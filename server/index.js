@@ -200,7 +200,7 @@ app.post('/api/suggest-experiences', async (req, res) => {
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios
 // concretos con nombre propio para el destino — el usuario los marca y esos lugares entran en el
-// pipeline de generación con prioridad casi de ancla (ver must_include_places en /api/generate-route).
+// pipeline de generación con prioridad casi de ancla (ver must_include_places en /api/generate-anchors).
 // Cada lugar se etiqueta con la categoría del banco de 18 a la que mejor encaja (para que el
 // frontend pueda ordenar por afinidad a las experiencias ya elegidas) — Claude puede usar
 // cualquiera de las 18, no solo las que el usuario ya seleccionó, para no perderse un sitio icónico
@@ -523,34 +523,45 @@ app.post('/api/transport-feasibility', async (req, res) => {
 
 // ── Generación de ruta ───────────────────────────────────────────────────────
 
-const ROUTE_SYSTEM_PROMPT = `You are an expert travel route planner. Generate a detailed, personalized day-by-day route based on ALL the user's preferences.
+// La generación de una ruta se hace ahora en varias llamadas encadenadas y pequeñas (anclas →
+// esqueleto → bloques de 3-4 días) en vez de una única llamada gigante — ver
+// [[project_route_planner_route_generation_pipeline]] en memoria. Cada llamada individual queda
+// muy por debajo de cualquier límite de tiempo de función serverless, sin importar cuántos días
+// tenga el viaje.
+
+const ANCHORS_SYSTEM_PROMPT = `You are an expert travel route planner. Your ONLY job right now is to identify the best "anchor" places for a trip — the real, specific must-see or must-do things that should anchor the itinerary, based on the traveler's chosen experience focus. Do NOT write a day-by-day itinerary yet — that happens in a later step, you won't see it.
 
 CRITICAL RULES:
 - Every place MUST be real and currently open/accessible
-- Prices MUST be real and current
-- Tips must be genuinely useful insider knowledge, not generic advice
-- Time estimates between stops must be realistic
-- Restaurant recommendations must be real places
-- Adapt the number of stops per day strictly to the pace preference
-- If the user travels by car between origin and destination, the route STARTS from the origin with interesting stops along the road
-- For trips longer than 3 days in one city, include 1-2 day trips or excursions outside the city
-- The last day should be relaxed: revisits, free time, no rush
-- Include 3 restaurant options per meal: budget (€), mid-range (€€), premium (€€€)
-- Consider the season/dates for weather, events, closures and seasonal tips
-
-COMPANION ADAPTATION:
-- Solo: social spots, solo-friendly activities. Accommodation: single room.
-- Couple: romantic spots, scenic walks, nice dinners. Accommodation: double room.
-- Family: kid-friendly, parks, shorter walks, family restaurants. Accommodation: family/connecting rooms sized to the group — the exact adult/children breakdown and each child's age are given below, adapt activities and pacing to the youngest child's age.
-- Group: group activities, shared experiences, nightlife. Accommodation: favor shared houses/villas or multi-room blocks over individual doubles when it fits the destination and budget — the exact group size is given below, optimize for group logistics.
+- Prioritize genuine variety across the traveler's chosen experience categories over cramming in every possible attraction
+- Pick roughly 2-3 anchors per day of the trip (fewer for very short trips, more for long multi-city trips) — real, well-known-enough places that genuinely fit the destination and the chosen experience focus
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
 {
-  "destination": "City, Country",
-  "origin": "City, Country",
+  "anchors": [
+    {
+      "name": "Real place or activity name",
+      "city": "Which city/town it's in — use the exact destination name for single-city trips",
+      "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
+      "reason": "One short phrase — why this fits the traveler's chosen experience focus"
+    }
+  ]
+}`
+
+const SKELETON_SYSTEM_PROMPT = `You are an expert travel route planner. Your job right now is to design the SHAPE of the trip — which days belong to which city/zone and what kind of day each one is — NOT the individual stops within each day (a later step fills those in, using exactly the shape you decide here, so make it realistic and complete).
+
+CRITICAL RULES:
+- Structure it so every day you define is realistic to actually fill with content later (feasible transitions, sensible day counts per city/zone)
+- For trips longer than 3 days in one city, reserve 1-2 days as type "excursion" (day trips outside the city)
+- The LAST day of the whole trip must be type "relax" — revisits, free time, no rush
+- If the traveler goes by car between origin and destination, day 1 must be type "road" (the route starts from the origin with stops along the road)
+- Consider the season/dates for weather/events when deciding zone order (e.g. avoid starting in the coldest region in winter if it can be avoided)
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+
+{
   "summary": "One emotional line about this route",
-  "total_stops": number,
   "estimated_budget": {
     "accommodation_per_night": "€XX-€XX",
     "meals_per_day": "€XX-€XX",
@@ -559,11 +570,40 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "days": [
     {
       "day_number": 1,
-      "title": "Short evocative title",
       "type": "city|road|excursion|relax",
-      "city": "City the traveler is actually in this day — only differs from the overall destination for multi-city trips (e.g. day 1-3 'Tokyo', day 4-6 'Kyoto'); for single-city destinations just repeat the destination name",
-      "country_code": "ISO 3166-1 alpha-2 country code (lowercase, e.g. 'it', 'jp') of the country this day's city is in — used to show the country flag in the app's route overview, always include it even for single-city destinations",
-      "phase_type": "ONLY for multidestino_mixto_o_circuito archetype (omit entirely for any other archetype): 'urbana' | 'naturaleza' | 'isla' — which kind of phase this specific day belongs to, changing exactly on the days the itinerary moves to a new phase",
+      "city": "City/zone the traveler is actually in this day — only differs from the overall destination for multi-city trips; for single-city destinations just repeat the destination name",
+      "country_code": "ISO 3166-1 alpha-2 country code (lowercase, e.g. 'it', 'jp') of the country this day's city is in, always include it even for single-city destinations",
+      "phase_type": "ONLY for multidestino_mixto_o_circuito archetype (omit entirely for any other archetype): 'urbana' | 'naturaleza' | 'isla' — which kind of phase this specific day belongs to, changing exactly on the days the itinerary moves to a new phase"
+    }
+  ]
+}`
+
+const DAY_BLOCK_SYSTEM_PROMPT = `You are an expert travel route planner. You're filling in the stops and meals for ONE BLOCK of days within a longer trip — the overall shape (which city/zone and what type each day is) has ALREADY been decided, given to you below; do not change it, just fill in realistic, detailed content for EXACTLY the days listed, nothing more and nothing less.
+
+CRITICAL RULES:
+- Every place MUST be real and currently open/accessible
+- Prices MUST be real and current
+- Tips must be genuinely useful insider knowledge, not generic advice
+- Time estimates between stops must be realistic
+- Restaurant recommendations must be real places
+- Adapt the number of stops per day strictly to the pace preference
+- Include 3 restaurant options per meal: budget (€), mid-range (€€), premium (€€€)
+- Consider the season/dates for weather, events, closures and seasonal tips
+- Do NOT repeat any place or restaurant already used earlier in the trip (see "context from earlier" below) — keep the trip varied, favor categories that haven't been overused yet where it still fits the traveler's experience focus
+
+COMPANION ADAPTATION:
+- Solo: social spots, solo-friendly activities.
+- Couple: romantic spots, scenic walks, nice dinners.
+- Family: kid-friendly, parks, shorter walks, family restaurants — adapt activities and pacing to the youngest child's age (given below).
+- Group: group activities, shared experiences, nightlife — optimize for group logistics (exact size given below).
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+
+{
+  "days": [
+    {
+      "day_number": 1,
+      "title": "Short evocative title",
       "stops": [
         {
           "id": "unique-id",
@@ -612,7 +652,7 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   ],
   "not_included": [
     {
-      "name": "Place Name",
+      "name": "Place Name — only include places relevant to THIS block's city/cities",
       "reason": "Why it did not make the cut",
       "where_it_fits": "Specific suggestion of where to add it",
       "latitude": 00.0000,
@@ -621,7 +661,7 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   ],
   "excursions_available": [
     {
-      "name": "Excursion name",
+      "name": "Excursion name — only if one of this block's days is type \\"excursion\\", omit array entirely otherwise",
       "duration": "half_day|full_day",
       "description": "What you do",
       "estimated_price": "€XX",
@@ -674,7 +714,7 @@ const COMPANION_LABEL = {
 /**
  * "Elige tus acompañantes" (Paso 5) — AVENTURA EN TRIBU/CON MI CREW llevan datos numéricos que
  * Claude necesita para adaptar habitaciones y actividades (ver COMPANION ADAPTATION en
- * ROUTE_SYSTEM_PROMPT), no solo la etiqueta genérica de COMPANION_LABEL.
+ * DAY_BLOCK_SYSTEM_PROMPT), no solo la etiqueta genérica de COMPANION_LABEL.
  */
 function formatCompanion(answers) {
   const base = COMPANION_LABEL[answers.companion] ?? 'not specified'
@@ -783,8 +823,40 @@ function buildArchetypeContext(transportContext) {
       lines.push('- Decide the best high-speed train or domestic flight between each city yourself.')
     }
     lines.push('- Within each city: walking + public transport only.')
+    lines.push('- Give each day a "city" field (see schema) reflecting which city the traveler is actually in that day, changing exactly on the days the itinerary moves between cities.')
+  } else if (archetype === 'multidestino_mixto_o_circuito') {
     lines.push(
-      `- IMPORTANT — additional required output for this archetype: give each day a "city" field (see schema) reflecting which city the traveler is actually in that day, changing exactly on the days the itinerary moves between cities. ALSO include a top-level "city_transitions" array in your JSON response (sibling of "days"), one entry per city change, with this exact shape:
+      '- Structure the route as a chain of phases of three possible types, in whatever order and combination fits the destination and trip length: "urbana" (a city, e.g. Kuala Lumpur, Hanoi, Cusco), "naturaleza" (a remote nature/jungle zone, typically without a real airport/train/public bus reaching it well, e.g. Cameron Highlands, Sapa, Valle Sagrado), or "isla" (an island, e.g. Langkawi, Perhentian, islas Ballestas).',
+    )
+    lines.push('- Within an urban phase: walking + public transport + taxi/rideshare only, never a rental car.')
+    lines.push(
+      '- Nature and island phases: mobility to/around points of interest is handled by the phase itself (lodge transfers, organized tours) — do not add a separate car-rental need there beyond the phase-to-phase transitions.',
+    )
+    lines.push('- Give each day a "city" field (the specific phase name — city, nature zone, or island) AND a "phase_type" field (see schema), both changing exactly on the days the itinerary moves to a new phase.')
+  } else if (archetype === 'expedicion_o_crucero') {
+    lines.push('- All mobility (boat, guided 4x4, tourist train) and accommodation are managed by the operator — do not suggest independent transport or hotel bookings.')
+  }
+
+  if (is_region && archetype !== 'roadtrip_exclusivo' && archetype !== 'base_y_excursiones') {
+    lines.push('- This is a region, not a single city — the traveler will need ground transport to get around even if they arrived by train/flight.')
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * Solo llamado desde buildSkeletonUserPrompt — las instrucciones de city_transitions/
+ * phase_transitions vivían antes dentro de buildArchetypeContext, pero esa función ahora también la
+ * usan las llamadas de bloque de días (que NO deben volver a decidir transiciones, el esqueleto ya
+ * las fijó), así que se separaron en su propia función usada solo por la llamada de esqueleto.
+ */
+function buildTransitionsInstructions(transportContext) {
+  const { archetype, pase_dominante } = transportContext ?? {}
+
+  if (archetype === 'multidestino_tren_o_vuelo') {
+    return `
+
+ALSO include a top-level "city_transitions" array in your JSON response (sibling of "days"), one entry per city change, with this exact shape:
 {
   "city_transitions": [
     {
@@ -800,19 +872,14 @@ function buildArchetypeContext(transportContext) {
   ]
 }
 Same rigor as real geography, not "is it technically possible": train.feasible only if a traveler would realistically take it for this specific leg (reasonable duration, not multiple transfers for a short hop); flight.feasible only if there's a real domestic route; bus.feasible only if it's a real, commonly-used option. If neither train nor flight is realistic for this leg, still fill in bus with real facts — the frontend needs it as a fallback.${
-        pase_dominante ? ` "recommended" and "pass_covers_leg" both matter here: pass_covers_leg = false only when the ${pase_dominante} genuinely does not cover this specific leg well (e.g. a remote route the pass excludes) — true by default.` : ' Set "pass_covers_leg" to true for every leg (no pass in play for this trip).'
-      }`,
-    )
-  } else if (archetype === 'multidestino_mixto_o_circuito') {
-    lines.push(
-      '- Structure the route as a chain of phases of three possible types, in whatever order and combination fits the destination and trip length: "urbana" (a city, e.g. Kuala Lumpur, Hanoi, Cusco), "naturaleza" (a remote nature/jungle zone, typically without a real airport/train/public bus reaching it well, e.g. Cameron Highlands, Sapa, Valle Sagrado), or "isla" (an island, e.g. Langkawi, Perhentian, islas Ballestas).',
-    )
-    lines.push('- Within an urban phase: walking + public transport + taxi/rideshare only, never a rental car.')
-    lines.push(
-      '- Nature and island phases: mobility to/around points of interest is handled by the phase itself (lodge transfers, organized tours) — do not add a separate car-rental need there beyond the phase-to-phase transitions below.',
-    )
-    lines.push(
-      `- IMPORTANT — additional required output for this archetype: give each day a "city" field (the specific phase name — city, nature zone, or island) AND a "phase_type" field (see schema), both changing exactly on the days the itinerary moves to a new phase. ALSO include a top-level "phase_transitions" array (sibling of "days"), one entry per phase change, with this exact shape:
+      pase_dominante ? ` "recommended" and "pass_covers_leg" both matter here: pass_covers_leg = false only when the ${pase_dominante} genuinely does not cover this specific leg well (e.g. a remote route the pass excludes) — true by default.` : ' Set "pass_covers_leg" to true for every leg (no pass in play for this trip).'
+    }`
+  }
+
+  if (archetype === 'multidestino_mixto_o_circuito') {
+    return `
+
+ALSO include a top-level "phase_transitions" array (sibling of "days"), one entry per phase change, with this exact shape:
 {
   "phase_transitions": [
     {
@@ -835,17 +902,10 @@ Fill in ONLY the fields that make real-world sense for that specific from_phase_
 - urbana↔urbana: evaluate train/flight/bus like any other city-to-city leg (feasible only if a real traveler would realistically use it — direct or max 1 transfer, reasonable duration vs. the fastest alternative). Leave ferry/transfer_organizado/roadtrip_alquiler feasible=false.
 - any phase↔isla (island on either side): evaluate ONLY ferry (a real, short, practical crossing) and flight (a real domestic route). Leave train/bus/transfer_organizado/roadtrip_alquiler feasible=false — cars and organized transfers never cross to an island.
 - urbana↔naturaleza or naturaleza↔naturaleza: evaluate transfer_organizado (a private/shared tourist minivan transfer, bookable via 12Go Asia or a local operator — feasible=true in almost every real case, this is the default connective tissue for these legs), roadtrip_alquiler (feasible only under the same threshold as any road trip leg: under 12-16h total driving, a real rentable route — and set "apto_camper_autocaravana": true ONLY if this specific region has real camper/RV rental culture and camper-suitable roads; the large majority of destinations in this archetype do NOT — Thailand/Vietnam/Malaysia/Peru/Colombia mostly don't — but be honest about real exceptions like Costa Rica or New Zealand-style circuits when it genuinely applies), and bus (feasible=true ONLY if a real public bus line covers this specific leg — many remote nature zones have none, that is expected and fine). Leave train/flight/ferry feasible=false.
-Of whichever fields came out feasible=true, set "recommended" to the single best one for a typical traveler (balance of price/duration/comfort) — use "roadtrip" to mean roadtrip_alquiler regardless of whether the camper variant applies, don't try to pick between car and camper. null only if nothing came out feasible=true (should be rare — transfer_organizado in particular should almost always be feasible for nature/urban legs).`,
-    )
-  } else if (archetype === 'expedicion_o_crucero') {
-    lines.push('- All mobility (boat, guided 4x4, tourist train) and accommodation are managed by the operator — do not suggest independent transport or hotel bookings.')
+Of whichever fields came out feasible=true, set "recommended" to the single best one for a typical traveler (balance of price/duration/comfort) — use "roadtrip" to mean roadtrip_alquiler regardless of whether the camper variant applies, don't try to pick between car and camper. null only if nothing came out feasible=true (should be rare — transfer_organizado in particular should almost always be feasible for nature/urban legs).`
   }
 
-  if (is_region && archetype !== 'roadtrip_exclusivo' && archetype !== 'base_y_excursiones') {
-    lines.push('- This is a region, not a single city — the traveler will need ground transport to get around even if they arrived by train/flight.')
-  }
-
-  return lines.join('\n')
+  return ''
 }
 
 function formatSeasonOrDates(answers) {
@@ -875,18 +935,75 @@ MANDATORY USER ANCHORS — the traveler explicitly selected these real places fr
 Places: ${names.join(', ')}`
 }
 
-function buildRouteUserPrompt(destination, answers, transportContext, mustIncludePlaces) {
-  return `Generate a travel route:
+function buildAnchorsUserPrompt(destination, answers, transportContext, mustIncludePlaces) {
+  return `Identify anchor places for this trip:
+- Destination: ${destination}
+- Days: ${answers.days}
+- Season/dates: ${formatSeasonOrDates(answers)}
+- Traveling with: ${formatCompanion(answers)}
+- Experience focus (build anchors around these): ${formatExperiences(answers.experiences)}
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${formatMustIncludePlaces(mustIncludePlaces)}`
+}
+
+/** Anclas ya identificadas, agrupadas por ciudad — solo para que la llamada de esqueleto calibre cuántos días merece cada ciudad/zona, no le pide que las reparta día a día (eso lo decide cada llamada de bloque). */
+function formatAnchorsSummary(anchors) {
+  if (!Array.isArray(anchors) || anchors.length === 0) return ''
+  const byCity = new Map()
+  for (const anchor of anchors) {
+    const city = (anchor?.city || '').trim() || 'unknown'
+    if (!byCity.has(city)) byCity.set(city, [])
+    byCity.get(city).push(anchor.name)
+  }
+  const lines = [...byCity.entries()].map(([city, names]) => `  - ${city}: ${names.join(', ')}`)
+  return `\n\nAnchor places already identified (grouped by city — use this to gauge how many days each city/zone deserves):\n${lines.join('\n')}`
+}
+
+function buildSkeletonUserPrompt(destination, answers, transportContext, anchors, mustIncludePlaces) {
+  return `Design the day-by-day shape for this trip:
 - Origin: ${answers.origin}
 - Destination: ${destination}
 - Arrival transport (phase 1 — how to arrive, NOT how to move around at destination): ${formatArrivalTransport(transportContext?.transport_option)}
 - Days: ${answers.days}
 - Season/dates: ${formatSeasonOrDates(answers)}
 - Traveling with: ${formatCompanion(answers)}
-- Experience focus (the traveler explicitly chose these from a fixed list — build the route's DNA around them, favor stops/activities that genuinely match): ${formatExperiences(answers.experiences)}
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${buildTransitionsInstructions(transportContext)}${formatAnchorsSummary(anchors)}${formatMustIncludePlaces(mustIncludePlaces)}`
+}
+
+function formatSkeletonDays(blockDays) {
+  return blockDays.map((day) => `  - Day ${day.day_number}: type=${day.type}, city=${day.city}${day.phase_type ? `, phase=${day.phase_type}` : ''}`).join('\n')
+}
+
+function formatBlockAnchors(anchorsForBlock) {
+  if (!anchorsForBlock || anchorsForBlock.length === 0) return ''
+  return `\n- Anchor places to weave into these specific days wherever they fit best (not necessarily all on one day): ${anchorsForBlock.map((anchor) => anchor.name).join(', ')}`
+}
+
+/** Resumen de lo ya escrito en bloques anteriores — para que este bloque no repita sitios/categorías y mantenga continuidad geográfica sin necesitar ver el viaje completo. */
+function formatContinuity(continuity) {
+  if (!continuity) return ''
+  const categories = Object.entries(continuity.usedCategoryCounts || {})
+    .map(([category, count]) => `${category} (${count})`)
+    .join(', ')
+  return `
+
+CONTEXT FROM EARLIER IN THE TRIP (already-written days from previous blocks — for continuity, avoid repeats, keep variety):
+- Where the previous block left off: ${continuity.lastCity || 'n/a'}, last stops visited: ${(continuity.lastStopNames || []).join(', ') || 'none'}
+- Categories already used a lot so far: ${categories || 'none yet'}
+- Places/restaurants already used — do NOT repeat any of these: ${(continuity.usedPlaceNames || []).join(', ') || 'none yet'}`
+}
+
+function buildDayBlockUserPrompt(destination, answers, transportContext, blockDays, anchorsForBlock, mustIncludeForBlock, continuity, isFirstBlockOfTrip) {
+  return `Fill in the stops and meals for this block of days (the trip's overall shape is already decided — just fill in realistic content for exactly these days):
+${formatSkeletonDays(blockDays)}
+
+Trip context:
+- Destination: ${destination}${isFirstBlockOfTrip ? `\n- Arrival transport (phase 1 — how to arrive, NOT how to move around at destination): ${formatArrivalTransport(transportContext?.transport_option)}` : ''}
+- Season/dates: ${formatSeasonOrDates(answers)}
+- Traveling with: ${formatCompanion(answers)}
+- Experience focus: ${formatExperiences(answers.experiences)}
 - Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
 - Schedule: ${CHRONOTYPE_LABEL[answers.chronotype] ?? answers.chronotype}
-- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatMustIncludePlaces(mustIncludePlaces)}`
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatBlockAnchors(anchorsForBlock)}${formatMustIncludePlaces(mustIncludeForBlock)}${formatContinuity(continuity)}`
 }
 
 function sanitizeCityTransitionLeg(leg) {
@@ -974,122 +1091,220 @@ function sanitizePhaseTransitions(raw) {
     }))
 }
 
-/**
- * Paso (2-5) de LoadingScreen.tsx que corresponde al estado actual del texto que Claude ya ha
- * generado — NO son llamadas separadas (todo es una única llamada en streaming a
- * `/api/generate-route`), así que se infieren de qué parte del JSON de la respuesta ya ha
- * aparecido: antes de que empiece el array "days" (2, "Buscando lo mejor de {destino}" — cabecera,
- * presupuesto, anclas), y después según qué fracción de los días pedidos ya se han empezado a
- * escribir (3 → 4 → 5, "Aplicando tus preferencias"/"Ajustando tu ritmo"/"Optimizando tu ruta" —
- * las tres cosas ocurren en realidad a la vez por cada día que Claude escribe, no son fases
- * realmente separadas, pero avanzan con el progreso real del texto recibido, no con un temporizador).
- */
-function computeGenerationStep(snapshot, totalDays) {
-  if (!snapshot.includes('"days"')) return 2
-  const daysSeen = (snapshot.match(/"day_number"\s*:\s*\d+/g) ?? []).length
-  const fraction = daysSeen / totalDays
-  if (fraction < 1 / 3) return 3
-  if (fraction < 2 / 3) return 4
-  return 5
+// ── Generación de ruta por fases encadenadas ────────────────────────────────
+//
+// Anclas → esqueleto → bloques de 3-4 días, en vez de una única llamada gigante — cada llamada
+// queda muy por debajo de cualquier límite de tiempo de función serverless, sin importar cuántos
+// días tenga el viaje. El frontend (routeGenerationOrchestrator.ts) encadena estas tres llamadas
+// una tras otra y persiste el progreso en Supabase tras cada una — ver
+// [[project_route_planner_route_generation_pipeline]] en memoria.
+
+function readTransportContext(body) {
+  const { archetype, is_region, transport_option, vehicle_type, vehicle_ownership, accommodation_mode, travel_mode, pase_dominante, travel_pass_confirmed } =
+    body ?? {}
+  return { archetype, is_region, transport_option, vehicle_type, vehicle_ownership, accommodation_mode, travel_mode, pase_dominante, travel_pass_confirmed }
 }
 
-app.post('/api/generate-route', async (req, res) => {
-  const {
-    destination,
-    answers,
-    archetype,
-    is_region,
-    transport_option,
-    vehicle_type,
-    vehicle_ownership,
-    accommodation_mode,
-    travel_mode,
-    pase_dominante,
-    travel_pass_confirmed,
-    must_include_places,
-  } = req.body ?? {}
+function hasRequiredAnswers(answers) {
+  return Boolean(
+    answers?.origin && answers?.days && answers?.companion && Array.isArray(answers?.experiences) && answers?.pace && answers?.chronotype && answers?.budgetLevel,
+  )
+}
 
-  if (
-    !destination ||
-    !answers?.origin ||
-    !answers?.days ||
-    !answers?.companion ||
-    !Array.isArray(answers?.experiences) ||
-    !answers?.pace ||
-    !answers?.chronotype ||
-    !answers?.budgetLevel
-  ) {
+const ANCHOR_CATEGORIES = new Set(['temple', 'museum', 'nature', 'viewpoint', 'neighborhood', 'market', 'park', 'landmark', 'experience', 'beach'])
+
+function sanitizeAnchors(raw, destination) {
+  if (!Array.isArray(raw)) return []
+  const seen = new Set()
+  const result = []
+  for (const entry of raw) {
+    if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) continue
+    const name = entry.name.trim().slice(0, 150)
+    const key = name.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({
+      name,
+      city: typeof entry.city === 'string' && entry.city.trim() ? entry.city.trim().slice(0, 100) : destination,
+      category: ANCHOR_CATEGORIES.has(entry.category) ? entry.category : 'experience',
+      reason: typeof entry.reason === 'string' ? entry.reason.trim().slice(0, 200) : '',
+    })
+    if (result.length >= 60) break
+  }
+  return result
+}
+
+/** Los lugares que el viajero marcó explícitamente en "Elige lugares" cuentan como anclas garantizadas — se añaden aquí en vez de confiar en que Claude los repita todos por su cuenta. */
+function mergeMustIncludeIntoAnchors(anchors, mustIncludePlaces, destination) {
+  if (!Array.isArray(mustIncludePlaces)) return anchors
+  const existingNames = new Set(anchors.map((anchor) => anchor.name.toLowerCase()))
+  const merged = [...anchors]
+  for (const name of mustIncludePlaces) {
+    if (typeof name !== 'string' || !name.trim()) continue
+    const trimmed = name.trim().slice(0, 150)
+    if (existingNames.has(trimmed.toLowerCase())) continue
+    existingNames.add(trimmed.toLowerCase())
+    merged.push({ name: trimmed, city: destination, category: 'experience', reason: 'Elegido por ti' })
+  }
+  return merged
+}
+
+app.post('/api/generate-anchors', async (req, res) => {
+  const { destination, answers, must_include_places } = req.body ?? {}
+  if (!destination || !hasRequiredAnswers(answers)) {
     res.status(400).json({ error: 'Faltan preferencias del usuario necesarias para generar la ruta.' })
     return
   }
 
-  const transportContext = {
-    archetype,
-    is_region,
-    transport_option,
-    vehicle_type,
-    vehicle_ownership,
-    accommodation_mode,
-    travel_mode,
-    pase_dominante,
-    travel_pass_confirmed,
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system: ANCHORS_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildAnchorsUserPrompt(destination, answers, readTransportContext(req.body), must_include_places) }],
+    })
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const anchors = mergeMustIncludeIntoAnchors(sanitizeAnchors(parsed?.anchors, destination), must_include_places, destination)
+    res.json({ anchors })
+  } catch (error) {
+    console.error('Error al generar anclas con la API de Claude:', error)
+    res.status(502).json({ error: 'No se pudieron identificar las anclas del viaje con IA.' })
+  }
+})
+
+const SKELETON_DAY_TYPES = new Set(['city', 'road', 'excursion', 'relax'])
+const SKELETON_PHASE_TYPES = new Set(['urbana', 'naturaleza', 'isla'])
+
+function sanitizeSkeletonDays(raw, destination, totalDays) {
+  if (!Array.isArray(raw)) return []
+  const byDayNumber = new Map()
+  for (const entry of raw) {
+    const dayNumber = Number(entry?.day_number)
+    if (!Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > totalDays) continue
+    byDayNumber.set(dayNumber, {
+      day_number: dayNumber,
+      type: SKELETON_DAY_TYPES.has(entry.type) ? entry.type : 'city',
+      city: typeof entry.city === 'string' && entry.city.trim() ? entry.city.trim().slice(0, 100) : destination,
+      country_code: typeof entry.country_code === 'string' && entry.country_code.trim() ? entry.country_code.trim().slice(0, 2).toLowerCase() : null,
+      phase_type: SKELETON_PHASE_TYPES.has(entry.phase_type) ? entry.phase_type : undefined,
+    })
+  }
+  // Rellena cualquier día que Claude se haya dejado sin definir (no debería pasar, pero un esqueleto
+  // incompleto rompería los bloques de días que vienen después) repitiendo el día anterior más cercano.
+  const days = []
+  let lastKnown = null
+  for (let dayNumber = 1; dayNumber <= totalDays; dayNumber++) {
+    const found = byDayNumber.get(dayNumber)
+    const day = found ?? { ...(lastKnown ?? { type: 'city', city: destination, country_code: null }), day_number: dayNumber }
+    days.push(day)
+    lastKnown = day
+  }
+  return days
+}
+
+app.post('/api/generate-skeleton', async (req, res) => {
+  const { destination, answers, anchors, must_include_places } = req.body ?? {}
+  if (!destination || !hasRequiredAnswers(answers)) {
+    res.status(400).json({ error: 'Faltan preferencias del usuario necesarias para generar la ruta.' })
+    return
   }
 
-  // NDJSON (una línea = un evento JSON) en vez de un único res.json() — así la pantalla de carga
-  // (LoadingScreen.tsx) puede mostrar progreso por pasos real, derivado del propio texto que Claude
-  // va generando (no un temporizador simulado). Ver computeGenerationStep más abajo: los "pasos" 2-5
-  // no son llamadas separadas (todo sale de una sola llamada a Claude en streaming), así que se
-  // infieren de qué parte del JSON de respuesta ya se ha escrito hasta el momento.
-  res.setHeader('Content-Type', 'application/x-ndjson')
-  res.setHeader('Cache-Control', 'no-cache')
-  const sendEvent = (event) => res.write(`${JSON.stringify(event)}\n`)
-
+  const transportContext = readTransportContext(req.body)
   const totalDays = Number(answers.days) > 0 ? Number(answers.days) : 1
-  let currentStep = 2
-  sendEvent({ type: 'progress', step: currentStep })
 
   try {
-    // Rutas largas (hasta 21 días) generan un JSON grande — necesita streaming porque
-    // la API rechaza max_tokens altos en modo no-streaming (podría tardar más de 10 min).
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 8192,
+      system: SKELETON_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildSkeletonUserPrompt(destination, answers, transportContext, anchors, must_include_places) }],
+    })
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const days = sanitizeSkeletonDays(parsed?.days, destination, totalDays)
+    if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos')
+
+    res.json({
+      summary: typeof parsed?.summary === 'string' ? parsed.summary.slice(0, 300) : '',
+      estimated_budget: parsed?.estimated_budget && typeof parsed.estimated_budget === 'object' ? parsed.estimated_budget : undefined,
+      days,
+      city_transitions: Array.isArray(parsed?.city_transitions) ? sanitizeCityTransitions(parsed.city_transitions) : undefined,
+      phase_transitions: Array.isArray(parsed?.phase_transitions) ? sanitizePhaseTransitions(parsed.phase_transitions) : undefined,
+    })
+  } catch (error) {
+    console.error('Error al generar el esqueleto de la ruta con la API de Claude:', error)
+    res.status(502).json({ error: 'No se pudo definir la forma del viaje con IA.' })
+  }
+})
+
+function sanitizeDayBlockDays(raw, blockDayNumbers) {
+  if (!Array.isArray(raw)) return []
+  const allowed = new Set(blockDayNumbers)
+  return raw.filter((entry) => allowed.has(Number(entry?.day_number)) && Array.isArray(entry?.stops) && Array.isArray(entry?.meals))
+}
+
+app.post('/api/generate-day-block', async (req, res) => {
+  const { destination, answers, block_days, anchors_for_block, must_include_for_block, continuity, is_first_block_of_trip } = req.body ?? {}
+  if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
+    res.status(400).json({ error: 'Faltan datos necesarios para generar este bloque de días.' })
+    return
+  }
+
+  const transportContext = readTransportContext(req.body)
+  const blockDayNumbers = block_days.map((day) => Number(day.day_number)).filter((n) => Number.isInteger(n))
+
+  try {
+    // Streaming (mismo motivo que antes en la llamada única): evita el límite de la API para
+    // respuestas largas en modo no-streaming — un bloque de 3-4 días con paradas/comidas detalladas
+    // puede acercarse a ese límite en viajes de ritmo intenso.
     const stream = anthropic.messages.stream({
       model: MODEL,
-      max_tokens: 64000,
-      system: ROUTE_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildRouteUserPrompt(destination, answers, transportContext, must_include_places) }],
+      max_tokens: 16000,
+      system: DAY_BLOCK_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: buildDayBlockUserPrompt(
+            destination,
+            answers,
+            transportContext,
+            block_days,
+            anchors_for_block,
+            must_include_for_block,
+            continuity,
+            Boolean(is_first_block_of_trip),
+          ),
+        },
+      ],
     })
-
-    stream.on('text', (_delta, snapshot) => {
-      const step = computeGenerationStep(snapshot, totalDays)
-      if (step !== currentStep) {
-        currentStep = step
-        sendEvent({ type: 'progress', step: currentStep })
-      }
-    })
-
     const response = await stream.finalMessage()
 
     if (response.stop_reason === 'max_tokens') {
-      throw new Error('La respuesta de Claude se cortó por exceder el límite de tokens (ruta demasiado larga).')
+      throw new Error('La respuesta de Claude se cortó por exceder el límite de tokens (bloque de días demasiado largo).')
     }
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    if (!Array.isArray(parsed?.days)) throw new Error('Respuesta de Claude sin campo "days" válido')
-    if (Array.isArray(parsed?.city_transitions)) {
-      parsed.city_transitions = sanitizeCityTransitions(parsed.city_transitions)
-    }
-    if (Array.isArray(parsed?.phase_transitions)) {
-      parsed.phase_transitions = sanitizePhaseTransitions(parsed.phase_transitions)
-    }
+    const days = sanitizeDayBlockDays(parsed?.days, blockDayNumbers)
+    if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos para este bloque')
 
-    sendEvent({ type: 'done', route: parsed })
-    res.end()
+    res.json({
+      days,
+      not_included: Array.isArray(parsed?.not_included) ? parsed.not_included : [],
+      excursions_available: Array.isArray(parsed?.excursions_available) ? parsed.excursions_available : [],
+    })
   } catch (error) {
-    console.error('Error al generar la ruta con la API de Claude:', error)
-    sendEvent({ type: 'error', message: 'No se pudo generar la ruta con IA.' })
-    res.end()
+    console.error('Error al generar un bloque de días con la API de Claude:', error)
+    res.status(502).json({ error: 'No se pudo generar este tramo del viaje con IA.' })
   }
 })
 

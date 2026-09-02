@@ -22,6 +22,7 @@ function buildTripPayload(): TripPayload | null {
     },
     wishlist: state.wishlist,
     uiState: { mode: state.mode, activeDayId: state.activeDayId },
+    generationState: null,
   }
 }
 
@@ -49,6 +50,8 @@ async function attemptSave(travelerId: string) {
  */
 export function TripSync() {
   const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
+  const setDestination = useRouteStore((state) => state.setDestination)
+  const setScreen = useRouteStore((state) => state.setScreen)
   const route = useRouteStore((state) => state.route)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const transportBookings = useRouteStore((state) => state.transportBookings)
@@ -80,7 +83,18 @@ export function TripSync() {
         if (cancelled) return
         // Si mientras cargaba ya se puso en marcha otro flujo (p. ej. un enlace de viaje
         // compartido, ver decodeTripFromUrl en App.tsx), no lo pisamos con el viaje guardado.
-        if (trip && useRouteStore.getState().screen === 'destination') hydrateTrip(trip)
+        if (trip && useRouteStore.getState().screen === 'destination') {
+          if (trip.generationState) {
+            // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
+            // existe completa). LoadingScreenContainer (App.tsx) consume pendingResume y continúa
+            // exactamente donde se dejó, sin repetir llamadas ya hechas.
+            setDestination(trip.generationState.params.destination)
+            useSyncStore.getState().setPendingResume(trip.generationState)
+            setScreen('loading')
+          } else {
+            hydrateTrip(trip)
+          }
+        }
 
         hydratedRef.current = true
         useSyncStore.getState().setStatus('idle')

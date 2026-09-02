@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
+import { useSyncStore } from './store/useSyncStore'
 import { DestinationInput } from './components/destination/DestinationInput'
 import { RouteSearch, type ConfirmedRoute } from './components/destination/RouteSearch'
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
-import { useRouteGenerator } from './hooks/useRouteGenerator'
-import type { Place, QuestionnaireAnswers, TransportContext } from './lib/types'
+import { computeLoadingStep, runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
+import { saveGenerationCheckpoint } from './lib/tripPersistence'
+import type { Place, QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
 import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
@@ -109,36 +111,60 @@ function LoadingScreenContainer() {
   const selectedPlaceIds = useRouteStore((state) => state.selected_place_ids)
   const setRoute = useRouteStore((state) => state.setRoute)
   const setScreen = useRouteStore((state) => state.setScreen)
-  const { generateRoute } = useRouteGenerator()
+  const pendingResume = useSyncStore((state) => state.pendingResume)
+  const setPendingResume = useSyncStore((state) => state.setPendingResume)
+  const travelerId = useSyncStore((state) => state.travelerId)
 
   const [status, setStatus] = useState<'loading' | 'done' | 'error'>('loading')
   const [step, setStep] = useState(2)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [route, setLocalRoute] = useState<ReturnType<typeof useRouteStore.getState>['route']>(null)
   const [attempt, setAttempt] = useState(0)
+  // Progreso ya alcanzado EN ESTA sesión de pantalla — un "Reintentar" tras un fallo a medio camino
+  // retoma desde aquí (no desde cero), igual que retomaría una generación cargada de Supabase.
+  const lastCheckpointRef = useRef<GenerationResumeState | null>(null)
 
   useEffect(() => {
     if (!destination) return
     let cancelled = false
     setStatus('loading')
-    setStep(2)
 
-    const transportContext: TransportContext = {
-      archetype,
-      is_region: isRegion,
-      transport_option: transportOption,
-      vehicle_type: vehicleType,
-      vehicle_ownership: vehicleOwnership,
-      accommodation_mode: accommodationMode,
-      travel_mode: travelMode,
-      pase_dominante: paseDominante,
-      travel_pass_confirmed: travelPassConfirmed,
-    }
+    const resumeState = lastCheckpointRef.current ?? pendingResume
+    if (pendingResume) setPendingResume(null)
 
-    const mustIncludePlaces = suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name)
+    const params: GenerationParams = resumeState
+      ? resumeState.params
+      : {
+          destination,
+          answers: answers as QuestionnaireAnswers,
+          transportContext: {
+            archetype,
+            is_region: isRegion,
+            transport_option: transportOption,
+            vehicle_type: vehicleType,
+            vehicle_ownership: vehicleOwnership,
+            accommodation_mode: accommodationMode,
+            travel_mode: travelMode,
+            pase_dominante: paseDominante,
+            travel_pass_confirmed: travelPassConfirmed,
+          },
+          mustIncludePlaces: suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
+        }
 
-    generateRoute(destination, answers as QuestionnaireAnswers, transportContext, mustIncludePlaces, (nextStep) => {
-      if (!cancelled) setStep(nextStep)
+    setStep(resumeState ? computeLoadingStep(resumeState) : 2)
+
+    runGeneration(params, resumeState, async (checkpoint) => {
+      if (cancelled) return
+      lastCheckpointRef.current = checkpoint
+      setStep(computeLoadingStep(checkpoint))
+      if (travelerId) {
+        try {
+          await saveGenerationCheckpoint(travelerId, checkpoint)
+        } catch {
+          // El guardado de progreso falló (sin conexión, etc.) — no se aborta la generación, sigue
+          // en memoria; TripSync ya cubre el aviso discreto de guardado en general.
+        }
+      }
     })
       .then((generated) => {
         if (cancelled) return
@@ -154,7 +180,9 @@ function LoadingScreenContainer() {
     return () => {
       cancelled = true
     }
-    // `attempt` solo cambia para forzar un reintento con la misma llamada.
+    // `attempt` solo cambia para forzar un reintento (retoma desde lastCheckpointRef si ya se avanzó
+    // algo). El resto de dependencias son deliberadamente solo del primer render — un cambio a media
+    // generación no debe reiniciarla.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, attempt])
 

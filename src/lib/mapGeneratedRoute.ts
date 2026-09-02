@@ -64,7 +64,7 @@ interface GeneratedMeal {
   options: GeneratedMealOption[]
 }
 
-interface GeneratedDay {
+export interface GeneratedDay {
   day_number: number
   title: string
   type?: string

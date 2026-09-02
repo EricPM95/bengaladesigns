@@ -1,6 +1,8 @@
 import type { Route, RouteMode, WishlistItem } from './types'
 import type { MockHotelResult } from './mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from './readiness'
+import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
+import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
 
 export interface TripBookings {
@@ -22,6 +24,8 @@ export interface TripPayload {
   bookings: TripBookings
   wishlist: WishlistItem[]
   uiState: TripUiState
+  /** Presente y con phase !== 'done' cuando la generación se cerró a mitad — TripSync.tsx la usa para retomar en vez de abrir la ruta directamente. */
+  generationState: GenerationResumeState | null
 }
 
 /**
@@ -55,15 +59,17 @@ export async function bootstrapTraveler(): Promise<string> {
 export async function loadTrip(travelerId: string): Promise<TripPayload | null> {
   if (!supabase) return null
 
-  const { data, error } = await supabase.from('trips').select('route, bookings, wishlist, ui_state').eq('traveler_id', travelerId).maybeSingle()
+  const { data, error } = await supabase.from('trips').select('route, bookings, wishlist, ui_state, generation_state').eq('traveler_id', travelerId).maybeSingle()
   if (error) throw error
   if (!data) return null
 
+  const generationState = data.generation_state as GenerationResumeState | null
   return {
     route: data.route as Route,
     bookings: data.bookings as TripBookings,
     wishlist: (data.wishlist ?? []) as WishlistItem[],
     uiState: data.ui_state as TripUiState,
+    generationState: generationState && generationState.phase !== 'done' ? generationState : null,
   }
 }
 
@@ -78,6 +84,33 @@ export async function saveTrip(travelerId: string, payload: TripPayload): Promis
       bookings: payload.bookings,
       wishlist: payload.wishlist,
       ui_state: payload.uiState,
+      generation_state: null,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'traveler_id' },
+  )
+  if (error) throw error
+}
+
+/**
+ * Guarda el progreso de una generación en curso — se llama tras CADA fase/bloque completado (ver
+ * onCheckpoint en routeGenerationOrchestrator.ts), así que si el usuario cierra la pestaña a mitad,
+ * la próxima apertura retoma justo aquí (ver TripSync.tsx) en vez de perder lo ya generado. No
+ * escribe nada durante la fase 'anchors' — todavía no hay un Route válido que guardar (esa fase es
+ * además la más rápida de repetir si se pierde). Cuando `checkpoint.phase` es 'done', limpia
+ * generation_state a null — el guardado normal (saveTrip/autosave) toma el relevo a partir de ahí.
+ */
+export async function saveGenerationCheckpoint(travelerId: string, checkpoint: GenerationResumeState): Promise<void> {
+  if (!supabase) return
+  if (checkpoint.phase === 'anchors') return
+
+  const route = mapGeneratedRouteToRoute(checkpoint.generated, checkpoint.params.destination, checkpoint.params.answers, checkpoint.params.transportContext)
+
+  const { error } = await supabase.from('trips').upsert(
+    {
+      traveler_id: travelerId,
+      route,
+      generation_state: checkpoint.phase === 'done' ? null : checkpoint,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'traveler_id' },

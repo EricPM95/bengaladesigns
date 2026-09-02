@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 interface LoadingScreenProps {
   destination: string
   status: 'loading' | 'done' | 'error'
-  /** Paso activo del pipeline real (2-5), recibido en vivo desde el backend a medida que Claude genera la ruta — ver useRouteGenerator.ts/onProgress. El paso 1 ("Creando tu viaje") ya está resuelto antes de llegar a esta pantalla (arquetipo/transporte), así que siempre se muestra completo desde el primer render. */
+  /** Paso activo real (2-5) — cada uno corresponde a una llamada encadenada que de verdad ha terminado (anclas → esqueleto → bloques de días), ver computeLoadingStep en routeGenerationOrchestrator.ts. El paso 1 ("Creando tu viaje") ya está resuelto antes de llegar a esta pantalla (arquetipo/transporte), así que siempre se muestra completo desde el primer render. */
   step: number
   errorMessage?: string
   onFinish: () => void
@@ -131,13 +131,12 @@ function StepRow({ step, state }: { step: StepDef; state: RowState }) {
 
 /**
  * Pantalla de generación de ruta — lista de pasos con progreso real (no una animación con tiempos
- * fijos): `step` llega en vivo desde el backend a medida que el texto de Claude va completando cada
- * parte de la respuesta (ver computeGenerationStep en server/index.js y onProgress en
- * useRouteGenerator.ts). Solo un paso está "en curso" a la vez; si el pipeline tarda más de lo
- * normal en algún paso, el spinner de ese paso simplemente sigue girando hasta que complete de
- * verdad — no hay timeout ni error prematuro aquí. Fondo degradado cálido como excepción puntual al
- * resto de la app (transmite "algo especial está pasando"); tipografía Plus Jakarta Sans heredada
- * del body, sin cambios.
+ * fijos): `step` llega tras cada llamada encadenada que de verdad termina (anclas → esqueleto →
+ * bloques de días — ver runGeneration/computeLoadingStep en routeGenerationOrchestrator.ts). Solo un
+ * paso está "en curso" a la vez; si algún bloque tarda más de lo normal, su spinner simplemente
+ * sigue girando hasta que complete de verdad — no hay timeout ni error prematuro aquí. Fondo
+ * degradado cálido como excepción puntual al resto de la app (transmite "algo especial está
+ * pasando"); tipografía Plus Jakarta Sans heredada del body, sin cambios.
  */
 export function LoadingScreen({ destination, status, step, errorMessage, onFinish, onRetry }: LoadingScreenProps) {
   useEffect(() => {
