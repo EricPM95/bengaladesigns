@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import 'flag-icons/css/flag-icons.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light mode — cada variable es un triplete RGB "R G B" (sin rgb() ni comas) para que
+     Tailwind pueda aplicar modificadores de opacidad (bg-accent-red/10, etc.) vía rgb(var(--x) / <alpha-value>). */
+  --bg: 250 249 249;
+  --bg-card: 255 255 255;
+  --bg-hover: 245 245 244;
+  --accent: 13 148 136;
+  --accent-hover: 15 118 110;
+  --accent-soft: 204 251 241;
+  --accent-warm: 249 112 102;
+  --accent-gold: 245 158 11;
+  --accent-red: 220 38 38;
+  --accent-lilac: 237 231 246;
+  --text: 24 24 27;
+  --text-soft: 113 113 122;
+  --text-muted: 161 161 170;
+  --border: 228 228 231;
+  --border-accent: 153 246 228;
+}
+
+.dark {
+  --bg: 9 9 11;
+  --bg-card: 24 24 27;
+  --bg-hover: 39 39 42;
+  --accent: 45 212 191;
+  --accent-hover: 94 234 212;
+  --accent-soft: 4 47 46;
+  --accent-warm: 251 113 133;
+  --accent-gold: 245 158 11;
+  --accent-red: 248 113 113;
+  --accent-lilac: 46 38 64;
+  --text: 250 250 250;
+  --text-soft: 161 161 170;
+  --text-muted: 113 113 122;
+  --border: 39 39 42;
+  --border-accent: 19 78 74;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
