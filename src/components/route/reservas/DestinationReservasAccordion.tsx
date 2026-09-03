@@ -47,9 +47,9 @@ export function DestinationReservasAccordion({ route, segment, isLastSegment, ex
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-bg-card">
-      <button type="button" onClick={onToggle} className="flex w-full items-center gap-2 p-3 text-left transition-colors hover:bg-bg-hover">
+      <button type="button" onClick={onToggle} className="flex w-full items-center gap-2 p-3.5 text-left transition-colors hover:bg-bg-hover">
         <ChevronIcon expanded={expanded} />
-        <span className="text-body font-semibold text-text">{segment.city}</span>
+        <span className="font-display text-h2 font-bold text-text">{segment.city}</span>
       </button>
 
       {expanded && (

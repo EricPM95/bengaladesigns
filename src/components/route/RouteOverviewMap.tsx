@@ -31,7 +31,7 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       center: [points[0].lng, points[0].lat],
       zoom: 11,
     })

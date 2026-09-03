@@ -75,6 +75,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Recolorea react-day-picker (DurationSelector.tsx) con la paleta de la app en vez de su azul por
+   defecto — solo variables CSS, la librería ya trae el resto de estilos (grid, tamaños, animación
+   de mes). `rgb(var(--accent))` porque los tokens de color de la app son tripletes RGB sin rgb(). */
+.rdp-root {
+  --rdp-accent-color: rgb(var(--accent));
+  --rdp-accent-background-color: rgb(var(--accent-soft));
+  --rdp-today-color: rgb(var(--accent));
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
 #root {
   height: 100%;
   overflow-y: auto;

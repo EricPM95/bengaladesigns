@@ -51,7 +51,8 @@ export function ReservasPanel({ route }: ReservasPanelProps) {
       <div>
         <h2 className="font-display text-h2 font-semibold text-text">Vuelos</h2>
         <p className="mt-1 text-small text-text-soft">
-          Añade tus horarios de vuelo para afinar los traslados de llegada/vuelta y detectar si merece la pena ajustar la ruta.
+          Si ya tienes el billete, indica aquí las horas para ajustar los traslados de la ruta. Para buscar y reservar el vuelo en sí, hazlo
+          desde «Transporte» dentro de cada destino, más abajo.
         </p>
       </div>
 

@@ -16,6 +16,7 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/supabase-js": "^2.114.0",
+    "date-fns": "^4.4.0",
     "express": "^4.21.2",
     "flag-icons": "^7.5.0",
     "framer-motion": "^11.18.2",
@@ -23,6 +24,7 @@
     "jspdf": "^2.5.2",
     "mapbox-gl": "^3.29.0",
     "react": "^18.3.1",
+    "react-day-picker": "^10.0.1",
     "react-dom": "^18.3.1",
     "zustand": "^4.5.7"
   },

@@ -24,19 +24,33 @@ import { TodayView } from './today/TodayView'
 const MOBILE_MAP_MIN_VH = 15
 const MOBILE_MAP_MAX_VH = 75
 
-const SINGLE_DAY_MARKER_BG = 'rgb(var(--accent))'
-const SINGLE_DAY_MARKER_TEXT = '#ffffff'
-
-/** Mapa de un único día (DIAS y el resto de pestañas que no son RUTA) — un color fijo, numerado por posición dentro de ese día. */
-function buildSingleDayMarkers(stops: Stop[]): StopsMapMarker[] {
+/** Mapa de un único día (DIAS y el resto de pestañas que no son RUTA/RESERVAS) — mismo color que el círculo numerado de sus paradas (ver dayIndex en DayDetailPanel.tsx), numerado por posición dentro de ese día. */
+function buildSingleDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
   return stops.map((stop, index) => ({
     id: stop.id,
     name: stop.name,
     coordinates: stop.coordinates,
     number: index + 1,
-    bg: SINGLE_DAY_MARKER_BG,
-    text: SINGLE_DAY_MARKER_TEXT,
+    bg: dayColorPastel(dayIndex),
+    text: dayColorStrong(dayIndex),
   }))
+}
+
+function CollapseMapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  )
+}
+
+function ExpandMapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <path d="M3 3h7v7H3z" />
+      <path d="M14 14h7v7h-7z" />
+    </svg>
+  )
 }
 
 /** Mapa combinado de TODOS los días (RUTA, destino único) — coloreado por día con el mismo criterio que el círculo numerado de cada parada en DIAS (ver StopAccordion.tsx), numerado por posición dentro de su propio día. */
@@ -67,6 +81,7 @@ export function RouteView() {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
+  const [mapCollapsed, setMapCollapsed] = useState(false)
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
@@ -82,7 +97,16 @@ export function RouteView() {
   const hasTripDates = Boolean(route.answers.dateRange)
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
+  const activeDayIndex = route.days.findIndex((day) => day.id === activeDay.id)
   const segments = buildDestinationSegments(route.days)
+  // RUTA y RESERVAS comparten el mismo mapa (combinado por día, o por destino si hay varios) —
+  // RESERVAS es un panel por destino, no por día, así que el mapa de un solo día activo (el que
+  // usan DIAS/EXPLORAR/HOY) no tenía sentido ahí y a veces ni se veía si ese día no tenía paradas.
+  const showRouteStyleMap = mode === 'route' || mode === 'bookings'
+  // El botón de colapsar mapa solo aplica a DIAS (pedido explícitamente ahí, para ganar espacio de
+  // contenido) — el resto de pestañas se quedan con el comportamiento normal.
+  const canCollapseMap = mode === 'days'
+  const mapHidden = canCollapseMap && mapCollapsed
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
@@ -133,27 +157,57 @@ export function RouteView() {
       <Header />
 
       <div ref={containerRef} style={splitStyle} className="flex flex-1 flex-col overflow-hidden md:flex-row">
-        <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
-          {mode === 'route' ? (
-            segments.length <= 1 ? (
-              <StopsMapView markers={buildCombinedDaysMarkers(route.days)} />
+        {!mapHidden && (
+          <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
+            {showRouteStyleMap ? (
+              segments.length <= 1 ? (
+                <StopsMapView markers={buildCombinedDaysMarkers(route.days)} />
+              ) : (
+                <RouteOverviewMap segments={segments} days={route.days} />
+              )
             ) : (
-              <RouteOverviewMap segments={segments} days={route.days} />
-            )
-          ) : (
-            <StopsMapView markers={buildSingleDayMarkers(activeDay.stops)} activeStopId={activeStopId} onSelectStop={setActiveStopId} />
-          )}
-        </div>
-
-        <div onMouseDown={handleDragStart} className="hidden w-1.5 shrink-0 cursor-col-resize bg-border transition-colors hover:bg-accent md:block" />
-
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden md:w-[var(--split-w)]">
-          <div
-            onPointerDown={handleMobilePanelDragStart}
-            className="flex shrink-0 cursor-row-resize touch-none items-center justify-center py-2 md:hidden"
-          >
-            <span className="h-1.5 w-10 rounded-full bg-border" />
+              <StopsMapView
+                markers={buildSingleDayMarkers(activeDay.stops, activeDayIndex)}
+                activeStopId={activeStopId}
+                onSelectStop={setActiveStopId}
+              />
+            )}
+            {canCollapseMap && (
+              <button
+                type="button"
+                onClick={() => setMapCollapsed(true)}
+                aria-label="Ocultar mapa"
+                title="Ocultar mapa"
+                className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-md transition-colors hover:bg-bg-hover"
+              >
+                <CollapseMapIcon />
+              </button>
+            )}
           </div>
+        )}
+
+        {!mapHidden && (
+          <div onMouseDown={handleDragStart} className="hidden w-1.5 shrink-0 cursor-col-resize bg-border transition-colors hover:bg-accent md:block" />
+        )}
+
+        <div className={`relative flex min-h-0 flex-1 flex-col overflow-hidden ${mapHidden ? 'md:w-full' : 'md:w-[var(--split-w)]'}`}>
+          {mapHidden ? (
+            <button
+              type="button"
+              onClick={() => setMapCollapsed(false)}
+              className="mx-4 mt-3 flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full border-2 border-accent bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-sm transition-colors hover:bg-bg-hover"
+            >
+              <ExpandMapIcon />
+              Mostrar mapa
+            </button>
+          ) : (
+            <div
+              onPointerDown={handleMobilePanelDragStart}
+              className="flex shrink-0 cursor-row-resize touch-none items-center justify-center py-2 md:hidden"
+            >
+              <span className="h-1.5 w-10 rounded-full bg-border" />
+            </div>
+          )}
           <ModeSwitcher showToday={hasTripDates} />
 
           {mode === 'today' && hasTripDates && <TodayView route={route} />}

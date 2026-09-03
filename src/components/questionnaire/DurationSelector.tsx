@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react'
+import { DayPicker, type DateRange as PickerRange } from 'react-day-picker'
+import 'react-day-picker/style.css'
+import { es } from 'date-fns/locale'
 import type { DateRange, QuestionnaireAnswers, Season } from '../../lib/types'
 import { daysBetweenInclusive, todayIso } from '../../lib/dateRange'
 import { SEASON_META, getCurrentSeason } from '../../lib/season'
@@ -21,11 +24,28 @@ function formatRangeEs(range: DateRange): string {
   return `${start} → ${end}`
 }
 
+/** Fecha ISO (yyyy-mm-dd) → Date en huso horario local, sin el desfase de `new Date(iso)` (que la interpreta en UTC). */
+function isoToLocalDate(iso: string): Date {
+  return new Date(`${iso}T00:00:00`)
+}
+
+/** Date → fecha ISO (yyyy-mm-dd) usando los componentes LOCALES — nunca `.toISOString()`, que desplaza el día según el huso horario. */
+function localDateToIso(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function DurationSelector({ days, dateRange, season, onChange }: DurationSelectorProps) {
   const [customDraft, setCustomDraft] = useState(days !== undefined ? String(days) : '')
   const [showCalendar, setShowCalendar] = useState(false)
-  const [draftStart, setDraftStart] = useState(dateRange?.start ?? '')
-  const [draftEnd, setDraftEnd] = useState(dateRange?.end ?? '')
+  // Rango a medio elegir (solo "Inicio" clicado, "Fin" todavía no) — el propio DayPicker se
+  // encarga de resaltarlo visualmente mientras tanto; solo se aplica de verdad (onChange) al
+  // completarse con las dos fechas.
+  const [draftRange, setDraftRange] = useState<PickerRange | undefined>(
+    dateRange ? { from: isoToLocalDate(dateRange.start), to: isoToLocalDate(dateRange.end) } : undefined,
+  )
   const [dateError, setDateError] = useState<string | null>(null)
   // Al abrir "¿ya tienes fecha?" ocultamos la época hasta que el usuario vuelva a elegir
   // días de forma explícita (botón rápido o campo "otro") — evita mostrar dos preguntas
@@ -64,7 +84,6 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
   }
 
   const applyDateRange = (start: string, end: string) => {
-    if (!start || !end) return
     const spanDays = daysBetweenInclusive(start, end)
     if (spanDays === null) {
       setDateError('La fecha de fin debe ser posterior a la de inicio.')
@@ -78,25 +97,16 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
     onChange({ dateRange: { start, end }, days: spanDays, season: undefined })
   }
 
-  // Inicio y fin son totalmente independientes de los botones/campo de duración — no se
-  // autorrellenan entre sí. Solo al tener ambas fechas se calculan los días y se aplican,
-  // sobrescribiendo cualquier valor previo elegido por botón o campo numérico.
-  const handleStartChange = (value: string) => {
-    setDraftStart(value)
-    setDateError(null)
-    if (value && draftEnd) applyDateRange(value, draftEnd)
-  }
-
-  const handleEndChange = (value: string) => {
-    setDraftEnd(value)
-    setDateError(null)
-    if (draftStart && value) applyDateRange(draftStart, value)
+  const handleRangeSelect = (range: PickerRange | undefined) => {
+    setDraftRange(range)
+    if (range?.from && range?.to) {
+      applyDateRange(localDateToIso(range.from), localDateToIso(range.to))
+    }
   }
 
   const clearDateRange = () => {
     onChange({ dateRange: undefined })
-    setDraftStart('')
-    setDraftEnd('')
+    setDraftRange(undefined)
     setShowCalendar(false)
     setDateError(null)
     setSeasonHidden(false)
@@ -159,27 +169,18 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
 
       {showCalendar && (
         <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-col gap-1 text-caption text-text-muted">
-              Inicio
-              <input
-                type="date"
-                min={todayIso()}
-                value={draftStart}
-                onChange={(event) => handleStartChange(event.target.value)}
-                className="rounded-lg border border-border bg-bg px-2 py-1.5 text-small text-text focus:border-accent focus:outline-none"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-caption text-text-muted">
-              Fin
-              <input
-                type="date"
-                min={draftStart || todayIso()}
-                value={draftEnd}
-                onChange={(event) => handleEndChange(event.target.value)}
-                className="rounded-lg border border-border bg-bg px-2 py-1.5 text-small text-text focus:border-accent focus:outline-none"
-              />
-            </label>
+          <div className="calendar-scope flex justify-center">
+            <DayPicker
+              mode="range"
+              selected={draftRange}
+              onSelect={handleRangeSelect}
+              disabled={{ before: isoToLocalDate(todayIso()) }}
+              resetOnSelect
+              numberOfMonths={1}
+              locale={es}
+              weekStartsOn={1}
+              showOutsideDays
+            />
           </div>
           <p className="text-caption text-text-soft">
             Con fechas exactas, cruzamos el itinerario con estacionalidad, clima, festivos, cierres y eventos especiales.

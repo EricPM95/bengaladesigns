@@ -135,8 +135,15 @@ export function DayDetailPanel({
   const otherDays = allDays.filter((candidate) => candidate.id !== day.id)
   // Mismo índice que usa el mapa combinado de todos los días (CombinedDaysMapView.tsx) para asignar
   // color por día — así el círculo numerado de cada parada coincide exactamente con el color de ese
-  // día ahí (fondo pastel + número en la versión oscura/saturada del mismo tono).
-  const dayIndex = allDays.findIndex((candidate) => candidate.id === day.id)
+  // día ahí (fondo pastel + número en la versión oscura/saturada del mismo tono). `allDays` excluye
+  // a propósito el día sintético de vuelta (ver DayList.tsx), así que si `day` ES ese día,
+  // `findIndex` no lo encuentra (-1) — dayColor(-1) reventaría (DAY_COLORS[-1] es undefined). No
+  // pasa nada con el fallback a 0: un día de vuelta nunca tiene paradas (buildMockStopsForDay corta
+  // en seco con isReturnLeg), así que estos colores no llegan a pintarse ahí de todas formas.
+  const dayIndex = Math.max(
+    allDays.findIndex((candidate) => candidate.id === day.id),
+    0,
+  )
   const stopCircleBg = dayColorPastel(dayIndex)
   const stopCircleText = dayColorStrong(dayIndex)
   const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
