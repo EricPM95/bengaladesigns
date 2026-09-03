@@ -401,12 +401,21 @@ export function mapGeneratedRouteToRoute(
     transportByDay.set(fact.dayNumber, buildPhaseTransportSegment(fact))
   }
 
+  // El array de días generado representa NOCHES ("1 día generado = 1 noche"); appendReturnLegDay
+  // añade un día final de "vuelta" que no es noche. El pipeline (server/index.js, contentDaysFor)
+  // ya pide exactamente `answers.days - 1` noches para que sumando el día de vuelta el total
+  // coincida con lo que el viajero eligió — este chequeo es el invariante que lo garantiza: solo
+  // añade el día de vuelta si con los días ya generados NO se alcanza el total pedido (evita
+  // duplicar el +1 si algo más arriba cambia y ya llegan `answers.days` días completos).
+  const mappedDays = generated.days.map((day) => mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut))
+  const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
+
   return {
     id: `route-${slugify(destination)}-${Date.now()}`,
     destination,
     country: '',
     origin: answers.origin,
-    days: appendReturnLegDay(generated.days.map((day) => mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut))),
+    days,
     answers,
     transportContext,
     budget: mapBudget(generated.estimated_budget),

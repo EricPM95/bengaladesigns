@@ -142,6 +142,8 @@ interface RouteStoreState {
   suggested_places: PlaceCandidate[]
   suggested_places_loading: boolean
   suggested_places_failed: boolean
+  /** Con qué conjunto de experiencias se pidió el `suggested_places` actual — permite precargar en cuanto se conoce el destino (ver suggestPlacesInBackground.ts) y detectar en "Ver lugares" si ese resultado ya sirve o si el viajero cambió su selección y hace falta pedirlo de nuevo. */
+  suggested_places_source_ids: ExperienceId[]
   /** ids de `suggested_places` que el viajero marcó — entran en la generación como anclas de alta prioridad (ver must_include_places). */
   selected_place_ids: string[]
 
@@ -192,7 +194,7 @@ interface RouteStoreState {
   setSuggestedExperiencesLoading: (loading: boolean) => void
   setSuggestedExperiencesFailed: (failed: boolean) => void
   setPlacesStepStarted: (started: boolean) => void
-  setSuggestedPlaces: (places: PlaceCandidate[]) => void
+  setSuggestedPlaces: (places: PlaceCandidate[], sourceIds: ExperienceId[]) => void
   setSuggestedPlacesLoading: (loading: boolean) => void
   setSuggestedPlacesFailed: (failed: boolean) => void
   toggleSelectedPlace: (placeId: string) => void
@@ -307,6 +309,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   suggested_experiences_failed: false,
   places_step_started: false,
   suggested_places: [],
+  suggested_places_source_ids: [],
   suggested_places_loading: false,
   suggested_places_failed: false,
   selected_place_ids: [],
@@ -351,6 +354,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       suggested_experiences_failed: false,
       places_step_started: false,
       suggested_places: [],
+      suggested_places_source_ids: [],
       suggested_places_loading: false,
       suggested_places_failed: false,
       selected_place_ids: [],
@@ -401,7 +405,8 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   setSuggestedExperiencesLoading: (loading) => set({ suggested_experiences_loading: loading }),
   setSuggestedExperiencesFailed: (failed) => set({ suggested_experiences_failed: failed, suggested_experiences_loading: false }),
   setPlacesStepStarted: (started) => set({ places_step_started: started }),
-  setSuggestedPlaces: (places) => set({ suggested_places: places, suggested_places_loading: false, suggested_places_failed: false }),
+  setSuggestedPlaces: (places, sourceIds) =>
+    set({ suggested_places: places, suggested_places_source_ids: sourceIds, suggested_places_loading: false, suggested_places_failed: false }),
   setSuggestedPlacesLoading: (loading) => set({ suggested_places_loading: loading }),
   setSuggestedPlacesFailed: (failed) => set({ suggested_places_failed: failed, suggested_places_loading: false }),
   toggleSelectedPlace: (placeId) =>
@@ -440,6 +445,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       suggested_experiences_failed: false,
       places_step_started: false,
       suggested_places: [],
+      suggested_places_source_ids: [],
       suggested_places_loading: false,
       suggested_places_failed: false,
       selected_place_ids: [],

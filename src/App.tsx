@@ -7,6 +7,7 @@ import { RouteSearch, type ConfirmedRoute } from './components/destination/Route
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
+import { mapGeneratedRouteToRoute } from './lib/mapGeneratedRoute'
 import { saveGenerationCheckpoint } from './lib/tripPersistence'
 import type { Place, QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
@@ -165,17 +166,22 @@ function LoadingScreenContainer() {
           // en memoria; TripSync ya cubre el aviso discreto de guardado en general.
         }
       }
-    })
-      .then((generated) => {
-        if (cancelled) return
-        setLocalRoute(generated)
+      // La navegación se decide AQUÍ, en cuanto el checkpoint dice que ya está todo generado — no
+      // se espera a que además se resuelva la promesa que envuelve runGeneration en memoria. Si el
+      // móvil pierde el foco/la conexión a mitad de generación, esa promesa puede quedarse colgada
+      // aunque los checkpoints (y el guardado en Supabase) sigan llegando bien al reconectar — antes
+      // la navegación dependía solo del `.then()` de abajo, así que se quedaba parada en la pantalla
+      // de carga con todos los pasos ya en verde. La pregunta correcta es "¿está todo el contenido
+      // ya generado (y guardado)?", que es justo lo que este checkpoint confirma.
+      if (nextCheckpoint.phase === 'done' && !cancelled) {
+        setLocalRoute(mapGeneratedRouteToRoute(nextCheckpoint.generated, destination, params.answers, params.transportContext))
         setStatus('done')
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return
-        setErrorMessage(error instanceof Error ? error.message : 'No se pudo generar la ruta con IA.')
-        setStatus('error')
-      })
+      }
+    }).catch((error: unknown) => {
+      if (cancelled) return
+      setErrorMessage(error instanceof Error ? error.message : 'No se pudo generar la ruta con IA.')
+      setStatus('error')
+    })
 
     return () => {
       cancelled = true

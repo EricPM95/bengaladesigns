@@ -1,11 +1,17 @@
 import { useRouteStore } from '../store/useRouteStore'
 import { suggestExperiences } from './suggestExperiences'
+import { suggestPlacesInBackground } from './suggestPlacesInBackground'
 
 /**
  * Sugerencia de experiencias: se dispara en paralelo a `classifyInBackground` en cuanto se conoce
  * el destino, y no bloquea la navegación — para cuando el usuario llegue al selector de
  * experiencias ya habrá resuelto casi siempre. Solo depende del nombre del destino, no del
  * arquetipo, así que no espera a la clasificación.
+ *
+ * En cuanto resuelve, encadena también la precarga del pool de lugares (suggestPlacesInBackground)
+ * usando esta misma sugerencia — así, muchos pasos después, "Elige tus lugares" ya no tiene que
+ * esperar los ~20s de esa llamada (ver suggestPlacesOnDemand.ts, que reutiliza este resultado si el
+ * viajero no cambió la selección sugerida).
  */
 export function suggestExperiencesInBackground(name: string): void {
   const { setSuggestedExperiences, setSuggestedExperiencesFailed, setSuggestedExperiencesLoading } = useRouteStore.getState()
@@ -16,5 +22,6 @@ export function suggestExperiencesInBackground(name: string): void {
       return
     }
     setSuggestedExperiences(ids)
+    suggestPlacesInBackground(name, ids)
   })
 }
