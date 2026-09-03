@@ -7,8 +7,15 @@ config({ path: '.env.local' })
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 8787
 const MODEL = 'claude-sonnet-4-6'
 
+// En local, la clave viene de .env.local (dotenv, arriba); en Vercel viene directamente de las
+// Environment Variables del proyecto (sin archivo — dotenv.config() ahí simplemente no encuentra
+// nada y no hace nada, no borra lo que Vercel ya haya puesto en process.env). Este log confirma en
+// el arranque (frío o local) si la clave llegó, sin imprimir el valor real — compara los últimos 4
+// caracteres con los de la clave que pegaste en el dashboard de Vercel si algo falla ahí.
 if (!process.env.ANTHROPIC_API_KEY) {
-  console.warn('Falta ANTHROPIC_API_KEY en .env.local — los endpoints de IA devolverán error 500.')
+  console.warn('Falta ANTHROPIC_API_KEY — revisa .env.local en desarrollo, o Project Settings → Environment Variables en Vercel (asegúrate de marcar "Production"). Los endpoints de IA devolverán error 500.')
+} else {
+  console.log(`ANTHROPIC_API_KEY detectada (termina en …${process.env.ANTHROPIC_API_KEY.slice(-4)}, longitud ${process.env.ANTHROPIC_API_KEY.length}).`)
 }
 
 const anthropic = new Anthropic()
@@ -18,6 +25,21 @@ app.use(express.json())
 function extractJsonText(text) {
   const fenced = text.trim().match(/```(?:json)?\s*([\s\S]*?)```/i)
   return (fenced ? fenced[1] : text).trim()
+}
+
+/**
+ * Log de errores de la API de Anthropic en una sola línea de texto PLANO (no un objeto anidado) —
+ * el visor de logs de Vercel colapsa objetos anidados como `error: {…}` y no deja expandirlos desde
+ * la vista rápida, así que pasarle el objeto Error entero a console.error (como se hacía antes) deja
+ * el mensaje real inaccesible ahí. `error.message` en los errores de @anthropic-ai/sdk (clase
+ * APIError, ver node_modules/@anthropic-ai/sdk/core/error.js → makeMessage) YA es un string plano
+ * con el status y el cuerpo de error completo («400 {"type":"error","error":{"type":"invalid_request_error","message":"..."}}»),
+ * así que basta con imprimir eso explícitamente para que sobreviva el colapso.
+ */
+function logAnthropicError(context, error) {
+  const status = error?.status ?? 'sin status'
+  const requestId = error?.requestID ?? 'sin request-id'
+  console.error(`[Anthropic] ${context} — status=${status} requestId=${requestId} — ${error?.message ?? String(error)}`)
 }
 
 const DESTINATION_ARCHETYPES = new Set([
@@ -95,7 +117,7 @@ app.post('/api/classify-destination', async (req, res) => {
       pase_dominante: archetype === 'multidestino_tren_o_vuelo' && paseDominanteRaw ? paseDominanteRaw.slice(0, 100) : null,
     })
   } catch (error) {
-    console.error('Error al clasificar el destino con la API de Claude:', error)
+    logAnthropicError('classify-destination', error)
     res.status(502).json({ error: 'No se pudo clasificar el destino con IA.' })
   }
 })
@@ -191,7 +213,7 @@ app.post('/api/suggest-experiences', async (req, res) => {
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     res.json({ experience_ids: sanitizeExperienceIds(parsed?.experience_ids) })
   } catch (error) {
-    console.error('Error al sugerir experiencias con la API de Claude:', error)
+    logAnthropicError('suggest-experiences', error)
     res.status(502).json({ error: 'No se pudieron sugerir experiencias con IA.' })
   }
 })
@@ -282,7 +304,7 @@ app.post('/api/suggest-places', async (req, res) => {
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     res.json({ places: sanitizeSuggestedPlaces(parsed?.places) })
   } catch (error) {
-    console.error('Error al sugerir lugares con la API de Claude:', error)
+    logAnthropicError('suggest-places', error)
     res.status(502).json({ error: 'No se pudieron sugerir lugares con IA.' })
   }
 })
@@ -353,7 +375,7 @@ app.post('/api/interpret-route', async (req, res) => {
       duracion_tipica_dias: [Number(parsed?.duracion_tipica_dias_min) || 0, Number(parsed?.duracion_tipica_dias_max) || 0],
     })
   } catch (error) {
-    console.error('Error al interpretar la ruta con la API de Claude:', error)
+    logAnthropicError('interpret-route', error)
     res.status(502).json({ error: 'No se pudo interpretar esta ruta con IA.' })
   }
 })
@@ -516,7 +538,7 @@ app.post('/api/transport-feasibility', async (req, res) => {
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     res.json(sanitizeTransportFeasibility(parsed))
   } catch (error) {
-    console.error('Error al consultar la API de Claude:', error)
+    logAnthropicError('transport-feasibility', error)
     res.status(502).json({ error: 'No se pudo calcular la viabilidad del trayecto con IA.' })
   }
 })
@@ -558,6 +580,12 @@ CRITICAL RULES:
 - If the traveler goes by car between origin and destination, day 1 must be type "road" (the route starts from the origin with stops along the road)
 - Consider the season/dates for weather/events when deciding zone order (e.g. avoid starting in the coldest region in winter if it can be avoided)
 
+IMPORTANT — each day's content below will be written by a SEPARATE call that runs IN PARALLEL with every other day's call, with no visibility into what the others end up writing. Your job here is to prevent overlap between days BEFORE that happens, by giving each day a distinct focus:
+- "zone_focus": a short, specific sub-area, neighborhood or theme for that day (e.g. "Centro storico y Coliseo" vs "Trastevere y orilla del Tíber" for two days in the same city) — two days in the same city MUST get a different zone_focus so they don't end up covering the same ground
+- "experience_focus": 1-3 category tags (from: temple, museum, nature, viewpoint, neighborhood, market, park, landmark, experience, beach) this day should lean into — vary these across days of the same city too
+- "anchor_names": assign EVERY anchor place given to you below to exactly ONE day each — whichever city/zone/timing fits it best. Spread them across days realistically instead of stacking most of them on one day, unless the trip is short enough that a day genuinely needs several
+- "must_include_names": same idea — assign EVERY must-include place given to you below to exactly ONE day each
+
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
 {
@@ -573,7 +601,11 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
       "type": "city|road|excursion|relax",
       "city": "City/zone the traveler is actually in this day — only differs from the overall destination for multi-city trips; for single-city destinations just repeat the destination name",
       "country_code": "ISO 3166-1 alpha-2 country code (lowercase, e.g. 'it', 'jp') of the country this day's city is in, always include it even for single-city destinations",
-      "phase_type": "ONLY for multidestino_mixto_o_circuito archetype (omit entirely for any other archetype): 'urbana' | 'naturaleza' | 'isla' — which kind of phase this specific day belongs to, changing exactly on the days the itinerary moves to a new phase"
+      "phase_type": "ONLY for multidestino_mixto_o_circuito archetype (omit entirely for any other archetype): 'urbana' | 'naturaleza' | 'isla' — which kind of phase this specific day belongs to, changing exactly on the days the itinerary moves to a new phase",
+      "zone_focus": "Short sub-area/theme for this specific day, distinct from other days in the same city",
+      "experience_focus": ["landmark", "museum"],
+      "anchor_names": ["Exact anchor name from the list below, assigned to this day"],
+      "must_include_names": ["Exact must-include name from the list below, assigned to this day"]
     }
   ]
 }`
@@ -970,29 +1002,44 @@ function buildSkeletonUserPrompt(destination, answers, transportContext, anchors
 }
 
 function formatSkeletonDays(blockDays) {
-  return blockDays.map((day) => `  - Day ${day.day_number}: type=${day.type}, city=${day.city}${day.phase_type ? `, phase=${day.phase_type}` : ''}`).join('\n')
+  return blockDays
+    .map((day) => {
+      const parts = [`type=${day.type}`, `city=${day.city}`]
+      if (day.phase_type) parts.push(`phase=${day.phase_type}`)
+      if (day.zone_focus) parts.push(`zone_focus=${day.zone_focus}`)
+      if (day.experience_focus?.length) parts.push(`experience_focus=${day.experience_focus.join('/')}`)
+      return `  - Day ${day.day_number}: ${parts.join(', ')}`
+    })
+    .join('\n')
 }
 
 function formatBlockAnchors(anchorsForBlock) {
   if (!anchorsForBlock || anchorsForBlock.length === 0) return ''
-  return `\n- Anchor places to weave into these specific days wherever they fit best (not necessarily all on one day): ${anchorsForBlock.map((anchor) => anchor.name).join(', ')}`
+  return `\n- Anchor places assigned to today — a helpful reference, NOT a mandatory checklist: skip any that don't genuinely fit today's pace/time/geography, and feel free to add other real places from your own knowledge of the destination if that makes for a better day: ${anchorsForBlock.map((anchor) => anchor.name).join(', ')}`
 }
 
-/** Resumen de lo ya escrito en bloques anteriores — para que este bloque no repita sitios/categorías y mantenga continuidad geográfica sin necesitar ver el viaje completo. */
-function formatContinuity(continuity) {
-  if (!continuity) return ''
-  const categories = Object.entries(continuity.usedCategoryCounts || {})
-    .map(([category, count]) => `${category} (${count})`)
-    .join(', ')
+/**
+ * Resumen ligero de TODOS los días del viaje, calculado una sola vez en generate-skeleton (zone_focus
+ * + experience_focus, ver SKELETON_SYSTEM_PROMPT) — sustituye al mecanismo anterior de "continuity"
+ * (que dependía del contenido YA ESCRITO de bloques anteriores, obligando a generarlos en serie).
+ * Como esto se calcula de antemano y es idéntico para todos los bloques, cada día puede lanzarse en
+ * paralelo con el resto y aun así evitar solaparse en zona/temática con los demás, sin necesitar ver
+ * su contenido final.
+ */
+function formatTripOverview(allDays, blockDayNumbers) {
+  const others = (allDays ?? []).filter((day) => !blockDayNumbers.includes(day.day_number))
+  if (others.length === 0) return ''
+  const lines = others.map((day) => {
+    const focus = [day.zone_focus, day.experience_focus?.length ? day.experience_focus.join('/') : null].filter(Boolean).join(' — ')
+    return `  - Day ${day.day_number} (${day.city}): ${focus || 'general exploration'}`
+  })
   return `
 
-CONTEXT FROM EARLIER IN THE TRIP (already-written days from previous blocks — for continuity, avoid repeats, keep variety):
-- Where the previous block left off: ${continuity.lastCity || 'n/a'}, last stops visited: ${(continuity.lastStopNames || []).join(', ') || 'none'}
-- Categories already used a lot so far: ${categories || 'none yet'}
-- Places/restaurants already used — do NOT repeat any of these: ${(continuity.usedPlaceNames || []).join(', ') || 'none yet'}`
+OTHER DAYS IN THIS TRIP (being written in parallel by separate calls — this is what each one is focused on, so you can naturally avoid overlapping the same places/themes without seeing their final content):
+${lines.join('\n')}`
 }
 
-function buildDayBlockUserPrompt(destination, answers, transportContext, blockDays, anchorsForBlock, mustIncludeForBlock, continuity, isFirstBlockOfTrip) {
+function buildDayBlockUserPrompt(destination, answers, transportContext, blockDays, anchorsForBlock, mustIncludeForBlock, allDays, isFirstBlockOfTrip) {
   return `Fill in the stops and meals for this block of days (the trip's overall shape is already decided — just fill in realistic content for exactly these days):
 ${formatSkeletonDays(blockDays)}
 
@@ -1003,7 +1050,7 @@ Trip context:
 - Experience focus: ${formatExperiences(answers.experiences)}
 - Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
 - Schedule: ${CHRONOTYPE_LABEL[answers.chronotype] ?? answers.chronotype}
-- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatBlockAnchors(anchorsForBlock)}${formatMustIncludePlaces(mustIncludeForBlock)}${formatContinuity(continuity)}`
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatBlockAnchors(anchorsForBlock)}${formatMustIncludePlaces(mustIncludeForBlock)}${formatTripOverview(allDays, blockDays.map((day) => day.day_number))}`
 }
 
 function sanitizeCityTransitionLeg(leg) {
@@ -1156,6 +1203,8 @@ app.post('/api/generate-anchors', async (req, res) => {
     return
   }
 
+  const t0 = Date.now()
+  console.log(`[timing] generate-anchors START ${new Date(t0).toISOString()}`)
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -1163,6 +1212,7 @@ app.post('/api/generate-anchors', async (req, res) => {
       system: ANCHORS_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: buildAnchorsUserPrompt(destination, answers, readTransportContext(req.body), must_include_places) }],
     })
+    console.log(`[timing] generate-anchors END — ${Date.now() - t0}ms`)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -1171,7 +1221,8 @@ app.post('/api/generate-anchors', async (req, res) => {
     const anchors = mergeMustIncludeIntoAnchors(sanitizeAnchors(parsed?.anchors, destination), must_include_places, destination)
     res.json({ anchors })
   } catch (error) {
-    console.error('Error al generar anclas con la API de Claude:', error)
+    console.log(`[timing] generate-anchors FAILED — ${Date.now() - t0}ms`)
+    logAnthropicError('generate-anchors', error)
     res.status(502).json({ error: 'No se pudieron identificar las anclas del viaje con IA.' })
   }
 })
@@ -1179,7 +1230,40 @@ app.post('/api/generate-anchors', async (req, res) => {
 const SKELETON_DAY_TYPES = new Set(['city', 'road', 'excursion', 'relax'])
 const SKELETON_PHASE_TYPES = new Set(['urbana', 'naturaleza', 'isla'])
 
-function sanitizeSkeletonDays(raw, destination, totalDays) {
+function sanitizeExperienceFocus(raw) {
+  if (!Array.isArray(raw)) return []
+  const values = raw.filter((value) => typeof value === 'string' && ANCHOR_CATEGORIES.has(value))
+  return [...new Set(values)].slice(0, 4)
+}
+
+function sanitizeNameList(raw) {
+  if (!Array.isArray(raw)) return []
+  const names = raw.filter((value) => typeof value === 'string' && value.trim()).map((value) => value.trim().slice(0, 150))
+  return [...new Set(names)].slice(0, 20)
+}
+
+/**
+ * Garantiza que ningún ancla/lugar obligatorio se quede sin día asignado — si Claude se dejó alguno
+ * fuera al repartirlos entre días (ver instrucciones de anchor_names/must_include_names en
+ * SKELETON_SYSTEM_PROMPT), lo añade aquí al día cuya ciudad coincida (o al primer día si no hay
+ * forma de saberlo) en vez de perderlo silenciosamente — cada bloque de día solo recibe las anclas/
+ * lugares de SU propio día (ver anchorsForBlockDays en routeGenerationOrchestrator.ts), así que uno
+ * sin día asignado nunca llegaría a generarse.
+ */
+function topUpUnassignedNames(days, allNames, field, anchorsByName) {
+  const assigned = new Set(days.flatMap((day) => day[field].map((name) => name.toLowerCase())))
+  for (const rawName of allNames) {
+    if (typeof rawName !== 'string' || !rawName.trim()) continue
+    const name = rawName.trim()
+    if (assigned.has(name.toLowerCase())) continue
+    const city = anchorsByName?.get(name.toLowerCase())
+    const targetDay = (city && days.find((day) => day.city === city)) ?? days[0]
+    if (targetDay) targetDay[field] = [...targetDay[field], name]
+    assigned.add(name.toLowerCase())
+  }
+}
+
+function sanitizeSkeletonDays(raw, destination, totalDays, anchors, mustIncludePlaces) {
   if (!Array.isArray(raw)) return []
   const byDayNumber = new Map()
   for (const entry of raw) {
@@ -1191,6 +1275,10 @@ function sanitizeSkeletonDays(raw, destination, totalDays) {
       city: typeof entry.city === 'string' && entry.city.trim() ? entry.city.trim().slice(0, 100) : destination,
       country_code: typeof entry.country_code === 'string' && entry.country_code.trim() ? entry.country_code.trim().slice(0, 2).toLowerCase() : null,
       phase_type: SKELETON_PHASE_TYPES.has(entry.phase_type) ? entry.phase_type : undefined,
+      zone_focus: typeof entry.zone_focus === 'string' && entry.zone_focus.trim() ? entry.zone_focus.trim().slice(0, 150) : undefined,
+      experience_focus: sanitizeExperienceFocus(entry.experience_focus),
+      anchor_names: sanitizeNameList(entry.anchor_names),
+      must_include_names: sanitizeNameList(entry.must_include_names),
     })
   }
   // Rellena cualquier día que Claude se haya dejado sin definir (no debería pasar, pero un esqueleto
@@ -1199,10 +1287,42 @@ function sanitizeSkeletonDays(raw, destination, totalDays) {
   let lastKnown = null
   for (let dayNumber = 1; dayNumber <= totalDays; dayNumber++) {
     const found = byDayNumber.get(dayNumber)
-    const day = found ?? { ...(lastKnown ?? { type: 'city', city: destination, country_code: null }), day_number: dayNumber }
+    const day = found ?? {
+      ...(lastKnown ?? { type: 'city', city: destination, country_code: null }),
+      day_number: dayNumber,
+      zone_focus: undefined,
+      experience_focus: [],
+      anchor_names: [],
+      must_include_names: [],
+    }
     days.push(day)
     lastKnown = day
   }
+
+  // Un lugar puede estar tanto en `anchors` (candidatos automáticos) como en `mustIncludePlaces`
+  // (elegidos a mano por el usuario) — generate-anchors ya los fusiona en una sola entrada de
+  // `anchors` (ver mergeMustIncludeIntoAnchors), así que si Claude reparte ese mismo nombre por las
+  // dos vías (anchor_names en un día, must_include_names en otro) acaba duplicado como parada en el
+  // contenido final. must_include_names manda: se quita de anchor_names en todos los días y se
+  // excluye del top-up de anclas, para que ese lugar tenga garantizado un único día asignado.
+  const mustIncludeNamesLower = new Set(
+    (Array.isArray(mustIncludePlaces) ? mustIncludePlaces : [])
+      .filter((name) => typeof name === 'string' && name.trim())
+      .map((name) => name.trim().toLowerCase()),
+  )
+  for (const day of days) {
+    day.anchor_names = day.anchor_names.filter((name) => !mustIncludeNamesLower.has(name.toLowerCase()))
+  }
+
+  const anchorsByName = new Map((anchors ?? []).map((anchor) => [anchor.name.toLowerCase(), anchor.city]))
+  topUpUnassignedNames(
+    days,
+    (anchors ?? []).map((anchor) => anchor.name).filter((name) => !mustIncludeNamesLower.has(name.toLowerCase())),
+    'anchor_names',
+    anchorsByName,
+  )
+  topUpUnassignedNames(days, Array.isArray(mustIncludePlaces) ? mustIncludePlaces : [], 'must_include_names', null)
+
   return days
 }
 
@@ -1216,6 +1336,8 @@ app.post('/api/generate-skeleton', async (req, res) => {
   const transportContext = readTransportContext(req.body)
   const totalDays = Number(answers.days) > 0 ? Number(answers.days) : 1
 
+  const t0 = Date.now()
+  console.log(`[timing] generate-skeleton START ${new Date(t0).toISOString()} (totalDays=${totalDays})`)
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -1223,12 +1345,13 @@ app.post('/api/generate-skeleton', async (req, res) => {
       system: SKELETON_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: buildSkeletonUserPrompt(destination, answers, transportContext, anchors, must_include_places) }],
     })
+    console.log(`[timing] generate-skeleton END — ${Date.now() - t0}ms`)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const days = sanitizeSkeletonDays(parsed?.days, destination, totalDays)
+    const days = sanitizeSkeletonDays(parsed?.days, destination, totalDays, Array.isArray(anchors) ? anchors : [], must_include_places)
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos')
 
     res.json({
@@ -1239,7 +1362,8 @@ app.post('/api/generate-skeleton', async (req, res) => {
       phase_transitions: Array.isArray(parsed?.phase_transitions) ? sanitizePhaseTransitions(parsed.phase_transitions) : undefined,
     })
   } catch (error) {
-    console.error('Error al generar el esqueleto de la ruta con la API de Claude:', error)
+    console.log(`[timing] generate-skeleton FAILED — ${Date.now() - t0}ms`)
+    logAnthropicError('generate-skeleton', error)
     res.status(502).json({ error: 'No se pudo definir la forma del viaje con IA.' })
   }
 })
@@ -1251,7 +1375,7 @@ function sanitizeDayBlockDays(raw, blockDayNumbers) {
 }
 
 app.post('/api/generate-day-block', async (req, res) => {
-  const { destination, answers, block_days, anchors_for_block, must_include_for_block, continuity, is_first_block_of_trip } = req.body ?? {}
+  const { destination, answers, block_days, anchors_for_block, must_include_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
     res.status(400).json({ error: 'Faltan datos necesarios para generar este bloque de días.' })
     return
@@ -1260,6 +1384,8 @@ app.post('/api/generate-day-block', async (req, res) => {
   const transportContext = readTransportContext(req.body)
   const blockDayNumbers = block_days.map((day) => Number(day.day_number)).filter((n) => Number.isInteger(n))
 
+  const t0 = Date.now()
+  console.log(`[timing] generate-day-block START ${new Date(t0).toISOString()} (days=${blockDayNumbers.join(',')})`)
   try {
     // Streaming (mismo motivo que antes en la llamada única): evita el límite de la API para
     // respuestas largas en modo no-streaming — un bloque de 3-4 días con paradas/comidas detalladas
@@ -1278,13 +1404,17 @@ app.post('/api/generate-day-block', async (req, res) => {
             block_days,
             anchors_for_block,
             must_include_for_block,
-            continuity,
+            all_days,
             Boolean(is_first_block_of_trip),
           ),
         },
       ],
     })
+    stream.on('streamEvent', (event) => {
+      if (event.type === 'content_block_start') console.log(`[timing] generate-day-block (days=${blockDayNumbers.join(',')}) first content byte — ${Date.now() - t0}ms`)
+    })
     const response = await stream.finalMessage()
+    console.log(`[timing] generate-day-block END (days=${blockDayNumbers.join(',')}) — ${Date.now() - t0}ms — stop_reason=${response.stop_reason} output_tokens=${response.usage?.output_tokens}`)
 
     if (response.stop_reason === 'max_tokens') {
       throw new Error('La respuesta de Claude se cortó por exceder el límite de tokens (bloque de días demasiado largo).')
@@ -1303,7 +1433,8 @@ app.post('/api/generate-day-block', async (req, res) => {
       excursions_available: Array.isArray(parsed?.excursions_available) ? parsed.excursions_available : [],
     })
   } catch (error) {
-    console.error('Error al generar un bloque de días con la API de Claude:', error)
+    console.log(`[timing] generate-day-block FAILED (days=${blockDayNumbers.join(',')}) — ${Date.now() - t0}ms`)
+    logAnthropicError('generate-day-block', error)
     res.status(502).json({ error: 'No se pudo generar este tramo del viaje con IA.' })
   }
 })

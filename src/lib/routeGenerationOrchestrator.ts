@@ -3,13 +3,15 @@ import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDa
 
 /**
  * Verificado en vivo (2026-09-02): un bloque de 4 días tardó 210s, uno de 2 días 146s, y uno de UN
- * SOLO día 71s — el coste NO escala limpiamente con el número de días, hay un coste fijo grande
- * (~60-70s) en cualquier llamada que pida el contenido detallado de paradas/comidas (tips,
- * entry_options, restaurantes reales...), muy por encima de lo que las llamadas ligeras (anclas 20s,
- * esqueleto 13s) tardan. Por eso el tamaño de bloque se bajó de los 3-4 días pedidos originalmente a
- * 1 — es el único tamaño que se acerca a estar cómodamente por debajo de un límite de función
- * serverless típico; 2+ días ya se va a 150s+. Revisar si algún día el modelo/backend cambia de
- * forma que un bloque mayor vuelva a ser viable.
+ * SOLO día 71s — el coste escala con el volumen de contenido pedido (tips, entry_options,
+ * restaurantes reales...), muy por encima de lo que las llamadas ligeras (anclas 12s, esqueleto 7s)
+ * tardan. BLOCK_SIZE se queda en 1 día — sigue siendo el tamaño más cómodo bajo el límite de función
+ * serverless (ver vercel.json maxDuration) — pero desde 2026-09-03 los bloques ya no se generan en
+ * serie: se lanzan todos a la vez (ver el bucle de Promise más abajo) porque la continuidad entre
+ * días ya no depende de ver el contenido escrito del bloque anterior, sino de un resumen calculado
+ * de antemano en generate-skeleton (zone_focus/experience_focus/anchor_names/must_include_names por
+ * día, ver SKELETON_SYSTEM_PROMPT en server/index.js). Con 3 días esto bajó el tiempo total de
+ * ~230s (anclas+esqueleto+3 bloques en serie) a el tiempo del bloque más lento, no la suma de todos.
  */
 const BLOCK_SIZE = 1
 
@@ -26,6 +28,21 @@ export interface SkeletonDay {
   city: string
   country_code: string | null
   phase_type?: string
+  /** Sub-zona/tema del día (ver SKELETON_SYSTEM_PROMPT) — solo para que los días no se solapen entre sí; no se usa para nada más en el cliente. */
+  zone_focus?: string
+  experience_focus?: string[]
+  /** Nombres de anclas asignadas a ESTE día concreto (no a la ciudad entera) — ver anchorsForBlockDays más abajo. */
+  anchor_names?: string[]
+  /** Igual que anchor_names pero para must_include_places (Wishlist del usuario, casi obligatorios). */
+  must_include_names?: string[]
+}
+
+/** Vista ligera de un día para el "resumen de otros días" que recibe cada bloque — ver formatTripOverview en server/index.js. */
+export interface LightDaySummary {
+  day_number: number
+  city: string
+  zone_focus?: string
+  experience_focus?: string[]
 }
 
 export interface SkeletonResponse {
@@ -34,13 +51,6 @@ export interface SkeletonResponse {
   days: SkeletonDay[]
   city_transitions?: GeneratedRouteResponse['city_transitions']
   phase_transitions?: GeneratedRouteResponse['phase_transitions']
-}
-
-interface ContinuitySummary {
-  lastCity: string
-  lastStopNames: string[]
-  usedCategoryCounts: Record<string, number>
-  usedPlaceNames: string[]
 }
 
 export type GenerationPhase = 'anchors' | 'skeleton' | 'blocks' | 'done'
@@ -111,43 +121,28 @@ function chunkDays(days: SkeletonDay[], size: number): SkeletonDay[][] {
   return chunks
 }
 
-function anchorsForCities(anchors: Anchor[], cities: Set<string>): Anchor[] {
-  return anchors.filter((anchor) => cities.has(anchor.city))
+/** Anclas asignadas a los días concretos de este bloque (ver anchor_names por día en generate-skeleton) — ya no se reparten por ciudad entera, así dos días de la misma ciudad no reciben las mismas anclas y no compiten por ellas al generarse en paralelo. */
+function anchorsForBlockDays(anchors: Anchor[], block: SkeletonDay[]): Anchor[] {
+  const names = new Set(block.flatMap((day) => (day.anchor_names ?? []).map((name) => name.toLowerCase())))
+  if (names.size === 0) return []
+  return anchors.filter((anchor) => names.has(anchor.name.toLowerCase()))
 }
 
-/** must_include_places no llevan ciudad propia — se infiere por si coinciden con el nombre de un ancla ya ubicada; si no hay forma de saberlo, se incluyen en todos los bloques (mejor repetir la instrucción que perder el lugar). */
-function placesForCities(mustIncludePlaces: string[], allAnchors: Anchor[], cities: Set<string>): string[] {
-  const anchorCityByName = new Map(allAnchors.map((anchor) => [anchor.name.toLowerCase(), anchor.city]))
-  return mustIncludePlaces.filter((name) => {
-    const city = anchorCityByName.get(name.toLowerCase())
-    return !city || cities.has(city)
-  })
+/** Igual que anchorsForBlockDays pero para must_include_places (ver must_include_names por día) — cada lugar de la Wishlist del usuario se asigna a un único día en el esqueleto, con reparto garantizado por topUpUnassignedNames en el servidor (ningún lugar se queda sin día). */
+function mustIncludeForBlockDays(mustIncludePlaces: string[], block: SkeletonDay[]): string[] {
+  const names = new Set(block.flatMap((day) => day.must_include_names ?? []).map((name) => name.toLowerCase()))
+  if (names.size === 0) return []
+  return mustIncludePlaces.filter((name) => names.has(name.toLowerCase()))
 }
 
-/** Resumen de lo ya escrito hasta ahora — para que el siguiente bloque mantenga continuidad geográfica y variedad sin necesitar ver el viaje completo (ver formatContinuity en server/index.js). */
-function buildContinuity(generated: GeneratedRouteResponse): ContinuitySummary | null {
-  const writtenDays = generated.days.filter((day) => day.stops.length > 0)
-  if (writtenDays.length === 0) return null
+function toLightDaySummary(day: SkeletonDay): LightDaySummary {
+  return { day_number: day.day_number, city: day.city, zone_focus: day.zone_focus, experience_focus: day.experience_focus }
+}
 
-  const lastDay = writtenDays[writtenDays.length - 1]
-  const usedCategoryCounts: Record<string, number> = {}
-  const usedPlaceNames: string[] = []
-  for (const day of writtenDays) {
-    for (const stop of day.stops) {
-      if (stop.category) usedCategoryCounts[stop.category] = (usedCategoryCounts[stop.category] ?? 0) + 1
-      usedPlaceNames.push(stop.name)
-    }
-    for (const meal of day.meals) {
-      for (const option of meal.options) usedPlaceNames.push(option.name)
-    }
-  }
-
-  return {
-    lastCity: lastDay.city ?? '',
-    lastStopNames: lastDay.stops.slice(-3).map((stop) => stop.name),
-    usedCategoryCounts,
-    usedPlaceNames: usedPlaceNames.slice(-30),
-  }
+/** Un día ya generado (con contenido real) no se vuelve a pedir al reanudar una generación a medias — ver el filtro de pendingBlocks más abajo. */
+function isDayAlreadyGenerated(generated: GeneratedRouteResponse, dayNumber: number): boolean {
+  const day = generated.days.find((candidate) => candidate.day_number === dayNumber)
+  return Boolean(day && day.stops.length > 0)
 }
 
 function mergeBlockDaysIntoGenerated(
@@ -222,31 +217,52 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
 
   const blocks = chunkDays(skeleton.days, BLOCK_SIZE)
   const totalBlocks = blocks.length
+  // Al reanudar, un bloque ya generado (day.stops.length > 0 en `generated`) no se vuelve a pedir —
+  // esto reemplaza al índice `completedBlocks` como mecanismo de "qué falta", porque con bloques en
+  // paralelo ya no hay garantía de que se completen en orden.
+  const pendingBlocks = blocks.filter((block) => block.some((day) => !isDayAlreadyGenerated(generated, day.day_number)))
+  completedBlocks = totalBlocks - pendingBlocks.length
 
-  for (let index = completedBlocks; index < blocks.length; index++) {
-    const block = blocks[index]
-    const cities = new Set(block.map((day) => day.city))
-    const continuity = buildContinuity(generated)
+  if (pendingBlocks.length > 0) {
+    const allDaysLight = skeleton.days.map(toLightDaySummary)
 
-    const result = await postJson<{
-      days: GeneratedDay[]
-      not_included: GeneratedRouteResponse['not_included']
-      excursions_available: GeneratedRouteResponse['excursions_available']
-    }>('/api/generate-day-block', {
-      destination,
-      answers,
-      block_days: block,
-      anchors_for_block: anchorsForCities(anchors, cities),
-      must_include_for_block: placesForCities(mustIncludePlaces, anchors, cities),
-      continuity,
-      is_first_block_of_trip: index === 0,
-      ...transportContext,
+    // Las peticiones se disparan TODAS aquí, de golpe (sin ningún await entre una y otra) — la
+    // concurrencia real ocurre en este `.map`, no en cómo se procesan los resultados después.
+    // Procesarlos uno a uno en el orden del array (en vez de con Promise.all) evita que dos bloques
+    // que terminan casi a la vez pisen el checkpoint de Supabase del otro (ver
+    // saveGenerationCheckpoint en tripPersistence.ts) — el coste en tiempo de esto es mínimo, porque
+    // el fetch de todos ya está en marcha desde el principio; el tiempo total pasa a ser el del
+    // bloque más lento, no la suma de todos.
+    const blockPromises = pendingBlocks.map((block) => {
+      const promise = postJson<{
+        days: GeneratedDay[]
+        not_included: GeneratedRouteResponse['not_included']
+        excursions_available: GeneratedRouteResponse['excursions_available']
+      }>('/api/generate-day-block', {
+        destination,
+        answers,
+        block_days: block,
+        anchors_for_block: anchorsForBlockDays(anchors, block),
+        must_include_for_block: mustIncludeForBlockDays(mustIncludePlaces, block),
+        all_days: allDaysLight,
+        is_first_block_of_trip: block.some((day) => day.day_number === 1),
+        ...transportContext,
+      })
+      // Si otro bloque falla primero y abortamos el bucle de abajo antes de llegar a este `await`,
+      // esta promesa sigue en marcha en segundo plano — este catch mudo solo evita el warning de
+      // "unhandled rejection" si también termina fallando; el error real se sigue propagando a
+      // través del `await blockPromise` correspondiente más abajo.
+      promise.catch(() => {})
+      return promise
     })
 
-    generated = mergeBlockDaysIntoGenerated(generated, result.days, result.not_included, result.excursions_available)
-    completedBlocks = index + 1
-    const done = completedBlocks >= totalBlocks
-    await onCheckpoint({ phase: done ? 'done' : 'blocks', params, anchors, skeleton, generated, completedBlocks, totalBlocks })
+    for (const blockPromise of blockPromises) {
+      const result = await blockPromise
+      generated = mergeBlockDaysIntoGenerated(generated, result.days, result.not_included, result.excursions_available)
+      completedBlocks += 1
+      const done = completedBlocks >= totalBlocks
+      await onCheckpoint({ phase: done ? 'done' : 'blocks', params, anchors, skeleton, generated, completedBlocks, totalBlocks })
+    }
   }
 
   return mapGeneratedRouteToRoute(generated, destination, answers, transportContext)

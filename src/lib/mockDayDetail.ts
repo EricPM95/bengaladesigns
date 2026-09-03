@@ -382,7 +382,18 @@ export function buildMockStopsForDay(day: DayPlan): MockStopDetail[] {
   })
 }
 
-/** Convierte una parada real (`Stop`, añadida/editada por el usuario) en la forma rica que consume StopAccordion — sin tips ni sección de compra, ese contenido curado es exclusivo de las 6 plantillas fijas de arriba, no algo que un lugar recién añadido tenga. */
+/**
+ * Convierte una parada real (`Stop`) en la forma rica que consume StopAccordion. Cubre dos casos
+ * distintos con el mismo tipo de entrada:
+ * - Parada generada por Claude (pipeline de generación, ver mapStop en mapGeneratedRoute.ts): SÍ
+ *   trae tip real (`insiderTip`) y entradas reales (`ticketOptions`, de `entry_options` del
+ *   prompt) — hay que conservarlos, no son mock. Sin `afiliacion_disponible` (no hay integración
+ *   de afiliación a nivel de parada individual todavía), así que cae en el modo "Tickets" simple
+ *   de PurchaseSection (lista + enlace a la web oficial), no en el carrusel.
+ * - Parada añadida/editada a mano por el usuario (EXPLORAR/el "+" entre paradas): no tiene tip ni
+ *   entradas propias — `insiderTip`/`ticketOptions` vienen `undefined` en ese caso y el resultado
+ *   es el shell vacío de siempre.
+ */
 export function shellFromStop(stop: Stop): MockStopDetail {
   return {
     id: stop.id,
@@ -391,8 +402,17 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     hours: null,
     photoUrl: stop.photoUrl,
     description: stop.description,
-    tips: [],
-    purchase: null,
+    tips: stop.insiderTip ? [stop.insiderTip] : [],
+    purchase: mapStopTicketsToPurchase(stop),
+  }
+}
+
+function mapStopTicketsToPurchase(stop: Stop): PlacePurchaseInfo | null {
+  if (!stop.ticketOptions || stop.ticketOptions.length === 0) return null
+  return {
+    lugar: stop.name,
+    afiliacion_disponible: false,
+    entradas: stop.ticketOptions.map((option) => ({ nombre: option.label, precio: option.price })),
   }
 }
 
