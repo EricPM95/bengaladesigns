@@ -16,6 +16,11 @@ export function classifyInBackground(name: string): void {
   const { setArchetype, setArchetypeAmbiguous, setArchetypeClassificationFailed } = useRouteStore.getState()
   setArchetypeClassificationFailed(false)
   classifyDestination(name).then((result) => {
+    // Si el viajero volvió atrás y eligió OTRO destino mientras esta llamada seguía en vuelo, su
+    // resultado ya no es del destino actual — aplicarlo igualmente pisaría la clasificación (o el
+    // estado de carga) del destino nuevo con datos del viejo. Se descarta en silencio; el destino
+    // nuevo ya disparó su propia llamada al elegirse.
+    if (useRouteStore.getState().destination !== name) return
     if (!result) {
       setArchetypeClassificationFailed(true)
       return

@@ -15,6 +15,9 @@ export function suggestPlacesInBackground(destination: string, experienceIds: Ex
   const { setSuggestedPlaces, setSuggestedPlacesFailed, setSuggestedPlacesLoading } = useRouteStore.getState()
   setSuggestedPlacesLoading(true)
   suggestPlaces(destination, experienceIds).then((places) => {
+    // Mismo guard que suggestExperiencesInBackground.ts — si el destino cambió mientras esta
+    // llamada (la más lenta de las dos, ~20s) seguía en vuelo, su resultado ya no sirve.
+    if (useRouteStore.getState().destination !== destination) return
     if (!places) {
       setSuggestedPlacesFailed(true)
       return

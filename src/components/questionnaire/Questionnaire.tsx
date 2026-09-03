@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
 import type { BudgetLevel, Chronotype, TripPace } from '../../lib/types'
@@ -52,9 +52,15 @@ const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
  * Cuestionario como flujo de pantallas completas — una pregunta a la vez, con flecha de volver
  * (excepto en "destino", que vive fuera de este componente). El orden y las condiciones de
  * desbloqueo (showX) son las mismas de siempre; lo único que cambia es que ahora cada una se
- * muestra en su propia pantalla en vez de apilarse todas en una página larga. Avanza sola en
- * cuanto la pregunta activa queda resuelta (el mismo momento en que antes aparecía la siguiente
- * tarjeta más abajo) — retroceder con la flecha nunca borra la respuesta ya dada.
+ * muestra en su propia pantalla en vez de apilarse todas en una página larga.
+ *
+ * Avanza sola al tocar una opción, sin ningún botón "Continuar" visible — el ÚNICO caso con botón
+ * explícito es "fechas" (`activeStep === 'days'`), a propósito: ahí es fácil equivocarse, así que
+ * el avance automático queda desactivado (ver el guard `isViewingDays` en el efecto) y hace falta
+ * confirmar. Para pace/chronotype/budget (una sola opción, resuelve la pantalla entera) el propio
+ * `onClick` llama a `goToNextStep()` en el mismo tap — origen y acompañantes son flujos internos
+ * más complejos sin un único "tap final", así que se detectan por el efecto de abajo en cuanto
+ * `steps` crece. Retroceder con la flecha nunca borra la respuesta ya dada.
  */
 export function Questionnaire() {
   const destination = useRouteStore((state) => state.destination)
@@ -148,8 +154,14 @@ export function Questionnaire() {
   // pantalla — mismo momento en que antes aparecía la tarjeta siguiente más abajo en la página
   // larga. Solo avanza si el usuario estaba en la última pantalla desbloqueada (si volvió atrás a
   // revisar una respuesta anterior, no lo saca de ahí aunque esa respuesta siga siendo válida).
-  useEffect(() => {
-    if (steps.length > prevStepsLengthRef.current && currentStepIndex === prevStepsLengthRef.current - 1) {
+  // "Fechas" es la única excepción explícita — se queda ahí y exige el botón "Continuar" propio de
+  // esa pantalla en vez de avanzar sola (ver más abajo), porque ahí es fácil equivocarse de fecha.
+  // useLayoutEffect (no useEffect) a propósito — corrige el índice ANTES de que el navegador pinte
+  // el frame, así nunca se llega a ver el instante en que `steps` ya creció pero `currentStepIndex`
+  // todavía no: ese único frame intermedio era el "parpadeo" que se veía antes.
+  useLayoutEffect(() => {
+    const isViewingDays = steps[currentStepIndex] === 'days'
+    if (!isViewingDays && steps.length > prevStepsLengthRef.current && currentStepIndex === prevStepsLengthRef.current - 1) {
       setCurrentStepIndex(steps.length - 1)
     }
     prevStepsLengthRef.current = steps.length
@@ -168,6 +180,14 @@ export function Questionnaire() {
     }
     setCurrentStepIndex(safeIndex - 1)
   }
+
+  /** Avanza a la pantalla siguiente en el MISMO tap que responde la pregunta — batcheado por React
+      en un único render, así que nunca hay un frame intermedio que "parpadee" antes de cambiar de
+      pantalla (a diferencia de esperar a que el efecto de arriba reaccione un tick después). Solo
+      hace falta llamarlo explícitamente en las preguntas de una sola opción (pace/chronotype/
+      budget) — origen y acompañantes son flujos internos más complejos, sin un único "tap final"
+      claro, y se resuelven vía el efecto de arriba en cuanto quedan completos. */
+  const goToNextStep = () => setCurrentStepIndex((index) => Math.min(index, steps.length - 1) + 1)
 
   const handleCreateRoute = () => {
     // Si el usuario nunca fijó fechas exactas ni eligió estación, aplicamos la estación actual
@@ -197,7 +217,12 @@ export function Questionnaire() {
         </p>
       </div>
 
-      <div className="mx-auto w-full max-w-lg flex-1 px-6 pb-10 pt-6">
+      {/* `flex` + `m-auto` en el hijo (no `justify-center`, que en overflow recorta el principio del
+          contenido en vez de dejarlo hacer scroll con normalidad) — centra la pantalla entera en
+          ambos ejes cuando el contenido cabe (fechas, ritmo, horario...) y, si no cabe (el
+          formulario de familia, la lista de lugares...), simplemente permite scroll desde arriba,
+          sin recortes. */}
+      <div className="flex flex-1 overflow-y-auto px-6 pb-10 pt-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeStep}
@@ -205,6 +230,7 @@ export function Questionnaire() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="m-auto w-full max-w-lg"
           >
             <h1 className="font-display text-h1 font-semibold text-text">{title}</h1>
             {subtitle && <p className="mt-1 text-small text-text-soft">{subtitle}</p>}
@@ -239,7 +265,17 @@ export function Questionnaire() {
               )}
 
               {activeStep === 'days' && (
-                <DurationSelector days={answers.days} dateRange={answers.dateRange} season={answers.season} onChange={updateAnswers} />
+                <div className="space-y-4">
+                  <DurationSelector days={answers.days} dateRange={answers.dateRange} season={answers.season} onChange={updateAnswers} />
+                  {/* Única pantalla con botón "Continuar" explícito, sin avance automático — aquí
+                      es más fácil equivocarse de fecha que en el resto del cuestionario, así que
+                      conviene que el usuario confirme antes de seguir. */}
+                  {answers.days !== undefined && (
+                    <Button onClick={goToNextStep} className="w-full">
+                      Continuar →
+                    </Button>
+                  )}
+                </div>
               )}
 
               {activeStep === 'companion' && (
@@ -283,7 +319,10 @@ export function Questionnaire() {
                       label={option.label}
                       description={option.description}
                       selected={answers.pace === option.value}
-                      onClick={() => updateAnswers({ pace: option.value })}
+                      onClick={() => {
+                        updateAnswers({ pace: option.value })
+                        goToNextStep()
+                      }}
                     />
                   ))}
                 </div>
@@ -298,7 +337,10 @@ export function Questionnaire() {
                       label={option.label}
                       description={option.description}
                       selected={answers.chronotype === option.value}
-                      onClick={() => updateAnswers({ chronotype: option.value })}
+                      onClick={() => {
+                        updateAnswers({ chronotype: option.value })
+                        goToNextStep()
+                      }}
                     />
                   ))}
                 </div>
@@ -313,7 +355,10 @@ export function Questionnaire() {
                       label={option.label}
                       description={option.description}
                       selected={answers.budgetLevel === option.value}
-                      onClick={() => updateAnswers({ budgetLevel: option.value })}
+                      onClick={() => {
+                        updateAnswers({ budgetLevel: option.value })
+                        goToNextStep()
+                      }}
                     />
                   ))}
                 </div>
@@ -331,17 +376,6 @@ export function Questionnaire() {
                   onToggleAll={toggleSelectAllPlaces}
                   onRetry={() => suggestPlacesOnDemand(destination, answers.experiences ?? [])}
                 />
-              )}
-
-              {/* Solo aparece al volver atrás a revisar una respuesta ya dada — en la pantalla más
-                  reciente (la "frontera"), avanzar es cosa de cada pregunta (elegir una opción, el
-                  botón "Continuar"/"Ver lugares" propio de OriginInput/ExperienceSelector...), igual
-                  que antes revelaba la siguiente tarjeta más abajo. Sin este botón, volver atrás
-                  dejaría al usuario sin forma de regresar a donde estaba. */}
-              {safeIndex < steps.length - 1 && (
-                <Button onClick={() => setCurrentStepIndex(safeIndex + 1)} className="mt-6 w-full">
-                  Continuar →
-                </Button>
               )}
             </div>
           </motion.div>

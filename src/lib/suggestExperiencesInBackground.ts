@@ -17,6 +17,11 @@ export function suggestExperiencesInBackground(name: string): void {
   const { setSuggestedExperiences, setSuggestedExperiencesFailed, setSuggestedExperiencesLoading } = useRouteStore.getState()
   setSuggestedExperiencesLoading(true)
   suggestExperiences(name).then((ids) => {
+    // Si el viajero volvió atrás y eligió OTRO destino mientras esta llamada seguía en vuelo, su
+    // resultado ya no es del destino actual — aplicarlo (y encima encadenar la precarga de
+    // lugares CON ESTE destino viejo) dejaría el pool mostrando sitios que no son los del destino
+    // marcado ahora mismo. Se descarta en silencio; el destino nuevo ya disparó su propia cadena.
+    if (useRouteStore.getState().destination !== name) return
     if (!ids) {
       setSuggestedExperiencesFailed(true)
       return
