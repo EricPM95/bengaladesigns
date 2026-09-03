@@ -18,6 +18,7 @@ import { suggestExperiencesInBackground } from './lib/suggestExperiencesInBackgr
 import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { SyncStatusBanner } from './components/sync/SyncStatusBanner'
+import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
 
 function DestinationScreen() {
   const setDestination = useRouteStore((state) => state.setDestination)
@@ -160,7 +161,11 @@ function LoadingScreenContainer() {
       setCheckpoint(nextCheckpoint)
       if (travelerId) {
         try {
-          await saveGenerationCheckpoint(travelerId, nextCheckpoint)
+          const tripId = useSyncStore.getState().activeTripId
+          const savedId = await saveGenerationCheckpoint(travelerId, tripId, nextCheckpoint)
+          // Primer checkpoint guardado de un viaje nuevo (insert) — los siguientes actualizan esta
+          // misma fila en vez de crear una nueva cada vez (ver saveGenerationCheckpoint).
+          if (!tripId && savedId) useSyncStore.getState().setActiveTripId(savedId)
         } catch {
           // El guardado de progreso falló (sin conexión, etc.) — no se aborta la generación, sigue
           // en memoria; TripSync ya cubre el aviso discreto de guardado en general.
@@ -272,6 +277,7 @@ function App() {
       <SyncStatusBanner />
       <AnimatePresence mode="wait">
         {screen === 'destination' && <DestinationScreen />}
+        {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
         {screen === 'questionnaire' && <QuestionnaireScreen />}
         {screen === 'loading' && <LoadingScreenContainer key="loading" />}
         {screen === 'route' && <RouteScreen />}

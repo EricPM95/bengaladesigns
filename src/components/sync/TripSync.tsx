@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
-import { bootstrapTraveler, loadTrip, saveTrip, type TripPayload } from '../../lib/tripPersistence'
+import { bootstrapTraveler, loadAllTrips, saveTrip, type TripPayload } from '../../lib/tripPersistence'
 import { supabase } from '../../lib/supabaseClient'
+import { getTodayTripContext } from '../../lib/todayMode'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -31,7 +32,11 @@ async function attemptSave(travelerId: string) {
   if (!payload) return
   useSyncStore.getState().setStatus('saving')
   try {
-    await saveTrip(travelerId, payload)
+    const tripId = useSyncStore.getState().activeTripId
+    const savedId = await saveTrip(travelerId, tripId, payload)
+    // Primer guardado de un viaje nuevo (insert) — a partir de ahora los siguientes guardados
+    // actualizan esta misma fila en vez de crear una nueva cada vez.
+    if (!tripId) useSyncStore.getState().setActiveTripId(savedId)
     useSyncStore.getState().setStatus('saved')
   } catch (err) {
     useSyncStore.getState().setError(err instanceof Error ? err.message : 'No se pudo guardar el viaje.')
@@ -40,13 +45,16 @@ async function attemptSave(travelerId: string) {
 
 /**
  * Componente invisible (sin salida visual propia), montado una vez en App.tsx — arranca la sesión
- * anónima y carga el viaje ya guardado al abrir la app (ver hydrateTrip en useRouteStore.ts), y
- * guarda automáticamente con debounce cada cambio relevante del viaje activo. Sin Supabase
+ * anónima y carga TODOS los viajes guardados al abrir la app, decidiendo dónde aterrizar: si algún
+ * viaje tiene una generación a medias, la retoma; si no, si algún viaje tiene la fecha de hoy dentro
+ * de su rango, lo abre directo en Modo Hoy; si hay 1+ viajes pero ninguno de los dos casos
+ * anteriores, muestra "Mis viajes"; con 0 viajes, se queda en la pantalla de destino de siempre.
+ * También guarda automáticamente con debounce cada cambio relevante del viaje activo. Sin Supabase
  * configurado (`supabase` null), no hace nada — la app sigue funcionando enteramente en memoria.
  *
- * El guardado no se activa hasta que `hydratedRef` está a true (carga inicial ya resuelta, con o
- * sin viaje encontrado) — evita que el primer render, con el store todavía vacío, sobrescriba un
- * viaje ya guardado con `route: null` antes de que dé tiempo a cargarlo.
+ * El guardado no se activa hasta que `hydratedRef` está a true (carga inicial ya resuelta) — evita
+ * que el primer render, con el store todavía vacío, sobrescriba un viaje ya guardado con
+ * `route: null` antes de que dé tiempo a cargarlo.
  */
 export function TripSync() {
   const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
@@ -79,20 +87,29 @@ export function TripSync() {
         if (cancelled) return
         useSyncStore.getState().setTravelerId(id)
 
-        const trip = await loadTrip(id)
+        const trips = await loadAllTrips(id)
         if (cancelled) return
+        useSyncStore.getState().setSavedTrips(trips)
+
         // Si mientras cargaba ya se puso en marcha otro flujo (p. ej. un enlace de viaje
-        // compartido, ver decodeTripFromUrl en App.tsx), no lo pisamos con el viaje guardado.
-        if (trip && useRouteStore.getState().screen === 'destination') {
-          if (trip.generationState) {
+        // compartido, ver decodeTripFromUrl en App.tsx), no lo pisamos con lo guardado.
+        if (useRouteStore.getState().screen === 'destination') {
+          const resumable = trips.find((trip) => trip.generationState)
+          const todayTrip = trips.find((trip) => !trip.generationState && getTodayTripContext(trip.route))
+
+          if (resumable && resumable.generationState) {
             // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
             // existe completa). LoadingScreenContainer (App.tsx) consume pendingResume y continúa
             // exactamente donde se dejó, sin repetir llamadas ya hechas.
-            setDestination(trip.generationState.params.destination)
-            useSyncStore.getState().setPendingResume(trip.generationState)
+            useSyncStore.getState().setActiveTripId(resumable.id)
+            setDestination(resumable.generationState.params.destination)
+            useSyncStore.getState().setPendingResume(resumable.generationState)
             setScreen('loading')
-          } else {
-            hydrateTrip(trip)
+          } else if (todayTrip) {
+            useSyncStore.getState().setActiveTripId(todayTrip.id)
+            hydrateTrip(todayTrip)
+          } else if (trips.length > 0) {
+            setScreen('myTrips')
           }
         }
 

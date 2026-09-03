@@ -28,6 +28,11 @@ export interface TripPayload {
   generationState: GenerationResumeState | null
 }
 
+/** Un viaje guardado ya identificado por su fila — lo que devuelve loadAllTrips, y lo que hay que pasar de vuelta a saveTrip/deleteTrip para operar sobre ESA fila en concreto. */
+export interface SavedTrip extends TripPayload {
+  id: string
+}
+
 /**
  * Sesión anónima (o ya existente, anónima o real) — mismo `auth.uid()` para siempre gracias al
  * flujo nativo de Supabase de "convertir" una sesión anónima en una cuenta real más adelante, así
@@ -55,41 +60,57 @@ export async function bootstrapTraveler(): Promise<string> {
   return userId
 }
 
-/** null = este traveler aún no tiene ningún viaje guardado (usuario nuevo, o solo llegó hasta el cuestionario sin generar ruta). */
-export async function loadTrip(travelerId: string): Promise<TripPayload | null> {
-  if (!supabase) return null
+/** Todos los viajes guardados de este traveler, más recientes primero — [] si todavía no tiene ninguno. */
+export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
+  if (!supabase) return []
 
-  const { data, error } = await supabase.from('trips').select('route, bookings, wishlist, ui_state, generation_state').eq('traveler_id', travelerId).maybeSingle()
+  const { data, error } = await supabase
+    .from('trips')
+    .select('id, route, bookings, wishlist, ui_state, generation_state')
+    .eq('traveler_id', travelerId)
+    .order('updated_at', { ascending: false })
   if (error) throw error
-  if (!data) return null
 
-  const generationState = data.generation_state as GenerationResumeState | null
-  return {
-    route: data.route as Route,
-    bookings: data.bookings as TripBookings,
-    wishlist: (data.wishlist ?? []) as WishlistItem[],
-    uiState: data.ui_state as TripUiState,
-    generationState: generationState && generationState.phase !== 'done' ? generationState : null,
-  }
+  return (data ?? []).map((row) => {
+    const generationState = row.generation_state as GenerationResumeState | null
+    return {
+      id: row.id as string,
+      route: row.route as Route,
+      bookings: row.bookings as TripBookings,
+      wishlist: (row.wishlist ?? []) as WishlistItem[],
+      uiState: row.ui_state as TripUiState,
+      generationState: generationState && generationState.phase !== 'done' ? generationState : null,
+    }
+  })
 }
 
-/** Un solo viaje activo por traveler (unique en traveler_id, ver la migración) — upsert siempre sustituye el mismo registro. */
-export async function saveTrip(travelerId: string, payload: TripPayload): Promise<void> {
-  if (!supabase) return
+/**
+ * Guarda un viaje — `tripId` null significa que todavía no existe como fila (primer guardado de un
+ * viaje nuevo): inserta y devuelve el `id` generado, que quien llama debe recordar (ver
+ * useSyncStore.activeTripId) para que los guardados siguientes actualicen ESA fila en vez de crear
+ * una nueva cada vez. Con `tripId` ya conocido, actualiza esa fila.
+ */
+export async function saveTrip(travelerId: string, tripId: string | null, payload: TripPayload): Promise<string> {
+  if (!supabase) throw new Error('Supabase no configurado.')
 
-  const { error } = await supabase.from('trips').upsert(
-    {
-      traveler_id: travelerId,
-      route: payload.route,
-      bookings: payload.bookings,
-      wishlist: payload.wishlist,
-      ui_state: payload.uiState,
-      generation_state: null,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: 'traveler_id' },
-  )
+  const row = {
+    route: payload.route,
+    bookings: payload.bookings,
+    wishlist: payload.wishlist,
+    ui_state: payload.uiState,
+    generation_state: null,
+    updated_at: new Date().toISOString(),
+  }
+
+  if (tripId) {
+    const { error } = await supabase.from('trips').update(row).eq('id', tripId)
+    if (error) throw error
+    return tripId
+  }
+
+  const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
   if (error) throw error
+  return data.id as string
 }
 
 /**
@@ -97,23 +118,36 @@ export async function saveTrip(travelerId: string, payload: TripPayload): Promis
  * onCheckpoint en routeGenerationOrchestrator.ts), así que si el usuario cierra la pestaña a mitad,
  * la próxima apertura retoma justo aquí (ver TripSync.tsx) en vez de perder lo ya generado. No
  * escribe nada durante la fase 'anchors' — todavía no hay un Route válido que guardar (esa fase es
- * además la más rápida de repetir si se pierde). Cuando `checkpoint.phase` es 'done', limpia
- * generation_state a null — el guardado normal (saveTrip/autosave) toma el relevo a partir de ahí.
+ * además la más rápida de repetir si se pierde). Igual que saveTrip: `tripId` null crea la fila
+ * (primer checkpoint real de un viaje nuevo) y devuelve su id; con `tripId` ya conocido, la
+ * actualiza. Cuando `checkpoint.phase` es 'done', limpia generation_state a null — el guardado
+ * normal (saveTrip/autosave) toma el relevo a partir de ahí.
  */
-export async function saveGenerationCheckpoint(travelerId: string, checkpoint: GenerationResumeState): Promise<void> {
-  if (!supabase) return
-  if (checkpoint.phase === 'anchors') return
+export async function saveGenerationCheckpoint(travelerId: string, tripId: string | null, checkpoint: GenerationResumeState): Promise<string | null> {
+  if (!supabase) return tripId
+  if (checkpoint.phase === 'anchors') return tripId
 
   const route = mapGeneratedRouteToRoute(checkpoint.generated, checkpoint.params.destination, checkpoint.params.answers, checkpoint.params.transportContext)
+  const row = {
+    route,
+    generation_state: checkpoint.phase === 'done' ? null : checkpoint,
+    updated_at: new Date().toISOString(),
+  }
 
-  const { error } = await supabase.from('trips').upsert(
-    {
-      traveler_id: travelerId,
-      route,
-      generation_state: checkpoint.phase === 'done' ? null : checkpoint,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: 'traveler_id' },
-  )
+  if (tripId) {
+    const { error } = await supabase.from('trips').update(row).eq('id', tripId)
+    if (error) throw error
+    return tripId
+  }
+
+  const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
+  if (error) throw error
+  return data.id as string
+}
+
+/** Borra la fila de un viaje guardado — pantalla "Mis viajes" (papelera + confirmación). */
+export async function deleteTrip(tripId: string): Promise<void> {
+  if (!supabase) return
+  const { error } = await supabase.from('trips').delete().eq('id', tripId)
   if (error) throw error
 }
