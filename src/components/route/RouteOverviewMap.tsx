@@ -69,7 +69,15 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
       }
     })
 
-    return () => map.remove()
+    // Mapbox GL no detecta solo que su contenedor cambió de tamaño (p.ej. al arrastrar el tirador
+    // del panel en móvil) — sin esto el canvas se queda fijo en el tamaño que tenía al crearse.
+    const resizeObserver = new ResizeObserver(() => map.resize())
+    resizeObserver.observe(containerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+      map.remove()
+    }
   }, [pointsKey])
 
   if (points.length === 0) {

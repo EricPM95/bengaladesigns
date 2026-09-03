@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
-import type { TransportMode } from '../../../lib/mockDayDetail'
+import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
   buildConnectorInfo,
+  refineConnectorWithRealDistance,
   resolveDisplayStops,
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
@@ -97,6 +98,11 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
+  // cada conector parada→parada en cuanto resuelven — ver el useEffect más abajo y
+  // refineConnectorWithRealDistance en mockDayDetail.ts. Empieza vacío: el primer render siempre
+  // muestra el mock (instantáneo), nunca un spinner.
+  const [refinedConnectors, setRefinedConnectors] = useState<Record<string, ConnectorInfo>>({})
 
   const arrivalDetail = travel
     ? buildArrivalDepartureDetail(isLastDay ? travel.fromCity : travel.toCity, origin, isLastDay ? 'departure' : 'arrival')
@@ -105,6 +111,27 @@ export function DayDetailPanel({
 
   const stops = resolveDisplayStops(day)
   const realStops: Stop[] = day.stops.length > 0 ? day.stops : seedStopsFromTemplate(day)
+  const stopIdsKey = realStops.map((stop) => stop.id).join(',')
+
+  // Progresivo: pide la distancia/tiempo REAL (Mapbox Directions) de cada conector parada→parada
+  // en cuanto se conocen las paradas del día — el conector ya se ve con el mock instantáneo (ver
+  // buildConnectorInfo más abajo) y este efecto solo lo sustituye si/cuando resuelve. No hace nada
+  // para paradas de plantilla (coordenadas (0,0)): refineConnectorWithRealDistance devuelve null y
+  // el mock se queda tal cual, sin re-render de más.
+  useEffect(() => {
+    let cancelled = false
+    for (let index = 1; index < realStops.length; index++) {
+      const connectorKey = `${day.id}-connector-${index}`
+      refineConnectorWithRealDistance(realStops[index - 1].coordinates, realStops[index].coordinates).then((refined) => {
+        if (!cancelled && refined) setRefinedConnectors((prev) => ({ ...prev, [connectorKey]: refined }))
+      })
+    }
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [day.id, stopIdsKey])
+
   const otherDays = allDays.filter((candidate) => candidate.id !== day.id)
   // Mismo índice que usa el mapa combinado de todos los días (CombinedDaysMapView.tsx) para asignar
   // color por día — así el círculo numerado de cada parada coincide exactamente con el color de ese
@@ -157,7 +184,7 @@ export function DayDetailPanel({
         const fromAccommodation = index === 0 && useAccommodationOrigin && previousNightHotel
         const connector = fromAccommodation
           ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)
-          : buildConnectorInfo(day.id, index)
+          : (refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index))
         const fromName = fromAccommodation ? previousNightHotel.name : index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
 
         return (

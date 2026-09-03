@@ -97,6 +97,8 @@ export interface PlaceCandidate {
   description: string
   category: ExperienceId
   coordinates: Coordinates
+  /** true para los imprescindibles objetivos del destino (ej. Coliseo/Fontana di Trevi en Roma) — mismo criterio que las anclas del pipeline de generación, ver PlaceSelector.tsx. */
+  isMainAttraction: boolean
 }
 
 export type TripPace = 'zen' | 'balanced' | 'nonstop'

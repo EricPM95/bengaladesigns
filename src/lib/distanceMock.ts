@@ -1,13 +1,13 @@
 import type { Coordinates } from './types'
+import { getRoutedDistance } from './mapboxDirections'
 
 /**
- * No hay integración real con Google Maps Distance Matrix (ni clave, ni proxy en server/index.js
- * — ver package.json) — igual que el resto de distancias de la app (ver mockDayDetail.ts
- * `buildRealDisplacement`), se calcula localmente. La posición del viajero SÍ es real (Geolocation
- * del navegador); solo la conversión distancia→tiempo de trayecto es una estimación a pie de
- * andar, no una consulta real de tráfico/transporte. El día que haya backend con clave, solo cambia
- * `estimateWalkMinutes`/la llamada en sí — el `source: 'gps' | 'estimate'` ya distingue en la UI
- * cuándo el dato viene de la ubicación real.
+ * La distancia GPS→parada usa la Directions API de Mapbox (mismo proveedor/token que el resto de
+ * la app) cuando hay posición real y coordenadas reales de la parada — tiempo/distancia real
+ * caminando por calles, no línea recta. Si la API falla (sin red, sin token, sin ruta) o no hay
+ * posición/coordenadas reales, cae a Haversine + velocidad media a pie, igual que antes — el
+ * `source: 'gps' | 'estimate'` distingue en la UI si hubo posición real, independientemente de si
+ * la distancia en sí vino de Directions o del fallback.
  */
 
 function seededRandom(seed: string) {
@@ -65,7 +65,8 @@ function mockDistanceFor(seed: string): StopDistance {
 
 const NULL_ISLAND: Coordinates = { lat: 0, lng: 0 }
 
-function hasRealCoordinates(coordinates: Coordinates | undefined): coordinates is Coordinates {
+/** Paradas de plantilla/mock (sin generar todavía) llevan coordenadas (0,0) — así se distingue de una parada con ubicación real sin tener que ir función por función. */
+export function hasRealCoordinates(coordinates: Coordinates | undefined): coordinates is Coordinates {
   return Boolean(coordinates) && (coordinates!.lat !== NULL_ISLAND.lat || coordinates!.lng !== NULL_ISLAND.lng)
 }
 
@@ -81,6 +82,10 @@ export async function getDistanceToStop(stopId: string, coordinates: Coordinates
   const here = await getCurrentPositionSafe()
   if (!here) return mockDistanceFor(stopId)
 
+  const routed = await getRoutedDistance('walking', here, coordinates)
+  if (routed) return { meters: routed.meters, walkMinutes: routed.minutes, source: 'gps' }
+
+  // Directions no respondió (sin red, límite de la API...) — mejor una estimación en línea recta que nada.
   const meters = Math.round(haversineMeters(here, coordinates))
   return { meters, walkMinutes: estimateWalkMinutes(meters), source: 'gps' }
 }

@@ -65,7 +65,7 @@ export function MissingAccommodationBanner({ route }: MissingAccommodationBanner
   }
 
   const segments = buildDestinationSegments(route.days)
-  const firstUnresolved = segments.find((segment) => !accommodationSelections[segment.dayIds[0]])
+  const firstUnresolved = segments.find((segment) => segment.nights > 0 && !accommodationSelections[segment.dayIds[0]])
   if (!firstUnresolved) return null
 
   return (

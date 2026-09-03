@@ -1,4 +1,6 @@
-import type { DayPlan, MealSlot, Restaurant, Stop } from './types'
+import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop } from './types'
+import { hasRealCoordinates } from './distanceMock'
+import { getRoutedDistance } from './mapboxDirections'
 
 /**
  * Contenido "rico" de un día en la pestaña DIAS — acordeón de llegada/vuelta y acordeones de
@@ -503,12 +505,58 @@ export function buildConnectorInfo(daySeed: string, seedIndex: number): Connecto
   return buildRealDisplacement(`${daySeed}-connector-${seedIndex}`)
 }
 
+function formatMeters(meters: number): string {
+  return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${meters} m`
+}
+
+/**
+ * Progresivo: refina un conector ya mostrado (el mock instantáneo de `buildConnectorInfo`, arriba)
+ * con distancias/tiempos REALES de la Directions API de Mapbox, en cuanto ambas paradas tienen
+ * coordenadas reales (paradas generadas por IA o añadidas a mano — nunca paradas de plantilla, que
+ * llevan (0,0), ver hasRealCoordinates) — quien llama (DayDetailPanel.tsx) sigue enseñando el mock
+ * hasta que esto resuelve y lo sustituye en su sitio, sin bloquear el render con un spinner.
+ * Caminar y conducir son reales (dos perfiles de Mapbox); "transporte público" no tiene equivalente
+ * real en la Directions API, así que se deriva del tiempo real en coche + un margen fijo de
+ * espera/trasbordo — sigue siendo una estimación, pero ya no un número aleatorio sin relación con
+ * el trayecto real. Devuelve null (el llamador se queda con el mock) si falta alguna coordenada
+ * real o si la API falla.
+ */
+export async function refineConnectorWithRealDistance(fromCoords: Coordinates | undefined, toCoords: Coordinates | undefined): Promise<ConnectorInfo | null> {
+  if (!hasRealCoordinates(fromCoords) || !hasRealCoordinates(toCoords)) return null
+
+  const [walking, driving] = await Promise.all([
+    getRoutedDistance('walking', fromCoords, toCoords),
+    getRoutedDistance('driving', fromCoords, toCoords),
+  ])
+  if (!walking || !driving) return null
+
+  const transitMinutes = Math.max(3, Math.round(driving.minutes * 1.4) + 6)
+
+  const modeOptions: TransportModeOption[] = [
+    { mode: 'driving', durationLabel: `${driving.minutes} min`, distanceLabel: formatMeters(driving.meters) },
+    { mode: 'transit', durationLabel: `${transitMinutes} min`, distanceLabel: formatMeters(driving.meters) },
+    { mode: 'walking', durationLabel: `${walking.minutes} min`, distanceLabel: formatMeters(walking.meters) },
+  ]
+
+  return {
+    hasRealDisplacement: true,
+    label: `${walking.minutes} min a pie · ${formatMeters(walking.meters)}`,
+    modeOptions,
+  }
+}
+
 /**
  * Conector que toca un alojamiento real (noche anterior → primera parada, o última parada → noche
  * de hoy) — sustituye al punto genérico del centro de la ciudad en cuanto se conoce el alojamiento.
  * `seed` debe incorporar el nombre del hotel (no solo el día) para que el resultado sea estable por
  * alojamiento, no solo por día — ver DayDetailPanel.tsx. Recálculo silencioso: nunca decide si este
  * conector se muestra o no (eso ya lo decide quien llama), solo genera su distancia/tiempo mock.
+ *
+ * A diferencia de `buildConnectorInfo` (parada↔parada), este SIEMPRE se queda en mock — los
+ * hoteles (`mockAffiliateData.ts`) son 100% ficticios (nombres de plantilla, sin integración real
+ * de Booking/Expedia todavía) y no llevan coordenadas propias, así que no hay ninguna ubicación
+ * real a la que pedirle una ruta a Mapbox. El día que haya alojamiento real con coordenadas, esto
+ * puede refinarse igual que `refineConnectorWithRealDistance`.
  */
 export function buildAccommodationConnectorInfo(seed: string): ConnectorInfo {
   return buildRealDisplacement(seed)

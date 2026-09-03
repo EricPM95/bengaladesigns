@@ -94,7 +94,11 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                   travel={travel}
                   isLastDay={index === route.days.length - 1}
                   origin={route.origin}
-                  stay={!isCamper && stayByFirstDayId.has(day.id) ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights } : null}
+                  stay={
+                    !isCamper && stayByFirstDayId.has(day.id) && stayByFirstDayId.get(day.id)!.nights > 0
+                      ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights }
+                      : null
+                  }
                   nightSegmentDayId={!isCamper ? (segmentByDayId.get(day.id)?.dayIds[0] ?? null) : null}
                   previousNightSegmentDayId={!isCamper ? (segmentByDayId.get(route.days[index - 1]?.id ?? '')?.dayIds[0] ?? null) : null}
                   isRoadtripHop={segmentByDayId.get(day.id)?.nights === 1}

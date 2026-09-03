@@ -6,7 +6,7 @@ import { DestinationInput } from './components/destination/DestinationInput'
 import { RouteSearch, type ConfirmedRoute } from './components/destination/RouteSearch'
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
-import { computeLoadingStep, runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
+import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
 import { saveGenerationCheckpoint } from './lib/tripPersistence'
 import type { Place, QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
@@ -88,7 +88,7 @@ function QuestionnaireScreen() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -24 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="min-h-screen bg-bg text-text"
+      className="min-h-dvh bg-bg text-text"
     >
       <Questionnaire />
     </motion.div>
@@ -116,7 +116,7 @@ function LoadingScreenContainer() {
   const travelerId = useSyncStore((state) => state.travelerId)
 
   const [status, setStatus] = useState<'loading' | 'done' | 'error'>('loading')
-  const [step, setStep] = useState(2)
+  const [checkpoint, setCheckpoint] = useState<GenerationResumeState | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [route, setLocalRoute] = useState<ReturnType<typeof useRouteStore.getState>['route']>(null)
   const [attempt, setAttempt] = useState(0)
@@ -151,15 +151,15 @@ function LoadingScreenContainer() {
           mustIncludePlaces: suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
         }
 
-    setStep(resumeState ? computeLoadingStep(resumeState) : 2)
+    setCheckpoint(resumeState)
 
-    runGeneration(params, resumeState, async (checkpoint) => {
+    runGeneration(params, resumeState, async (nextCheckpoint) => {
       if (cancelled) return
-      lastCheckpointRef.current = checkpoint
-      setStep(computeLoadingStep(checkpoint))
+      lastCheckpointRef.current = nextCheckpoint
+      setCheckpoint(nextCheckpoint)
       if (travelerId) {
         try {
-          await saveGenerationCheckpoint(travelerId, checkpoint)
+          await saveGenerationCheckpoint(travelerId, nextCheckpoint)
         } catch {
           // El guardado de progreso falló (sin conexión, etc.) — no se aborta la generación, sigue
           // en memoria; TripSync ya cubre el aviso discreto de guardado en general.
@@ -196,8 +196,21 @@ function LoadingScreenContainer() {
 
   const handleRetry = () => setAttempt((value) => value + 1)
 
+  const completedDayNumbers = (checkpoint?.generated.days ?? []).filter((day) => day.stops.length > 0).map((day) => day.day_number)
+
   return (
-    <LoadingScreen destination={destination} status={status} step={step} errorMessage={errorMessage} onFinish={handleFinish} onRetry={handleRetry} />
+    <LoadingScreen
+      destination={destination}
+      status={status}
+      phase={checkpoint?.phase ?? 'anchors'}
+      totalBlocks={checkpoint?.totalBlocks ?? 0}
+      skeletonDays={checkpoint?.skeleton?.days ?? []}
+      completedDayNumbers={completedDayNumbers}
+      tripStartIso={answers.dateRange?.start}
+      errorMessage={errorMessage}
+      onFinish={handleFinish}
+      onRetry={handleRetry}
+    />
   )
 }
 
@@ -208,7 +221,7 @@ function RouteScreen() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="h-screen"
+      className="h-dvh"
     >
       <RouteView />
     </motion.div>

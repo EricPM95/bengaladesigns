@@ -33,6 +33,11 @@ export function buildDestinationSegments(days: DayPlan[]): DestinationSegment[] 
       segments.push({ id: day.id, city: day.city, countryCode: day.countryCode ?? null, dayIds: [day.id], nights: 1 })
     }
   }
+  // El último día del viaje entero no necesita alojamiento esa noche (se vuelve a origen) — a
+  // diferencia de un tramo intermedio, donde SÍ se duerme la noche de su último día antes de
+  // trasladarse al siguiente destino. Por eso solo el tramo final pierde una noche, nunca los demás.
+  const lastSegment = segments[segments.length - 1]
+  if (lastSegment) lastSegment.nights = Math.max(0, lastSegment.nights - 1)
   return segments
 }
 

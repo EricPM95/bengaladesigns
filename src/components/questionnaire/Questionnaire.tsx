@@ -105,11 +105,16 @@ export function Questionnaire() {
       vehicleType,
       companionCapacityAcknowledged,
     )
-  const showPlaces = showExperiences && !suggestedExperiencesLoading && placesStepStarted
-  const showPace = showPlaces && !suggestedPlacesLoading
+  // "Elige lugares" (showPlaces) va al FINAL del cuestionario, justo antes del botón — pero se
+  // dispara (placesStepStarted + suggestPlacesOnDemand) en cuanto se confirman las experiencias,
+  // varios pasos antes de mostrarse (ver ExperienceSelector.onConfirm más abajo): así la sugerencia
+  // de Claude ya está lista (o casi) cuando el usuario por fin llega a esta pantalla, en vez de
+  // hacerle esperar aquí.
+  const showPace = showExperiences && !suggestedExperiencesLoading && placesStepStarted
   const showChronotype = showPace && answers.pace !== undefined
   const showBudget = showChronotype && answers.chronotype !== undefined
-  const isComplete = showBudget && answers.budgetLevel !== undefined
+  const showPlaces = showBudget && answers.budgetLevel !== undefined
+  const isComplete = showPlaces && !suggestedPlacesLoading
 
   return (
     <div className="mx-auto max-w-lg space-y-4 px-6 py-16">
@@ -203,22 +208,6 @@ export function Questionnaire() {
         </QuestionCard>
       )}
 
-      {showPlaces && (
-        <QuestionCard title="Elige lugares">
-          <PlaceSelector
-            destinationName={destination}
-            places={suggestedPlaces}
-            loading={suggestedPlacesLoading}
-            failed={suggestedPlacesFailed}
-            selectedIds={selectedPlaceIds}
-            experiences={answers.experiences ?? []}
-            onToggle={toggleSelectedPlace}
-            onToggleAll={toggleSelectAllPlaces}
-            onRetry={() => suggestPlacesOnDemand(destination, answers.experiences ?? [])}
-          />
-        </QuestionCard>
-      )}
-
       {showPace && (
         <QuestionCard title="Tu ritmo">
           <div className="space-y-2">
@@ -267,6 +256,22 @@ export function Questionnaire() {
               />
             ))}
           </div>
+        </QuestionCard>
+      )}
+
+      {showPlaces && (
+        <QuestionCard title="Elige lugares">
+          <PlaceSelector
+            destinationName={destination}
+            places={suggestedPlaces}
+            loading={suggestedPlacesLoading}
+            failed={suggestedPlacesFailed}
+            selectedIds={selectedPlaceIds}
+            experiences={answers.experiences ?? []}
+            onToggle={toggleSelectedPlace}
+            onToggleAll={toggleSelectAllPlaces}
+            onRetry={() => suggestPlacesOnDemand(destination, answers.experiences ?? [])}
+          />
         </QuestionCard>
       )}
 

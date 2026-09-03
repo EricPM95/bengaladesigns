@@ -5,10 +5,11 @@ interface FloatingCombinedMapButtonProps {
 /**
  * Botón flotante — mismo estilo (circular, fondo blanco/tarjeta, borde verde, icono centrado) y
  * mismo tamaño que el de presupuesto (FloatingBudget), apilado justo encima, para que se perciban
- * como una pareja consistente. Abre la vista de mapa combinado de todos los días
- * (CombinedDaysMapView.tsx). Visible en toda la app (cualquier pestaña: Hoy/Ruta/Días/Explorar/
- * Reservas), no solo en DIAS — el mapa "solo del día activo" de DIAS sigue siendo el comportamiento
- * por defecto ahí, esto es un atajo aparte siempre a mano.
+ * como una pareja consistente. Navega a la pestaña RUTA (ver RouteView.tsx: `onClick={() =>
+ * setMode('route')}`) — ahí el mapa muestra el combinado por días coloreado (destino único) o el de
+ * destinos grandes numerados (multi-destino), ver buildCombinedDaysMarkers/RouteOverviewMap. Ya no
+ * abre una pantalla de mapa a pantalla completa aparte (esa vista se eliminó). Visible en toda la
+ * app (cualquier pestaña: Hoy/Ruta/Días/Explorar/Reservas).
  */
 export function FloatingCombinedMapButton({ onClick }: FloatingCombinedMapButtonProps) {
   return (

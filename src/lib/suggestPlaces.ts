@@ -6,6 +6,7 @@ interface RawPlace {
   name?: unknown
   description?: unknown
   category?: unknown
+  is_main_attraction?: unknown
   latitude?: unknown
   longitude?: unknown
 }
@@ -32,6 +33,7 @@ export async function suggestPlaces(destination: string, experienceIds: Experien
         name: place.name,
         description: typeof place.description === 'string' ? place.description : '',
         category: typeof place.category === 'string' && isKnownExperienceId(place.category) ? place.category : 'joyas_ocultas',
+        isMainAttraction: place.is_main_attraction === true,
         coordinates: {
           lat: typeof place.latitude === 'number' ? place.latitude : 0,
           lng: typeof place.longitude === 'number' ? place.longitude : 0,

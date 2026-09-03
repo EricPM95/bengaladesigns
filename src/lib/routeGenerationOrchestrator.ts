@@ -160,14 +160,6 @@ function mergeBlockDaysIntoGenerated(
   }
 }
 
-/** Paso (2-5) de LoadingScreen.tsx que corresponde al checkpoint actual — cada uno refleja una llamada que de verdad ha terminado (o está a punto de empezar), nunca un temporizador. */
-export function computeLoadingStep(state: Pick<GenerationResumeState, 'phase' | 'completedBlocks' | 'totalBlocks'>): number {
-  if (state.phase === 'anchors') return 2
-  if (state.phase === 'skeleton') return 3
-  if (state.phase === 'done') return 5
-  const fraction = state.totalBlocks > 0 ? state.completedBlocks / state.totalBlocks : 0
-  return fraction < 0.5 ? 4 : 5
-}
 
 /**
  * Genera (o retoma) una ruta encadenando llamadas pequeñas: anclas → esqueleto → bloques de

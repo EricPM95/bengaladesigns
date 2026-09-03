@@ -238,6 +238,8 @@ El viajero ya eligió estas experiencias como las que más le interesan: ${focus
 Para cada lugar, elige la categoría del banco fijo de 18 que mejor encaja (usa EXACTAMENTE un id de esta lista, nunca inventes otro):
 ${bankLines}
 
+Marca "is_main_attraction": true SOLO para los imprescindibles objetivos de "${destino}" — los 3 a 6 sitios que casi cualquier viajero reconocería o que aparecen en cualquier guía como lo más importante del destino (ej. en Roma: Coliseo, Fontana di Trevi). false para el resto, aunque sean buenos lugares — esto no es una opinión de qué encaja con las experiencias elegidas, es un hecho objetivo sobre qué tan icónico/imprescindible es el sitio en sí.
+
 Responde SOLO este JSON, sin texto ni markdown:
 {
   "places": [
@@ -245,6 +247,7 @@ Responde SOLO este JSON, sin texto ni markdown:
       "name": "Nombre real del lugar",
       "description": "Una frase corta (máximo 20 palabras) que explique qué es o por qué merece la pena",
       "category": "id exacto del banco de 18",
+      "is_main_attraction": false,
       "latitude": 00.0000,
       "longitude": 00.0000
     }
@@ -270,6 +273,7 @@ function sanitizeSuggestedPlaces(raw) {
       name,
       description: typeof entry.description === 'string' ? entry.description.trim().slice(0, 200) : '',
       category,
+      is_main_attraction: entry.is_main_attraction === true,
       latitude,
       longitude,
     })

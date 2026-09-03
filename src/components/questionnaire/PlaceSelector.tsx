@@ -40,8 +40,45 @@ export function PlaceSelector({ destinationName, places, loading, failed, select
     )
   }
 
-  const ordered = orderPlacesByExperience(places, experiences)
+  const mainAttractions = places.filter((place) => place.isMainAttraction)
+  const ordered = orderPlacesByExperience(
+    places.filter((place) => !place.isMainAttraction),
+    experiences,
+  )
   const allSelected = places.length > 0 && selectedIds.length === places.length
+
+  const renderCard = (place: PlaceCandidate, highlighted: boolean) => {
+    const selected = selectedIds.includes(place.id)
+    return (
+      <button
+        key={place.id}
+        type="button"
+        onClick={() => onToggle(place.id)}
+        className={`relative overflow-hidden rounded-xl border text-left transition-colors ${
+          selected ? 'border-accent' : highlighted ? 'border-accent-gold' : 'border-border hover:border-border-accent'
+        }`}
+      >
+        {highlighted && (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            ⭐ Imprescindible
+          </span>
+        )}
+        <span
+          className={`absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 text-caption font-bold ${
+            selected ? 'border-accent bg-accent text-white' : 'border-white bg-black/30 text-transparent'
+          }`}
+          aria-hidden="true"
+        >
+          ✓
+        </span>
+        <img src={`https://picsum.photos/seed/${encodeURIComponent(place.id)}/400/280`} alt="" className="h-24 w-full object-cover" />
+        <div className={`space-y-0.5 p-2 ${selected ? 'bg-accent-soft' : ''}`}>
+          <p className="line-clamp-2 text-caption font-medium text-text">{place.name}</p>
+          <p className="line-clamp-2 text-caption text-text-muted">{place.description}</p>
+        </div>
+      </button>
+    )
+  }
 
   return (
     <div className="space-y-3">
@@ -54,35 +91,14 @@ export function PlaceSelector({ destinationName, places, loading, failed, select
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {ordered.map((place) => {
-          const selected = selectedIds.includes(place.id)
-          return (
-            <button
-              key={place.id}
-              type="button"
-              onClick={() => onToggle(place.id)}
-              className={`relative overflow-hidden rounded-xl border text-left transition-colors ${
-                selected ? 'border-accent' : 'border-border hover:border-border-accent'
-              }`}
-            >
-              <span
-                className={`absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 text-caption font-bold ${
-                  selected ? 'border-accent bg-accent text-white' : 'border-white bg-black/30 text-transparent'
-                }`}
-                aria-hidden="true"
-              >
-                ✓
-              </span>
-              <img src={`https://picsum.photos/seed/${encodeURIComponent(place.id)}/400/280`} alt="" className="h-24 w-full object-cover" />
-              <div className={`space-y-0.5 p-2 ${selected ? 'bg-accent-soft' : ''}`}>
-                <p className="line-clamp-2 text-caption font-medium text-text">{place.name}</p>
-                <p className="line-clamp-2 text-caption text-text-muted">{place.description}</p>
-              </div>
-            </button>
-          )
-        })}
-      </div>
+      {mainAttractions.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">Atracciones principales de {destinationName}</p>
+          <div className="grid grid-cols-2 gap-3">{mainAttractions.map((place) => renderCard(place, true))}</div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-3">{ordered.map((place) => renderCard(place, false))}</div>
     </div>
   )
 }
