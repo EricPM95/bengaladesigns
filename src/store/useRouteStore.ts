@@ -195,6 +195,8 @@ interface RouteStoreState {
   setSuggestedExperiencesFailed: (failed: boolean) => void
   setPlacesStepStarted: (started: boolean) => void
   setSuggestedPlaces: (places: PlaceCandidate[], sourceIds: ExperienceId[]) => void
+  /** Añade UN lugar según va llegando del streaming NDJSON de /api/suggest-places — a diferencia de setSuggestedPlaces (reemplazo completo), no toca loading/failed, deja eso a quien orquesta el stream. */
+  appendSuggestedPlace: (place: PlaceCandidate, sourceIds: ExperienceId[]) => void
   setSuggestedPlacesLoading: (loading: boolean) => void
   setSuggestedPlacesFailed: (failed: boolean) => void
   toggleSelectedPlace: (placeId: string) => void
@@ -405,8 +407,13 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   setSuggestedExperiencesLoading: (loading) => set({ suggested_experiences_loading: loading }),
   setSuggestedExperiencesFailed: (failed) => set({ suggested_experiences_failed: failed, suggested_experiences_loading: false }),
   setPlacesStepStarted: (started) => set({ places_step_started: started }),
-  setSuggestedPlaces: (places, sourceIds) =>
-    set({ suggested_places: places, suggested_places_source_ids: sourceIds, suggested_places_loading: false, suggested_places_failed: false }),
+  setSuggestedPlaces: (places, sourceIds) => set({ suggested_places: places, suggested_places_source_ids: sourceIds }),
+  appendSuggestedPlace: (place, sourceIds) =>
+    set((state) =>
+      state.suggested_places.some((existing) => existing.id === place.id)
+        ? state
+        : { suggested_places: [...state.suggested_places, place], suggested_places_source_ids: sourceIds },
+    ),
   setSuggestedPlacesLoading: (loading) => set({ suggested_places_loading: loading }),
   setSuggestedPlacesFailed: (failed) => set({ suggested_places_failed: failed, suggested_places_loading: false }),
   toggleSelectedPlace: (placeId) =>

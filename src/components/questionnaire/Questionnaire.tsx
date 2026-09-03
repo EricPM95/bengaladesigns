@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
-import type { BudgetLevel, Chronotype, TripPace } from '../../lib/types'
+import type { BudgetLevel, Chronotype, ExperienceId, TripPace } from '../../lib/types'
 import { getCurrentSeason } from '../../lib/season'
 import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
@@ -61,6 +61,15 @@ const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
  * `onClick` llama a `goToNextStep()` en el mismo tap — origen y acompañantes son flujos internos
  * más complejos sin un único "tap final", así que se detectan por el efecto de abajo en cuanto
  * `steps` crece. Retroceder con la flecha nunca borra la respuesta ya dada.
+ *
+ * IMPORTANTE: `suggested_places` (el streaming de /api/suggest-places) NUNCA se lee aquí arriba —
+ * vive solo dentro de PlacesGrid/PlacesCreateRouteFooter más abajo, cada uno con su propia
+ * suscripción. Se probó a leerlo aquí (para el botón "Crear mi ruta") y rompía justo la animación
+ * de "avanza sola": con un lugar nuevo llegando cada ~1s, este componente entero volvía a
+ * renderizar a ese ritmo, y esos renders de más pisaban a media transición la animación de salida
+ * de framer-motion (mode="wait" espera a que termine para desmontar) — el usuario se quedaba
+ * viendo la pantalla anterior indefinidamente aunque el paso ya hubiera avanzado por dentro. Aislar
+ * esa suscripción en componentes hijos evita que sus renders se propaguen hacia arriba.
  */
 export function Questionnaire() {
   const destination = useRouteStore((state) => state.destination)
@@ -82,12 +91,6 @@ export function Questionnaire() {
   const suggestedExperiencesLoading = useRouteStore((state) => state.suggested_experiences_loading)
   const suggestedExperiencesFailed = useRouteStore((state) => state.suggested_experiences_failed)
   const placesStepStarted = useRouteStore((state) => state.places_step_started)
-  const suggestedPlaces = useRouteStore((state) => state.suggested_places)
-  const suggestedPlacesLoading = useRouteStore((state) => state.suggested_places_loading)
-  const suggestedPlacesFailed = useRouteStore((state) => state.suggested_places_failed)
-  const selectedPlaceIds = useRouteStore((state) => state.selected_place_ids)
-  const toggleSelectedPlace = useRouteStore((state) => state.toggleSelectedPlace)
-  const toggleSelectAllPlaces = useRouteStore((state) => state.toggleSelectAllPlaces)
   const resolveArchetypeChoice = useRouteStore((state) => state.resolveArchetypeChoice)
   const setTransportOption = useRouteStore((state) => state.setTransportOption)
   const setVehicleOwnership = useRouteStore((state) => state.setVehicleOwnership)
@@ -365,15 +368,9 @@ export function Questionnaire() {
               )}
 
               {activeStep === 'places' && (
-                <PlaceSelector
-                  destinationName={destination}
-                  places={suggestedPlaces}
-                  loading={suggestedPlacesLoading}
-                  failed={suggestedPlacesFailed}
-                  selectedIds={selectedPlaceIds}
+                <PlacesGrid
+                  destination={destination}
                   experiences={answers.experiences ?? []}
-                  onToggle={toggleSelectedPlace}
-                  onToggleAll={toggleSelectAllPlaces}
                   onRetry={() => suggestPlacesOnDemand(destination, answers.experiences ?? [])}
                 />
               )}
@@ -385,19 +382,68 @@ export function Questionnaire() {
       {activeStep === 'places' && (
         <div className="sticky bottom-0 z-10 border-t border-border bg-bg-card px-6 py-4">
           <div className="mx-auto w-full max-w-lg">
-            <Button onClick={handleCreateRoute} disabled={suggestedPlacesLoading || suggestedPlacesFailed} className="w-full">
-              {suggestedPlacesLoading ? (
-                <>
-                  <Spinner className="text-white" />
-                  Cargando lugares...
-                </>
-              ) : (
-                '✨ Crear mi ruta'
-              )}
-            </Button>
+            <PlacesCreateRouteButton onCreateRoute={handleCreateRoute} />
           </div>
         </div>
       )}
     </div>
+  )
+}
+
+interface PlacesGridProps {
+  destination: string
+  experiences: ExperienceId[]
+  onRetry: () => void
+}
+
+/**
+ * Aislado del render de Questionnaire a propósito (ver el comentario grande más arriba) — se
+ * suscribe DIRECTAMENTE a `suggested_places`/loading/failed/selected_place_ids, así que solo ESTE
+ * componente vuelve a renderizar en cada lugar nuevo que llega por streaming, no toda la pantalla.
+ */
+function PlacesGrid({ destination, experiences, onRetry }: PlacesGridProps) {
+  const suggestedPlaces = useRouteStore((state) => state.suggested_places)
+  const suggestedPlacesLoading = useRouteStore((state) => state.suggested_places_loading)
+  const suggestedPlacesFailed = useRouteStore((state) => state.suggested_places_failed)
+  const selectedPlaceIds = useRouteStore((state) => state.selected_place_ids)
+  const toggleSelectedPlace = useRouteStore((state) => state.toggleSelectedPlace)
+  const toggleSelectAllPlaces = useRouteStore((state) => state.toggleSelectAllPlaces)
+
+  return (
+    <PlaceSelector
+      destinationName={destination}
+      places={suggestedPlaces}
+      loading={suggestedPlacesLoading}
+      failed={suggestedPlacesFailed}
+      selectedIds={selectedPlaceIds}
+      experiences={experiences}
+      onToggle={toggleSelectedPlace}
+      onToggleAll={toggleSelectAllPlaces}
+      onRetry={onRetry}
+    />
+  )
+}
+
+/** Mismo aislamiento que PlacesGrid, y por la misma razón — el botón "Crear mi ruta" también necesita suggested_places, pero no debe hacer que Questionnaire entero vuelva a renderizar por ello. */
+function PlacesCreateRouteButton({ onCreateRoute }: { onCreateRoute: () => void }) {
+  const suggestedPlaces = useRouteStore((state) => state.suggested_places)
+  const suggestedPlacesLoading = useRouteStore((state) => state.suggested_places_loading)
+  const suggestedPlacesFailed = useRouteStore((state) => state.suggested_places_failed)
+
+  // Con streaming, "cargando" y "ya hay lugares que elegir" pueden ser ciertos a la vez — el viaje
+  // solo necesita los lugares que el usuario MARQUE, así que en cuanto hay alguno donde elegir no
+  // hace falta esperar a que terminen de llegar los 18-30. Solo bloquea si todavía no hay nada (o
+  // si ni eso se consiguió).
+  return (
+    <Button onClick={onCreateRoute} disabled={suggestedPlaces.length === 0 && (suggestedPlacesLoading || suggestedPlacesFailed)} className="w-full">
+      {suggestedPlaces.length === 0 && suggestedPlacesLoading ? (
+        <>
+          <Spinner className="text-white" />
+          Cargando lugares...
+        </>
+      ) : (
+        '✨ Crear mi ruta'
+      )}
+    </Button>
   )
 }

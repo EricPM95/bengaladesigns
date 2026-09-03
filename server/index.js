@@ -255,31 +255,105 @@ Responde SOLO este JSON, sin texto ni markdown:
 }`
 }
 
-function sanitizeSuggestedPlaces(raw) {
-  if (!Array.isArray(raw)) return []
-  const seen = new Set()
-  const result = []
-  for (const [index, entry] of raw.entries()) {
-    if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) continue
-    const name = entry.name.trim().slice(0, 150)
-    const key = name.toLowerCase()
-    if (seen.has(key)) continue
-    seen.add(key)
-    const category = EXPERIENCE_IDS.has(entry.category) ? entry.category : 'joyas_ocultas'
-    const latitude = typeof entry.latitude === 'number' ? entry.latitude : 0
-    const longitude = typeof entry.longitude === 'number' ? entry.longitude : 0
-    result.push({
-      id: `place-${index}-${key.replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`,
-      name,
-      description: typeof entry.description === 'string' ? entry.description.trim().slice(0, 200) : '',
-      category,
-      is_main_attraction: entry.is_main_attraction === true,
-      latitude,
-      longitude,
-    })
-    if (result.length >= 40) break
+/** Un solo lugar crudo del JSON de Claude → forma final, o null si no es válido/es un duplicado por nombre ya visto en `seenNames` (compartido entre llamadas para deduplicar across todo el streaming, no solo dentro de un batch). */
+function sanitizePlaceEntry(entry, index, seenNames) {
+  if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return null
+  const name = entry.name.trim().slice(0, 150)
+  const key = name.toLowerCase()
+  if (seenNames.has(key)) return null
+  seenNames.add(key)
+  const category = EXPERIENCE_IDS.has(entry.category) ? entry.category : 'joyas_ocultas'
+  const latitude = typeof entry.latitude === 'number' ? entry.latitude : 0
+  const longitude = typeof entry.longitude === 'number' ? entry.longitude : 0
+  return {
+    id: `place-${index}-${key.replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`,
+    name,
+    description: typeof entry.description === 'string' ? entry.description.trim().slice(0, 200) : '',
+    category,
+    is_main_attraction: entry.is_main_attraction === true,
+    latitude,
+    longitude,
   }
-  return result
+}
+
+/**
+ * Extrae objetos COMPLETOS del array `places` a medida que el snapshot de texto de Claude va
+ * creciendo (streaming) — sin esperar a que el JSON entero termine de generarse. Escanea carácter a
+ * carácter llevando profundidad de `{}` (respetando strings/escapes, para no confundir una llave
+ * dentro de una descripción con estructura real) SOLO dentro del array `"places": [...]`; cada vez
+ * que la profundidad vuelve a 0 tras haber abierto un objeto, ese objeto ya está completo y se
+ * puede parsear y emitir de inmediato. El estado de escaneo (posición, profundidad, si se está
+ * dentro de un string) vive en el closure del propio parser para poder llamarlo repetidas veces
+ * con el snapshot acumulado, retomando donde se quedó — nunca reprocesa desde el principio.
+ */
+function createIncrementalPlacesParser(onPlace) {
+  let arrayStartIdx = -1
+  let scanPos = 0
+  let depth = 0
+  let inString = false
+  let escaped = false
+  let objStart = -1
+  let index = 0
+  const seenNames = new Set()
+  let stopped = false
+
+  return function feed(snapshot) {
+    if (stopped) return
+    if (arrayStartIdx === -1) {
+      const marker = snapshot.indexOf('"places"')
+      if (marker === -1) return
+      const bracket = snapshot.indexOf('[', marker)
+      if (bracket === -1) return
+      arrayStartIdx = bracket + 1
+      scanPos = arrayStartIdx
+    }
+
+    for (; scanPos < snapshot.length; scanPos++) {
+      const ch = snapshot[scanPos]
+      if (inString) {
+        if (escaped) escaped = false
+        else if (ch === '\\') escaped = true
+        else if (ch === '"') inString = false
+        continue
+      }
+      if (ch === '"') {
+        inString = true
+        continue
+      }
+      if (ch === '{') {
+        if (depth === 0) objStart = scanPos
+        depth++
+        continue
+      }
+      if (ch === '}') {
+        depth--
+        if (depth === 0 && objStart !== -1) {
+          const raw = snapshot.slice(objStart, scanPos + 1)
+          objStart = -1
+          try {
+            const entry = JSON.parse(raw)
+            const sanitized = sanitizePlaceEntry(entry, index, seenNames)
+            if (sanitized) {
+              index++
+              onPlace(sanitized)
+              if (index >= 40) {
+                stopped = true
+                return
+              }
+            }
+          } catch {
+            // Objeto todavía incompleto o malformado en este punto del streaming — se ignora, no
+            // debería pasar si el conteo de profundidad es correcto, pero es inofensivo si pasa.
+          }
+        }
+        continue
+      }
+      if (ch === ']' && depth === 0) {
+        stopped = true
+        return
+      }
+    }
+  }
 }
 
 app.post('/api/suggest-places', async (req, res) => {
@@ -292,8 +366,31 @@ app.post('/api/suggest-places', async (req, res) => {
 
   const experienceIds = Array.isArray(experience_ids) ? experience_ids.filter((id) => EXPERIENCE_IDS.has(id)) : []
 
+  // Content-Type NDJSON se fija de forma perezosa, justo antes de la primera escritura — así, si
+  // la llamada a Claude falla ANTES de que se complete ningún lugar (ej. clave inválida, timeout de
+  // red), todavía se puede responder con el JSON de error clásico (res.status().json()) en vez de
+  // un protocolo de streaming a medias que el cliente tendría que interpretar como fallo total de
+  // todos modos. Una vez se ha escrito la primera línea, los fallos posteriores se comunican con una
+  // línea final {"type":"error"} — la cabecera HTTP ya no se puede cambiar a esas alturas.
+  let streamingStarted = false
+  const t0 = Date.now()
+  let emittedCount = 0
+
+  const startStreamingIfNeeded = () => {
+    if (streamingStarted) return
+    streamingStarted = true
+    res.setHeader('Content-Type', 'application/x-ndjson')
+    res.setHeader('Cache-Control', 'no-cache')
+  }
+
+  const parser = createIncrementalPlacesParser((place) => {
+    startStreamingIfNeeded()
+    emittedCount++
+    res.write(`${JSON.stringify({ type: 'place', place })}\n`)
+  })
+
   try {
-    const response = await anthropic.messages.create({
+    const stream = anthropic.messages.stream({
       model: MODEL,
       max_tokens: 4000,
       system:
@@ -301,15 +398,44 @@ app.post('/api/suggest-places', async (req, res) => {
         'El JSON debe tener exactamente un campo: places (array de 18 a 30 objetos con name, description, category y coordenadas reales).',
       messages: [{ role: 'user', content: buildSuggestPlacesPrompt(destination, experienceIds) }],
     })
+    stream.on('text', (_delta, snapshot) => {
+      try {
+        parser(snapshot)
+      } catch {
+        // Un hipo puntual parseando un snapshot todavía a medias no debe tumbar el stream entero —
+        // el siguiente `text` con más contenido normalmente ya resuelve solo.
+      }
+    })
 
+    const response = await stream.finalMessage()
+    // Pasada final por si el modelo cerró algún objeto justo en el último fragmento de texto y el
+    // evento 'text' correspondiente no llegó a procesarse a tiempo (no debería faltar nada, pero es
+    // gratis comprobarlo).
     const textBlock = response.content.find((block) => block.type === 'text')
-    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+    if (textBlock) parser(textBlock.text)
 
-    const parsed = JSON.parse(extractJsonText(textBlock.text))
-    res.json({ places: sanitizeSuggestedPlaces(parsed?.places) })
+    console.log(`[timing] suggest-places (${destination}) — ${Date.now() - t0}ms — ${emittedCount} lugares emitidos`)
+
+    if (emittedCount === 0) {
+      if (streamingStarted) {
+        res.write(`${JSON.stringify({ type: 'error' })}\n`)
+        res.end()
+      } else {
+        res.status(502).json({ error: 'No se pudieron sugerir lugares con IA.' })
+      }
+      return
+    }
+
+    res.write(`${JSON.stringify({ type: 'done' })}\n`)
+    res.end()
   } catch (error) {
     logAnthropicError('suggest-places', error)
-    res.status(502).json({ error: 'No se pudieron sugerir lugares con IA.' })
+    if (streamingStarted) {
+      res.write(`${JSON.stringify({ type: 'error' })}\n`)
+      res.end()
+    } else {
+      res.status(502).json({ error: 'No se pudieron sugerir lugares con IA.' })
+    }
   }
 })
 

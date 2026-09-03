@@ -20,24 +20,33 @@ interface PlaceSelectorProps {
  * checkbox — los afines a las experiencias ya elegidas salen primero, intercalados entre
  * categorías (ver orderPlacesByExperience). Los marcados aquí entran en la generación como anclas
  * de alta prioridad, no como sugerencia genérica.
+ *
+ * /api/suggest-places transmite los lugares por streaming (NDJSON, uno en cuanto Claude lo termina
+ * de escribir) en vez de esperar a los 18-30 completos — así que `loading` y `places.length > 0`
+ * pueden ser true a la vez (siguen llegando más) y el criterio de "aún no hay nada que mostrar" ya
+ * no es solo `loading`, sino `loading && places.length === 0`. Mismo razonamiento para `failed`: con
+ * 0 lugares es un fallo real (con su botón Reintentar); con algunos ya en pantalla, un aviso
+ * discreto de que no llegaron más basta, no hace falta ocultar lo que sí se consiguió.
  */
 export function PlaceSelector({ destinationName, places, loading, failed, selectedIds, experiences, onToggle, onToggleAll, onRetry }: PlaceSelectorProps) {
-  if (loading) {
-    return (
-      <p className="flex items-center gap-2 text-small italic text-text-soft">
-        <Spinner className="text-accent" />
-        Buscando lugares en {destinationName}...
-      </p>
-    )
-  }
+  if (places.length === 0) {
+    if (loading) {
+      return (
+        <p className="flex items-center gap-2 text-small italic text-text-soft">
+          <Spinner className="text-accent" />
+          Buscando lugares en {destinationName}...
+        </p>
+      )
+    }
 
-  if (failed) {
-    return (
-      <div className="space-y-2">
-        <p className="text-small text-text-soft">No hemos podido sugerir lugares para {destinationName} ahora mismo.</p>
-        <Button onClick={onRetry}>Reintentar</Button>
-      </div>
-    )
+    if (failed) {
+      return (
+        <div className="space-y-2">
+          <p className="text-small text-text-soft">No hemos podido sugerir lugares para {destinationName} ahora mismo.</p>
+          <Button onClick={onRetry}>Reintentar</Button>
+        </div>
+      )
+    }
   }
 
   const mainAttractions = places.filter((place) => place.isMainAttraction)
@@ -99,6 +108,22 @@ export function PlaceSelector({ destinationName, places, loading, failed, select
       )}
 
       <div className="grid grid-cols-2 gap-3">{ordered.map((place) => renderCard(place, false))}</div>
+
+      {loading && (
+        <p className="flex items-center gap-2 text-caption italic text-text-soft">
+          <Spinner className="text-accent" />
+          Buscando más lugares en {destinationName}...
+        </p>
+      )}
+
+      {!loading && failed && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-bg-card px-3 py-2">
+          <p className="text-caption text-text-soft">No hemos podido cargar más lugares.</p>
+          <button type="button" onClick={onRetry} className="shrink-0 text-caption font-semibold text-accent hover:text-accent-hover">
+            Reintentar
+          </button>
+        </div>
+      )}
     </div>
   )
 }
