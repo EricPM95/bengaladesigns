@@ -229,6 +229,7 @@ export function DevQuickRouteScreen() {
           accommodation_mode: null,
           travel_mode: null,
           pase_dominante: null,
+          vehiculo_altamente_recomendado: false,
           travel_pass_confirmed: null,
         },
         budget: { items: [], total: 0 },

@@ -88,5 +88,5 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
     )
   }
 
-  return <div ref={containerRef} className="h-full w-full" />
+  return <div ref={containerRef} className="isolate h-full w-full" />
 }

@@ -21,6 +21,13 @@ export interface DestinationClassification {
    * lo bastante dominante como para asumirlo por defecto (ej. Corea del Sur, Taiwán, EE.UU.).
    */
   pase_dominante: string | null
+  /**
+   * Solo relevante cuando archetype es base_y_excursiones (en cualquier otro caso, false): true si
+   * el transporte público/organizado entre puntos de interés es limitado y un vehículo propio
+   * mejora sustancialmente la experiencia (ej. Tenerife, Azores) — decide el color ámbar/gris de
+   * "Vehículo de alquiler" en RESERVAS (ver readiness.ts).
+   */
+  vehiculo_altamente_recomendado: boolean
 }
 
 /** Clasifica el destino (arquetipo + is_region + ambiguous + requiere_coche + pase_dominante) vía Claude. Devuelve null si la llamada falla. */
@@ -42,6 +49,7 @@ export async function classifyDestination(destination: string): Promise<Destinat
       ambiguous: Boolean(data.ambiguous),
       requiere_coche: Boolean(data.requiere_coche),
       pase_dominante: typeof data.pase_dominante === 'string' ? data.pase_dominante : null,
+      vehiculo_altamente_recomendado: Boolean(data.vehiculo_altamente_recomendado),
     }
   } catch {
     return null

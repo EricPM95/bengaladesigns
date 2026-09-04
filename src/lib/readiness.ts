@@ -23,6 +23,16 @@ export interface GeneralBooking {
 
 export type EsimStatus = 'have' | 'booked'
 
+/**
+ * Prioridad visual del ítem sin resolver (borde de ReservasItemRow) — independiente del peso usado
+ * para el % de "viaje listo": rojo (solo Seguro de viaje, "Imprescindibles", no cuenta para la
+ * alerta de la pestaña), ámbar (transporte, alojamiento/camper, y vehículo de alquiler SOLO si
+ * `vehiculo_altamente_recomendado` — cuenta para la alerta), gris (N26, eSIM, y vehículo de
+ * alquiler cuando no está altamente recomendado — no cuenta para la alerta). Resuelto siempre pinta
+ * verde sin importar esta prioridad (ver ReservasItemRow.tsx).
+ */
+export type ReadinessPriority = 'red' | 'yellow' | 'gray'
+
 export interface ReadinessItem {
   id: string
   kind: ReadinessItemKind
@@ -32,6 +42,7 @@ export interface ReadinessItem {
   /** Ciudad del destino al que pertenece, o null para los ítems de "Imprescindibles". */
   destinationCity: string | null
   resolved: boolean
+  priority: ReadinessPriority
 }
 
 /** Estado ya resuelto de cada tipo de ítem, leído del store — buildReadinessItems es una función pura sobre esto. */
@@ -80,6 +91,8 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
 
+  const rentalVehiclePriority: ReadinessPriority = route.transportContext.vehiculo_altamente_recomendado ? 'yellow' : 'gray'
+
   segments.forEach((segment, index) => {
     const firstDayIndex = route.days.findIndex((day) => day.id === segment.dayIds[0])
     const arrival = computeDayTravelInfo(route, firstDayIndex)
@@ -90,6 +103,7 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
       weight: 2,
       destinationCity: segment.city,
       resolved: resolved.transportBookedDayIds.has(segment.dayIds[0]),
+      priority: 'yellow',
     })
 
     if (!isCamper) {
@@ -100,6 +114,7 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
         weight: 2,
         destinationCity: segment.city,
         resolved: resolved.accommodationSegmentIds.has(segment.dayIds[0]),
+        priority: 'yellow',
       })
     }
 
@@ -112,6 +127,7 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
         weight: 2,
         destinationCity: segment.city,
         resolved: resolved.transportBookedDayIds.has(lastDay.id),
+        priority: 'yellow',
       })
     }
   })
@@ -125,11 +141,20 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
       weight: 1,
       destinationCity: null,
       resolved: resolved.esimResolvedCountries.has(countryCode),
+      priority: 'gray',
     })
   }
 
-  items.push({ id: 'general-insurance', kind: 'insurance', label: 'Seguro de viaje', weight: 2, destinationCity: null, resolved: resolved.insuranceBooked })
-  items.push({ id: 'general-n26', kind: 'n26', label: 'Tarjeta N26', weight: 1, destinationCity: null, resolved: resolved.n26Added })
+  items.push({
+    id: 'general-insurance',
+    kind: 'insurance',
+    label: 'Seguro de viaje',
+    weight: 2,
+    destinationCity: null,
+    resolved: resolved.insuranceBooked,
+    priority: 'red',
+  })
+  items.push({ id: 'general-n26', kind: 'n26', label: 'Tarjeta N26', weight: 1, destinationCity: null, resolved: resolved.n26Added, priority: 'gray' })
   if (hasRentalVehicle) {
     items.push({
       id: 'general-rental-vehicle',
@@ -138,6 +163,7 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
       weight: 1,
       destinationCity: null,
       resolved: resolved.rentalVehicleBooked,
+      priority: rentalVehiclePriority,
     })
   }
 
@@ -150,6 +176,11 @@ export function computeReadinessPercent(items: ReadinessItem[]): number {
   if (totalWeight === 0) return 0
   const resolvedWeight = items.filter((item) => item.resolved).reduce((sum, item) => sum + item.weight, 0)
   return Math.round((resolvedWeight / totalWeight) * 100)
+}
+
+/** true si queda algún ítem ámbar (alta prioridad: transporte, alojamiento/camper, o vehículo de alquiler altamente recomendado) sin resolver — enciende el icono de alerta (!) de la pestaña Reservas del menú. El seguro de viaje (rojo) nunca cuenta aquí aunque sea igual de crítico, a propósito (ver Prompt 5, punto 7). */
+export function hasUnresolvedYellowItems(items: ReadinessItem[]): boolean {
+  return items.some((item) => item.priority === 'yellow' && !item.resolved)
 }
 
 /** Rojo (0%, nada reservado) → naranja (algo pero no todo) → verde (100%) — mismo criterio para el punto de color del indicador de la cabecera. */

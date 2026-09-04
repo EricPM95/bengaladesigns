@@ -4,9 +4,7 @@ import { computeDayTravelInfo } from '../../../lib/dayTravelInfo'
 import { TransportRow } from './TransportRow'
 import { AccommodationRow } from './AccommodationRow'
 import { EsimRow } from './EsimRow'
-import { InsuranceRow } from './InsuranceRow'
 import { N26Row } from './N26Row'
-import { RentalVehicleRow } from './RentalVehicleRow'
 
 interface DestinationReservasAccordionProps {
   route: Route
@@ -35,14 +33,14 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 /**
  * Acordeón de un destino en RESERVAS — mismos destinos/orden que RUTA. Transporte de llegada
  * siempre; transporte de vuelta SOLO en el último destino; alojamiento salvo vehículo camper;
- * eSIM del país (si se conoce); y los ítems de "General del viaje" repetidos con el mismo estado
- * compartido que el bloque general (ver GeneralReservasSection).
+ * N26/eSIM del país (si se conoce), con el mismo estado sincronizado entre destinos que en el resto
+ * de la app. Seguro de viaje y vehículo de alquiler viven en ReservasPanel.tsx como secciones
+ * generales del viaje (no por destino) — no se repiten aquí.
  */
 export function DestinationReservasAccordion({ route, segment, isLastSegment, expanded, onToggle }: DestinationReservasAccordionProps) {
   const firstDayIndex = route.days.findIndex((day) => day.id === segment.dayIds[0])
   const arrival = computeDayTravelInfo(route, firstDayIndex)
   const isCamper = route.transportContext.vehicle_type === 'camper'
-  const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
   const lastDay = route.days[route.days.length - 1]
 
   return (
@@ -57,10 +55,8 @@ export function DestinationReservasAccordion({ route, segment, isLastSegment, ex
           {arrival && <TransportRow dayId={segment.dayIds[0]} label={`${arrival.fromCity} → ${arrival.toCity}`} />}
           {!isCamper && segment.nights > 0 && <AccommodationRow segmentDayId={segment.dayIds[0]} city={segment.city} totalNights={segment.nights} />}
           {isLastSegment && <TransportRow dayId={lastDay.id} label={`${segment.city} → ${route.origin}`} />}
-          {segment.countryCode && <EsimRow countryCode={segment.countryCode} />}
-          <InsuranceRow />
           <N26Row />
-          {hasRentalVehicle && <RentalVehicleRow />}
+          {segment.countryCode && <EsimRow countryCode={segment.countryCode} />}
         </div>
       )}
     </div>

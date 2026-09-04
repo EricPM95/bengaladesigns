@@ -33,6 +33,7 @@ function buildSingleDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[
     number: index + 1,
     bg: dayColorPastel(dayIndex),
     text: dayColorStrong(dayIndex),
+    photoUrl: stop.photoUrl,
   }))
 }
 
@@ -65,6 +66,7 @@ function buildCombinedDaysMarkers(days: DayPlan[]): StopsMapMarker[] {
         number: stopIndex + 1,
         bg: dayColorPastel(dayIndex),
         text: dayColorStrong(dayIndex),
+        photoUrl: stop.photoUrl,
       })),
     )
 }
@@ -82,6 +84,10 @@ export function RouteView() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
   const [mapCollapsed, setMapCollapsed] = useState(false)
+  // Publicado por ExplorePanel mientras "Comer y beber"/"Miradores y fotos" está activo — sustituye
+  // a las paradas del día activo en este mismo mapa compartido (null = mapa normal de DIAS/Hoy).
+  const [exploreMarkers, setExploreMarkers] = useState<StopsMapMarker[] | null>(null)
+  const [exploreActiveId, setExploreActiveId] = useState<string | null>(null)
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
@@ -94,18 +100,24 @@ export function RouteView() {
 
   if (!route) return null
 
+  // RESERVAS es su propia pantalla completa (mismo patrón ✕ que RUTA/EXPLORAR, ver
+  // ReservasPanel.tsx) — no comparte el mapa/tirador/panel partido del resto de pestañas, así que
+  // se resuelve aquí antes de montar ese layout en absoluto. Cerrar vuelve siempre a RUTA, mismo
+  // criterio que DestinationDetailModal/AttractionsFinder.
+  if (mode === 'bookings') {
+    return <ReservasPanel route={route} onClose={() => setMode('route')} />
+  }
+
   const hasTripDates = Boolean(route.answers.dateRange)
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
   const activeDayIndex = route.days.findIndex((day) => day.id === activeDay.id)
   const segments = buildDestinationSegments(route.days)
-  // RUTA y RESERVAS comparten el mismo mapa (combinado por día, o por destino si hay varios) —
-  // RESERVAS es un panel por destino, no por día, así que el mapa de un solo día activo (el que
-  // usan DIAS/EXPLORAR/HOY) no tenía sentido ahí y a veces ni se veía si ese día no tenía paradas.
-  const showRouteStyleMap = mode === 'route' || mode === 'bookings'
-  // El botón de colapsar mapa solo aplica a DIAS (pedido explícitamente ahí, para ganar espacio de
-  // contenido) — el resto de pestañas se quedan con el comportamiento normal.
-  const canCollapseMap = mode === 'days'
+  const showRouteStyleMap = mode === 'route'
+  // El botón de colapsar mapa aplica a DIAS y a EXPLORAR (mismo patrón mapa+tirador+colapsar en
+  // ambas, pedido explícitamente para EXPLORAR también) — el resto de pestañas se quedan con el
+  // comportamiento normal.
+  const canCollapseMap = mode === 'days' || mode === 'explore'
   const mapHidden = canCollapseMap && mapCollapsed
 
   const handleDragStart = () => {
@@ -165,6 +177,8 @@ export function RouteView() {
               ) : (
                 <RouteOverviewMap segments={segments} days={route.days} />
               )
+            ) : mode === 'explore' && exploreMarkers !== null ? (
+              <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
             ) : (
               <StopsMapView
                 markers={buildSingleDayMarkers(activeDay.stops, activeDayIndex)}
@@ -214,9 +228,15 @@ export function RouteView() {
 
           {mode === 'route' && <RouteOverview route={route} />}
 
-          {mode === 'explore' && <ExplorePanel route={route} defaultCity={activeDay.city} />}
-
-          {mode === 'bookings' && <ReservasPanel route={route} />}
+          {mode === 'explore' && (
+            <ExplorePanel
+              route={route}
+              defaultCity={activeDay.city}
+              onMarkersChange={setExploreMarkers}
+              activeResultId={exploreActiveId}
+              onSelectResultId={setExploreActiveId}
+            />
+          )}
 
           {mode === 'days' && (
             <>

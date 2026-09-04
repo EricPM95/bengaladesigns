@@ -28,7 +28,7 @@ export function classifyInBackground(name: string): void {
     if (result.ambiguous) {
       setArchetypeAmbiguous(result.is_region)
     } else {
-      setArchetype(result.archetype, result.is_region, result.requiere_coche, result.pase_dominante)
+      setArchetype(result.archetype, result.is_region, result.requiere_coche, result.pase_dominante, result.vehiculo_altamente_recomendado)
     }
   })
 }

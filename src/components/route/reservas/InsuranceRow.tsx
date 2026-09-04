@@ -16,6 +16,7 @@ export function InsuranceRow() {
         label="Seguro de viaje"
         resolved={Boolean(booking)}
         subtitle={booking ? `${booking.provider} · €${booking.price}` : undefined}
+        priority="red"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Obtener con 5% dto.',

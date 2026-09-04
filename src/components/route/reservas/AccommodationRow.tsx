@@ -22,6 +22,7 @@ export function AccommodationRow({ segmentDayId, city, totalNights }: Accommodat
         label={`Alojamiento en ${city}`}
         resolved={Boolean(hotel)}
         subtitle={hotel ? `${hotel.name} · ${totalNights} noche${totalNights === 1 ? '' : 's'}` : undefined}
+        priority="yellow"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',

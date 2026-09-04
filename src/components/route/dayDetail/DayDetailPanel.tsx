@@ -14,7 +14,7 @@ import {
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDepartureAccordion } from './ArrivalDepartureAccordion'
-import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
+import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
 import { StopAccordion } from './StopAccordion'
 import { StopConnector } from './StopConnector'
 import { StopMenu } from './StopMenu'
@@ -92,6 +92,7 @@ export function DayDetailPanel({
   )
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
+  const route = useRouteStore((state) => state.route)
 
   const [openId, setOpenId] = useState<string | null>(null)
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
@@ -221,17 +222,20 @@ export function DayDetailPanel({
           stops.length,
         )}
 
-      <PlaceFinderPanel
-        open={insertAt !== null}
-        city={day.city}
-        excludeStopIds={realStops.map((stop) => stop.id)}
-        onPick={(newStop) => {
-          if (day.stops.length === 0) seedDayStops(day.id, realStops)
-          if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
-          setInsertAt(null)
-        }}
-        onClose={() => setInsertAt(null)}
-      />
+      {route && (
+        <AttractionsFinder
+          route={route}
+          city={day.city}
+          open={insertAt !== null}
+          title="Añadir una parada"
+          onPick={(newStop) => {
+            if (day.stops.length === 0) seedDayStops(day.id, realStops)
+            if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
+            setInsertAt(null)
+          }}
+          onClose={() => setInsertAt(null)}
+        />
+      )}
     </div>
   )
 }

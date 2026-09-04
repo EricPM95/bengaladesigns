@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import type { Route } from '../../lib/types'
-import { buildDestinationSegments, formatSegmentNightsLabel } from '../../lib/destinationSegments'
+import { buildDestinationSegments, formatSegmentNightsLabel, segmentCentroid } from '../../lib/destinationSegments'
 import { DestinationSegmentCard } from './DestinationSegmentCard'
+import { DestinationDistanceConnector } from './DestinationDistanceConnector'
 import { DestinationDetailModal } from './DestinationDetailModal'
 
 interface RouteOverviewProps {
@@ -23,13 +24,17 @@ export function RouteOverview({ route }: RouteOverviewProps) {
     <div className="flex-1 overflow-y-auto">
       <div>
         {segments.map((segment, index) => (
-          <DestinationSegmentCard
-            key={segment.id}
-            segment={segment}
-            index={index}
-            nightsLabel={formatSegmentNightsLabel(segment, route.days, route.answers.dateRange?.start)}
-            onOpenDetail={() => setDetailCity(segment.city)}
-          />
+          <div key={segment.id}>
+            {index > 0 && (
+              <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />
+            )}
+            <DestinationSegmentCard
+              segment={segment}
+              index={index}
+              nightsLabel={formatSegmentNightsLabel(segment, route.days, route.answers.dateRange?.start)}
+              onOpenDetail={() => setDetailCity(segment.city)}
+            />
+          </div>
         ))}
       </div>
 

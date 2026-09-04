@@ -107,6 +107,7 @@ function LoadingScreenContainer() {
   const accommodationMode = useRouteStore((state) => state.accommodation_mode)
   const travelMode = useRouteStore((state) => state.travel_mode)
   const paseDominante = useRouteStore((state) => state.pase_dominante)
+  const vehiculoAltamenteRecomendado = useRouteStore((state) => state.vehiculo_altamente_recomendado)
   const travelPassConfirmed = useRouteStore((state) => state.travel_pass_confirmed)
   const answers = useRouteStore((state) => state.answers)
   const suggestedPlaces = useRouteStore((state) => state.suggested_places)
@@ -148,6 +149,7 @@ function LoadingScreenContainer() {
             accommodation_mode: accommodationMode,
             travel_mode: travelMode,
             pase_dominante: paseDominante,
+            vehiculo_altamente_recomendado: vehiculoAltamenteRecomendado,
             travel_pass_confirmed: travelPassConfirmed,
           },
           mustIncludePlaces: suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
@@ -262,6 +264,7 @@ function App() {
         sharedTrip.transportContext.is_region,
         undefined,
         sharedTrip.transportContext.pase_dominante,
+        sharedTrip.transportContext.vehiculo_altamente_recomendado,
       )
       setTransportOption(sharedTrip.transportContext.transport_option)
       setVehicleOwnership(sharedTrip.transportContext.vehicle_ownership)

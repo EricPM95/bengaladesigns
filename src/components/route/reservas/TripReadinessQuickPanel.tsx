@@ -30,8 +30,8 @@ const URGENT_ITEMS_LIMIT = 3
 
 /**
  * Panel rápido que abre el indicador de % en la cabecera — resumen, NO la lista completa (esa
- * lista vive únicamente en la pestaña RESERVAS, ver DestinationReservasAccordion.tsx/
- * GeneralReservasSection.tsx, para no duplicar contenido). Muestra el % en grande, cuántos ítems
+ * lista vive únicamente en la pestaña RESERVAS, ver ReservasPanel.tsx/DestinationReservasAccordion.tsx,
+ * para no duplicar contenido). Muestra el % en grande, cuántos ítems
  * quedan pendientes, los 2-3 más urgentes (mismas filas interactivas rojo/verde de siempre, vía
  * ReadinessBreakdownRow) y un único CTA que lleva a RESERVAS.
  */

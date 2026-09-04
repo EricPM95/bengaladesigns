@@ -13,6 +13,8 @@ export interface StopsMapMarker {
   number: number
   bg: string
   text: string
+  /** Foto ya existente de la parada (mismo dato que su tarjeta) — si falta, el popup muestra solo el nombre, sin pedirla a ninguna API. */
+  photoUrl?: string
 }
 
 interface StopsMapViewProps {
@@ -43,6 +45,15 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
       zoom: 14,
     })
     innerElsRef.current = new Map()
+    // Un único popup vivo a la vez — reutilizado (nunca varios apilados) para que abrir uno nuevo
+    // cierre automáticamente el anterior, y closeOnClick para que un click fuera de cualquier pin
+    // también lo cierre (click en OTRO pin no llega al mapa, así que ese caso lo cubre el propio
+    // toggle de abajo).
+    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: true, offset: 18, className: 'stops-map-popup' })
+    let openPinId: string | null = null
+    popup.on('close', () => {
+      openPinId = null
+    })
 
     map.on('load', () => {
       markers.forEach((marker) => {
@@ -57,7 +68,30 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
           'flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white transition-transform'
         inner.textContent = String(marker.number)
         root.appendChild(inner)
-        root.addEventListener('click', () => onSelectStop?.(marker.id))
+        root.addEventListener('click', (event) => {
+          event.stopPropagation()
+          onSelectStop?.(marker.id)
+          // Tocar el mismo pin que ya tiene el popup abierto lo cierra (toggle); tocar cualquier
+          // otro pin reemplaza el contenido y lo mueve ahí, nunca se apilan dos popups.
+          const alreadyOpenHere = popup.isOpen() && openPinId === marker.id
+          popup.remove()
+          if (alreadyOpenHere) return
+          const card = document.createElement('div')
+          card.className = 'w-40 overflow-hidden rounded-xl bg-bg-card shadow-lg'
+          if (marker.photoUrl) {
+            const img = document.createElement('img')
+            img.src = marker.photoUrl
+            img.alt = ''
+            img.className = 'h-20 w-full object-cover'
+            card.appendChild(img)
+          }
+          const label = document.createElement('p')
+          label.className = 'line-clamp-2 p-2 text-caption font-semibold text-text'
+          label.textContent = marker.name
+          card.appendChild(label)
+          openPinId = marker.id
+          popup.setLngLat([marker.coordinates.lng, marker.coordinates.lat]).setDOMContent(card).addTo(map)
+        })
         innerElsRef.current.set(marker.id, inner)
         new mapboxgl.Marker({ element: root }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map)
       })
@@ -100,5 +134,5 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
     )
   }
 
-  return <div ref={containerRef} className="h-full w-full" />
+  return <div ref={containerRef} className="isolate h-full w-full" />
 }

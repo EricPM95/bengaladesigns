@@ -85,6 +85,37 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Popup de un pin del mapa (StopsMapView.tsx) — quita el chrome por defecto de Mapbox (padding,
+   border-radius, sombra propia) para que la tarjeta blanca que construimos a mano (foto + nombre,
+   ya con sus propias clases Tailwind) sea la única superficie visible, coherente con el resto de
+   tarjetas de la app en vez del recuadro genérico de Mapbox. */
+.stops-map-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: none;
+  background: transparent;
+}
+.stops-map-popup .mapboxgl-popup-tip {
+  border-top-color: rgb(var(--bg-card));
+  border-bottom-color: rgb(var(--bg-card));
+}
+
+/* Mapbox GL renderiza su logo/atribución (esquina inf-izq) y el icono de info (esquina inf-dcha)
+   como controles DOM propios con position:absolute encima de su <canvas> WebGL — en algunos
+   navegadores ese canvas se compone en su propia capa GPU y esos controles pueden "filtrarse" por
+   encima de un overlay/modal que se abre sobre el mapa aunque el z-index y el orden del DOM ya sean
+   correctos (confirmado con elementFromPoint). Ningún ajuste de z-index/isolation lo arregla porque
+   no es un problema de stacking-context sino de compositing GPU del canvas. Solución robusta: ocultar
+   esos controles mientras cualquier overlay a pantalla completa (Modal.tsx y DestinationDetailModal,
+   ambos "fixed inset-0 z-50") esté abierto — el mapa que cubren deja de ser visible/relevante en ese
+   momento, así que no hace falta atribución visible. Las pantallas EXPLORAR (z-40) NO entran aquí a
+   propósito: son vistas base con su propio mapa, no un overlay sobre otro mapa ya montado.  */
+body:has(.fixed.inset-0.z-50) .mapboxgl-ctrl-bottom-left,
+body:has(.fixed.inset-0.z-50) .mapboxgl-ctrl-bottom-right {
+  visibility: hidden;
+}
+
 #root {
   height: 100%;
   overflow-y: auto;

@@ -17,6 +17,7 @@ export function N26Row() {
         kind="n26"
         label="Tarjeta N26"
         resolved={n26Added}
+        priority="gray"
         onClick={() => setOpen(true)}
         bookAction={{ label: 'Reservar', href: 'https://n26.com', onGet: () => setN26Added(true) }}
       />

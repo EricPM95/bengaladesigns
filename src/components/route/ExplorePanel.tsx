@@ -1,13 +1,20 @@
-import { useState } from 'react'
-import type { Route } from '../../lib/types'
+import { useEffect, useState } from 'react'
+import type { Route, Stop } from '../../lib/types'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { AttractionsPoolView } from './explore/AttractionsPoolView'
-import { NearbyPlacesView } from './explore/NearbyPlacesView'
+import type { StopsMapMarker } from '../map/StopsMapView'
+import type { NearbyPlaceResult } from '../../lib/nearbyPlacesSearch'
+import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
+import { DayPositionPicker } from './dayDetail/DayPositionPicker'
+import { NearbyPlacesView, toMarker } from './explore/NearbyPlacesView'
 
 interface ExplorePanelProps {
   route: Route
   /** Ciudad del día activo — punto de partida por defecto al entrar desde DIAS ("pestaña global del día activo"). */
   defaultCity: string
+  /** El mapa compartido de RouteView.tsx (mismo mapa+tirador+botón de colapsar que DIAS) — mientras "Comer y beber"/"Miradores y fotos" está activo, sus resultados sustituyen a las paradas del día en ese mapa; null lo devuelve a mostrar el día activo. */
+  onMarkersChange: (markers: StopsMapMarker[] | null) => void
+  activeResultId: string | null
+  onSelectResultId: (id: string | null) => void
 }
 
 type ExploreCategory = 'food' | 'viewpoints' | 'attractions'
@@ -20,14 +27,56 @@ const CATEGORIES: { id: ExploreCategory; icon: string; label: string }[] = [
 
 /**
  * Pestaña EXPLORAR — 3 categorías, cada una con su propio formato (nunca un cuarto recuadro):
- * "Comer y beber"/"Miradores y fotos" abren NearbyPlacesView (mapa + lista real vía Mapbox,
- * valoraciones mock); "Atracciones" abre el Pool ya implementado (AttractionsPoolView), filtrado a
- * esa única categoría del banco de 18.
+ * "Comer y beber"/"Miradores y fotos" reutilizan el mapa+tirador+botón de colapsar que ya comparte
+ * DIAS (ver RouteView.tsx) — este panel solo publica sus resultados hacia ese mapa vía
+ * `onMarkersChange`, sin mapa ni botón "volver" propios. "Atracciones" abre AttractionsFinder a
+ * pantalla completa — acordeón "ya en tu ruta" + buscador libre, el mismo componente reutilizado
+ * también en el "+" de DIAS y en RESERVAS.
  */
-export function ExplorePanel({ route, defaultCity }: ExplorePanelProps) {
+export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResultId, onSelectResultId }: ExplorePanelProps) {
   const cities = [...new Set(buildDestinationSegments(route.days).map((segment) => segment.city))]
   const [city, setCity] = useState(cities.includes(defaultCity) ? defaultCity : (cities[0] ?? defaultCity))
   const [activeCategory, setActiveCategory] = useState<ExploreCategory | null>(null)
+  const [pendingStop, setPendingStop] = useState<Stop | null>(null)
+  const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
+
+  // Solo food/viewpoints publican marcadores hacia el mapa compartido — al salir de esa categoría
+  // (o entrar en el selector/Atracciones) el mapa vuelve a mostrar el día activo, como siempre.
+  useEffect(() => {
+    if (activeCategory !== 'food' && activeCategory !== 'viewpoints') {
+      onMarkersChange(null)
+      return
+    }
+    onMarkersChange(results ? results.map(toMarker) : [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategory, results])
+
+  useEffect(() => {
+    // Al desmontar EXPLORAR entero (cambio de pestaña), devuelve el mapa compartido a su estado normal.
+    return () => onMarkersChange(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const backToCategories = () => {
+    setActiveCategory(null)
+    setResults(null)
+    onSelectResultId(null)
+  }
+
+  if (activeCategory === 'food' || activeCategory === 'viewpoints') {
+    return (
+      <NearbyPlacesView
+        city={city}
+        categoryLabel={activeCategory === 'food' ? 'Comer y beber' : 'Miradores y fotos'}
+        categoryIds={activeCategory === 'food' ? ['restaurant', 'cafe'] : ['viewpoint']}
+        onBack={backToCategories}
+        results={results}
+        onResultsChange={setResults}
+        activeId={activeResultId}
+        onSelectId={onSelectResultId}
+      />
+    )
+  }
 
   return (
     <div className="flex-1 space-y-5 overflow-y-auto p-4">
@@ -69,13 +118,18 @@ export function ExplorePanel({ route, defaultCity }: ExplorePanelProps) {
         ))}
       </div>
 
-      {activeCategory === 'food' && (
-        <NearbyPlacesView city={city} categoryLabel="Comer y beber" categoryIds={['restaurant', 'cafe']} onClose={() => setActiveCategory(null)} />
+      {activeCategory === 'attractions' && (
+        <AttractionsFinder
+          route={route}
+          city={city}
+          open
+          title={`🏛️ Atracciones en ${city}`}
+          onPick={setPendingStop}
+          onClose={() => setActiveCategory(null)}
+        />
       )}
-      {activeCategory === 'viewpoints' && (
-        <NearbyPlacesView city={city} categoryLabel="Miradores y fotos" categoryIds={['viewpoint']} onClose={() => setActiveCategory(null)} />
-      )}
-      {activeCategory === 'attractions' && <AttractionsPoolView route={route} city={city} onClose={() => setActiveCategory(null)} />}
+
+      <DayPositionPicker route={route} stop={pendingStop} onClose={() => setPendingStop(null)} onInserted={() => setPendingStop(null)} />
     </div>
   )
 }

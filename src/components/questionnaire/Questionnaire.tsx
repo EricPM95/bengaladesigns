@@ -7,6 +7,7 @@ import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
 import { classifyInBackground } from '../../lib/classifyInBackground'
 import { suggestExperiencesInBackground } from '../../lib/suggestExperiencesInBackground'
+import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { ChoiceButton } from './ChoiceButton'
 import { OriginInput } from './OriginInput'
@@ -91,6 +92,7 @@ export function Questionnaire() {
   const suggestedExperiencesLoading = useRouteStore((state) => state.suggested_experiences_loading)
   const suggestedExperiencesFailed = useRouteStore((state) => state.suggested_experiences_failed)
   const placesStepStarted = useRouteStore((state) => state.places_step_started)
+  const setDatesConfirmed = useRouteStore((state) => state.setDatesConfirmed)
   const resolveArchetypeChoice = useRouteStore((state) => state.resolveArchetypeChoice)
   const setTransportOption = useRouteStore((state) => state.setTransportOption)
   const setVehicleOwnership = useRouteStore((state) => state.setVehicleOwnership)
@@ -272,9 +274,23 @@ export function Questionnaire() {
                   <DurationSelector days={answers.days} dateRange={answers.dateRange} season={answers.season} onChange={updateAnswers} />
                   {/* Única pantalla con botón "Continuar" explícito, sin avance automático — aquí
                       es más fácil equivocarse de fecha que en el resto del cuestionario, así que
-                      conviene que el usuario confirme antes de seguir. */}
+                      conviene que el usuario confirme antes de seguir. Este tap es también el
+                      momento en que se dispara la precarga en segundo plano del pool de lugares
+                      (ver suggestPlacesInBackground.ts y el comentario en
+                      suggestExperiencesInBackground.ts) — si la sugerencia de experiencias de
+                      Claude ya resolvió, se lanza aquí mismo; si no, la lanzará ella sola en
+                      cuanto resuelva (dates_confirmed ya estará en true para entonces). */}
                   {answers.days !== undefined && (
-                    <Button onClick={goToNextStep} className="w-full">
+                    <Button
+                      onClick={() => {
+                        setDatesConfirmed(true)
+                        if (suggestedExperiences.length > 0) {
+                          suggestPlacesInBackground(destination, suggestedExperiences)
+                        }
+                        goToNextStep()
+                      }}
+                      className="w-full"
+                    >
                       Continuar →
                     </Button>
                   )}

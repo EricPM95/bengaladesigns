@@ -90,6 +90,13 @@ interface RouteStoreState {
    */
   pase_dominante: string | null
   /**
+   * Solo relevante cuando archetype es base_y_excursiones: true si el transporte público/
+   * organizado entre puntos de interés es limitado y un vehículo propio mejora sustancialmente la
+   * experiencia (ej. Tenerife, Azores) — decide el color ámbar/gris de "Vehículo de alquiler" en
+   * RESERVAS (ver readiness.ts). false en cualquier otro caso.
+   */
+  vehiculo_altamente_recomendado: boolean
+  /**
    * Respuesta del viajero a "¿Vas a viajar con {pase_dominante}?" — null mientras no se ha
    * preguntado (o no aplica, porque pase_dominante es null). true/false una vez respondida, para
    * todo el viaje (no se vuelve a preguntar tramo a tramo).
@@ -138,6 +145,8 @@ interface RouteStoreState {
 
   /** true una vez el usuario pulsa "Ver lugares" en el selector de experiencias — dispara /api/suggest-places y revela el paso "Elige lugares". Distinto de las experiencias en sí: este paso necesita una llamada real a Claude, así que no se dispara solo con marcar checkboxes. */
   places_step_started: boolean
+  /** true una vez el usuario confirma "fechas" (pantalla "days") — punto en el que se dispara la precarga en segundo plano del pool de lugares (ver suggestPlacesInBackground.ts), no antes. Guarda contra la carrera con la sugerencia de experiencias de Claude: si esta llega DESPUÉS de confirmar fechas, dispara la precarga ella misma al resolver (ver suggestExperiencesInBackground.ts). */
+  dates_confirmed: boolean
   /** Lugares concretos sugeridos por Claude para el destino — ver /api/suggest-places. Vacío mientras no se ha resuelto. */
   suggested_places: PlaceCandidate[]
   suggested_places_loading: boolean
@@ -175,6 +184,7 @@ interface RouteStoreState {
     isRegion: boolean | null,
     requiereCoche?: boolean,
     paseDominante?: string | null,
+    vehiculoAltamenteRecomendado?: boolean,
   ) => void
   /** Clasificación ambigua: fija is_region, deja archetype en null y marca archetype_ambiguous — la app debe preguntarle al usuario. */
   setArchetypeAmbiguous: (isRegion: boolean | null) => void
@@ -194,6 +204,7 @@ interface RouteStoreState {
   setSuggestedExperiencesLoading: (loading: boolean) => void
   setSuggestedExperiencesFailed: (failed: boolean) => void
   setPlacesStepStarted: (started: boolean) => void
+  setDatesConfirmed: (confirmed: boolean) => void
   setSuggestedPlaces: (places: PlaceCandidate[], sourceIds: ExperienceId[]) => void
   /** Añade UN lugar según va llegando del streaming NDJSON de /api/suggest-places — a diferencia de setSuggestedPlaces (reemplazo completo), no toca loading/failed, deja eso a quien orquesta el stream. */
   appendSuggestedPlace: (place: PlaceCandidate, sourceIds: ExperienceId[]) => void
@@ -297,6 +308,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   archetype_classification_failed: false,
   requiere_coche: false,
   pase_dominante: null,
+  vehiculo_altamente_recomendado: false,
   travel_pass_confirmed: null,
   transport_option: null,
   vehicle_type: null,
@@ -310,6 +322,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   suggested_experiences_loading: false,
   suggested_experiences_failed: false,
   places_step_started: false,
+  dates_confirmed: false,
   suggested_places: [],
   suggested_places_source_ids: [],
   suggested_places_loading: false,
@@ -342,6 +355,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       archetype_classification_failed: false,
       requiere_coche: false,
       pase_dominante: null,
+      vehiculo_altamente_recomendado: false,
       travel_pass_confirmed: null,
       transport_option: null,
       vehicle_type: null,
@@ -355,13 +369,14 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       suggested_experiences_loading: false,
       suggested_experiences_failed: false,
       places_step_started: false,
+      dates_confirmed: false,
       suggested_places: [],
       suggested_places_source_ids: [],
       suggested_places_loading: false,
       suggested_places_failed: false,
       selected_place_ids: [],
     }),
-  setArchetype: (archetype, isRegion, requiereCoche = false, paseDominante = null) =>
+  setArchetype: (archetype, isRegion, requiereCoche = false, paseDominante = null, vehiculoAltamenteRecomendado = false) =>
     set({
       archetype,
       is_region: isRegion,
@@ -369,6 +384,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       archetype_classification_failed: false,
       requiere_coche: requiereCoche,
       pase_dominante: paseDominante,
+      vehiculo_altamente_recomendado: vehiculoAltamenteRecomendado,
       travel_pass_confirmed: null,
     }),
   setArchetypeAmbiguous: (isRegion) =>
@@ -379,11 +395,19 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       archetype_classification_failed: false,
       requiere_coche: false,
       pase_dominante: null,
+      vehiculo_altamente_recomendado: false,
       travel_pass_confirmed: null,
     }),
   setArchetypeClassificationFailed: (failed) => set({ archetype_classification_failed: failed }),
   resolveArchetypeChoice: (archetype) =>
-    set({ archetype, archetype_ambiguous: false, requiere_coche: false, pase_dominante: null, travel_pass_confirmed: null }),
+    set({
+      archetype,
+      archetype_ambiguous: false,
+      requiere_coche: false,
+      pase_dominante: null,
+      vehiculo_altamente_recomendado: false,
+      travel_pass_confirmed: null,
+    }),
   setTransportOption: (option) =>
     set({
       transport_option: option,
@@ -407,6 +431,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   setSuggestedExperiencesLoading: (loading) => set({ suggested_experiences_loading: loading }),
   setSuggestedExperiencesFailed: (failed) => set({ suggested_experiences_failed: failed, suggested_experiences_loading: false }),
   setPlacesStepStarted: (started) => set({ places_step_started: started }),
+  setDatesConfirmed: (confirmed) => set({ dates_confirmed: confirmed }),
   setSuggestedPlaces: (places, sourceIds) => set({ suggested_places: places, suggested_places_source_ids: sourceIds }),
   appendSuggestedPlace: (place, sourceIds) =>
     set((state) =>
@@ -438,6 +463,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       archetype_classification_failed: false,
       requiere_coche: false,
       pase_dominante: null,
+      vehiculo_altamente_recomendado: false,
       travel_pass_confirmed: null,
       transport_option: null,
       vehicle_type: null,
@@ -451,6 +477,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       suggested_experiences_loading: false,
       suggested_experiences_failed: false,
       places_step_started: false,
+      dates_confirmed: false,
       suggested_places: [],
       suggested_places_source_ids: [],
       suggested_places_loading: false,

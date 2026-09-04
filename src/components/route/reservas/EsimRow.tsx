@@ -31,6 +31,7 @@ export function EsimRow({ countryCode }: EsimRowProps) {
         label="eSIM"
         subtitle={subtitle}
         resolved={resolved}
+        priority="gray"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Obtener con 5% dto.',

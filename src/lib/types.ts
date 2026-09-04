@@ -152,6 +152,8 @@ export interface TransportContext {
   pase_dominante: string | null
   /** Respuesta del viajero a "¿Vas a viajar con {pase_dominante}?" — null mientras no se ha preguntado o no aplica. */
   travel_pass_confirmed: boolean | null
+  /** Solo para base_y_excursiones: true si un vehículo propio mejora sustancialmente la experiencia (transporte público/organizado limitado) — decide el color ámbar/gris de "Vehículo de alquiler" en RESERVAS (ver readiness.ts). */
+  vehiculo_altamente_recomendado: boolean
 }
 
 // ── Shared primitives ─────────────────────────────────────

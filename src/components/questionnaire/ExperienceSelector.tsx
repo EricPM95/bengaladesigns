@@ -86,7 +86,7 @@ export function ExperienceSelector({
 
       {!placesStepStarted && (
         <Button onClick={onConfirm} disabled={selected.length === 0} className="w-full">
-          Ver lugares para estas experiencias →
+          Continuar →
         </Button>
       )}
     </div>

@@ -20,6 +20,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         label={`Transporte: ${label}`}
         resolved={Boolean(booking)}
         subtitle={booking ? `${booking.operator} · €${booking.price}` : undefined}
+        priority="yellow"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',

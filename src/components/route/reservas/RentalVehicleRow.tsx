@@ -12,6 +12,7 @@ export function RentalVehicleRow() {
 
   const isCamper = route?.transportContext.vehicle_type === 'camper'
   const { url, label: providerLabel } = isCamper ? buildCamperRentalLink(route?.days[0]?.countryCode ?? null) : buildCarRentalLink()
+  const priority = route?.transportContext.vehiculo_altamente_recomendado ? 'yellow' : 'gray'
 
   return (
     <>
@@ -20,6 +21,7 @@ export function RentalVehicleRow() {
         label="Vehículo de alquiler"
         resolved={Boolean(booking)}
         subtitle={booking ? `${booking.provider} · €${booking.price}` : undefined}
+        priority={priority}
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',

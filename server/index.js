@@ -54,7 +54,7 @@ const DESTINATION_ARCHETYPES = new Set([
 // ── PASO 1 — Clasificación automática del destino ──────────────────────────
 
 function buildClassifyPrompt(destino) {
-  return `Analiza el destino "${destino}" y devuelve SOLO un JSON, sin explicación ni markdown, con estos cinco campos:
+  return `Analiza el destino "${destino}" y devuelve SOLO un JSON, sin explicación ni markdown, con estos seis campos:
 
 1. archetype — clasifícalo en exactamente uno de estos 6:
 
@@ -73,9 +73,11 @@ function buildClassifyPrompt(destino) {
 
 5. pase_dominante — SOLO relevante si archetype es multidestino_tren_o_vuelo (en cualquier otro caso, null). Nombre del pase de transporte que la mayoría de turistas usa para moverse por este destino, SI existe uno claramente dominante (ej. "JR Pass" para Japón, "Swiss Travel Pass" para Suiza, "Eurail/Interrail Global Pass" cuando el itinerario cruza varios países europeos). null si no hay ninguno lo bastante dominante como para asumirlo por defecto (ej. Corea del Sur, Taiwán, EE.UU. — ahí la norma real es comprar billete a billete).
 
+6. vehiculo_altamente_recomendado — SOLO relevante si archetype es base_y_excursiones (en cualquier otro caso, false). true si el transporte público/organizado entre los puntos de interés de este destino es limitado (poca frecuencia, cobertura parcial, o tours muy encorsetados) y un vehículo propio mejora sustancialmente la experiencia (ej. Tenerife, São Miguel/Azores, Cerdeña rural). false si el destino se cubre bien sin vehículo (tours organizados frecuentes, transporte público o transfers ya cubren de sobra los puntos de interés típicos, ej. Mallorca con base en Palma, Creta con excursiones organizadas desde un resort).
+
 Cuando ambiguous = true, aun así devuelve tu mejor estimación de archetype (la app la ignorará y preguntará al usuario, pero necesita un valor por si acaso).
 
-Responde SOLO: {"archetype": "xxx", "is_region": true/false, "ambiguous": true/false, "requiere_coche": true/false, "pase_dominante": "nombre del pase" o null}`
+Responde SOLO: {"archetype": "xxx", "is_region": true/false, "ambiguous": true/false, "requiere_coche": true/false, "pase_dominante": "nombre del pase" o null, "vehiculo_altamente_recomendado": true/false}`
 }
 
 app.post('/api/classify-destination', async (req, res) => {
@@ -92,7 +94,7 @@ app.post('/api/classify-destination', async (req, res) => {
       max_tokens: 120,
       system:
         'Responde EXCLUSIVAMENTE con JSON válido, sin explicación ni texto adicional ni markdown. ' +
-        'El JSON debe tener exactamente cinco campos: archetype (string, uno de los 6 ids solicitados, en minúsculas con guiones bajos), is_region (booleano), ambiguous (booleano), requiere_coche (booleano) y pase_dominante (string o null).',
+        'El JSON debe tener exactamente seis campos: archetype (string, uno de los 6 ids solicitados, en minúsculas con guiones bajos), is_region (booleano), ambiguous (booleano), requiere_coche (booleano), pase_dominante (string o null) y vehiculo_altamente_recomendado (booleano).',
       messages: [{ role: 'user', content: buildClassifyPrompt(destination) }],
     })
 
@@ -115,6 +117,7 @@ app.post('/api/classify-destination', async (req, res) => {
       ambiguous: Boolean(parsed?.ambiguous),
       requiere_coche: archetype === 'urbano_clasico' && Boolean(parsed?.requiere_coche),
       pase_dominante: archetype === 'multidestino_tren_o_vuelo' && paseDominanteRaw ? paseDominanteRaw.slice(0, 100) : null,
+      vehiculo_altamente_recomendado: archetype === 'base_y_excursiones' && Boolean(parsed?.vehiculo_altamente_recomendado),
     })
   } catch (error) {
     logAnthropicError('classify-destination', error)
