@@ -9,6 +9,7 @@ import { N26Row } from './N26Row'
 interface DestinationReservasAccordionProps {
   route: Route
   segment: DestinationSegment
+  isFirstSegment: boolean
   isLastSegment: boolean
   expanded: boolean
   onToggle: () => void
@@ -32,15 +33,21 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 
 /**
  * Acordeón de un destino en RESERVAS — mismos destinos/orden que RUTA. Transporte de llegada
- * siempre; transporte de vuelta SOLO en el último destino; alojamiento salvo vehículo camper;
- * N26/eSIM del país (si se conoce), con el mismo estado sincronizado entre destinos que en el resto
- * de la app. Seguro de viaje y vehículo de alquiler viven en ReservasPanel.tsx como secciones
- * generales del viaje (no por destino) — no se repiten aquí.
+ * siempre, EXCEPTO en un roadtrip_exclusivo: ahí el vehículo (Imprescindibles/RentalVehicleRow) ya
+ * cubre todo el trayecto entre etapas, así que solo el PRIMER destino (vuelo real hasta el origen
+ * del roadtrip) muestra ese ítem — los intermedios no son un vuelo nuevo, solo seguir conduciendo.
+ * Transporte de vuelta SOLO en el último destino (vuelo real de regreso, no cubierto por el
+ * vehículo); alojamiento salvo vehículo camper; N26/eSIM del país (si se conoce), con el mismo
+ * estado sincronizado entre destinos que en el resto de la app. Seguro de viaje y vehículo de
+ * alquiler viven en ReservasPanel.tsx como secciones generales del viaje (no por destino) — no se
+ * repiten aquí.
  */
-export function DestinationReservasAccordion({ route, segment, isLastSegment, expanded, onToggle }: DestinationReservasAccordionProps) {
+export function DestinationReservasAccordion({ route, segment, isFirstSegment, isLastSegment, expanded, onToggle }: DestinationReservasAccordionProps) {
   const firstDayIndex = route.days.findIndex((day) => day.id === segment.dayIds[0])
   const arrival = computeDayTravelInfo(route, firstDayIndex)
   const isCamper = route.transportContext.vehicle_type === 'camper'
+  const isRoadtrip = route.transportContext.archetype === 'roadtrip_exclusivo'
+  const showArrivalTransport = Boolean(arrival) && (!isRoadtrip || isFirstSegment)
   const lastDay = route.days[route.days.length - 1]
 
   return (
@@ -52,7 +59,7 @@ export function DestinationReservasAccordion({ route, segment, isLastSegment, ex
 
       {expanded && (
         <div className="divide-y divide-border border-t border-border">
-          {arrival && <TransportRow dayId={segment.dayIds[0]} label={`${arrival.fromCity} → ${arrival.toCity}`} />}
+          {showArrivalTransport && arrival && <TransportRow dayId={segment.dayIds[0]} label={`${arrival.fromCity} → ${arrival.toCity}`} />}
           {!isCamper && segment.nights > 0 && <AccommodationRow segmentDayId={segment.dayIds[0]} city={segment.city} totalNights={segment.nights} />}
           {isLastSegment && <TransportRow dayId={lastDay.id} label={`${segment.city} → ${route.origin}`} />}
           <N26Row />

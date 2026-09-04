@@ -99,7 +99,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
           ✕
         </button>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 pl-16">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-20">
           <div className="mx-auto w-full max-w-lg space-y-5">
             {showWelcomeBanner && (
               <div className="rounded-xl border border-accent-gold/40 bg-accent-gold/10 p-3 text-small text-text">
@@ -230,6 +230,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                       key={segment.id}
                       route={route}
                       segment={segment}
+                      isFirstSegment={index === 0}
                       isLastSegment={index === segments.length - 1}
                       expanded={openCity === segment.id}
                       onToggle={() => setOpenCity((current) => (current === segment.id ? null : segment.id))}
