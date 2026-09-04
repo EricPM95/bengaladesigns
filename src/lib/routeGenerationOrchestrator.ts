@@ -154,7 +154,17 @@ function mergeBlockDaysIntoGenerated(
   const byDayNumber = new Map(blockDays.map((day) => [day.day_number, day]))
   return {
     ...generated,
-    days: generated.days.map((day) => byDayNumber.get(day.day_number) ?? day),
+    // El bloque (DAY_BLOCK_SYSTEM_PROMPT) solo devuelve day_number/title/stops/meals/rainy_alternative
+    // — city/country_code/type/phase_type los decidió el esqueleto y no vienen en esta respuesta.
+    // Sustituir el día ENTERO por el del bloque (como antes) los perdía: country_code se quedaba
+    // siempre undefined → sin bandera en RUTA (ni en single-city ni en multi-city). Se combinan los
+    // dos, reafirmando explícitamente los campos del esqueleto para que ganen aunque el bloque
+    // devolviera alguno de esos campos por su cuenta.
+    days: generated.days.map((day) => {
+      const blockDay = byDayNumber.get(day.day_number)
+      if (!blockDay) return day
+      return { ...day, ...blockDay, city: day.city, country_code: day.country_code, type: day.type, phase_type: day.phase_type }
+    }),
     not_included: [...(generated.not_included ?? []), ...(notIncluded ?? [])],
     excursions_available: [...(generated.excursions_available ?? []), ...(excursions ?? [])],
   }
