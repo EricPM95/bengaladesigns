@@ -235,6 +235,8 @@ interface RouteStoreState {
   insertStopAt: (dayId: string, index: number, stop: Stop) => void
   /** "Cristaliza" el pool de plantilla mock de un día en `Stop[]` reales, solo si el día aún no tiene ninguna parada real — ver seedStopsFromTemplate en mockDayDetail.ts. No hace nada si el día ya tiene paradas (nunca pisa ediciones existentes). */
   seedDayStops: (dayId: string, seedStops: Stop[]) => void
+  /** "Regenerar este día" (DayMenu.tsx) — SUSTITUYE `day.stops` entero por `orderedStops` (ya ordenadas geográficamente por el llamador, ver geographicStopOrder.ts) y reconstruye sus horas desde la primera, igual que reorderStops. A diferencia de seedDayStops (solo si el día está vacío) esto SIEMPRE pisa lo que hubiera antes — es justo lo que "regenerar" pide. */
+  regenerateDayStops: (dayId: string, orderedStops: Stop[]) => void
 
   /** Modo Hoy — marca el check-in real de una parada ("Ya he estado aquí" / "Ya terminé, seguir"). */
   checkInStop: (dayId: string, stopId: string) => void
@@ -626,6 +628,12 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       const day = state.route.days.find((d) => d.id === dayId)
       if (!day || day.stops.length > 0) return state
       return { route: updateDay(state.route, dayId, (d) => ({ ...d, stops: seedStops })) }
+    }),
+
+  regenerateDayStops: (dayId, orderedStops) =>
+    set((state) => {
+      if (!state.route) return state
+      return { route: updateDay(state.route, dayId, (day) => ({ ...day, stops: retimeStops(orderedStops) })) }
     }),
 
   checkInStop: (dayId, stopId) =>

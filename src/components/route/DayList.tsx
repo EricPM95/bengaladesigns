@@ -1,8 +1,17 @@
-import type { Route } from '../../lib/types'
+import { useState } from 'react'
+import type { Route, Stop, TripPace } from '../../lib/types'
 import { addDaysToIso, formatShortDateEs } from '../../lib/dateRange'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
+import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
+import { orderStopsGeographically } from '../../lib/geographicStopOrder'
+import { useRouteStore } from '../../store/useRouteStore'
+import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayDetailPanel } from './dayDetail/DayDetailPanel'
+import { DayMenu } from './dayDetail/DayMenu'
+
+/** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
+const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
 
 interface DayListProps {
   route: Route
@@ -36,6 +45,10 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
  * paradas) se implementará en una fase posterior — por ahora el panel expandido queda vacío.
  */
 export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
+  const regenerateDayStops = useRouteStore((state) => state.regenerateDayStops)
+  const seedDayStops = useRouteStore((state) => state.seedDayStops)
+  const [regenerateDayId, setRegenerateDayId] = useState<string | null>(null)
+
   const tripStartIso = route.answers.dateRange?.start
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
@@ -44,6 +57,18 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
   /** Segmento (con su alojamiento) al que pertenece CADA día del tramo, no solo su primer día — para saber qué alojamiento cubre la noche de un día cualquiera (ver DayDetailPanel.tsx, punto 4). */
   const segmentByDayId = new Map(segments.flatMap((segment) => segment.dayIds.map((dayId) => [dayId, segment])))
   const allDays = route.days.filter((candidate) => !candidate.isReturnLeg).map((candidate) => ({ id: candidate.id, dayNumber: candidate.dayNumber, city: candidate.city }))
+
+  const regenerateDay = route.days.find((day) => day.id === regenerateDayId) ?? null
+  const regenerateDayRealStops: Stop[] = regenerateDay ? (regenerateDay.stops.length > 0 ? regenerateDay.stops : seedStopsFromTemplate(regenerateDay)) : []
+
+  const handleConfirmRegenerate = (stops: Stop[]) => {
+    if (!regenerateDay) return
+    // Primer edición de este día en concreto: "cristaliza" el pool de plantilla en Stop[] reales
+    // antes de sustituirlo — no-op si el día ya tenía paradas reales (mismo patrón que StopMenu.tsx).
+    seedDayStops(regenerateDay.id, regenerateDayRealStops)
+    regenerateDayStops(regenerateDay.id, orderStopsGeographically(stops))
+    setRegenerateDayId(null)
+  }
 
   return (
     <div className="flex-1 space-y-2 overflow-y-auto bg-bg-hover p-3">
@@ -54,10 +79,17 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
 
         return (
           <div key={day.id}>
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectDay(expanded ? null : day.id)}
-              className={`flex w-full items-center gap-3 bg-bg-card px-4 py-4 text-left transition-colors hover:bg-bg-card/80 ${
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  onSelectDay(expanded ? null : day.id)
+                }
+              }}
+              className={`flex w-full cursor-pointer items-center gap-3 bg-bg-card px-4 py-4 text-left transition-colors hover:bg-bg-card/80 ${
                 expanded ? 'rounded-t-xl' : 'rounded-xl'
               }`}
             >
@@ -84,8 +116,14 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                 <span className="shrink-0 text-caption font-medium text-text">{day.city}</span>
               )}
 
+              {!day.isReturnLeg && (
+                <span onClick={(event) => event.stopPropagation()}>
+                  <DayMenu onRegenerate={() => setRegenerateDayId(day.id)} />
+                </span>
+              )}
+
               <ChevronIcon expanded={expanded} />
-            </button>
+            </div>
 
             {expanded && (
               <div className="rounded-b-xl bg-bg-card">
@@ -112,6 +150,22 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
           </div>
         )
       })}
+
+      {regenerateDay && (
+        <AttractionsFinder
+          route={route}
+          city={regenerateDay.city}
+          open
+          title={`Regenerar el Día ${regenerateDay.dayNumber} · ${regenerateDay.city}`}
+          onClose={() => setRegenerateDayId(null)}
+          multiSelect={{
+            initialSelected: regenerateDayRealStops,
+            onConfirm: handleConfirmRegenerate,
+            confirmLabel: 'Regenerar día con esta selección',
+            tightWarningThreshold: PACE_COMFORTABLE_MAX[route.answers.pace ?? 'balanced'],
+          }}
+        />
+      )}
     </div>
   )
 }
