@@ -14,7 +14,7 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AccommodationBlock } from './AccommodationBlock'
-import { ArrivalDepartureAccordion } from './ArrivalDepartureAccordion'
+import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
 import { StopAccordion } from './StopAccordion'
 import { StopConnector } from './StopConnector'
@@ -96,8 +96,8 @@ export function DayDetailPanel({
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const route = useRouteStore((state) => state.route)
 
-  const [openId, setOpenId] = useState<string | null>(null)
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
+  const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
@@ -111,7 +111,6 @@ export function DayDetailPanel({
   const arrivalDetail = travel
     ? buildArrivalDepartureDetail(isLastDay ? travel.fromCity : travel.toCity, origin, isLastDay ? 'departure' : 'arrival')
     : null
-  const arrivalId = `${day.id}-arrival`
 
   const stops = resolveDisplayStops(day)
   const realStops: Stop[] = day.stops.length > 0 ? day.stops : seedStopsFromTemplate(day)
@@ -166,8 +165,6 @@ export function DayDetailPanel({
   // simple) — vacío en rutas dev/manuales, que no pasan por /api/generate-anchors.
   const anchorNamesLower = new Set((route?.anchorNames ?? []).map((name) => name.toLowerCase()))
 
-  const toggle = (id: string) => setOpenId((current) => (current === id ? null : id))
-
   const renderConnector = (
     connectorKey: string,
     connector: ReturnType<typeof buildConnectorInfo>,
@@ -202,7 +199,21 @@ export function DayDetailPanel({
 
       {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
 
-      {arrivalDetail && <ArrivalDepartureAccordion detail={arrivalDetail} expanded={openId === arrivalId} onToggle={() => toggle(arrivalId)} />}
+      {arrivalDetail && (
+        <button
+          type="button"
+          onClick={() => setArrivalSheetOpen(true)}
+          className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg-card p-3 text-left transition-colors hover:bg-bg-hover"
+        >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-hover text-white" aria-hidden="true">
+            ✈
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-body font-semibold text-text">{arrivalDetail.headline}</p>
+            <p className="truncate text-caption text-text-soft">{arrivalDetail.subtitle}</p>
+          </div>
+        </button>
+      )}
 
       {stops.map((stop, index) => {
         const connectorKey = `${day.id}-connector-${index}`
@@ -261,6 +272,14 @@ export function DayDetailPanel({
         dayStops={dayStopRefs}
         isAnchor={detailIndex !== null && anchorNamesLower.has(stops[detailIndex].name.toLowerCase())}
         onClose={() => setDetailIndex(null)}
+      />
+
+      <ArrivalDetailSheet
+        detail={arrivalSheetOpen ? arrivalDetail : null}
+        dayNumber={day.dayNumber}
+        dateIso={dateIso}
+        dayStops={dayStopRefs}
+        onClose={() => setArrivalSheetOpen(false)}
       />
     </div>
   )

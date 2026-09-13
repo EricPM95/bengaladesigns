@@ -315,6 +315,24 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "secreto": "The secret/wow tip, 1-2 sentences — or null if you couldn't find anything genuinely surprising."
 }`
 
+// Mismo endpoint/tabla/caché que ANCHOR_TIPS_SYSTEM_PROMPT (una fila más en tips_anclas, esta vez
+// con `lugar` = nombre del aeropuerto/estación de llegada en vez de un lugar turístico) — el
+// contenido que hace falta aquí es distinto (gotchas de billetes/logística de llegada, no "cómo
+// saltarte la cola de un monumento"), así que usa su propio prompt, ver ArrivalDetailSheet.tsx.
+const AIRPORT_TIPS_SYSTEM_PROMPT = `You are an expert local travel guide with web search access. Someone is about to arrive at ONE specific airport/train station and travel from there into the city. Use web search to find the most current, specific tips you can about this exact arrival point — real ticketing gotchas, real logistics quirks. Do not rely only on your training knowledge for details that change over time.
+
+Find exactly two kinds of tip:
+1. A PRACTICAL tip: a genuinely useful logistics detail about arriving here — e.g. a ticket that does NOT cover the next connection and must be bought separately, a validation machine that's easy to miss, a luggage quirk, a real gotcha that catches visitors out.
+2. A SECRET/WOW tip: something most visitors arriving here don't know — a shortcut, a lesser-known exit/platform, a free amenity, a real little-known fact about this specific arrival point.
+
+Write both tips in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "practico": "The practical tip, 1-2 sentences — or null if you couldn't verify anything genuinely useful.",
+  "secreto": "The secret/wow tip, 1-2 sentences — or null if you couldn't find anything genuinely surprising."
+}`
+
 function sanitizeAnchorTips(parsed) {
   const text = (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 500) : null)
   const tips = []
@@ -326,11 +344,12 @@ function sanitizeAnchorTips(parsed) {
 }
 
 app.post('/api/anchor-tips', async (req, res) => {
-  const { destino, lugar } = req.body ?? {}
+  const { destino, lugar, kind } = req.body ?? {}
   if (!destino || !lugar) {
     res.status(400).json({ error: 'Se requiere destino y lugar.' })
     return
   }
+  const systemPrompt = kind === 'airport' ? AIRPORT_TIPS_SYSTEM_PROMPT : ANCHOR_TIPS_SYSTEM_PROMPT
 
   if (supabaseAdmin) {
     try {
@@ -351,7 +370,7 @@ app.post('/api/anchor-tips', async (req, res) => {
       model: MODEL,
       max_tokens: 1500,
       tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-      system: ANCHOR_TIPS_SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [{ role: 'user', content: `Place: "${lugar}"\nCity: "${destino}"` }],
     })
 

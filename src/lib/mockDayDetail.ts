@@ -22,34 +22,43 @@ export function seededRandom(seed: string) {
 
 // ── Llegada / vuelta ─────────────────────────────────────────
 
+export interface AffiliateTicketInfo {
+  proveedor: 'civitatis' | 'getyourguide'
+  precio: number
+  moneda: string
+  url_afiliado: string
+}
+
 export interface TransitOption {
   name: string
   durationLabel: string
-  /** Duración en minutos — para comparar contra el traslado privado y decidir el copy del CTA (ver buildPrivateTransferCta). */
   durationMinutes: number
   price: number
   /** Nº de trasbordos — 0 = directo. */
   transfers: number
   /** Parada/línea concreta SOLO cuando se conoce con fiabilidad (ej. "Termini") — si no, se omite, nunca se inventa. */
   stopName?: string
+  /** Solo si Civitatis/GetYourGuide venden billete para ESTA vía concreta — si falta, ArrivalDetailSheet.tsx la muestra igual pero sin botón de compra, puramente informativa. */
+  affiliateTicket?: AffiliateTicketInfo
 }
 
-export interface HotelZoneDistance {
-  zone: string
-  durationLabel: string
-  price?: number
-  /** Parada/línea concreta SOLO cuando se conoce con fiabilidad (ej. "Línea A, parada Ottaviano") — si no, se omite. */
-  stopName?: string
+export interface PrivateTransferInfo {
+  proveedor: 'civitatis' | 'getyourguide'
+  precio: number
+  moneda: string
+  url_afiliado: string
 }
 
 export interface AirportOption {
   code: string
   name: string
+  /** "32 km al centro" — dato fijo del aeropuerto en sí, independiente de la hora de vuelo. */
+  distanceToCenterLabel: string
   transitOptions: TransitOption[]
-  hotelZoneDistances: HotelZoneDistance[]
-  /** Duración estimada del traslado privado, en minutos — usada solo para calcular el ahorro del CTA (ver buildPrivateTransferCta), nunca se muestra literal. */
-  privateTransferMinutes: number
-  tip: string
+  /** Precio orientativo del taxi — nunca lleva botón de compra/venta, no hay afiliado que lo monetice. */
+  taxiPriceLabel: string
+  /** undefined = Civitatis/GetYourGuide no venden traslado privado para este aeropuerto — la pestaña "Traslados" de ArrivalDetailSheet.tsx no se muestra en absoluto. */
+  privateTransfer?: PrivateTransferInfo
   officialLinkLabel: string
 }
 
@@ -63,85 +72,62 @@ export interface ArrivalDepartureDetail {
   airports: AirportOption[]
 }
 
-/**
- * Copy persuasivo del CTA de traslado privado, adaptado al contexto real del trayecto — nunca un
- * texto fijo. Prioridad: hora de vuelo conocida y de madrugada > trayecto con trasbordos (mejor
- * para familias/equipaje) > ahorro de tiempo significativo (≥30 min) frente a la opción pública
- * más lenta > copy de confort genérico si ninguna de las anteriores aplica.
- */
-export function buildPrivateTransferCta(transitOptions: TransitOption[], privateTransferMinutes: number, flightHour?: number | null): string {
-  if (flightHour != null && (flightHour < 6 || flightHour >= 22)) {
-    return 'Evita esperas de madrugada — te recogen a la hora exacta de tu vuelo'
-  }
-
-  const hasTransfers = transitOptions.some((option) => option.transfers > 0)
-  if (hasTransfers) {
-    return 'Ideal si vais en familia o con maletas — sin trasbordos, puerta a puerta'
-  }
-
-  const slowest = transitOptions.reduce((max, option) => (option.durationMinutes > max.durationMinutes ? option : max), transitOptions[0])
-  const savedMinutes = slowest ? slowest.durationMinutes - privateTransferMinutes : 0
-  if (slowest && savedMinutes >= 30) {
-    const savedLabel = savedMinutes >= 60 ? `${Math.round((savedMinutes / 60) * 2) / 2}h` : `${savedMinutes} min`
-    return `Ahorra ${savedLabel} frente a ${slowest.name.replace(/\s*\(.*\)$/, '')} — llegas directo`
-  }
-
-  return 'Viaja cómodo y sin esperas — te recogen y te llevan directo a tu alojamiento'
-}
-
 /** Únicos destinos con más de un aeropuerto conocido en este mock — el resto cae al genérico de un solo punto de llegada. */
 const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
   roma: [
     {
       code: 'FCO',
       name: 'Fiumicino',
+      distanceToCenterLabel: '32 km al centro',
       transitOptions: [
-        { name: 'Leonardo Express (tren directo)', durationLabel: '32 min', durationMinutes: 32, price: 14, transfers: 0, stopName: 'Roma Termini' },
+        {
+          name: 'Leonardo Express (tren directo)',
+          durationLabel: '32 min',
+          durationMinutes: 32,
+          price: 14,
+          transfers: 0,
+          stopName: 'Roma Termini',
+          affiliateTicket: { proveedor: 'civitatis', precio: 14, moneda: 'EUR', url_afiliado: '#' },
+        },
         { name: 'Tren regional FL1', durationLabel: '48 min', durationMinutes: 48, price: 8, transfers: 0, stopName: 'Roma Tiburtina' },
         { name: 'Autobús lanzadera', durationLabel: '55 min', durationMinutes: 55, price: 6, transfers: 0, stopName: 'Roma Termini' },
       ],
-      hotelZoneDistances: [
-        { zone: 'Centro histórico', durationLabel: '10 min a pie desde Termini', price: 0 },
-        { zone: 'Trastevere', durationLabel: '15 min en tranvía', price: 1.5, stopName: 'Tranvía 8, parada Trastevere/Mastai' },
-        { zone: 'Vaticano', durationLabel: '20 min en metro (línea A)', price: 1.5, stopName: 'Línea A, parada Ottaviano' },
-      ],
-      privateTransferMinutes: 25,
-      tip: 'El billete del tren regional FL1 vale también para el metro/autobús durante 100 minutos desde la validación — no hace falta comprar otro para el último tramo hasta el hotel.',
+      taxiPriceLabel: '50-55€ (tarifa fija aeropuerto-centro)',
+      privateTransfer: { proveedor: 'getyourguide', precio: 45, moneda: 'EUR', url_afiliado: '#' },
       officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
     },
     {
       code: 'CIA',
       name: 'Ciampino',
+      distanceToCenterLabel: '15 km al centro',
       transitOptions: [
         { name: 'Autobús directo a Termini', durationLabel: '40 min', durationMinutes: 40, price: 6, transfers: 0, stopName: 'Roma Termini' },
         { name: 'Autobús + metro', durationLabel: '55 min', durationMinutes: 55, price: 7.5, transfers: 1 },
       ],
-      hotelZoneDistances: [
-        { zone: 'Centro histórico', durationLabel: '10 min a pie desde Termini', price: 0 },
-        { zone: 'Trastevere', durationLabel: '15 min en tranvía', price: 1.5, stopName: 'Tranvía 8, parada Trastevere/Mastai' },
-        { zone: 'Vaticano', durationLabel: '20 min en metro (línea A)', price: 1.5, stopName: 'Línea A, parada Ottaviano' },
-      ],
-      privateTransferMinutes: 35,
-      tip: 'Ciampino no tiene estación de tren propia — todas las opciones pasan por autobús hasta Termini, así que compra el billete combinado si vas a moverte más ese mismo día.',
+      taxiPriceLabel: '30-35€ (tarifa fija aeropuerto-centro)',
       officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
     },
   ],
 }
 
 function genericAirport(cityName: string): AirportOption {
+  const rand = seededRandom(`${cityName}-airport`)
   return {
     code: '',
-    name: cityName,
+    name: `Aeropuerto de ${cityName}`,
+    distanceToCenterLabel: '20-30 km al centro',
     transitOptions: [
-      { name: 'Tren/autobús directo al centro', durationLabel: '35-45 min', durationMinutes: 40, price: 10, transfers: 0 },
-      { name: 'Taxi compartido', durationLabel: '25-30 min', durationMinutes: 28, price: 25, transfers: 0 },
+      {
+        name: 'Tren/autobús directo al centro',
+        durationLabel: '35-45 min',
+        durationMinutes: 40,
+        price: 10,
+        transfers: 0,
+        ...(rand() > 0.5 ? { affiliateTicket: { proveedor: 'civitatis' as const, precio: 10, moneda: 'EUR', url_afiliado: '#' } } : {}),
+      },
     ],
-    hotelZoneDistances: [
-      { zone: 'Centro histórico', durationLabel: '10-15 min desde la estación principal', price: 1.5 },
-      { zone: 'Zona de negocios/moderna', durationLabel: '15-20 min desde la estación principal', price: 1.5 },
-    ],
-    privateTransferMinutes: 30,
-    tip: 'Guarda el billete hasta salir de la estación — en varias ciudades europeas hay controles aleatorios y la multa por no llevarlo es bastante más cara que el billete.',
+    taxiPriceLabel: '25-35€ orientativo',
+    ...(rand() > 0.4 ? { privateTransfer: { proveedor: 'getyourguide' as const, precio: 40, moneda: 'EUR', url_afiliado: '#' } } : {}),
     officialLinkLabel: 'Horarios y precios oficiales del operador local',
   }
 }
