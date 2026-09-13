@@ -128,8 +128,13 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
   const hoursTag = stop ? computeStopHoursTag(stop.hours, new Date().getHours() * 60 + new Date().getMinutes()) : null
   // Solo los lugares con afiliación de tours (ver mockDayDetail.ts) tienen sentido con
   // Civitatis/GetYourGuide — un mercado local con solo entrada libre (afiliacion_disponible:false)
-  // no debe mostrar tarjetas de tours inventadas.
+  // no debe mostrar tarjetas de tours inventadas. En real, esto será "la API de afiliación devolvió
+  // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   const tickets = stop?.purchase?.afiliacion_disponible ? buildMockStopTickets(stop.id, stop.name) : []
+  const hasTickets = tickets.length > 0
+  // Si el tab guardado quedó en "tickets" pero este lugar no tiene ninguno, cae a "resumen" — la
+  // única pestaña visible en ese caso (sin pestañas de por medio, ver el render de abajo).
+  const activeTab: Tab = hasTickets ? tab : 'resumen'
   const dayPillLabel = `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
 
   return (
@@ -182,27 +187,29 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
                 </div>
               </div>
 
-              <div className="flex gap-1 rounded-xl bg-bg-hover p-1">
-                {(
-                  [
-                    { id: 'resumen', label: 'Resumen' },
-                    { id: 'tickets', label: 'Tickets & Entradas' },
-                  ] as const
-                ).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setTab(item.id)}
-                    className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
-                      tab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
+              {hasTickets && (
+                <div className="flex gap-1 rounded-xl bg-bg-hover p-1">
+                  {(
+                    [
+                      { id: 'resumen', label: 'Resumen' },
+                      { id: 'tickets', label: 'Tickets & Entradas' },
+                    ] as const
+                  ).map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setTab(item.id)}
+                      className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
+                        activeTab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-              {tab === 'resumen' && (
+              {activeTab === 'resumen' && (
                 <div className="space-y-4">
                   {descLoading ? (
                     <p className="flex items-center gap-2 text-small italic text-text-soft">
@@ -262,16 +269,13 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
                 </div>
               )}
 
-              {tab === 'tickets' &&
-                (tickets.length > 0 ? (
-                  <div className="space-y-3">
-                    {tickets.map((ticket, index) => (
-                      <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="py-6 text-center text-small text-text-soft">No hay entradas ni tours disponibles para este lugar.</p>
-                ))}
+              {activeTab === 'tickets' && (
+                <div className="space-y-3">
+                  {tickets.map((ticket, index) => (
+                    <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
