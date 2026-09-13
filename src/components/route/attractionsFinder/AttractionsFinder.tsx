@@ -115,7 +115,12 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, title }:
   return (
     <AnimatePresence>
       {open && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg"
+        >
           <div className="flex shrink-0 items-center gap-3 border-b border-border p-4 pl-16">
             <button
               type="button"

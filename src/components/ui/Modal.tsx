@@ -25,7 +25,7 @@ export function Modal({ open, onClose, children }: ModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center sm:p-6"
+          className="map-cover-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center sm:p-6"
         >
           <motion.div
             initial={{ opacity: 0, y: 40 }}

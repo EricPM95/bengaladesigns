@@ -3,6 +3,7 @@ import type { DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
+import { addDaysToIso } from '../../../lib/dateRange'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
@@ -17,6 +18,7 @@ import { ArrivalDepartureAccordion } from './ArrivalDepartureAccordion'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
 import { StopAccordion } from './StopAccordion'
 import { StopConnector } from './StopConnector'
+import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 
@@ -95,6 +97,7 @@ export function DayDetailPanel({
   const route = useRouteStore((state) => state.route)
 
   const [openId, setOpenId] = useState<string | null>(null)
+  const [detailIndex, setDetailIndex] = useState<number | null>(null)
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
@@ -148,6 +151,17 @@ export function DayDetailPanel({
   const stopCircleBg = dayColorPastel(dayIndex)
   const stopCircleText = dayColorStrong(dayIndex)
   const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
+
+  const tripStartIso = route?.answers.dateRange?.start
+  const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
+  // Paradas REALES del día (con coordenadas) para el mapa de StopDetailSheet — mismo orden que
+  // `stops` (contenido rico mock/real), así que `realStops[index]` siempre es la pareja correcta.
+  const dayStopRefs: DayStopRef[] = realStops.map((realStop) => ({
+    id: realStop.id,
+    name: realStop.name,
+    coordinates: realStop.coordinates,
+    photoUrl: realStop.photoUrl,
+  }))
 
   const toggle = (id: string) => setOpenId((current) => (current === id ? null : id))
 
@@ -203,8 +217,7 @@ export function DayDetailPanel({
               stop={stop}
               circleBg={stopCircleBg}
               circleText={stopCircleText}
-              expanded={openId === stop.id}
-              onToggle={() => toggle(stop.id)}
+              onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
             />
           </div>
@@ -236,6 +249,15 @@ export function DayDetailPanel({
           onClose={() => setInsertAt(null)}
         />
       )}
+
+      <StopDetailSheet
+        stop={detailIndex !== null ? stops[detailIndex] : null}
+        city={day.city}
+        dayNumber={day.dayNumber}
+        dateIso={dateIso}
+        dayStops={dayStopRefs}
+        onClose={() => setDetailIndex(null)}
+      />
     </div>
   )
 }

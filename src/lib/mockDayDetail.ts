@@ -11,7 +11,7 @@ import { getRoutedDistance } from './mapboxDirections'
  * que debe seguir consumiendo el componente visual).
  */
 
-function seededRandom(seed: string) {
+export function seededRandom(seed: string) {
   let h = 0
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
   return () => {
@@ -209,6 +209,8 @@ export interface MockStopDetail {
   name: string
   category: string
   hours: string | null
+  /** Duración estimada de la visita, en minutos — pill "⏳" de StopDetailSheet (ver format.ts formatDuration). */
+  durationMinutes: number
   photoUrl: string
   description: string
   sections?: StopSection[]
@@ -224,6 +226,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Casco histórico de ${city}`,
     category: 'Paseo urbano',
     hours: null,
+    durationMinutes: 120,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-casco/600/400`,
     description: `El corazón antiguo de ${city} — calles estrechas, plazas con terrazas y la mejor forma de hacerse una idea de cómo vivía la ciudad antes de convertirse en destino turístico. Se recorre bien sin prisa, parando donde apetezca.`,
     tips: ['Ve a primera hora de la mañana o al atardecer — a mediodía se llena de grupos y pierde parte de la magia.'],
@@ -242,6 +245,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Catedral de ${city}`,
     category: 'Monumento religioso',
     hours: '09:00–19:00',
+    durationMinutes: 60,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-catedral/600/400`,
     description: `La catedral principal de ${city}, con siglos de historia superpuestos en su propia arquitectura. Merece la pena tanto por el interior (altares, vidrieras, cripta) como por las vistas desde su torre o cúpula.`,
     tips: ['La entrada a la torre/cúpula suele agotarse por franjas — resérvala con antelación si no quieres quedarte sin sitio.'],
@@ -270,6 +274,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Museo de Arte de ${city}`,
     category: 'Museo de arte',
     hours: '10:00–18:00 (cerrado lunes)',
+    durationMinutes: 120,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-museo/600/400`,
     description: `Una de las colecciones de referencia de ${city}, con obras que abarcan varios siglos repartidas en salas temáticas. No hace falta ser experto en arte para disfrutarlo — el recorrido está pensado para que cada sala cuente una época distinta.`,
     sections: [
@@ -310,6 +315,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Mirador de ${city}`,
     category: 'Mirador panorámico',
     hours: null,
+    durationMinutes: 45,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-mirador/600/400`,
     description: `El mejor punto elevado de ${city} para ver la ciudad de un vistazo — especialmente recomendable al atardecer, cuando la luz baja da un color distinto a los tejados.`,
     tips: ['Llega unos 30 minutos antes de la puesta de sol para hacerte con un buen sitio sin agobios de última hora.'],
@@ -320,6 +326,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Mercado Central de ${city}`,
     category: 'Mercado local',
     hours: '08:00–15:00',
+    durationMinutes: 60,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-mercado/600/400`,
     description: `Mercado de toda la vida donde compra parte de la propia ciudad — buena parada para probar producto local, desayunar algo distinto o simplemente ver el ritmo diario de ${city} sin filtro turístico.`,
     tips: ['Va perdiendo puestos abiertos según se acerca el mediodía — ve por la mañana si quieres verlo en su mejor momento.'],
@@ -334,6 +341,7 @@ const STOP_TEMPLATES: StopTemplate[] = [
     name: `Yacimiento arqueológico de ${city}`,
     category: 'Yacimiento arqueológico',
     hours: '09:00–17:00',
+    durationMinutes: 90,
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-yacimiento/600/400`,
     description: `Restos arqueológicos que documentan la historia más antigua de ${city}, hoy integrados en el propio paisaje urbano. Un recorrido pausado permite reconstruir mentalmente cómo era la zona hace siglos.`,
     sections: [
@@ -402,6 +410,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     name: stop.name,
     category: stop.categoryLabel ?? 'Añadido por ti',
     hours: null,
+    durationMinutes: stop.durationMinutes,
     photoUrl: stop.photoUrl,
     description: stop.description,
     tips: stop.insiderTip ? [stop.insiderTip] : [],

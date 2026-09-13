@@ -158,6 +158,7 @@ export function buildPoolPlaceDetail(place: PoolPlace): MockStopDetail {
     name: place.name,
     category: categoryLabel(place.category),
     hours: null,
+    durationMinutes: 60,
     photoUrl: place.photoUrl,
     description: `${place.name} es una de las opciones de ${label} más recomendadas de la zona — vale la pena añadirlo a tu ruta si te encaja el hueco.`,
     tips: [ATTRACTION_TIPS[Math.floor(rand() * ATTRACTION_TIPS.length)]],

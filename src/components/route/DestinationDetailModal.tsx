@@ -39,7 +39,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg"
+          className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg"
         >
           <button
             type="button"

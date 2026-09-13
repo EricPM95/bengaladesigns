@@ -221,6 +221,66 @@ app.post('/api/suggest-experiences', async (req, res) => {
   }
 })
 
+// ── Ficha de una parada (StopDetailSheet, pestaña "Resumen") — descripción/qué vas a ver/por qué
+// recomendado + dirección/web oficial de UN lugar concreto, generados por Claude bajo demanda al
+// abrir la ficha (no en el pipeline de generación de la ruta). Los tickets/tours de esa misma
+// pantalla siguen siendo mock (ver mockStopTickets.ts) — solo el contenido editorial es real aquí.
+
+const DESCRIBE_STOP_SYSTEM_PROMPT = `You are an expert local travel guide. Someone is looking at the detail card for ONE specific place inside a trip you already helped plan. Write genuinely useful, specific content — never generic filler that could apply to any place.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "description": "2-3 sentences: what this place is, historical/general context.",
+  "what_youll_see": "2-3 sentences: the concrete experience INSIDE this specific place — what you'll actually walk through, see or do there.",
+  "why_recommended": "1-2 sentences: why this specific place is worth including in a trip to this city.",
+  "address": "Real, specific street address as 'Street, City' — or null if you don't genuinely know it.",
+  "official_website": "Real official website URL (just the domain or full URL) if this place has one — or null if it doesn't have one or you're not confident."
+}`
+
+function sanitizeStopDescription(parsed) {
+  const text = (value, max) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : '')
+  return {
+    description: text(parsed?.description, 500),
+    what_youll_see: text(parsed?.what_youll_see, 500),
+    why_recommended: text(parsed?.why_recommended, 300),
+    address: text(parsed?.address, 200) || null,
+    official_website: text(parsed?.official_website, 200) || null,
+  }
+}
+
+app.post('/api/describe-stop', async (req, res) => {
+  const { name, city, category } = req.body ?? {}
+  if (!name || !city) {
+    res.status(400).json({ error: 'Se requiere name y city.' })
+    return
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 700,
+      system: DESCRIBE_STOP_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: `Place: "${name}"\nCity: "${city}"${category ? `\nCategory: "${category}"` : ''}`,
+        },
+      ],
+    })
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const result = sanitizeStopDescription(parsed)
+    if (!result.description) throw new Error('Respuesta de Claude sin descripción válida')
+    res.json(result)
+  } catch (error) {
+    logAnthropicError('describe-stop', error)
+    res.status(502).json({ error: 'No se pudo generar la descripción con IA.' })
+  }
+})
+
 // ── "Elige lugares" — pantalla tras "Elige tus experiencias", lista AMPLIA de sitios reales ──
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios

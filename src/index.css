@@ -107,12 +107,13 @@ body {
    encima de un overlay/modal que se abre sobre el mapa aunque el z-index y el orden del DOM ya sean
    correctos (confirmado con elementFromPoint). Ningún ajuste de z-index/isolation lo arregla porque
    no es un problema de stacking-context sino de compositing GPU del canvas. Solución robusta: ocultar
-   esos controles mientras cualquier overlay a pantalla completa (Modal.tsx y DestinationDetailModal,
-   ambos "fixed inset-0 z-50") esté abierto — el mapa que cubren deja de ser visible/relevante en ese
-   momento, así que no hace falta atribución visible. Las pantallas EXPLORAR (z-40) NO entran aquí a
-   propósito: son vistas base con su propio mapa, no un overlay sobre otro mapa ya montado.  */
-body:has(.fixed.inset-0.z-50) .mapboxgl-ctrl-bottom-left,
-body:has(.fixed.inset-0.z-50) .mapboxgl-ctrl-bottom-right {
+   esos controles mientras cualquier overlay marcado `.map-cover-overlay` esté abierto — el mapa que
+   cubre deja de ser visible/relevante en ese momento, así que no hace falta atribución visible. Esta
+   clase la llevan solo los overlays que se abren ENCIMA de un mapa ajeno sin tener uno propio (ver
+   Modal.tsx, DestinationDetailModal.tsx, AttractionsFinder.tsx) — nunca una pantalla que trae su
+   propio mapa (EXPLORAR, StopDetailSheet...), o esta regla ocultaría también SU atribución. */
+body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-left,
+body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   visibility: hidden;
 }
 
