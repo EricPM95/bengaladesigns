@@ -16,16 +16,16 @@ create table if not exists public.tips_anclas (
 
 alter table public.tips_anclas enable row level security;
 
--- Cualquier sesión de Supabase (incluida anónima, ver 0001_travelers_and_trips.sql) puede leer el
--- caché y añadir tips nuevos — nunca actualizar ni borrar los ya existentes, así un viajero no puede
--- pisar un tip ya verificado de otro. server/index.js es el único que escribe en la práctica (el
--- cliente nunca llama a Supabase directamente para esta tabla), pero la policy vive a nivel de fila
--- por si esto cambia más adelante.
+-- Cualquiera puede leer el caché y añadir tips nuevos — nunca actualizar ni borrar los ya
+-- existentes, así un viajero no puede pisar un tip ya verificado de otro. server/index.js es quien
+-- escribe en la práctica, usando la clave anónima SIN iniciar sesión (rol "anon", no
+-- "authenticated" — a diferencia de travelers/trips, que sí pasan por signInAnonymously), así que
+-- las políticas cubren ambos roles a propósito.
 create policy "tips_anclas select all" on public.tips_anclas
-  for select to authenticated using (true);
+  for select to anon, authenticated using (true);
 
 create policy "tips_anclas insert all" on public.tips_anclas
-  for insert to authenticated with check (true);
+  for insert to anon, authenticated with check (true);
 
 -- Datos semilla ya verificados (fuentes reales, no mock) — punto de partida antes de que el
 -- sistema empiece a generar y cachear dinámicamente el resto de anclas la primera vez que alguien
