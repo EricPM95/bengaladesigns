@@ -25,8 +25,10 @@ const timeInputClasses = 'w-full rounded-xl border border-border bg-bg px-3 py-2
 
 /**
  * Pestaña RESERVAS — pantalla completa (mismo patrón ✕ que RUTA/EXPLORAR, ver DestinationDetailModal
- * / AttractionsFinder), sin mapa. Horarios de vuelo con "doble camino" (Recalcular con IA / Añadir yo
- * mismo, ver `manualAddDayId`), "Imprescindibles" (solo Seguro de viaje, rojo), lista plana si el
+ * / AttractionsFinder), sin mapa. Horarios de vuelo con "doble camino" (Optimizar ruta / Añadir yo
+ * mismo, ver `manualAddDayId`) SOLO cuando la oportunidad es accionable (ver `actionable` en
+ * flightOpportunity.ts — una llegada de madrugada no ofrece nada real que optimizar, solo un aviso
+ * neutro sin botones), "Imprescindibles" (solo Seguro de viaje, rojo), lista plana si el
  * viaje es de un único destino o acordeón por destino si son varios (ver DestinationReservasAccordion),
  * y el vehículo de alquiler general (fuera de "Imprescindibles" — no cuenta para su alerta). El % de
  * "viaje listo" se calcula en useTripReadiness.ts y se muestra en la cabecera (TripReadinessBadge).
@@ -104,16 +106,13 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             {showWelcomeBanner && (
               <div className="rounded-xl border border-accent-gold/40 bg-accent-gold/10 p-3 text-small text-text">
                 Para darte una ruta personalizada adaptada a tu viaje, añade cuanto antes tu vuelo y tu{' '}
-                {isCamper ? 'camper/autocaravana' : 'alojamiento'} — si aún no lo tienes, puedes reservarlo desde aquí. ¡Corre que vuelan!
+                {isCamper ? 'camper/autocaravana' : 'alojamiento'}. Si todavía no los tienes, puedes reservarlos desde aquí. ¡Corre que vuelan!
               </div>
             )}
 
             <div>
               <h2 className="font-display text-h2 font-semibold text-text">Vuelos</h2>
-              <p className="mt-1 text-small text-text-soft">
-                Si ya tienes el billete, indica aquí las horas para ajustar los traslados de la ruta. Para buscar y reservar el vuelo en sí,
-                hazlo desde «Transporte» dentro de cada destino, más abajo.
-              </p>
+              <p className="mt-1 text-small text-text-soft">Si ya tienes el billete, indica las horas de llegada y salida para ajustar los traslados de la ruta.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -142,6 +141,17 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               const isDone = simulatedIds.has(opportunity.dayId)
               const chosenLuggage = luggageChoices[opportunity.dayId]
               const needsLuggageQuestion = opportunity.dayId === day1Id && day1HotelKnown && !chosenLuggage && !isDone && !isRecalculating
+
+              if (!opportunity.actionable) {
+                return (
+                  <div key={opportunity.dayId} className="flex items-start gap-3 rounded-xl border border-border bg-bg-hover p-3">
+                    <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
+                      🌙
+                    </span>
+                    <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
+                  </div>
+                )
+              }
 
               return (
                 <div key={opportunity.dayId} className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
@@ -183,7 +193,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                     ) : (
                       <div className="flex gap-2">
                         <Button onClick={() => handleRecalculate(opportunity.dayId)} className="flex-1 text-caption font-bold shadow-sm">
-                          ✨ Recalcular con IA
+                          ✨ Optimizar ruta
                         </Button>
                         <Button onClick={() => setManualAddDayId(opportunity.dayId)} variant="secondary" className="flex-1 text-caption font-bold">
                           Añadir yo mismo
