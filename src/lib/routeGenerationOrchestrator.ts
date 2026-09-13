@@ -267,5 +267,11 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
     }
   }
 
-  return mapGeneratedRouteToRoute(generated, destination, answers, transportContext)
+  return mapGeneratedRouteToRoute(
+    generated,
+    destination,
+    answers,
+    transportContext,
+    anchors.map((anchor) => anchor.name),
+  )
 }

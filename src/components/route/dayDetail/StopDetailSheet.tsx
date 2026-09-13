@@ -6,10 +6,13 @@ import { formatDuration } from '../../../lib/format'
 import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
+import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
 import { buildMockStopTickets } from '../../../lib/mockStopTickets'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { StopTicketCard } from './StopTicketCard'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
+import { TipBox } from './TipBox'
+import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
@@ -30,7 +33,7 @@ export interface DayStopRef {
   photoUrl?: string
 }
 
-type Tab = 'resumen' | 'tickets'
+type Tab = 'resumen' | 'tickets' | 'tips'
 
 interface StopDetailSheetProps {
   /** null = cerrado. */
@@ -41,6 +44,8 @@ interface StopDetailSheetProps {
   dateIso: string | null
   /** Todas las paradas REALES del día (con coordenadas), en orden — la actual se resalta, el resto se muestra en gris de contexto. */
   dayStops: DayStopRef[]
+  /** true si este lugar es una ancla (Paso 1 del pipeline, ver Route.anchorNames) — decide si los tips vienen del caché con búsqueda web (tips_anclas) o del `localTip` simple de describeStopApi.ts. */
+  isAnchor: boolean
   onClose: () => void
 }
 
@@ -70,12 +75,13 @@ function PinIcon() {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache); "Tickets &
  * Entradas" sigue siendo mock (mockStopTickets.ts) hasta conectar Civitatis/GetYourGuide reales.
  */
-export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onClose }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAnchor, onClose }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [description, setDescription] = useState<StopDescription | null>(null)
   const [descLoading, setDescLoading] = useState(false)
   const [descFailed, setDescFailed] = useState(false)
+  const [anchorTips, setAnchorTips] = useState<StopTip[]>([])
   const [directionsOpen, setDirectionsOpen] = useState(false)
 
   useEffect(() => {
@@ -95,6 +101,23 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
       cancelled = true
     }
   }, [stop?.id, stop?.name, stop?.category, city])
+
+  // Tips de ancla — llamada aparte (caché en Supabase + búsqueda web, ver anchorTipsApi.ts), solo
+  // para lugares obligatorios del destino. Las paradas normales no llaman aquí: su tip (si lo hay)
+  // ya viene incluido en `description.localTip`, sin coste ni caché aparte.
+  useEffect(() => {
+    if (!stop || !isAnchor) {
+      setAnchorTips([])
+      return
+    }
+    let cancelled = false
+    fetchAnchorTips(city, stop.name).then((tips) => {
+      if (!cancelled) setAnchorTips(tips)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [stop?.id, stop?.name, isAnchor, city])
 
   const handleDragStart = (event: ReactPointerEvent) => {
     event.preventDefault()
@@ -132,9 +155,16 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   const tickets = stop?.purchase?.afiliacion_disponible ? buildMockStopTickets(stop.id, stop.name) : []
   const hasTickets = tickets.length > 0
-  // Si el tab guardado quedó en "tickets" pero este lugar no tiene ninguno, cae a "resumen" — la
-  // única pestaña visible en ese caso (sin pestañas de por medio, ver el render de abajo).
-  const activeTab: Tab = hasTickets ? tab : 'resumen'
+  // Ancla: tips reales con búsqueda web (0-2, práctico/secreto). Parada normal: el `localTip` de
+  // describeStopApi.ts, si Claude encontró algo genuinamente bueno — siempre tipo "secreto" (es el
+  // mismo espíritu "esto no lo sabe todo el mundo", solo que sin caché ni búsqueda web).
+  const tips: StopTip[] = isAnchor ? anchorTips : description?.localTip ? [{ tipo: 'secreto', texto: description.localTip }] : []
+  const hasTips = tips.length > 0
+
+  const visibleTabs: Tab[] = ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])]
+  // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
+  // contenido), cae a "resumen".
+  const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
   const dayPillLabel = `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
 
   return (
@@ -187,25 +217,28 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
                 </div>
               </div>
 
-              {hasTickets && (
+              {visibleTabs.length > 1 && (
                 <div className="flex gap-1 rounded-xl bg-bg-hover p-1">
                   {(
                     [
                       { id: 'resumen', label: 'Resumen' },
                       { id: 'tickets', label: 'Tickets & Entradas' },
+                      { id: 'tips', label: 'Tips' },
                     ] as const
-                  ).map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setTab(item.id)}
-                      className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
-                        activeTab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                  )
+                    .filter((item) => visibleTabs.includes(item.id))
+                    .map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setTab(item.id)}
+                        className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
+                          activeTab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
                 </div>
               )}
 
@@ -274,6 +307,18 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, onCl
                   {tickets.map((ticket, index) => (
                     <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
                   ))}
+                </div>
+              )}
+
+              {activeTab === 'tips' && (
+                <div className="space-y-2">
+                  {tips.map((tip, index) =>
+                    tip.tipo === 'practico' ? (
+                      <TipBox key={index}>{tip.texto}</TipBox>
+                    ) : (
+                      <LocalSecretBox key={index}>{tip.texto}</LocalSecretBox>
+                    ),
+                  )}
                 </div>
               )}
             </div>

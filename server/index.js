@@ -1,11 +1,23 @@
 import express from 'express'
 import { config } from 'dotenv'
 import Anthropic from '@anthropic-ai/sdk'
+import { createClient } from '@supabase/supabase-js'
 
 config({ path: '.env.local' })
 
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 8787
 const MODEL = 'claude-sonnet-4-6'
+
+// Mismas credenciales que el cliente (src/lib/supabaseClient.ts) — reutilizadas aquí SOLO para el
+// caché global de tips_anclas (server/index.js:ANCHOR_TIPS_SYSTEM_PROMPT), una tabla sin datos de
+// usuario que cualquier viajero puede leer/escribir vía este endpoint (ver database.sql para las
+// políticas RLS) — no hace falta una service role key aparte para esto.
+const supabaseUrl = process.env.VITE_SUPABASE_URL
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Faltan VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — el caché de tips_anclas estará desactivado (cada tip de ancla se genera de nuevo, sin persistir).')
+}
+const supabaseAdmin = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null
 
 // En local, la clave viene de .env.local (dotenv, arriba); en Vercel viene directamente de las
 // Environment Variables del proyecto (sin archivo — dotenv.config() ahí simplemente no encuentra
@@ -226,7 +238,7 @@ app.post('/api/suggest-experiences', async (req, res) => {
 // abrir la ficha (no en el pipeline de generación de la ruta). Los tickets/tours de esa misma
 // pantalla siguen siendo mock (ver mockStopTickets.ts) — solo el contenido editorial es real aquí.
 
-const DESCRIBE_STOP_SYSTEM_PROMPT = `You are an expert local travel guide. Someone is looking at the detail card for ONE specific place inside a trip you already helped plan. Write genuinely useful, specific content — never generic filler that could apply to any place.
+const DESCRIBE_STOP_SYSTEM_PROMPT = `You are an expert local travel guide. Someone is looking at the detail card for ONE specific place inside a trip you already helped plan. Write genuinely useful, specific content — never generic filler that could apply to any place. Write every text field in SPANISH (the traveler's language), regardless of what language your own knowledge of the place is in.
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
@@ -234,7 +246,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "what_youll_see": "2-3 sentences: the concrete experience INSIDE this specific place — what you'll actually walk through, see or do there.",
   "why_recommended": "1-2 sentences: why this specific place is worth including in a trip to this city.",
   "address": "Real, specific street address as 'Street, City' — or null if you don't genuinely know it.",
-  "official_website": "Real official website URL (just the domain or full URL) if this place has one — or null if it doesn't have one or you're not confident."
+  "official_website": "Real official website URL (just the domain or full URL) if this place has one — or null if it doesn't have one or you're not confident.",
+  "local_tip": "Something a LOCAL or a repeat visitor would know — not the typical advice already in every guidebook. A genuinely surprising angle, a lesser-known detail, a good photo spot, a small anecdote. Only from your own knowledge, no web search. If you don't have anything good enough, use null — never force a mediocre tip."
 }`
 
 function sanitizeStopDescription(parsed) {
@@ -245,6 +258,7 @@ function sanitizeStopDescription(parsed) {
     why_recommended: text(parsed?.why_recommended, 300),
     address: text(parsed?.address, 200) || null,
     official_website: text(parsed?.official_website, 200) || null,
+    local_tip: text(parsed?.local_tip, 400) || null,
   }
 }
 
@@ -278,6 +292,93 @@ app.post('/api/describe-stop', async (req, res) => {
   } catch (error) {
     logAnthropicError('describe-stop', error)
     res.status(502).json({ error: 'No se pudo generar la descripción con IA.' })
+  }
+})
+
+// ── Tips de ANCLAS (StopDetailSheet, pestaña "Tips") — SOLO para anclas (Paso 1 del pipeline,
+// lugares obligatorios del destino, ver /api/generate-anchors), nunca para paradas normales del
+// pool (esas usan `local_tip` de /api/describe-stop de arriba, sin caché ni búsqueda web). Una
+// ancla es lo bastante genérica (Coliseo Romano, Torre Eiffel...) para que MUCHOS viajeros distintos
+// generen una ruta con ella — cachear en Supabase (tabla `tips_anclas`, ver database.sql) hace que
+// el coste de la búsqueda web + Claude se pague UNA sola vez por lugar, nunca por usuario.
+const ANCHOR_TIPS_SYSTEM_PROMPT = `You are an expert local travel guide with web search access. Someone is planning a visit to ONE specific, well-known place. Use web search to find the most current, specific tips you can — real access points, real ways to skip lines, real lesser-known viewpoints. Do not rely only on your training knowledge for logistics that change over time (opening hours, specific entrances, transit lines).
+
+Find exactly two kinds of tip:
+1. A PRACTICAL tip: how to skip the line, the best time to go, what to bring — genuinely useful, verified logistics.
+2. A SECRET/WOW tip: something most visitors don't know — a lesser-known free viewpoint, an alternative access with fewer people, a specific photo angle locals use, a real little-known fact. This is the one meant to impress, not just inform.
+
+Write both tips in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language, never quote or leave them in the source language.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "practico": "The practical tip, 1-2 sentences — or null if you couldn't verify anything genuinely useful.",
+  "secreto": "The secret/wow tip, 1-2 sentences — or null if you couldn't find anything genuinely surprising."
+}`
+
+function sanitizeAnchorTips(parsed) {
+  const text = (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 500) : null)
+  const tips = []
+  const practico = text(parsed?.practico)
+  const secreto = text(parsed?.secreto)
+  if (practico) tips.push({ tipo: 'practico', texto: practico })
+  if (secreto) tips.push({ tipo: 'secreto', texto: secreto })
+  return tips
+}
+
+app.post('/api/anchor-tips', async (req, res) => {
+  const { destino, lugar } = req.body ?? {}
+  if (!destino || !lugar) {
+    res.status(400).json({ error: 'Se requiere destino y lugar.' })
+    return
+  }
+
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin.from('tips_anclas').select('tipo, texto').eq('destino', destino).eq('lugar', lugar)
+      if (error) throw error
+      if (data && data.length > 0) {
+        res.json({ tips: data, cached: true })
+        return
+      }
+    } catch (error) {
+      // Fallo leyendo el caché no debe bloquear la generación — sigue como si no hubiera caché.
+      logAnthropicError('anchor-tips (read cache)', error)
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+      system: ANCHOR_TIPS_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Place: "${lugar}"\nCity: "${destino}"` }],
+    })
+
+    // Con web_search, la respuesta puede traer texto intermedio (razonamiento) ANTES de que
+    // vuelvan los resultados de la búsqueda — el JSON final siempre es el ÚLTIMO bloque de texto,
+    // nunca el primero (a diferencia del resto de endpoints, que no usan herramientas).
+    const textBlocks = response.content.filter((block) => block.type === 'text')
+    const finalText = textBlocks[textBlocks.length - 1]?.text
+    if (!finalText) throw new Error('Respuesta de Claude sin bloque de texto final')
+
+    const parsed = JSON.parse(extractJsonText(finalText))
+    const tips = sanitizeAnchorTips(parsed)
+
+    if (tips.length > 0 && supabaseAdmin) {
+      try {
+        await supabaseAdmin.from('tips_anclas').insert(tips.map((tip) => ({ destino, lugar, tipo: tip.tipo, texto: tip.texto })))
+      } catch (error) {
+        // El tip ya se generó y se puede devolver igual — un fallo guardándolo en caché solo
+        // significa que la próxima vez se vuelve a generar, no es motivo para dar error al viajero.
+        logAnthropicError('anchor-tips (write cache)', error)
+      }
+    }
+
+    res.json({ tips, cached: false })
+  } catch (error) {
+    logAnthropicError('anchor-tips', error)
+    res.status(502).json({ error: 'No se pudieron generar los tips con IA.' })
   }
 })
 

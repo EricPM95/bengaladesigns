@@ -162,6 +162,9 @@ export function DayDetailPanel({
     coordinates: realStop.coordinates,
     photoUrl: realStop.photoUrl,
   }))
+  // Nombres de ancla en minúsculas, para StopDetailSheet (tips con búsqueda web + caché vs. tip
+  // simple) — vacío en rutas dev/manuales, que no pasan por /api/generate-anchors.
+  const anchorNamesLower = new Set((route?.anchorNames ?? []).map((name) => name.toLowerCase()))
 
   const toggle = (id: string) => setOpenId((current) => (current === id ? null : id))
 
@@ -256,6 +259,7 @@ export function DayDetailPanel({
         dayNumber={day.dayNumber}
         dateIso={dateIso}
         dayStops={dayStopRefs}
+        isAnchor={detailIndex !== null && anchorNamesLower.has(stops[detailIndex].name.toLowerCase())}
         onClose={() => setDetailIndex(null)}
       />
     </div>

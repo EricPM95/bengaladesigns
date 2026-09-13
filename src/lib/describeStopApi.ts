@@ -11,6 +11,9 @@ export interface StopDescription {
   whyRecommended: string
   address: string | null
   officialWebsite: string | null
+  /** Tip generado solo con el conocimiento de Claude (sin búsqueda web) — para paradas que NO son
+      ancla, ver anchorTipsApi.ts para esas. null si Claude no tenía nada genuinamente bueno. */
+  localTip: string | null
 }
 
 const cache = new Map<string, StopDescription>()
@@ -43,6 +46,7 @@ export async function describeStop(name: string, city: string, category?: string
         whyRecommended: data.why_recommended ?? '',
         address: data.address ?? null,
         officialWebsite: data.official_website ?? null,
+        localTip: data.local_tip ?? null,
       }
       if (!result.description) return null
       cache.set(key, result)

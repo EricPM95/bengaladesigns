@@ -389,6 +389,7 @@ export function mapGeneratedRouteToRoute(
   destination: string,
   answers: QuestionnaireAnswers,
   transportContext: TransportContext,
+  anchorNames: string[] = [],
 ): Route {
   const didntMakeCut = mapDidntMakeCut(generated.not_included)
   const excursionsByDay = mapExcursionsByDay(generated.excursions_available)
@@ -421,5 +422,6 @@ export function mapGeneratedRouteToRoute(
     budget: mapBudget(generated.estimated_budget),
     intensity: answers.pace === 'zen' ? 1 : answers.pace === 'nonstop' ? 5 : 3,
     createdAt: new Date().toISOString(),
+    anchorNames,
   }
 }
