@@ -9,10 +9,12 @@ export interface StopsMapMarker {
   id: string
   name: string
   coordinates: Coordinates
-  /** Número mostrado en el pin — quien llama decide qué significa (posición en el día, orden global...). */
+  /** Número mostrado en el pin — quien llama decide qué significa (posición en el día, orden global...). Ignorado si `icon` está presente. */
   number: number
   bg: string
   text: string
+  /** Emoji/icono mostrado en vez del número — para el pin morado de "punto de llegada" (avión/barco/tren), ver arrivalIcon.ts. */
+  icon?: string
   /** Foto ya existente de la parada (mismo dato que su tarjeta) — si falta, el popup muestra solo el nombre, sin pedirla a ninguna API. */
   photoUrl?: string
 }
@@ -33,7 +35,9 @@ interface StopsMapViewProps {
 export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
-  const markersKey = markers.map((marker) => `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.number}:${marker.bg}`).join('|')
+  const markersKey = markers
+    .map((marker) => `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}`)
+    .join('|')
 
   useEffect(() => {
     if (!containerRef.current || markers.length === 0) return
@@ -66,7 +70,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
         inner.style.color = marker.text
         inner.className =
           'flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white transition-transform'
-        inner.textContent = String(marker.number)
+        inner.textContent = marker.icon ?? String(marker.number)
         root.appendChild(inner)
         root.addEventListener('click', (event) => {
           event.stopPropagation()

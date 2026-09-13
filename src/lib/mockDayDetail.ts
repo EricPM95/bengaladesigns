@@ -68,8 +68,18 @@ export interface ArrivalDepartureDetail {
   headline: string
   subtitle: string
   whyRecommendation: string
-  disclaimer: string
   airports: AirportOption[]
+}
+
+/** Nombre real de la estación/hub principal de la ciudad, tomado de los propios transitOptions ya
+    conocidos (ej. "Roma Termini") — nunca "la estación principal" a secas. null cuando no se conoce
+    ninguno con fiabilidad (aeropuerto genérico sin datos concretos). */
+function primaryHubName(airports: AirportOption[]): string | null {
+  for (const airport of airports) {
+    const withStop = airport.transitOptions.find((option) => option.stopName)
+    if (withStop?.stopName) return withStop.stopName
+  }
+  return null
 }
 
 /** Únicos destinos con más de un aeropuerto conocido en este mock — el resto cae al genérico de un solo punto de llegada. */
@@ -134,6 +144,11 @@ function genericAirport(cityName: string): AirportOption {
 
 export function buildArrivalDepartureDetail(cityName: string, originName: string, kind: 'arrival' | 'departure'): ArrivalDepartureDetail {
   const airports = MULTI_AIRPORT_CITIES[cityName.trim().toLowerCase()] ?? [genericAirport(cityName)]
+  const hubName = primaryHubName(airports)
+  // Con hub conocido (ej. "Roma Termini"): lo nombra directamente, como pide el ejemplo. Sin él
+  // (aeropuerto genérico sin datos concretos): referencia el propio aeropuerto por su nombre real en
+  // vez de inventar un hub que no conocemos — nunca "la estación/punto principal" a secas.
+  const hubReference = hubName ? `${hubName}, el punto de conexión principal de ${cityName}` : `${airports[0].name}`
 
   if (kind === 'arrival') {
     return {
@@ -141,10 +156,7 @@ export function buildArrivalDepartureDetail(cityName: string, originName: string
       cityName,
       headline: `Llegada a ${cityName}`,
       subtitle: `Cómo llegar al centro desde tu punto de entrada en ${cityName}`,
-      whyRecommendation:
-        'Recomendamos ir primero a la estación/punto principal de la ciudad porque es donde conecta el resto del transporte urbano (metro, tranvía, autobuses) — desde ahí, cualquier zona de alojamiento queda a un solo trasbordo.',
-      disclaimer:
-        'Esto no está ajustado a la hora exacta de tu vuelo — es la mejor forma de moverte una vez aterrices. Si añades tu vuelo en Reservas, podremos afinar los horarios.',
+      whyRecommendation: `Recomendamos ir primero a ${hubReference} — desde ahí conecta el metro, el tranvía y los autobuses urbanos, así que cualquier zona de tu alojamiento queda a un solo trasbordo.`,
       airports,
     }
   }
@@ -154,10 +166,7 @@ export function buildArrivalDepartureDetail(cityName: string, originName: string
     cityName,
     headline: `Vuelta a ${originName}`,
     subtitle: `Cómo llegar a tu punto de salida en ${cityName} con margen de sobra`,
-    whyRecommendation:
-      'Igual que a la llegada, el punto de salida principal es donde conecta todo el transporte urbano — desde cualquier zona de alojamiento llegas con un solo trasbordo, sin depender de tráfico impredecible.',
-    disclaimer:
-      'Esto no está ajustado a la hora exacta de tu vuelo de vuelta — calcula tu margen sobre la hora de salida real. Si añades tu vuelo en Reservas, podremos afinar los horarios.',
+    whyRecommendation: `Igual que a la llegada, ${hubReference} es donde conecta todo el transporte urbano — desde cualquier zona de tu alojamiento llegas con un solo trasbordo, sin depender de tráfico impredecible.`,
     airports,
   }
 }

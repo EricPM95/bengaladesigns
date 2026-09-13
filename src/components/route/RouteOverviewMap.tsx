@@ -3,12 +3,16 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Coordinates, DayPlan } from '../../lib/types'
 import { segmentCentroid, type DestinationSegment } from '../../lib/destinationSegments'
+import type { StopsMapMarker } from '../map/StopsMapView'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 interface RouteOverviewMapProps {
   segments: DestinationSegment[]
   days: DayPlan[]
+  /** Pin morado (avión/barco/tren) por destino, en las coordenadas reales de su aeropuerto/puerto/
+      estación — ver useArrivalMarkers.ts. Vacío mientras el geocoding no ha resuelto todavía. */
+  arrivalMarkers?: StopsMapMarker[]
 }
 
 function collectPoints(segments: DestinationSegment[], days: DayPlan[]): Coordinates[] {
@@ -21,10 +25,11 @@ function collectPoints(segments: DestinationSegment[], days: DayPlan[]): Coordin
  * ruta trazada en orden de la lista si hay varios. El centroide de cada tramo (`segmentCentroid`)
  * es su posición en el mapa.
  */
-export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
+export function RouteOverviewMap({ segments, days, arrivalMarkers = [] }: RouteOverviewMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const points = collectPoints(segments, days)
   const pointsKey = points.map((c) => `${c.lat.toFixed(5)},${c.lng.toFixed(5)}`).join('|')
+  const arrivalMarkersKey = arrivalMarkers.map((marker) => `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}`).join('|')
 
   useEffect(() => {
     if (!containerRef.current || points.length === 0) return
@@ -45,6 +50,16 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
         new mapboxgl.Marker({ element: el }).setLngLat([coords.lng, coords.lat]).addTo(map)
       })
 
+      // Pin morado del punto de llegada real (avión/barco/tren) por destino — ver useArrivalMarkers.ts.
+      arrivalMarkers.forEach((marker) => {
+        const el = document.createElement('div')
+        el.className = 'flex h-7 w-7 items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white'
+        el.style.backgroundColor = marker.bg
+        el.style.color = marker.text
+        el.textContent = marker.icon ?? ''
+        new mapboxgl.Marker({ element: el }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map)
+      })
+
       if (points.length > 1) {
         map.addSource('route-line', {
           type: 'geojson',
@@ -60,10 +75,13 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
           source: 'route-line',
           paint: { 'line-color': '#2DD4BF', 'line-width': 3, 'line-dasharray': [2, 1.5] },
         })
+      }
 
-        const bounds = points.reduce(
+      const allPoints = [...points, ...arrivalMarkers.map((marker) => marker.coordinates)]
+      if (allPoints.length > 1) {
+        const bounds = allPoints.reduce(
           (b, c) => b.extend([c.lng, c.lat] as [number, number]),
-          new mapboxgl.LngLatBounds([points[0].lng, points[0].lat], [points[0].lng, points[0].lat]),
+          new mapboxgl.LngLatBounds([allPoints[0].lng, allPoints[0].lat], [allPoints[0].lng, allPoints[0].lat]),
         )
         map.fitBounds(bounds, { padding: 48, maxZoom: 12 })
       }
@@ -78,7 +96,7 @@ export function RouteOverviewMap({ segments, days }: RouteOverviewMapProps) {
       resizeObserver.disconnect()
       map.remove()
     }
-  }, [pointsKey])
+  }, [pointsKey, arrivalMarkersKey])
 
   if (points.length === 0) {
     return (

@@ -3,6 +3,7 @@ import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { dayColorPastel, dayColorStrong } from '../../lib/dayColors'
+import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
 import { FloatingBudget } from '../layout/FloatingBudget'
@@ -98,6 +99,11 @@ export function RouteView() {
     if (window.innerWidth >= 768 && window.innerWidth < 1024) setPanelSplit(40)
   }, [])
 
+  // Calculado ya aquí (antes de los `return` condicionales de abajo) porque useArrivalMarkers es un
+  // hook — debe llamarse siempre, en el mismo orden, en cada render (reglas de los hooks).
+  const segmentsForArrivalMarkers = buildDestinationSegments(route?.days ?? [])
+  const arrivalMarkers = useArrivalMarkers(route, segmentsForArrivalMarkers)
+
   if (!route) return null
 
   // RESERVAS es su propia pantalla completa (mismo patrón ✕ que RUTA/EXPLORAR, ver
@@ -112,7 +118,7 @@ export function RouteView() {
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
   const activeDayIndex = route.days.findIndex((day) => day.id === activeDay.id)
-  const segments = buildDestinationSegments(route.days)
+  const segments = segmentsForArrivalMarkers
   const showRouteStyleMap = mode === 'route'
   // El botón de colapsar mapa aplica a DIAS y a EXPLORAR (mismo patrón mapa+tirador+colapsar en
   // ambas, pedido explícitamente para EXPLORAR también) — el resto de pestañas se quedan con el
@@ -173,9 +179,9 @@ export function RouteView() {
           <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
             {showRouteStyleMap ? (
               segments.length <= 1 ? (
-                <StopsMapView markers={buildCombinedDaysMarkers(route.days)} />
+                <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} />
               ) : (
-                <RouteOverviewMap segments={segments} days={route.days} />
+                <RouteOverviewMap segments={segments} days={route.days} arrivalMarkers={arrivalMarkers} />
               )
             ) : mode === 'explore' && exploreMarkers !== null ? (
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />

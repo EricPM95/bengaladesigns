@@ -7,6 +7,7 @@ import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
+import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { buildMockStopTickets } from '../../../lib/mockStopTickets'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { StopTicketCard } from './StopTicketCard'
@@ -67,6 +68,28 @@ function PinIcon() {
   )
 }
 
+function MetroIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+      <rect x="5" y="3" width="14" height="14" rx="4" />
+      <circle cx="8.5" cy="12.5" r="0.5" fill="currentColor" />
+      <circle cx="15.5" cy="12.5" r="0.5" fill="currentColor" />
+      <path d="M8 21l1.5-3h5L16 21M5 17h14" />
+    </svg>
+  )
+}
+
+function BusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+      <rect x="4" y="4" width="16" height="13" rx="2" />
+      <path d="M4 11h16M8 4v13M16 4v13" />
+      <circle cx="7.5" cy="19.5" r="1.2" />
+      <circle cx="16.5" cy="19.5" r="1.2" />
+    </svg>
+  )
+}
+
 /**
  * Ficha de una parada — pantalla completa con el mismo patrón mapa arriba + panel deslizable abajo
  * (tirador gris) ya usado en DIAS (ver RouteView.tsx), sustituye al acordeón inline que expandía
@@ -82,6 +105,7 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   const [descLoading, setDescLoading] = useState(false)
   const [descFailed, setDescFailed] = useState(false)
   const [anchorTips, setAnchorTips] = useState<StopTip[]>([])
+  const [nearbyTransit, setNearbyTransit] = useState<NearbyTransit>({ metro: [], bus: [] })
   const [directionsOpen, setDirectionsOpen] = useState(false)
 
   useEffect(() => {
@@ -118,6 +142,24 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
       cancelled = true
     }
   }, [stop?.id, stop?.name, isAnchor, city])
+
+  // Transporte público cercano — a diferencia de los tips de ancla, esto se pide para CUALQUIER
+  // parada (ver nearbyTransitApi.ts): es un hecho geográfico fijo, cacheado siempre por lugar, nunca
+  // por viaje. Metro/bus vacíos = Claude no encontró nada verificable con búsqueda web — la sección
+  // simplemente no se muestra, nunca se inventa una parada.
+  useEffect(() => {
+    if (!stop) {
+      setNearbyTransit({ metro: [], bus: [] })
+      return
+    }
+    let cancelled = false
+    fetchNearbyTransit(city, stop.name).then((result) => {
+      if (!cancelled) setNearbyTransit(result)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [stop?.id, stop?.name, city])
 
   const handleDragStart = (event: ReactPointerEvent) => {
     event.preventDefault()
@@ -285,6 +327,24 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                         </button>
                       </div>
                     )}
+
+                    {(nearbyTransit.metro.length > 0 || nearbyTransit.bus.length > 0) && (
+                      <div className="space-y-1.5 pt-1">
+                        {nearbyTransit.metro.map((entry, index) => (
+                          <p key={`metro-${index}`} className="flex items-center gap-1.5 text-small text-text-soft">
+                            <MetroIcon />
+                            {entry.linea ? `${entry.linea} · ${entry.parada}` : entry.parada}
+                          </p>
+                        ))}
+                        {nearbyTransit.bus.map((entry, index) => (
+                          <p key={`bus-${index}`} className="flex items-center gap-1.5 text-small text-text-soft">
+                            <BusIcon />
+                            {entry.linea ? `${entry.linea} · ${entry.parada}` : entry.parada}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+
                     {description?.officialWebsite && (
                       <a
                         href={

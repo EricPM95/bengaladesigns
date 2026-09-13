@@ -1,8 +1,11 @@
 import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import type { Coordinates } from '../../../lib/types'
 import type { ArrivalDepartureDetail } from '../../../lib/mockDayDetail'
 import { formatShortDateEs } from '../../../lib/dateRange'
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
+import { ARRIVAL_MARKER_BG, ARRIVAL_MARKER_TEXT, arrivalIconFor } from '../../../lib/arrivalIcon'
+import { resolveArrivalPointCoordinates } from '../../../lib/arrivalPointGeocoding'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import type { DayStopRef } from './StopDetailSheet'
 import { TipBox } from './TipBox'
@@ -23,6 +26,8 @@ interface ArrivalDetailSheetProps {
   dayNumber: number
   dateIso: string | null
   dayStops: DayStopRef[]
+  /** 'flight'|'ferry'|'train'|... (TransportOption.id / TransportSegment.mode) — decide el icono del pin morado del punto de llegada. null si no se conoce (rutas dev/manuales). */
+  transportModeId: string | null
   onClose: () => void
 }
 
@@ -48,11 +53,12 @@ function formatPrice(precio: number, moneda: string): string {
  * aeropuerto concreto tiene traslado privado en venta; "Tips" reutiliza el mismo caché con búsqueda
  * web que las anclas (anchorTipsApi.ts, kind:'airport'), una fila más en la misma tabla Supabase.
  */
-export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, onClose }: ArrivalDetailSheetProps) {
+export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, transportModeId, onClose }: ArrivalDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
   const [airportIndex, setAirportIndex] = useState(0)
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [tips, setTips] = useState<StopTip[]>([])
+  const [arrivalPointCoords, setArrivalPointCoords] = useState<Coordinates | null>(null)
 
   const airport = detail?.airports[airportIndex] ?? null
 
@@ -61,6 +67,24 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, onClo
     setTab('resumen')
     setAirportIndex(0)
   }, [detail?.kind, detail?.cityName])
+
+  // Coordenadas REALES del punto de llegada (no una aproximación) — para el pin morado del mapa.
+  // Fijas para los aeropuertos ya conocidos (ver arrivalPointGeocoding.ts), geocoding real vía
+  // Mapbox en cualquier otro caso, re-resuelto cada vez que cambia el aeropuerto seleccionado.
+  useEffect(() => {
+    if (!detail || !airport) {
+      setArrivalPointCoords(null)
+      return
+    }
+    let cancelled = false
+    const knownKey = airport.code ? `${airport.name} (${airport.code})` : undefined
+    resolveArrivalPointCoordinates(detail.cityName, transportModeId, knownKey).then((coords) => {
+      if (!cancelled) setArrivalPointCoords(coords)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [detail?.cityName, airport?.code, airport?.name, transportModeId])
 
   useEffect(() => {
     if (!detail || !airport) {
@@ -101,6 +125,18 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, onClo
     text: MARKER_TEXT,
     photoUrl: dayStop.photoUrl,
   }))
+
+  if (airport && arrivalPointCoords) {
+    markers.push({
+      id: `arrival-point-${airport.code || airport.name}`,
+      name: airport.name,
+      coordinates: arrivalPointCoords,
+      number: 0,
+      bg: ARRIVAL_MARKER_BG,
+      text: ARRIVAL_MARKER_TEXT,
+      icon: arrivalIconFor(transportModeId),
+    })
+  }
 
   const hasTraslados = Boolean(airport?.privateTransfer)
   const hasTips = tips.length > 0
@@ -226,8 +262,6 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, onClo
                       </div>
                     </div>
                   </div>
-
-                  <p className="text-caption text-text-muted">{detail.disclaimer}</p>
 
                   <a href="#" className="block text-small font-medium text-accent-hover underline underline-offset-2 hover:text-accent">
                     {airport.officialLinkLabel}

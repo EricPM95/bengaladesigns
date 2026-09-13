@@ -401,6 +401,83 @@ app.post('/api/anchor-tips', async (req, res) => {
   }
 })
 
+// ── Transporte público cercano a UNA parada (StopDetailSheet, pestaña "Resumen") — a diferencia de
+// tips_anclas (solo anclas), esto se cachea para CUALQUIER lugar de CUALQUIER ruta: es un hecho
+// geográfico fijo (qué línea de metro/bus para cerca), no depende del viajero ni del arquetipo del
+// viaje, así que compensa cachearlo siempre. Búsqueda web real a propósito — nunca inventar una
+// línea/parada de memoria, ver NEARBY_TRANSIT_SYSTEM_PROMPT.
+const NEARBY_TRANSIT_SYSTEM_PROMPT = `You are a meticulous local transit researcher with web search access. Someone wants to know the closest metro and bus stops to ONE specific place. Use web search to verify real, current, specific transit lines and stop names — NEVER invent or guess a line/stop name from general knowledge if you cannot verify it. If you cannot find reliable information for a category, return an empty array for it — an empty result is always better than a wrong or made-up one.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "metro": [{ "linea": "e.g. 'Línea B'", "parada": "e.g. 'Colosseo'" }],
+  "bus": [{ "linea": "e.g. '75, 87, 118'", "parada": "e.g. 'Colosseo/Via Labicana'" }]
+}
+Both arrays may be empty. Only include entries you are confident are real and current. Write "linea" and "parada" in Spanish where they're not proper nouns (keep real line numbers/names as-is).`
+
+function sanitizeTransitEntries(raw) {
+  if (!Array.isArray(raw)) return []
+  return raw
+    .filter((entry) => entry && typeof entry.parada === 'string' && entry.parada.trim())
+    .slice(0, 6)
+    .map((entry) => ({
+      linea: typeof entry.linea === 'string' ? entry.linea.trim().slice(0, 100) : '',
+      parada: entry.parada.trim().slice(0, 150),
+    }))
+}
+
+app.post('/api/nearby-transit', async (req, res) => {
+  const { destino, lugar } = req.body ?? {}
+  if (!destino || !lugar) {
+    res.status(400).json({ error: 'Se requiere destino y lugar.' })
+    return
+  }
+
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin.from('transporte_cercano').select('metro, bus').eq('destino', destino).eq('lugar', lugar).maybeSingle()
+      if (error) throw error
+      if (data) {
+        res.json({ metro: data.metro ?? [], bus: data.bus ?? [], cached: true })
+        return
+      }
+    } catch (error) {
+      logAnthropicError('nearby-transit (read cache)', error)
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+      system: NEARBY_TRANSIT_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Place: "${lugar}"\nCity: "${destino}"` }],
+    })
+
+    const textBlocks = response.content.filter((block) => block.type === 'text')
+    const finalText = textBlocks[textBlocks.length - 1]?.text
+    if (!finalText) throw new Error('Respuesta de Claude sin bloque de texto final')
+
+    const parsed = JSON.parse(extractJsonText(finalText))
+    const metro = sanitizeTransitEntries(parsed?.metro)
+    const bus = sanitizeTransitEntries(parsed?.bus)
+
+    if (supabaseAdmin) {
+      try {
+        await supabaseAdmin.from('transporte_cercano').insert({ destino, lugar, metro, bus })
+      } catch (error) {
+        logAnthropicError('nearby-transit (write cache)', error)
+      }
+    }
+
+    res.json({ metro, bus, cached: false })
+  } catch (error) {
+    logAnthropicError('nearby-transit', error)
+    res.status(502).json({ error: 'No se pudo obtener el transporte cercano con IA.' })
+  }
+})
+
 // ── "Elige lugares" — pantalla tras "Elige tus experiencias", lista AMPLIA de sitios reales ──
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios

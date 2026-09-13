@@ -111,6 +111,13 @@ export function DayDetailPanel({
   const arrivalDetail = travel
     ? buildArrivalDepartureDetail(isLastDay ? travel.fromCity : travel.toCity, origin, isLastDay ? 'departure' : 'arrival')
     : null
+  // Modo de transporte para el pin morado del mapa de ArrivalDetailSheet (ver arrivalIcon.ts): el
+  // día 1 y el de vuelta no tienen su propio TransportSegment (city_transitions solo cubre
+  // transiciones ENTRE destinos del propio viaje, no el tramo origen↔destino) — para esos dos se usa
+  // el modo elegido en el cuestionario (transport_option); cualquier otro día de traslado (cambio de
+  // ciudad dentro de un viaje multidestino) sí tiene su propio day.transport.
+  const arrivalTransportModeId =
+    day.dayNumber === 1 || isLastDay ? (route?.transportContext.transport_option?.id ?? null) : (day.transport?.mode ?? null)
 
   const stops = resolveDisplayStops(day)
   const realStops: Stop[] = day.stops.length > 0 ? day.stops : seedStopsFromTemplate(day)
@@ -279,6 +286,7 @@ export function DayDetailPanel({
         dayNumber={day.dayNumber}
         dateIso={dateIso}
         dayStops={dayStopRefs}
+        transportModeId={arrivalTransportModeId}
         onClose={() => setArrivalSheetOpen(false)}
       />
     </div>
