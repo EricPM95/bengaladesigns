@@ -403,7 +403,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
   return {
     id: stop.id,
     name: stop.name,
-    category: stop.categoryLabel ?? 'Añadido por ti',
+    category: stop.categoryLabel ?? 'Punto de interés',
     hours: null,
     durationMinutes: stop.durationMinutes,
     photoUrl: stop.photoUrl,
@@ -471,6 +471,8 @@ export interface ConnectorInfo {
   label: string
   /** Presente solo cuando hasRealDisplacement=true — una opción por modo, mismo orden siempre (driving, transit, walking). */
   modeOptions?: TransportModeOption[]
+  /** Distancia a pie en metros, presente solo cuando hasRealDisplacement=true — para el resumen "X km a pie" de DayDetailPanel.tsx, sin tener que parsear distanceLabel. */
+  meters?: number
 }
 
 const TEXT_ONLY_CONNECTORS = [
@@ -496,6 +498,7 @@ function buildRealDisplacement(seed: string): ConnectorInfo {
     hasRealDisplacement: true,
     label: `${walkMinutes} min a pie · ${meters} m`,
     modeOptions,
+    meters,
   }
 }
 
@@ -546,6 +549,7 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
     hasRealDisplacement: true,
     label: `${walking.minutes} min a pie · ${formatMeters(walking.meters)}`,
     modeOptions,
+    meters: walking.meters,
   }
 }
 

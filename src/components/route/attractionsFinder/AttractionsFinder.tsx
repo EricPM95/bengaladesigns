@@ -86,6 +86,7 @@ function stopFromResult(result: AttractionSearchResult): Stop {
     time: '12:00',
     name: result.name,
     description: 'Añadido por ti',
+    categoryLabel: result.category || undefined,
     durationMinutes: 60,
     coordinates: result.coordinates,
     photoUrl: result.photoUrl,

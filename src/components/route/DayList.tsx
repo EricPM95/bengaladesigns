@@ -20,7 +20,7 @@ interface DayListProps {
   onSelectDay: (dayId: string | null) => void
 }
 
-function ChevronIcon({ expanded }: { expanded: boolean }) {
+function ChevronIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -29,9 +29,9 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+      className="h-4 w-4 shrink-0 text-text-muted"
     >
-      <polyline points="6 9 12 15 18 9" />
+      <polyline points="9 6 15 12 9 18" />
     </svg>
   )
 }
@@ -40,9 +40,10 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
  * Lista de todos los días del viaje en orden (única navegación entre días de DIAS — ya no hay tira
  * horizontal de chips aparte), cada uno como una caja individual sobre fondo gris — fecha + destino,
  * o las dos ciudades en rojo unidas por línea punteada en días de traslado (ver
- * computeDayTravelInfo). Cada caja es un acordeón: el día "expandido" es simplemente `activeDayId`,
- * solo puede haber un día abierto a la vez, sin estado propio en este componente. Click en el día ya
- * expandido lo contrae (pasa `null`). El banner "¿Necesitas alojamiento?" vive DENTRO de este mismo
+ * computeDayTravelInfo). Cada caja es solo un punto de navegación: tocarla abre la pantalla completa
+ * de ese día (DayDetailPanel, con su propio botón "Volver"), ya no expande contenido inline — así
+ * que `activeDayId` aquí solo decide QUÉ pantalla de día está abierta, no si lo está (no hay toggle
+ * de cerrar tocando la misma fila). El banner "¿Necesitas alojamiento?" vive DENTRO de este mismo
  * contenedor con scroll (antes vivía fuera, en RouteView.tsx, por lo que quedaba fijo en pantalla
  * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
@@ -85,16 +86,14 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
             <div
               role="button"
               tabIndex={0}
-              onClick={() => onSelectDay(expanded ? null : day.id)}
+              onClick={() => onSelectDay(day.id)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
-                  onSelectDay(expanded ? null : day.id)
+                  onSelectDay(day.id)
                 }
               }}
-              className={`flex w-full cursor-pointer items-center gap-3 bg-bg-card px-4 py-4 text-left transition-colors hover:bg-bg-card/80 ${
-                expanded ? 'rounded-t-xl' : 'rounded-xl'
-              }`}
+              className="flex w-full cursor-pointer items-center gap-3 rounded-xl bg-bg-card px-4 py-4 text-left transition-colors hover:bg-bg-card/80"
             >
               <div className="relative flex h-7 w-7 shrink-0 items-center justify-center">
                 {index > 0 && <span className="absolute bottom-full left-1/2 h-4 w-px -translate-x-1/2 bg-border" />}
@@ -125,30 +124,29 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                 </span>
               )}
 
-              <ChevronIcon expanded={expanded} />
+              <ChevronIcon />
             </div>
 
             {expanded && (
-              <div className="rounded-b-xl bg-bg-card">
-                <DayDetailPanel
-                  day={day}
-                  travel={travel}
-                  isLastDay={index === route.days.length - 1}
-                  origin={route.origin}
-                  stay={
-                    !isCamper && stayByFirstDayId.has(day.id) && stayByFirstDayId.get(day.id)!.nights > 0
-                      ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights }
-                      : null
-                  }
-                  nightSegmentDayId={!isCamper ? (segmentByDayId.get(day.id)?.dayIds[0] ?? null) : null}
-                  previousNightSegmentDayId={!isCamper ? (segmentByDayId.get(route.days[index - 1]?.id ?? '')?.dayIds[0] ?? null) : null}
-                  isRoadtripHop={segmentByDayId.get(day.id)?.nights === 1}
-                  allDays={allDays}
-                  isFirstDayOfTrip={index === 0}
-                  showCamperBlock={isCamper && hasRentalVehicle}
-                  showRentalCarBlock={!isCamper && hasRentalVehicle}
-                />
-              </div>
+              <DayDetailPanel
+                day={day}
+                travel={travel}
+                isLastDay={index === route.days.length - 1}
+                origin={route.origin}
+                stay={
+                  !isCamper && stayByFirstDayId.has(day.id) && stayByFirstDayId.get(day.id)!.nights > 0
+                    ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights }
+                    : null
+                }
+                nightSegmentDayId={!isCamper ? (segmentByDayId.get(day.id)?.dayIds[0] ?? null) : null}
+                previousNightSegmentDayId={!isCamper ? (segmentByDayId.get(route.days[index - 1]?.id ?? '')?.dayIds[0] ?? null) : null}
+                isRoadtripHop={segmentByDayId.get(day.id)?.nights === 1}
+                allDays={allDays}
+                isFirstDayOfTrip={index === 0}
+                showCamperBlock={isCamper && hasRentalVehicle}
+                showRentalCarBlock={!isCamper && hasRentalVehicle}
+                onBack={() => onSelectDay(null)}
+              />
             )}
           </div>
         )

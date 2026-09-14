@@ -3,7 +3,7 @@ import type { DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
-import { addDaysToIso } from '../../../lib/dateRange'
+import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
@@ -13,6 +13,7 @@ import {
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
@@ -43,23 +44,97 @@ interface DayDetailPanelProps {
   showCamperBlock: boolean
   /** vehicle_type car + vehicle_ownership rental — aparece ADEMÁS de AccommodationBlock (logística de vehículo aparte del alojamiento). */
   showRentalCarBlock: boolean
+  /** Vuelve a la lista de días (DayList) — este panel es ahora una pantalla completa de navegación, no un acordeón inline. */
+  onBack: () => void
 }
 
 const DEFAULT_MODE: TransportMode = 'walking'
+/** Hora asumida de inicio de la jornada (mock, sin dato real de horario por parada) — punto de partida para repartir las paradas entre Mañana/Tarde/Noche, ver `computeTimeSlots`. */
+const DAY_START_MINUTES = 9 * 60
+
+type TimeSlot = 'mañana' | 'tarde' | 'noche'
+
+const SLOT_LABELS: Record<TimeSlot, string> = { mañana: 'Mañana', tarde: 'Tarde', noche: 'Noche' }
+
+/** Reparte las paradas del día en Mañana (<13:00) / Tarde (13:00-19:00) / Noche (≥19:00) acumulando su `durationMinutes` desde `DAY_START_MINUTES` — sin dato real de hora de visita (mock), es la mejor aproximación disponible y coincide con el diseño de referencia (franjas por posición, no por horario de apertura). */
+function computeTimeSlots(stops: { durationMinutes: number }[]): TimeSlot[] {
+  let minutes = DAY_START_MINUTES
+  return stops.map((stop) => {
+    const slot: TimeSlot = minutes < 13 * 60 ? 'mañana' : minutes < 19 * 60 ? 'tarde' : 'noche'
+    minutes += stop.durationMinutes
+    return slot
+  })
+}
+
+function formatWalkKm(totalMeters: number): string {
+  if (totalMeters <= 0) return '0 km'
+  return `${(totalMeters / 1000).toFixed(1).replace('.', ',')} km`
+}
+
+function formatActivityDuration(totalMinutes: number): string {
+  if (totalMinutes <= 0) return '0h'
+  if (totalMinutes < 60) return `${totalMinutes} min`
+  const hours = Math.round((totalMinutes / 60) * 2) / 2
+  return `${Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')}h`
+}
+
+function BackIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  )
+}
+
+/** Apunta hacia arriba (mapa visible, tocar para colapsar) o hacia abajo (mapa colapsado, tocar para expandir) — mismo icono, solo rotado. */
+function MapToggleIcon({ mapVisible }: { mapVisible: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`h-4 w-4 transition-transform ${mapVisible ? '' : 'rotate-180'}`}
+    >
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  )
+}
+
+/** Mismo color por día que el círculo numerado de cada parada (ver dayIndex más abajo) — así el pin del mini-mapa de esta pantalla coincide con el resto de mapas de la app. */
+function buildDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
+  return stops.map((stop, index) => ({
+    id: stop.id,
+    name: stop.name,
+    coordinates: stop.coordinates,
+    number: index + 1,
+    bg: dayColorPastel(dayIndex),
+    text: dayColorStrong(dayIndex),
+    photoUrl: stop.photoUrl,
+  }))
+}
 
 /**
- * Contenido de un día al expandirlo en la pestaña DIAS — bloque(s) "dónde duermes" (estáticos, no
- * acordeón) primero: el de vehículo (camper, o coche de alquiler además del de alojamiento) SOLO en
- * `route.days[0]` (reserva única del viaje, ver VehicleBlock.tsx), luego el de alojamiento cuando
- * este día es el primer día de una estancia sin resolver, LUEGO el acordeón de llegada/vuelta si
- * aplica, y luego una parada por lugar, todo conectado por StopConnector. Solo un acordeón abierto a
- * la vez, con estado propio de este panel (independiente del acordeón "día" de DayList, que ya
- * decidió mostrar este panel).
+ * Pantalla completa de un día en la pestaña DIAS — navegación desde DayList.tsx (ya no es un
+ * acordeón inline: cada día abre esta pantalla y `onBack` vuelve a la lista). Mini-mapa arriba
+ * (con su propio colapsar/expandir, independiente del mapa compartido de RouteView.tsx, que queda
+ * cubierto detrás), cabecera con día/fecha/ciudad y un resumen en una fila (paradas · km a pie ·
+ * horas de actividad) — luego bloque(s) "dónde duermes" (estáticos, no acordeón): el de vehículo
+ * (camper, o coche de alquiler además del de alojamiento) SOLO en `route.days[0]` (reserva única
+ * del viaje, ver VehicleBlock.tsx), el de alojamiento cuando este día es el primer día de una
+ * estancia sin resolver, LUEGO el acordeón de llegada/vuelta si aplica, y luego las paradas
+ * agrupadas por franja horaria (Mañana/Tarde/Noche, ver `computeTimeSlots`) conectadas por
+ * StopConnector. Solo un acordeón de parada abierto a la vez, con estado propio de este panel.
  *
  * Las paradas se muestran vía `resolveDisplayStops` — plantilla mock mientras `day.stops` esté
  * vacío, paradas reales (editables) en cuanto hay alguna edición (añadir/quitar/mover/cambiar) —
  * ver mockDayDetail.ts. Los conectores no necesitan invalidación explícita: se derivan del ORDEN e
- * ÍNDICE de las paradas en cada render, así que cualquier edición ya los recalcula gratis.
+ * ÍNDICE de las paradas en cada render, así que cualquier edición ya los recalcula gratis. El
+ * conector entre dos paradas de FRANJAS distintas se sustituye por la cabecera de la franja nueva
+ * (sin fila de desplazamiento ahí, igual que en el diseño de referencia) — excepto el primero del
+ * día, que conserva su conector (llegada/instalación) bajo la cabecera "Mañana".
  *
  * El modo de transporte de cada conector es propio de este panel: `modeOverrides` guarda las
  * elecciones puntuales por conector, `dayDefaultMode` es el predeterminado aplicado a todos cuando
@@ -86,6 +161,7 @@ export function DayDetailPanel({
   isFirstDayOfTrip,
   showCamperBlock,
   showRentalCarBlock,
+  onBack,
 }: DayDetailPanelProps) {
   const accommodationResolved = useRouteStore((state) => (stay ? Boolean(state.accommodationSelections[stay.segmentDayId]) : false))
   const tonightHotel = useRouteStore((state) => (nightSegmentDayId ? state.accommodationSelections[nightSegmentDayId] : undefined))
@@ -102,6 +178,7 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  const [mapCollapsed, setMapCollapsed] = useState(false)
   // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
   // cada conector parada→parada en cuanto resuelven — ver el useEffect más abajo y
   // refineConnectorWithRealDistance en mockDayDetail.ts. Empieza vacío: el primer render siempre
@@ -172,9 +249,32 @@ export function DayDetailPanel({
   // simple) — vacío en rutas dev/manuales, que no pasan por /api/generate-anchors.
   const anchorNamesLower = new Set((route?.anchorNames ?? []).map((name) => name.toLowerCase()))
 
+  // Un conector por parada (llegada/instalación → parada 1, o parada→parada) — calculado una sola
+  // vez y reutilizado tanto para el render como para el resumen "km a pie" de la cabecera.
+  const connectorEntries = stops.map((_stop, index) => {
+    const connectorKey = `${day.id}-connector-${index}`
+    const fromAccommodation = index === 0 && useAccommodationOrigin && previousNightHotel
+    const connector = fromAccommodation
+      ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)
+      : (refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index))
+    const fromName = fromAccommodation ? previousNightHotel.name : index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
+    return { connectorKey, connector, fromName }
+  })
+  const finalConnector: ConnectorInfo | null =
+    stops.length > 0
+      ? tonightHotel
+        ? buildAccommodationConnectorInfo(`${day.id}-to-accommodation-${tonightHotel.id}`)
+        : { hasRealDisplacement: false, label: 'Fin del día.' }
+      : null
+
+  const timeSlots = computeTimeSlots(stops)
+  const totalWalkMeters = connectorEntries.reduce((sum, entry) => sum + (entry.connector.meters ?? 0), 0) + (finalConnector?.meters ?? 0)
+  const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
+  const dayMarkers = buildDayMarkers(realStops, dayIndex)
+
   const renderConnector = (
     connectorKey: string,
-    connector: ReturnType<typeof buildConnectorInfo>,
+    connector: ConnectorInfo,
     fromName: string,
     toName: string,
     addStopIndex: number,
@@ -199,77 +299,144 @@ export function DayDetailPanel({
   }
 
   return (
-    <div className="space-y-2 px-3 pb-3">
-      {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
-
-      {stay && !accommodationResolved && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
-
-      {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
-
-      {arrivalDetail && (
-        <button
-          type="button"
-          onClick={() => setArrivalSheetOpen(true)}
-          className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg-card p-3 text-left transition-colors hover:bg-bg-hover"
-        >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-hover text-white" aria-hidden="true">
-            ✈
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-body font-semibold text-text">{arrivalDetail.headline}</p>
-            <p className="truncate text-caption text-text-soft">{arrivalDetail.subtitle}</p>
-          </div>
-        </button>
+    <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
+      {mapCollapsed ? (
+        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card p-3">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Volver"
+            title="Volver"
+            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-sm transition-colors hover:bg-bg-hover"
+          >
+            <BackIcon />
+          </button>
+          <button
+            type="button"
+            onClick={() => setMapCollapsed(false)}
+            aria-label="Mostrar mapa"
+            title="Mostrar mapa"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-sm transition-colors hover:bg-bg-hover"
+          >
+            <MapToggleIcon mapVisible={false} />
+          </button>
+        </div>
+      ) : (
+        <div className="relative h-48 shrink-0">
+          <StopsMapView markers={dayMarkers} />
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Volver"
+            title="Volver"
+            className="absolute left-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+          >
+            <BackIcon />
+          </button>
+          <button
+            type="button"
+            onClick={() => setMapCollapsed(true)}
+            aria-label="Ocultar mapa"
+            title="Ocultar mapa"
+            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-md transition-colors hover:bg-bg-hover"
+          >
+            <MapToggleIcon mapVisible />
+          </button>
+        </div>
       )}
 
-      {stops.map((stop, index) => {
-        const connectorKey = `${day.id}-connector-${index}`
-        const fromAccommodation = index === 0 && useAccommodationOrigin && previousNightHotel
-        const connector = fromAccommodation
-          ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)
-          : (refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index))
-        const fromName = fromAccommodation ? previousNightHotel.name : index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 pt-4">
+          <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">
+            Día {day.dayNumber}
+            {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
+          </p>
+          <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 text-small text-text-soft">
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true">📍</span>
+              {stops.length} parada{stops.length === 1 ? '' : 's'}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true">🚶</span>
+              {formatWalkKm(totalWalkMeters)} a pie
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true">🕐</span>
+              {formatActivityDuration(totalActivityMinutes)} actividad
+            </span>
+          </div>
+        </div>
 
-        return (
-          <div key={stop.id}>
-            {renderConnector(connectorKey, connector, fromName, stop.name, index)}
-            <StopAccordion
-              index={index}
-              stop={stop}
-              circleBg={stopCircleBg}
-              circleText={stopCircleText}
-              onOpen={() => setDetailIndex(index)}
-              menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
+        <div className="space-y-2 px-3 pb-3">
+          {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
+
+          {stay && !accommodationResolved && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
+
+          {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
+
+          {arrivalDetail && (
+            <button
+              type="button"
+              onClick={() => setArrivalSheetOpen(true)}
+              className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg-card p-3 text-left transition-colors hover:bg-bg-hover"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-hover text-white" aria-hidden="true">
+                ✈
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-body font-semibold text-text">{arrivalDetail.headline}</p>
+                <p className="truncate text-caption text-text-soft">{arrivalDetail.subtitle}</p>
+              </div>
+            </button>
+          )}
+
+          {stops.map((stop, index) => {
+            const { connectorKey, connector, fromName } = connectorEntries[index]
+            const slot = timeSlots[index]
+            const showSlotHeader = index === 0 || slot !== timeSlots[index - 1]
+            const showConnector = index === 0 || slot === timeSlots[index - 1]
+
+            return (
+              <div key={stop.id}>
+                {showSlotHeader && (
+                  <p className={`px-1 pb-1 text-caption font-semibold uppercase tracking-wide text-text-muted ${index === 0 ? 'pt-0' : 'pt-3'}`}>
+                    {SLOT_LABELS[slot]}
+                  </p>
+                )}
+                {showConnector && renderConnector(connectorKey, connector, fromName, stop.name, index)}
+                <StopAccordion
+                  index={index}
+                  stop={stop}
+                  circleBg={stopCircleBg}
+                  circleText={stopCircleText}
+                  onOpen={() => setDetailIndex(index)}
+                  menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
+                />
+              </div>
+            )
+          })}
+
+          {stops.length > 0 &&
+            finalConnector &&
+            renderConnector(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
+
+          {route && (
+            <AttractionsFinder
+              route={route}
+              city={day.city}
+              open={insertAt !== null}
+              title="Añadir una parada"
+              onPick={(newStop) => {
+                if (day.stops.length === 0) seedDayStops(day.id, realStops)
+                if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
+                setInsertAt(null)
+              }}
+              onClose={() => setInsertAt(null)}
             />
-          </div>
-        )
-      })}
-
-      {stops.length > 0 &&
-        renderConnector(
-          `${day.id}-connector-accommodation`,
-          tonightHotel
-            ? buildAccommodationConnectorInfo(`${day.id}-to-accommodation-${tonightHotel.id}`)
-            : { hasRealDisplacement: false, label: 'Fin del día.' },
-          stops[stops.length - 1].name,
-          tonightHotel?.name ?? '',
-          stops.length,
-        )}
-
-      {route && (
-        <AttractionsFinder
-          route={route}
-          city={day.city}
-          open={insertAt !== null}
-          title="Añadir una parada"
-          onPick={(newStop) => {
-            if (day.stops.length === 0) seedDayStops(day.id, realStops)
-            if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
-            setInsertAt(null)
-          }}
-          onClose={() => setInsertAt(null)}
-        />
-      )}
+          )}
+        </div>
+      </div>
 
       <StopDetailSheet
         stop={detailIndex !== null ? stops[detailIndex] : null}
