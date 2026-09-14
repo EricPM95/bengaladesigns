@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import type { DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
@@ -51,6 +51,10 @@ interface DayDetailPanelProps {
 const DEFAULT_MODE: TransportMode = 'walking'
 /** Hora asumida de inicio de la jornada (mock, sin dato real de horario por parada) — punto de partida para repartir las paradas entre Mañana/Tarde/Noche, ver `computeTimeSlots`. */
 const DAY_START_MINUTES = 9 * 60
+// Mismos límites/valor por defecto que el tirador de mapa de StopDetailSheet.tsx/ArrivalDetailSheet.tsx — ninguno de los dos lados puede llegar a desaparecer del todo.
+const MAP_MIN_VH = 15
+const MAP_MAX_VH = 75
+const DEFAULT_MAP_VH = 28
 
 type TimeSlot = 'mañana' | 'tarde' | 'noche'
 
@@ -207,6 +211,7 @@ export function DayDetailPanel({
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
   const [mapCollapsed, setMapCollapsed] = useState(false)
+  const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
   // cada conector parada→parada en cuanto resuelven — ver el useEffect más abajo y
   // refineConnectorWithRealDistance en mockDayDetail.ts. Empieza vacío: el primer render siempre
@@ -326,6 +331,23 @@ export function DayDetailPanel({
     )
   }
 
+  // Mismo patrón de tirador arrastrable que StopDetailSheet.tsx/ArrivalDetailSheet.tsx — agranda/encoge el mini-mapa, clamped entre MAP_MIN_VH y MAP_MAX_VH.
+  const handleMapDragStart = (event: ReactPointerEvent) => {
+    event.preventDefault()
+    const startY = event.clientY
+    const startVh = mapVh
+    const vhUnit = window.innerHeight / 100
+    const clampedVh = (clientY: number) => Math.min(MAP_MAX_VH, Math.max(MAP_MIN_VH, startVh + (clientY - startY) / vhUnit))
+    const onPointerMove = (moveEvent: PointerEvent) => setMapVh(clampedVh(moveEvent.clientY))
+    const onPointerUp = (upEvent: PointerEvent) => {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
+      setMapVh(clampedVh(upEvent.clientY))
+    }
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
+  }
+
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
       {mapCollapsed ? (
@@ -350,7 +372,7 @@ export function DayDetailPanel({
           </button>
         </div>
       ) : (
-        <div className="relative h-48 shrink-0">
+        <div className="relative shrink-0" style={{ height: `${mapVh}vh` }}>
           <StopsMapView markers={dayMarkers} />
           <button
             type="button"
@@ -370,6 +392,12 @@ export function DayDetailPanel({
           >
             <MapToggleIcon mapVisible />
           </button>
+        </div>
+      )}
+
+      {!mapCollapsed && (
+        <div onPointerDown={handleMapDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center bg-bg-card py-2">
+          <span className="h-1.5 w-10 rounded-full bg-border" />
         </div>
       )}
 

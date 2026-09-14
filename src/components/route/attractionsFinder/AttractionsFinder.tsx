@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { Route, Stop } from '../../../lib/types'
+import type { Coordinates, Route, Stop } from '../../../lib/types'
 import { searchAttractions, type AttractionSearchResult } from '../../../lib/mapboxAttractionsSearch'
+import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
-import { Modal } from '../../ui/Modal'
-import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { Spinner } from '../../ui/Spinner'
 
 interface MultiSelectConfig {
@@ -56,14 +55,6 @@ function XIcon() {
   )
 }
 
-function BackIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  )
-}
-
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -95,14 +86,15 @@ function stopFromResult(result: AttractionSearchResult): Stop {
 
 /**
  * Buscador de lugares — dos formas muy distintas según el modo:
- * - Un solo lugar (`onPick`, sin `multiSelect`): ficha compacta tipo hoja inferior (ver Modal.tsx),
- *   un único buscador con foco automático, resultados en vivo vía Mapbox Search Box API (sin
- *   pestañas de "Pool"/"Buscar" separadas — todo en una sola lista), etiqueta "En la lista" para lo
- *   que ya está en la ruta (en cualquier día, no solo el actual — ver routeStopsIndex.ts) SIN
- *   impedir añadirlo de nuevo, y una fila "Buscar: {término}" que cambia a vista de mapa con esos
- *   mismos resultados. Tocar cualquier resultado (o su pin en el mapa) lo añade y cierra al momento.
- *   Usado en el "+" entre paradas de DIAS, "Atracciones" de EXPLORAR y "Añadir yo mismo" de RESERVAS/
- *   Modo Hoy.
+ * - Un solo lugar (`onPick`, sin `multiSelect`): pantalla completa (sin mapa — solo buscador +
+ *   lista, ocupando toda la pantalla), foco automático, resultados en vivo vía Mapbox Search Box
+ *   API (sin pestañas de "Pool"/"Buscar" separadas — todo en una sola lista) con sesgo de
+ *   `proximity` centrado en el destino del viaje (geocodificado una vez por `city` al abrir, ver
+ *   `proximity` más abajo) para que un homónimo lejano no se cuele por delante del lugar real del
+ *   viaje. Etiqueta "En la lista" para lo que ya está en la ruta (en cualquier día, no solo el
+ *   actual — ver routeStopsIndex.ts) SIN impedir añadirlo de nuevo. Tocar cualquier resultado lo
+ *   añade y cierra al momento. Usado en el "+" entre paradas de DIAS, "Atracciones" de EXPLORAR y
+ *   "Añadir yo mismo" de RESERVAS/Modo Hoy.
  * - Selección libre (`multiSelect`): pantalla completa con acordeón "ya en tu ruta" + checkboxes +
  *   botón "Confirmar", sin tocar — ver DayMenu.tsx "Regenerar este día".
  */
@@ -113,7 +105,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
   const [searching, setSearching] = useState(false)
   const [searchFailed, setSearchFailed] = useState(false)
   const [selected, setSelected] = useState<Map<string, Stop>>(new Map())
-  const [mapView, setMapView] = useState(false)
+  const [proximity, setProximity] = useState<Coordinates | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const stopEntries = buildRouteStopEntries(route)
@@ -125,13 +117,26 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     setQuery('')
     setResults(null)
     setSearchFailed(false)
-    setMapView(false)
     setSelected(new Map((multiSelect?.initialSelected ?? []).map((stop) => [stop.id, stop])))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
+  // Coordenadas del destino actual (geocodificadas una vez por ciudad, no en cada tecleo) — sesgo
+  // de proximidad para la búsqueda de abajo, ver mapboxAttractionsSearch.ts. null si la ciudad no
+  // resuelve (deja la búsqueda sin sesgo, nunca bloquea).
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    searchPlaces(city).then((places) => {
+      if (!cancelled) setProximity(places[0]?.coordinates ?? null)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, city])
+
   // Foco automático en el buscador del modo "un solo lugar" — con un pequeño margen para que la
-  // animación de entrada de Modal.tsx ya haya montado el input antes de intentar enfocarlo.
+  // animación de entrada ya haya montado el input antes de intentar enfocarlo.
   useEffect(() => {
     if (!open || multiSelect) return
     const timer = window.setTimeout(() => inputRef.current?.focus(), 50)
@@ -157,7 +162,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     let cancelled = false
     setSearching(true)
     const timer = window.setTimeout(() => {
-      searchAttractions(trimmed).then((found) => {
+      searchAttractions(trimmed, proximity).then((found) => {
         if (cancelled) return
         setResults(found)
         setSearchFailed(found.length === 0)
@@ -168,7 +173,8 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [query])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, proximity])
 
   const pick = (result: AttractionSearchResult) => {
     const stop = stopFromResult(result)
@@ -332,119 +338,97 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     )
   }
 
-  // ── Modo un solo lugar — hoja inferior compacta ──────────────────────────────────────────────
+  // ── Modo un solo lugar — pantalla completa, sin mapa: solo buscador + lista ─────────────────────
   const trimmedQuery = query.trim()
-  const mapMarkers: StopsMapMarker[] = sortedResults.map((result, index) => ({
-    id: result.id,
-    name: result.name,
-    coordinates: result.coordinates,
-    number: index + 1,
-    bg: 'rgb(var(--accent))',
-    text: '#ffffff',
-    photoUrl: result.photoUrl,
-  }))
+
+  const resultRow = (result: AttractionSearchResult) => {
+    const alreadyInRoute = isNameAlreadyInRoute(result.name, stopEntries)
+    return (
+      <button
+        key={result.id}
+        type="button"
+        onClick={() => pick(result)}
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-hover"
+      >
+        <PinIcon />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-small font-semibold text-text">{result.name}</p>
+          <p className="truncate text-caption text-text-soft">{result.address}</p>
+        </div>
+        {alreadyInRoute && <span className="shrink-0 rounded-full bg-accent-soft px-2 py-1 text-caption font-semibold text-accent-hover">En la lista</span>}
+      </button>
+    )
+  }
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <div className="space-y-4">
-        <h2 className="text-center font-display text-h2 font-semibold text-text">{title ?? 'Añadir una parada'}</h2>
-
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-bg px-3 py-2.5">
-          <SearchIcon />
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Busca un lugar..."
-            autoComplete="off"
-            className="w-full bg-transparent text-body text-text outline-none placeholder:text-text-muted"
-          />
-          {query && (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg"
+        >
+          <div className="flex shrink-0 items-center gap-3 border-b border-border p-4 pl-16">
             <button
               type="button"
-              onClick={() => {
-                setQuery('')
-                inputRef.current?.focus()
-              }}
-              aria-label="Borrar búsqueda"
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-hover text-text-muted hover:text-text"
+              onClick={onClose}
+              aria-label="Cerrar"
+              title="Cerrar"
+              className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
             >
-              <XIcon />
+              ✕
             </button>
-          )}
-        </div>
+            <h2 className="font-display text-h2 font-semibold text-text">{title ?? 'Añadir una parada'}</h2>
+          </div>
 
-        {mapView ? (
-          <div className="space-y-2">
-            <button type="button" onClick={() => setMapView(false)} className="flex items-center gap-1.5 text-small font-semibold text-accent-hover hover:text-accent">
-              <BackIcon />
-              Volver a la lista
-            </button>
-            <div className="h-72 overflow-hidden rounded-xl border border-border">
-              <StopsMapView markers={mapMarkers} onSelectStop={(id) => { const result = sortedResults.find((r) => r.id === id); if (result) pick(result) }} />
+          <div className="shrink-0 px-4 pt-3">
+            <div className="mx-auto flex w-full max-w-lg items-center gap-2 rounded-xl border border-border bg-bg-card px-3 py-2.5">
+              <SearchIcon />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Busca un lugar..."
+                autoComplete="off"
+                className="w-full bg-transparent text-body text-text outline-none placeholder:text-text-muted"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('')
+                    inputRef.current?.focus()
+                  }}
+                  aria-label="Borrar búsqueda"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-hover text-text-muted hover:text-text"
+                >
+                  <XIcon />
+                </button>
+              )}
             </div>
           </div>
-        ) : (
-          <div className="max-h-[55vh] space-y-1 overflow-y-auto">
-            {!trimmedQuery && <p className="py-6 text-center text-small text-text-soft">Escribe para buscar un lugar.</p>}
 
-            {trimmedQuery && searching && (
-              <p className="flex items-center gap-2 py-4 text-small text-text-soft">
-                <Spinner className="text-accent" />
-                Buscando...
-              </p>
-            )}
+          <div className="flex-1 overflow-y-auto p-4 pt-2">
+            <div className="mx-auto w-full max-w-lg space-y-1">
+              {!trimmedQuery && <p className="py-6 text-center text-small text-text-soft">Escribe para buscar un lugar.</p>}
 
-            {trimmedQuery && !searching && searchFailed && (
-              <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
-            )}
+              {trimmedQuery && searching && (
+                <p className="flex items-center gap-2 py-4 text-small text-text-soft">
+                  <Spinner className="text-accent" />
+                  Buscando...
+                </p>
+              )}
 
-            {trimmedQuery &&
-              !searching &&
-              sortedResults.length > 0 &&
-              (() => {
-                const [first, ...rest] = sortedResults
-                const resultRow = (result: AttractionSearchResult) => {
-                  const alreadyInRoute = isNameAlreadyInRoute(result.name, stopEntries)
-                  return (
-                    <button
-                      key={result.id}
-                      type="button"
-                      onClick={() => pick(result)}
-                      className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-hover"
-                    >
-                      <PinIcon />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-small font-semibold text-text">{result.name}</p>
-                        <p className="truncate text-caption text-text-soft">{result.address}</p>
-                      </div>
-                      {alreadyInRoute && (
-                        <span className="shrink-0 rounded-full bg-accent-soft px-2 py-1 text-caption font-semibold text-accent-hover">En la lista</span>
-                      )}
-                    </button>
-                  )
-                }
-                return (
-                  <>
-                    {resultRow(first)}
-                    <button
-                      type="button"
-                      onClick={() => setMapView(true)}
-                      className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-hover"
-                    >
-                      <SearchIcon />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-small font-semibold text-text">Buscar: {trimmedQuery}</p>
-                        <p className="text-caption text-text-soft">Ver resultado(s) en el mapa</p>
-                      </div>
-                    </button>
-                    {rest.map(resultRow)}
-                  </>
-                )
-              })()}
+              {trimmedQuery && !searching && searchFailed && (
+                <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
+              )}
+
+              {trimmedQuery && !searching && sortedResults.map(resultRow)}
+            </div>
           </div>
-        )}
-      </div>
-    </Modal>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
