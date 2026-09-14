@@ -478,6 +478,102 @@ app.post('/api/nearby-transit', async (req, res) => {
   }
 })
 
+// ── "Nuestra selección" de restaurantes — acordeón dorado "Hora de comer"/"Hora de cenar" en DIAS,
+// cuando el timeline de un día cruza la franja de comida o cena (ver DayDetailPanel.tsx) — mismo
+// patrón que tips_anclas/transporte_cercano: hecho geográfico+temporal fijo (qué restaurantes
+// recomendar en una zona a esa hora), independiente del viajero, cacheado UNA vez por zona+franja
+// en Supabase (tabla zona_restaurantes) y reutilizado por cualquier ruta futura. Búsqueda web real a
+// propósito — nunca fiarse solo de memoria entrenada para reputación/vigencia de un restaurante.
+const ZONA_RESTAURANTES_SYSTEM_PROMPT = `You are an expert local food guide with web search access. Someone is in ONE specific neighborhood/zone of a destination, at lunch or dinner time, and wants 2-3 genuinely well-regarded restaurants within easy walking distance of that zone. Use web search to verify real, currently-operating restaurants with a real good reputation — do not rely only on training knowledge, and do not invent or guess a restaurant that might not exist or might have closed.
+
+For each restaurant, write a SHORT, SPECIFIC reason it's recommended — something a local would actually say, never generic filler like "good Italian food" or "cozy atmosphere". Mention what makes it genuinely worth going to: a specific dish, a real reputation detail (e.g. "family-run trattoria known for the best carbonara in the area, not touristy"), a real local favorite status.
+
+Assign a budget tier by your own judgment of the type of establishment (€ = casual/cheap, €€ = mid-range, €€€ = upscale) — never invent an exact live price, you cannot know that reliably.
+
+Write everything in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "restaurantes": [
+    { "nombre": "Real restaurant name", "motivo": "1 short specific sentence, in Spanish", "presupuesto": "€" }
+  ]
+}
+Return between 2 and 3 restaurants. If you genuinely cannot verify any real, currently-operating restaurant in this zone, return an empty array — never invent one to fill the quota.`
+
+function sanitizeCuratedRestaurants(parsed) {
+  if (!Array.isArray(parsed?.restaurantes)) return []
+  const validBudget = new Set(['€', '€€', '€€€'])
+  return parsed.restaurantes
+    .filter((entry) => entry && typeof entry.nombre === 'string' && entry.nombre.trim() && typeof entry.motivo === 'string' && entry.motivo.trim())
+    .slice(0, 3)
+    .map((entry) => {
+      const nombre = entry.nombre.trim().slice(0, 120)
+      return {
+        nombre,
+        motivo: entry.motivo.trim().slice(0, 300),
+        presupuesto: validBudget.has(entry.presupuesto) ? entry.presupuesto : '€€',
+        foto: `https://picsum.photos/seed/${encodeURIComponent(nombre)}/400/280`,
+      }
+    })
+}
+
+app.post('/api/meal-recommendations', async (req, res) => {
+  const { destino, zona, franja } = req.body ?? {}
+  if (!destino || !zona || (franja !== 'comida' && franja !== 'cena')) {
+    res.status(400).json({ error: 'Se requiere destino, zona y franja ("comida" o "cena").' })
+    return
+  }
+
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('zona_restaurantes')
+        .select('seleccion')
+        .eq('destino', destino)
+        .eq('zona', zona)
+        .eq('franja', franja)
+        .maybeSingle()
+      if (error) throw error
+      if (data) {
+        res.json({ seleccion: data.seleccion ?? [], cached: true })
+        return
+      }
+    } catch (error) {
+      logAnthropicError('meal-recommendations (read cache)', error)
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+      system: ZONA_RESTAURANTES_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Zone: "${zona}"\nDestination: "${destino}"\nMeal: ${franja === 'cena' ? 'dinner' : 'lunch'}` }],
+    })
+
+    const textBlocks = response.content.filter((block) => block.type === 'text')
+    const finalText = textBlocks[textBlocks.length - 1]?.text
+    if (!finalText) throw new Error('Respuesta de Claude sin bloque de texto final')
+
+    const parsed = JSON.parse(extractJsonText(finalText))
+    const seleccion = sanitizeCuratedRestaurants(parsed)
+
+    if (supabaseAdmin) {
+      try {
+        await supabaseAdmin.from('zona_restaurantes').insert({ destino, zona, franja, seleccion })
+      } catch (error) {
+        logAnthropicError('meal-recommendations (write cache)', error)
+      }
+    }
+
+    res.json({ seleccion, cached: false })
+  } catch (error) {
+    logAnthropicError('meal-recommendations', error)
+    res.status(502).json({ error: 'No se pudieron generar las recomendaciones con IA.' })
+  }
+})
+
 // ── "Elige lugares" — pantalla tras "Elige tus experiencias", lista AMPLIA de sitios reales ──
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios

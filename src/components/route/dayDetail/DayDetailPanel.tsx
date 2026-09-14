@@ -1,4 +1,4 @@
-import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { Fragment, useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import type { DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
@@ -17,6 +17,7 @@ import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
+import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
 import { StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
@@ -68,6 +69,34 @@ function computeTimeSlots(stops: { durationMinutes: number }[]): TimeSlot[] {
     minutes += stop.durationMinutes
     return slot
   })
+}
+
+interface StopTiming {
+  startMinutes: number
+  endMinutes: number
+}
+
+/** Mismo reloj acumulado que `computeTimeSlots`, pero conservando inicio/fin de cada parada — necesario para saber en qué HUECO entre dos paradas cae la hora de comer/cenar (ver `findMealInsertionIndex`), no solo en qué tercio del día. */
+function computeStopTimings(stops: { durationMinutes: number }[]): StopTiming[] {
+  let minutes = DAY_START_MINUTES
+  return stops.map((stop) => {
+    const startMinutes = minutes
+    minutes += stop.durationMinutes
+    return { startMinutes, endMinutes: minutes }
+  })
+}
+
+const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
+const DINNER_WINDOW: [number, number] = [20 * 60 + 30, 22 * 60]
+
+/** Índice de la parada TRAS la que insertar el acordeón dorado "Hora de comer"/"Hora de cenar" — el primer hueco (entre esa parada y la siguiente, o tras la última si el día termina dentro de la ventana) cuyo rango se solapa con la franja horaria dada. null si el día nunca llega a cruzarla (ej. un día corto que termina a las 12:00). */
+function findMealInsertionIndex(timings: StopTiming[], window: [number, number]): number | null {
+  for (let index = 0; index < timings.length; index++) {
+    const gapStart = timings[index].endMinutes
+    const gapEnd = index + 1 < timings.length ? timings[index + 1].startMinutes : Infinity
+    if (gapEnd >= window[0] && gapStart <= window[1]) return index
+  }
+  return null
 }
 
 function formatWalkKm(totalMeters: number): string {
@@ -305,6 +334,15 @@ export function DayDetailPanel({
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
   const dayMarkers = buildDayMarkers(realStops, dayIndex)
 
+  // Acordeón dorado "Hora de comer"/"Hora de cenar" — se inserta tras la parada donde cae ese hueco
+  // del timeline (ver findMealInsertionIndex), anclado a las coordenadas de ESA parada tanto para
+  // geocodificar el barrio como para "Rápido y cerca" (MealTimeAccordion.tsx). route?.destination
+  // solo falta en rutas sin generar aún (no debería pasar aquí, pero evita reventar el render).
+  const stopTimings = computeStopTimings(stops)
+  const lunchInsertionIndex = findMealInsertionIndex(stopTimings, LUNCH_WINDOW)
+  const dinnerInsertionIndex = findMealInsertionIndex(stopTimings, DINNER_WINDOW)
+  const destino = route?.destination ?? day.city
+
   const renderConnector = (
     connectorKey: string,
     connector: ConnectorInfo,
@@ -454,24 +492,38 @@ export function DayDetailPanel({
             const slot = timeSlots[index]
             const showSlotHeader = index === 0 || slot !== timeSlots[index - 1]
             const showConnector = index === 0 || slot === timeSlots[index - 1]
+            const showLunchAccordion = lunchInsertionIndex === index
+            const showDinnerAccordion = dinnerInsertionIndex === index
 
             return (
-              <div key={stop.id}>
-                {showSlotHeader && (
-                  <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
-                    {SLOT_LABELS[slot]}
-                  </p>
+              <Fragment key={stop.id}>
+                <div>
+                  {showSlotHeader && (
+                    <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
+                      {SLOT_LABELS[slot]}
+                    </p>
+                  )}
+                  {showConnector && renderConnector(connectorKey, connector, fromName, stop.name, index)}
+                  <StopAccordion
+                    index={index}
+                    stop={stop}
+                    circleBg={stopCircleBg}
+                    circleText={stopCircleText}
+                    onOpen={() => setDetailIndex(index)}
+                    menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
+                  />
+                </div>
+                {showLunchAccordion && (
+                  <div className="pt-2">
+                    <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="comida" />
+                  </div>
                 )}
-                {showConnector && renderConnector(connectorKey, connector, fromName, stop.name, index)}
-                <StopAccordion
-                  index={index}
-                  stop={stop}
-                  circleBg={stopCircleBg}
-                  circleText={stopCircleText}
-                  onOpen={() => setDetailIndex(index)}
-                  menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
-                />
-              </div>
+                {showDinnerAccordion && (
+                  <div className="pt-2">
+                    <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="cena" />
+                  </div>
+                )}
+              </Fragment>
             )
           })}
 
