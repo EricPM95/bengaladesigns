@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Route, Stop } from '../../../lib/types'
 import { searchAttractions, type AttractionSearchResult } from '../../../lib/mapboxAttractionsSearch'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
+import { Modal } from '../../ui/Modal'
+import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { Spinner } from '../../ui/Spinner'
 
 interface MultiSelectConfig {
@@ -19,11 +21,11 @@ interface AttractionsFinderProps {
   city: string
   open: boolean
   onClose: () => void
-  /** Modo de un solo lugar (por defecto) — cada "+ Añadir" llama esto directamente y no cierra la pantalla, para poder seguir añadiendo. */
+  /** Modo de un solo lugar (por defecto) — tocar un resultado lo añade y cierra la pantalla de inmediato (una "+" = una parada insertada en ese punto exacto). */
   onPick?: (stop: Stop) => void
-  /** Modo de selección libre — checkboxes en vez de "+ Añadir" instantáneo, con un botón "Confirmar" al final (ver DayMenu.tsx "Regenerar este día"). Mutuamente excluyente con `onPick`. */
+  /** Modo de selección libre — checkboxes en vez de tocar-para-añadir-y-cerrar, con un botón "Confirmar" al final (ver DayMenu.tsx "Regenerar este día"). Mutuamente excluyente con `onPick`, sigue siendo la pantalla completa con acordeón de siempre — no la ficha de búsqueda rediseñada de abajo, que es solo para el caso de un lugar cada vez. */
   multiSelect?: MultiSelectConfig
-  /** Por defecto "Añadir un lugar en {city}" — EXPLORAR pasa "🏛️ Atracciones en {city}" para mantener su copy anterior. */
+  /** Por defecto "Añadir una parada" — EXPLORAR pasa "🏛️ Atracciones en {city}" para mantener su copy anterior. */
   title?: string
 }
 
@@ -32,6 +34,32 @@ function SearchIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
       <circle cx="11" cy="11" r="7" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  )
+}
+
+function PinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0 text-text-muted">
+      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
+
+function BackIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <polyline points="15 18 9 12 15 6" />
     </svg>
   )
 }
@@ -65,13 +93,17 @@ function stopFromResult(result: AttractionSearchResult): Stop {
 }
 
 /**
- * Buscador de lugares a pantalla completa — acordeón "ya en tu ruta" (cerrado por defecto) +
- * buscador libre vía Mapbox Search Box API (sin restricción geográfica, autocompletado en vivo).
- * Componente ÚNICO reutilizado en 4 sitios: la categoría "Atracciones" de EXPLORAR, el "+" entre
- * paradas de DIAS, "Añadir yo mismo" en RESERVAS (los 3 en modo `onPick`, un lugar a la vez, sin
- * cerrar la pantalla) y "Regenerar este día" (DayMenu.tsx, modo `multiSelect`: checkboxes + botón
- * "Confirmar" con todo lo marcado a la vez) — cada llamador decide qué hacer con el resultado, este
- * componente no lo sabe ni le importa.
+ * Buscador de lugares — dos formas muy distintas según el modo:
+ * - Un solo lugar (`onPick`, sin `multiSelect`): ficha compacta tipo hoja inferior (ver Modal.tsx),
+ *   un único buscador con foco automático, resultados en vivo vía Mapbox Search Box API (sin
+ *   pestañas de "Pool"/"Buscar" separadas — todo en una sola lista), etiqueta "En la lista" para lo
+ *   que ya está en la ruta (en cualquier día, no solo el actual — ver routeStopsIndex.ts) SIN
+ *   impedir añadirlo de nuevo, y una fila "Buscar: {término}" que cambia a vista de mapa con esos
+ *   mismos resultados. Tocar cualquier resultado (o su pin en el mapa) lo añade y cierra al momento.
+ *   Usado en el "+" entre paradas de DIAS, "Atracciones" de EXPLORAR y "Añadir yo mismo" de RESERVAS/
+ *   Modo Hoy.
+ * - Selección libre (`multiSelect`): pantalla completa con acordeón "ya en tu ruta" + checkboxes +
+ *   botón "Confirmar", sin tocar — ver DayMenu.tsx "Regenerar este día".
  */
 export function AttractionsFinder({ route, city, open, onClose, onPick, multiSelect, title }: AttractionsFinderProps) {
   const [accordionOpen, setAccordionOpen] = useState(false)
@@ -80,6 +112,8 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
   const [searching, setSearching] = useState(false)
   const [searchFailed, setSearchFailed] = useState(false)
   const [selected, setSelected] = useState<Map<string, Stop>>(new Map())
+  const [mapView, setMapView] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const stopEntries = buildRouteStopEntries(route)
   const cityStops = stopEntries.filter((entry) => entry.city === city)
@@ -90,9 +124,18 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
     setQuery('')
     setResults(null)
     setSearchFailed(false)
+    setMapView(false)
     setSelected(new Map((multiSelect?.initialSelected ?? []).map((stop) => [stop.id, stop])))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
+
+  // Foco automático en el buscador del modo "un solo lugar" — con un pequeño margen para que la
+  // animación de entrada de Modal.tsx ya haya montado el input antes de intentar enfocarlo.
+  useEffect(() => {
+    if (!open || multiSelect) return
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 50)
+    return () => window.clearTimeout(timer)
+  }, [open, multiSelect])
 
   const toggleSelected = (stop: Stop) => {
     setSelected((prev) => {
@@ -133,8 +176,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
       return
     }
     onPick?.(stop)
-    setQuery('')
-    setResults(null)
+    onClose()
   }
 
   const sortedResults = results
@@ -144,83 +186,82 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
   const selectedCount = selected.size
   const showTightWarning = Boolean(multiSelect) && selectedCount > (multiSelect?.tightWarningThreshold ?? Infinity)
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg"
-        >
-          <div className="flex shrink-0 items-center gap-3 border-b border-border p-4 pl-16">
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Cerrar"
-              title="Cerrar"
-              className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
-            >
-              ✕
-            </button>
-            <h2 className="font-display text-h2 font-semibold text-text">{title ?? `Añadir un lugar en ${city}`}</h2>
-          </div>
+  // ── Modo selección libre — pantalla completa sin cambios, ver DayMenu.tsx "Regenerar este día" ──
+  if (multiSelect) {
+    return (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg"
+          >
+            <div className="flex shrink-0 items-center gap-3 border-b border-border p-4 pl-16">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Cerrar"
+                title="Cerrar"
+                className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+              >
+                ✕
+              </button>
+              <h2 className="font-display text-h2 font-semibold text-text">{title ?? `Añadir un lugar en ${city}`}</h2>
+            </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="mx-auto w-full max-w-lg space-y-4">
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-bg-card px-3 py-2">
-                <SearchIcon />
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Busca un lugar..."
-                  autoFocus
-                  autoComplete="off"
-                  className="w-full bg-transparent text-small text-text outline-none placeholder:text-text-muted"
-                />
-              </div>
-
-              {multiSelect && selectedCount > 0 && (
-                <div className="space-y-2 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
-                  <p className="text-caption font-semibold uppercase tracking-wide text-accent-hover">Seleccionados ({selectedCount})</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[...selected.values()].map((stop) => (
-                      <span key={stop.id} className="flex items-center gap-1 rounded-full bg-bg-card py-1 pl-2.5 pr-1.5 text-caption font-medium text-text">
-                        {stop.name}
-                        <button
-                          type="button"
-                          onClick={() => toggleSelected(stop)}
-                          aria-label={`Quitar ${stop.name}`}
-                          className="flex h-4 w-4 items-center justify-center rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  {showTightWarning && (
-                    <p className="text-caption text-accent-hover">Este día queda bastante apretado — pero es tu elección.</p>
-                  )}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="mx-auto w-full max-w-lg space-y-4">
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-bg-card px-3 py-2">
+                  <SearchIcon />
+                  <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Busca un lugar..."
+                    autoFocus
+                    autoComplete="off"
+                    className="w-full bg-transparent text-small text-text outline-none placeholder:text-text-muted"
+                  />
                 </div>
-              )}
 
-              <div className="overflow-hidden rounded-xl border border-border">
-                <button
-                  type="button"
-                  onClick={() => setAccordionOpen((value) => !value)}
-                  className="flex w-full items-center justify-between gap-2 bg-bg-card px-3 py-2.5 text-left"
-                >
-                  <span className="text-caption font-semibold uppercase tracking-wide text-text-muted">Lugares que ya están en tu ruta a {city}</span>
-                  <ChevronIcon open={accordionOpen} />
-                </button>
-                {accordionOpen && (
-                  <div className="divide-y divide-border border-t border-border">
-                    {cityStops.length === 0 && <p className="p-3 text-small text-text-soft">Todavía no has añadido ninguna parada en {city}.</p>}
-                    {cityStops.map((entry) => (
-                      <div key={entry.stop.id} className="flex items-center gap-3 p-3">
-                        <img src={entry.stop.photoUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
-                        <p className="min-w-0 flex-1 truncate text-small font-medium text-text">{entry.stop.name}</p>
-                        {multiSelect && (
+                {selectedCount > 0 && (
+                  <div className="space-y-2 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
+                    <p className="text-caption font-semibold uppercase tracking-wide text-accent-hover">Seleccionados ({selectedCount})</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[...selected.values()].map((stop) => (
+                        <span key={stop.id} className="flex items-center gap-1 rounded-full bg-bg-card py-1 pl-2.5 pr-1.5 text-caption font-medium text-text">
+                          {stop.name}
+                          <button
+                            type="button"
+                            onClick={() => toggleSelected(stop)}
+                            aria-label={`Quitar ${stop.name}`}
+                            className="flex h-4 w-4 items-center justify-center rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    {showTightWarning && <p className="text-caption text-accent-hover">Este día queda bastante apretado — pero es tu elección.</p>}
+                  </div>
+                )}
+
+                <div className="overflow-hidden rounded-xl border border-border">
+                  <button
+                    type="button"
+                    onClick={() => setAccordionOpen((value) => !value)}
+                    className="flex w-full items-center justify-between gap-2 bg-bg-card px-3 py-2.5 text-left"
+                  >
+                    <span className="text-caption font-semibold uppercase tracking-wide text-text-muted">Lugares que ya están en tu ruta a {city}</span>
+                    <ChevronIcon open={accordionOpen} />
+                  </button>
+                  {accordionOpen && (
+                    <div className="divide-y divide-border border-t border-border">
+                      {cityStops.length === 0 && <p className="p-3 text-small text-text-soft">Todavía no has añadido ninguna parada en {city}.</p>}
+                      {cityStops.map((entry) => (
+                        <div key={entry.stop.id} className="flex items-center gap-3 p-3">
+                          <img src={entry.stop.photoUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                          <p className="min-w-0 flex-1 truncate text-small font-medium text-text">{entry.stop.name}</p>
                           <button
                             type="button"
                             onClick={() => toggleSelected(entry.stop)}
@@ -230,34 +271,33 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                           >
                             {selected.has(entry.stop.id) ? '✓ Incluido' : '+ Incluir'}
                           </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                {searching && (
-                  <p className="flex items-center gap-2 py-4 text-small text-text-soft">
-                    <Spinner className="text-accent" />
-                    Buscando...
-                  </p>
-                )}
-                {!searching && searchFailed && <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>}
-
-                {!searching &&
-                  sortedResults.map((result) => {
-                    const alreadyInRoute = isNameAlreadyInRoute(result.name, stopEntries)
-                    const isSelected = selected.has(`stop-${result.id}`)
-                    return (
-                      <div key={result.id} className="flex items-center gap-3 rounded-xl border border-border p-2">
-                        <img src={result.photoUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-small font-semibold text-text">{result.name}</p>
-                          <p className="truncate text-caption text-text-soft">{result.address}</p>
                         </div>
-                        {multiSelect ? (
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  {searching && (
+                    <p className="flex items-center gap-2 py-4 text-small text-text-soft">
+                      <Spinner className="text-accent" />
+                      Buscando...
+                    </p>
+                  )}
+                  {!searching && searchFailed && (
+                    <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
+                  )}
+
+                  {!searching &&
+                    sortedResults.map((result) => {
+                      const isSelected = selected.has(`stop-${result.id}`)
+                      return (
+                        <div key={result.id} className="flex items-center gap-3 rounded-xl border border-border p-2">
+                          <img src={result.photoUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-small font-semibold text-text">{result.name}</p>
+                            <p className="truncate text-caption text-text-soft">{result.address}</p>
+                          </div>
                           <button
                             type="button"
                             onClick={() => pick(result)}
@@ -267,25 +307,13 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                           >
                             {isSelected ? '✓ Añadido' : '+ Añadir'}
                           </button>
-                        ) : alreadyInRoute ? (
-                          <span className="shrink-0 rounded-full bg-accent-soft px-2 py-1 text-caption font-semibold text-accent-hover">✓ Ya en ruta</span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => pick(result)}
-                            className="shrink-0 rounded-lg bg-accent-soft px-2.5 py-1.5 text-caption font-semibold text-accent-hover transition-colors hover:bg-border"
-                          >
-                            + Añadir
-                          </button>
-                        )}
-                      </div>
-                    )
-                  })}
+                        </div>
+                      )
+                    })}
+                </div>
               </div>
             </div>
-          </div>
 
-          {multiSelect && (
             <div className="shrink-0 border-t border-border bg-bg-card p-4">
               <div className="mx-auto w-full max-w-lg">
                 <button
@@ -297,9 +325,125 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                 </button>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )
+  }
+
+  // ── Modo un solo lugar — hoja inferior compacta ──────────────────────────────────────────────
+  const trimmedQuery = query.trim()
+  const mapMarkers: StopsMapMarker[] = sortedResults.map((result, index) => ({
+    id: result.id,
+    name: result.name,
+    coordinates: result.coordinates,
+    number: index + 1,
+    bg: 'rgb(var(--accent))',
+    text: '#ffffff',
+    photoUrl: result.photoUrl,
+  }))
+
+  return (
+    <Modal open={open} onClose={onClose}>
+      <div className="space-y-4">
+        <h2 className="text-center font-display text-h2 font-semibold text-text">{title ?? 'Añadir una parada'}</h2>
+
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-bg px-3 py-2.5">
+          <SearchIcon />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Busca un lugar..."
+            autoComplete="off"
+            className="w-full bg-transparent text-body text-text outline-none placeholder:text-text-muted"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('')
+                inputRef.current?.focus()
+              }}
+              aria-label="Borrar búsqueda"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-hover text-text-muted hover:text-text"
+            >
+              <XIcon />
+            </button>
           )}
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+
+        {mapView ? (
+          <div className="space-y-2">
+            <button type="button" onClick={() => setMapView(false)} className="flex items-center gap-1.5 text-small font-semibold text-accent-hover hover:text-accent">
+              <BackIcon />
+              Volver a la lista
+            </button>
+            <div className="h-72 overflow-hidden rounded-xl border border-border">
+              <StopsMapView markers={mapMarkers} onSelectStop={(id) => { const result = sortedResults.find((r) => r.id === id); if (result) pick(result) }} />
+            </div>
+          </div>
+        ) : (
+          <div className="max-h-[55vh] space-y-1 overflow-y-auto">
+            {!trimmedQuery && <p className="py-6 text-center text-small text-text-soft">Escribe para buscar un lugar.</p>}
+
+            {trimmedQuery && searching && (
+              <p className="flex items-center gap-2 py-4 text-small text-text-soft">
+                <Spinner className="text-accent" />
+                Buscando...
+              </p>
+            )}
+
+            {trimmedQuery && !searching && searchFailed && (
+              <p className="py-4 text-center text-small text-text-soft">No hemos encontrado ese lugar. Prueba con otro nombre.</p>
+            )}
+
+            {trimmedQuery &&
+              !searching &&
+              sortedResults.length > 0 &&
+              (() => {
+                const [first, ...rest] = sortedResults
+                const resultRow = (result: AttractionSearchResult) => {
+                  const alreadyInRoute = isNameAlreadyInRoute(result.name, stopEntries)
+                  return (
+                    <button
+                      key={result.id}
+                      type="button"
+                      onClick={() => pick(result)}
+                      className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-hover"
+                    >
+                      <PinIcon />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-small font-semibold text-text">{result.name}</p>
+                        <p className="truncate text-caption text-text-soft">{result.address}</p>
+                      </div>
+                      {alreadyInRoute && (
+                        <span className="shrink-0 rounded-full bg-accent-soft px-2 py-1 text-caption font-semibold text-accent-hover">En la lista</span>
+                      )}
+                    </button>
+                  )
+                }
+                return (
+                  <>
+                    {resultRow(first)}
+                    <button
+                      type="button"
+                      onClick={() => setMapView(true)}
+                      className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-hover"
+                    >
+                      <SearchIcon />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-small font-semibold text-text">Buscar: {trimmedQuery}</p>
+                        <p className="text-caption text-text-soft">Ver resultado(s) en el mapa</p>
+                      </div>
+                    </button>
+                    {rest.map(resultRow)}
+                  </>
+                )
+              })()}
+          </div>
+        )}
+      </div>
+    </Modal>
   )
 }
