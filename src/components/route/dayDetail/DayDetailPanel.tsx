@@ -103,6 +103,34 @@ function MapToggleIcon({ mapVisible }: { mapVisible: boolean }) {
   )
 }
 
+/** Los 3 iconos de la fila resumen (paradas/km a pie/horas de actividad) — mismo estilo lineal fino, sin relleno, y se pintan todos del mismo verde oscuro (text-accent-hover) desde quien los usa, ver el JSX del resumen más abajo. */
+function SummaryPinIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
+      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function SummaryWalkIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
+      <ellipse cx="8" cy="15.5" rx="2.6" ry="4.4" transform="rotate(-12 8 15.5)" />
+      <ellipse cx="16" cy="8.5" rx="2.6" ry="4.4" transform="rotate(12 16 8.5)" />
+    </svg>
+  )
+}
+
+function SummaryClockIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15.5 14" />
+    </svg>
+  )
+}
+
 /** Mismo color por día que el círculo numerado de cada parada (ver dayIndex más abajo) — así el pin del mini-mapa de esta pantalla coincide con el resto de mapas de la app. */
 function buildDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
   return stops.map((stop, index) => ({
@@ -352,17 +380,19 @@ export function DayDetailPanel({
             {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
           </p>
           <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
-          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft">
-            <span className="flex items-center gap-1.5">
-              <span aria-hidden="true">📍</span>
+          <div className="mt-2.5 mb-4 flex items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft">
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+              <SummaryPinIcon className="text-accent-hover" />
               {stops.length} parada{stops.length === 1 ? '' : 's'}
             </span>
-            <span className="flex items-center gap-1.5">
-              <span aria-hidden="true">🚶</span>
+            <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+              <SummaryWalkIcon className="text-accent-hover" />
               {formatWalkKm(totalWalkMeters)} a pie
             </span>
-            <span className="flex items-center gap-1.5">
-              <span aria-hidden="true">🕐</span>
+            <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+              <SummaryClockIcon className="text-accent-hover" />
               {formatActivityDuration(totalActivityMinutes)} actividad
             </span>
           </div>
@@ -400,7 +430,7 @@ export function DayDetailPanel({
             return (
               <div key={stop.id}>
                 {showSlotHeader && (
-                  <p className={`px-1 pb-1 text-caption font-semibold uppercase tracking-wide text-text-muted ${index === 0 ? 'pt-0' : 'pt-6'}`}>
+                  <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
                     {SLOT_LABELS[slot]}
                   </p>
                 )}
