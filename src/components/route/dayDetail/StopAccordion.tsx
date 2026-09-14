@@ -20,7 +20,7 @@ interface StopAccordionProps {
  */
 export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText }: StopAccordionProps) {
   return (
-    <div className="relative rounded-xl border border-border bg-bg-card">
+    <div className="relative rounded-xl border border-border bg-bg-card shadow-sm">
       <button type="button" onClick={onOpen} className="flex w-full items-start gap-3 rounded-xl p-3 text-left transition-colors hover:bg-bg-hover">
         <span
           className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-caption font-semibold"
