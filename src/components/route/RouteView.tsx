@@ -257,9 +257,13 @@ export function RouteView() {
         </div>
       </div>
 
-      <FloatingCombinedMapButton onClick={() => setMode('route')} />
-
-      <FloatingBudget />
+      {/* Ocultos en la pantalla completa de detalle de un día (DayDetailPanel, ver DayList.tsx): ya tiene su propio mini-mapa arriba, y el presupuesto no aplica en ese contexto — solo visibles en las pantallas principales. */}
+      {!(mode === 'days' && activeDayId) && (
+        <>
+          <FloatingCombinedMapButton onClick={() => setMode('route')} />
+          <FloatingBudget />
+        </>
+      )}
     </div>
   )
 }

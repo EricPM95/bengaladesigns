@@ -352,7 +352,7 @@ export function DayDetailPanel({
             {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
           </p>
           <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 text-small text-text-soft">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft">
             <span className="flex items-center gap-1.5">
               <span aria-hidden="true">📍</span>
               {stops.length} parada{stops.length === 1 ? '' : 's'}
@@ -400,7 +400,7 @@ export function DayDetailPanel({
             return (
               <div key={stop.id}>
                 {showSlotHeader && (
-                  <p className={`px-1 pb-1 text-caption font-semibold uppercase tracking-wide text-text-muted ${index === 0 ? 'pt-0' : 'pt-3'}`}>
+                  <p className={`px-1 pb-1 text-caption font-semibold uppercase tracking-wide text-text-muted ${index === 0 ? 'pt-0' : 'pt-6'}`}>
                     {SLOT_LABELS[slot]}
                   </p>
                 )}

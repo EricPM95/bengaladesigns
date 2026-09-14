@@ -23,6 +23,7 @@ import type {
   WishlistItem,
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
+import { triggerBudgetFly } from '../lib/budgetFlyBus'
 import { minutesToTime, parseTimeToMinutes } from '../lib/time'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
@@ -738,6 +739,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
   addBudgetItem: (item) =>
     set((state) => {
       if (!state.route) return state
+      triggerBudgetFly(item.amount)
       return {
         route: { ...state.route, budget: recalculateBudgetTotal({ ...state.route.budget, items: [...state.route.budget.items, item] }) },
       }
@@ -788,6 +790,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
           ? { icon: '🏨', label: `${hotel.name} (${segment.city})`, amount: hotel.pricePerNight * segment.nights, category: 'route', sourceType: 'hotel', refId: segmentDayId }
           : null,
       )
+      if (hotel && segment) triggerBudgetFly(hotel.pricePerNight * segment.nights)
       return { accommodationSelections: next, route: { ...state.route, budget } }
     }),
 
@@ -804,6 +807,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
         budgetId,
         booking ? { icon: '✈️', label: booking.operator, amount: booking.price, category: 'route', sourceType: 'flight', refId: dayId } : null,
       )
+      if (booking) triggerBudgetFly(booking.price)
       return { transportBookings: next, route: { ...state.route, budget } }
     }),
 
@@ -815,6 +819,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
         'budget-insurance',
         booking ? { icon: '🛡', label: `Seguro — ${booking.provider}`, amount: booking.price, category: 'route', sourceType: 'other', refId: 'general-insurance' } : null,
       )
+      if (booking) triggerBudgetFly(booking.price)
       return { insuranceBooking: booking, route: { ...state.route, budget } }
     }),
 
@@ -830,6 +835,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
           ? { icon: '🚗', label: `Vehículo de alquiler — ${booking.provider}`, amount: booking.price, category: 'route', sourceType: 'other', refId: 'general-rental-vehicle' }
           : null,
       )
+      if (booking) triggerBudgetFly(booking.price)
       return { rentalVehicleBooking: booking, route: { ...state.route, budget } }
     }),
 
