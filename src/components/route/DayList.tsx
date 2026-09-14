@@ -9,6 +9,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayDetailPanel } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
+import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 
 /** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
 const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
@@ -36,13 +37,14 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 }
 
 /**
- * Lista de todos los días del viaje en orden, cada uno como una caja individual sobre fondo gris —
- * fecha + destino, o las dos ciudades en rojo unidas por línea punteada en días de traslado (ver
- * computeDayTravelInfo). Cada caja es un acordeón: el día "expandido" es simplemente `activeDayId`
- * (mismo estado que el DaySelector de arriba) — así la sincronización entre ambos es automática y
+ * Lista de todos los días del viaje en orden (única navegación entre días de DIAS — ya no hay tira
+ * horizontal de chips aparte), cada uno como una caja individual sobre fondo gris — fecha + destino,
+ * o las dos ciudades en rojo unidas por línea punteada en días de traslado (ver
+ * computeDayTravelInfo). Cada caja es un acordeón: el día "expandido" es simplemente `activeDayId`,
  * solo puede haber un día abierto a la vez, sin estado propio en este componente. Click en el día ya
- * expandido lo contrae (pasa `null`). El contenido detallado de cada día (transporte, hotel,
- * paradas) se implementará en una fase posterior — por ahora el panel expandido queda vacío.
+ * expandido lo contrae (pasa `null`). El banner "¿Necesitas alojamiento?" vive DENTRO de este mismo
+ * contenedor con scroll (antes vivía fuera, en RouteView.tsx, por lo que quedaba fijo en pantalla
+ * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
 export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
   const regenerateDayStops = useRouteStore((state) => state.regenerateDayStops)
@@ -72,6 +74,7 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
 
   return (
     <div className="flex-1 space-y-2 overflow-y-auto bg-bg-hover p-3">
+      <MissingAccommodationBanner route={route} />
       {route.days.map((day, index) => {
         const travel = computeDayTravelInfo(route, index)
         const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null

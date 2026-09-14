@@ -8,11 +8,9 @@ import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
 import { FloatingBudget } from '../layout/FloatingBudget'
 import { StopsMapView, type StopsMapMarker } from '../map/StopsMapView'
-import { DaySelector } from './DaySelector'
 import { DayList } from './DayList'
 import { ExplorePanel } from './ExplorePanel'
 import { FloatingCombinedMapButton } from './FloatingCombinedMapButton'
-import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
@@ -92,8 +90,10 @@ export function RouteView() {
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
-  // fila y el ancho se controla con panelSplit/handleDragStart).
-  const [mobileMapVh, setMobileMapVh] = useState(30)
+  // fila y el ancho se controla con panelSplit/handleDragStart). Por defecto cerca del mínimo — el
+  // panel inferior (contenido real) es el protagonista; arrastrar el tirador hacia abajo agranda el
+  // mapa si hace falta.
+  const [mobileMapVh, setMobileMapVh] = useState(MOBILE_MAP_MIN_VH + 3)
 
   useEffect(() => {
     if (window.innerWidth >= 768 && window.innerWidth < 1024) setPanelSplit(40)
@@ -246,8 +246,6 @@ export function RouteView() {
 
           {mode === 'days' && (
             <>
-              <DaySelector days={route.days} activeDayId={activeDayId} onSelect={setActiveDayId} tripStartIso={route.answers.dateRange?.start} />
-              <MissingAccommodationBanner route={route} />
               {route.isPreview && (
                 <div className="mx-4 mt-4 shrink-0 rounded-xl bg-accent-soft px-4 py-3 text-small text-accent-hover">
                   🚧 Las rutas generadas por IA llegan muy pronto — esto es una vista previa con datos de ejemplo.
