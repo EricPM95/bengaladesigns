@@ -1405,7 +1405,7 @@ function formatSkeletonDays(blockDays) {
 
 function formatBlockAnchors(anchorsForBlock) {
   if (!anchorsForBlock || anchorsForBlock.length === 0) return ''
-  return `\n- Anchor places assigned to today — a helpful reference, NOT a mandatory checklist: skip any that don't genuinely fit today's pace/time/geography, and feel free to add other real places from your own knowledge of the destination if that makes for a better day: ${anchorsForBlock.map((anchor) => anchor.name).join(', ')}`
+  return `\n- MANDATORY DESTINATION ANCHORS assigned to today — these are the destination's essential must-see places, identified before this trip was planned and independent of anything the traveler manually picked. Fit every one of them into today's plan at a realistic time/order (respecting opening hours and geography). Only skip one if it is truly impossible to fit today (genuinely conflicts with pace/duration or geography) — in that case it MUST still appear in "not_included" with a specific reason referencing exactly what conflict caused it to be dropped, never a generic reason for these. You may still add other real places you know of alongside them if there's room: ${anchorsForBlock.map((anchor) => anchor.name).join(', ')}`
 }
 
 /**
