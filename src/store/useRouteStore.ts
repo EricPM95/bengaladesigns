@@ -340,7 +340,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   suggested_places_loading: false,
   suggested_places_failed: false,
   selected_place_ids: [],
-  answers: {},
+  // chronotype/budgetLevel vienen con valor por defecto desde el arranque — el formulario
+  // rediseñado ya no los pregunta (el viajero puede ajustar horarios más tarde a mano desde DIAS/
+  // Modo Hoy), así que necesitan un valor razonable aquí para que hasRequiredAnswers (server/
+  // index.js) nunca los eche en falta.
+  answers: { chronotype: 'normal', budgetLevel: 'comfortable' },
   route: null,
   activeDayId: null,
   mode: 'route',
@@ -466,7 +470,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   updateAnswers: (partial) => set((state) => ({ answers: { ...state.answers, ...partial } })),
   resetQuestionnaire: () =>
     set({
-      answers: {},
+      answers: { chronotype: 'normal', budgetLevel: 'comfortable' },
       destination: null,
       destinationPlace: null,
       archetype: null,

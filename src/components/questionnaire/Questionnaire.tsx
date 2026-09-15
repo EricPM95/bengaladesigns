@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
-import type { BudgetLevel, Chronotype, ExperienceId, TripPace } from '../../lib/types'
+import type { ExperienceId, TripPace } from '../../lib/types'
 import { getCurrentSeason } from '../../lib/season'
 import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
@@ -24,19 +24,7 @@ const paceOptions: { value: TripPace; icon: string; label: string; description: 
   { value: 'nonstop', icon: '⚡', label: 'Sin parar', description: '6+, de sol a sol, verlo todo' },
 ]
 
-const chronotypeOptions: { value: Chronotype; icon: string; label: string; description: string }[] = [
-  { value: 'sunrise', icon: '🌅', label: 'Madrugador', description: 'Empezar a las 6-7am' },
-  { value: 'normal', icon: '🕐', label: 'Horario normal', description: '9am-10pm' },
-  { value: 'nightowl', icon: '🌙', label: 'Ave nocturna', description: 'Empezar tarde, vida nocturna' },
-]
-
-const budgetOptions: { value: BudgetLevel; icon: string; label: string; description: string }[] = [
-  { value: 'backpacker', icon: '🎒', label: 'Mochilero', description: 'Hostales, comida callejera' },
-  { value: 'comfortable', icon: '🏨', label: 'Cómodo', description: 'Hoteles, buenos restaurantes' },
-  { value: 'treatMyself', icon: '💎', label: 'Darme un capricho', description: 'Hoteles boutique, las mejores experiencias' },
-]
-
-type StepId = 'origin' | 'days' | 'companion' | 'experiences' | 'pace' | 'chronotype' | 'budget' | 'places'
+type StepId = 'origin' | 'days' | 'companion' | 'experiences' | 'pace' | 'places'
 
 const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
   origin: { title: '¿Desde dónde viajas?' },
@@ -44,8 +32,6 @@ const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
   companion: { title: 'Elige tus acompañantes' },
   experiences: { title: 'Elige tus experiencias' },
   pace: { title: 'Tu ritmo' },
-  chronotype: { title: 'Elige tu horario' },
-  budget: { title: 'Presupuesto' },
   places: { title: 'Elige lugares' },
 }
 
@@ -58,7 +44,7 @@ const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
  * Avanza sola al tocar una opción, sin ningún botón "Continuar" visible — el ÚNICO caso con botón
  * explícito es "fechas" (`activeStep === 'days'`), a propósito: ahí es fácil equivocarse, así que
  * el avance automático queda desactivado (ver el guard `isViewingDays` en el efecto) y hace falta
- * confirmar. Para pace/chronotype/budget (una sola opción, resuelve la pantalla entera) el propio
+ * confirmar. Para pace (una sola opción, resuelve la pantalla entera) el propio
  * `onClick` llama a `goToNextStep()` en el mismo tap — origen y acompañantes son flujos internos
  * más complejos sin un único "tap final", así que se detectan por el efecto de abajo en cuanto
  * `steps` crece. Retroceder con la flecha nunca borra la respuesta ya dada.
@@ -149,9 +135,7 @@ export function Questionnaire() {
   // de Claude ya está lista (o casi) cuando el usuario por fin llega a esta pantalla, en vez de
   // hacerle esperar aquí.
   const showPace = showExperiences && !suggestedExperiencesLoading && placesStepStarted
-  const showChronotype = showPace && answers.pace !== undefined
-  const showBudget = showChronotype && answers.chronotype !== undefined
-  const showPlaces = showBudget && answers.budgetLevel !== undefined
+  const showPlaces = showPace && answers.pace !== undefined
 
   const steps: StepId[] = [
     'origin',
@@ -159,8 +143,6 @@ export function Questionnaire() {
     ...(showCompanion ? (['companion'] as const) : []),
     ...(showExperiences ? (['experiences'] as const) : []),
     ...(showPace ? (['pace'] as const) : []),
-    ...(showChronotype ? (['chronotype'] as const) : []),
-    ...(showBudget ? (['budget'] as const) : []),
     ...(showPlaces ? (['places'] as const) : []),
   ]
 
@@ -355,7 +337,7 @@ export function Questionnaire() {
                     // BUG 1: `showPace` (y por tanto el auto-avance basado en que `steps` crezca)
                     // no cambia si `placesStepStarted` ya era true de una vuelta anterior — al
                     // revisitar esta pantalla, cambiar la selección y volver a confirmar, nunca se
-                    // disparaba el avance. Igual que pace/chronotype/budget, se navega explícitamente
+                    // disparaba el avance. Igual que pace, se navega explícitamente
                     // en el mismo tap en vez de depender solo del efecto pasivo.
                     suggestPlacesOnDemand(destination, answers.experiences ?? [])
                     goToNextStep()
@@ -374,42 +356,6 @@ export function Questionnaire() {
                       selected={answers.pace === option.value}
                       onClick={() => {
                         updateAnswers({ pace: option.value })
-                        goToNextStep()
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {activeStep === 'chronotype' && (
-                <div className="space-y-2">
-                  {chronotypeOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.value}
-                      icon={option.icon}
-                      label={option.label}
-                      description={option.description}
-                      selected={answers.chronotype === option.value}
-                      onClick={() => {
-                        updateAnswers({ chronotype: option.value })
-                        goToNextStep()
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {activeStep === 'budget' && (
-                <div className="space-y-2">
-                  {budgetOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.value}
-                      icon={option.icon}
-                      label={option.label}
-                      description={option.description}
-                      selected={answers.budgetLevel === option.value}
-                      onClick={() => {
-                        updateAnswers({ budgetLevel: option.value })
                         goToNextStep()
                       }}
                     />
