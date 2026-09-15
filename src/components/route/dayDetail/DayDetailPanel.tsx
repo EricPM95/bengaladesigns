@@ -4,6 +4,7 @@ import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
+import { minutesToTime, parseTimeToMinutes } from '../../../lib/time'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
@@ -50,8 +51,10 @@ interface DayDetailPanelProps {
 }
 
 const DEFAULT_MODE: TransportMode = 'walking'
-/** Hora asumida de inicio de la jornada (mock, sin dato real de horario por parada) — punto de partida para repartir las paradas entre Mañana/Tarde/Noche, ver `computeTimeSlots`. */
+/** Hora asumida de inicio de la jornada cuando la primera parada no trae una `time` real (rutas dev/plantilla) — ver `computeStopSchedule`. */
 const DAY_START_MINUTES = 9 * 60
+/** Minutos a pie entre dos paradas cuando el conector no trae un `walkMinutes` real todavía (ni mock ni refinado por Mapbox) — mismo valor de reserva que `retimeStops` en useRouteStore.ts, para que el horario calculado aquí no se desvíe del que ya usa Modo Hoy. */
+const DEFAULT_WALK_MINUTES = 15
 // Mismos límites/valor por defecto que el tirador de mapa de StopDetailSheet.tsx/ArrivalDetailSheet.tsx — ninguno de los dos lados puede llegar a desaparecer del todo.
 const MAP_MIN_VH = 15
 const MAP_MAX_VH = 75
@@ -61,28 +64,36 @@ type TimeSlot = 'mañana' | 'tarde' | 'noche'
 
 const SLOT_LABELS: Record<TimeSlot, string> = { mañana: 'Mañana', tarde: 'Tarde', noche: 'Noche' }
 
-/** Reparte las paradas del día en Mañana (<13:00) / Tarde (13:00-19:00) / Noche (≥19:00) acumulando su `durationMinutes` desde `DAY_START_MINUTES` — sin dato real de hora de visita (mock), es la mejor aproximación disponible y coincide con el diseño de referencia (franjas por posición, no por horario de apertura). */
-function computeTimeSlots(stops: { durationMinutes: number }[]): TimeSlot[] {
-  let minutes = DAY_START_MINUTES
-  return stops.map((stop) => {
-    const slot: TimeSlot = minutes < 13 * 60 ? 'mañana' : minutes < 19 * 60 ? 'tarde' : 'noche'
-    minutes += stop.durationMinutes
-    return slot
-  })
-}
-
-interface StopTiming {
+interface StopSchedule {
+  slot: TimeSlot
   startMinutes: number
   endMinutes: number
 }
 
-/** Mismo reloj acumulado que `computeTimeSlots`, pero conservando inicio/fin de cada parada — necesario para saber en qué HUECO entre dos paradas cae la hora de comer/cenar (ver `findMealInsertionIndex`), no solo en qué tercio del día. */
-function computeStopTimings(stops: { durationMinutes: number }[]): StopTiming[] {
-  let minutes = DAY_START_MINUTES
-  return stops.map((stop) => {
+/**
+ * Hora de inicio/fin real de cada parada, acumulando desde `firstStopStartMinutes` (la `time` real
+ * de la primera parada cuando la trae — rutas generadas por IA, ver `suggested_time` en
+ * mapGeneratedRoute.ts — o `DAY_START_MINUTES` si no) + su `durationMinutes` + los minutos a pie
+ * REALES hasta la siguiente (del propio conector ya calculado para esa parada, refinado por Mapbox
+ * cuando hay coordenadas reales — ver `connectorEntries`/`walkMinutes` en ConnectorInfo, mismo dato
+ * que ya alimenta el resumen "X km a pie"). Mismo reloj acumulado que `retimeStops` en
+ * useRouteStore.ts (la base de Modo Hoy), reutilizado aquí en vez de reinventado — solo que además
+ * usa el conector YA refinado por Mapbox en vez de un `?? 15` genérico cuando está disponible. El
+ * tercio del día (Mañana/Tarde/Noche) se deriva de esta misma hora de inicio, ya no de un
+ * acumulador propio aparte.
+ */
+function computeStopSchedule(
+  stops: { durationMinutes: number }[],
+  walkMinutesBetween: (index: number) => number,
+  firstStopStartMinutes: number,
+): StopSchedule[] {
+  let minutes = firstStopStartMinutes
+  return stops.map((stop, index) => {
+    if (index > 0) minutes += stops[index - 1].durationMinutes + walkMinutesBetween(index)
     const startMinutes = minutes
-    minutes += stop.durationMinutes
-    return { startMinutes, endMinutes: minutes }
+    const endMinutes = startMinutes + stop.durationMinutes
+    const slot: TimeSlot = startMinutes < 13 * 60 ? 'mañana' : startMinutes < 19 * 60 ? 'tarde' : 'noche'
+    return { slot, startMinutes, endMinutes }
   })
 }
 
@@ -90,10 +101,10 @@ const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
 const DINNER_WINDOW: [number, number] = [20 * 60 + 30, 22 * 60]
 
 /** Índice de la parada TRAS la que insertar el acordeón dorado "Hora de comer"/"Hora de cenar" — el primer hueco (entre esa parada y la siguiente, o tras la última si el día termina dentro de la ventana) cuyo rango se solapa con la franja horaria dada. null si el día nunca llega a cruzarla (ej. un día corto que termina a las 12:00). */
-function findMealInsertionIndex(timings: StopTiming[], window: [number, number]): number | null {
-  for (let index = 0; index < timings.length; index++) {
-    const gapStart = timings[index].endMinutes
-    const gapEnd = index + 1 < timings.length ? timings[index + 1].startMinutes : Infinity
+function findMealInsertionIndex(schedule: StopSchedule[], window: [number, number]): number | null {
+  for (let index = 0; index < schedule.length; index++) {
+    const gapStart = schedule[index].endMinutes
+    const gapEnd = index + 1 < schedule.length ? schedule[index + 1].startMinutes : Infinity
     if (gapEnd >= window[0] && gapStart <= window[1]) return index
   }
   return null
@@ -186,7 +197,7 @@ function buildDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
  * (camper, o coche de alquiler además del de alojamiento) SOLO en `route.days[0]` (reserva única
  * del viaje, ver VehicleBlock.tsx), el de alojamiento cuando este día es el primer día de una
  * estancia sin resolver, LUEGO el acordeón de llegada/vuelta si aplica, y luego las paradas
- * agrupadas por franja horaria (Mañana/Tarde/Noche, ver `computeTimeSlots`) conectadas por
+ * agrupadas por franja horaria (Mañana/Tarde/Noche, ver `computeStopSchedule`) conectadas por
  * StopConnector. Solo un acordeón de parada abierto a la vez, con estado propio de este panel.
  *
  * Las paradas se muestran vía `resolveDisplayStops` — plantilla mock mientras `day.stops` esté
@@ -329,18 +340,36 @@ export function DayDetailPanel({
         : { hasRealDisplacement: false, label: 'Fin del día.' }
       : null
 
-  const timeSlots = computeTimeSlots(stops)
   const totalWalkMeters = connectorEntries.reduce((sum, entry) => sum + (entry.connector.meters ?? 0), 0) + (finalConnector?.meters ?? 0)
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
   const dayMarkers = buildDayMarkers(realStops, dayIndex)
+
+  // Hora real de inicio de cada parada: si el día ya tiene paradas REALES (editadas a mano o
+  // generadas por IA, day.stops.length > 0), cada una trae su propia `time` fiable — real
+  // suggested_time de Claude, o recalculada por retimeStops en cada edición del store (añadir/
+  // quitar/insertar/mover, ver useRouteStore.ts) — así que se muestra tal cual, exactamente igual
+  // que ya hace Modo Hoy (getStopPlannedWindow en todayMode.ts), sin recalcular nada aquí. Un día
+  // 100% de plantilla (sin editar todavía) no tiene ninguna `time` real que mostrar — ahí sí se
+  // acumula desde DAY_START_MINUTES con la duración real de cada parada + el tiempo a pie del
+  // conector (refinado por Mapbox cuando hay coordenadas reales), ver computeStopSchedule.
+  const schedule: StopSchedule[] =
+    day.stops.length > 0
+      ? stops.map((stop, index) => {
+          const rawTime = realStops[index]?.time
+          const parsed = rawTime ? parseTimeToMinutes(rawTime) : NaN
+          const startMinutes = Number.isNaN(parsed) ? DAY_START_MINUTES : parsed
+          const endMinutes = startMinutes + stop.durationMinutes
+          const slot: TimeSlot = startMinutes < 13 * 60 ? 'mañana' : startMinutes < 19 * 60 ? 'tarde' : 'noche'
+          return { slot, startMinutes, endMinutes }
+        })
+      : computeStopSchedule(stops, (index) => connectorEntries[index].connector.walkMinutes ?? DEFAULT_WALK_MINUTES, DAY_START_MINUTES)
 
   // Acordeón dorado "Hora de comer"/"Hora de cenar" — se inserta tras la parada donde cae ese hueco
   // del timeline (ver findMealInsertionIndex), anclado a las coordenadas de ESA parada tanto para
   // geocodificar el barrio como para "Rápido y cerca" (MealTimeAccordion.tsx). route?.destination
   // solo falta en rutas sin generar aún (no debería pasar aquí, pero evita reventar el render).
-  const stopTimings = computeStopTimings(stops)
-  const lunchInsertionIndex = findMealInsertionIndex(stopTimings, LUNCH_WINDOW)
-  const dinnerInsertionIndex = findMealInsertionIndex(stopTimings, DINNER_WINDOW)
+  const lunchInsertionIndex = findMealInsertionIndex(schedule, LUNCH_WINDOW)
+  const dinnerInsertionIndex = findMealInsertionIndex(schedule, DINNER_WINDOW)
   const destino = route?.destination ?? day.city
 
   const renderConnector = (
@@ -489,18 +518,28 @@ export function DayDetailPanel({
 
           {stops.map((stop, index) => {
             const { connectorKey, connector, fromName } = connectorEntries[index]
-            const slot = timeSlots[index]
-            const showSlotHeader = index === 0 || slot !== timeSlots[index - 1]
-            const showConnector = index === 0 || slot === timeSlots[index - 1]
+            const { slot, startMinutes } = schedule[index]
+            const showSlotHeader = index === 0 || slot !== schedule[index - 1].slot
+            const showConnector = index === 0 || slot === schedule[index - 1].slot
             const showLunchAccordion = lunchInsertionIndex === index
             const showDinnerAccordion = dinnerInsertionIndex === index
+
+            // Rango horario de la franja completa (ej. "09:00 — 13:30") — busca hasta dónde llega
+            // esta misma franja (mismo criterio que `showConnector`: mientras el slot no cambie) para
+            // usar el fin de la ÚLTIMA parada de la franja, no solo el de esta.
+            let slotRangeLabel = ''
+            if (showSlotHeader) {
+              let lastIndexInSlot = index
+              while (lastIndexInSlot + 1 < schedule.length && schedule[lastIndexInSlot + 1].slot === slot) lastIndexInSlot++
+              slotRangeLabel = `${minutesToTime(startMinutes)} — ${minutesToTime(schedule[lastIndexInSlot].endMinutes)}`
+            }
 
             return (
               <Fragment key={stop.id}>
                 <div>
                   {showSlotHeader && (
                     <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
-                      {SLOT_LABELS[slot]}
+                      {SLOT_LABELS[slot]} · {slotRangeLabel}
                     </p>
                   )}
                   {showConnector && renderConnector(connectorKey, connector, fromName, stop.name, index)}
@@ -509,6 +548,7 @@ export function DayDetailPanel({
                     stop={stop}
                     circleBg={stopCircleBg}
                     circleText={stopCircleText}
+                    startTime={minutesToTime(startMinutes)}
                     onOpen={() => setDetailIndex(index)}
                     menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
                   />

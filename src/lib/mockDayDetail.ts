@@ -1,6 +1,7 @@
 import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
+import { minutesToTime } from './time'
 
 /**
  * Contenido "rico" de un día en la pestaña DIAS — acordeón de llegada/vuelta y acordeones de
@@ -436,17 +437,34 @@ export function resolveDisplayStops(day: DayPlan): MockStopDetail[] {
   return day.stops.map((stop) => richById.get(stop.id) ?? shellFromStop(stop))
 }
 
-/** "Cristaliza" el pool de plantilla en `Stop[]` reales — la primera vez que se edita algo en un día sin ediciones previas, para que la edición tenga algo real sobre lo que operar en el store. */
+/** Minutos a pie entre paradas de plantilla cuando se cristalizan (sin coordenadas reales todavía, así que no hay conector real que consultar) — mismo valor de reserva que el resto del cálculo horario de la app, ver DEFAULT_WALK_MINUTES en DayDetailPanel.tsx. */
+const TEMPLATE_WALK_GAP_MINUTES = 15
+
+/**
+ * "Cristaliza" el pool de plantilla en `Stop[]` reales — la primera vez que se edita algo en un día
+ * sin ediciones previas, para que la edición tenga algo real sobre lo que operar en el store. La
+ * hora de cada parada se acumula desde las 09:00 usando la duración REAL de su plantilla (antes
+ * quedaba en franjas fijas de 1h por posición, "09:00, 10:00, 11:00...", ignorando que p. ej. un
+ * museo dura 120 min) — así el horario no da un salto raro justo al hacer la primera edición de un
+ * día, sea cual sea el sitio desde el que venía mostrándose (DayDetailPanel.tsx usa este mismo
+ * cálculo mientras el día sigue siendo 100% plantilla).
+ */
 export function seedStopsFromTemplate(day: DayPlan): Stop[] {
-  return buildMockStopsForDay(day).map((detail, index) => ({
-    id: detail.id,
-    time: `${String(9 + index).padStart(2, '0')}:00`,
-    name: detail.name,
-    description: detail.description,
-    durationMinutes: 60,
-    coordinates: { lat: 0, lng: 0 },
-    photoUrl: detail.photoUrl,
-  }))
+  const details = buildMockStopsForDay(day)
+  let cursor = 9 * 60
+  return details.map((detail) => {
+    const time = minutesToTime(cursor)
+    cursor += detail.durationMinutes + TEMPLATE_WALK_GAP_MINUTES
+    return {
+      id: detail.id,
+      time,
+      name: detail.name,
+      description: detail.description,
+      durationMinutes: detail.durationMinutes,
+      coordinates: { lat: 0, lng: 0 },
+      photoUrl: detail.photoUrl,
+    }
+  })
 }
 
 // ── Conectores entre paradas ──────────────────────────────────
@@ -473,6 +491,8 @@ export interface ConnectorInfo {
   modeOptions?: TransportModeOption[]
   /** Distancia a pie en metros, presente solo cuando hasRealDisplacement=true — para el resumen "X km a pie" de DayDetailPanel.tsx, sin tener que parsear distanceLabel. */
   meters?: number
+  /** Minutos a pie, presente solo cuando hasRealDisplacement=true — para calcular la hora de inicio real de cada parada en DayDetailPanel.tsx, sin tener que parsear durationLabel. */
+  walkMinutes?: number
 }
 
 const TEXT_ONLY_CONNECTORS = [
@@ -499,6 +519,7 @@ function buildRealDisplacement(seed: string): ConnectorInfo {
     label: `${walkMinutes} min a pie · ${meters} m`,
     modeOptions,
     meters,
+    walkMinutes,
   }
 }
 
@@ -550,6 +571,7 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
     label: `${walking.minutes} min a pie · ${formatMeters(walking.meters)}`,
     modeOptions,
     meters: walking.meters,
+    walkMinutes: walking.minutes,
   }
 }
 

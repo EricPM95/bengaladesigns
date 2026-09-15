@@ -544,7 +544,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
       return {
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: day.stops.filter((stop) => stop.id !== stopId),
+          stops: retimeStops(day.stops.filter((stop) => stop.id !== stopId)),
         })),
       }
     }),
@@ -573,8 +573,8 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
         route: {
           ...state.route,
           days: state.route.days.map((day) => {
-            if (day.id === fromDayId) return { ...day, stops: day.stops.filter((s) => s.id !== stopId) }
-            if (day.id === toDayId) return { ...day, stops: [...day.stops, stop] }
+            if (day.id === fromDayId) return { ...day, stops: retimeStops(day.stops.filter((s) => s.id !== stopId)) }
+            if (day.id === toDayId) return { ...day, stops: retimeStops([...day.stops, stop]) }
             return day
           }),
         },
@@ -596,7 +596,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
     set((state) => {
       if (!state.route) return state
       return {
-        route: updateDay(state.route, dayId, (day) => ({ ...day, stops: [...day.stops, stop] })),
+        route: updateDay(state.route, dayId, (day) => ({ ...day, stops: retimeStops([...day.stops, stop]) })),
       }
     }),
 
@@ -618,7 +618,7 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
         route: updateDay(state.route, dayId, (day) => {
           const stops = [...day.stops]
           stops.splice(index, 0, stop)
-          return { ...day, stops }
+          return { ...day, stops: retimeStops(stops) }
         }),
       }
     }),

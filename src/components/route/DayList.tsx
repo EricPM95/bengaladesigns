@@ -103,20 +103,17 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                 {index < route.days.length - 1 && <span className="absolute top-full left-1/2 h-4 w-px -translate-x-1/2 bg-border" />}
               </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="text-body font-medium text-text">{dateIso ? formatShortDateEs(dateIso) : `Día ${day.dayNumber}`}</p>
-                {travel && <p className="text-caption font-medium text-accent-red">Día de viaje</p>}
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">
+                  {dateIso ? formatShortDateEs(dateIso) : `Día ${day.dayNumber}`}
+                </p>
+                <p className="truncate text-body font-semibold text-text">{travel ? `${travel.fromCity} → ${travel.toCity}` : day.city}</p>
+                {travel && (
+                  <p className="text-caption font-medium" style={{ color: '#E24C4C' }}>
+                    Día de viaje
+                  </p>
+                )}
               </div>
-
-              {travel ? (
-                <div className="flex shrink-0 items-center gap-1.5 text-caption font-medium text-text">
-                  <span>{travel.fromCity}</span>
-                  <span className="h-px w-3 shrink-0 border-t border-dashed border-text-muted" />
-                  <span>{travel.toCity}</span>
-                </div>
-              ) : (
-                <span className="shrink-0 text-caption font-medium text-text">{day.city}</span>
-              )}
 
               {!day.isReturnLeg && (
                 <span onClick={(event) => event.stopPropagation()}>

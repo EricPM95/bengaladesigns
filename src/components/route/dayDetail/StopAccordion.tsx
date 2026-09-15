@@ -11,14 +11,16 @@ interface StopAccordionProps {
   circleBg: string
   /** Número dentro del círculo — versión oscura/saturada del MISMO tono que circleBg (dayColorStrong), nunca negro/blanco genérico. */
   circleText: string
+  /** Hora de inicio calculada para esta parada concreta ("09:00"), ver computeStopSchedule en DayDetailPanel.tsx — distinta de `stop.hours` (horario de apertura del lugar). Opcional: se omite en contextos sin este cálculo (ninguno hoy, pero deja la tarjeta intacta si algún día se reutiliza sin él). */
+  startTime?: string
 }
 
 /**
- * Fila de una parada visitable en la lista del día — badge numerado, nombre, horario, categoría y
- * miniatura, sin ningún CTA de venta. Al pulsar abre la ficha a pantalla completa (StopDetailSheet),
- * ya no expande contenido inline debajo de la tarjeta como antes.
+ * Fila de una parada visitable en la lista del día — badge numerado, hora de inicio, nombre,
+ * horario, categoría y miniatura, sin ningún CTA de venta. Al pulsar abre la ficha a pantalla
+ * completa (StopDetailSheet), ya no expande contenido inline debajo de la tarjeta como antes.
  */
-export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText }: StopAccordionProps) {
+export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText, startTime }: StopAccordionProps) {
   return (
     <div className="relative rounded-xl border border-border bg-bg-card shadow-sm">
       <button type="button" onClick={onOpen} className="flex w-full items-start gap-3 rounded-xl p-3 text-left transition-colors hover:bg-bg-hover">
@@ -30,6 +32,7 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText 
         </span>
 
         <div className="min-w-0 flex-1 space-y-1.5">
+          {startTime && <p className="text-caption font-bold text-accent-hover">{startTime}</p>}
           <p className="text-body font-semibold text-text">{stop.name}</p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-soft">
