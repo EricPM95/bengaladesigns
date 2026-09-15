@@ -538,10 +538,12 @@ Assign a budget tier by your own judgment of the type of establishment (€ = ca
 
 Write everything in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language.
 
+Also give the real approximate coordinates (latitude/longitude) of each restaurant, from your own knowledge or whatever address/location your web search turned up — used only to place a pin on a map, doesn't need survey-grade precision, but must be genuinely close to the real place (never a guess at the city center or a placeholder).
+
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
   "restaurantes": [
-    { "nombre": "Real restaurant name", "motivo": "1 short specific sentence, in Spanish", "presupuesto": "€" }
+    { "nombre": "Real restaurant name", "motivo": "1 short specific sentence, in Spanish", "presupuesto": "€", "latitude": 00.0000, "longitude": 00.0000 }
   ]
 }
 Return between 2 and 3 restaurants. If you genuinely cannot verify any real, currently-operating restaurant in this zone, return an empty array — never invent one to fill the quota.`
@@ -554,11 +556,17 @@ function sanitizeCuratedRestaurants(parsed) {
     .slice(0, 3)
     .map((entry) => {
       const nombre = entry.nombre.trim().slice(0, 120)
+      const latitude = typeof entry.latitude === 'number' && Number.isFinite(entry.latitude) ? entry.latitude : null
+      const longitude = typeof entry.longitude === 'number' && Number.isFinite(entry.longitude) ? entry.longitude : null
       return {
         nombre,
         motivo: entry.motivo.trim().slice(0, 300),
         presupuesto: validBudget.has(entry.presupuesto) ? entry.presupuesto : '€€',
         foto: `https://picsum.photos/seed/${encodeURIComponent(nombre)}/400/280`,
+        // null si Claude no dio coordenadas válidas — el pin de ese restaurante simplemente se omite
+        // del mapa (MealDetailSheet.tsx), nunca se inventa una posición aproximada.
+        latitude,
+        longitude,
       }
     })
 }

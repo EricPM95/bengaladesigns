@@ -5,6 +5,16 @@ import type { Coordinates } from '../../lib/types'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
+function computeBounds(markers: { coordinates: Coordinates }[]): mapboxgl.LngLatBounds {
+  return markers.reduce(
+    (bound, marker) => bound.extend([marker.coordinates.lng, marker.coordinates.lat] as [number, number]),
+    new mapboxgl.LngLatBounds(
+      [markers[0].coordinates.lng, markers[0].coordinates.lat],
+      [markers[0].coordinates.lng, markers[0].coordinates.lat],
+    ),
+  )
+}
+
 export interface StopsMapMarker {
   id: string
   name: string
@@ -23,6 +33,8 @@ interface StopsMapViewProps {
   markers: StopsMapMarker[]
   activeStopId?: string | null
   onSelectStop?: (stopId: string) => void
+  /** Cuando true, cambiar `activeStopId` mueve la cámara: `flyTo` el marcador activo (acercando el zoom), o vuelve al `fitBounds` de todos los marcadores cuando pasa a null — usado por MealDetailSheet.tsx para el highlight mapa↔lista de restaurantes. Por defecto false: el resto de usos de este mapa (RUTA, DIAS, StopDetailSheet) solo quieren el resaltado visual del pin, sin mover la cámara. */
+  flyToActiveStop?: boolean
 }
 
 /**
@@ -32,9 +44,10 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapViewProps) {
+export function StopsMapView({ markers, activeStopId, onSelectStop, flyToActiveStop = false }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
+  const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersKey = markers
     .map((marker) => `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}`)
     .join('|')
@@ -48,6 +61,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
       center: [markers[0].coordinates.lng, markers[0].coordinates.lat],
       zoom: 14,
     })
+    mapRef.current = map
     innerElsRef.current = new Map()
     // Un único popup vivo a la vez — reutilizado (nunca varios apilados) para que abrir uno nuevo
     // cierre automáticamente el anterior, y closeOnClick para que un click fuera de cualquier pin
@@ -101,14 +115,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
       })
 
       if (markers.length > 1) {
-        const bounds = markers.reduce(
-          (bound, marker) => bound.extend([marker.coordinates.lng, marker.coordinates.lat] as [number, number]),
-          new mapboxgl.LngLatBounds(
-            [markers[0].coordinates.lng, markers[0].coordinates.lat],
-            [markers[0].coordinates.lng, markers[0].coordinates.lat],
-          ),
-        )
-        map.fitBounds(bounds, { padding: 56, maxZoom: 15 })
+        map.fitBounds(computeBounds(markers), { padding: 56, maxZoom: 15 })
       }
     })
 
@@ -120,6 +127,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
     return () => {
       resizeObserver.disconnect()
       map.remove()
+      mapRef.current = null
     }
   }, [markersKey])
 
@@ -129,6 +137,22 @@ export function StopsMapView({ markers, activeStopId, onSelectStop }: StopsMapVi
       el.style.zIndex = stopId === activeStopId ? '10' : ''
     }
   }, [activeStopId])
+
+  // Solo cuando `flyToActiveStop` (MealDetailSheet.tsx: highlight mapa↔lista de restaurantes) — el
+  // resto de usos de activeStopId (RUTA, DIAS, StopDetailSheet) solo quieren el pin resaltado, sin
+  // mover la cámara del viajero de donde la dejó.
+  useEffect(() => {
+    if (!flyToActiveStop) return
+    const map = mapRef.current
+    if (!map) return
+    if (activeStopId) {
+      const marker = markers.find((candidate) => candidate.id === activeStopId)
+      if (marker) map.flyTo({ center: [marker.coordinates.lng, marker.coordinates.lat], zoom: Math.max(map.getZoom(), 16), duration: 800 })
+    } else if (markers.length > 1) {
+      map.fitBounds(computeBounds(markers), { padding: 56, maxZoom: 15, duration: 800 })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStopId, flyToActiveStop, markersKey])
 
   if (markers.length === 0) {
     return (

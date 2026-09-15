@@ -19,6 +19,7 @@ import { StopsMapView } from '../../map/StopsMapView'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
+import { MealDetailSheet } from './MealDetailSheet'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
 import { AddStopButton, StopConnector } from './StopConnector'
@@ -234,6 +235,10 @@ export function DayDetailPanel({
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
   const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
+  // Qué bloque de comida/cena está abierto a pantalla completa (MealDetailSheet) — `stopIndex` es la
+  // parada tras la que cae esa franja (ancla geográfica), mismo dato que antes recibía
+  // MealTimeAccordion directamente. null = cerrado.
+  const [mealSheet, setMealSheet] = useState<{ franja: 'comida' | 'cena'; stopIndex: number } | null>(null)
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
@@ -421,8 +426,8 @@ export function DayDetailPanel({
   // canvas WebGL de Mapbox GL montados a la vez arriesgan que el de abajo se "filtre" por encima
   // del overlay que se supone que lo tapa (compositing GPU del canvas, no un problema de z-index —
   // ver el comentario junto a dayDetailOpen en RouteView.tsx, mismo motivo). Se trata igual que el
-  // colapsado manual: mientras cualquiera de esos dos esté abierto, este mapa ni se monta.
-  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen
+  // colapsado manual: mientras cualquiera de esos esté abierto, este mapa ni se monta.
+  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null
 
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
@@ -581,7 +586,13 @@ export function DayDetailPanel({
                   <>
                     {renderMealGapAddStop(index + 1)}
                     <div className="pt-2">
-                      <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="comida" />
+                      <MealTimeAccordion
+                        destino={destino}
+                        city={day.city}
+                        coordinates={realStops[index].coordinates}
+                        franja="comida"
+                        onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
+                      />
                     </div>
                     {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
@@ -590,7 +601,13 @@ export function DayDetailPanel({
                   <>
                     {renderMealGapAddStop(index + 1)}
                     <div className="pt-2">
-                      <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="cena" />
+                      <MealTimeAccordion
+                        destino={destino}
+                        city={day.city}
+                        coordinates={realStops[index].coordinates}
+                        franja="cena"
+                        onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
+                      />
                     </div>
                     {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
@@ -637,6 +654,16 @@ export function DayDetailPanel({
         dayStops={dayStopRefs}
         transportModeId={arrivalTransportModeId}
         onClose={() => setArrivalSheetOpen(false)}
+      />
+
+      <MealDetailSheet
+        open={mealSheet !== null}
+        destino={destino}
+        city={day.city}
+        coordinates={mealSheet ? realStops[mealSheet.stopIndex].coordinates : { lat: 0, lng: 0 }}
+        franja={mealSheet?.franja ?? 'comida'}
+        dayStops={dayStopRefs}
+        onClose={() => setMealSheet(null)}
       />
     </div>
   )

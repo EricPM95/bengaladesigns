@@ -11,6 +11,9 @@ export interface CuratedRestaurant {
   foto: string
   motivo: string
   presupuesto: '€' | '€€' | '€€€'
+  /** null si Claude no dio coordenadas válidas (o si el resultado viene de un caché anterior a este campo) — ese restaurante se muestra igual en la lista, solo se omite su pin en el mapa (MealDetailSheet.tsx). */
+  latitude: number | null
+  longitude: number | null
 }
 
 type Franja = 'comida' | 'cena'
@@ -39,7 +42,17 @@ export async function fetchCuratedRestaurants(destino: string, zona: string, fra
       })
       if (!response.ok) return []
       const data = await response.json()
-      const seleccion: CuratedRestaurant[] = Array.isArray(data.seleccion) ? data.seleccion : []
+      const raw: unknown[] = Array.isArray(data.seleccion) ? data.seleccion : []
+      // Coerción defensiva de latitude/longitude — filas cacheadas en Supabase ANTES de que este
+      // campo existiera vienen sin ellas (undefined, no null), ver zona_restaurantes.sql.
+      const seleccion: CuratedRestaurant[] = raw.map((entry) => {
+        const restaurant = entry as CuratedRestaurant
+        return {
+          ...restaurant,
+          latitude: typeof restaurant.latitude === 'number' ? restaurant.latitude : null,
+          longitude: typeof restaurant.longitude === 'number' ? restaurant.longitude : null,
+        }
+      })
       cache.set(key, seleccion)
       return seleccion
     } catch {
