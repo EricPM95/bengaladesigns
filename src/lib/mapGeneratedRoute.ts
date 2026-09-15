@@ -44,6 +44,10 @@ interface GeneratedStop {
   latitude: number
   longitude: number
   category?: string
+  /** Tipo de lugar específico (ej. "Anfiteatro histórico") — ver BLOQUE B, categoryLabel en Stop (types.ts). */
+  category_label?: string
+  /** "HH:MM–HH:MM" si tiene horario real, null si es de acceso libre — ver BLOQUE B, Stop.hours. */
+  hours?: string | null
   entry_fee?: string
   entry_options?: GeneratedEntryOption[]
   travel_to_next?: GeneratedTravelToNext
@@ -225,6 +229,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     coordinates: { lat: generated.latitude, lng: generated.longitude },
     photoUrl: `https://picsum.photos/seed/${encodeURIComponent(generated.id || generated.name)}/600/400`,
     category: (generated.category && CATEGORY_MAP[generated.category]) || 'sight',
+    categoryLabel: generated.category_label,
+    hours: generated.hours ?? null,
     priceInfo: generated.entry_fee,
     insiderTip: generated.tip,
     ticketOptions: mapEntryOptions(generated.id || slugify(generated.name), generated.entry_options),

@@ -15,6 +15,7 @@ import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
+import { ClockIcon, HourglassIcon } from '../../ui/TimeIcons'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -242,16 +243,18 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <h1 className="font-display text-h2 font-semibold text-text">{stop.name}</h1>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="rounded-full bg-accent-soft px-2 py-0.5 text-caption font-medium text-accent-hover">
-                      ⏳ {formatDuration(stop.durationMinutes)}
+                    <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-caption font-medium text-accent-hover">
+                      <HourglassIcon />
+                      {formatDuration(stop.durationMinutes)}
                     </span>
                     {hoursTag && (
                       <span
-                        className={`rounded-full px-2 py-0.5 text-caption font-medium ${
+                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-medium ${
                           hoursTag.variant === 'closed' ? 'bg-accent-red/15 text-accent-red' : 'bg-accent-soft text-accent-hover'
                         }`}
                       >
-                        🕐 {hoursTag.label}
+                        <ClockIcon />
+                        {hoursTag.label}
                       </span>
                     )}
                     <span className="rounded-full bg-bg-hover px-2 py-0.5 text-caption font-medium text-text-muted">{stop.category}</span>

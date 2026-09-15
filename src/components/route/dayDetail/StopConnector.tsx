@@ -16,7 +16,8 @@ interface StopConnectorProps {
   onAddStop: () => void
 }
 
-function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
+/** Exportado para MealGapAddStop (DayDetailPanel.tsx) — el hueco antes/después de un bloque de comida/cena no tiene un ConnectorInfo real (no hay desplazamiento calculado hacia una comida), pero necesita el mismo botón "+ Añadir parada" que cualquier otro hueco del timeline (BLOQUE B). */
+export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
   return (
     <button
       type="button"

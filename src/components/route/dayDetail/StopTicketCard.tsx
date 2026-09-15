@@ -1,5 +1,6 @@
 import type { StopTicket } from '../../../lib/mockStopTickets'
 import { Button } from '../../ui/Button'
+import { HourglassIcon } from '../../ui/TimeIcons'
 
 /**
  * Estilo por proveedor — borde de la tarjeta + fondo del badge, un color propio por proveedor para
@@ -44,7 +45,7 @@ export function StopTicketCard({ ticket }: StopTicketCardProps) {
 
       <p className="mt-1 flex items-center gap-3 text-caption text-text-soft">
         <span className="flex items-center gap-1">
-          <span aria-hidden="true">⏳</span> {ticket.duracion}
+          <HourglassIcon /> {ticket.duracion}
         </span>
         <span className="flex items-center gap-1">
           <span aria-hidden="true">🗣️</span> {ticket.idioma}

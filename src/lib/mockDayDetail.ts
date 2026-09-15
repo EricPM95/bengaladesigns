@@ -405,7 +405,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     id: stop.id,
     name: stop.name,
     category: stop.categoryLabel ?? 'Punto de interés',
-    hours: null,
+    hours: stop.hours ?? null,
     durationMinutes: stop.durationMinutes,
     photoUrl: stop.photoUrl,
     description: stop.description,

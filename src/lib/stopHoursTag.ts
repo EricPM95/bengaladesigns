@@ -1,7 +1,8 @@
 /**
  * Etiqueta de horario para la ficha de una parada (StopDetailSheet) — azul "Abierto · HH:MM–HH:MM"
  * si la hora actual del dispositivo cae dentro del rango, rojo "Cerrado · abre a las HH:MM" si no,
- * o "Todo el año" (sin horario fijo conocido, acceso libre) cuando `hours` es null. Distinto de
+ * o "Acceso libre" (sin horario fijo, siempre accesible — ej. fuentes/plazas/arcos al aire libre)
+ * cuando `hours` es null (BLOQUE B, feedback de calidad: distinguir de un horario real). Distinto de
  * `computeOpenStatusLabel` (todayMode.ts), que da una cuenta atrás ("cierra en 45 min") pensada para
  * Modo Hoy — aquí se muestra el rango completo tal cual, como en la ficha de referencia.
  */
@@ -16,10 +17,10 @@ export interface StopHoursTag {
 }
 
 export function computeStopHoursTag(hours: string | null, nowMinutes: number): StopHoursTag {
-  if (!hours) return { label: 'Todo el año', variant: 'always' }
+  if (!hours) return { label: 'Acceso libre', variant: 'always' }
 
   const match = HOURS_RANGE_RE.exec(hours)
-  if (!match) return { label: 'Todo el año', variant: 'always' }
+  if (!match) return { label: 'Acceso libre', variant: 'always' }
 
   const [, openH, openM, closeH, closeM] = match
   const openMin = Number(openH) * 60 + Number(openM)

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
+import { ClockIcon } from '../../ui/TimeIcons'
 
 interface StopAccordionProps {
   index: number
@@ -37,8 +38,8 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-soft">
             <span className="flex items-center gap-1">
-              <span aria-hidden="true">🕐</span>
-              {stop.hours ?? 'Acceso libre, sin horario'}
+              <ClockIcon />
+              {stop.hours ?? 'Acceso libre'}
             </span>
             <span className="rounded-full bg-bg-hover px-2 py-0.5 font-medium text-text-muted">{stop.category}</span>
           </div>

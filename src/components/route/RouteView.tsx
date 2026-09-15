@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
-import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { dayColorPastel, dayColorStrong } from '../../lib/dayColors'
+import { buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
@@ -23,19 +22,6 @@ import { TodayView } from './today/TodayView'
 const MOBILE_MAP_MIN_VH = 15
 const MOBILE_MAP_MAX_VH = 75
 
-/** Mapa de un único día (DIAS y el resto de pestañas que no son RUTA/RESERVAS) — mismo color que el círculo numerado de sus paradas (ver dayIndex en DayDetailPanel.tsx), numerado por posición dentro de ese día. */
-function buildSingleDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
-  return stops.map((stop, index) => ({
-    id: stop.id,
-    name: stop.name,
-    coordinates: stop.coordinates,
-    number: index + 1,
-    bg: dayColorPastel(dayIndex),
-    text: dayColorStrong(dayIndex),
-    photoUrl: stop.photoUrl,
-  }))
-}
-
 function CollapseMapIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -51,23 +37,6 @@ function ExpandMapIcon() {
       <path d="M14 14h7v7h-7z" />
     </svg>
   )
-}
-
-/** Mapa combinado de TODOS los días (RUTA, destino único) — coloreado por día con el mismo criterio que el círculo numerado de cada parada en DIAS (ver StopAccordion.tsx), numerado por posición dentro de su propio día. */
-function buildCombinedDaysMarkers(days: DayPlan[]): StopsMapMarker[] {
-  return days
-    .filter((day) => !day.isReturnLeg)
-    .flatMap((day, dayIndex) =>
-      day.stops.map((stop, stopIndex): StopsMapMarker => ({
-        id: stop.id,
-        name: stop.name,
-        coordinates: stop.coordinates,
-        number: stopIndex + 1,
-        bg: dayColorPastel(dayIndex),
-        text: dayColorStrong(dayIndex),
-        photoUrl: stop.photoUrl,
-      })),
-    )
 }
 
 export function RouteView() {
@@ -117,7 +86,6 @@ export function RouteView() {
   const hasTripDates = Boolean(route.answers.dateRange)
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
-  const activeDayIndex = route.days.findIndex((day) => day.id === activeDay.id)
   const segments = segmentsForArrivalMarkers
   const showRouteStyleMap = mode === 'route'
   // El botón de colapsar mapa aplica a DIAS y a EXPLORAR (mismo patrón mapa+tirador+colapsar en
@@ -187,7 +155,7 @@ export function RouteView() {
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
             ) : (
               <StopsMapView
-                markers={buildSingleDayMarkers(activeDay.stops, activeDayIndex)}
+                markers={buildCombinedDaysMarkers(route.days, activeDayId)}
                 activeStopId={activeStopId}
                 onSelectStop={setActiveStopId}
               />

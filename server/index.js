@@ -1209,6 +1209,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
           "latitude": 00.0000,
           "longitude": 00.0000,
           "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
+          "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte', 'Basílica', 'Mirador', 'Plaza', 'Mercado local' — never a generic label like 'Punto de interés'",
+          "hours": "Real opening hours as 'HH:MM–HH:MM' ONLY if this place has a visitable interior with a schedule (museum, monument with indoor access, church with visiting hours) — null if it's always freely accessible outdoors (fountain, square, arch, viewpoint, street)",
           "entry_fee": "€X or Free",
           "entry_options": [
             {
@@ -2087,6 +2089,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
       "latitude": 00.0000,
       "longitude": 00.0000,
       "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
+      "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte', 'Basílica', 'Mirador' — never a generic label",
+      "hours": "Real opening hours as 'HH:MM–HH:MM' if it has a visitable interior with a schedule, null if always freely accessible outdoors",
       "entry_fee": "€X or Free"
     }
   ]

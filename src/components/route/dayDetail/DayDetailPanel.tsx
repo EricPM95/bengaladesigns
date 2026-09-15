@@ -4,6 +4,7 @@ import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
+import { buildCombinedDaysMarkers } from '../../../lib/routeMapMarkers'
 import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../../../lib/time'
 import {
   buildAccommodationConnectorInfo,
@@ -14,13 +15,13 @@ import {
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
+import { StopsMapView } from '../../map/StopsMapView'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
-import { StopConnector } from './StopConnector'
+import { AddStopButton, StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
@@ -173,19 +174,6 @@ function SummaryClockIcon({ className = '' }: { className?: string }) {
       <polyline points="12 7 12 12 15.5 14" />
     </svg>
   )
-}
-
-/** Mismo color por día que el círculo numerado de cada parada (ver dayIndex más abajo) — así el pin del mini-mapa de esta pantalla coincide con el resto de mapas de la app. */
-function buildDayMarkers(stops: Stop[], dayIndex: number): StopsMapMarker[] {
-  return stops.map((stop, index) => ({
-    id: stop.id,
-    name: stop.name,
-    coordinates: stop.coordinates,
-    number: index + 1,
-    bg: dayColorPastel(dayIndex),
-    text: dayColorStrong(dayIndex),
-    photoUrl: stop.photoUrl,
-  }))
 }
 
 /**
@@ -342,7 +330,9 @@ export function DayDetailPanel({
 
   const totalWalkMeters = connectorEntries.reduce((sum, entry) => sum + (entry.connector.meters ?? 0), 0) + (finalConnector?.meters ?? 0)
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
-  const dayMarkers = buildDayMarkers(realStops, dayIndex)
+  // Todos los días del viaje a la vez (BLOQUE B: "el mapa solo marca un lugar"), con el de esta
+  // pantalla resaltado y el resto atenuado — nunca ocultos, ver buildCombinedDaysMarkers.
+  const dayMarkers = buildCombinedDaysMarkers(route?.days ?? [day], day.id)
 
   // Hora real de inicio de cada parada: si el día ya tiene paradas REALES (editadas a mano o
   // generadas por IA, day.stops.length > 0), cada una trae su propia `time` fiable — real
@@ -397,6 +387,18 @@ export function DayDetailPanel({
       />
     )
   }
+
+  // "+" sin ConnectorInfo real (BLOQUE B) — el hueco antes/después de un bloque de comida/cena no
+  // tiene un desplazamiento calculado (MealTimeAccordion no es una parada real), pero necesita el
+  // mismo botón que cualquier otro hueco del timeline. Ambos lados de una misma comida insertan en
+  // el mismo índice del array de paradas (la comida no ocupa una posición propia ahí) — solo cambia
+  // dónde se ve el botón, antes o después de la tarjeta dorada.
+  const renderMealGapAddStop = (insertIndex: number) => (
+    <div className="flex items-center gap-2 py-1 pl-4">
+      <span className="h-6 w-px shrink-0 border-l border-dashed border-text-muted" />
+      <AddStopButton onAddStop={() => setInsertAt(insertIndex)} />
+    </div>
+  )
 
   // Mismo patrón de tirador arrastrable que StopDetailSheet.tsx/ArrivalDetailSheet.tsx — agranda/encoge el mini-mapa, clamped entre MAP_MIN_VH y MAP_MAX_VH.
   const handleMapDragStart = (event: ReactPointerEvent) => {
@@ -563,14 +565,22 @@ export function DayDetailPanel({
                   />
                 </div>
                 {showLunchAccordion && (
-                  <div className="pt-2">
-                    <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="comida" />
-                  </div>
+                  <>
+                    {renderMealGapAddStop(index + 1)}
+                    <div className="pt-2">
+                      <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="comida" />
+                    </div>
+                    {renderMealGapAddStop(index + 1)}
+                  </>
                 )}
                 {showDinnerAccordion && (
-                  <div className="pt-2">
-                    <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="cena" />
-                  </div>
+                  <>
+                    {renderMealGapAddStop(index + 1)}
+                    <div className="pt-2">
+                      <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="cena" />
+                    </div>
+                    {renderMealGapAddStop(index + 1)}
+                  </>
                 )}
               </Fragment>
             )

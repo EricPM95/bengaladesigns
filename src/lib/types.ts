@@ -198,8 +198,10 @@ export interface Stop {
   coordinates: Coordinates
   photoUrl: string
   category?: StopCategory
-  /** Etiqueta de categoría del banco de 18 experiencias (ej. "Gastronomía") — solo en paradas añadidas desde el pool de EXPLORAR/el "+" entre paradas, para la píldora de categoría del acordeón en DIAS. Independiente de `category` (StopCategory), que sirve para otra cosa (pines del mapa en RUTA). */
+  /** Etiqueta específica del tipo de lugar (ej. "Anfiteatro histórico", "Museo de arte", "Gastronomía") para la píldora de categoría del acordeón en DIAS — nunca el bucket genérico de `category` (StopCategory, que sirve para otra cosa: pines del mapa en RUTA). Viene de Claude (`category_label`, ver mapStop en mapGeneratedRoute.ts) para paradas generadas por IA, o del banco de 18 experiencias para paradas añadidas desde EXPLORAR/el "+" entre paradas. shellFromStop (mockDayDetail.ts) cae a "Punto de interés" solo si esto falta. */
   categoryLabel?: string
+  /** Horario real "HH:MM–HH:MM" si el lugar tiene interior visitable con horario (museo, monumento con acceso, iglesia con horario) — null/undefined si es un sitio siempre accesible al aire libre (fuente, plaza, arco, mirador). Viene de Claude (`hours`, ver mapStop) para paradas generadas por IA; StopDetailSheet.tsx (computeStopHoursTag) muestra "Acceso libre" cuando falta. */
+  hours?: string | null
   priceInfo?: string
   insiderTip?: string
   ticketOptions?: TicketOption[]
