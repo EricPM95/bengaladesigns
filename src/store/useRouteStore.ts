@@ -24,7 +24,7 @@ import type {
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
 import { triggerBudgetFly } from '../lib/budgetFlyBus'
-import { minutesToTime, parseTimeToMinutes } from '../lib/time'
+import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../lib/time'
 import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
@@ -45,13 +45,19 @@ function linkBudgetItem(budget: Budget, id: string, item: Omit<BudgetItem, 'id'>
   return recalculateBudgetTotal({ ...budget, items: item ? [...withoutPrevious, { ...item, id }] : withoutPrevious })
 }
 
+// La primera parada conserva su propia `time` tal cual (puede venir de una edición manual, ej.
+// "Cambiar hora" — nunca se toca lo que el viajero fijó a mano); desde la segunda en adelante, cada
+// hora SÍ es un cálculo (acumulado + colchón), así que se redondea hacia arriba al cuarto de hora
+// como el resto del horario de la app (ver roundUpToQuarterHour en time.ts / stopScheduling.ts) —
+// nunca "10:27". El redondeo se propaga (el cursor sigue desde la hora YA redondeada), no se acumula
+// error de arrastre.
 function retimeStops(stops: Stop[]): Stop[] {
   if (stops.length === 0) return stops
   let cursor = parseTimeToMinutes(stops[0].time)
-  return stops.map((stop) => {
-    const time = minutesToTime(cursor)
-    cursor += stop.durationMinutes + (stop.walkingTimeToNextMinutes ?? 15)
-    return { ...stop, time }
+  return stops.map((stop, index) => {
+    const startMinutes = index === 0 ? cursor : roundUpToQuarterHour(cursor)
+    cursor = startMinutes + stop.durationMinutes + (stop.walkingTimeToNextMinutes ?? 15)
+    return { ...stop, time: minutesToTime(startMinutes) }
   })
 }
 

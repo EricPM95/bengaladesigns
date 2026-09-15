@@ -13,3 +13,8 @@ export function minutesToTime(totalMinutes: number): string {
 export function addMinutesToTime(time: string, minutes: number): string {
   return minutesToTime(parseTimeToMinutes(time) + minutes)
 }
+
+/** Redondea HACIA ARRIBA al siguiente múltiplo de 15 — para que ninguna hora calculada (nunca una introducida a mano) se muestre con el minuto exacto del cálculo interno (ej. "10:27"). Redondear hacia arriba, no al más cercano, para no mostrar nunca una hora más temprana de la que realmente corresponde y así no perder el margen de seguridad de los colchones (ver stopScheduling.ts). */
+export function roundUpToQuarterHour(minutes: number): number {
+  return Math.ceil(minutes / 15) * 15
+}

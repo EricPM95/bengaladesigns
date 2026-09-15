@@ -4,7 +4,7 @@ import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
-import { minutesToTime, parseTimeToMinutes } from '../../../lib/time'
+import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../../../lib/time'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
@@ -89,7 +89,7 @@ function computeStopSchedule(
 ): StopSchedule[] {
   let minutes = firstStopStartMinutes
   return stops.map((stop, index) => {
-    if (index > 0) minutes += stops[index - 1].durationMinutes + walkMinutesBetween(index)
+    if (index > 0) minutes = roundUpToQuarterHour(minutes + stops[index - 1].durationMinutes + walkMinutesBetween(index))
     const startMinutes = minutes
     const endMinutes = startMinutes + stop.durationMinutes
     const slot: TimeSlot = startMinutes < 13 * 60 ? 'mañana' : startMinutes < 19 * 60 ? 'tarde' : 'noche'
@@ -537,7 +537,10 @@ export function DayDetailPanel({
             if (showSlotHeader) {
               let lastIndexInSlot = index
               while (lastIndexInSlot + 1 < schedule.length && schedule[lastIndexInSlot + 1].slot === slot) lastIndexInSlot++
-              slotRangeLabel = `${minutesToTime(startMinutes)} — ${minutesToTime(schedule[lastIndexInSlot].endMinutes)}`
+              // Redondeo hacia arriba al cuarto de hora en los dos extremos del rango — el de inicio
+              // ya suele venir redondeado desde el propio `schedule`, pero el de fin es fin+duración
+              // (no necesariamente un cuarto de hora exacto), así que se redondea aquí explícitamente.
+              slotRangeLabel = `${minutesToTime(roundUpToQuarterHour(startMinutes))} — ${minutesToTime(roundUpToQuarterHour(schedule[lastIndexInSlot].endMinutes))}`
             }
 
             return (

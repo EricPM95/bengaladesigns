@@ -1,7 +1,7 @@
 import type { Chronotype, Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
-import { minutesToTime } from './time'
+import { minutesToTime, roundUpToQuarterHour } from './time'
 
 /**
  * Cálculo real del horario de un día — sustituye a confiar en `suggested_time`/`travel_to_next` de
@@ -81,6 +81,11 @@ export async function computeRealStopSchedule(
       const walkMinutes = await walkMinutesBetween(previous.coordinates, stop.coordinates)
       startMinutes = cursor + bufferMinutes + walkMinutes
     }
+    // Redondeo hacia ARRIBA al cuarto de hora — nunca hacia el más cercano, para no mostrar una hora
+    // más temprana de la que corresponde y así no perder el margen de los colchones por el redondeo
+    // (ver roundUpToQuarterHour en time.ts). Sobre el resultado YA acumulado, no sobre cada sumando
+    // por separado.
+    startMinutes = roundUpToQuarterHour(startMinutes)
 
     // La primera parada del día nunca se recorta (aunque el cronotipo ya la deje tarde) — a partir
     // de la segunda, si ya no cabe antes de que acabe la ventana activa, ella y el resto del día se
