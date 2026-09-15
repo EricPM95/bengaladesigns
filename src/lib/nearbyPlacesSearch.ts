@@ -52,13 +52,24 @@ function enrichWithMockRating(feature: MapboxSearchBoxFeature, categoryLabel: st
   }
 }
 
-async function fetchCategory(canonicalCategoryId: string, near: Coordinates, signal?: AbortSignal): Promise<MapboxSearchBoxFeature[]> {
+/** Metros por grado de latitud ~constante en toda la Tierra; longitud se corrige por coseno de la latitud (los grados de longitud se acortan según te alejas del ecuador). */
+const METERS_PER_DEGREE_LAT = 111_320
+
+/** Caja delimitadora cuadrada de `radiusMeters` alrededor de `center` — `bbox` de la Search Box API de Mapbox, la única forma real de limitar (o ampliar) el radio efectivo de búsqueda: `proximity` por sí sola solo ordena por cercanía, no acota el área (ver BLOQUE C, feedback de calidad: el radio efectivo se sentía demasiado estrecho). */
+function buildBoundingBox(center: Coordinates, radiusMeters: number): [number, number, number, number] {
+  const latDelta = radiusMeters / METERS_PER_DEGREE_LAT
+  const lngDelta = radiusMeters / (METERS_PER_DEGREE_LAT * Math.cos((center.lat * Math.PI) / 180))
+  return [center.lng - lngDelta, center.lat - latDelta, center.lng + lngDelta, center.lat + latDelta]
+}
+
+async function fetchCategory(canonicalCategoryId: string, near: Coordinates, radiusMeters: number | undefined, signal?: AbortSignal): Promise<MapboxSearchBoxFeature[]> {
   if (!MAPBOX_TOKEN) return []
 
   const url = new URL(`https://api.mapbox.com/search/searchbox/v1/category/${canonicalCategoryId}`)
   url.searchParams.set('access_token', MAPBOX_TOKEN)
   url.searchParams.set('proximity', `${near.lng},${near.lat}`)
-  url.searchParams.set('limit', '10')
+  if (radiusMeters) url.searchParams.set('bbox', buildBoundingBox(near, radiusMeters).join(','))
+  url.searchParams.set('limit', radiusMeters ? '20' : '10')
   url.searchParams.set('language', 'es')
 
   const response = await fetch(url.toString(), { signal })
@@ -76,9 +87,18 @@ async function fetchCategory(canonicalCategoryId: string, near: Coordinates, sig
  * la API real). Valoración/reseñas SÍ son mock — ninguna API ya integrada expone esos datos (eso es
  * específico de Google Places, sin integrar). `canonicalCategoryIds` admite varias categorías
  * (ej. restaurant + cafe para "Comer y beber") — se combinan y deduplican por `mapbox_id`.
+ * `radiusMeters` es opcional (sin él, se mantiene el comportamiento de siempre: solo `proximity`,
+ * sin acotar área) — MealTimeAccordion.tsx lo pasa explícitamente para ampliar el radio efectivo de
+ * restaurantes (BLOQUE C, feedback de calidad: el radio por defecto se sentía demasiado estrecho).
  */
-export async function searchNearbyPlaces(canonicalCategoryIds: string[], near: Coordinates, categoryLabel: string, signal?: AbortSignal): Promise<NearbyPlaceResult[]> {
-  const results = await Promise.all(canonicalCategoryIds.map((categoryId) => fetchCategory(categoryId, near, signal)))
+export async function searchNearbyPlaces(
+  canonicalCategoryIds: string[],
+  near: Coordinates,
+  categoryLabel: string,
+  signal?: AbortSignal,
+  radiusMeters?: number,
+): Promise<NearbyPlaceResult[]> {
+  const results = await Promise.all(canonicalCategoryIds.map((categoryId) => fetchCategory(categoryId, near, radiusMeters, signal)))
   const seen = new Set<string>()
   const merged: MapboxSearchBoxFeature[] = []
   for (const feature of results.flat()) {

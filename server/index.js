@@ -621,6 +621,88 @@ app.post('/api/meal-recommendations', async (req, res) => {
   }
 })
 
+// ── "Nombre de zona turístico" — BLOQUE C del feedback de calidad ──────────────────────────
+//
+// reverseGeocodeZone (mapboxReverseGeocode.ts) devuelve el barrio/rione ADMINISTRATIVO exacto de
+// unas coordenadas (ej. en Roma: "Sant'Eustachio", "Ponte", "Pigna" — nombres que solo conocen los
+// locales, nunca los turistas), y eso es justo lo que titulaba el acordeón dorado "Hora de comer en
+// Sant'Eustachio". No hay forma mecánica de distinguir un rione turísticamente reconocible
+// ("Trastevere", "Testaccio") de uno que no lo es ("Ponte", "Pigna") — ambos son el mismo tipo de
+// feature de Mapbox al mismo nivel administrativo — así que hace falta juicio real sobre el
+// destino, igual que el resto de "hechos fijos" de la app (tips_anclas, zona_restaurantes):
+// cacheado UNA vez por destino+zona_bruta en Supabase y reutilizado por cualquier ruta futura.
+const ZONA_TURISTICA_SYSTEM_PROMPT = `You help translate a raw administrative neighborhood name into whatever a TOURIST would actually recognize for that specific point, or decide that nothing recognizable applies.
+
+You will be given a destination and one raw, specific neighborhood/locality name from geocoding data — often an official administrative subdivision that LOCALS use but tourists have never heard of (e.g. Rome's "rioni" like "Ponte", "Sant'Eustachio", "Regola", "Campo Marzio", "Pigna").
+
+Your job: return the broader, well-known, tourist-recognizable area name that this specific point actually falls within — the kind of name that appears on tourist maps and in guidebooks (e.g. "Centro Histórico", "Trastevere", "Testaccio", "Barrio Judío", "El Born", "Montmartre"). This is very often DIFFERENT from the raw input — most raw administrative neighborhood names are NOT tourist-recognizable on their own, and most real destinations have only a handful of genuinely well-known tourist-area names.
+
+- If the raw name itself IS already a well-known tourist area (e.g. "Trastevere", "Montmartre"), return it as-is.
+- If it falls within a broader recognizable tourist area (e.g. Rome's "Ponte"/"Sant'Eustachio"/"Pigna"/"Parione" all fall within what tourists know as "Centro Histórico"), return that broader name.
+- If genuinely NO recognizable tourist-area name applies to this point, return null — never force a stretch or invent one just to fill the field.
+
+Respond ONLY in valid JSON (no markdown, no explanation):
+{ "zona_turistica": "Recognizable name in Spanish, or null" }`
+
+function buildZonaTuristicaPrompt(destino, zonaBruta) {
+  return `Destino: "${destino}"\nNombre de zona en bruto (geocodificación administrativa): "${zonaBruta}"`
+}
+
+app.post('/api/zona-turistica', async (req, res) => {
+  const { destino, zona_bruta: zonaBruta } = req.body ?? {}
+  if (!destino || !zonaBruta) {
+    res.status(400).json({ error: 'Se requiere destino y zona_bruta.' })
+    return
+  }
+
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('zona_turistica')
+        .select('zona_turistica')
+        .eq('destino', destino)
+        .eq('zona_bruta', zonaBruta)
+        .maybeSingle()
+      if (error) throw error
+      if (data) {
+        res.json({ zona_turistica: data.zona_turistica ?? null, cached: true })
+        return
+      }
+    } catch (error) {
+      logAnthropicError('zona-turistica (read cache)', error)
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 200,
+      system: ZONA_TURISTICA_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildZonaTuristicaPrompt(destino, zonaBruta) }],
+    })
+    logCallCost('zona-turistica', response)
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const zonaTuristica = typeof parsed?.zona_turistica === 'string' && parsed.zona_turistica.trim() ? parsed.zona_turistica.trim().slice(0, 80) : null
+
+    if (supabaseAdmin) {
+      try {
+        await supabaseAdmin.from('zona_turistica').insert({ destino, zona_bruta: zonaBruta, zona_turistica: zonaTuristica })
+      } catch (error) {
+        logAnthropicError('zona-turistica (write cache)', error)
+      }
+    }
+
+    res.json({ zona_turistica: zonaTuristica, cached: false })
+  } catch (error) {
+    logAnthropicError('zona-turistica', error)
+    res.status(502).json({ error: 'No se pudo resolver el nombre de zona con IA.' })
+  }
+})
+
 // ── "Elige lugares" — pantalla tras "Elige tus experiencias", lista AMPLIA de sitios reales ──
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios
