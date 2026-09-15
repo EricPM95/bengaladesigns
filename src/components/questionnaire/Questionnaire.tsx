@@ -107,7 +107,16 @@ export function Questionnaire() {
   const resetQuestionnaire = useRouteStore((state) => state.resetQuestionnaire)
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
-  const prevStepsLengthRef = useRef(1)
+  // Para el paso actualmente en pantalla: ¿ya existía el paso siguiente en el momento en que se
+  // llegó a él (adelante o atrás)? Si sí, es una simple revisita a una respuesta ya dada — no debe
+  // autoavanzar solo por eso. Si en algún momento posterior, SIN cambiar de paso, el siguiente pasa
+  // a existir cuando antes no existía, es que el usuario acaba de completar (o re-completar tras
+  // editar) este paso — ahí sí toca avanzar. Sustituye a comparar solo la LONGITUD global de
+  // `steps`: ese chequeo fallaba al volver atrás a un paso ya desbloqueado, cambiar la respuesta y
+  // confirmarla de nuevo — la longitud global de `steps` no "crecía" (esos pasos posteriores ya
+  // estaban contados desde la primera vez), así que el auto-avance nunca se disparaba y el usuario
+  // se quedaba bloqueado sin poder continuar (BUG 1).
+  const arrivedAtStepRef = useRef<{ index: number; nextExisted: boolean }>({ index: 0, nextExisted: false })
 
   const showDays =
     answers.origin !== undefined &&
@@ -155,27 +164,45 @@ export function Questionnaire() {
     ...(showPlaces ? (['places'] as const) : []),
   ]
 
+  const safeIndex = Math.min(currentStepIndex, steps.length - 1)
+  const activeStep = steps[safeIndex]
+  const nextStepExists = safeIndex < steps.length - 1
+
   // En cuanto la pregunta activa queda resuelta y se desbloquea la siguiente, avanza sola a esa
   // pantalla — mismo momento en que antes aparecía la tarjeta siguiente más abajo en la página
-  // larga. Solo avanza si el usuario estaba en la última pantalla desbloqueada (si volvió atrás a
-  // revisar una respuesta anterior, no lo saca de ahí aunque esa respuesta siga siendo válida).
+  // larga. Solo avanza si el paso siguiente NO existía ya cuando se llegó al actual (si volvió
+  // atrás a revisar una respuesta anterior que ya estaba resuelta, no lo saca de ahí solo por
+  // eso) — ver el comentario junto a `arrivedAtStepRef` más arriba para el porqué de este cambio.
   // "Fechas" es la única excepción explícita — se queda ahí y exige el botón "Continuar" propio de
   // esa pantalla en vez de avanzar sola (ver más abajo), porque ahí es fácil equivocarse de fecha.
   // useLayoutEffect (no useEffect) a propósito — corrige el índice ANTES de que el navegador pinte
-  // el frame, así nunca se llega a ver el instante en que `steps` ya creció pero `currentStepIndex`
-  // todavía no: ese único frame intermedio era el "parpadeo" que se veía antes.
+  // el frame, así nunca se llega a ver el instante en que el paso siguiente ya existe pero
+  // `currentStepIndex` todavía no lo refleja: ese único frame intermedio era el "parpadeo" que se
+  // veía antes.
   useLayoutEffect(() => {
-    const isViewingDays = steps[currentStepIndex] === 'days'
-    if (!isViewingDays && steps.length > prevStepsLengthRef.current && currentStepIndex === prevStepsLengthRef.current - 1) {
-      setCurrentStepIndex(steps.length - 1)
+    const isViewingDays = activeStep === 'days'
+    if (arrivedAtStepRef.current.index !== safeIndex) {
+      arrivedAtStepRef.current = { index: safeIndex, nextExisted: nextStepExists }
+      return
     }
-    prevStepsLengthRef.current = steps.length
-  }, [steps.length, currentStepIndex])
+    if (!nextStepExists) {
+      // Sigue sin existir el siguiente paso, o ha dejado de existir porque el usuario está a
+      // media edición de una respuesta anterior (ej. cambió de "a mi aire" a "aventura en tribu"
+      // y todavía no ha rellenado las edades) — se anota aquí para que la PRÓXIMA vez que sí
+      // exista se detecte como una transición real, nunca como "ya existía desde que llegamos".
+      // Sin esto, un false→true→false→true mientras no se cambia de pantalla dejaba la marca de
+      // "ya existía" congelada en el true más antiguo y el auto-avance dejaba de dispararse tras
+      // volver a completar la respuesta.
+      arrivedAtStepRef.current.nextExisted = false
+      return
+    }
+    if (!isViewingDays && !arrivedAtStepRef.current.nextExisted) {
+      arrivedAtStepRef.current.nextExisted = true
+      setCurrentStepIndex(safeIndex + 1)
+    }
+  }, [safeIndex, nextStepExists, activeStep])
 
   if (!destination) return null
-
-  const safeIndex = Math.min(currentStepIndex, steps.length - 1)
-  const activeStep = steps[safeIndex]
 
   const handleBack = () => {
     if (safeIndex === 0) {
@@ -324,8 +351,15 @@ export function Questionnaire() {
                   selected={answers.experiences ?? []}
                   onChange={(experiences) => updateAnswers({ experiences })}
                   onRetry={() => suggestExperiencesInBackground(destination)}
-                  placesStepStarted={placesStepStarted}
-                  onConfirm={() => suggestPlacesOnDemand(destination, answers.experiences ?? [])}
+                  onConfirm={() => {
+                    // BUG 1: `showPace` (y por tanto el auto-avance basado en que `steps` crezca)
+                    // no cambia si `placesStepStarted` ya era true de una vuelta anterior — al
+                    // revisitar esta pantalla, cambiar la selección y volver a confirmar, nunca se
+                    // disparaba el avance. Igual que pace/chronotype/budget, se navega explícitamente
+                    // en el mismo tap en vez de depender solo del efecto pasivo.
+                    suggestPlacesOnDemand(destination, answers.experiences ?? [])
+                    goToNextStep()
+                  }}
                 />
               )}
 

@@ -12,8 +12,6 @@ interface ExperienceSelectorProps {
   selected: ExperienceId[]
   onChange: (selected: ExperienceId[]) => void
   onRetry: () => void
-  /** true una vez el viajero pulsó "Ver lugares" — oculta el botón (el paso "Elige lugares" ya está en marcha) pero sigue permitiendo tocar checkboxes. */
-  placesStepStarted: boolean
   onConfirm: () => void
 }
 
@@ -32,7 +30,6 @@ export function ExperienceSelector({
   selected,
   onChange,
   onRetry,
-  placesStepStarted,
   onConfirm,
 }: ExperienceSelectorProps) {
   if (loading) {
@@ -93,11 +90,14 @@ export function ExperienceSelector({
         Elegidas: {selected.length}/{MAX_EXPERIENCES}
       </p>
 
-      {!placesStepStarted && (
-        <Button onClick={onConfirm} disabled={selected.length === 0} className="w-full">
-          Continuar →
-        </Button>
-      )}
+      {/* Siempre visible mientras esta pantalla esté activa (BUG 1, feedback de calidad) — antes se
+          ocultaba en cuanto `placesStepStarted` pasaba a true (pensado para el diseño antiguo de
+          scroll largo, donde "Elige lugares" ya se veía más abajo en la misma página); en el
+          diseño de una pantalla por pregunta eso dejaba SIN botón — y por tanto sin forma de
+          avanzar — a quien volvía atrás a cambiar su selección. */}
+      <Button onClick={onConfirm} disabled={selected.length === 0} className="w-full">
+        Continuar →
+      </Button>
     </div>
   )
 }

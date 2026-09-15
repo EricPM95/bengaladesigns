@@ -118,6 +118,8 @@ function LoadingScreenContainer() {
   const pendingResume = useSyncStore((state) => state.pendingResume)
   const setPendingResume = useSyncStore((state) => state.setPendingResume)
   const travelerId = useSyncStore((state) => state.travelerId)
+  const generationComplete = useSyncStore((state) => state.generationComplete)
+  const setGenerationComplete = useSyncStore((state) => state.setGenerationComplete)
 
   const [status, setStatus] = useState<'loading' | 'done' | 'error'>('loading')
   const [checkpoint, setCheckpoint] = useState<GenerationResumeState | null>(null)
@@ -127,11 +129,31 @@ function LoadingScreenContainer() {
   // Progreso ya alcanzado EN ESTA sesión de pantalla — un "Reintentar" tras un fallo a medio camino
   // retoma desde aquí (no desde cero), igual que retomaría una generación cargada de Supabase.
   const lastCheckpointRef = useRef<GenerationResumeState | null>(null)
+  // Últimos `params` usados para generar — el listener de `visibilitychange` de más abajo los
+  // necesita para poder reintentar `finalizeRoute` fuera del efecto de generación (BUG 2).
+  const paramsRef = useRef<GenerationParams | null>(null)
+
+  // Remate compartido entre el propio callback de checkpoint y el listener de `visibilitychange`
+  // de más abajo (BUG 2) — mapear + calcular el horario real (Mapbox) es trabajo async que puede
+  // quedarse colgado si el navegador congela la pestaña en segundo plano justo mientras corre; si
+  // eso pasa, `generationComplete` (persistente en el store, ver useSyncStore.ts) sigue siendo
+  // true y el listener puede reintentar exactamente este mismo remate al volver a primer plano, en
+  // vez de esperar a que la promesa suspendida se reanude por su cuenta.
+  const finalizeRoute = async (finalCheckpoint: GenerationResumeState, params: GenerationParams) => {
+    const mapped = mapGeneratedRouteToRoute(finalCheckpoint.generated, destination, params.answers, params.transportContext)
+    // Horario real por parada (cronotipo + colchón de ritmo + tiempo a pie real, ver
+    // stopScheduling.ts) — sustituye al suggested_time/travel_to_next de Claude, que es solo una
+    // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero antes
+    // de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
+    const scheduled = await applyRealStopSchedule(mapped, params.answers.chronotype, params.answers.pace ?? 'balanced')
+    return scheduled
+  }
 
   useEffect(() => {
     if (!destination) return
     let cancelled = false
     setStatus('loading')
+    setGenerationComplete(false)
 
     const resumeState = lastCheckpointRef.current ?? pendingResume
     if (pendingResume) setPendingResume(null)
@@ -156,6 +178,7 @@ function LoadingScreenContainer() {
           mustIncludePlaces: suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
         }
 
+    paramsRef.current = params
     setCheckpoint(resumeState)
 
     runGeneration(params, resumeState, async (nextCheckpoint) => {
@@ -182,12 +205,12 @@ function LoadingScreenContainer() {
       // de carga con todos los pasos ya en verde. La pregunta correcta es "¿está todo el contenido
       // ya generado (y guardado)?", que es justo lo que este checkpoint confirma.
       if (nextCheckpoint.phase === 'done' && !cancelled) {
-        const mapped = mapGeneratedRouteToRoute(nextCheckpoint.generated, destination, params.answers, params.transportContext)
-        // Horario real por parada (cronotipo + colchón de ritmo + tiempo a pie real, ver
-        // stopScheduling.ts) — sustituye al suggested_time/travel_to_next de Claude, que es solo una
-        // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero
-        // antes de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
-        const scheduled = await applyRealStopSchedule(mapped, params.answers.chronotype, params.answers.pace ?? 'balanced')
+        // Marcado en el store ANTES del remate async (BUG 2) — si la pestaña se congela justo
+        // aquí, el flag ya quedó puesto y el listener de `visibilitychange` de más abajo puede
+        // reintentar `finalizeRoute` al volver a primer plano, sin depender de que esta misma
+        // promesa se reanude por su cuenta.
+        setGenerationComplete(true)
+        const scheduled = await finalizeRoute(nextCheckpoint, params)
         if (cancelled) return
         setLocalRoute(scheduled)
         setStatus('done')
@@ -206,6 +229,31 @@ function LoadingScreenContainer() {
     // generación no debe reiniciarla.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, attempt])
+
+  // BUG 2 (feedback de calidad): si el navegador congela la ejecución de JS de la pestaña en
+  // segundo plano (cambio de pestaña, app minimizada en móvil) justo mientras `finalizeRoute`
+  // estaba en marcha tras el checkpoint final, esa promesa puede quedarse colgada sin completar —
+  // la pantalla se queda con todos los pasos en verde pero nunca redirige. Al volver a primer
+  // plano, si `generationComplete` (persistente en el store, sobrevive aunque la pestaña se haya
+  // congelado) ya es true pero esta pantalla no llegó a `status === 'done'`, se reintenta el
+  // remate con el último checkpoint/params conocidos en vez de depender de que la promesa
+  // original se reanude por su cuenta.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return
+      if (!generationComplete || status === 'done' || route) return
+      const finalCheckpoint = lastCheckpointRef.current
+      const params = paramsRef.current
+      if (!finalCheckpoint || finalCheckpoint.phase !== 'done' || !params) return
+      finalizeRoute(finalCheckpoint, params).then((scheduled) => {
+        setLocalRoute(scheduled)
+        setStatus('done')
+      })
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generationComplete, status, route])
 
   if (!destination) return null
 
