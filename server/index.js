@@ -1263,6 +1263,11 @@ TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possib
 - Whenever a visit ends and the next thing is a meal (lunch or dinner), leave real time for it: at least 30 minutes to get there and sit down, the meal block itself at least 1h15min (order, eat, pay), then at least 30 more minutes to travel to whatever comes next. Example: a visit ending at 12:00 → lunch roughly 12:30-13:45 → next stop starting from 14:15 at the earliest — never straight from a 12:00 end into a 14:00 stop with nothing accounted for in between.
 - Apply the exact same logic to dinner: real travel time before it, at least 1h15min for the meal itself, real travel time after if anything else follows that day.
 
+REAL OPENING HOURS — you already know the approximate real opening hours of major monuments, museums and attractions; use that knowledge, never guess or default to "always open":
+- suggested_time for a stop with real opening hours must NEVER be earlier than that place's own opening time — even if that pushes the whole morning later, or means reordering the day so an earlier-opening or always-open place goes first. Do not assume every stop opens at whatever generic hour the day happens to start. Wrong example: scheduling the Colosseum at 07:30 when it actually opens around 08:30 — that stop must move to 08:30 or later, not stay where the day's rhythm would otherwise put it.
+- This overrides the traveler's chronotype/schedule preference for THIS specific stop's start time — "early riser" describes when the traveler is awake and ready to go, not when a ticketed site opens. If the day starts before the first real stop's opening time, either open the day with something genuinely always-open (a sunrise walk, a viewpoint, a market that's already trading) and place the ticketed stop once it actually opens, or simply start that first stop at its real opening time — never at the chronotype's generic start hour regardless of whether the place is open yet.
+- Decide the "hours" field (below) by what the traveler is actually entering for THIS stop, not by what's visible for free from the street. A monument whose duration_minutes implies going inside — a ticket, a checkpoint, a visiting schedule (Colosseum, Vatican Museums, a cathedral's interior, any museum) — is NEVER "hours": null, even though its exterior is always visible/photographable for free. Only genuinely free-standing, no-ticket, no-schedule places (a fountain, a square, an arch, a viewpoint, a street) get "hours": null. Wrong example: marking the Colosseum "hours": null/"Acceso libre" — it has real, specific opening hours (~08:30-19:00 depending on season) and those must be used, not treated as an always-open landmark.
+
 FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience focus below:
 - Reserve ONE 2.5-3 hour block on whichever day of this block is most logical for it (normally an early day of the trip, morning start) — represent it as a single stop with name "Free Tour: <a real, specific suggested free tour for this destination>", description covering what the tour covers, tip covering the exact meeting point plus the customary recommended tip amount for a free tour in this destination, duration_minutes between 150-180.
 - Do NOT also list, as separate individual stops that same day, places this free tour itself already covers — that would double them up.
@@ -1300,7 +1305,7 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
           "longitude": 00.0000,
           "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
           "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte', 'Basílica', 'Mirador', 'Plaza', 'Mercado local' — never a generic label like 'Punto de interés'",
-          "hours": "Real opening hours as 'HH:MM–HH:MM' ONLY if this place has a visitable interior with a schedule (museum, monument with indoor access, church with visiting hours) — null if it's always freely accessible outdoors (fountain, square, arch, viewpoint, street)",
+          "hours": "Real opening hours as 'HH:MM–HH:MM' if this stop involves entering somewhere with a ticket/checkpoint/schedule (museum, monument interior, church with visiting hours — e.g. Colosseum ~08:30-19:00) — null ONLY for genuinely free-standing, no-ticket, no-schedule places (fountain, square, arch, viewpoint, street). See REAL OPENING HOURS above — never null just because the place is also visible/photographable for free from outside.",
           "entry_fee": "€X or Free",
           "entry_options": [
             {
@@ -1355,7 +1360,12 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
       "suggested_day": 4
     }
   ]
-}`
+}
+
+CRITICAL VALIDATION — NEVER VIOLATE THESE:
+- NEVER set suggested_time earlier than the place's real opening hour — not even for the first stop of the day, not even if the traveler's chronotype/schedule preference asks for an earlier start.
+- NEVER set "hours" to null for a place with indoor/ticketed access (museum, monument interior, church with a visiting schedule) — always give real hours for those, "hours": null is ONLY for genuinely free-standing outdoor places with no ticket and no schedule.
+- If you don't know the exact real hours of a specific place, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.`
 
 /** "Elige tus experiencias" (reemplaza el antiguo "¿Qué mueve tu viaje?" de 5 opciones) — traduce los ids elegidos a texto legible para el prompt de generación. */
 /** 'free_tour' es un pseudo-id fuera del banco de 18 (ver FREE_TOUR handling en DAY_BLOCK_SYSTEM_PROMPT) — no está en EXPERIENCE_BANK a propósito, para no colar "Free Tour" como categoría al etiquetar lugares sueltos en suggest-places/suggest-experiences (ver EXPERIENCE_IDS). Aquí solo se traduce a texto legible para el prompt de generación. */
@@ -2162,7 +2172,8 @@ const DAY_BLOCK_TOPUP_SYSTEM_PROMPT = `You are an expert travel route planner. A
 CRITICAL RULES:
 - Every place MUST be real and currently open/accessible, and MUST NOT already be in the "already in this day" list given to you
 - Prioritize the afternoon window (14:00-20:00) if that is where the gap is — a smaller church, viewpoint, market or neighborhood walk is a perfectly good fill-in, it does not need to be a headline attraction
-- Fit realistically into the existing schedule (geography, opening hours, time of day)
+- Fit realistically into the existing schedule (geography, time of day)
+- suggested_time must never be earlier than the stop's own real opening time (you already know the approximate real hours of major attractions — e.g. the Colosseum opens around 08:30, never schedule it at 07:30) — reorder or push later if needed
 - Tips must be genuinely useful insider knowledge, not generic advice
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
@@ -2180,11 +2191,16 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
       "longitude": 00.0000,
       "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
       "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte', 'Basílica', 'Mirador' — never a generic label",
-      "hours": "Real opening hours as 'HH:MM–HH:MM' if it has a visitable interior with a schedule, null if always freely accessible outdoors",
+      "hours": "Real opening hours as 'HH:MM–HH:MM' if this stop involves entering somewhere with a ticket/checkpoint/schedule (museum, monument interior, church with visiting hours) — null ONLY for genuinely free-standing, no-ticket, no-schedule places (fountain, square, arch, viewpoint, street), never just because the place is also visible for free from outside",
       "entry_fee": "€X or Free"
     }
   ]
-}`
+}
+
+CRITICAL VALIDATION — NEVER VIOLATE THESE:
+- NEVER set suggested_time earlier than the place's real opening hour.
+- NEVER set "hours" to null for a place with indoor/ticketed access — only genuinely free-standing outdoor places with no ticket and no schedule get null.
+- If you don't know the exact real hours, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.`
 
 function buildDayBlockTopUpPrompt(destination, day, addCount, answers) {
   const existing = day.stops.map((stop) => `${stop?.suggested_time ?? '??:??'} — ${stop?.name ?? 'sin nombre'}`).join('\n  - ')
@@ -2249,6 +2265,56 @@ async function topUpShortDays(destination, days, blockDays, answers) {
   return days
 }
 
+// ── Red de seguridad post-generación: horarios de apertura ─────────────────────────────────
+//
+// El prompt (REAL OPENING HOURS + CRITICAL VALIDATION en DAY_BLOCK_SYSTEM_PROMPT) ya le pide esto a
+// Claude, pero un prompt es una petición, no una garantía (feedback de calidad: el Coliseo salió
+// programado a las 07:30 con apertura a las 08:30). Doble red: (A) corrige en el momento lo que se
+// puede corregir sin ambigüedad — un suggested_time anterior a la apertura real es simplemente
+// incorrecto, se sube a la hora de apertura; (B) dos avisos en logs para lo que NO se puede corregir
+// automáticamente sin arriesgar falsos positivos — nunca se inventa un horario ni se fuerza
+// hours≠null solo por la categoría, eso lo decide mejor el propio prompt caso a caso.
+
+function parseHHMM(value) {
+  if (typeof value !== 'string') return null
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim())
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
+
+function parseOpeningMinutesServer(hours) {
+  if (typeof hours !== 'string') return null
+  const match = /(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/.exec(hours)
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
+
+function formatMinutesAsHHMM(totalMinutes) {
+  const wrapped = ((totalMinutes % (24 * 60)) + 24 * 60) % (24 * 60)
+  return `${String(Math.floor(wrapped / 60)).padStart(2, '0')}:${String(wrapped % 60).padStart(2, '0')}`
+}
+
+/** Categorías cuyo nombre normalmente implica interior visitable con taquilla — solo para el aviso (B), nunca para forzar un cambio: "landmark"/"neighborhood"/"viewpoint" cubren de sobra sitios de acceso libre que el prompt ya clasifica bien. */
+const TYPICALLY_INDOOR_CATEGORIES = new Set(['museum', 'temple'])
+
+function validateStopHours(day) {
+  if (!Array.isArray(day?.stops)) return
+  for (const stop of day.stops) {
+    const openingMinutes = parseOpeningMinutesServer(stop?.hours)
+    const suggestedMinutes = parseHHMM(stop?.suggested_time)
+    if (openingMinutes != null && suggestedMinutes != null && suggestedMinutes < openingMinutes) {
+      const fixed = formatMinutesAsHHMM(openingMinutes)
+      console.log(
+        `[hours-validation] day ${day.day_number} — "${stop.name}" suggested_time ${stop.suggested_time} es antes de que abra (${stop.hours}) — ajustado a ${fixed}`,
+      )
+      stop.suggested_time = fixed
+    }
+    if ((stop?.hours === null || stop?.hours === undefined) && TYPICALLY_INDOOR_CATEGORIES.has(stop?.category)) {
+      console.log(`[hours-validation] day ${day.day_number} — "${stop?.name}" (${stop?.category}) sin horario real (hours=null) — revisar si debería tener taquilla/horario`)
+    }
+  }
+}
+
 app.post('/api/generate-day-block', async (req, res) => {
   const { destination, answers, block_days, anchors_for_block, must_include_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
@@ -2304,6 +2370,7 @@ app.post('/api/generate-day-block', async (req, res) => {
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos para este bloque')
 
     await topUpShortDays(destination, days, block_days, answers)
+    for (const day of days) validateStopHours(day)
 
     res.json({
       days,

@@ -16,6 +16,14 @@ export interface StopHoursTag {
   variant: StopHoursVariant
 }
 
+/** Minuto de apertura de un `Stop.hours` tipo "HH:MM–HH:MM" — null si no hay horario real (acceso libre) o el formato no se reconoce. Compartido con stopScheduling.ts para que ninguna parada se programe antes de que el lugar abra de verdad. */
+export function parseOpeningMinutes(hours: string | null | undefined): number | null {
+  if (!hours) return null
+  const match = HOURS_RANGE_RE.exec(hours)
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
+
 export function computeStopHoursTag(hours: string | null, nowMinutes: number): StopHoursTag {
   if (!hours) return { label: 'Acceso libre', variant: 'always' }
 

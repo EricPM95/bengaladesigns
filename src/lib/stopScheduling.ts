@@ -1,6 +1,7 @@
 import type { Chronotype, Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
+import { parseOpeningMinutes } from './stopHoursTag'
 import { minutesToTime, roundUpToQuarterHour } from './time'
 
 /**
@@ -118,6 +119,16 @@ export async function computeRealStopSchedule(
     // (ver roundUpToQuarterHour en time.ts). Sobre el resultado YA acumulado, no sobre cada sumando
     // por separado.
     startMinutes = roundUpToQuarterHour(startMinutes)
+
+    // Nunca antes de que el lugar abra de verdad — sin esto, la PRIMERA parada del día siempre
+    // heredaba la hora fija del cronotipo (ej. 07:30 para "madrugador") sin importar si ese lugar en
+    // concreto abre más tarde (ej. el Coliseo a las 08:30); el mismo caso, aunque menos frecuente,
+    // puede darse en cualquier parada si el acumulado cae antes de su apertura. `stop.hours` viene de
+    // Claude (ver BLOQUE B, DAY_BLOCK_SYSTEM_PROMPT) — null significa acceso libre, sin horario que respetar.
+    const openingMinutes = parseOpeningMinutes(stop.hours)
+    if (openingMinutes != null && startMinutes < openingMinutes) {
+      startMinutes = roundUpToQuarterHour(openingMinutes)
+    }
 
     // La primera parada del día nunca se recorta (aunque el cronotipo ya la deje tarde) — a partir
     // de la segunda, si ya no cabe antes de que acabe la ventana activa, ella y el resto del día se
