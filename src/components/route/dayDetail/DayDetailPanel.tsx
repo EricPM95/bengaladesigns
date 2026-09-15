@@ -531,6 +531,12 @@ export function DayDetailPanel({
             const showConnector = index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
             const showLunchAccordion = lunchInsertionIndex === index
             const showDinnerAccordion = dinnerInsertionIndex === index
+            // Si esta es la ÚLTIMA parada del día, lo que sigue a la comida/cena no es otra parada
+            // sino "Fin del día" — que ya trae su propio "+ Añadir parada" (el conector final, ver
+            // más abajo). Mostrar TAMBIÉN el de después del acordeón dorado sería un botón duplicado
+            // pegado al mismo hueco — se omite solo ese lado, el de ANTES del acordeón se mantiene
+            // (ese hueco, parada→comida, no lo cubre nadie más).
+            const suppressTrailingMealGap = index === stops.length - 1 && Boolean(finalConnector)
 
             // Rango horario de la franja completa (ej. "09:00 — 13:30") — busca hasta dónde llega
             // esta misma franja (mismo criterio que `showConnector`: mientras el slot no cambie) para
@@ -570,7 +576,7 @@ export function DayDetailPanel({
                     <div className="pt-2">
                       <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="comida" />
                     </div>
-                    {renderMealGapAddStop(index + 1)}
+                    {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
                 )}
                 {showDinnerAccordion && (
@@ -579,7 +585,7 @@ export function DayDetailPanel({
                     <div className="pt-2">
                       <MealTimeAccordion destino={destino} city={day.city} coordinates={realStops[index].coordinates} franja="cena" />
                     </div>
-                    {renderMealGapAddStop(index + 1)}
+                    {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
                 )}
               </Fragment>
