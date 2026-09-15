@@ -417,9 +417,16 @@ export function DayDetailPanel({
     window.addEventListener('pointerup', onPointerUp)
   }
 
+  // StopDetailSheet/ArrivalDetailSheet abren su PROPIO mapa encima de este mismo panel — dos
+  // canvas WebGL de Mapbox GL montados a la vez arriesgan que el de abajo se "filtre" por encima
+  // del overlay que se supone que lo tapa (compositing GPU del canvas, no un problema de z-index —
+  // ver el comentario junto a dayDetailOpen en RouteView.tsx, mismo motivo). Se trata igual que el
+  // colapsado manual: mientras cualquiera de esos dos esté abierto, este mapa ni se monta.
+  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen
+
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
-      {mapCollapsed ? (
+      {mapCollapsed || mapHiddenBySheet ? (
         <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card p-3">
           <button
             type="button"

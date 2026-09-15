@@ -92,7 +92,16 @@ export function RouteView() {
   // ambas, pedido explícitamente para EXPLORAR también) — el resto de pestañas se quedan con el
   // comportamiento normal.
   const canCollapseMap = mode === 'days' || mode === 'explore'
-  const mapHidden = canCollapseMap && mapCollapsed
+  // Con un día abierto, DayDetailPanel (y StopDetailSheet dentro de él) ya cubren TODA la pantalla
+  // como overlay fixed — el mapa compartido de aquí debajo no se ve, así que desmontarlo mientras
+  // tanto no es solo una optimización: un <canvas> WebGL de Mapbox GL puede componerse en su propia
+  // capa GPU y "filtrarse" por encima de un overlay aunque el z-index/orden del DOM ya sean
+  // correctos (mismo problema ya documentado para los controles de atribución, ver
+  // body:has(.map-cover-overlay) en index.css — ahí la solución es ocultar el control porque el
+  // mapa de encima SÍ debe seguir viéndose; aquí, como no debe verse nada del mapa de abajo en
+  // absoluto, la solución robusta es no renderizarlo mientras el día esté abierto).
+  const dayDetailOpen = mode === 'days' && activeDayId !== null
+  const mapHidden = (canCollapseMap && mapCollapsed) || dayDetailOpen
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
