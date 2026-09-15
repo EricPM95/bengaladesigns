@@ -331,7 +331,7 @@ export function DayDetailPanel({
       ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)
       : (refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index))
     const fromName = fromAccommodation ? previousNightHotel.name : index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
-    return { connectorKey, connector, fromName }
+    return { connectorKey, connector, fromName, fromAccommodation: Boolean(fromAccommodation) }
   })
   const finalConnector: ConnectorInfo | null =
     stops.length > 0
@@ -517,10 +517,16 @@ export function DayDetailPanel({
           )}
 
           {stops.map((stop, index) => {
-            const { connectorKey, connector, fromName } = connectorEntries[index]
+            const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
             const { slot, startMinutes } = schedule[index]
             const showSlotHeader = index === 0 || slot !== schedule[index - 1].slot
-            const showConnector = index === 0 || slot === schedule[index - 1].slot
+            // La primera parada del día nunca lleva el conector de relleno genérico ("Después de
+            // instalarte...", "Buen momento para parar a comer algo..." — ver TEXT_ONLY_CONNECTORS
+            // en mockDayDetail.ts): el viajero decide por su cuenta cómo llegar desde el alojamiento,
+            // la ruta empieza directamente en el lugar 1. SÍ se muestra cuando el conector es real
+            // (viene del alojamiento de anoche, con distancia/tiempo real) — ese es información útil,
+            // no relleno.
+            const showConnector = index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
             const showLunchAccordion = lunchInsertionIndex === index
             const showDinnerAccordion = dinnerInsertionIndex === index
 

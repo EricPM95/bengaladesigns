@@ -25,6 +25,7 @@ import type {
 import type { TripPayload } from '../lib/tripPersistence'
 import { triggerBudgetFly } from '../lib/budgetFlyBus'
 import { minutesToTime, parseTimeToMinutes } from '../lib/time'
+import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
 
@@ -284,6 +285,8 @@ interface RouteStoreState {
   /** Reservas — hora "HH:MM" del vuelo de llegada/salida, o null para borrarla. */
   setArrivalFlightTime: (time: string | null) => void
   setDepartureFlightTime: (time: string | null) => void
+  /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
+  optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
 }
 
 const updateDay = (route: Route, dayId: string, updater: (day: DayPlan) => DayPlan): Route => ({
@@ -301,7 +304,7 @@ const getInitialDarkMode = (): boolean => {
   }
 }
 
-export const useRouteStore = create<RouteStoreState>((set) => ({
+export const useRouteStore = create<RouteStoreState>((set, get) => ({
   screen: 'destination',
   destination: null,
   destinationPlace: null,
@@ -851,4 +854,15 @@ export const useRouteStore = create<RouteStoreState>((set) => ({
     set((state) => (state.route ? { route: { ...state.route, arrivalFlightTime: time } } : state)),
   setDepartureFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time } } : state)),
+
+  optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
+    const state = get()
+    if (!state.route) return
+    const day = state.route.days.find((candidate) => candidate.id === dayId)
+    if (!day || day.stops.length === 0) return
+    const flightTimeMinutes = parseTimeToMinutes(flightTime)
+    if (Number.isNaN(flightTimeMinutes)) return
+    const optimized = await computeOptimizedDay(day, kind, flightTimeMinutes, state.route.answers.pace)
+    set((current) => (current.route ? { route: updateDay(current.route, dayId, (d) => ({ ...d, ...optimized })) } : current))
+  },
 }))

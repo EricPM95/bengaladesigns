@@ -8,6 +8,7 @@ import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
 import { mapGeneratedRouteToRoute } from './lib/mapGeneratedRoute'
+import { applyRealStopSchedule } from './lib/stopScheduling'
 import { saveGenerationCheckpoint } from './lib/tripPersistence'
 import type { Place, QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
@@ -181,7 +182,14 @@ function LoadingScreenContainer() {
       // de carga con todos los pasos ya en verde. La pregunta correcta es "¿está todo el contenido
       // ya generado (y guardado)?", que es justo lo que este checkpoint confirma.
       if (nextCheckpoint.phase === 'done' && !cancelled) {
-        setLocalRoute(mapGeneratedRouteToRoute(nextCheckpoint.generated, destination, params.answers, params.transportContext))
+        const mapped = mapGeneratedRouteToRoute(nextCheckpoint.generated, destination, params.answers, params.transportContext)
+        // Horario real por parada (cronotipo + colchón de ritmo + tiempo a pie real, ver
+        // stopScheduling.ts) — sustituye al suggested_time/travel_to_next de Claude, que es solo una
+        // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero
+        // antes de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
+        const scheduled = await applyRealStopSchedule(mapped, params.answers.chronotype, params.answers.pace ?? 'balanced')
+        if (cancelled) return
+        setLocalRoute(scheduled)
         setStatus('done')
       }
     }).catch((error: unknown) => {

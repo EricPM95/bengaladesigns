@@ -37,6 +37,7 @@ const timeInputClasses = 'w-full rounded-xl border border-border bg-bg px-3 py-2
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
+  const optimizeDayWithRealTransport = useRouteStore((state) => state.optimizeDayWithRealTransport)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const transportBookings = useRouteStore((state) => state.transportBookings)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
@@ -59,13 +60,17 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const day1Id = route.days[0]?.id
   const day1HotelKnown = Boolean(segments[0] && accommodationSelections[segments[0].dayIds[0]])
 
-  const handleRecalculate = (dayId: string, luggageChoice?: LuggageChoice) => {
+  const handleRecalculate = async (dayId: string, luggageChoice?: LuggageChoice) => {
     if (luggageChoice) setLuggageChoices((prev) => ({ ...prev, [dayId]: luggageChoice }))
     setRecalculatingId(dayId)
-    setTimeout(() => {
-      setRecalculatingId(null)
-      setSimulatedIds((prev) => new Set(prev).add(dayId))
-    }, 900)
+    // Recalcula el horario REAL de ESTE día a partir del vuelo introducido (ver stopScheduling.ts,
+    // "Optimizar ruta") — día 1 usa la hora de llegada, el último día la de vuelta; el resto del
+    // viaje no se toca.
+    const kind = dayId === day1Id ? 'arrival' : 'departure'
+    const flightTime = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
+    if (flightTime) await optimizeDayWithRealTransport(dayId, kind, flightTime)
+    setRecalculatingId(null)
+    setSimulatedIds((prev) => new Set(prev).add(dayId))
   }
 
   const manualAddDay = manualAddDayId ? route.days.find((day) => day.id === manualAddDayId) : null
@@ -166,7 +171,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
                     {isDone ? (
                       <p className="text-caption font-medium text-accent-hover">
-                        ✓ (Simulado){' '}
+                        ✓ Horario actualizado.{' '}
                         {chosenLuggage === 'hotel-first'
                           ? ` La ruta del Día ${opportunity.dayNumber} pasaría primero por el hotel a dejar las maletas.`
                           : chosenLuggage === 'visit-first'
