@@ -39,6 +39,33 @@ export const PACE_DAY_END_MINUTES: Record<TripPace, number> = {
 /** Minutos a pie de reserva cuando falta alguna coordenada real (parada de plantilla) o Mapbox no responde — mismo valor que el resto del cálculo horario de la app (DayDetailPanel.tsx/useRouteStore.ts). */
 export const DEFAULT_WALK_MINUTES = 15
 
+/**
+ * Colchón real de comida (BLOQUE A2 del feedback de calidad) — cuando el hueco entre el fin de una
+ * parada y el inicio de la siguiente cruza la hora de comer/cenar, el colchón genérico de
+ * PACE_BUFFER_MINUTES (10-30min) se queda corto: no hay tiempo real de sentarse a comer. Se reserva
+ * como mucho UNA vez por comida y por día (ver lunchReserved/dinnerReserved en
+ * computeRealStopSchedule) — el resto de huecos del día siguen usando el colchón genérico.
+ * 30min de traslado + 75min de comida real + 30min de traslado a la siguiente parada = 135min, que
+ * coincide exactamente con el ejemplo del feedback: visita termina 12:00 → comida 12:30-13:45 →
+ * siguiente parada desde 14:15.
+ */
+export const MEAL_TRAVEL_BUFFER_MINUTES = 30
+export const MEAL_BLOCK_MINUTES = 75
+const MEAL_GAP_MINUTES = MEAL_TRAVEL_BUFFER_MINUTES * 2 + MEAL_BLOCK_MINUTES
+const LUNCH_TRIGGER_MINUTES = 12 * 60 // 12:00 — a partir de aquí, el primer hueco se trata como comida
+const DINNER_TRIGGER_MINUTES = 19 * 60 // 19:00 — a partir de aquí, el primer hueco se trata como cena
+
+/** A qué comida (si alguna) corresponde el hueco tras el fin de la parada anterior, y el colchón mínimo que exige — null si ese hueco ya no necesita colchón de comida (ya reservada hoy, o aún no toca). */
+function mealGapFor(prevEndMinutes: number, lunchReserved: boolean, dinnerReserved: boolean): { minutes: number; meal: 'lunch' | 'dinner' | null } {
+  if (!lunchReserved && prevEndMinutes >= LUNCH_TRIGGER_MINUTES && prevEndMinutes < DINNER_TRIGGER_MINUTES) {
+    return { minutes: MEAL_GAP_MINUTES, meal: 'lunch' }
+  }
+  if (!dinnerReserved && prevEndMinutes >= DINNER_TRIGGER_MINUTES) {
+    return { minutes: MEAL_GAP_MINUTES, meal: 'dinner' }
+  }
+  return { minutes: 0, meal: null }
+}
+
 async function walkMinutesBetween(from: Coordinates, to: Coordinates): Promise<number> {
   if (!hasRealCoordinates(from) || !hasRealCoordinates(to)) return DEFAULT_WALK_MINUTES
   const routed = await getRoutedDistance('walking', from, to)
@@ -71,6 +98,8 @@ export async function computeRealStopSchedule(
   const scheduled: Stop[] = []
   let cursor = firstStopStartMinutes
   let previous: Stop | null = null
+  let lunchReserved = false
+  let dinnerReserved = false
 
   for (let index = 0; index < stops.length; index++) {
     const stop = stops[index]
@@ -79,7 +108,10 @@ export async function computeRealStopSchedule(
       startMinutes = firstStopStartMinutes
     } else {
       const walkMinutes = await walkMinutesBetween(previous.coordinates, stop.coordinates)
-      startMinutes = cursor + bufferMinutes + walkMinutes
+      const mealGap = mealGapFor(cursor, lunchReserved, dinnerReserved)
+      if (mealGap.meal === 'lunch') lunchReserved = true
+      if (mealGap.meal === 'dinner') dinnerReserved = true
+      startMinutes = cursor + Math.max(bufferMinutes + walkMinutes, mealGap.minutes)
     }
     // Redondeo hacia ARRIBA al cuarto de hora — nunca hacia el más cercano, para no mostrar una hora
     // más temprana de la que corresponde y así no perder el margen de los colchones por el redondeo

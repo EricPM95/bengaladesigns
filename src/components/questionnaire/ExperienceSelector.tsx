@@ -1,5 +1,5 @@
 import type { ExperienceId } from '../../lib/types'
-import { EXPERIENCE_BANK } from '../../lib/experienceBank'
+import { EXPERIENCE_BANK, FREE_TOUR_EXPERIENCE } from '../../lib/experienceBank'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
@@ -79,6 +79,15 @@ export function ExperienceSelector({
             onClick={() => toggle(entry.id)}
           />
         ))}
+        {/* Free Tour siempre disponible, fuera del filtrado por destino de Claude — ver FREE_TOUR_EXPERIENCE en experienceBank.ts */}
+        <ChoiceButton
+          key={FREE_TOUR_EXPERIENCE.id}
+          icon={FREE_TOUR_EXPERIENCE.icon}
+          label={FREE_TOUR_EXPERIENCE.title}
+          selected={selected.includes(FREE_TOUR_EXPERIENCE.id)}
+          disabled={atCap && !selected.includes(FREE_TOUR_EXPERIENCE.id)}
+          onClick={() => toggle(FREE_TOUR_EXPERIENCE.id)}
+        />
       </div>
       <p className="text-caption text-text-muted">
         Elegidas: {selected.length}/{MAX_EXPERIENCES}

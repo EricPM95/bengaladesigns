@@ -84,6 +84,8 @@ export type ExperienceId =
   | 'turismo_rural'
   | 'naturaleza'
   | 'joyas_ocultas'
+  /** Pseudo-id fuera del banco de 18 — siempre seleccionable (no depende del filtrado por destino de Claude), ver FREE_TOUR_EXPERIENCE en experienceBank.ts. */
+  | 'free_tour'
 
 /**
  * Un lugar concreto y real del destino, sugerido por Claude tras elegir experiencias (ver
@@ -333,6 +335,10 @@ export interface Excursion {
   length: ExcursionLength
   durationLabel: string
   price: number
+  /** Qué se hace en la excursión — de la IA, ver GeneratedExcursion.description en mapGeneratedRoute.ts. */
+  description?: string
+  /** Cómo llegar/volver sugerido por la IA (tren/bus/tour organizado), ver A5 en server/index.js — nunca una integración real de compra, solo texto informativo. */
+  transportSuggestion?: string
   rating?: number
   reviewCount?: number
   bookUrl?: string

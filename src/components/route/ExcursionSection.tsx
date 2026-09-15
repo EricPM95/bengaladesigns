@@ -25,6 +25,8 @@ export function ExcursionSection({ excursions }: ExcursionSectionProps) {
           {excursion.durationLabel} · €{excursion.price}
           {excursion.rating && ` · ★${excursion.rating} (${formatReviewCount(excursion.reviewCount ?? 0)})`}
         </p>
+        {excursion.description && <p className="text-small text-text-soft">{excursion.description}</p>}
+        {excursion.transportSuggestion && <p className="text-caption text-text-muted">🚆 {excursion.transportSuggestion}</p>}
         <div className="flex gap-1.5 pt-1">
           {excursion.bookUrl && (
             <a

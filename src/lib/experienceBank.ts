@@ -37,5 +37,14 @@ export const EXPERIENCE_BANK: ExperienceDefinition[] = [
 const EXPERIENCE_IDS = new Set(EXPERIENCE_BANK.map((entry) => entry.id))
 
 export function isKnownExperienceId(id: string): id is ExperienceId {
-  return EXPERIENCE_IDS.has(id as ExperienceId)
+  return EXPERIENCE_IDS.has(id as ExperienceId) || id === FREE_TOUR_EXPERIENCE.id
 }
+
+/**
+ * "Free Tour" — deliberadamente FUERA de EXPERIENCE_BANK: no es una categoría de lugares por destino
+ * (Claude no la filtra en /api/suggest-experiences, ni se usa para etiquetar sitios sueltos en
+ * suggest-places), es una experiencia fija que existe en casi cualquier destino urbano. Por eso se
+ * muestra siempre fijada en el selector (ver ExperienceSelector.tsx), no como parte de la rejilla de
+ * sugeridas por Claude.
+ */
+export const FREE_TOUR_EXPERIENCE: ExperienceDefinition = { id: 'free_tour', icon: '🚶‍♀️', title: 'Free Tour' }

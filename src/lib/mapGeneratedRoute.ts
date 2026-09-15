@@ -125,6 +125,8 @@ interface GeneratedExcursion {
   name: string
   duration: 'half_day' | 'full_day'
   description: string
+  /** Cómo llegar/volver sugerido por la IA (tren/bus/tour organizado) — ver EXCURSION DAYS en DAY_BLOCK_SYSTEM_PROMPT (server/index.js). */
+  transport_suggestion?: string
   estimated_price: string
   suggested_day?: number
 }
@@ -264,6 +266,11 @@ function mapDidntMakeCut(items?: GeneratedNotIncluded[]): DidntMakeCutItem[] | u
   }))
 }
 
+/** Enlace de búsqueda genérico (no es una integración de afiliación real, mismo espíritu que buildSearchUrl en cityTransitionTransport.ts) — ni Civitatis ni GetYourGuide están conectados de verdad todavía. */
+function buildExcursionSearchUrl(name: string): string {
+  return `https://www.google.com/search?q=${encodeURIComponent(`${name} excursión reserva Civitatis GetYourGuide`)}`
+}
+
 function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excursion[]> {
   const byDay = new Map<number, Excursion[]>()
   for (const [index, excursion] of (excursions ?? []).entries()) {
@@ -274,6 +281,9 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       length: excursion.duration === 'half_day' ? 'half-day' : 'full-day',
       durationLabel: excursion.duration === 'half_day' ? 'Medio día' : 'Día completo',
       price: parseEuroMidpoint(excursion.estimated_price),
+      description: excursion.description,
+      transportSuggestion: excursion.transport_suggestion,
+      bookUrl: buildExcursionSearchUrl(excursion.name),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])
   }
