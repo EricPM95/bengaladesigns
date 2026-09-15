@@ -54,6 +54,47 @@ function logAnthropicError(context, error) {
   console.error(`[Anthropic] ${context} — status=${status} requestId=${requestId} — ${error?.message ?? String(error)}`)
 }
 
+// Precios verificados para claude-sonnet-4-6 (MODEL, arriba) contra
+// platform.claude.com/docs/en/about-claude/pricing el 2026-09-15 — si MODEL cambia de modelo,
+// esta tabla hay que actualizarla a mano (no hay endpoint que la devuelva en runtime).
+const SONNET_4_6_PRICING_PER_MTOK = {
+  input: 3,
+  output: 15,
+  cacheWrite5m: 3.75,
+  cacheWrite1h: 6,
+  cacheRead: 0.3,
+}
+const WEB_SEARCH_PRICE_PER_1000 = 10
+
+/**
+ * Registra uso real y coste estimado de CADA llamada a Claude del pipeline — un endpoint no logueado
+ * es dinero que se va sin que nadie lo vea. `endpoint` es solo una etiqueta para distinguir líneas en
+ * los logs (Vercel → Runtime Logs en producción; terminal en local), no cambia nada del comportamiento
+ * de la llamada. Nunca lanza ni bloquea la respuesta si `response.usage` faltara por lo que sea.
+ */
+function logCallCost(endpoint, response) {
+  const usage = response?.usage
+  if (!usage) return
+  const inputTokens = usage.input_tokens ?? 0
+  const outputTokens = usage.output_tokens ?? 0
+  const cacheWriteTokens = usage.cache_creation_input_tokens ?? 0
+  const cacheReadTokens = usage.cache_read_input_tokens ?? 0
+  const webSearches = usage.server_tool_use?.web_search_requests ?? 0
+
+  const cost =
+    (inputTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.input +
+    (outputTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.output +
+    (cacheWriteTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.cacheWrite5m +
+    (cacheReadTokens / 1_000_000) * SONNET_4_6_PRICING_PER_MTOK.cacheRead +
+    (webSearches / 1000) * WEB_SEARCH_PRICE_PER_1000
+
+  const parts = [`input=${inputTokens}tok`, `output=${outputTokens}tok`]
+  if (cacheWriteTokens) parts.push(`cache_write=${cacheWriteTokens}tok`)
+  if (cacheReadTokens) parts.push(`cache_read=${cacheReadTokens}tok`)
+  if (webSearches) parts.push(`web_searches=${webSearches}`)
+  console.log(`[cost] ${endpoint} — ${parts.join(' ')} — $${cost.toFixed(4)}`)
+}
+
 const DESTINATION_ARCHETYPES = new Set([
   'roadtrip_exclusivo',
   'base_y_excursiones',
@@ -109,6 +150,7 @@ app.post('/api/classify-destination', async (req, res) => {
         'El JSON debe tener exactamente seis campos: archetype (string, uno de los 6 ids solicitados, en minúsculas con guiones bajos), is_region (booleano), ambiguous (booleano), requiere_coche (booleano), pase_dominante (string o null) y vehiculo_altamente_recomendado (booleano).',
       messages: [{ role: 'user', content: buildClassifyPrompt(destination) }],
     })
+    logCallCost('classify-destination', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -221,6 +263,7 @@ app.post('/api/suggest-experiences', async (req, res) => {
         'El JSON debe tener exactamente un campo: experience_ids (array de 4 a 8 strings, cada uno un id EXACTO del banco proporcionado, nunca inventado).',
       messages: [{ role: 'user', content: buildSuggestExperiencesPrompt(destination) }],
     })
+    logCallCost('suggest-experiences', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -281,6 +324,7 @@ app.post('/api/describe-stop', async (req, res) => {
         },
       ],
     })
+    logCallCost('describe-stop', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -373,6 +417,7 @@ app.post('/api/anchor-tips', async (req, res) => {
       system: systemPrompt,
       messages: [{ role: 'user', content: `Place: "${lugar}"\nCity: "${destino}"` }],
     })
+    logCallCost(`anchor-tips (${kind === 'airport' ? 'airport' : 'place'})`, response)
 
     // Con web_search, la respuesta puede traer texto intermedio (razonamiento) ANTES de que
     // vuelvan los resultados de la búsqueda — el JSON final siempre es el ÚLTIMO bloque de texto,
@@ -454,6 +499,7 @@ app.post('/api/nearby-transit', async (req, res) => {
       system: NEARBY_TRANSIT_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: `Place: "${lugar}"\nCity: "${destino}"` }],
     })
+    logCallCost('nearby-transit', response)
 
     const textBlocks = response.content.filter((block) => block.type === 'text')
     const finalText = textBlocks[textBlocks.length - 1]?.text
@@ -551,6 +597,7 @@ app.post('/api/meal-recommendations', async (req, res) => {
       system: ZONA_RESTAURANTES_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: `Zone: "${zona}"\nDestination: "${destino}"\nMeal: ${franja === 'cena' ? 'dinner' : 'lunch'}` }],
     })
+    logCallCost('meal-recommendations', response)
 
     const textBlocks = response.content.filter((block) => block.type === 'text')
     const finalText = textBlocks[textBlocks.length - 1]?.text
@@ -764,6 +811,7 @@ app.post('/api/suggest-places', async (req, res) => {
     })
 
     const response = await stream.finalMessage()
+    logCallCost('suggest-places', response)
     // Pasada final por si el modelo cerró algún objeto justo en el último fragmento de texto y el
     // evento 'text' correspondiente no llegó a procesarse a tiempo (no debería faltar nada, pero es
     // gratis comprobarlo).
@@ -837,6 +885,7 @@ app.post('/api/interpret-route', async (req, res) => {
         'sin texto adicional ni markdown. Nunca inventes ni adivines una ruta que no reconozcas con total seguridad.',
       messages: [{ role: 'user', content: buildInterpretRoutePrompt(query) }],
     })
+    logCallCost('interpret-route', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -1017,6 +1066,7 @@ app.post('/api/transport-feasibility', async (req, res) => {
       system: 'Eres un asistente experto en logística de viajes reales. Responde EXCLUSIVAMENTE con JSON válido, sin texto adicional ni markdown.',
       messages: [{ role: 'user', content: buildTransportFeasibilityPrompt(origin, destination) }],
     })
+    logCallCost('transport-feasibility', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -1699,6 +1749,7 @@ app.post('/api/generate-anchors', async (req, res) => {
       messages: [{ role: 'user', content: buildAnchorsUserPrompt(destination, answers, readTransportContext(req.body), must_include_places) }],
     })
     console.log(`[timing] generate-anchors END — ${Date.now() - t0}ms`)
+    logCallCost('generate-anchors', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -1832,6 +1883,7 @@ app.post('/api/generate-skeleton', async (req, res) => {
       messages: [{ role: 'user', content: buildSkeletonUserPrompt(destination, answers, transportContext, anchors, must_include_places) }],
     })
     console.log(`[timing] generate-skeleton END — ${Date.now() - t0}ms`)
+    logCallCost('generate-skeleton', response)
 
     const textBlock = response.content.find((block) => block.type === 'text')
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
@@ -1900,7 +1952,8 @@ app.post('/api/generate-day-block', async (req, res) => {
       if (event.type === 'content_block_start') console.log(`[timing] generate-day-block (days=${blockDayNumbers.join(',')}) first content byte — ${Date.now() - t0}ms`)
     })
     const response = await stream.finalMessage()
-    console.log(`[timing] generate-day-block END (days=${blockDayNumbers.join(',')}) — ${Date.now() - t0}ms — stop_reason=${response.stop_reason} output_tokens=${response.usage?.output_tokens}`)
+    console.log(`[timing] generate-day-block END (days=${blockDayNumbers.join(',')}) — ${Date.now() - t0}ms — stop_reason=${response.stop_reason}`)
+    logCallCost(`generate-day-block (days=${blockDayNumbers.join(',')})`, response)
 
     if (response.stop_reason === 'max_tokens') {
       throw new Error('La respuesta de Claude se cortó por exceder el límite de tokens (bloque de días demasiado largo).')
