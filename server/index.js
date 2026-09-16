@@ -409,7 +409,7 @@ app.post('/api/poi-content', async (req, res) => {
     try {
       const { data, error } = await supabaseAdmin
         .from('place_content_cache')
-        .select('id, content, hit_count')
+        .select('id, place_data, hit_count')
         .eq('place_name', placeName)
         .eq('destination', destination)
         .maybeSingle()
@@ -423,7 +423,7 @@ app.post('/api/poi-content', async (req, res) => {
           .then(({ error: touchError }) => {
             if (touchError) logAnthropicError('poi-content (touch)', touchError)
           })
-        res.json({ content: data.content, cached: true })
+        res.json({ content: data.place_data, cached: true })
         return
       }
     } catch (error) {
@@ -454,7 +454,7 @@ app.post('/api/poi-content', async (req, res) => {
         // explícitamente (mismo bug ya encontrado y arreglado en route-cache/save).
         const { error: insertError } = await supabaseAdmin
           .from('place_content_cache')
-          .insert({ place_name: placeName, destination, mapbox_id: mapboxId ?? null, content })
+          .insert({ place_name: placeName, destination, mapbox_id: mapboxId ?? null, place_data: content })
         if (insertError) throw insertError
       } catch (error) {
         // El contenido ya se generó y se puede devolver igual — un fallo guardándolo en caché solo
