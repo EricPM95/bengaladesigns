@@ -292,7 +292,7 @@
             "type": "exterior",
             "duration_min": 15,
             "group": "H",
-            "group_order": 2,
+            "group_order": 0,
             "is_free_access": true,
             "tips": [
               "Se diseñó para que vieras la Cúpula de San Pedro desde lejos — la mejor foto de San Pedro se hace desde el inicio de esta calle"
@@ -311,7 +311,8 @@
               "Cruzar el Puente Sisto a pie desde el centro es la entrada más bonita a Trastevere",
               "Para cenar: aléjate de las terrazas de la plaza principal — los mejores sitios están en las calles de atrás",
               "De noche es la zona con más ambiente de Roma — perfecto para el último plan del día"
-            ]
+            ],
+            "near_zone": "Vaticano"
           }
         ]
       },
@@ -536,7 +537,7 @@
             "type": "exterior",
             "duration_min": 10,
             "group": "H",
-            "group_order": 0,
+            "group_order": 2,
             "is_free_access": true,
             "tips": [
               "Las 10 estatuas de ángeles son de Bernini — cada una sostiene un instrumento de la Pasión. Se cruza naturalmente yendo a Castel Sant'Angelo"
@@ -621,11 +622,11 @@
       },
       "H": {
         "name": "Ruta monumental al Vaticano",
-        "description": "Puente Sant'Angelo → Castel Sant'Angelo → Via della Conciliazione → conecta con Grupo G.",
+        "description": "Via della Conciliazione → Castel Sant'Angelo (→ Puente Sant'Angelo). Bajando desde Plaza de San Pedro hacia el Tíber.",
         "order": [
-          "Puente Sant'Angelo",
+          "Via della Conciliazione",
           "Castel Sant'Angelo",
-          "Via della Conciliazione"
+          "Puente Sant'Angelo"
         ]
       },
       "I": {

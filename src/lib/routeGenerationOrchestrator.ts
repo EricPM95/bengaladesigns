@@ -38,6 +38,13 @@ export interface DayPlaces {
   places: DayPlace[]
 }
 
+/** Sugerencia de segunda visita (double_visit del JSON curado) para un día concreto — ver RecommendedRevisit en types.ts, esta es la forma "en bruto" tal cual la devuelve /api/generate-day-places (con day_number, sin agrupar por día todavía). */
+export interface RawRecommendedRevisit {
+  name: string
+  day_number: number
+  reason: string
+}
+
 /** Vista ligera de un día para el "resumen de otros días" que recibe cada bloque — ver formatTripOverview en server/index.js. */
 export interface LightDaySummary {
   day_number: number
@@ -73,6 +80,7 @@ export interface GenerationResumeState {
   phase: GenerationPhase
   params: GenerationParams
   dayPlaces: DayPlaces[]
+  recommendedRevisits: RawRecommendedRevisit[]
   skeleton: SkeletonResponse | null
   generated: GeneratedRouteResponse
   completedBlocks: number
@@ -270,7 +278,7 @@ async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnChec
     city_transitions: cached.route_data.city_transitions,
     phase_transitions: cached.route_data.phase_transitions,
   }
-  await onCheckpoint({ phase: 'blocks', params, dayPlaces: [], skeleton, generated: cached.route_data, completedBlocks: 0, totalBlocks: 1 })
+  await onCheckpoint({ phase: 'blocks', params, dayPlaces: [], recommendedRevisits: [], skeleton, generated: cached.route_data, completedBlocks: 0, totalBlocks: 1 })
 
   const generated =
     lookup.level === 'high'
@@ -278,7 +286,7 @@ async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnChec
       : await applyMediumMatchRedistribute(destination, answers, transportContext, cached)
 
   touchRouteCache(cached.id)
-  await onCheckpoint({ phase: 'done', params, dayPlaces: [], skeleton, generated, completedBlocks: 1, totalBlocks: 1 })
+  await onCheckpoint({ phase: 'done', params, dayPlaces: [], recommendedRevisits: [], skeleton, generated, completedBlocks: 1, totalBlocks: 1 })
 
   const finalRoute = mapGeneratedRouteToRoute(generated, destination, answers, transportContext, [])
   saveRouteCache(destination, answers.days, answers.experiences, answers.pace, generated)
@@ -386,6 +394,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   }
 
   let dayPlaces: DayPlaces[] = resumeFrom?.dayPlaces ?? []
+  let recommendedRevisits: RawRecommendedRevisit[] = resumeFrom?.recommendedRevisits ?? []
   let skeleton: SkeletonResponse | null = resumeFrom?.skeleton ?? null
   let generated: GeneratedRouteResponse = resumeFrom?.generated ?? { destination: '', origin: '', days: [] }
   let completedBlocks = resumeFrom?.completedBlocks ?? 0
@@ -400,7 +409,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
     skeleton = result
     generated = initialGeneratedFromSkeleton(result)
     phase = 'places'
-    await onCheckpoint({ phase, params, dayPlaces, skeleton, generated, completedBlocks, totalBlocks: 0 })
+    await onCheckpoint({ phase, params, dayPlaces, recommendedRevisits, skeleton, generated, completedBlocks, totalBlocks: 0 })
   }
 
   if (!skeleton) throw new Error('Falta el esqueleto del viaje — no se puede continuar.')
@@ -410,7 +419,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
     // server/index.js: necesita ver el viaje completo de una vez para no dejarse imprescindibles ni
     // repetir zonas entre días, algo que los bloques en paralelo de más abajo no pueden garantizar
     // por sí solos (cada uno ve el suyo en aislamiento).
-    const result = await postJson<{ days: DayPlaces[] }>('/api/generate-day-places', {
+    const result = await postJson<{ days: DayPlaces[]; recommended_revisits: RawRecommendedRevisit[] }>('/api/generate-day-places', {
       destination,
       answers,
       must_include_places: mustIncludePlaces,
@@ -418,9 +427,10 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
       ...transportContext,
     })
     dayPlaces = result.days
+    recommendedRevisits = result.recommended_revisits ?? []
     phase = 'blocks'
     const totalBlocks = chunkDays(skeleton.days, BLOCK_SIZE).length
-    await onCheckpoint({ phase, params, dayPlaces, skeleton, generated, completedBlocks: 0, totalBlocks })
+    await onCheckpoint({ phase, params, dayPlaces, recommendedRevisits, skeleton, generated, completedBlocks: 0, totalBlocks })
   }
 
   const blocks = chunkDays(skeleton.days, BLOCK_SIZE)
@@ -468,7 +478,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
       generated = mergeBlockDaysIntoGenerated(generated, result.days, result.not_included, result.excursions_available)
       completedBlocks += 1
       const done = completedBlocks >= totalBlocks
-      await onCheckpoint({ phase: done ? 'done' : 'blocks', params, dayPlaces, skeleton, generated, completedBlocks, totalBlocks })
+      await onCheckpoint({ phase: done ? 'done' : 'blocks', params, dayPlaces, recommendedRevisits, skeleton, generated, completedBlocks, totalBlocks })
     }
   }
 
@@ -482,5 +492,5 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // en la Fase 1 (deduplicada, por si un lugar aparece dos veces por una segunda visita legítima).
   const anchorNames = [...new Set(dayPlaces.flatMap((day) => day.places.map((place) => place.name)))]
 
-  return mapGeneratedRouteToRoute(generated, destination, answers, transportContext, anchorNames)
+  return mapGeneratedRouteToRoute(generated, destination, answers, transportContext, anchorNames, recommendedRevisits)
 }

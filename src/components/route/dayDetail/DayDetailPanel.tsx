@@ -243,6 +243,9 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  /** Precarga del buscador de AddStopScreen cuando se abre desde el botón "Añadir como parada" de una tarjeta de segunda visita recomendada (ver day.recommendedRevisits) — undefined = buscador vacío, comportamiento normal del "+". */
+  const [addStopInitialQuery, setAddStopInitialQuery] = useState<string | undefined>(undefined)
+  const [dismissedRevisits, setDismissedRevisits] = useState<Set<string>>(new Set())
   const [mapCollapsed, setMapCollapsed] = useState(false)
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
@@ -620,6 +623,54 @@ export function DayDetailPanel({
             finalConnector &&
             renderConnector(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
 
+          {day.recommendedRevisits && day.recommendedRevisits.length > 0 && (
+            <div className="space-y-2 pt-3">
+              {day.recommendedRevisits
+                .filter((rec) => !dismissedRevisits.has(rec.name))
+                .map((rec) => (
+                  <div key={rec.name} className="relative rounded-xl border border-accent/30 bg-accent/5 p-3 pr-8">
+                    <button
+                      type="button"
+                      onClick={() => setDismissedRevisits((prev) => new Set(prev).add(rec.name))}
+                      aria-label="Descartar sugerencia"
+                      className="absolute right-2 top-2 rounded-full p-1 text-text-muted hover:bg-bg-hover hover:text-text"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="h-4 w-4">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                      </svg>
+                    </button>
+                    <div className="flex items-start gap-2">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="mt-0.5 h-4 w-4 shrink-0 text-accent"
+                      >
+                        <path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+                      </svg>
+                      <div className="min-w-0">
+                        <p className="text-small font-medium text-text">Segunda visita recomendada: {rec.name}</p>
+                        <p className="mt-0.5 text-caption text-text-soft">{rec.reason}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddStopInitialQuery(rec.name)
+                        setInsertAt(realStops.length)
+                      }}
+                      className="mt-2 rounded-full bg-accent px-3 py-1.5 text-caption font-semibold text-white transition-colors hover:bg-accent-hover"
+                    >
+                      Añadir como parada
+                    </button>
+                  </div>
+                ))}
+            </div>
+          )}
+
           {route && (
             <AddStopScreen
               route={route}
@@ -630,12 +681,17 @@ export function DayDetailPanel({
               afterStopName={insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null}
               anchorCoordinates={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.coordinates ?? null) : null}
               dayMarkers={dayMarkers}
+              initialQuery={addStopInitialQuery}
               onPick={(newStop) => {
                 if (day.stops.length === 0) seedDayStops(day.id, realStops)
                 if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
                 setInsertAt(null)
+                setAddStopInitialQuery(undefined)
               }}
-              onClose={() => setInsertAt(null)}
+              onClose={() => {
+                setInsertAt(null)
+                setAddStopInitialQuery(undefined)
+              }}
             />
           )}
         </div>

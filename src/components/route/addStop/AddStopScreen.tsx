@@ -41,6 +41,8 @@ interface AddStopScreenProps {
   anchorCoordinates: Coordinates | null
   /** Paradas YA existentes del día, numeradas igual que en DIAS — se pintan en el mapa como contexto. */
   dayMarkers: StopsMapMarker[]
+  /** Precarga el buscador con este texto y dispara la búsqueda al abrir — usado por la tarjeta de "segunda visita recomendada" (RecommendedRevisit) para que el lugar ya salga sin que el viajero tenga que escribirlo. */
+  initialQuery?: string
   onPick: (stop: Stop) => void
   onClose: () => void
 }
@@ -151,6 +153,7 @@ export function AddStopScreen({
   afterStopName,
   anchorCoordinates,
   dayMarkers,
+  initialQuery,
   onPick,
   onClose,
 }: AddStopScreenProps) {
@@ -173,7 +176,7 @@ export function AddStopScreen({
 
   useEffect(() => {
     if (!open) return
-    setQuery('')
+    setQuery(initialQuery ?? '')
     setSearchResults(null)
     setActiveFilters([])
     setCategoryResults({})

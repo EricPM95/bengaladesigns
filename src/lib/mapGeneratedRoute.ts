@@ -7,6 +7,7 @@ import type {
   PhaseType,
   PriceTier,
   QuestionnaireAnswers,
+  RecommendedRevisit,
   Restaurant,
   Route,
   Stop,
@@ -387,6 +388,7 @@ function mapDay(
   excursionsByDay: Map<number, Excursion[]>,
   transportByDay: Map<number, TransportSegment>,
   didntMakeCut?: DidntMakeCutItem[],
+  recommendedRevisitsByDay?: Map<number, RecommendedRevisit[]>,
 ): DayPlan {
   return {
     id: `day-${generated.day_number}`,
@@ -400,6 +402,7 @@ function mapDay(
     meals: generated.meals.map((meal) => mapMeal(generated.day_number, meal)),
     excursions: excursionsByDay.get(generated.day_number),
     didntMakeCut: generated.day_number === 1 ? didntMakeCut : undefined,
+    recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
     isRelaxedDay: generated.type === 'relax',
@@ -428,9 +431,16 @@ export function mapGeneratedRouteToRoute(
   answers: QuestionnaireAnswers,
   transportContext: TransportContext,
   anchorNames: string[] = [],
+  recommendedRevisits: { name: string; day_number: number; reason: string }[] = [],
 ): Route {
   const didntMakeCut = mapDidntMakeCut(generated.not_included)
   const excursionsByDay = mapExcursionsByDay(generated.excursions_available)
+  const recommendedRevisitsByDay = new Map<number, RecommendedRevisit[]>()
+  for (const entry of recommendedRevisits) {
+    const list = recommendedRevisitsByDay.get(entry.day_number) ?? []
+    list.push({ name: entry.name, reason: entry.reason })
+    recommendedRevisitsByDay.set(entry.day_number, list)
+  }
 
   const transportByDay = new Map<number, TransportSegment>()
   for (const fact of mapCityTransitionFacts(generated.city_transitions)) {
@@ -446,7 +456,9 @@ export function mapGeneratedRouteToRoute(
   // coincida con lo que el viajero eligió — este chequeo es el invariante que lo garantiza: solo
   // añade el día de vuelta si con los días ya generados NO se alcanza el total pedido (evita
   // duplicar el +1 si algo más arriba cambia y ya llegan `answers.days` días completos).
-  const mappedDays = generated.days.map((day) => mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut))
+  const mappedDays = generated.days.map((day) =>
+    mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay),
+  )
   const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
 
   return {

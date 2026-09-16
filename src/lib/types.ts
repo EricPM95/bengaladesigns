@@ -366,6 +366,20 @@ export interface DidntMakeCutItem {
   priceToAdd?: number
 }
 
+// ── Segunda visita recomendada (double_visit del JSON curado) ─────────────
+
+/**
+ * Un lugar con `double_visit: true` en data/destinations.json (ver generate-day-places, Fase 1) ya
+ * aparece una vez como parada real de este día — esto NO es otra parada, es una sugerencia aparte
+ * ("vale la pena volver de noche") con su propio botón "Añadir como parada" para que el viajero
+ * decida por su cuenta, en vez de forzarla en el itinerario. Solo lo rellenan los destinos curados
+ * (destinos sin JSON siempre devuelven un array vacío, ver /api/generate-day-places).
+ */
+export interface RecommendedRevisit {
+  name: string
+  reason: string
+}
+
 // ── Rain plan B ───────────────────────────────────────────
 
 export interface RainPlanB {
@@ -388,6 +402,7 @@ export interface DayPlan {
   meals: MealSlot[]
   excursions?: Excursion[]
   didntMakeCut?: DidntMakeCutItem[]
+  recommendedRevisits?: RecommendedRevisit[]
   rainPlanB?: RainPlanB
   isExcursionDay?: boolean
   isRelaxedDay?: boolean
