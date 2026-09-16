@@ -1377,10 +1377,10 @@ CRITICAL RULES:
 1. COMPLETENESS — nothing from the destination's real top 15-20 "must-see" list may be missing. If a traveler searched "what to see in {destination}" and the first 15-20 results are real, well-known sights, every single one of them MUST appear somewhere across this trip's days (spread across the days that fit its zone, not crammed into one day) — unless the trip is too short to physically fit all of them, in which case keep the most essential ones and it is fine to leave the most minor ones out. Before finalizing, double-check by name that the single most iconic, unmissable sight(s) of the destination are in your list somewhere (the one thing almost nobody skips — e.g. the Louvre in Paris, the Colosseum in Rome, the Sagrada Familia in Barcelona) — it is easy to lose one of these specifically because it doesn't fit neatly into any day's zone/theme; if that happens, adjust which day it lands on rather than dropping it.
 2. ORGANIC ROUTE — within each day, order the places as a natural walking route: one place should lead into the next by real geographic proximity, not by importance or category. If two places are genuinely a few minutes apart (a famous arch right next to a major monument, a square that is physically part of a landmark's setting), they belong consecutively in the list.
 3. GEOGRAPHIC GROUPING — you already received each day's zone/theme below (decided by an earlier step) — respect it: only place things that genuinely belong to that day's zone, never mix places from a far-away zone into a day whose zone doesn't include them.
-4. QUANTITY PER DAY, by pace:
-   - "zen"/"balanced" pace: 4-5 full/visitable places per day
-   - "nonstop" pace: 6-8 full/visitable places per day
-   Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) do NOT count toward that number — add as many of those as genuinely belong on the day's route, on top of the count above.
+4. QUANTITY PER DAY, by pace — these numbers are a rough feel, NOT a hard cap to stop at or a quota to force:
+   - "zen"/"balanced" pace ("Tranquilo"): no rush, longer time at each place, roughly 4-5 full/visitable places as a typical feel. But if a cluster of quick exterior places sits within ~10 minutes' walk of each other in the same zone (e.g. Plaza de España → Fontana di Trevi → Panteón → Piazza Navona → Campo de' Fiori), include ALL of them — skipping an obvious nearby stop just to keep the count low makes no sense, the traveler is right there. What this pace does NOT do: stack two long visits (2h+) in the same day, one in the morning and another in the afternoon — pick one.
+   - "nonstop" pace ("Completo"): make the most of the whole day, chain stops with no dead gaps, can comfortably reach 7-8 places when the zone supports it. This pace CAN stack two long visits (2h+) in the same day — one in the morning, one in the afternoon — if the geography/logistics genuinely make it work.
+   Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) that sit on the natural path between two places you're including do NOT count toward the numbers above and are NEVER skipped for either pace — they cost little time/energy and leaving one out when it's literally on the route makes the trip look incomplete.
 5. LONG vs SHORT VISITS — a visit that takes 2-3h (a large museum, an extensive archaeological site) can legitimately be the day's only "long" item for that half of the day — that's correct pacing, not a thin day. Short visits (10-45min: a square, a small church, a viewpoint, a façade) should chain together or sit alongside a long visit, never fill an entire half-day alone.
 6. THE TRAVELER'S CHOSEN EXPERIENCES ADD, THEY DON'T REPLACE — the traveler's chosen experience focus (given below) adds thematic places (markets, hidden gems, food spots, etc.) ON TOP OF the destination's essential must-sees from rule 1 — never use it as an excuse to swap out a classic imprescindible.
 7. FREE TOUR — if "Free Tour" is in the traveler's chosen experiences, day 1's morning (roughly 10:00-12:30) is reserved for it — do not assign a long interior visit to day 1's morning slot; afternoon/evening of day 1 works normally.
@@ -1580,9 +1580,9 @@ const ARCHETYPE_LABEL = {
 }
 
 const PACE_LABEL = {
-  zen: 'zen (4 stops/day minimum, slow mornings, long breaks — never an empty afternoon)',
-  balanced: 'balanced (4-6 stops/day, flexible)',
-  nonstop: 'nonstop (6-8 stops, sunrise to sunset, see it all)',
+  zen: 'zen/"Tranquilo" — no rush, slower mornings, longer time at each place, roughly 4-5 full visits as a typical feel (never a hard cap — a cluster of quick nearby exterior stops is always visited in full, see REQUIRED PLACES). NEVER stack two long (2h+) visits in the same day, morning and afternoon — pick one.',
+  balanced: 'balanced/"Tranquilo" — same spirit as zen (see above), slightly more flexible.',
+  nonstop: 'nonstop/"Completo" — make the most of the whole day, chain stops with no dead gaps, comfortably 7-8 places when the zone supports it. CAN stack two long (2h+) visits in the same day, one morning and one afternoon, if the geography/logistics genuinely allow it.',
 }
 
 /** Mínimo de paradas visitables (sin contar comidas) para un día "city" normal, según ritmo — usado para validar y autocompletar la respuesta de generate-day-block, ver MIN_STOPS_BY_PACE más abajo. El propio prompt (PACE_LABEL/DAY_BLOCK_SYSTEM_PROMPT) ya pide este rango, esto es la red de seguridad server-side por si Claude no lo cumple. */
@@ -2532,6 +2532,158 @@ function sanitizeDayPlaceEntry(raw) {
 }
 
 /**
+ * Para los destinos más populares, la Fase 1 (Claude) puede fallar por pura variabilidad
+ * probabilística en incluir el hito más icónico del destino (visto en vivo: el Museo del Louvre
+ * desapareció de las 3 listas de un viaje entero a París) — en vez de perseguir el 100% de
+ * determinismo a base de más prompt, se verifica la respuesta de Claude contra esta lista
+ * hardcodeada de imprescindibles absolutos DESPUÉS de recibirla (nunca la sustituye, solo la
+ * completa si falta algo). `zoneHints` ayuda a elegir el día más lógico por palabras del zone_focus
+ * del esqueleto (ver findNeverMissLandmarks/enforceNeverMissLandmarks más abajo); sin coincidencia,
+ * va al primer día "city" elegible — mismo punto ciego que el resto de mecanismos de "dónde meterlo
+ * si no hay señal geográfica mejor" de este archivo (topUpUnassignedNames en su día, etc.).
+ */
+const NEVER_MISS_LANDMARKS = [
+  {
+    aliases: ['roma', 'rome'],
+    landmarks: [
+      { name: 'Coliseo', type: 'interior_largo', duration_min: 120, zoneHints: ['coliseo', 'colosseo', 'foro', 'imperial', 'palatino'] },
+      { name: 'Museos Vaticanos', type: 'interior_largo', duration_min: 180, zoneHints: ['vaticano'] },
+      { name: 'Basílica de San Pedro', type: 'interior_largo', duration_min: 90, zoneHints: ['vaticano', 'pedro'] },
+      { name: 'Panteón', type: 'interior_largo', duration_min: 45, zoneHints: ['centro', 'storico', 'navona', 'trevi'] },
+      { name: 'Fontana di Trevi', type: 'exterior', duration_min: 30, zoneHints: ['centro', 'storico', 'navona', 'trevi'] },
+      { name: 'Foro Romano', type: 'interior_largo', duration_min: 90, zoneHints: ['coliseo', 'colosseo', 'foro', 'imperial'] },
+    ],
+  },
+  {
+    aliases: ['paris', 'parís'],
+    landmarks: [
+      { name: 'Torre Eiffel', type: 'interior_largo', duration_min: 120, zoneHints: ['eiffel', 'trocadero', 'invalides'] },
+      { name: 'Museo del Louvre', type: 'interior_largo', duration_min: 180, zoneHints: ['cite', 'louvre', 'tullerias', 'sena'] },
+      { name: 'Catedral de Notre-Dame', type: 'exterior', duration_min: 30, zoneHints: ['cite', 'sena', 'marais'] },
+      { name: 'Arco de Triunfo', type: 'interior_largo', duration_min: 60, zoneHints: ['eiffel', 'champs', 'eliseos', 'etoile'] },
+      { name: 'Basílica del Sacré-Cœur', type: 'interior_corto', duration_min: 40, zoneHints: ['montmartre'] },
+      { name: 'Museo de Orsay', type: 'interior_largo', duration_min: 150, zoneHints: ['sena', 'germain', 'eiffel'] },
+    ],
+  },
+  {
+    aliases: ['londres', 'london'],
+    landmarks: [
+      { name: 'Torre de Londres', type: 'interior_largo', duration_min: 120, zoneHints: ['torre', 'city', 'tamesis', 'thames'] },
+      { name: 'Palacio de Buckingham', type: 'exterior', duration_min: 30, zoneHints: ['buckingham', 'westminster', 'james'] },
+      { name: 'Abadía de Westminster', type: 'interior_largo', duration_min: 90, zoneHints: ['westminster'] },
+      { name: 'Big Ben', type: 'exterior', duration_min: 15, zoneHints: ['westminster'] },
+      { name: 'British Museum', type: 'interior_largo', duration_min: 150, zoneHints: ['bloomsbury', 'covent', 'soho'] },
+      { name: 'London Eye', type: 'interior_corto', duration_min: 45, zoneHints: ['westminster', 'tamesis', 'thames', 'southbank'] },
+    ],
+  },
+  {
+    aliases: ['barcelona'],
+    landmarks: [
+      { name: 'Sagrada Familia', type: 'interior_largo', duration_min: 90, zoneHints: ['sagrada', 'eixample'] },
+      { name: 'Parque Güell', type: 'interior_largo', duration_min: 90, zoneHints: ['guell', 'gracia'] },
+      { name: 'Casa Batlló', type: 'interior_largo', duration_min: 75, zoneHints: ['eixample', 'gracia', 'batllo'] },
+      { name: 'La Pedrera', type: 'interior_corto', duration_min: 60, zoneHints: ['eixample', 'gracia'] },
+      { name: 'Barrio Gótico', type: 'exterior', duration_min: 60, zoneHints: ['gotico', 'born', 'rambla'] },
+      { name: 'La Rambla', type: 'exterior', duration_min: 40, zoneHints: ['rambla', 'gotico', 'raval'] },
+    ],
+  },
+  {
+    aliases: ['lisboa', 'lisbon'],
+    landmarks: [
+      { name: 'Torre de Belém', type: 'interior_corto', duration_min: 45, zoneHints: ['belem'] },
+      { name: 'Mosteiro dos Jerónimos', type: 'interior_largo', duration_min: 90, zoneHints: ['belem'] },
+      { name: 'Castelo de São Jorge', type: 'interior_largo', duration_min: 90, zoneHints: ['alfama', 'castelo'] },
+      { name: 'Alfama', type: 'exterior', duration_min: 60, zoneHints: ['alfama', 'castelo'] },
+      { name: 'Praça do Comércio', type: 'exterior', duration_min: 25, zoneHints: ['baixa', 'chiado', 'comercio'] },
+      { name: 'Elevador de Santa Justa', type: 'interior_corto', duration_min: 20, zoneHints: ['baixa', 'chiado'] },
+    ],
+  },
+  {
+    aliases: ['amsterdam', 'ámsterdam'],
+    landmarks: [
+      { name: 'Casa de Ana Frank', type: 'interior_largo', duration_min: 75, zoneHints: ['jordaan', 'canales', 'grachten'] },
+      { name: 'Rijksmuseum', type: 'interior_largo', duration_min: 150, zoneHints: ['museumplein', 'museos'] },
+      { name: 'Museo Van Gogh', type: 'interior_largo', duration_min: 120, zoneHints: ['museumplein', 'museos'] },
+      { name: 'Plaza Dam', type: 'exterior', duration_min: 20, zoneHints: ['dam', 'centro'] },
+      { name: 'Canales de Ámsterdam', type: 'exterior', duration_min: 40, zoneHints: ['canales', 'grachten', 'jordaan'] },
+      { name: 'Mercado de Flores Bloemenmarkt', type: 'exterior', duration_min: 25, zoneHints: ['centro', 'dam'] },
+    ],
+  },
+  {
+    aliases: ['nueva york', 'new york', 'nyc'],
+    landmarks: [
+      { name: 'Estatua de la Libertad', type: 'interior_largo', duration_min: 150, zoneHints: ['libertad', 'liberty', 'battery', 'financiero'] },
+      { name: 'Central Park', type: 'exterior', duration_min: 60, zoneHints: ['central park', 'upper'] },
+      { name: 'Times Square', type: 'exterior', duration_min: 20, zoneHints: ['times square', 'midtown'] },
+      { name: 'Empire State Building', type: 'interior_largo', duration_min: 75, zoneHints: ['midtown'] },
+      { name: 'Museo Metropolitano de Arte', type: 'interior_largo', duration_min: 150, zoneHints: ['upper', 'central park', 'met'] },
+      { name: 'Puente de Brooklyn', type: 'exterior', duration_min: 40, zoneHints: ['brooklyn', 'financiero', 'dumbo'] },
+    ],
+  },
+  {
+    aliases: ['tokio', 'tokyo'],
+    landmarks: [
+      { name: 'Templo Senso-ji', type: 'interior_corto', duration_min: 45, zoneHints: ['asakusa'] },
+      { name: 'Cruce de Shibuya', type: 'exterior', duration_min: 20, zoneHints: ['shibuya'] },
+      { name: 'Torre de Tokio', type: 'interior_corto', duration_min: 45, zoneHints: ['minato', 'roppongi', 'shiba'] },
+      { name: 'Santuario Meiji', type: 'exterior', duration_min: 45, zoneHints: ['harajuku', 'shibuya', 'meiji'] },
+      { name: 'Palacio Imperial', type: 'exterior', duration_min: 45, zoneHints: ['chiyoda', 'imperial'] },
+      { name: 'Barrio de Akihabara', type: 'exterior', duration_min: 45, zoneHints: ['akihabara'] },
+    ],
+  },
+]
+
+function stripAccentsLower(value) {
+  return typeof value === 'string' ? value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() : ''
+}
+
+/** Coincidencia por palabra completa para alias de una palabra (evita falsos positivos tipo "Romania" conteniendo "roma"); los alias de dos o más palabras ("nueva york") se buscan como substring literal, sin ese riesgo. */
+function findNeverMissLandmarks(destination) {
+  const norm = stripAccentsLower(destination)
+  if (!norm) return null
+  const words = new Set(norm.split(/[^a-z]+/).filter(Boolean))
+  for (const entry of NEVER_MISS_LANDMARKS) {
+    for (const alias of entry.aliases) {
+      const isMultiWord = alias.includes(' ')
+      if (isMultiWord ? norm.includes(alias) : words.has(alias)) return entry.landmarks
+    }
+  }
+  return null
+}
+
+/**
+ * Después de que Fase 1 (Claude) devuelva su lista, se comprueba contra NEVER_MISS_LANDMARKS (si el
+ * destino es uno de los cubiertos) — cualquier hito que falte se añade aquí mismo, en el día cuyo
+ * zone_focus mejor encaje (zoneHints) o, sin coincidencia, en el primer día "city" elegible.
+ */
+function enforceNeverMissLandmarks(days, destination, skeletonDays) {
+  const landmarks = findNeverMissLandmarks(destination)
+  if (!landmarks || days.length === 0) return days
+
+  const skeletonByDayNumber = new Map((skeletonDays ?? []).map((day) => [Number(day.day_number), day]))
+  const eligibleDayNumbers = days.map((day) => day.day_number).sort((a, b) => a - b)
+  const firstCityDay = eligibleDayNumbers.find((dayNumber) => skeletonByDayNumber.get(dayNumber)?.type === 'city') ?? eligibleDayNumbers[0]
+
+  for (const landmark of landmarks) {
+    const alreadyPresent = days.some((day) => day.places.some((place) => isFuzzyPlaceMatch(place.name, landmark.name)))
+    if (alreadyPresent) continue
+
+    const zoneFocusMatch = days.find((day) => {
+      const zoneFocus = stripAccentsLower(skeletonByDayNumber.get(day.day_number)?.zone_focus ?? '')
+      return zoneFocus && landmark.zoneHints.some((hint) => zoneFocus.includes(hint))
+    })
+    const targetDayNumber = zoneFocusMatch?.day_number ?? firstCityDay
+    const targetDay = days.find((day) => day.day_number === targetDayNumber)
+    if (!targetDay) continue
+
+    targetDay.places.push({ name: landmark.name, type: landmark.type, duration_min: landmark.duration_min })
+    console.log(`[never-miss] "${landmark.name}" no apareció en la Fase 1 para "${destination}" — añadido automáticamente al día ${targetDayNumber}`)
+  }
+
+  return days
+}
+
+/**
  * Fase 1 (generate-day-places) — saneo de la respuesta. Solo se aceptan días "city" del esqueleto
  * (road/excursion nunca llevan lista, ver DAY_PLACES_SYSTEM_PROMPT); cada día se deduplica
  * dentro de sí mismo (un mismo nombre repetido DOS VECES en el mismo día es un error del modelo, no
@@ -2611,6 +2763,7 @@ app.post('/api/generate-day-places', async (req, res) => {
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places)
+    enforceNeverMissLandmarks(days, destination, skeleton_days)
     res.json({ days })
   } catch (error) {
     console.log(`[timing] generate-day-places FAILED — ${Date.now() - t0}ms`)
