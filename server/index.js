@@ -1381,13 +1381,14 @@ CRITICAL RULES:
    - "zen"/"balanced" pace ("Tranquilo"): no rush, longer time at each place, roughly 4-5 full/visitable places as a typical feel. But if a cluster of quick exterior places sits within ~10 minutes' walk of each other in the same zone (e.g. Plaza de España → Fontana di Trevi → Panteón → Piazza Navona → Campo de' Fiori), include ALL of them — skipping an obvious nearby stop just to keep the count low makes no sense, the traveler is right there. What this pace does NOT do: stack two long visits (2h+) in the same day, one in the morning and another in the afternoon — pick one.
    - "nonstop" pace ("Completo"): make the most of the whole day, chain stops with no dead gaps, can comfortably reach 7-8 places when the zone supports it. This pace CAN stack two long visits (2h+) in the same day — one in the morning, one in the afternoon — if the geography/logistics genuinely make it work.
    Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) that sit on the natural path between two places you're including do NOT count toward the numbers above and are NEVER skipped for either pace — they cost little time/energy and leaving one out when it's literally on the route makes the trip look incomplete.
+   Hard ceiling regardless of pace: a later step must write full real content (description, tip, real hours, coordinates, connector) for every single place in your list in one pass, so a day's list should very rarely need more than about 10-11 places total (long visits + short visits + quick exteriors combined) to cover everything genuinely worth including — if a zone is so dense that it would take more than that to include every real must-see, prioritize the most iconic/essential ones over minor extras rather than padding the list further.
 5. LONG vs SHORT VISITS — a visit that takes 2-3h (a large museum, an extensive archaeological site) can legitimately be the day's only "long" item for that half of the day — that's correct pacing, not a thin day. Short visits (10-45min: a square, a small church, a viewpoint, a façade) should chain together or sit alongside a long visit, never fill an entire half-day alone.
 6. THE TRAVELER'S CHOSEN EXPERIENCES ADD, THEY DON'T REPLACE — the traveler's chosen experience focus (given below) adds thematic places (markets, hidden gems, food spots, etc.) ON TOP OF the destination's essential must-sees from rule 1 — never use it as an excuse to swap out a classic imprescindible.
 7. FREE TOUR — if "Free Tour" is in the traveler's chosen experiences, day 1's morning (roughly 10:00-12:30) is reserved for it — do not assign a long interior visit to day 1's morning slot; afternoon/evening of day 1 works normally.
 8. CONNECTION PLACES — if a small, genuinely iconic place sits literally on the walking path between two places you're already including (under ~5 minutes out of the way), always include it too — never skip an obvious short stop that's right there on the route.
 9. SECOND VISITS — a handful of the destination's true signature sights (a famous illuminated landmark, a plaza that feels completely different by night) can legitimately appear TWICE across different days if the second visit is a genuinely different experience (e.g. by night instead of by day) — use this sparingly (0-2 places per trip, never for an ordinary museum or interior visit), and only when it's a place travelers genuinely do visit twice.
 10. STRATEGIC ORDER HINT — you know which major sights get crowded/have real opening-hour pressure (big museums, top monuments) — for those, put them earlier in their day's list (a later step will schedule them first thing in the morning); put natural sunset/viewpoint spots later in their day's list.
-11. Every place must be REAL, specific, and use its clean, official Spanish name — no parentheses, no advice, no timing notes in "name" (that has no home here at all, this is just a list).
+11. Every place must be REAL, specific, and use its clean, official Spanish name — no parentheses, no advice, no timing notes in "name" (that has no home here at all, this is just a list). Use exactly ONE consistent name per real place across the whole list — never list the same place twice under two different name variants (e.g. the local-language name once and its Spanish translation another time, like "Musée d'Orsay" and "Museo de Orsay" both appearing separately — that is the SAME museum counted twice, not two places).
 
 "relax" days (typically the trip's last day — revisits, free time, no rush) DO get a place list too, just naturally lighter/shorter than a packed "city" day. Only "road" and "excursion" days are handled by a different step — do not include those in your response at all.
 
@@ -2708,7 +2709,12 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
       if (seen.has(key)) continue
       seen.add(key)
       places.push(place)
-      if (places.length >= 14) break
+      // Tope defensivo — ver [timing] real en logs: la Fase 2 tiene que escribir contenido completo
+      // (descripción/tip/horario/coordenadas/conectores) para CADA lugar de la lista en una sola
+      // llamada, así que más lugares = más tokens de salida = más tiempo. 14+/día medidos en vivo
+      // tardaban 130-150s, por encima del límite de la función serverless — 11 deja margen real sin
+      // recortar el "visita todo lo que esté en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
+      if (places.length >= 11) break
     }
     byDayNumber.set(dayNumber, places)
   }
