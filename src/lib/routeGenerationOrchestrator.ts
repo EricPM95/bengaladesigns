@@ -371,7 +371,14 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // Solo se intenta en un arranque limpio — una generación que se está RETOMANDO (resumeFrom) ya
   // decidió su camino la primera vez que se lanzó; no tiene sentido reconsiderar la caché a mitad.
   if (!resumeFrom) {
-    const cachedRoute = await tryRouteCacheReuse(params, onCheckpoint).catch(() => null)
+    const cachedRoute = await tryRouteCacheReuse(params, onCheckpoint).catch((error: unknown) => {
+      // Nunca debe bloquear la generación — pero un catch mudo hace imposible diagnosticar por qué
+      // un camino de caché falló (se descubrió así: un bug real en el conteo de días quedaba
+      // invisible, cayendo al pipeline completo sin ningún rastro). Un console.warn no interrumpe
+      // nada, solo deja huella.
+      console.warn('[route-cache] no se pudo reutilizar la ruta cacheada, generando de cero:', error)
+      return null
+    })
     if (cachedRoute) return cachedRoute
   }
 

@@ -2210,7 +2210,7 @@ const ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT = `You are an expert travel route p
 
 ${DAY_BLOCK_SYSTEM_PROMPT.split('RESPOND ONLY IN VALID JSON')[0].split('\n').slice(2).join('\n')}
 
-RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation) — same shape as a normal itinerary, covering EVERY day from 1 to the requested total:
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation) — same shape as a normal itinerary, covering EVERY day from 1 to the "Días de contenido a generar" number given to you (never more, never fewer — the trip's actual final travel-home day is added separately afterward, you never generate it):
 
 {
   "days": [
@@ -2227,7 +2227,7 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation) — same 
   "excursions_available": []
 }`
 
-function buildRouteCacheRedistributePrompt(destination, answers, pool) {
+function buildRouteCacheRedistributePrompt(destination, answers, contentDays, pool) {
   const poolLines = pool
     .map(
       (stop) =>
@@ -2236,7 +2236,7 @@ function buildRouteCacheRedistributePrompt(destination, answers, pool) {
     .join('\n')
 
   return `Destino: "${destination}"
-Días totales: ${answers.days}
+Días de contenido a generar: ${contentDays}
 Ritmo: ${PACE_LABEL[answers.pace] ?? answers.pace}
 Experiencias elegidas: ${formatExperiences(answers.experiences)}
 Acompañantes: ${formatCompanion(answers)}
@@ -2258,13 +2258,21 @@ app.post('/api/regenerate-route-redistribute', async (req, res) => {
     res.status(400).json({ error: 'Redistribución de caché limitada a viajes de hasta 7 días.' })
     return
   }
+  // "1 día generado = 1 noche" (ver appendReturnLegDay en tripDays.ts) — EXACTAMENTE la misma
+  // convención que generate-skeleton/generate-day-block: el último día (regreso al origen) es
+  // sintético, nunca lo genera Claude, y mapGeneratedRouteToRoute lo añade solo si hacen falta más
+  // días para llegar a answers.days. Pedirle a Claude answers.days días completos aquí (en vez de
+  // answers.days-1) fue un bug real: mapGeneratedRouteToRoute nunca añadía el día de vuelta al ver
+  // que ya había "suficientes" días, y algo aguas abajo de esa forma resultante rompía en silencio
+  // (tryRouteCacheReuse lo capturaba con un catch mudo, cayendo al pipeline completo sin avisar).
+  const contentDays = Math.max(answers.days - 1, 1)
 
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 16000,
       system: ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildRouteCacheRedistributePrompt(destination, answers, knownStops) }],
+      messages: [{ role: 'user', content: buildRouteCacheRedistributePrompt(destination, answers, contentDays, knownStops) }],
     })
     logCallCost('regenerate-route-redistribute', response)
 
@@ -2274,7 +2282,7 @@ app.post('/api/regenerate-route-redistribute', async (req, res) => {
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     const days = sanitizeDayBlockDays(
       parsed?.days,
-      Array.from({ length: answers.days }, (_, index) => index + 1),
+      Array.from({ length: contentDays }, (_, index) => index + 1),
     )
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos')
 
