@@ -1389,6 +1389,7 @@ CRITICAL RULES:
 9. SECOND VISITS — a handful of the destination's true signature sights (a famous illuminated landmark, a plaza that feels completely different by night) can legitimately appear TWICE across different days if the second visit is a genuinely different experience (e.g. by night instead of by day) — use this sparingly (0-2 places per trip, never for an ordinary museum or interior visit), and only when it's a place travelers genuinely do visit twice.
 10. STRATEGIC ORDER HINT — you know which major sights get crowded/have real opening-hour pressure (big museums, top monuments) — for those, put them earlier in their day's list (a later step will schedule them first thing in the morning); put natural sunset/viewpoint spots later in their day's list.
 11. Every place must be REAL, specific, and use its clean, official Spanish name — no parentheses, no advice, no timing notes in "name" (that has no home here at all, this is just a list). Use exactly ONE consistent name per real place across the whole list — never list the same place twice under two different name variants (e.g. the local-language name once and its Spanish translation another time, like "Musée d'Orsay" and "Museo de Orsay" both appearing separately — that is the SAME museum counted twice, not two places).
+12. SPANISH NAMES, EVERYWHERE, NOT JUST THE FAMOUS ONES — this applies to every single place, not only the destination's headline sights: if a place's name has a commonly-used Spanish translation, use it, even for lesser-known squares/streets/bridges/gardens. Concretely, translate the generic/descriptive part of a name even when you keep a proper noun untouched: "Place" → "Plaza" (e.g. "Place des Vosges" → "Plaza de los Vosgos", "Place du Parvis Notre-Dame" → "Plaza de Notre-Dame"), "Pont" → "Puente" (e.g. "Pont Neuf" → "Puente Nuevo"), "Champ"/"Champs" → "Campo" (e.g. "Champ de Mars" → "Campo de Marte"), "Jardin" → "Jardín", "Rue" → "Calle", "Église" → "Iglesia", "Cathédrale" → "Catedral", "Château" → "Castillo"/"Palacio", "Musée" → "Museo", "Tour" → "Torre", "Parc" → "Parque", "Sacré-Cœur" → "Sagrado Corazón" (e.g. "Basílica del Sacré-Cœur" → "Basílica del Sagrado Corazón" — ALWAYS this exact Spanish form, never the French one, so it matches consistently every time it's mentioned) — the same logic applies in any language, not just French (Italian "Piazza" → "Plaza", "Ponte" → "Puente", "Chiesa" → "Iglesia"; Portuguese "Praça" → "Plaza", "Igreja" → "Iglesia"; German "Platz" → "Plaza", "Brücke" → "Puente"; etc.). ONLY keep a name in its original language when it is genuinely a proper noun with no real Spanish equivalent — a neighborhood/district name ("Montmartre", "Le Marais", "Trastevere", "Chiado"), a person's name, or a place whose local name is what Spanish speakers actually use too ("Saint-Germain-des-Prés" stays as-is, that IS the name used in Spanish).
 
 "relax" days (typically the trip's last day — revisits, free time, no rush) DO get a place list too, just naturally lighter/shorter than a packed "city" day. Only "road" and "excursion" days are handled by a different step — do not include those in your response at all.
 
@@ -1423,7 +1424,8 @@ CRITICAL RULES:
 PLACE NAMES — "name" is ONLY the clean, official name of the place, in Spanish:
 - No parentheses, no added context, no advice, no timing notes inside the name. Wrong: "Colosseo (primera visita — madrugada sin masas)" or "Musei Vaticani e Cappella Sistina". Right: "Coliseo" / "Museos Vaticanos y Capilla Sixtina".
 - Any advice, recommendation or context ("mejor sin masas", "ideal al amanecer", "primera visita") belongs ONLY in the "tip" or "description" fields — NEVER inside "name".
-- Use the Spanish name travelers would recognize (official Spanish exonym/translation when one commonly exists — "Coliseo" not "Colosseo", "Torre Eiffel" not "Tour Eiffel"), not the local-language name, unless the place has no real Spanish name (then use its actual proper name as-is).
+- Use the Spanish name travelers would recognize (official Spanish exonym/translation when one commonly exists), not the local-language name, unless the place has no real Spanish name (then use its actual proper name as-is). This applies to EVERY place, not just headline sights — translate the generic/descriptive part of a name even for lesser-known squares/streets/bridges: "Coliseo" not "Colosseo", "Torre Eiffel" not "Tour Eiffel", "Puente Nuevo" not "Pont Neuf", "Plaza de los Vosgos" not "Place des Vosges", "Campo de Marte" not "Champ de Mars" — same logic in any language ("Place/Piazza/Praça/Platz" → "Plaza", "Pont/Ponte/Brücke" → "Puente", "Jardin" → "Jardín", "Église/Chiesa/Igreja" → "Iglesia", "Musée" → "Museo"). ONLY keep the original-language name for a genuine proper noun with no real Spanish equivalent (a neighborhood like "Montmartre"/"Le Marais"/"Trastevere", or a name Spanish speakers already use as-is like "Saint-Germain-des-Prés").
+- For "city"/"relax" days this rarely applies (their names are already fixed by the required list, see REQUIRED PLACES below) — it matters most for "road"/"excursion" day content, which you name yourself.
 
 MEALS ARE NEVER A NUMBERED STOP — this is a hard rule that has been violated before, do not repeat that mistake:
 - A restaurant, lunch break, dinner break, or any "pausa para comer/cenar" must NEVER appear inside a day's "stops" array. Meals exist ONLY inside that day's "meals" array.
@@ -2562,7 +2564,7 @@ const NEVER_MISS_LANDMARKS = [
       { name: 'Museo del Louvre', type: 'interior_largo', duration_min: 180, zoneHints: ['cite', 'louvre', 'tullerias', 'sena'] },
       { name: 'Catedral de Notre-Dame', type: 'exterior', duration_min: 30, zoneHints: ['cite', 'sena', 'marais'] },
       { name: 'Arco de Triunfo', type: 'interior_largo', duration_min: 60, zoneHints: ['eiffel', 'champs', 'eliseos', 'etoile'] },
-      { name: 'Basílica del Sacré-Cœur', type: 'interior_corto', duration_min: 40, zoneHints: ['montmartre'] },
+      { name: 'Basílica del Sagrado Corazón', type: 'interior_corto', duration_min: 40, zoneHints: ['montmartre'] },
       { name: 'Museo de Orsay', type: 'interior_largo', duration_min: 150, zoneHints: ['sena', 'germain', 'eiffel'] },
     ],
   },
@@ -2573,7 +2575,7 @@ const NEVER_MISS_LANDMARKS = [
       { name: 'Palacio de Buckingham', type: 'exterior', duration_min: 30, zoneHints: ['buckingham', 'westminster', 'james'] },
       { name: 'Abadía de Westminster', type: 'interior_largo', duration_min: 90, zoneHints: ['westminster'] },
       { name: 'Big Ben', type: 'exterior', duration_min: 15, zoneHints: ['westminster'] },
-      { name: 'British Museum', type: 'interior_largo', duration_min: 150, zoneHints: ['bloomsbury', 'covent', 'soho'] },
+      { name: 'Museo Británico', type: 'interior_largo', duration_min: 150, zoneHints: ['bloomsbury', 'covent', 'soho'] },
       { name: 'London Eye', type: 'interior_corto', duration_min: 45, zoneHints: ['westminster', 'tamesis', 'thames', 'southbank'] },
     ],
   },
@@ -2592,10 +2594,10 @@ const NEVER_MISS_LANDMARKS = [
     aliases: ['lisboa', 'lisbon'],
     landmarks: [
       { name: 'Torre de Belém', type: 'interior_corto', duration_min: 45, zoneHints: ['belem'] },
-      { name: 'Mosteiro dos Jerónimos', type: 'interior_largo', duration_min: 90, zoneHints: ['belem'] },
-      { name: 'Castelo de São Jorge', type: 'interior_largo', duration_min: 90, zoneHints: ['alfama', 'castelo'] },
+      { name: 'Monasterio de los Jerónimos', type: 'interior_largo', duration_min: 90, zoneHints: ['belem'] },
+      { name: 'Castillo de San Jorge', type: 'interior_largo', duration_min: 90, zoneHints: ['alfama', 'castelo'] },
       { name: 'Alfama', type: 'exterior', duration_min: 60, zoneHints: ['alfama', 'castelo'] },
-      { name: 'Praça do Comércio', type: 'exterior', duration_min: 25, zoneHints: ['baixa', 'chiado', 'comercio'] },
+      { name: 'Plaza del Comercio', type: 'exterior', duration_min: 25, zoneHints: ['baixa', 'chiado', 'comercio'] },
       { name: 'Elevador de Santa Justa', type: 'interior_corto', duration_min: 20, zoneHints: ['baixa', 'chiado'] },
     ],
   },
