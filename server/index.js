@@ -1942,6 +1942,359 @@ function mergeMustIncludeIntoAnchors(anchors, mustIncludePlaces, destination) {
   return merged
 }
 
+// ── SISTEMA DE CACHÉ INTELIGENTE DE RUTAS ───────────────────────────────────────────────────
+//
+// Antes de lanzar el pipeline completo (anclas → esqueleto → bloques de días), se busca si ya
+// existe una ruta generada antes para el MISMO destino con parámetros parecidos — si el parecido es
+// alto, se reutiliza esa ruta como base y solo se le pide a Claude lo que cambia (mucho más barato y
+// rápido que generar desde cero). Cada resultado (reutilizado con cambios, o nuevo de cero) se
+// guarda SIEMPRE como una fila NUEVA de route_cache (nunca se sobreescribe una existente) — ver
+// supabase/migrations/0008_route_cache.sql.
+//
+// Clave de coincidencia: destino (obligatorio) + días + experiencias + ritmo. Los acompañantes NO
+// forman parte de la clave — companion_id/edades/tamaño de grupo no cambian qué lugares visitar,
+// solo el tono del contenido (ver formatCompanion), así que dos peticiones con las mismas
+// experiencias/días/ritmo pero distinto acompañante SÍ deben coincidir al 100%.
+function normalizeDestinationForMatch(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : ''
+}
+
+function jaccardOverlap(a, b) {
+  const setA = new Set(Array.isArray(a) ? a : [])
+  const setB = new Set(Array.isArray(b) ? b : [])
+  if (setA.size === 0 && setB.size === 0) return 1
+  let intersection = 0
+  for (const value of setA) if (setB.has(value)) intersection += 1
+  const union = setA.size + setB.size - intersection
+  return union === 0 ? 1 : intersection / union
+}
+
+function daysMatchScore(a, b) {
+  const diff = Math.abs(Number(a) - Number(b))
+  if (diff === 0) return 1
+  if (diff === 1) return 0.75
+  if (diff === 2) return 0.5
+  return 0
+}
+
+/**
+ * Porcentaje de coincidencia (0-100) de una fila de route_cache contra la petición actual — pesos
+ * exactos dados por el usuario: destino obligatorio (si no coincide, 0), experiencias 50%
+ * (intersección/unión), ritmo 25% (coincide o no), días 25% (igual=100%, ±1=75%, ±2=50%, más=0%).
+ */
+function computeRouteCacheMatch(row, query) {
+  if (normalizeDestinationForMatch(row.destination) !== normalizeDestinationForMatch(query.destination)) return 0
+  const expScore = jaccardOverlap(row.experiences, query.experiences)
+  const paceScore = row.pace === query.pace ? 1 : 0
+  const daysScore = daysMatchScore(row.days, query.days)
+  return Math.round((expScore * 0.5 + paceScore * 0.25 + daysScore * 0.25) * 100)
+}
+
+/** 'high' → reutilizar 80-90% (solo ajustar lo que cambia); 'medium' → reutilizar 60-70% (redistribuir); 'none' → generación nueva completa. */
+function routeCacheLevel(matchPct) {
+  if (matchPct >= 75) return 'high'
+  if (matchPct >= 50) return 'medium'
+  return 'none'
+}
+
+app.post('/api/route-cache/lookup', async (req, res) => {
+  const { destination, days, experiences, pace } = req.body ?? {}
+  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !pace) {
+    res.status(400).json({ error: 'Se requiere destination, days, experiences y pace.' })
+    return
+  }
+  if (!supabaseAdmin) {
+    res.json({ level: 'none', entry: null, match_pct: 0 })
+    return
+  }
+
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('route_cache')
+      .select('id, destination, days, experiences, pace, route_data, hit_count')
+      .ilike('destination', destination)
+      .limit(50)
+    if (error) throw error
+
+    let best = null
+    let bestScore = -1
+    for (const row of data ?? []) {
+      const score = computeRouteCacheMatch(row, { destination, days, experiences, pace })
+      if (score > bestScore) {
+        bestScore = score
+        best = row
+      }
+    }
+
+    const level = best ? routeCacheLevel(bestScore) : 'none'
+    if (level === 'none' || !best) {
+      res.json({ level: 'none', entry: null, match_pct: Math.max(bestScore, 0) })
+      return
+    }
+
+    res.json({
+      level,
+      match_pct: bestScore,
+      entry: { id: best.id, days: best.days, experiences: best.experiences, pace: best.pace, route_data: best.route_data },
+    })
+  } catch (error) {
+    logAnthropicError('route-cache/lookup', error)
+    // Best-effort — si falla la búsqueda de caché, se sigue con generación completa normal, nunca
+    // se bloquea al viajero por esto.
+    res.json({ level: 'none', entry: null, match_pct: 0 })
+  }
+})
+
+app.post('/api/route-cache/touch', async (req, res) => {
+  const { id } = req.body ?? {}
+  if (!id || !supabaseAdmin) {
+    res.json({ ok: false })
+    return
+  }
+  try {
+    const { data, error } = await supabaseAdmin.from('route_cache').select('hit_count').eq('id', id).maybeSingle()
+    if (error) throw error
+    const { error: updateError } = await supabaseAdmin
+      .from('route_cache')
+      .update({ hit_count: (data?.hit_count ?? 1) + 1, last_used_at: new Date().toISOString() })
+      .eq('id', id)
+    if (updateError) throw updateError
+    res.json({ ok: true })
+  } catch (error) {
+    logAnthropicError('route-cache/touch', error)
+    res.json({ ok: false })
+  }
+})
+
+app.post('/api/route-cache/save', async (req, res) => {
+  const { destination, days, experiences, pace, route_data: routeData } = req.body ?? {}
+  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !pace || !routeData || !supabaseAdmin) {
+    res.json({ ok: false })
+    return
+  }
+  try {
+    // SIEMPRE inserta una fila nueva — nunca actualiza/sobreescribe una existente, ver el
+    // comentario grande al principio de esta sección. El cliente Supabase NO lanza en un error de
+    // Postgrest (a diferencia de un fetch normal) — hay que comprobar `error` explícitamente, o un
+    // insert fallido (ej. la tabla no existe todavía) se reporta como éxito por error.
+    const { error } = await supabaseAdmin.from('route_cache').insert({ destination, days, experiences, pace, route_data: routeData })
+    if (error) throw error
+    res.json({ ok: true })
+  } catch (error) {
+    logAnthropicError('route-cache/save', error)
+    res.json({ ok: false })
+  }
+})
+
+/** Vista compacta de una parada ya generada — lo mínimo que Claude necesita para decidir qué quitar/mantener, sin gastar tokens en tips/entry_options/travel_to_next que no hacen falta para esta decisión. */
+function compactStopForCache(stop) {
+  return {
+    id: stop.id,
+    name: stop.name,
+    category: stop.category,
+    category_label: stop.category_label,
+    suggested_time: stop.suggested_time,
+    duration_minutes: stop.duration_minutes,
+  }
+}
+
+const ROUTE_CACHE_EXPERIENCES_SYSTEM_PROMPT = `You are an expert travel route planner adjusting an EXISTING, already-verified itinerary for a traveler whose chosen experience focus changed slightly — your job is ONLY to identify which existing stops no longer fit and which new stops should fill the resulting gaps. Do NOT rewrite the whole itinerary, do NOT touch days/stops that are not affected by the change.
+
+LANGUAGE — every text field you write must be in Spanish.
+
+CRITICAL RULES (same standards as generating from scratch):
+- Every new place MUST be real and currently open/accessible, and MUST NOT already exist elsewhere in this itinerary
+- "name" is ONLY the clean official Spanish name — no parentheses, no advice, no timing context (see PLACE NAMES below)
+- NEVER add a restaurant/meal as a stop — this itinerary's meals are handled separately, not shown to you
+- New stops must fit realistically into the existing schedule of the day you assign them to (geography, time of day, real opening hours) — never earlier than a place's own real opening time
+- Tips (1-3 sentences) only when genuinely high-value: combined tickets, partial free access, strategic timing, real logistics — empty string if nothing genuinely good, never generic filler
+
+PLACE NAMES: "name" is ONLY the clean official name of the place in Spanish, no parentheses/advice/timing notes — e.g. "Coliseo" not "Colosseo (sin colas por la mañana)".
+
+WHAT TO REMOVE: the traveler no longer wants these experience categories: {{removed}}. Look at the existing stops (given below, grouped by day) and identify which ones were clearly chosen FOR one of those categories — remove ONLY those, keep everything else untouched, including stops that could arguably fit multiple categories but still make sense on their own merit.
+
+WHAT TO ADD: the traveler now wants these experience categories: {{added}}. Add new real stops for these, fitting them into the gaps left by whatever you removed (or genuinely free time in the existing schedule) — do not just append them at the end of the day, place them at a realistic suggested_time.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "removed_stop_ids": ["exact id from the existing itinerary given to you"],
+  "new_stops": [
+    {
+      "day_number": 2,
+      "id": "unique-id",
+      "name": "Clean official place name, in Spanish",
+      "description": "2 sentences max, in Spanish",
+      "tip": "1-3 sentences, in Spanish, empty string if nothing genuinely good",
+      "suggested_time": "HH:MM",
+      "duration_minutes": 90,
+      "latitude": 00.0000,
+      "longitude": 00.0000,
+      "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
+      "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte'",
+      "hours": "Real opening hours 'HH:MM–HH:MM', or null only for genuinely free-standing no-ticket places",
+      "entry_fee": "€X or Free"
+    }
+  ]
+}
+If nothing genuinely needs removing, return an empty "removed_stop_ids". If nothing genuinely valuable can be added, return an empty "new_stops" — never force a mediocre addition just to fill the categories.`
+
+function buildRouteCacheExperiencesPrompt(destination, days, removedLabel, addedLabel) {
+  const dayLines = days
+    .map((day) => {
+      const stopLines = (day.stops ?? [])
+        .map((stop) => `    - id="${stop.id}" ${stop.suggested_time ?? '??:??'} "${stop.name}" (${stop.category_label ?? stop.category ?? 'sin categoría'})`)
+        .join('\n')
+      return `Día ${day.day_number} (${day.city ?? destination}, tipo ${day.type ?? 'city'}):\n${stopLines || '    (sin paradas)'}`
+    })
+    .join('\n\n')
+
+  return `Destino: "${destination}"
+
+Itinerario existente:
+${dayLines}
+
+Categorías que el viajero YA NO quiere: ${removedLabel || '(ninguna)'}
+Categorías NUEVAS que el viajero quiere: ${addedLabel || '(ninguna)'}`
+}
+
+function sanitizeRouteCacheNewStop(entry) {
+  if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return null
+  if (!Number.isInteger(entry.day_number)) return null
+  if (typeof entry.latitude !== 'number' || typeof entry.longitude !== 'number') return null
+  return entry
+}
+
+app.post('/api/regenerate-route-experiences', async (req, res) => {
+  const { destination, days, old_experiences: oldExperiences, new_experiences: newExperiences } = req.body ?? {}
+  if (!destination || !Array.isArray(days) || !Array.isArray(oldExperiences) || !Array.isArray(newExperiences)) {
+    res.status(400).json({ error: 'Se requiere destination, days, old_experiences y new_experiences.' })
+    return
+  }
+
+  const removed = oldExperiences.filter((id) => !newExperiences.includes(id))
+  const added = newExperiences.filter((id) => !oldExperiences.includes(id))
+
+  // Nada cambió en las experiencias (el ±1 día o el ritmo fueron lo único distinto) — reutilización
+  // gratis, sin gastar nada en Claude.
+  if (removed.length === 0 && added.length === 0) {
+    res.json({ removed_stop_ids: [], new_stops: [] })
+    return
+  }
+
+  const compactDays = days.map((day) => ({ ...day, stops: (day.stops ?? []).map(compactStopForCache) }))
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system: ROUTE_CACHE_EXPERIENCES_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildRouteCacheExperiencesPrompt(destination, compactDays, formatExperiences(removed), formatExperiences(added)) }],
+    })
+    logCallCost('regenerate-route-experiences', response)
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const removedStopIds = Array.isArray(parsed?.removed_stop_ids) ? parsed.removed_stop_ids.filter((id) => typeof id === 'string') : []
+    const newStops = Array.isArray(parsed?.new_stops) ? parsed.new_stops.map(sanitizeRouteCacheNewStop).filter(Boolean) : []
+
+    res.json({ removed_stop_ids: removedStopIds, new_stops: newStops })
+  } catch (error) {
+    logAnthropicError('regenerate-route-experiences', error)
+    res.status(502).json({ error: 'No se pudo ajustar la ruta cacheada con IA.' })
+  }
+})
+
+const ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT = `You are an expert travel route planner. You already have a POOL of real, previously-verified stops for this exact destination (from an earlier trip planned for a similar traveler) — your job is to build a fresh day-by-day itinerary for the traveler's NEW request, reusing as many pool stops as genuinely fit, and only inventing new ones to cover what the pool doesn't. Reusing verified stops instead of re-researching everything from scratch is the whole point — lean on the pool wherever it reasonably fits the new day count/pace/experience focus.
+
+${DAY_BLOCK_SYSTEM_PROMPT.split('RESPOND ONLY IN VALID JSON')[0].split('\n').slice(2).join('\n')}
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation) — same shape as a normal itinerary, covering EVERY day from 1 to the requested total:
+
+{
+  "days": [
+    {
+      "day_number": 1,
+      "type": "city|road|excursion|relax",
+      "title": "Short evocative title, in Spanish",
+      "stops": [ /* same stop shape as usual — see the pool below for the fields available on reused stops */ ],
+      "meals": [ { "time": "breakfast|lunch|dinner", "options": [ { "name": "Real Restaurant Name", "price_level": "€|€€|€€€", "cuisine": "Type, in Spanish", "description": "in Spanish", "price_range": "€X-€X per person", "latitude": 00.0000, "longitude": 00.0000 } ] } ],
+      "rainy_alternative": "in Spanish"
+    }
+  ],
+  "not_included": [],
+  "excursions_available": []
+}`
+
+function buildRouteCacheRedistributePrompt(destination, answers, pool) {
+  const poolLines = pool
+    .map(
+      (stop) =>
+        `- "${stop.name}" (${stop.category_label ?? stop.category ?? 'sin categoría'}, ${stop.duration_minutes ?? '?'}min${stop.hours ? `, horario ${stop.hours}` : ''}) — ${stop.description ?? ''}`,
+    )
+    .join('\n')
+
+  return `Destino: "${destination}"
+Días totales: ${answers.days}
+Ritmo: ${PACE_LABEL[answers.pace] ?? answers.pace}
+Experiencias elegidas: ${formatExperiences(answers.experiences)}
+Acompañantes: ${formatCompanion(answers)}
+
+Pool de paradas ya verificadas de una ruta anterior a este destino:
+${poolLines || '(pool vacío — genera todo de cero)'}`
+}
+
+app.post('/api/regenerate-route-redistribute', async (req, res) => {
+  const { destination, answers, known_stops: knownStops } = req.body ?? {}
+  if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(knownStops)) {
+    res.status(400).json({ error: 'Se requiere destination, answers y known_stops.' })
+    return
+  }
+  // Un solo call cubre TODOS los días de golpe (a diferencia del pipeline normal, que los reparte en
+  // bloques en paralelo) — manejable para viajes cortos/medios, pero por encima de este tamaño el
+  // riesgo de una respuesta cortada/lenta supera el ahorro; el llamador debe caer al pipeline normal.
+  if (answers.days > 7) {
+    res.status(400).json({ error: 'Redistribución de caché limitada a viajes de hasta 7 días.' })
+    return
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 16000,
+      system: ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildRouteCacheRedistributePrompt(destination, answers, knownStops) }],
+    })
+    logCallCost('regenerate-route-redistribute', response)
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const days = sanitizeDayBlockDays(
+      parsed?.days,
+      Array.from({ length: answers.days }, (_, index) => index + 1),
+    )
+    if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos')
+
+    for (const day of days) {
+      filterFreeTourDuplicateStops(day)
+      filterMealLikeStops(day)
+      validateStopHours(day)
+    }
+
+    res.json({
+      days,
+      not_included: Array.isArray(parsed?.not_included) ? parsed.not_included : [],
+      excursions_available: Array.isArray(parsed?.excursions_available) ? parsed.excursions_available : [],
+    })
+  } catch (error) {
+    logAnthropicError('regenerate-route-redistribute', error)
+    res.status(502).json({ error: 'No se pudo redistribuir la ruta cacheada con IA.' })
+  }
+})
+
 app.post('/api/generate-anchors', async (req, res) => {
   const { destination, answers, must_include_places } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers)) {

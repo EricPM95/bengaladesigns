@@ -89,6 +89,192 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>
 }
 
+// ── SISTEMA DE CACHÉ INTELIGENTE DE RUTAS ───────────────────────────────────────────────────
+//
+// Antes del pipeline completo (anclas → esqueleto → bloques), se busca una ruta ya generada para
+// el mismo destino con parámetros parecidos (ver computeRouteCacheMatch en server/index.js: destino
+// obligatorio + experiencias 50% + ritmo 25% + días 25%, acompañantes NUNCA forman parte de la
+// clave). ≥75% → solo se ajustan las paradas que cambian (regenerate-route-experiences); 50-74% →
+// se redistribuye el pool completo de paradas conocidas contra el nuevo día/ritmo
+// (regenerate-route-redistribute); <75%/<50%/sin Supabase/cualquier fallo → se cae al pipeline
+// normal de siempre, SIN excepción y SIN bloquear al viajero — todo esto es puramente una
+// optimización de coste, nunca debe poder impedir que la ruta se genere.
+
+interface RouteCacheEntry {
+  id: string
+  days: number
+  experiences: string[]
+  pace: string
+  route_data: GeneratedRouteResponse
+}
+
+interface RouteCacheLookupResponse {
+  level: 'high' | 'medium' | 'none'
+  match_pct: number
+  entry: RouteCacheEntry | null
+}
+
+async function lookupRouteCache(destination: string, days: number, experiences: string[], pace: string): Promise<RouteCacheLookupResponse> {
+  try {
+    return await postJson<RouteCacheLookupResponse>('/api/route-cache/lookup', { destination, days, experiences, pace })
+  } catch {
+    return { level: 'none', match_pct: 0, entry: null }
+  }
+}
+
+/** Fire-and-forget a propósito — ni bumpear hit_count ni guardar una entrada nueva debe poder retrasar o romper la generación de la ruta que el viajero ya está viendo. */
+function touchRouteCache(id: string): void {
+  postJson('/api/route-cache/touch', { id }).catch(() => {})
+}
+
+function saveRouteCache(destination: string, days: number, experiences: string[], pace: string, routeData: GeneratedRouteResponse): void {
+  postJson('/api/route-cache/save', { destination, days, experiences, pace, route_data: routeData }).catch(() => {})
+}
+
+interface RegenerateExperiencesResponse {
+  removed_stop_ids: string[]
+  new_stops: (GeneratedDay['stops'][number] & { day_number: number })[]
+}
+
+/** ≥75%: mismo día a día de la ruta cacheada, solo se quitan las paradas que ya no encajan con las experiencias elegidas y se añaden las que faltan — nunca toca "meals", nunca reescribe un día entero. */
+async function applyHighMatchReuse(
+  destination: string,
+  answers: QuestionnaireAnswers,
+  transportContext: TransportContext,
+  cached: RouteCacheEntry,
+): Promise<GeneratedRouteResponse> {
+  let days = cached.route_data.days.map((day) => ({ ...day, stops: [...day.stops] }))
+
+  // Ajuste de días (el peso de "días" en el match permite hasta ±2 y seguir contando como
+  // coincidencia parcial) — de más días sobra recortar por el final; de menos, se piden los días
+  // que faltan con el MISMO endpoint de bloques de siempre (ver generate-day-block), no algo nuevo.
+  if (answers.days < days.length) {
+    days = days.slice(0, answers.days)
+  } else if (answers.days > days.length) {
+    const lastDay = days[days.length - 1]
+    for (let dayNumber = days.length + 1; dayNumber <= answers.days; dayNumber += 1) {
+      const blockDay = { day_number: dayNumber, type: 'city', city: lastDay?.city ?? destination, country_code: lastDay?.country_code }
+      const result = await postJson<{ days: GeneratedDay[] }>('/api/generate-day-block', {
+        destination,
+        answers,
+        block_days: [blockDay],
+        anchors_for_block: [],
+        must_include_for_block: [],
+        all_days: days.map((day) => ({ day_number: day.day_number, city: day.city })),
+        is_first_block_of_trip: false,
+        ...transportContext,
+      })
+      days = [...days, ...result.days]
+    }
+  }
+
+  const diff = await postJson<RegenerateExperiencesResponse>('/api/regenerate-route-experiences', {
+    destination,
+    days,
+    old_experiences: cached.experiences,
+    new_experiences: answers.experiences,
+  })
+
+  const removedIds = new Set(diff.removed_stop_ids)
+  const byDayNumber = new Map(days.map((day) => [day.day_number, day]))
+  for (const day of days) {
+    day.stops = day.stops.filter((stop) => !removedIds.has(stop.id))
+  }
+  for (const newStop of diff.new_stops) {
+    const { day_number: dayNumber, ...stopFields } = newStop
+    const day = byDayNumber.get(dayNumber)
+    if (!day) continue
+    day.stops = [...day.stops, stopFields].sort((a, b) => (a.suggested_time ?? '').localeCompare(b.suggested_time ?? ''))
+  }
+
+  return { ...cached.route_data, days }
+}
+
+interface RegenerateRedistributeResponse {
+  days: GeneratedDay[]
+  not_included: GeneratedRouteResponse['not_included']
+  excursions_available: GeneratedRouteResponse['excursions_available']
+}
+
+/** 50-74%: el pool de paradas YA conocidas de la ruta cacheada (de cualquier acompañante/ritmo previo para este destino) se le da a Claude como base preferente para reconstruir la distribución día a día contra el nuevo total de días/ritmo/experiencias — un único call en vez de esqueleto+N bloques. */
+async function applyMediumMatchRedistribute(
+  destination: string,
+  answers: QuestionnaireAnswers,
+  transportContext: TransportContext,
+  cached: RouteCacheEntry,
+): Promise<GeneratedRouteResponse> {
+  const seenNames = new Set<string>()
+  const pool = cached.route_data.days
+    .flatMap((day) => day.stops)
+    .filter((stop) => {
+      const key = stop.name.trim().toLowerCase()
+      if (seenNames.has(key)) return false
+      seenNames.add(key)
+      return true
+    })
+
+  const result = await postJson<RegenerateRedistributeResponse>('/api/regenerate-route-redistribute', {
+    destination,
+    answers,
+    known_stops: pool,
+    ...transportContext,
+  })
+
+  return {
+    ...cached.route_data,
+    days: result.days,
+    not_included: result.not_included,
+    excursions_available: result.excursions_available,
+  }
+}
+
+/**
+ * Intenta reutilizar una ruta cacheada en vez del pipeline completo — devuelve null (nunca lanza)
+ * si no hay caché disponible, el mejor candidato coincide por debajo del 50%, o cualquier paso falla
+ * por el camino: en TODOS esos casos el llamador simplemente sigue con el pipeline normal de
+ * siempre, como si esta función no existiera.
+ */
+async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnCheckpoint): Promise<Route | null> {
+  const { destination, answers, transportContext } = params
+  const lookup = await lookupRouteCache(destination, answers.days, answers.experiences, answers.pace)
+  if (lookup.level === 'none' || !lookup.entry) return null
+  // El pipeline de redistribución cubre TODOS los días en una sola llamada (ver el límite en
+  // regenerate-route-redistribute) — para un viaje más largo no compensa el riesgo, se cae al
+  // pipeline normal como si no hubiera habido coincidencia.
+  if (lookup.level === 'medium' && answers.days > 7) return null
+
+  const cached = lookup.entry
+
+  // Checkpoint "instantáneo": no hubo llamadas de anclas/esqueleto reales, pero LoadingScreen.tsx
+  // solo necesita ver las fases avanzar para pintar sus checks — un único "bloque" representa todo
+  // el ajuste de la ruta cacheada, sea cual sea el nivel de coincidencia.
+  const skeletonDays: SkeletonDay[] = cached.route_data.days.map((day) => ({
+    day_number: day.day_number,
+    type: day.type ?? 'city',
+    city: day.city ?? destination,
+    country_code: day.country_code ?? null,
+  }))
+  const skeleton: SkeletonResponse = {
+    summary: cached.route_data.summary ?? '',
+    days: skeletonDays,
+    city_transitions: cached.route_data.city_transitions,
+    phase_transitions: cached.route_data.phase_transitions,
+  }
+  await onCheckpoint({ phase: 'skeleton', params, anchors: [], skeleton, generated: cached.route_data, completedBlocks: 0, totalBlocks: 1 })
+
+  const generated =
+    lookup.level === 'high'
+      ? await applyHighMatchReuse(destination, answers, transportContext, cached)
+      : await applyMediumMatchRedistribute(destination, answers, transportContext, cached)
+
+  touchRouteCache(cached.id)
+  await onCheckpoint({ phase: 'done', params, anchors: [], skeleton, generated, completedBlocks: 1, totalBlocks: 1 })
+
+  const finalRoute = mapGeneratedRouteToRoute(generated, destination, answers, transportContext, [])
+  saveRouteCache(destination, answers.days, answers.experiences, answers.pace, generated)
+  return finalRoute
+}
+
 /** Objeto GeneratedRouteResponse "vacío" con los días del esqueleto ya en su sitio (sin paradas todavía) — cada bloque completado va sustituyendo sus días por la versión rellena, ver mergeBlockDaysIntoGenerated. */
 function initialGeneratedFromSkeleton(skeleton: SkeletonResponse): GeneratedRouteResponse {
   return {
@@ -182,6 +368,13 @@ function mergeBlockDaysIntoGenerated(
 export async function runGeneration(params: GenerationParams, resumeFrom: GenerationResumeState | null, onCheckpoint: OnCheckpoint): Promise<Route> {
   const { destination, answers, transportContext, mustIncludePlaces } = params
 
+  // Solo se intenta en un arranque limpio — una generación que se está RETOMANDO (resumeFrom) ya
+  // decidió su camino la primera vez que se lanzó; no tiene sentido reconsiderar la caché a mitad.
+  if (!resumeFrom) {
+    const cachedRoute = await tryRouteCacheReuse(params, onCheckpoint).catch(() => null)
+    if (cachedRoute) return cachedRoute
+  }
+
   let anchors: Anchor[] = resumeFrom?.anchors ?? []
   let skeleton: SkeletonResponse | null = resumeFrom?.skeleton ?? null
   let generated: GeneratedRouteResponse = resumeFrom?.generated ?? { destination: '', origin: '', days: [] }
@@ -266,6 +459,11 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
       await onCheckpoint({ phase: done ? 'done' : 'blocks', params, anchors, skeleton, generated, completedBlocks, totalBlocks })
     }
   }
+
+  // Ruta generada de cero — se guarda como entrada nueva de route_cache para que futuras peticiones
+  // parecidas (mismo destino/experiencias/ritmo/días) puedan reutilizarla vía tryRouteCacheReuse en
+  // vez de pasar por el pipeline completo otra vez. Fire-and-forget, nunca bloquea la ruta actual.
+  saveRouteCache(destination, answers.days, answers.experiences, answers.pace, generated)
 
   return mapGeneratedRouteToRoute(
     generated,
