@@ -7,7 +7,7 @@ interface LoadingScreenProps {
   origin: string
   destination: string
   status: 'loading' | 'done' | 'error'
-  /** Fase real del pipeline (anclas → esqueleto → bloques de días → done), ver GenerationResumeState en routeGenerationOrchestrator.ts. El paso 1 ("Creando tu viaje") ya está resuelto antes de llegar a esta pantalla (arquetipo/transporte), así que siempre se muestra completo desde el primer render. */
+  /** Fase real del pipeline (esqueleto → lugares → bloques de días → done), ver GenerationResumeState en routeGenerationOrchestrator.ts. El paso 1 ("Creando tu viaje") ya está resuelto antes de llegar a esta pantalla (arquetipo/transporte), así que siempre se muestra completo desde el primer render. */
   phase: GenerationPhase
   /** Nº total de bloques de días que va a procesar el pipeline — 0 mientras no se conoce todavía (antes de que resuelva el esqueleto). */
   totalBlocks: number
@@ -59,6 +59,15 @@ function ClockIcon({ className }: StepIconProps) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3.5 2" />
+    </svg>
+  )
+}
+
+function PinListIcon({ className }: StepIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12Z" />
+      <circle cx="12" cy="9" r="2.3" />
     </svg>
   )
 }
@@ -154,7 +163,8 @@ function buildSteps(
   tripStartIso: string | undefined,
   allDone: boolean,
 ): StepRowDef[] {
-  const reachedSkeleton = phase === 'skeleton' || phase === 'blocks' || phase === 'done'
+  const reachedSkeleton = phase === 'places' || phase === 'blocks' || phase === 'done'
+  const reachedPlaces = phase === 'blocks' || phase === 'done'
   const reachedBlocks = phase === 'blocks' || phase === 'done'
 
   return [
@@ -163,9 +173,17 @@ function buildSteps(
       key: 'step-2',
       icon: CompassIcon,
       circleClass: 'bg-rose-400',
-      title: `Buscando lo mejor de ${destination}`,
-      subtitle: 'Encontrando anclas y experiencias para ti',
+      title: `Diseñando tu viaje a ${destination}`,
+      subtitle: 'Definiendo la forma de cada día',
       state: reachedSkeleton ? 'done' : 'active',
+    },
+    {
+      key: 'step-2b',
+      icon: PinListIcon,
+      circleClass: 'bg-amber-400',
+      title: 'Eligiendo los imprescindibles',
+      subtitle: 'Ni un solo lugar top se queda fuera',
+      state: reachedPlaces ? 'done' : reachedSkeleton ? 'active' : 'pending',
     },
     {
       key: 'step-3',
@@ -173,7 +191,7 @@ function buildSteps(
       circleClass: 'bg-fuchsia-400',
       title: 'Aplicando tus preferencias',
       subtitle: 'Ajustando según tu vehículo y compañía',
-      state: reachedBlocks ? 'done' : reachedSkeleton ? 'active' : 'pending',
+      state: reachedBlocks ? 'done' : reachedPlaces ? 'active' : 'pending',
     },
     ...buildBlockSteps(phase, totalBlocks, skeletonDays, completedDayNumbers, tripStartIso),
     {

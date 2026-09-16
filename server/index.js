@@ -470,8 +470,8 @@ app.post('/api/poi-content', async (req, res) => {
   }
 })
 
-// ── Tips de ANCLAS (StopDetailSheet, pestaña "Tips") — SOLO para anclas (Paso 1 del pipeline,
-// lugares obligatorios del destino, ver /api/generate-anchors), nunca para paradas normales del
+// ── Tips de ANCLAS (StopDetailSheet, pestaña "Tips") — SOLO para anclas (Route.anchorNames, la
+// lista completa de lugares elegida en /api/generate-day-places, Fase 1 del pipeline), nunca para paradas normales del
 // pool (esas usan `local_tip` de /api/describe-stop de arriba, sin caché ni búsqueda web). Una
 // ancla es lo bastante genérica (Coliseo Romano, Torre Eiffel...) para que MUCHOS viajeros distintos
 // generen una ruta con ella — cachear en Supabase (tabla `tips_anclas`, ver database.sql) hace que
@@ -859,7 +859,7 @@ app.post('/api/zona-turistica', async (req, res) => {
 //
 // A diferencia de suggest-experiences (categorías genéricas del banco de 18), esto pide sitios
 // concretos con nombre propio para el destino — el usuario los marca y esos lugares entran en el
-// pipeline de generación con prioridad casi de ancla (ver must_include_places en /api/generate-anchors).
+// pipeline de generación con prioridad casi obligatoria (ver must_include_places en /api/generate-day-places).
 // Cada lugar se etiqueta con la categoría del banco de 18 a la que mejor encaja (para que el
 // frontend pueda ordenar por afinidad a las experiencias ya elegidas) — Claude puede usar
 // cualquiera de las 18, no solo las que el usuario ya seleccionó, para no perderse un sitio icónico
@@ -1321,46 +1321,18 @@ app.post('/api/transport-feasibility', async (req, res) => {
 // muy por debajo de cualquier límite de tiempo de función serverless, sin importar cuántos días
 // tenga el viaje.
 
-const ANCHORS_SYSTEM_PROMPT = `You are an expert travel route planner. Your ONLY job right now is to identify the best "anchor" places for a trip — the real, specific must-see or must-do things that should anchor the itinerary, based on the traveler's chosen experience focus. Do NOT write a day-by-day itinerary yet — that happens in a later step, you won't see it.
-
-CRITICAL RULES:
-- Every place MUST be real and currently open/accessible
-- Prioritize genuine variety across the traveler's chosen experience categories over cramming in every possible attraction
-- Pick roughly 2-3 anchors per day of the trip (fewer for very short trips, more for long multi-city trips) — real, well-known-enough places that genuinely fit the destination and the chosen experience focus
-- Among these, mark 1-3 (only for trips of 2+ days, never more than 3) that are genuinely iconic enough to reward TWO separate visits at different times of day (a famous fountain, plaza, or illuminated landmark that looks and feels different at dawn vs. at night) with "double_visit": true — be selective, most anchors should NOT get this, only the destination's true signature sights
-- "name" is ONLY the clean, official Spanish name of the place — no parentheses, no advice, no timing context (e.g. "Coliseo" not "Colosseo (sin colas por la mañana)"). Use the Spanish exonym when one commonly exists ("Torre Eiffel" not "Tour Eiffel").
-
-RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
-
-{
-  "anchors": [
-    {
-      "name": "Real place or activity name, in Spanish — see CRITICAL RULES above",
-      "city": "Which city/town it's in — use the exact destination name for single-city trips",
-      "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
-      "reason": "One short phrase, in Spanish — why this fits the traveler's chosen experience focus",
-      "double_visit": false
-    }
-  ]
-}`
-
-const SKELETON_SYSTEM_PROMPT = `You are an expert travel route planner. Your job right now is to design the SHAPE of the trip — which days belong to which city/zone and what kind of day each one is — NOT the individual stops within each day (a later step fills those in, using exactly the shape you decide here, so make it realistic and complete).
+const SKELETON_SYSTEM_PROMPT = `You are an expert travel route planner. Your job right now is to design the SHAPE of the trip — which days belong to which city/zone and what kind of day each one is — NOT the individual places within each day (two LATER steps handle that, using exactly the shape you decide here: first a full place-selection pass, then a per-day content pass — so make this shape realistic and complete).
 
 CRITICAL RULES:
 - Structure it so every day you define is realistic to actually fill with content later (feasible transitions, sensible day counts per city/zone)
-- MANDATORY for any trip of 4+ total days: exactly ONE day, somewhere between day 3 and day 5 (inclusive — never day 1, never the last day of the trip), MUST be type "excursion" — a real, popular day-trip destination reachable from where the traveler is staying (e.g. Rome → Pompeii/Naples, Barcelona → Montserrat, Paris → Versailles). For trips of 6+ total days, add a SECOND excursion day, reasonably spaced from the first (still never day 1 or the last day). Do NOT assign any anchor_names/must_include_names (home-city mandatory places) to an "excursion" day — that day's content is the excursion itself, give its city-center anchors to a different day instead.
+- MANDATORY for any trip of 4+ total days: exactly ONE day, somewhere between day 3 and day 5 (inclusive — never day 1, never the last day of the trip), MUST be type "excursion" — a real, popular day-trip destination reachable from where the traveler is staying (e.g. Rome → Pompeii/Naples, Barcelona → Montserrat, Paris → Versailles). For trips of 6+ total days, add a SECOND excursion day, reasonably spaced from the first (still never day 1 or the last day).
 - The LAST day of the whole trip must be type "relax" — revisits, free time, no rush
 - If the traveler goes by car between origin and destination, day 1 must be type "road" (the route starts from the origin with stops along the road)
 - Consider the season/dates for weather/events when deciding zone order (e.g. avoid starting in the coldest region in winter if it can be avoided)
 
-DOUBLE-VISIT ANCHORS — some anchors below may be marked as worth two visits (see the anchor list further down):
-- Assign each double-visit anchor to TWO different days via anchor_names (once on each of those two days) — ideally one earlier/morning-leaning day and one later/evening-leaning day, never two days back to back unless the trip is very short. Every other anchor still gets exactly one day.
-
-IMPORTANT — each day's content below will be written by a SEPARATE call that runs IN PARALLEL with every other day's call, with no visibility into what the others end up writing. Your job here is to prevent overlap between days BEFORE that happens, by giving each day a distinct focus:
-- "zone_focus": a short, specific sub-area, neighborhood or theme for that day (e.g. "Centro storico y Coliseo" vs "Trastevere y orilla del Tíber" for two days in the same city) — two days in the same city MUST get a different zone_focus so they don't end up covering the same ground
+IMPORTANT — a separate call right after this one will choose the FULL list of places for every "city" day, seeing your entire shape at once (so it can guarantee no essential sight of the destination is missed and no two days cover the same ground). Your only job is to give it a shape it can work with:
+- "zone_focus": a short, specific sub-area, neighborhood or theme for that day (e.g. "Centro storico y Coliseo" vs "Trastevere y orilla del Tíber" for two days in the same city) — two days in the same city MUST get a different zone_focus so their place lists don't end up overlapping
 - "experience_focus": 1-3 category tags (from: temple, museum, nature, viewpoint, neighborhood, market, park, landmark, experience, beach) this day should lean into — vary these across days of the same city too
-- "anchor_names": assign EVERY anchor place given to you below to exactly ONE day each (TWO days for double-visit anchors, see above) — whichever city/zone/timing fits it best. Spread them across days realistically instead of stacking most of them on one day, unless the trip is short enough that a day genuinely needs several
-- "must_include_names": same idea — assign EVERY must-include place given to you below to exactly ONE day each
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
@@ -1379,14 +1351,62 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
       "country_code": "ISO 3166-1 alpha-2 country code (lowercase, e.g. 'it', 'jp') of the country this day's city is in, always include it even for single-city destinations",
       "phase_type": "ONLY for multidestino_mixto_o_circuito archetype (omit entirely for any other archetype): 'urbana' | 'naturaleza' | 'isla' — which kind of phase this specific day belongs to, changing exactly on the days the itinerary moves to a new phase",
       "zone_focus": "Short sub-area/theme for this specific day, distinct from other days in the same city",
-      "experience_focus": ["landmark", "museum"],
-      "anchor_names": ["Exact anchor name from the list below, assigned to this day"],
-      "must_include_names": ["Exact must-include name from the list below, assigned to this day"]
+      "experience_focus": ["landmark", "museum"]
     }
   ]
 }`
 
-const DAY_BLOCK_SYSTEM_PROMPT = `You are an expert travel route planner. You're filling in the stops and meals for ONE BLOCK of days within a longer trip — the overall shape (which city/zone and what type each day is) has ALREADY been decided, given to you below; do not change it, just fill in realistic, detailed content for EXACTLY the days listed, nothing more and nothing less.
+/**
+ * FASE 1 (selección de lugares) — ver rediseño de generación de rutas. Antes, el propio bloque de
+ * día (DAY_BLOCK_SYSTEM_PROMPT) decidía QUÉ lugares visitar Y escribía todo su contenido en la MISMA
+ * llamada, generándose en paralelo un día a la vez sin ver el resto del viaje — eso hacía que "se
+ * perdiera" y se dejara fuera hasta el 40% de los imprescindibles reales de un destino (feedback de
+ * calidad real: faltaban el Arco de Constantino junto al Coliseo, la Escalinata de España, Castel
+ * Sant'Angelo...). Esta llamada se hace UNA VEZ para TODO el viaje (no por bloque), así que ve el
+ * viaje completo de una vez y puede aplicar la regla "ningún imprescindible del top 15-20 puede
+ * faltar" con contexto real, además de ordenar cada día como un recorrido a pie orgánico. Como solo
+ * pide nombre+tipo+duración (nada de horarios/descripciones/tips), la respuesta es pequeña y barata
+ * incluso para un viaje largo — DAY_BLOCK_SYSTEM_PROMPT (más abajo) recibe esta lista exacta después
+ * y su único trabajo pasa a ser enriquecerla, nunca inventar ni recortar lugares.
+ */
+const DAY_PLACES_SYSTEM_PROMPT = `You are an expert travel route planner with deep, real knowledge of specific destinations. Your ONLY job right now is to choose the COMPLETE list of real places to visit for every "city" day of this trip, in visiting order — no schedules, no descriptions, no tips, just the list. A later step enriches each place you list here with real content; it will NOT add, drop or replace anything from your list, so get the list itself right.
+
+THE CORE TEST — imagine the traveler asked you directly in a normal chat: "what should I see in {destination} in {N} days?". You would naturally give a complete, well-known list. That is EXACTLY the knowledge to use here — never a thinner version of it.
+
+CRITICAL RULES:
+1. COMPLETENESS — nothing from the destination's real top 15-20 "must-see" list may be missing. If a traveler searched "what to see in {destination}" and the first 15-20 results are real, well-known sights, every single one of them MUST appear somewhere across this trip's days (spread across the days that fit its zone, not crammed into one day) — unless the trip is too short to physically fit all of them, in which case keep the most essential ones and it is fine to leave the most minor ones out. Before finalizing, double-check by name that the single most iconic, unmissable sight(s) of the destination are in your list somewhere (the one thing almost nobody skips — e.g. the Louvre in Paris, the Colosseum in Rome, the Sagrada Familia in Barcelona) — it is easy to lose one of these specifically because it doesn't fit neatly into any day's zone/theme; if that happens, adjust which day it lands on rather than dropping it.
+2. ORGANIC ROUTE — within each day, order the places as a natural walking route: one place should lead into the next by real geographic proximity, not by importance or category. If two places are genuinely a few minutes apart (a famous arch right next to a major monument, a square that is physically part of a landmark's setting), they belong consecutively in the list.
+3. GEOGRAPHIC GROUPING — you already received each day's zone/theme below (decided by an earlier step) — respect it: only place things that genuinely belong to that day's zone, never mix places from a far-away zone into a day whose zone doesn't include them.
+4. QUANTITY PER DAY, by pace:
+   - "zen"/"balanced" pace: 4-5 full/visitable places per day
+   - "nonstop" pace: 6-8 full/visitable places per day
+   Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) do NOT count toward that number — add as many of those as genuinely belong on the day's route, on top of the count above.
+5. LONG vs SHORT VISITS — a visit that takes 2-3h (a large museum, an extensive archaeological site) can legitimately be the day's only "long" item for that half of the day — that's correct pacing, not a thin day. Short visits (10-45min: a square, a small church, a viewpoint, a façade) should chain together or sit alongside a long visit, never fill an entire half-day alone.
+6. THE TRAVELER'S CHOSEN EXPERIENCES ADD, THEY DON'T REPLACE — the traveler's chosen experience focus (given below) adds thematic places (markets, hidden gems, food spots, etc.) ON TOP OF the destination's essential must-sees from rule 1 — never use it as an excuse to swap out a classic imprescindible.
+7. FREE TOUR — if "Free Tour" is in the traveler's chosen experiences, day 1's morning (roughly 10:00-12:30) is reserved for it — do not assign a long interior visit to day 1's morning slot; afternoon/evening of day 1 works normally.
+8. CONNECTION PLACES — if a small, genuinely iconic place sits literally on the walking path between two places you're already including (under ~5 minutes out of the way), always include it too — never skip an obvious short stop that's right there on the route.
+9. SECOND VISITS — a handful of the destination's true signature sights (a famous illuminated landmark, a plaza that feels completely different by night) can legitimately appear TWICE across different days if the second visit is a genuinely different experience (e.g. by night instead of by day) — use this sparingly (0-2 places per trip, never for an ordinary museum or interior visit), and only when it's a place travelers genuinely do visit twice.
+10. STRATEGIC ORDER HINT — you know which major sights get crowded/have real opening-hour pressure (big museums, top monuments) — for those, put them earlier in their day's list (a later step will schedule them first thing in the morning); put natural sunset/viewpoint spots later in their day's list.
+11. Every place must be REAL, specific, and use its clean, official Spanish name — no parentheses, no advice, no timing notes in "name" (that has no home here at all, this is just a list).
+
+"relax" days (typically the trip's last day — revisits, free time, no rush) DO get a place list too, just naturally lighter/shorter than a packed "city" day. Only "road" and "excursion" days are handled by a different step — do not include those in your response at all.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+
+{
+  "days": [
+    {
+      "day_number": 1,
+      "places": [
+        { "name": "Clean official place name, in Spanish", "type": "interior_largo|interior_corto|exterior", "duration_min": 120 }
+      ]
+    }
+  ]
+}
+
+"type" meaning: "interior_largo" = long ticketed/interior visit (2h+, e.g. a major museum or monument interior); "interior_corto" = short ticketed/interior visit (under 1h, e.g. a small church interior); "exterior" = free, no-ticket outdoor place (square, viewpoint, arch, street, façade).`
+
+const DAY_BLOCK_SYSTEM_PROMPT = `You are an expert travel route planner. You're filling in the schedule, descriptions and meals for ONE BLOCK of days within a longer trip — the overall shape (which city/zone and what type each day is) AND, for "city" days, the exact complete list of places to visit (in visiting order) have ALREADY been decided, given to you below; do not change either, just enrich EXACTLY the days listed with realistic, detailed content, nothing more and nothing less.
 
 LANGUAGE — the app is in Spanish, EVERY text field you write (place names, titles, descriptions, tips, category labels, restaurant descriptions, everything) MUST be in Spanish, regardless of what language your own knowledge of the place is in.
 
@@ -1397,7 +1417,7 @@ CRITICAL RULES:
 - Restaurant recommendations must be real places
 - Include 3 restaurant options per meal: budget (€), mid-range (€€), premium (€€€)
 - Consider the season/dates for weather, events, closures and seasonal tips
-- Do NOT repeat any place or restaurant already used earlier in the trip (see "context from earlier" below) — keep the trip varied, favor categories that haven't been overused yet where it still fits the traveler's experience focus
+- Do NOT repeat any restaurant already used earlier in the trip (see "context from earlier" below) — keep meal recommendations varied
 
 PLACE NAMES — "name" is ONLY the clean, official name of the place, in Spanish:
 - No parentheses, no added context, no advice, no timing notes inside the name. Wrong: "Colosseo (primera visita — madrugada sin masas)" or "Musei Vaticani e Cappella Sistina". Right: "Coliseo" / "Museos Vaticanos y Capilla Sixtina".
@@ -1409,12 +1429,11 @@ MEALS ARE NEVER A NUMBERED STOP — this is a hard rule that has been violated b
 - Each day has EXACTLY one lunch entry (if the day includes it) and exactly one dinner entry — never two meal blocks for the same time slot, and never a stop AND a meal covering the same break.
 - Wrong: a stop named "Pausa para almuerzo" or "Almuerzo en Prati" appearing in "stops" right after (or instead of) the "lunch" entry in "meals". If the traveler is eating, it is a meals entry, period.
 
-STOP COUNT — realistic pacing, not a fixed quota: fill the day based on how long things actually take, never force stops into a morning that's already full, but never leave an afternoon half-empty either.
-- Estimate each visit's real duration honestly. A LONG visit (2-3h+: large museums, extensive archaeological sites, guided interior tours — e.g. Vatican Museums, Colosseum interior, the Louvre) can legitimately be the ONLY thing scheduled in a morning or afternoon block — that is correct pacing, not a sparse day, do not pad it with more stops just to hit a number.
-- A SHORT visit (10-45 min: fountains, squares, arches, viewpoints, façades, quick churches) does NOT justify occupying an entire 3-4 hour block alone — chain it with the nearest long visit, or with other short visits nearby.
-- Golden rule: if a free-access place is within a 5-minute walk of a stop you already scheduled, ALWAYS include it alongside that stop — it costs no real extra time and skipping it would be absurd. Concrete pattern (apply the same logic to any destination): the small arch/gate/square right next to a major monument, or the plaza that is physically inseparable from a landmark (its façade square) — always add these next to the anchor they sit beside, and if two such places from the same day's context sit on the natural walking path between two scheduled stops, mention that path as part of travel_to_next rather than silently skipping it.
-- Net effect per day block (not counting meals): if a block (morning or afternoon) is spent entirely on one long visit, that is fine — but the OTHER block of that same day (afternoon if morning had the long visit, or vice versa) still needs its own realistic content, at least 2-3 stops (short visits count, nearby free-access places count) before the day ends in a meal. Never let a day be "one long visit in the morning, one single stop in the afternoon, then straight to dinner" — that afternoon is under-filled.
-- "road"/"excursion"/"relax" day types are exempt from all of the above — their content works differently (driving stops along the way, one big excursion, or a deliberately light day).
+REQUIRED PLACES — for every "city" day in this block, the trip context below gives you the EXACT, complete list of places to visit that day, already in a sensible visiting order (decided by an earlier step that saw the whole trip at once):
+- Every single place in that list MUST appear as its own numbered stop in your response for that day — you may NOT drop, skip, merge, rename or substitute any of them.
+- You may NOT add any additional visitable place beyond that exact list for a "city" day — the selection is already final; your job here is only to enrich it (realistic schedule, description, tip, category, hours, coordinates, connectors to the next stop).
+- Keep the given order by default (it already reflects a sensible walking route) — only reorder within the day if strictly necessary to respect real opening hours or physically-impossible timing, and even then change as little as possible.
+- "relax" days DO get a required list too (below) — enrich it exactly the same way as a "city" day, it's just naturally lighter/shorter. Only "road" days were NOT given a place list — use your own judgment for realistic content there. "excursion" days are covered separately below.
 
 TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possible, not just plausible on paper:
 - suggested_time and travel_to_next are your own real-world estimate of when the day actually happens — treat them as a real schedule, not decoration.
@@ -1442,8 +1461,8 @@ FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience fo
 - Do NOT also list, as separate individual stops THAT SAME DAY, any place already listed in "free_tour_highlights" — that would double them up. On OTHER days of the trip, those same places ARE allowed and encouraged as their own proper stops when they deserve a deeper visit (e.g. the Pantheon from the outside during the tour, then a proper 30-45min interior visit as its own stop on a different day; a fountain seen on the tour, then again at night on a different day as an evening stop) — a free tour only sees things from outside in passing, a dedicated stop on another day is a genuinely different experience, not a repeat.
 - Places with paid/ticketed interior access (Colosseum, Vatican Museums, any museum or gallery) are NEVER covered by a free tour and always get their own individual stop, on any day, free tour or not.
 
-REPEAT / DOUBLE-VISIT ANCHORS — some mandatory anchors below may be worth two different-context visits on purpose (a famous fountain, plaza or illuminated landmark seen once by day and once by night is a deliberate, intentional repeat, not an error):
-- If a given anchor is the kind of place that rewards two visits, and the natural timing of today's plan lands at a different moment than usual (early morning, or evening/night), lean into that angle: title/description should explain why THIS visit is worth it at THIS specific time (e.g. "sin aglomeraciones al amanecer" vs. "iluminada de noche") — a short, distinct note, not the full description you'd give it on a single visit.
+REPEAT VISITS — the required list above may occasionally include a place that also appears on a different day elsewhere in the trip (a deliberate second visit to a signature sight, decided by the earlier step that saw the whole trip — e.g. a fountain seen once by day, once by night). That is intentional, not an error:
+- If today's scheduled time for that stop lands at a notably different moment than a typical single visit (early morning, or evening/night), lean into that angle: title/description should explain why THIS visit is worth it at THIS specific time (e.g. "sin aglomeraciones al amanecer" vs. "iluminada de noche") — a short, distinct note, not the full description you'd give it on a single visit.
 
 EXCURSION DAYS — only for a day in this block whose type is "excursion":
 - Pick the single most popular, real, well-known day-trip excursion FROM this destination (e.g. Rome → Pompeii/Naples, Barcelona → Montserrat, Paris → Versailles) — never invent one.
@@ -1540,7 +1559,8 @@ CRITICAL VALIDATION — NEVER VIOLATE THESE:
 - NEVER set suggested_time earlier than the place's real opening hour — not even for the first stop of the day, not even if the traveler's chronotype/schedule preference asks for an earlier start.
 - NEVER set "hours" to null for a place with indoor/ticketed access (museum, monument interior, church with a visiting schedule) — always give real hours for those, "hours": null is ONLY for genuinely free-standing outdoor places with no ticket and no schedule.
 - If you don't know the exact real hours of a specific place, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.
-- NEVER put a restaurant, meal, or food break inside "stops" — meals only ever go in "meals". NEVER write a "name" with parentheses, advice, or timing context in it — see PLACE NAMES above. Every text field must be in Spanish.`
+- NEVER put a restaurant, meal, or food break inside "stops" — meals only ever go in "meals". NEVER write a "name" with parentheses, advice, or timing context in it — see PLACE NAMES above. Every text field must be in Spanish.
+- For every "city" day, NEVER omit a place from the required list given to you (see REQUIRED PLACES above) and NEVER add a visitable place that isn't on it.`
 
 /** "Elige tus experiencias" (reemplaza el antiguo "¿Qué mueve tu viaje?" de 5 opciones) — traduce los ids elegidos a texto legible para el prompt de generación. */
 /** 'free_tour' es un pseudo-id fuera del banco de 18 (ver FREE_TOUR handling en DAY_BLOCK_SYSTEM_PROMPT) — no está en EXPERIENCE_BANK a propósito, para no colar "Free Tour" como categoría al etiquetar lugares sueltos en suggest-places/suggest-experiences (ver EXPERIENCE_IDS). Aquí solo se traduce a texto legible para el prompt de generación. */
@@ -1797,8 +1817,11 @@ function formatSeasonOrDates(answers) {
 /**
  * Lugares concretos que el viajero marcó explícitamente en "Elige lugares" (ver /api/suggest-places)
  * — a diferencia de experience focus (categorías), esto son sitios con nombre propio que el usuario
- * pidió por su cuenta. Se tratan casi como anclas suyas: alta prioridad, no una sugerencia más de
- * la IA. Vacío si el usuario no marcó ninguno (la lista es opcional, nunca bloquea el flujo).
+ * pidió por su cuenta. Se tratan casi como obligatorios: alta prioridad, no una sugerencia más de la
+ * IA. Vacío si el usuario no marcó ninguno (la lista es opcional, nunca bloquea el flujo). Ahora solo
+ * lo usa /api/generate-day-places (Fase 1) — una vez esa lista de lugares está decidida, el resto del
+ * pipeline (generate-day-block) ya no necesita saber cuáles eran "del usuario" frente a "de la IA",
+ * todos son ya, sin más, la lista exacta que hay que enriquecer.
  */
 function formatMustIncludePlaces(places) {
   if (!Array.isArray(places) || places.length === 0) return ''
@@ -1809,43 +1832,11 @@ function formatMustIncludePlaces(places) {
   if (names.length === 0) return ''
   return `
 
-MANDATORY USER ANCHORS — the traveler explicitly selected these real places from a curated list before generation started. Treat them as near-mandatory anchors of THEIRS, not generic AI suggestions: fit every one of them into the itinerary at a realistic time/order (respecting opening hours and geography), across whichever day(s) make sense. Only leave one out if it is truly impossible to fit (e.g. genuinely conflicts with pace/duration or geography) — in that case it MUST still appear in "not_included" with a specific reason referencing exactly what conflict caused it to be dropped, never a generic reason for these.
+MANDATORY USER PLACES — the traveler explicitly selected these real places from a curated list before generation started. Every single one of them MUST appear in your place list, on whichever day(s) fit their zone/geography best — never leave one out.
 Places: ${names.join(', ')}`
 }
 
-function buildAnchorsUserPrompt(destination, answers, transportContext, mustIncludePlaces) {
-  // 'free_tour' se excluye aquí a propósito: no es una categoría temática de LUGARES con nombre
-  // propio (un ancla es "Coliseo", no "hacer un free tour") — se gestiona aparte, por completo, en
-  // la regla FREE TOUR de DAY_BLOCK_SYSTEM_PROMPT. Dejarlo pasar aquí hacía que Claude inventara
-  // anclas tipo "Free Tour del Centro Storico", compitiendo/duplicando con esa regla.
-  const anchorExperiences = (answers.experiences ?? []).filter((id) => id !== 'free_tour')
-  return `Identify anchor places for this trip:
-- Destination: ${destination}
-- Days: ${answers.days}
-- Season/dates: ${formatSeasonOrDates(answers)}
-- Traveling with: ${formatCompanion(answers)}
-- Experience focus (build anchors around these): ${formatExperiences(anchorExperiences)}
-- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${formatMustIncludePlaces(mustIncludePlaces)}`
-}
-
-/** Anclas ya identificadas, agrupadas por ciudad — solo para que la llamada de esqueleto calibre cuántos días merece cada ciudad/zona, no le pide que las reparta día a día (eso lo decide cada llamada de bloque). */
-function formatAnchorsSummary(anchors) {
-  if (!Array.isArray(anchors) || anchors.length === 0) return ''
-  const byCity = new Map()
-  for (const anchor of anchors) {
-    const city = (anchor?.city || '').trim() || 'unknown'
-    if (!byCity.has(city)) byCity.set(city, [])
-    byCity.get(city).push(anchor.double_visit ? `${anchor.name} [double-visit]` : anchor.name)
-  }
-  const lines = [...byCity.entries()].map(([city, names]) => `  - ${city}: ${names.join(', ')}`)
-  const hasDoubleVisit = anchors.some((anchor) => anchor.double_visit)
-  const doubleVisitNote = hasDoubleVisit
-    ? '\n\nAnchors marked "[double-visit]" deserve TWO different days each (see DOUBLE-VISIT ANCHORS rule above) — everything else gets exactly one.'
-    : ''
-  return `\n\nAnchor places already identified (grouped by city — use this to gauge how many days each city/zone deserves):\n${lines.join('\n')}${doubleVisitNote}`
-}
-
-function buildSkeletonUserPrompt(destination, answers, transportContext, anchors, mustIncludePlaces) {
+function buildSkeletonUserPrompt(destination, answers, transportContext) {
   return `Design the day-by-day shape for this trip:
 - Origin: ${answers.origin}
 - Destination: ${destination}
@@ -1853,7 +1844,7 @@ function buildSkeletonUserPrompt(destination, answers, transportContext, anchors
 - Days: ${answers.days}
 - Season/dates: ${formatSeasonOrDates(answers)}
 - Traveling with: ${formatCompanion(answers)}
-- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${buildTransitionsInstructions(transportContext)}${formatAnchorsSummary(anchors)}${formatMustIncludePlaces(mustIncludePlaces)}`
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${buildTransitionsInstructions(transportContext)}`
 }
 
 function formatSkeletonDays(blockDays) {
@@ -1868,10 +1859,36 @@ function formatSkeletonDays(blockDays) {
     .join('\n')
 }
 
-function formatBlockAnchors(anchorsForBlock) {
-  if (!anchorsForBlock || anchorsForBlock.length === 0) return ''
-  const names = anchorsForBlock.map((anchor) => (anchor.double_visit ? `${anchor.name} [double-visit — see REPEAT / DOUBLE-VISIT ANCHORS rule above]` : anchor.name)).join(', ')
-  return `\n- MANDATORY DESTINATION ANCHORS assigned to today — these are the destination's essential must-see places, identified before this trip was planned and independent of anything the traveler manually picked. Fit every one of them into today's plan at a realistic time/order (respecting opening hours and geography). Only skip one if it is truly impossible to fit today (genuinely conflicts with pace/duration or geography) — in that case it MUST still appear in "not_included" with a specific reason referencing exactly what conflict caused it to be dropped, never a generic reason for these. You may still add other real places you know of alongside them if there's room: ${names}`
+/** Igual que buildDayBlockUserPrompt (ver más abajo) — le da a Claude el TRIP ENTERO de una vez (no un bloque), porque la Fase 1 (DAY_PLACES_SYSTEM_PROMPT) necesita ver todos los días a la vez para no repetir/olvidar imprescindibles entre ellos. Se listan los días "city" y "relax" — "road"/"excursion" no llevan lista de lugares (ver EXCURSION DAYS en DAY_BLOCK_SYSTEM_PROMPT, sigue siendo su propio paso). */
+function buildDayPlacesUserPrompt(destination, answers, transportContext, skeletonDays, mustIncludePlaces) {
+  const cityDays = (skeletonDays ?? []).filter((day) => day.type === 'city' || day.type === 'relax')
+  return `Choose the complete place list for this trip:
+- Destination: ${destination}
+- Total trip length: ${answers.days} day(s)
+- Season/dates: ${formatSeasonOrDates(answers)}
+- Traveling with: ${formatCompanion(answers)}
+- Experience focus (adds to the essential must-sees, see rule 6): ${formatExperiences(answers.experiences)}
+- Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}
+
+"City" days needing a place list (already shaped by an earlier step — respect each day's zone_focus/experience_focus):
+${formatSkeletonDays(cityDays)}${formatMustIncludePlaces(mustIncludePlaces)}`
+}
+
+/** La lista EXACTA de lugares decidida en Fase 1 (generate-day-places) para los días de este bloque — ver REQUIRED PLACES en DAY_BLOCK_SYSTEM_PROMPT. Vacío para un día "road" (no lleva lista) o "excursion" (su contenido lo decide DAY_BLOCK_SYSTEM_PROMPT por su cuenta, ver EXCURSION DAYS). */
+function formatRequiredPlaces(placesForBlock) {
+  if (!Array.isArray(placesForBlock) || placesForBlock.length === 0) return ''
+  const sections = placesForBlock
+    .filter((entry) => Array.isArray(entry?.places) && entry.places.length > 0)
+    .map((entry) => {
+      const items = entry.places.map((place) => `${place.name} [${place.type}, ~${place.duration_min}min]`).join('; ')
+      return `  - Day ${entry.day_number}: ${items}`
+    })
+  if (sections.length === 0) return ''
+  return `
+
+REQUIRED PLACES (exact, final list per day, in visiting order — see REQUIRED PLACES above, this is NOT optional):
+${sections.join('\n')}`
 }
 
 /**
@@ -1891,12 +1908,12 @@ function formatTripOverview(allDays, blockDayNumbers) {
   })
   return `
 
-OTHER DAYS IN THIS TRIP (being written in parallel by separate calls — this is what each one is focused on, so you can naturally avoid overlapping the same places/themes without seeing their final content):
+OTHER DAYS IN THIS TRIP (being written in parallel by separate calls — this is what each one is focused on, so you can naturally avoid overlapping the same restaurants/themes without seeing their final content):
 ${lines.join('\n')}`
 }
 
-function buildDayBlockUserPrompt(destination, answers, transportContext, blockDays, anchorsForBlock, mustIncludeForBlock, allDays, isFirstBlockOfTrip) {
-  return `Fill in the stops and meals for this block of days (the trip's overall shape is already decided — just fill in realistic content for exactly these days):
+function buildDayBlockUserPrompt(destination, answers, transportContext, blockDays, placesForBlock, allDays, isFirstBlockOfTrip) {
+  return `Fill in the stops and meals for this block of days (the trip's overall shape, and each "city" day's exact place list, are already decided — just enrich exactly these days):
 ${formatSkeletonDays(blockDays)}
 
 Trip context:
@@ -1906,7 +1923,7 @@ Trip context:
 - Experience focus: ${formatExperiences(answers.experiences)}
 - Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
 - Schedule: ${CHRONOTYPE_LABEL[answers.chronotype] ?? answers.chronotype}
-- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatBlockAnchors(anchorsForBlock)}${formatMustIncludePlaces(mustIncludeForBlock)}${formatTripOverview(allDays, blockDays.map((day) => day.day_number))}`
+- Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatRequiredPlaces(placesForBlock)}${formatTripOverview(allDays, blockDays.map((day) => day.day_number))}`
 }
 
 function sanitizeCityTransitionLeg(leg) {
@@ -2014,55 +2031,8 @@ function hasRequiredAnswers(answers) {
   )
 }
 
+/** Categorías de lugar/experience_focus — ya no las usa un saneo de "anclas" (ver Fase 1, generate-day-places), solo sanitizeExperienceFocus (esqueleto) las sigue validando. */
 const ANCHOR_CATEGORIES = new Set(['temple', 'museum', 'nature', 'viewpoint', 'neighborhood', 'market', 'park', 'landmark', 'experience', 'beach'])
-
-function sanitizeAnchors(raw, destination) {
-  if (!Array.isArray(raw)) return []
-  const seen = new Set()
-  const result = []
-  for (const entry of raw) {
-    if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) continue
-    const name = entry.name.trim().slice(0, 150)
-    const key = name.toLowerCase()
-    if (seen.has(key)) continue
-    seen.add(key)
-    result.push({
-      name,
-      city: typeof entry.city === 'string' && entry.city.trim() ? entry.city.trim().slice(0, 100) : destination,
-      category: ANCHOR_CATEGORIES.has(entry.category) ? entry.category : 'experience',
-      reason: typeof entry.reason === 'string' ? entry.reason.trim().slice(0, 200) : '',
-      double_visit: Boolean(entry.double_visit),
-    })
-    if (result.length >= 60) break
-  }
-  // Defensivo — el prompt pide "1-3, nunca más de 3", pero si Claude se pasa se recorta aquí (los
-  // primeros marcados ganan) en vez de dejar que media lista se repita dos veces por el esqueleto.
-  let doubleVisitLeft = 3
-  for (const anchor of result) {
-    if (!anchor.double_visit) continue
-    if (doubleVisitLeft > 0) {
-      doubleVisitLeft -= 1
-    } else {
-      anchor.double_visit = false
-    }
-  }
-  return result
-}
-
-/** Los lugares que el viajero marcó explícitamente en "Elige lugares" cuentan como anclas garantizadas — se añaden aquí en vez de confiar en que Claude los repita todos por su cuenta. */
-function mergeMustIncludeIntoAnchors(anchors, mustIncludePlaces, destination) {
-  if (!Array.isArray(mustIncludePlaces)) return anchors
-  const existingNames = new Set(anchors.map((anchor) => anchor.name.toLowerCase()))
-  const merged = [...anchors]
-  for (const name of mustIncludePlaces) {
-    if (typeof name !== 'string' || !name.trim()) continue
-    const trimmed = name.trim().slice(0, 150)
-    if (existingNames.has(trimmed.toLowerCase())) continue
-    existingNames.add(trimmed.toLowerCase())
-    merged.push({ name: trimmed, city: destination, category: 'experience', reason: 'Elegido por ti' })
-  }
-  return merged
-}
 
 // ── SISTEMA DE CACHÉ INTELIGENTE DE RUTAS ───────────────────────────────────────────────────
 //
@@ -2332,6 +2302,8 @@ const ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT = `You are an expert travel route p
 
 ${DAY_BLOCK_SYSTEM_PROMPT.split('RESPOND ONLY IN VALID JSON')[0].split('\n').slice(2).join('\n')}
 
+OVERRIDE — ignore the "REQUIRED PLACES" instruction above: it describes a different pipeline where the place list is pre-decided elsewhere. Here there is no such list — you decide which stops go on which day yourself, from the POOL and your own knowledge, exactly as instructed at the top of this prompt.
+
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation) — same shape as a normal itinerary, covering EVERY day from 1 to the "Días de contenido a generar" number given to you (never more, never fewer — the trip's actual final travel-home day is added separately afterward, you never generate it):
 
 {
@@ -2425,38 +2397,6 @@ app.post('/api/regenerate-route-redistribute', async (req, res) => {
   }
 })
 
-app.post('/api/generate-anchors', async (req, res) => {
-  const { destination, answers, must_include_places } = req.body ?? {}
-  if (!destination || !hasRequiredAnswers(answers)) {
-    res.status(400).json({ error: 'Faltan preferencias del usuario necesarias para generar la ruta.' })
-    return
-  }
-
-  const t0 = Date.now()
-  console.log(`[timing] generate-anchors START ${new Date(t0).toISOString()}`)
-  try {
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      system: ANCHORS_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildAnchorsUserPrompt(destination, answers, readTransportContext(req.body), must_include_places) }],
-    })
-    console.log(`[timing] generate-anchors END — ${Date.now() - t0}ms`)
-    logCallCost('generate-anchors', response)
-
-    const textBlock = response.content.find((block) => block.type === 'text')
-    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
-
-    const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const anchors = mergeMustIncludeIntoAnchors(sanitizeAnchors(parsed?.anchors, destination), must_include_places, destination)
-    res.json({ anchors })
-  } catch (error) {
-    console.log(`[timing] generate-anchors FAILED — ${Date.now() - t0}ms`)
-    logAnthropicError('generate-anchors', error)
-    res.status(502).json({ error: 'No se pudieron identificar las anclas del viaje con IA.' })
-  }
-})
-
 const SKELETON_DAY_TYPES = new Set(['city', 'road', 'excursion', 'relax'])
 const SKELETON_PHASE_TYPES = new Set(['urbana', 'naturaleza', 'isla'])
 
@@ -2472,28 +2412,7 @@ function sanitizeNameList(raw) {
   return [...new Set(names)].slice(0, 20)
 }
 
-/**
- * Garantiza que ningún ancla/lugar obligatorio se quede sin día asignado — si Claude se dejó alguno
- * fuera al repartirlos entre días (ver instrucciones de anchor_names/must_include_names en
- * SKELETON_SYSTEM_PROMPT), lo añade aquí al día cuya ciudad coincida (o al primer día si no hay
- * forma de saberlo) en vez de perderlo silenciosamente — cada bloque de día solo recibe las anclas/
- * lugares de SU propio día (ver anchorsForBlockDays en routeGenerationOrchestrator.ts), así que uno
- * sin día asignado nunca llegaría a generarse.
- */
-function topUpUnassignedNames(days, allNames, field, anchorsByName) {
-  const assigned = new Set(days.flatMap((day) => day[field].map((name) => name.toLowerCase())))
-  for (const rawName of allNames) {
-    if (typeof rawName !== 'string' || !rawName.trim()) continue
-    const name = rawName.trim()
-    if (assigned.has(name.toLowerCase())) continue
-    const city = anchorsByName?.get(name.toLowerCase())
-    const targetDay = (city && days.find((day) => day.city === city)) ?? days[0]
-    if (targetDay) targetDay[field] = [...targetDay[field], name]
-    assigned.add(name.toLowerCase())
-  }
-}
-
-function sanitizeSkeletonDays(raw, destination, totalDays, anchors, mustIncludePlaces) {
+function sanitizeSkeletonDays(raw, destination, totalDays) {
   if (!Array.isArray(raw)) return []
   const byDayNumber = new Map()
   for (const entry of raw) {
@@ -2507,12 +2426,10 @@ function sanitizeSkeletonDays(raw, destination, totalDays, anchors, mustIncludeP
       phase_type: SKELETON_PHASE_TYPES.has(entry.phase_type) ? entry.phase_type : undefined,
       zone_focus: typeof entry.zone_focus === 'string' && entry.zone_focus.trim() ? entry.zone_focus.trim().slice(0, 150) : undefined,
       experience_focus: sanitizeExperienceFocus(entry.experience_focus),
-      anchor_names: sanitizeNameList(entry.anchor_names),
-      must_include_names: sanitizeNameList(entry.must_include_names),
     })
   }
   // Rellena cualquier día que Claude se haya dejado sin definir (no debería pasar, pero un esqueleto
-  // incompleto rompería los bloques de días que vienen después) repitiendo el día anterior más cercano.
+  // incompleto rompería los pasos que vienen después) repitiendo el día anterior más cercano.
   const days = []
   let lastKnown = null
   for (let dayNumber = 1; dayNumber <= totalDays; dayNumber++) {
@@ -2522,37 +2439,10 @@ function sanitizeSkeletonDays(raw, destination, totalDays, anchors, mustIncludeP
       day_number: dayNumber,
       zone_focus: undefined,
       experience_focus: [],
-      anchor_names: [],
-      must_include_names: [],
     }
     days.push(day)
     lastKnown = day
   }
-
-  // Un lugar puede estar tanto en `anchors` (candidatos automáticos) como en `mustIncludePlaces`
-  // (elegidos a mano por el usuario) — generate-anchors ya los fusiona en una sola entrada de
-  // `anchors` (ver mergeMustIncludeIntoAnchors), así que si Claude reparte ese mismo nombre por las
-  // dos vías (anchor_names en un día, must_include_names en otro) acaba duplicado como parada en el
-  // contenido final. must_include_names manda: se quita de anchor_names en todos los días y se
-  // excluye del top-up de anclas, para que ese lugar tenga garantizado un único día asignado.
-  const mustIncludeNamesLower = new Set(
-    (Array.isArray(mustIncludePlaces) ? mustIncludePlaces : [])
-      .filter((name) => typeof name === 'string' && name.trim())
-      .map((name) => name.trim().toLowerCase()),
-  )
-  for (const day of days) {
-    day.anchor_names = day.anchor_names.filter((name) => !mustIncludeNamesLower.has(name.toLowerCase()))
-  }
-
-  const anchorsByName = new Map((anchors ?? []).map((anchor) => [anchor.name.toLowerCase(), anchor.city]))
-  topUpUnassignedNames(
-    days,
-    (anchors ?? []).map((anchor) => anchor.name).filter((name) => !mustIncludeNamesLower.has(name.toLowerCase())),
-    'anchor_names',
-    anchorsByName,
-  )
-  topUpUnassignedNames(days, Array.isArray(mustIncludePlaces) ? mustIncludePlaces : [], 'must_include_names', null)
-
   return days
 }
 
@@ -2586,44 +2476,8 @@ function ensureExcursionDays(days, totalDays) {
   return days
 }
 
-function mergeUniqueNames(a, b) {
-  const seen = new Set(a.map((name) => name.toLowerCase()))
-  const merged = [...a]
-  for (const name of b) {
-    if (seen.has(name.toLowerCase())) continue
-    seen.add(name.toLowerCase())
-    merged.push(name)
-  }
-  return merged
-}
-
-/**
- * Un día "excursion" no debería cargar con anclas/must-include del centro de la ciudad base — ese
- * día refleja el destino de la excursión, no la ciudad (ver regla EXCURSION DAYS en
- * DAY_BLOCK_SYSTEM_PROMPT). El prompt del esqueleto ya se lo pide a Claude, pero esto es la red de
- * seguridad: si de todas formas queda alguna (por Claude, o porque ensureExcursionDays convirtió un
- * día "city" que ya tenía anclas asignadas), se redistribuye al día "city" más cercano en vez de
- * perderla o dejarla en conflicto con el contenido de la excursión.
- */
-function stripAnchorsFromExcursionDays(days) {
-  const cityDays = days.filter((day) => day.type === 'city')
-  if (cityDays.length === 0) return days
-  for (const day of days) {
-    if (day.type !== 'excursion') continue
-    if (day.anchor_names.length === 0 && day.must_include_names.length === 0) continue
-    const nearest = cityDays.reduce((closest, candidate) =>
-      Math.abs(candidate.day_number - day.day_number) < Math.abs(closest.day_number - day.day_number) ? candidate : closest,
-    )
-    nearest.anchor_names = mergeUniqueNames(nearest.anchor_names, day.anchor_names)
-    nearest.must_include_names = mergeUniqueNames(nearest.must_include_names, day.must_include_names)
-    day.anchor_names = []
-    day.must_include_names = []
-  }
-  return days
-}
-
 app.post('/api/generate-skeleton', async (req, res) => {
-  const { destination, answers, anchors, must_include_places } = req.body ?? {}
+  const { destination, answers } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers)) {
     res.status(400).json({ error: 'Faltan preferencias del usuario necesarias para generar la ruta.' })
     return
@@ -2639,7 +2493,7 @@ app.post('/api/generate-skeleton', async (req, res) => {
       model: MODEL,
       max_tokens: 8192,
       system: SKELETON_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildSkeletonUserPrompt(destination, answers, transportContext, anchors, must_include_places) }],
+      messages: [{ role: 'user', content: buildSkeletonUserPrompt(destination, answers, transportContext) }],
     })
     console.log(`[timing] generate-skeleton END — ${Date.now() - t0}ms`)
     logCallCost('generate-skeleton', response)
@@ -2648,10 +2502,9 @@ app.post('/api/generate-skeleton', async (req, res) => {
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const days = sanitizeSkeletonDays(parsed?.days, destination, totalDays, Array.isArray(anchors) ? anchors : [], must_include_places)
+    const days = sanitizeSkeletonDays(parsed?.days, destination, totalDays)
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos')
     ensureExcursionDays(days, totalDays)
-    stripAnchorsFromExcursionDays(days)
 
     res.json({
       summary: typeof parsed?.summary === 'string' ? parsed.summary.slice(0, 300) : '',
@@ -2667,18 +2520,118 @@ app.post('/api/generate-skeleton', async (req, res) => {
   }
 })
 
+const PLACE_TYPES = new Set(['interior_largo', 'interior_corto', 'exterior'])
+const DEFAULT_DURATION_BY_TYPE = { interior_largo: 120, interior_corto: 45, exterior: 20 }
+
+function sanitizeDayPlaceEntry(raw) {
+  if (!raw || typeof raw.name !== 'string' || !raw.name.trim()) return null
+  const type = PLACE_TYPES.has(raw.type) ? raw.type : 'interior_corto'
+  const rawDuration = Number(raw.duration_min)
+  const duration_min = Number.isFinite(rawDuration) && rawDuration > 0 ? Math.min(Math.round(rawDuration), 240) : DEFAULT_DURATION_BY_TYPE[type]
+  return { name: raw.name.trim().slice(0, 150), type, duration_min }
+}
+
+/**
+ * Fase 1 (generate-day-places) — saneo de la respuesta. Solo se aceptan días "city" del esqueleto
+ * (road/excursion nunca llevan lista, ver DAY_PLACES_SYSTEM_PROMPT); cada día se deduplica
+ * dentro de sí mismo (un mismo nombre repetido DOS VECES en el mismo día es un error del modelo, no
+ * la "segunda visita" legítima que sí puede pasar ENTRE días distintos, ver regla 9 del prompt). Los
+ * lugares que el usuario marcó en "Elige lugares" (mustIncludePlaces) se fuerzan aquí si Claude se
+ * dejó alguno fuera — mismo espíritu que el topUpUnassignedNames que existía antes para las anclas.
+ */
+function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
+  const cityDayNumbers = new Set(
+    (skeletonDays ?? []).filter((day) => day.type === 'city' || day.type === 'relax').map((day) => Number(day.day_number)),
+  )
+  const byDayNumber = new Map()
+  for (const entry of Array.isArray(raw) ? raw : []) {
+    const dayNumber = Number(entry?.day_number)
+    if (!cityDayNumbers.has(dayNumber)) continue
+    const seen = new Set()
+    const places = []
+    for (const rawPlace of Array.isArray(entry?.places) ? entry.places : []) {
+      const place = sanitizeDayPlaceEntry(rawPlace)
+      if (!place) continue
+      const key = place.name.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      places.push(place)
+      if (places.length >= 14) break
+    }
+    byDayNumber.set(dayNumber, places)
+  }
+  for (const dayNumber of cityDayNumbers) {
+    if (!byDayNumber.has(dayNumber)) byDayNumber.set(dayNumber, [])
+  }
+
+  // Ningún lugar de la Wishlist del usuario puede quedar fuera — si Claude lo omitió, se añade al
+  // primer día "city" (sin señal fiable de a qué ciudad pertenece en un viaje multi-destino, mismo
+  // punto ciego que ya tenía el mecanismo al que reemplaza).
+  const allNamesLower = new Set([...byDayNumber.values()].flatMap((places) => places.map((place) => place.name.toLowerCase())))
+  const firstCityDay = [...cityDayNumbers].sort((a, b) => a - b)[0]
+  for (const rawName of Array.isArray(mustIncludePlaces) ? mustIncludePlaces : []) {
+    if (typeof rawName !== 'string' || !rawName.trim()) continue
+    const name = rawName.trim().slice(0, 150)
+    if (allNamesLower.has(name.toLowerCase())) continue
+    if (firstCityDay == null) continue
+    byDayNumber.get(firstCityDay).push({ name, type: 'interior_corto', duration_min: DEFAULT_DURATION_BY_TYPE.interior_corto })
+    allNamesLower.add(name.toLowerCase())
+  }
+
+  return [...byDayNumber.entries()].map(([day_number, places]) => ({ day_number, places })).sort((a, b) => a.day_number - b.day_number)
+}
+
+app.post('/api/generate-day-places', async (req, res) => {
+  const { destination, answers, must_include_places, skeleton_days } = req.body ?? {}
+  if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(skeleton_days) || skeleton_days.length === 0) {
+    res.status(400).json({ error: 'Faltan datos necesarios para elegir los lugares del viaje.' })
+    return
+  }
+
+  const transportContext = readTransportContext(req.body)
+  if (!skeleton_days.some((day) => day.type === 'city' || day.type === 'relax')) {
+    res.json({ days: [] })
+    return
+  }
+
+  const t0 = Date.now()
+  console.log(`[timing] generate-day-places START ${new Date(t0).toISOString()}`)
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 8192,
+      system: DAY_PLACES_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildDayPlacesUserPrompt(destination, answers, transportContext, skeleton_days, must_include_places) }],
+    })
+    console.log(`[timing] generate-day-places END — ${Date.now() - t0}ms`)
+    logCallCost('generate-day-places', response)
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places)
+    res.json({ days })
+  } catch (error) {
+    console.log(`[timing] generate-day-places FAILED — ${Date.now() - t0}ms`)
+    logAnthropicError('generate-day-places', error)
+    res.status(502).json({ error: 'No se pudo elegir la lista de lugares del viaje con IA.' })
+  }
+})
+
 function sanitizeDayBlockDays(raw, blockDayNumbers) {
   if (!Array.isArray(raw)) return []
   const allowed = new Set(blockDayNumbers)
   return raw.filter((entry) => allowed.has(Number(entry?.day_number)) && Array.isArray(entry?.stops) && Array.isArray(entry?.meals))
 }
 
-// ── A1: red de seguridad server-side contra días con demasiado pocas paradas ───────────────
+// ── VALIDACIÓN POST-GENERACIÓN (red de seguridad, puramente JS — nunca una llamada extra a Claude) ──
 //
-// El prompt (STOP COUNT en DAY_BLOCK_SYSTEM_PROMPT) ya le pide a Claude un mínimo de paradas y
-// cobertura de tarde, pero un prompt es una petición, no una garantía — este bloque valida la
-// respuesta real y, si se queda corta, pide EXACTAMENTE las paradas que faltan con una llamada
-// extra pequeña (barata, solo cuando hace falta) en vez de devolver un día flojo al viajero.
+// Antes esto reintentaba con una llamada extra a Claude si un día se quedaba corto de paradas
+// (topUpShortDays/topUpDayStops) — con el rediseño de la generación en dos fases (Fase 1 ya decide
+// la cantidad exacta de lugares por día, ver DAY_PLACES_SYSTEM_PROMPT), un día corto ya no es algo
+// que se pueda arreglar pidiendo más — es una señal de que la Fase 1 se equivocó, así que solo se
+// registra en logs para investigar, nunca se intenta "rellenar" automáticamente con otra llamada.
 
 function parseTimeMinutes(value) {
   if (typeof value !== 'string') return null
@@ -2701,7 +2654,7 @@ function countAfternoonStops(stops) {
  */
 const LONG_VISIT_MINUTES = 150
 
-/** Cuántas paradas más hace falta pedir — 0 si el día ya cumple el mínimo total (salvo que haya una visita larga, ver LONG_VISIT_MINUTES) Y la cobertura de tarde. Solo aplica a días "city" (o sin type, por compatibilidad); road/excursion/relax quedan exentos, igual que en el prompt. */
+/** Cuántas paradas de más haría falta para cumplir el mínimo total (salvo que haya una visita larga, ver LONG_VISIT_MINUTES) y la cobertura de tarde. Solo aplica a días "city" (o sin type, por compatibilidad); road/excursion/relax quedan exentos, igual que en el prompt. Puramente informativo — ver logStopCountWarning. */
 function computeStopDeficit(stops, dayType, pace) {
   if (dayType && dayType !== 'city') return 0
   const afternoonDeficit = Math.max(MIN_AFTERNOON_STOPS - countAfternoonStops(stops), 0)
@@ -2712,106 +2665,12 @@ function computeStopDeficit(stops, dayType, pace) {
   return Math.max(totalDeficit, afternoonDeficit)
 }
 
-const DAY_BLOCK_TOPUP_SYSTEM_PROMPT = `You are an expert travel route planner. A day of an itinerary you already helped plan came back with too few stops, or an empty afternoon — your ONLY job now is to add EXTRA real, visitable stops to fill that gap, without touching or repeating anything already there.
-
-LANGUAGE — the app is in Spanish, EVERY text field you write MUST be in Spanish, regardless of what language your own knowledge of the place is in.
-
-CRITICAL RULES:
-- Every place MUST be real and currently open/accessible, and MUST NOT already be in the "already in this day" list given to you
-- NEVER add a restaurant, meal, or food break as a stop — this list is only for visitable places, meals are handled separately
-- "name" is ONLY the clean official place name in Spanish — no parentheses, no advice, no timing context in it (that goes in "tip"/"description" instead). Prefer nearby SHORT visits (10-45min: a small church, viewpoint, square, market, neighborhood walk) over another headline attraction — especially anything within a 5-minute walk of a stop already in the day.
-- Fit realistically into the existing schedule (geography, time of day)
-- suggested_time must never be earlier than the stop's own real opening time (you already know the approximate real hours of major attractions — e.g. the Colosseum opens around 08:30, never schedule it at 07:30) — reorder or push later if needed
-- Tips must be genuinely useful insider knowledge (combined tickets, partial free access, strategic timing, real logistics) — never generic advice, and empty if you have nothing genuinely good
-
-RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
-
-{
-  "extra_stops": [
-    {
-      "id": "unique-id",
-      "name": "Clean official place name, in Spanish, no parentheses/advice — see CRITICAL RULES above",
-      "description": "2 sentences max, in Spanish",
-      "tip": "Genuinely useful insider tip, in Spanish, empty string if nothing genuinely good",
-      "suggested_time": "HH:MM",
-      "duration_minutes": 90,
-      "latitude": 00.0000,
-      "longitude": 00.0000,
-      "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
-      "category_label": "Short SPECIFIC place type in Spanish, e.g. 'Anfiteatro histórico', 'Museo de arte', 'Basílica', 'Mirador' — never a generic label",
-      "hours": "Real opening hours as 'HH:MM–HH:MM' if this stop involves entering somewhere with a ticket/checkpoint/schedule (museum, monument interior, church with visiting hours) — null ONLY for genuinely free-standing, no-ticket, no-schedule places (fountain, square, arch, viewpoint, street), never just because the place is also visible for free from outside",
-      "entry_fee": "€X or Free"
-    }
-  ]
-}
-
-CRITICAL VALIDATION — NEVER VIOLATE THESE:
-- NEVER set suggested_time earlier than the place's real opening hour.
-- NEVER set "hours" to null for a place with indoor/ticketed access — only genuinely free-standing outdoor places with no ticket and no schedule get null.
-- If you don't know the exact real hours, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.
-- NEVER add a restaurant/meal as a stop. Every text field must be in Spanish.`
-
-function buildDayBlockTopUpPrompt(destination, day, addCount, answers) {
-  const existing = day.stops.map((stop) => `${stop?.suggested_time ?? '??:??'} — ${stop?.name ?? 'sin nombre'}`).join('\n  - ')
-  return `This day of the trip to ${destination} needs ${addCount} more real, visitable stop(s):
-- City/zone: ${day.city ?? destination}
-- Day title: ${day.title ?? ''}
-- Experience focus: ${formatExperiences(answers.experiences)}
-- Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
-
-Already in this day (do NOT repeat any of these, and fit new stops naturally alongside them):
-  - ${existing || '(no stops yet)'}
-
-Add exactly ${addCount} new stop(s), prioritizing the 14:00-20:00 afternoon window if it is thin.`
-}
-
-function sanitizeExtraStop(entry) {
-  if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) return null
-  if (typeof entry.latitude !== 'number' || typeof entry.longitude !== 'number') return null
-  return entry
-}
-
-/** Best-effort: si esta llamada extra falla por lo que sea, se registra y se devuelve un array vacío — nunca rompe la respuesta principal del bloque de día (ese contenido ya es válido, solo más corto de lo ideal). */
-async function topUpDayStops(destination, day, addCount, answers) {
-  try {
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 2048,
-      system: DAY_BLOCK_TOPUP_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildDayBlockTopUpPrompt(destination, day, addCount, answers) }],
-    })
-    logCallCost(`generate-day-block-topup (day=${day.day_number})`, response)
-
-    const textBlock = response.content.find((block) => block.type === 'text')
-    if (!textBlock) return []
-    const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const extraStops = Array.isArray(parsed?.extra_stops) ? parsed.extra_stops.map(sanitizeExtraStop).filter(Boolean) : []
-    return extraStops
-  } catch (error) {
-    logAnthropicError('generate-day-block-topup', error)
-    return []
+/** Si un día "city" se queda corto de paradas o de cobertura de tarde, es una señal de que la Fase 1 (generate-day-places) decidió muy pocos lugares para ese día — se registra para investigar, nunca se intenta arreglar aquí con una llamada extra (ver VALIDACIÓN POST-GENERACIÓN arriba). */
+function logStopCountWarning(day, dayType, pace) {
+  const deficit = computeStopDeficit(day.stops ?? [], dayType, pace)
+  if (deficit > 0) {
+    console.log(`[stop-count] day ${day.day_number} — se esperaban ${deficit} parada(s) más para el ritmo "${pace}" (revisar generate-day-places para este día)`)
   }
-}
-
-function mergeExtraStops(stops, extraStops) {
-  if (extraStops.length === 0) return stops
-  return [...stops, ...extraStops].sort((a, b) => (parseTimeMinutes(a?.suggested_time) ?? 0) - (parseTimeMinutes(b?.suggested_time) ?? 0))
-}
-
-/** Recorre los días ya generados de este bloque y completa, uno a uno, los que se quedaron cortos de paradas — ver computeStopDeficit. Secuencial (no Promise.all) a propósito: con BLOCK_SIZE=1 casi siempre es como mucho un día, y mantenerlo simple evita más llamadas concurrentes de las necesarias. */
-async function topUpShortDays(destination, days, blockDays, answers) {
-  const typeByDayNumber = new Map(blockDays.map((day) => [Number(day.day_number), day.type]))
-  for (const day of days) {
-    const dayType = typeByDayNumber.get(day.day_number)
-    const addCount = computeStopDeficit(day.stops, dayType, answers.pace)
-    if (addCount === 0) continue
-    const extraStops = await topUpDayStops(destination, day, addCount, answers)
-    if (extraStops.length > 0) {
-      day.stops = mergeExtraStops(day.stops, extraStops)
-      console.log(`[stop-count] day ${day.day_number} topped up +${extraStops.length} stop(s) (deficit was ${addCount})`)
-    }
-  }
-  return days
 }
 
 // ── Red de seguridad post-generación: horarios de apertura ─────────────────────────────────
@@ -2899,21 +2758,108 @@ function normalizePlaceNameForMatch(name) {
   return typeof name === 'string' ? name.toLowerCase().replace(/\s*\([^)]*\)\s*/g, '').trim() : ''
 }
 
-function filterFreeTourDuplicateStops(day) {
+/**
+ * `requiredPlaces` (lista exacta de la Fase 1 para este día, si la hay — ver REQUIRED PLACES en
+ * DAY_BLOCK_SYSTEM_PROMPT) nunca se toca aquí: si una parada obligatoria coincide por casualidad con
+ * un highlight del Free Tour (visto en vivo con Roma: "Piazza Venezia"/"Foro de Trajano"/etc. son a
+ * la vez lugares imprescindibles Y sitios por los que pasa cualquier free tour real), eso es
+ * información correcta sobre la ruta del tour, no una parada duplicada que haya que borrar — borrarla
+ * violaría la garantía de REQUIRED PLACES. Sin lista (días "road", o el pipeline de redistribución de
+ * caché que no la calcula) se mantiene el comportamiento antiguo tal cual.
+ */
+function filterFreeTourDuplicateStops(day, requiredPlaces) {
   if (!Array.isArray(day?.stops)) return
   const freeTourStop = day.stops.find((stop) => stop?.is_free_tour)
   const highlights = Array.isArray(freeTourStop?.free_tour_highlights) ? freeTourStop.free_tour_highlights.map(normalizePlaceNameForMatch) : []
   if (highlights.length === 0) return
+  const requiredNames = new Set((Array.isArray(requiredPlaces) ? requiredPlaces : []).map((place) => normalizePlaceNameForMatch(place.name)))
   day.stops = day.stops.filter((stop) => {
     if (stop === freeTourStop) return true
+    if (requiredNames.has(normalizePlaceNameForMatch(stop?.name))) return true
     if (!highlights.includes(normalizePlaceNameForMatch(stop?.name))) return true
     console.log(`[free-tour-dedup] day ${day.day_number} — parada "${stop.name}" descartada por repetir un highlight del Free Tour de ese mismo día`)
     return false
   })
 }
 
+/** Tolerante a pequeñas variaciones de redacción entre el nombre exacto de la Fase 1 y cómo Claude
+ * lo repite en la Fase 2 (ej. "Museo del Louvre" vs "Louvre", "Coliseo" vs "Coliseo de Roma") —
+ * contención de substring en ambos sentidos sobre el nombre ya normalizado, mismo espíritu que
+ * isNameAlreadyInRoute en el cliente (routeStopsIndex.ts). */
+function isFuzzyPlaceMatch(nameA, nameB) {
+  const a = normalizePlaceNameForMatch(nameA)
+  const b = normalizePlaceNameForMatch(nameB)
+  if (!a || !b) return false
+  return a === b || a.includes(b) || b.includes(a)
+}
+
+/**
+ * Filtro estricto: en un día con lista de Fase 1 (REQUIRED PLACES), CUALQUIER parada que no
+ * corresponda a un lugar de esa lista se elimina — no solo se avisa (ver logMissingRequiredPlaces,
+ * que detecta el caso contrario: un lugar requerido que NO apareció). Encontrado en vivo con París:
+ * Claude coló "Pausa para almuerzo cerca del Louvre" como parada numerada — MEAL_LIKE_STOP_NAME no
+ * la detectó por la redacción exacta ("cerca del" en vez de "en"). Con una lista exacta ya decidida
+ * en Fase 1 no hay ninguna razón legítima para que aparezca una parada fuera de ella, así que se
+ * corta de raíz aquí en vez de intentar cubrir cada variante de redacción con más regex.
+ */
+function stripNonRequiredStops(day, requiredPlaces) {
+  if (!Array.isArray(requiredPlaces) || requiredPlaces.length === 0 || !Array.isArray(day?.stops)) return
+  day.stops = day.stops.filter((stop) => {
+    if (stop?.is_free_tour) return true
+    if (requiredPlaces.some((place) => isFuzzyPlaceMatch(place.name, stop?.name))) return true
+    console.log(`[required-places] day ${day.day_number} — parada "${stop?.name}" descartada por no estar en la lista de la Fase 1`)
+    return false
+  })
+}
+
+// ── Red de seguridad post-generación: lugares requeridos que no aparecieron ────────────────
+//
+// La Fase 1 (generate-day-places) decide la lista EXACTA de lugares de un día "city" — el prompt de
+// DAY_BLOCK_SYSTEM_PROMPT (REQUIRED PLACES) le prohíbe a Claude omitir ninguno, pero esto lo
+// verifica de verdad: si algo de la lista no aparece en la respuesta final, se registra para
+// investigar — nunca se inventa contenido aquí a ciegas, mejor un aviso en logs.
+function logMissingRequiredPlaces(day, requiredPlaces) {
+  if (!Array.isArray(requiredPlaces) || requiredPlaces.length === 0) return
+  const stops = day.stops ?? []
+  for (const place of requiredPlaces) {
+    if (!stops.some((stop) => isFuzzyPlaceMatch(place.name, stop?.name))) {
+      console.log(`[required-places] day ${day.day_number} — "${place.name}" estaba en la lista de la Fase 1 pero no aparece en la respuesta final`)
+    }
+  }
+}
+
+// ── Red de seguridad post-generación: coherencia geográfica del día ────────────────────────
+//
+// Más de 15km en línea recta entre paradas consecutivas de un mismo día probablemente significa que
+// se mezclaron zonas que no deberían ir juntas (ver GEOGRAPHIC GROUPING en DAY_PLACES_SYSTEM_PROMPT)
+// — solo se registra para investigar, nunca se reordena/corrige automáticamente aquí.
+const MAX_REASONABLE_WALKING_KM_PER_DAY = 15
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = (deg) => (deg * Math.PI) / 180
+  const radius = 6371
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return 2 * radius * Math.asin(Math.sqrt(a))
+}
+
+function logGeographicCoherence(day) {
+  const stops = (day.stops ?? []).filter(
+    (stop) => typeof stop?.latitude === 'number' && typeof stop?.longitude === 'number' && (stop.latitude !== 0 || stop.longitude !== 0),
+  )
+  if (stops.length < 2) return
+  let totalKm = 0
+  for (let i = 1; i < stops.length; i++) {
+    totalKm += haversineKm(stops[i - 1].latitude, stops[i - 1].longitude, stops[i].latitude, stops[i].longitude)
+  }
+  if (totalKm > MAX_REASONABLE_WALKING_KM_PER_DAY) {
+    console.log(`[geo-coherence] day ${day.day_number} — ${totalKm.toFixed(1)}km en línea recta entre paradas consecutivas (posible mezcla de zonas lejanas)`)
+  }
+}
+
 app.post('/api/generate-day-block', async (req, res) => {
-  const { destination, answers, block_days, anchors_for_block, must_include_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
+  const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
     res.status(400).json({ error: 'Faltan datos necesarios para generar este bloque de días.' })
     return
@@ -2921,6 +2867,10 @@ app.post('/api/generate-day-block', async (req, res) => {
 
   const transportContext = readTransportContext(req.body)
   const blockDayNumbers = block_days.map((day) => Number(day.day_number)).filter((n) => Number.isInteger(n))
+  const typeByDayNumber = new Map(block_days.map((day) => [Number(day.day_number), day.type]))
+  const requiredPlacesByDayNumber = new Map(
+    (Array.isArray(places_for_block) ? places_for_block : []).map((entry) => [Number(entry.day_number), entry.places]),
+  )
 
   const t0 = Date.now()
   console.log(`[timing] generate-day-block START ${new Date(t0).toISOString()} (days=${blockDayNumbers.join(',')})`)
@@ -2935,16 +2885,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: buildDayBlockUserPrompt(
-            destination,
-            answers,
-            transportContext,
-            block_days,
-            anchors_for_block,
-            must_include_for_block,
-            all_days,
-            Boolean(is_first_block_of_trip),
-          ),
+          content: buildDayBlockUserPrompt(destination, answers, transportContext, block_days, places_for_block, all_days, Boolean(is_first_block_of_trip)),
         },
       ],
     })
@@ -2966,11 +2907,15 @@ app.post('/api/generate-day-block', async (req, res) => {
     const days = sanitizeDayBlockDays(parsed?.days, blockDayNumbers)
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos para este bloque')
 
-    for (const day of days) filterFreeTourDuplicateStops(day)
-    await topUpShortDays(destination, days, block_days, answers)
     for (const day of days) {
+      const requiredPlaces = requiredPlacesByDayNumber.get(day.day_number)
+      filterFreeTourDuplicateStops(day, requiredPlaces)
+      stripNonRequiredStops(day, requiredPlaces)
       filterMealLikeStops(day)
       validateStopHours(day)
+      logMissingRequiredPlaces(day, requiredPlaces)
+      logStopCountWarning(day, typeByDayNumber.get(day.day_number), answers.pace)
+      logGeographicCoherence(day)
     }
 
     res.json({

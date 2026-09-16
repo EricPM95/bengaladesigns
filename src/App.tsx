@@ -212,7 +212,7 @@ function LoadingScreenContainer() {
       origin={answers.origin ?? ''}
       destination={destination}
       status={status}
-      phase={checkpoint?.phase ?? 'anchors'}
+      phase={checkpoint?.phase ?? 'skeleton'}
       totalBlocks={checkpoint?.totalBlocks ?? 0}
       skeletonDays={checkpoint?.skeleton?.days ?? []}
       completedDayNumbers={completedDayNumbers}

@@ -117,7 +117,7 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
  * Guarda el progreso de una generación en curso — se llama tras CADA fase/bloque completado (ver
  * onCheckpoint en routeGenerationOrchestrator.ts), así que si el usuario cierra la pestaña a mitad,
  * la próxima apertura retoma justo aquí (ver TripSync.tsx) en vez de perder lo ya generado. No
- * escribe nada durante la fase 'anchors' — todavía no hay un Route válido que guardar (esa fase es
+ * escribe nada durante la fase 'skeleton' — todavía no hay un Route válido que guardar (esa fase es
  * además la más rápida de repetir si se pierde). Igual que saveTrip: `tripId` null crea la fila
  * (primer checkpoint real de un viaje nuevo) y devuelve su id; con `tripId` ya conocido, la
  * actualiza. Cuando `checkpoint.phase` es 'done', limpia generation_state a null — el guardado
@@ -125,7 +125,7 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
  */
 export async function saveGenerationCheckpoint(travelerId: string, tripId: string | null, checkpoint: GenerationResumeState): Promise<string | null> {
   if (!supabase) return tripId
-  if (checkpoint.phase === 'anchors') return tripId
+  if (checkpoint.phase === 'skeleton') return tripId
 
   const route = mapGeneratedRouteToRoute(checkpoint.generated, checkpoint.params.destination, checkpoint.params.answers, checkpoint.params.transportContext)
   const row = {
