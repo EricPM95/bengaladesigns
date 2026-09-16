@@ -1,0 +1,4617 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-09-16",
+  "notes": "Fuente de verdad para selección de lugares. La Fase 1 del pipeline lee de aquí. Claude solo organiza los días y genera contenido rico.",
+  "roma": {
+    "destination_type": "city",
+    "country": "Italia",
+    "max_days_recommended": 6,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Nápoles",
+      "Pompeya",
+      "Florencia",
+      "Costa Amalfitana",
+      "Tívoli"
+    ],
+    "timezone": "Europe/Rome",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Coliseo",
+            "zone": "Roma Antigua",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "La entrada incluye Foro Romano y Palatino, válida 24 horas antes o después de tu visita al Coliseo",
+              "Visítalo a primera hora (08:30) — a partir de las 11:00 las colas superan la hora y el sol pega fuerte en verano",
+              "La mejor foto del Coliseo completo se hace desde Via Nicola Salvi, a 2 minutos subiendo la calle",
+              "Existe la visita al subterráneo (hipogeo) pero requiere entrada especial y reserva con meses de antelación"
+            ]
+          },
+          {
+            "name": "Arco de Constantino",
+            "zone": "Roma Antigua",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El arco más grande y mejor conservado de Roma. La mejor foto se hace desde el lado que mira al Coliseo — arco en primer plano y Coliseo de fondo",
+              "Fue construido reciclando esculturas de monumentos anteriores — si te fijas, las caras de los soldados son de épocas distintas"
+            ]
+          },
+          {
+            "name": "Foro Romano y Palatino",
+            "zone": "Roma Antigua",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Entra por la entrada de Via di San Gregorio (junto al Arco de Constantino), que siempre tiene menos cola que la entrada principal",
+              "El Palatino tiene las mejores vistas panorámicas del Foro — sube antes de bajar al nivel de las ruinas",
+              "Lleva agua y gorra — no hay sombra en la mayor parte del recorrido"
+            ]
+          },
+          {
+            "name": "Plaza del Campidoglio",
+            "zone": "Roma Antigua",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 4,
+            "is_free_access": true,
+            "tips": [
+              "Diseñada por Miguel Ángel. La mejor foto es subiendo la escalinata — gírate al llegar arriba para ver Roma a tus pies",
+              "Alberga los Museos Capitolinos (los más antiguos del mundo), perfectos si llueve"
+            ]
+          },
+          {
+            "name": "Altar de la Patria",
+            "zone": "Roma Antigua",
+            "type": "exterior_interior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 5,
+            "is_free_access": true,
+            "tips": [
+              "El acceso al monumento es gratuito. Las vistas desde las escaleras ya son espectaculares",
+              "Para la mejor vista de Roma: el ascensor panorámico de la terraza superior (7€) — ves el Coliseo, el Foro y toda la ciudad",
+              "Los romanos lo llaman 'la máquina de escribir' o 'la tarta de bodas' por su forma — úsalo como referencia para orientarte"
+            ]
+          },
+          {
+            "name": "Panteón",
+            "zone": "Centro Histórico",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La entrada es gratuita pero desde 2023 requiere reserva online (5€ de gestión). Reserva con antelación porque se agotan",
+              "Visítalo a mediodía si puedes — cuando el sol está en su punto más alto, el rayo de luz que entra por el óculo es espectacular",
+              "Si llueve, no te preocupes: el agua entra por el óculo pero el suelo tiene desagües romanos de 2.000 años que siguen funcionando"
+            ]
+          },
+          {
+            "name": "Santa Maria sopra Minerva",
+            "zone": "Centro Histórico",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La única iglesia gótica de Roma — todas las demás son barrocas o renacentistas",
+              "Tiene un Cristo de Miguel Ángel que pasa desapercibido para la mayoría de turistas",
+              "En la plaza hay un elefante de Bernini con un obelisco egipcio — la foto perfecta con el Panteón de fondo"
+            ]
+          },
+          {
+            "name": "Piazza Navona",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Construida sobre el antiguo Estadio de Domiciano — por eso tiene forma ovalada",
+              "Las tres fuentes son de Bernini. La central (Fuente de los Cuatro Ríos) es la más fotografiada — la mejor foto se hace desde el lado de Sant'Agnese",
+              "Evita los restaurantes de la plaza (trampas para turistas) — come en las calles laterales"
+            ]
+          },
+          {
+            "name": "Campo de' Fiori",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Por la mañana tiene el mercado más auténtico de Roma (hasta las 14:00). Por la noche es zona de bares",
+              "La estatua del centro es Giordano Bruno, quemado aquí por la Inquisición — los romanos le dejan flores"
+            ]
+          },
+          {
+            "name": "Fontana di Trevi",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "double_visit": true,
+            "double_visit_reason": "Merece visita de día (fotos) y de noche (iluminada, experiencia completamente distinta)",
+            "tips": [
+              "Merece DOS visitas: de día para las fotos y de noche iluminada",
+              "El truco para verla sin masas: antes de las 08:00 o después de las 23:00",
+              "La tradición: una moneda con la mano derecha por encima del hombro izquierdo, de espaldas. Se recogen 3.000€ al día que van a Cáritas"
+            ]
+          },
+          {
+            "name": "Escalinata de Plaza de España",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La mejor foto de la escalinata se hace desde abajo, con la iglesia de Trinità dei Monti arriba",
+              "En primavera (abril-mayo) la decoran con azaleas — la foto más icónica de Roma",
+              "Prohibido sentarse en los escalones (multa de 250€) desde 2019"
+            ]
+          },
+          {
+            "name": "Piazza del Popolo",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Las dos iglesias gemelas del lado sur parecen idénticas pero no lo son — busca las diferencias",
+              "Dentro de Santa Maria del Popolo hay dos Caravaggio que pasan desapercibidos — entrada gratuita"
+            ]
+          },
+          {
+            "name": "Terraza del Pincio",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 3,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "EL mejor mirador gratuito del centro de Roma. Al atardecer ves el sol ponerse detrás de la Cúpula de San Pedro",
+              "Se accede subiendo desde Piazza del Popolo o caminando por Villa Borghese"
+            ]
+          },
+          {
+            "name": "Galería Borghese",
+            "zone": "Norte",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "E",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Reserva OBLIGATORIA. Turnos estrictos de 2 horas — si no reservas con semanas de antelación, no entras",
+              "Tiene el David de Bernini, el Apolo y Dafne, y la Paolina de Canova — tres de las esculturas más impresionantes del mundo"
+            ]
+          },
+          {
+            "name": "Jardines de Villa Borghese",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "E",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El pulmón verde de Roma. Perfecto para un paseo relajado después de la Galería",
+              "Se puede alquilar una barca en el lago o un carrito de pedales"
+            ]
+          },
+          {
+            "name": "Museos Vaticanos y Capilla Sixtina",
+            "zone": "Vaticano",
+            "type": "interior_largo",
+            "duration_min": 180,
+            "group": "F",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Colas de 2-4 horas sin reserva. La entrada online cuesta 4€ extra pero te ahorra media mañana",
+              "Último domingo del mes entrada gratuita (09:00-14:00) pero la masificación es extrema — no recomendado",
+              "La Capilla Sixtina está al FINAL del recorrido — no te entretengas demasiado en las primeras salas",
+              "Truco: hay una puerta lateral en la Capilla Sixtina que conecta directamente con la Basílica de San Pedro — pregunta al guardia"
+            ]
+          },
+          {
+            "name": "Plaza de San Pedro",
+            "zone": "Vaticano",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "G",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Las columnas de Bernini están diseñadas para que desde UN punto exacto (marcado en el suelo) las 4 filas se alinean y solo ves una — búscalo",
+              "Si hay audiencia papal (miércoles por la mañana), la plaza está cortada — planifica otro día para la Basílica"
+            ]
+          },
+          {
+            "name": "Basílica de San Pedro",
+            "zone": "Vaticano",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "G",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La entrada es GRATUITA. La cola es control de seguridad, no de taquilla — suele ser de 15-30 min",
+              "Subir a la Cúpula: 8€ a pie (551 escalones) o 10€ con ascensor. Las vistas son las mejores de Roma",
+              "Dentro, la Piedad de Miguel Ángel está a la derecha nada más entrar",
+              "Horario verano: 07:00-18:00. Invierno: 07:30-17:00. Consulta la web oficial"
+            ]
+          },
+          {
+            "name": "Castel Sant'Angelo",
+            "zone": "Vaticano",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": "H",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Fue mausoleo romano, fortaleza papal y prisión. El pasillo secreto que conecta con el Vaticano (Passetto di Borgo) se ve desde fuera",
+              "La terraza superior tiene vistas brutales del Tíber y San Pedro"
+            ]
+          },
+          {
+            "name": "Via della Conciliazione",
+            "zone": "Vaticano",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "H",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Se diseñó para que vieras la Cúpula de San Pedro desde lejos — la mejor foto de San Pedro se hace desde el inicio de esta calle"
+            ]
+          },
+          {
+            "name": "Trastevere",
+            "zone": "Trastevere",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Cruzar el Puente Sisto a pie desde el centro es la entrada más bonita a Trastevere",
+              "Para cenar: aléjate de las terrazas de la plaza principal — los mejores sitios están en las calles de atrás",
+              "De noche es la zona con más ambiente de Roma — perfecto para el último plan del día"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Bocca della Verità",
+            "zone": "Aventino",
+            "type": "interior_corto",
+            "duration_min": 15,
+            "group": "I",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La leyenda dice que muerde la mano de los mentirosos. La cola puede ser larga pero avanza rápido",
+              "Gratis verla desde fuera, 2€ para meter la mano y hacer la foto"
+            ]
+          },
+          {
+            "name": "Circo Máximo",
+            "zone": "Aventino",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "I",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Donde se hacían las carreras de cuadrigas. Ahora es un parque pero se distingue perfectamente la forma del antiguo estadio"
+            ]
+          },
+          {
+            "name": "Termas de Caracalla",
+            "zone": "Aventino",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "I",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Las ruinas más impresionantes de Roma después del Coliseo. En verano se hacen conciertos de ópera al aire libre",
+              "Entrada combinada con el Mausoleo de Cecilia Metella y la Villa de los Quintili"
+            ]
+          },
+          {
+            "name": "Jardín de los Naranjos",
+            "zone": "Aventino",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "J",
+            "group_order": 1,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "Las mejores vistas panorámicas de Roma junto con el Pincio, pero mucho menos turístico. Perfecto para atardecer",
+              "Nombre real: Parco Savello. A 2 minutos de la Cerradura"
+            ]
+          },
+          {
+            "name": "Cerradura de los Caballeros de Malta",
+            "zone": "Aventino",
+            "type": "exterior",
+            "duration_min": 5,
+            "group": "J",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Mira por la cerradura de la puerta verde del Priorato. Verás la Cúpula de San Pedro perfectamente enmarcada — técnicamente ves tres estados a la vez: Italia, la Orden de Malta y el Vaticano",
+              "La cola puede ser de 15-30 min pero merece la pena. Mejor a primera hora"
+            ]
+          },
+          {
+            "name": "Columna de Trajano",
+            "zone": "Roma Antigua",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "A",
+            "group_order": 6,
+            "is_free_access": true,
+            "tips": [
+              "200 metros de relieves en espiral que cuentan la conquista de Dacia — como un cómic romano de 2.000 años",
+              "No se puede subir, pero desde el Altar de la Patria se ve desde arriba"
+            ]
+          },
+          {
+            "name": "Basílica de San Juan de Letrán",
+            "zone": "Laterano",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Técnicamente es la catedral de Roma (no San Pedro). Es la iglesia más antigua de Occidente",
+              "La Scala Santa está al lado — los fieles la suben de rodillas"
+            ]
+          },
+          {
+            "name": "Barrio Judío",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El ghetto más antiguo de Europa. Los restaurantes de cocina judío-romana son excelentes (alcachofas fritas, carciofi alla giudia)",
+              "El Pórtico de Octavia está aquí — ruinas romanas entre los edificios del barrio"
+            ]
+          },
+          {
+            "name": "Galería Doria Pamphilj",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El museo secreto mejor guardado de Roma. Una colección privada con Caravaggio, Velázquez y Bernini, sin las colas de los Vaticanos",
+              "La audioguía está narrada por un miembro de la familia Doria Pamphilj — toque personal único"
+            ]
+          },
+          {
+            "name": "Via Appia Antica",
+            "zone": "Afueras",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": "K",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La autopista del Imperio Romano. Alquila una bici en el centro de visitantes",
+              "Los domingos está cerrada al tráfico — el mejor día para ir"
+            ]
+          },
+          {
+            "name": "Catacumbas de San Calixto",
+            "zone": "Afueras",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "K",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "Solo se visitan con guía (incluido en la entrada). Tours cada 30 min en español",
+              "No se permiten fotos dentro. Temperatura constante de 15°C — lleva algo de abrigo"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días o experiencia 'Fuera de lo típico'",
+        "places": [
+          {
+            "name": "Basílica de San Clemente",
+            "zone": "Laterano",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La iglesia más fascinante de Roma: 3 niveles arqueológicos. Bajas literalmente 2.000 años — iglesia del XII sobre iglesia del IV sobre templo de Mitra del siglo I",
+              "La entrada a los niveles inferiores cuesta 10€ — probablemente los 10€ mejor invertidos de Roma"
+            ]
+          },
+          {
+            "name": "Quartiere Coppedè",
+            "zone": "Nomentano",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Un barrio surrealista que el 99% de turistas no conoce. Arquitectura de fantasía: arcos, torres, dragones, columnas imposibles",
+              "La entrada principal es un arco enorme en Via Dora — pasa por debajo y te sientes en otra dimensión"
+            ]
+          },
+          {
+            "name": "Basílica de Santa Maria la Mayor",
+            "zone": "Esquilino",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Una de las cuatro basílicas papales. Los mosaicos del siglo V son de los más antiguos de Roma",
+              "El techo está dorado con el primer oro que llegó de América"
+            ]
+          },
+          {
+            "name": "Mercado de Testaccio",
+            "zone": "Testaccio",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "L",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El mercado donde compran los romanos de verdad — cero turistas. Prueba los supplì (croquetas de arroz) y la porchetta",
+              "Abierto de lunes a sábado hasta las 15:00"
+            ]
+          },
+          {
+            "name": "Monte Testaccio",
+            "zone": "Testaccio",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "L",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Una colina artificial hecha con 53 millones de ánforas de aceite de oliva rotas — el vertedero de la Roma imperial convertido en barrio de moda"
+            ]
+          },
+          {
+            "name": "Puente Sant'Angelo",
+            "zone": "Vaticano",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "H",
+            "group_order": 0,
+            "is_free_access": true,
+            "tips": [
+              "Las 10 estatuas de ángeles son de Bernini — cada una sostiene un instrumento de la Pasión. Se cruza naturalmente yendo a Castel Sant'Angelo"
+            ]
+          },
+          {
+            "name": "EUR",
+            "zone": "EUR",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio que Mussolini construyó para una Exposición Universal que nunca se celebró. Arquitectura racionalista impresionante",
+              "El Palazzo della Civiltà Italiana (Coliseo Cuadrado) es ahora sede de Fendi — merece la foto"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Roma Antigua",
+        "description": "Coliseo → Arco de Constantino → Foro Romano → Campidoglio → Altar de la Patria. Ruta recta caminando.",
+        "order": [
+          "Coliseo",
+          "Arco de Constantino",
+          "Foro Romano y Palatino",
+          "Plaza del Campidoglio",
+          "Altar de la Patria",
+          "Columna de Trajano"
+        ]
+      },
+      "B": {
+        "name": "Panteón y alrededores",
+        "description": "Panteón → Santa Maria sopra Minerva. A 1 minuto una de otra.",
+        "order": [
+          "Panteón",
+          "Santa Maria sopra Minerva"
+        ]
+      },
+      "C": {
+        "name": "Plazas del Centro",
+        "description": "Piazza Navona ↔ Campo de' Fiori. A 5 minutos, cualquier orden.",
+        "order": [
+          "Piazza Navona",
+          "Campo de' Fiori"
+        ]
+      },
+      "D": {
+        "name": "Norte monumental",
+        "description": "Plaza de España → Piazza del Popolo → Terraza del Pincio. Ruta natural subiendo.",
+        "order": [
+          "Escalinata de Plaza de España",
+          "Piazza del Popolo",
+          "Terraza del Pincio"
+        ]
+      },
+      "E": {
+        "name": "Villa Borghese",
+        "description": "Galería Borghese → Jardines. Imposible ir a la Galería sin pasar por los jardines.",
+        "order": [
+          "Galería Borghese",
+          "Jardines de Villa Borghese"
+        ]
+      },
+      "F": {
+        "name": "Museos Vaticanos",
+        "description": "Solos porque ocupan 3h mínimo.",
+        "order": [
+          "Museos Vaticanos y Capilla Sixtina"
+        ]
+      },
+      "G": {
+        "name": "San Pedro",
+        "description": "Plaza → Basílica. Siempre la plaza primero.",
+        "order": [
+          "Plaza de San Pedro",
+          "Basílica de San Pedro"
+        ]
+      },
+      "H": {
+        "name": "Ruta monumental al Vaticano",
+        "description": "Puente Sant'Angelo → Castel Sant'Angelo → Via della Conciliazione → conecta con Grupo G.",
+        "order": [
+          "Puente Sant'Angelo",
+          "Castel Sant'Angelo",
+          "Via della Conciliazione"
+        ]
+      },
+      "I": {
+        "name": "Aventino sur",
+        "description": "Bocca della Verità → Circo Máximo → Termas de Caracalla. Ruta recta hacia el sur.",
+        "order": [
+          "Bocca della Verità",
+          "Circo Máximo",
+          "Termas de Caracalla"
+        ]
+      },
+      "J": {
+        "name": "Aventino miradores",
+        "description": "Jardín de los Naranjos → Cerradura de Malta. A 2 minutos, se combina con Grupo I.",
+        "order": [
+          "Jardín de los Naranjos",
+          "Cerradura de los Caballeros de Malta"
+        ]
+      },
+      "K": {
+        "name": "Via Appia",
+        "description": "Excursión de medio día fuera del centro.",
+        "order": [
+          "Via Appia Antica",
+          "Catacumbas de San Calixto"
+        ]
+      },
+      "L": {
+        "name": "Testaccio auténtico",
+        "description": "Mercado + Monte Testaccio. El barrio más romano de Roma.",
+        "order": [
+          "Mercado de Testaccio",
+          "Monte Testaccio"
+        ]
+      }
+    }
+  },
+  "paris": {
+    "destination_type": "city",
+    "country": "Francia",
+    "max_days_recommended": 6,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Versalles",
+      "Giverny",
+      "Mont Saint-Michel",
+      "Castillos del Loira"
+    ],
+    "timezone": "Europe/Paris",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Trocadéro",
+            "zone": "Torre Eiffel",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "AQUÍ se hace LA foto de la Torre Eiffel. La explanada es el único punto desde donde la ves completa, centrada y sin obstáculos",
+              "La mejor hora: amanecer (sin gente) o atardecer (luz dorada). A mediodía está masificado y a contraluz",
+              "Cuidado con los vendedores ambulantes y los timadores de las bolitas — ignóralos"
+            ]
+          },
+          {
+            "name": "Torre Eiffel",
+            "zone": "Torre Eiffel",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Compra la entrada online con semanas de antelación — las colas sin reserva superan las 2 horas",
+              "La segunda planta tiene las mejores vistas (no la cima, que está demasiado alta y a menudo nublada)",
+              "De noche hace un show de luces parpadeantes cada hora en punto durante 5 minutos — la mejor foto nocturna se hace desde el Trocadéro",
+              "Escaleras hasta la segunda planta: 674 escalones, 10,70€. Ascensor: 26,80€. Las escaleras tienen menos cola"
+            ]
+          },
+          {
+            "name": "Campo de Marte",
+            "zone": "Torre Eiffel",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El parque que se extiende desde la Torre Eiffel. Perfecto para un picnic con vistas",
+              "La foto clásica 'tumbado en el césped con la Torre de fondo' se hace aquí"
+            ]
+          },
+          {
+            "name": "Museo del Louvre",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 180,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Es IMPOSIBLE verlo entero en un día. Los 3 imprescindibles: La Mona Lisa (ala Denon, planta 1), Venus de Milo (ala Sully, planta baja) y Victoria de Samotracia (escalera Daru)",
+              "Entra por la Pirámide Invertida del centro comercial Carrousel (bajo tierra) — la cola es 10 veces menor que la pirámide principal",
+              "Cerrado los martes. Miércoles y viernes abre hasta las 21:45 — por la noche hay un 70% menos de gente",
+              "La mejor foto de la pirámide: de noche, con el reflejo en el agua"
+            ]
+          },
+          {
+            "name": "Jardín de las Tullerías",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Conecta el Louvre con la Plaza de la Concordia. Paseo perfecto después del museo",
+              "Las sillas verdes metálicas alrededor de los estanques son gratuitas y se pueden mover — sentarse a descansar con vistas es muy parisino"
+            ]
+          },
+          {
+            "name": "Plaza de la Concordia",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "Aquí estuvo la guillotina durante la Revolución Francesa. El obelisco egipcio del centro tiene 3.300 años",
+              "Desde aquí ves el Arco del Triunfo al final de los Campos Elíseos — la perspectiva es perfecta para foto"
+            ]
+          },
+          {
+            "name": "Catedral de Notre-Dame",
+            "zone": "Île de la Cité",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Reabierta en diciembre 2024 tras el incendio. La entrada es gratuita pero las colas pueden ser largas — llega temprano",
+              "Las gárgolas y la terraza de las torres tienen entrada aparte — las vistas del Sena son espectaculares",
+              "La mejor foto exterior se hace desde el Square Jean XXIII (detrás de la catedral), con los arbotantes y la aguja nueva"
+            ]
+          },
+          {
+            "name": "Sainte-Chapelle",
+            "zone": "Île de la Cité",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "Las vidrieras son las más impresionantes del mundo — 1.113 escenas bíblicas en 15 metros de cristal. Visítala cuando haga sol, la diferencia es brutal",
+              "Hay un pase combinado con la Conciergerie que ahorra dinero",
+              "Es pequeña — la visita dura 30-45 min, perfecta para combinar con Notre-Dame"
+            ]
+          },
+          {
+            "name": "Arco de Triunfo",
+            "zone": "Campos Elíseos",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Subir a la terraza (284 escalones o ascensor): ves la Torre Eiffel Y los Campos Elíseos a la vez — una de las mejores vistas de París",
+              "La mejor foto del Arco se hace desde la avenida de los Campos Elíseos mirando hacia arriba",
+              "Accede SOLO por el paso subterráneo — no intentes cruzar la rotonda a pie, es extremadamente peligroso"
+            ]
+          },
+          {
+            "name": "Avenida de los Campos Elíseos",
+            "zone": "Campos Elíseos",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La avenida más famosa del mundo — lo interesante está en los extremos (Concordia y Arco de Triunfo), el medio son tiendas de cadena",
+              "Las tiendas francesas de verdad están en las calles laterales, no en la avenida"
+            ]
+          },
+          {
+            "name": "Basílica del Sacré-Cœur",
+            "zone": "Montmartre",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "E",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La entrada es gratuita. Subir a la cúpula cuesta 7€ — las vistas de todo París son las más amplias de la ciudad",
+              "La escalinata es la foto clásica, pero las mejores vistas están desde el jardín Louise Michel (a la izquierda)",
+              "Cuidado con los timadores de las pulseras de la amistad — te las atan a la fuerza y te piden dinero"
+            ]
+          },
+          {
+            "name": "Barrio de Montmartre",
+            "zone": "Montmartre",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": "E",
+            "group_order": 2,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Piérdete por las calles detrás del Sacré-Cœur — Place du Tertre tiene pintores callejeros, y el Moulin de la Galette está a 5 min",
+              "El Moulin Rouge se ve desde fuera (boulevard de Clichy) — la fachada es la foto",
+              "Para cenar: evita Place du Tertre (trampa turística). Rue Lepic y Rue des Abbesses tienen restaurantes locales"
+            ]
+          },
+          {
+            "name": "Museo de Orsay",
+            "zone": "Rive Gauche",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Está en una antigua estación de tren — la arquitectura del edificio es una obra en sí misma",
+              "La mayor colección de impresionismo del mundo: Monet, Renoir, Degas, Van Gogh, Cézanne",
+              "El reloj gigante transparente de la planta 5 es la foto más instagrameable — ves el Sacré-Cœur a través del cristal",
+              "Cerrado los lunes. Con la misma entrada puedes volver en 8 días"
+            ]
+          },
+          {
+            "name": "Panteón de París",
+            "zone": "Barrio Latino",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "F",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La tumba de Víctor Hugo, Voltaire, Marie Curie y Alejandro Dumas. El péndulo de Foucault cuelga en el centro",
+              "La cúpula tiene vistas espectaculares pero solo se visita con visita guiada de abril a octubre"
+            ]
+          },
+          {
+            "name": "Jardín de Luxemburgo",
+            "zone": "Barrio Latino",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "F",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El jardín favorito de los parisinos. Lleva algo para picar y siéntate en las sillas verdes junto al estanque — es la experiencia más 'parisina' que puedes tener",
+              "Las sillas son gratuitas y puedes moverlas donde quieras"
+            ]
+          },
+          {
+            "name": "Barrio Latino",
+            "zone": "Barrio Latino",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "F",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El barrio universitario histórico de París. Las calles alrededor de Rue Mouffetard tienen los restaurantes y cafés con más encanto",
+              "La librería Shakespeare and Company (frente a Notre-Dame) es parada obligatoria para los amantes de los libros"
+            ]
+          },
+          {
+            "name": "Plaza de los Vosgos",
+            "zone": "Le Marais",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "G",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La plaza más antigua de París (1612). La casa de Víctor Hugo está en el número 6 — entrada gratuita",
+              "Los soportales de la plaza tienen galerías de arte y cafés escondidos"
+            ]
+          },
+          {
+            "name": "Barrio de Le Marais",
+            "zone": "Le Marais",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "G",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El barrio con más personalidad de París. Mezcla de galerías, tiendas vintage, falafel (Rue des Rosiers) y vida nocturna",
+              "Los domingos es el único barrio del centro donde las tiendas abren — perfecto para un domingo"
+            ]
+          },
+          {
+            "name": "Puente Nuevo",
+            "zone": "Île de la Cité",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "A pesar de su nombre, es el puente MÁS ANTIGUO de París (1607). La vista del Sena con la Île de la Cité es de postal"
+            ]
+          },
+          {
+            "name": "Paseo en barco por el Sena",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "atardecer",
+            "tips": [
+              "Dos opciones: Bateaux Mouches (turístico, audioguía, ~15€) o Batobus (barco-bus con paradas, ~17€ todo el día)",
+              "La mejor hora es al atardecer — ves todos los monumentos iluminándose durante el recorrido",
+              "Sale desde Pont de l'Alma (junto a la Torre Eiffel) o Notre-Dame"
+            ]
+          },
+          {
+            "name": "Saint-Germain-des-Prés",
+            "zone": "Rive Gauche",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio intelectual de París — aquí escribían Sartre y Simone de Beauvoir en el Café de Flore",
+              "El Café de Flore y Les Deux Magots son turísticos pero tomar un café en la terraza viendo pasar París merece la pena al menos una vez"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Conciergerie",
+            "zone": "Île de la Cité",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "C",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Aquí estuvo presa María Antonieta antes de ser ejecutada. Su celda está reconstruida",
+              "Pase combinado con Sainte-Chapelle disponible"
+            ]
+          },
+          {
+            "name": "Ópera Garnier",
+            "zone": "Ópera",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El interior es más impresionante que cualquier palacio de París. El techo de la sala principal fue pintado por Chagall",
+              "Visita por libre 14€ — mucho más barato que un espectáculo y ves todo"
+            ]
+          },
+          {
+            "name": "Galerías Lafayette",
+            "zone": "Ópera",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La cúpula de cristal art nouveau del interior es espectacular — merece entrar aunque no compres nada",
+              "La terraza de la azotea tiene vistas gratuitas de la Ópera y toda la ciudad"
+            ]
+          },
+          {
+            "name": "Museo Rodin",
+            "zone": "Inválidos",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": "H",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "El Pensador y Las Puertas del Infierno están en el jardín — merece la visita solo por el jardín",
+              "Mucho menos masificado que el Louvre u Orsay"
+            ]
+          },
+          {
+            "name": "Los Inválidos",
+            "zone": "Inválidos",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "H",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La tumba de Napoleón está bajo la cúpula dorada — el sarcófago es gigantesco, diseñado para imponer",
+              "El Museo del Ejército es enorme — si no te interesa la historia militar, ve directamente a la tumba"
+            ]
+          },
+          {
+            "name": "Museo de l'Orangerie",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Los Nenúfares de Monet en dos salas ovaladas diseñadas específicamente para ellos — una experiencia inmersiva antes de que existiera el concepto",
+              "Está en el extremo de las Tullerías, junto a la Concordia. Combina perfecto con el paseo del Grupo B"
+            ]
+          },
+          {
+            "name": "Île Saint-Louis",
+            "zone": "Islas",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La isla más tranquila de París, conectada con Île de la Cité. Helados de Berthillon (los mejores de París) en la calle principal",
+              "Pasear por los muelles al atardecer es una de las experiencias más románticas de la ciudad"
+            ]
+          },
+          {
+            "name": "Canal Saint-Martin",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El París hipster y local — cafés de especialidad, tiendas vintage, y las esclusas que se abren para los barcos",
+              "Famoso por la película Amélie. Los domingos la calle es peatonal"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días",
+        "places": [
+          {
+            "name": "Catacumbas de París",
+            "zone": "Montparnasse",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "6 millones de esqueletos apilados en túneles bajo la ciudad. Impactante. Reserva online obligatoria — se agotan días antes",
+              "Temperatura constante de 14°C — lleva algo de abrigo. Escaleras estrechas de bajada y subida (130 escalones)"
+            ]
+          },
+          {
+            "name": "Museo Picasso",
+            "zone": "Le Marais",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": "G",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "La mayor colección de Picasso del mundo, en un palacete del siglo XVII en Le Marais",
+              "Perfecto para combinar con el paseo por el Marais"
+            ]
+          },
+          {
+            "name": "Père-Lachaise",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El cementerio más famoso del mundo. Jim Morrison, Oscar Wilde, Edith Piaf, Chopin, Molière — todos aquí",
+              "Coge un mapa en la entrada — sin él no encontrarás las tumbas. La de Jim Morrison tiene guardia de seguridad permanente"
+            ]
+          },
+          {
+            "name": "Fundación Louis Vuitton",
+            "zone": "Boulogne",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El edificio de Frank Gehry es la obra de arte en sí — parece un velero de cristal. Las exposiciones temporales suelen ser de nivel mundial",
+              "Está en el Bois de Boulogne, lejos del centro — combina con un paseo por el parque"
+            ]
+          },
+          {
+            "name": "Rue Crémieux",
+            "zone": "Bastilla",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La calle más colorida de París — casas pintadas en colores pastel. Muy instagrameable pero es una calle residencial — respeta a los vecinos"
+            ]
+          },
+          {
+            "name": "Mercado de las Pulgas de Saint-Ouen",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercado de antigüedades más grande del mundo. Solo abierto sábado, domingo y lunes",
+              "Hay 14 mercados dentro del recinto — Vernaison es el más pintoresco, Dauphine el más caro"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Torre Eiffel",
+        "description": "Trocadéro → Torre Eiffel → Campo de Marte. SIEMPRE en este orden — foto desde Trocadéro, cruzar puente de Iéna, subir, bajar al Campo de Marte.",
+        "order": [
+          "Trocadéro",
+          "Torre Eiffel",
+          "Campo de Marte"
+        ]
+      },
+      "B": {
+        "name": "Eje Louvre-Concordia",
+        "description": "Louvre → Tullerías → Concordia. Ruta recta caminando.",
+        "order": [
+          "Museo del Louvre",
+          "Jardín de las Tullerías",
+          "Plaza de la Concordia"
+        ]
+      },
+      "C": {
+        "name": "Île de la Cité",
+        "description": "Notre-Dame → Sainte-Chapelle (→ Conciergerie si Nivel 2). A 5 minutos en la misma isla.",
+        "order": [
+          "Catedral de Notre-Dame",
+          "Sainte-Chapelle",
+          "Conciergerie"
+        ]
+      },
+      "D": {
+        "name": "Campos Elíseos",
+        "description": "Arco de Triunfo ↔ Campos Elíseos. Paseas la avenida en cualquier dirección.",
+        "order": [
+          "Arco de Triunfo",
+          "Avenida de los Campos Elíseos"
+        ]
+      },
+      "E": {
+        "name": "Montmartre",
+        "description": "Sacré-Cœur → paseo por Montmartre. Subes al Sacré-Cœur, luego te pierdes por el barrio.",
+        "order": [
+          "Basílica del Sacré-Cœur",
+          "Barrio de Montmartre"
+        ]
+      },
+      "F": {
+        "name": "Barrio Latino",
+        "description": "Panteón → Barrio Latino → Jardín de Luxemburgo. Todo a 5-10 minutos entre sí.",
+        "order": [
+          "Panteón de París",
+          "Barrio Latino",
+          "Jardín de Luxemburgo"
+        ]
+      },
+      "G": {
+        "name": "Le Marais",
+        "description": "Plaza de los Vosgos → Le Marais (→ Museo Picasso si Nivel 3). La plaza es la joya del barrio.",
+        "order": [
+          "Plaza de los Vosgos",
+          "Barrio de Le Marais",
+          "Museo Picasso"
+        ]
+      },
+      "H": {
+        "name": "Inválidos",
+        "description": "Museo Rodin → Los Inválidos. Ambos en la misma zona.",
+        "order": [
+          "Museo Rodin",
+          "Los Inválidos"
+        ]
+      }
+    }
+  },
+  "londres": {
+    "destination_type": "city",
+    "country": "Reino Unido",
+    "max_days_recommended": 7,
+    "excursion_trigger_from_day": 4,
+    "suggested_extensions": [
+      "Stonehenge",
+      "Bath",
+      "Oxford",
+      "Cambridge",
+      "Cotswolds"
+    ],
+    "timezone": "Europe/London",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Torre de Londres",
+            "zone": "City",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Las Joyas de la Corona están aquí — pasa por la cinta transportadora sin pararte y luego vuelve a hacer la cola para verlas mejor",
+              "Los Beefeaters hacen tours gratuitos cada 30 min — son divertidísimos y cuentan las ejecuciones con detalle"
+            ]
+          },
+          {
+            "name": "Tower Bridge",
+            "zone": "City",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La mejor foto se hace desde la orilla sur del Támesis (zona de City Hall)",
+              "Subir a la pasarela de cristal tiene entrada de pago pero las vistas son espectaculares — ves el río a través del suelo"
+            ]
+          },
+          {
+            "name": "Abadía de Westminster",
+            "zone": "Westminster",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Aquí se coronan y entierran los reyes de Inglaterra. La tumba de Isaac Newton está en la nave central",
+              "Miércoles por la tarde tiene horario extendido con menos gente"
+            ]
+          },
+          {
+            "name": "Casas del Parlamento y Big Ben",
+            "zone": "Westminster",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La mejor foto del Big Ben se hace desde el Puente de Westminster — todo el parlamento de fondo",
+              "Se puede visitar el Parlamento por dentro los sábados y durante el receso parlamentario"
+            ]
+          },
+          {
+            "name": "London Eye",
+            "zone": "South Bank",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Compra online con antelación — la cola sin reserva puede ser de 1-2 horas",
+              "Al atardecer las vistas son las mejores — ves todo Londres con luz dorada"
+            ]
+          },
+          {
+            "name": "Palacio de Buckingham",
+            "zone": "Westminster",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El Cambio de Guardia es a las 11:00, lunes, miércoles, viernes y domingo (diario en verano). Llega 45 min antes para tener buen sitio",
+              "Mejor posición: frente a la verja del palacio o en la escalinata del Victoria Memorial"
+            ]
+          },
+          {
+            "name": "St. James's Park",
+            "zone": "Westminster",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Desde el puente del lago ves el Palacio de Buckingham de fondo y el London Eye al otro lado — una de las mejores fotos de Londres",
+              "Los pelícanos del parque se alimentan cada día a las 14:30"
+            ]
+          },
+          {
+            "name": "British Museum",
+            "zone": "Bloomsbury",
+            "type": "interior_largo",
+            "duration_min": 150,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. La Piedra Rosetta, los mármoles del Partenón y las momias egipcias son los 3 imprescindibles",
+              "Es inmenso — elige 2-3 secciones o te agotarás. Egipto y Grecia son las más populares"
+            ]
+          },
+          {
+            "name": "Trafalgar Square",
+            "zone": "West End",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La National Gallery está justo aquí — entrada gratuita. Los leones de la plaza son el selfie clásico"
+            ]
+          },
+          {
+            "name": "Piccadilly Circus",
+            "zone": "West End",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El Times Square de Londres. Más bonito de noche con las pantallas iluminadas"
+            ]
+          },
+          {
+            "name": "Covent Garden",
+            "zone": "West End",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El mercado cubierto tiene artistas callejeros de alto nivel — ópera, acrobacia, magia. Gratis pero se agradece propina",
+              "Los restaurantes del interior son caros — come en las calles de alrededor"
+            ]
+          },
+          {
+            "name": "Hyde Park",
+            "zone": "West End",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El Speakers' Corner (esquina noreste, domingos por la mañana) es una tradición de debate libre única en el mundo",
+              "El lago Serpentine es perfecto para un paseo o alquilar una barca en verano"
+            ]
+          },
+          {
+            "name": "Catedral de San Pablo",
+            "zone": "City",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Subir a la cúpula tiene 528 escalones pero las vistas de 360° merecen cada uno",
+              "La Galería de los Susurros en la cúpula interior tiene un efecto acústico: un susurro de un lado se oye en el opuesto a 34 metros"
+            ]
+          },
+          {
+            "name": "Borough Market",
+            "zone": "South Bank",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mejor mercado gastronómico de Londres. Los puestos de los bordes son más baratos que los del centro",
+              "Abierto de miércoles a sábado (el sábado es el día grande). Llega temprano para evitar las masas del mediodía"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Museo de Historia Natural",
+            "zone": "South Kensington",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "E",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. El esqueleto de ballena azul en el hall principal es impresionante. La sala de dinosaurios es la favorita de familias",
+              "Se puede combinar con el V&A que está literalmente al lado"
+            ]
+          },
+          {
+            "name": "Museo V&A",
+            "zone": "South Kensington",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "E",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. El museo de artes decorativas más grande del mundo. El patio interior con café es una joya escondida"
+            ]
+          },
+          {
+            "name": "Tate Modern",
+            "zone": "South Bank",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. Antigua central eléctrica convertida en museo de arte contemporáneo. La vista desde el bar de la planta 10 es espectacular",
+              "Conectada con la Catedral de San Pablo por el Millennium Bridge — la foto del puente con San Pablo de fondo es icónica"
+            ]
+          },
+          {
+            "name": "Camden Town",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio alternativo de Londres. Los mercados (Camden Lock, Stables Market) son enormes — fácil perder 2-3 horas",
+              "La comida callejera aquí es la más variada de Londres — prueba de todo"
+            ]
+          },
+          {
+            "name": "Notting Hill",
+            "zone": "Oeste",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Las casas de colores de Lancaster Road y Portobello Road son la foto. Los sábados hay mercado de antigüedades en Portobello",
+              "La librería de la película (ahora una tienda de viajes) está en Portobello Road"
+            ]
+          },
+          {
+            "name": "Greenwich",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El meridiano cero está aquí — puedes poner un pie en cada hemisferio. El observatorio tiene entrada de pago",
+              "Llega en barco por el Támesis desde Westminster — es la forma más bonita"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días",
+        "places": [
+          {
+            "name": "Leadenhall Market",
+            "zone": "City",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercado victoriano cubierto donde se rodó el Callejón Diagon de Harry Potter. Más bonito entre semana cuando está lleno de oficinistas"
+            ]
+          },
+          {
+            "name": "Sky Garden",
+            "zone": "City",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Mirador GRATUITO en la planta 35 del edificio Walkie-Talkie. Hay que reservar online con antelación — se agotan rápido"
+            ]
+          },
+          {
+            "name": "Little Venice",
+            "zone": "Oeste",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Canales con houseboats de colores. Se puede coger un barco hasta Camden por el canal — una forma original de llegar"
+            ]
+          },
+          {
+            "name": "Museo Sir John Soane",
+            "zone": "Holborn",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. La casa-museo más excéntrica de Londres — cada centímetro está cubierto de arte y antigüedades. Solo se puede visitar en grupos pequeños"
+            ]
+          },
+          {
+            "name": "Shoreditch y Brick Lane",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más hipster de Londres. Street art de nivel mundial, mercados de comida internacional (sobre todo curry en Brick Lane) y tiendas vintage",
+              "Los domingos hay mercado en Brick Lane y Columbia Road (flores)"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Torre y puente",
+        "description": "Torre de Londres → Tower Bridge. Una al lado de la otra.",
+        "order": [
+          "Torre de Londres",
+          "Tower Bridge"
+        ]
+      },
+      "B": {
+        "name": "Westminster",
+        "description": "Abadía → Parlamento/Big Ben → London Eye. Ruta recta por la ribera.",
+        "order": [
+          "Abadía de Westminster",
+          "Casas del Parlamento y Big Ben",
+          "London Eye"
+        ]
+      },
+      "C": {
+        "name": "Buckingham",
+        "description": "Palacio → St. James's Park. El parque está justo delante.",
+        "order": [
+          "Palacio de Buckingham",
+          "St. James's Park"
+        ]
+      },
+      "D": {
+        "name": "West End",
+        "description": "Trafalgar Square → Piccadilly → Covent Garden. El corazón de Londres a pie.",
+        "order": [
+          "Trafalgar Square",
+          "Piccadilly Circus",
+          "Covent Garden"
+        ]
+      },
+      "E": {
+        "name": "South Kensington",
+        "description": "Historia Natural → V&A. Literalmente puerta con puerta.",
+        "order": [
+          "Museo de Historia Natural",
+          "Museo V&A"
+        ]
+      }
+    }
+  },
+  "barcelona": {
+    "destination_type": "city",
+    "country": "España",
+    "max_days_recommended": 5,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Montserrat",
+      "Costa Brava",
+      "Girona",
+      "Figueres",
+      "Tarragona"
+    ],
+    "timezone": "Europe/Madrid",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Sagrada Familia",
+            "zone": "Eixample",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Reserva OBLIGATORIA online — se agotan días antes. La entrada incluye audioguía y subida a una de las torres",
+              "La mejor hora para las vidrieras: por la mañana el sol entra por el lado este (colores cálidos), por la tarde por el oeste (colores fríos)",
+              "La fachada del Nacimiento (la más antigua) es la más detallada — la de la Pasión es austera y moderna a propósito"
+            ]
+          },
+          {
+            "name": "Parque Güell",
+            "zone": "Gràcia",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "La zona monumental (la del dragón y el banco de mosaico) requiere entrada de pago y reserva. El resto del parque es gratuito",
+              "Primera hora de la mañana o última de la tarde tiene menos gente y mejor luz para fotos",
+              "La mejor foto del skyline de Barcelona con el mar se hace desde la Cruz de las tres cruces (punto más alto del parque, zona gratuita)"
+            ]
+          },
+          {
+            "name": "La Rambla",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Pasea entera pero NO comas ni te sientes en los restaurantes de La Rambla — son trampas para turistas",
+              "Cuidado con los carteristas — es la zona con más robos de Barcelona. Lleva la cartera delante"
+            ]
+          },
+          {
+            "name": "Mercado de La Boquería",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Entra por el lado de la calle del Hospital (menos masificado que la entrada principal de La Rambla)",
+              "Los puestos del fondo son más baratos que los de la entrada. Prueba el zumo de fruta natural"
+            ]
+          },
+          {
+            "name": "Barrio Gótico",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Piérdete por las calles — es la mejor forma de descubrirlo. La Plaza del Rey y la Plaza de Sant Felip Neri son las joyas escondidas",
+              "El Puente del Bisbe (la foto más icónica del Gótico) es en realidad de 1928, no medieval"
+            ]
+          },
+          {
+            "name": "Catedral de Barcelona",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La entrada es gratuita excepto de 12:30 a 17:30 que cobran 9€ — ve antes o después",
+              "El claustro tiene 13 ocas vivas — una por cada año del martirio de Santa Eulàlia",
+              "Sube a la azotea (3€) para vistas del Gótico desde arriba"
+            ]
+          },
+          {
+            "name": "El Born",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más de moda de Barcelona. El Paseo del Born y sus calles laterales tienen las mejores tiendas independientes y bares de cócteles",
+              "El Born Centre Cultural (antiguo mercado) tiene ruinas arqueológicas de 1714 bajo el suelo de cristal — entrada gratuita"
+            ]
+          },
+          {
+            "name": "Basílica de Santa Maria del Mar",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La catedral del pueblo — construida por los trabajadores del puerto en el siglo XIV. Mucho más íntima que la Catedral",
+              "La novela 'La Catedral del Mar' de Ildefonso Falcones cuenta su historia"
+            ]
+          },
+          {
+            "name": "Paseo de Gracia",
+            "zone": "Eixample",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La Manzana de la Discordia (entre las calles Consell de Cent y Aragó) tiene tres edificios modernistas rivales: Casa Batlló, Casa Amatller y Casa Lleó Morera — uno al lado del otro"
+            ]
+          },
+          {
+            "name": "Casa Batlló",
+            "zone": "Eixample",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La experiencia inmersiva con realidad aumentada es espectacular — merece el precio (35-45€)",
+              "La terraza del dragón es la foto más icónica. De noche se ilumina y es aún más impresionante",
+              "Compra online — la cola sin reserva puede ser larga"
+            ]
+          },
+          {
+            "name": "La Pedrera (Casa Milà)",
+            "zone": "Eixample",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": "D",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "La azotea con las chimeneas de guerrero es la más fotografiada de Barcelona",
+              "La visita nocturna con proyecciones en la azotea es una experiencia única (de junio a octubre)"
+            ]
+          },
+          {
+            "name": "La Barceloneta",
+            "zone": "Barceloneta",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "La playa urbana de Barcelona. Pasea por el paseo marítimo, come paella en un chiringuito (los de segunda línea son más baratos y mejores)",
+              "Para la mejor paella del barrio: Can Paixano (cava bar con tapas) o Barceloneta (restaurante, reservar)"
+            ]
+          },
+          {
+            "name": "Montjuïc",
+            "zone": "Montjuïc",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": "E",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Sube en el teleférico desde la Barceloneta (10€) para las mejores vistas del puerto y la ciudad",
+              "El Castillo de Montjuïc tiene vistas panorámicas de 360°. La Fundación Miró y el MNAC están en la misma montaña",
+              "La Fuente Mágica hace espectáculo de luz y agua gratuito los jueves a sábados por la noche (verano)"
+            ]
+          },
+          {
+            "name": "Fuente Mágica de Montjuïc",
+            "zone": "Montjuïc",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "E",
+            "group_order": 2,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Espectáculo gratuito de luz, agua y música. Jueves a sábados en verano (21:00-23:00), viernes y sábados en invierno (20:00-21:00)",
+              "Llega 15 min antes para tener buen sitio"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Hospital de Sant Pau",
+            "zone": "Eixample",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El hospital modernista más bonito del mundo — a 5 minutos de la Sagrada Familia. Mucho menos turístico que las casas de Gaudí"
+            ]
+          },
+          {
+            "name": "Palau de la Música Catalana",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La sala de conciertos más espectacular de Europa. Las visitas guiadas duran 55 min — merece cada minuto"
+            ]
+          },
+          {
+            "name": "Bunkers del Carmel",
+            "zone": "Gràcia",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "EL mejor mirador de Barcelona — vistas 360° de toda la ciudad hasta el mar. Ideal al atardecer con algo para picar",
+              "Llegar en bus (119 o V17) o a pie subiendo desde el barrio del Carmel"
+            ]
+          },
+          {
+            "name": "Barrio de Gràcia",
+            "zone": "Gràcia",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El pueblo dentro de la ciudad. Plazas llenas de terrazas (Plaza del Sol, Plaza de la Vila de Gràcia) y tiendas independientes",
+              "En agosto la Festa Major de Gràcia decora las calles de forma espectacular — si coincides, no te lo pierdas"
+            ]
+          },
+          {
+            "name": "Camp Nou (Spotify Camp Nou)",
+            "zone": "Les Corts",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "En obras de remodelación — consulta disponibilidad antes de ir. El museo del Barça tiene la colección de trofeos más impresionante de Europa"
+            ]
+          },
+          {
+            "name": "Tibidabo",
+            "zone": "Tibidabo",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Parque de atracciones antiguo en la montaña más alta de Barcelona. Las vistas son increíbles — se ve toda la costa",
+              "Sube en el Tramvia Blau (tranvía histórico) + funicular para la experiencia completa"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días",
+        "places": [
+          {
+            "name": "Recinto Modernista de Sant Pau",
+            "zone": "Eixample",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Los jardines y pabellones subterráneos conectados por túneles son lo más impresionante — un hospital que parece un palacio"
+            ]
+          },
+          {
+            "name": "El Raval",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más multicultural de Barcelona. El MACBA (museo de arte contemporáneo) y su plaza donde hacen skate son icónicos",
+              "La Rambla del Raval tiene el Gato de Botero — la escultura más acariciada de Barcelona"
+            ]
+          },
+          {
+            "name": "Poblenou",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El antiguo barrio industrial reconvertido en el distrito de innovación. Street art, estudios de diseño y la Rambla del Poblenou (mucho más auténtica que La Rambla del centro)"
+            ]
+          },
+          {
+            "name": "Monasterio de Pedralbes",
+            "zone": "Pedralbes",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Un monasterio gótico del siglo XIV con el claustro más bonito de Barcelona — casi sin turistas"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "La Rambla",
+        "description": "La Rambla → La Boquería. El mercado está en la mitad de La Rambla.",
+        "order": [
+          "La Rambla",
+          "Mercado de La Boquería"
+        ]
+      },
+      "B": {
+        "name": "Barrio Gótico",
+        "description": "Barrio Gótico → Catedral. La catedral es el corazón del barrio.",
+        "order": [
+          "Barrio Gótico",
+          "Catedral de Barcelona"
+        ]
+      },
+      "C": {
+        "name": "El Born",
+        "description": "El Born → Santa Maria del Mar. La basílica es la joya del barrio.",
+        "order": [
+          "El Born",
+          "Basílica de Santa Maria del Mar"
+        ]
+      },
+      "D": {
+        "name": "Paseo de Gràcia modernista",
+        "description": "Paseo de Gràcia → Casa Batlló → La Pedrera. Ruta recta subiendo la avenida.",
+        "order": [
+          "Paseo de Gracia",
+          "Casa Batlló",
+          "La Pedrera (Casa Milà)"
+        ]
+      },
+      "E": {
+        "name": "Montjuïc",
+        "description": "Montjuïc → Fuente Mágica. Todo en la misma montaña.",
+        "order": [
+          "Montjuïc",
+          "Fuente Mágica de Montjuïc"
+        ]
+      }
+    }
+  },
+  "lisboa": {
+    "destination_type": "city",
+    "country": "Portugal",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Sintra",
+      "Cascais",
+      "Óbidos",
+      "Évora",
+      "Nazaré"
+    ],
+    "timezone": "Europe/Lisbon",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Torre de Belém",
+            "zone": "Belém",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "El icono de Lisboa. La cola puede ser larga — compra online o ve a primera hora",
+              "Los domingos y festivos la entrada es gratuita hasta las 14:00"
+            ]
+          },
+          {
+            "name": "Monasterio de los Jerónimos",
+            "zone": "Belém",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "El claustro es lo más impresionante — uno de los mejores ejemplos de arte manuelino del mundo",
+              "Entrada combinada con la Torre de Belém disponible y más barata. Domingos gratis hasta las 14:00"
+            ]
+          },
+          {
+            "name": "Pastéis de Belém",
+            "zone": "Belém",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "La pastelería original de los pasteles de nata desde 1837. La cola de la puerta es para llevar — dentro hay sitio casi siempre",
+              "Ponles canela y azúcar glass. El precio es el mismo dentro y fuera"
+            ]
+          },
+          {
+            "name": "Monumento a los Descubrimientos",
+            "zone": "Belém",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 4,
+            "is_free_access": true,
+            "tips": [
+              "Se puede subir a la terraza (6€) para vistas del Tajo y la rosa de los vientos gigante en el suelo"
+            ]
+          },
+          {
+            "name": "Alfama",
+            "zone": "Alfama",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más antiguo de Lisboa. Piérdete por las calles — cada esquina tiene un mirador o un azulejo espectacular",
+              "Baja desde el Castillo hacia el río, no subas — la subida es agotadora. Sube en el tranvía 28 o en Uber"
+            ]
+          },
+          {
+            "name": "Castillo de San Jorge",
+            "zone": "Alfama",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "Las mejores vistas panorámicas de Lisboa. Los pavos reales pasean libremente por los jardines",
+              "Al atardecer la luz sobre el Tajo es espectacular desde aquí"
+            ]
+          },
+          {
+            "name": "Mirador de Santa Lucía",
+            "zone": "Alfama",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El mirador más fotogénico de Lisboa — azulejos azules, buganvillas y vistas de los tejados de Alfama hasta el río",
+              "Justo al lado está el Mirador de las Puertas del Sol, con vistas aún más amplias"
+            ]
+          },
+          {
+            "name": "Tranvía 28",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 40,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Más que transporte, es una atracción. Cógelo en el inicio de línea (Martim Moniz o Campo de Ourique) para asegurarte asiento",
+              "Cuidado con los carteristas dentro del tranvía — es la zona con más robos de Lisboa. Lleva la cartera delante"
+            ]
+          },
+          {
+            "name": "Plaza del Comercio",
+            "zone": "Baixa",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La puerta de entrada a Lisboa desde el mar. El Arco da Rua Augusta tiene un mirador arriba (3€) con vistas espectaculares",
+              "Los escalones junto al agua son perfectos para sentarse al atardecer"
+            ]
+          },
+          {
+            "name": "Rua Augusta",
+            "zone": "Baixa",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La calle peatonal principal de la Baixa — conecta la Plaza del Comercio con el Rossio"
+            ]
+          },
+          {
+            "name": "Elevador de Santa Justa",
+            "zone": "Baixa",
+            "type": "interior_corto",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Diseñado por un discípulo de Eiffel. La cola puede ser de 30-60 min — si solo quieres las vistas, sube por las escaleras del Convento do Carmo (gratis) y accede directamente a la terraza de arriba por 1,50€"
+            ]
+          },
+          {
+            "name": "Barrio Alto",
+            "zone": "Barrio Alto",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "De día es tranquilo y tiene las mejores tiendas vintage. De noche es la zona de bares y vida nocturna de Lisboa",
+              "Los miradores de São Pedro de Alcântara y de la Graça están aquí arriba"
+            ]
+          },
+          {
+            "name": "LX Factory",
+            "zone": "Alcântara",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Antigua fábrica reconvertida en espacio creativo — restaurantes, tiendas de diseño, librerías y street art",
+              "La librería Ler Devagar tiene una bicicleta voladora dentro — una de las librerías más bonitas del mundo",
+              "Los domingos hay mercado de brunch. Los restaurantes son buenos pero más caros que el resto de Lisboa"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 3-4 días",
+        "places": [
+          {
+            "name": "Oceanário de Lisboa",
+            "zone": "Parque de las Naciones",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Considerado uno de los mejores acuarios del mundo. El tanque central con tiburones, rayas y pez luna es hipnótico",
+              "Perfecto para un día de lluvia o con niños"
+            ]
+          },
+          {
+            "name": "Panteón Nacional",
+            "zone": "Alfama",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 4,
+            "is_free_access": false,
+            "tips": [
+              "La terraza de la cúpula tiene unas de las mejores vistas de Alfama y el río",
+              "Aquí están los cenotafios de Vasco da Gama y otros héroes portugueses"
+            ]
+          },
+          {
+            "name": "Convento do Carmo",
+            "zone": "Chiado",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Las ruinas del convento destruido por el terremoto de 1755 — el techo que falta es lo más impresionante. Un recordatorio permanente del desastre"
+            ]
+          },
+          {
+            "name": "Museo Nacional del Azulejo",
+            "zone": "Este",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Único en el mundo. El panorama de Lisboa pre-terremoto de 1755 (23 metros de azulejos) es la pieza estrella",
+              "El edificio es un antiguo convento del siglo XVI — la cafetería en el claustro es preciosa"
+            ]
+          },
+          {
+            "name": "Time Out Market",
+            "zone": "Cais do Sodré",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercado gastronómico más famoso de Lisboa — los mejores chefs de la ciudad en formato casual",
+              "A mediodía está masificado — ve a las 11:00 o después de las 15:00"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 5+ días",
+        "places": [
+          {
+            "name": "Parque de las Naciones",
+            "zone": "Este",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La zona moderna de la Expo 98. El teleférico sobre el Tajo y la Estación de Oriente (de Calatrava) merecen la visita"
+            ]
+          },
+          {
+            "name": "Palacio da Pena (Sintra)",
+            "zone": "Sintra",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Técnicamente es excursión, pero si tienes tiempo es IMPRESCINDIBLE. El palacio de colores en la montaña es de cuento de hadas",
+              "Ve a primera hora — a partir de las 11:00 la cola es brutal. Compra online obligatorio"
+            ]
+          },
+          {
+            "name": "Costa da Caparica",
+            "zone": "Sur",
+            "type": "exterior",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Las playas más cercanas a Lisboa (30 min en bus). En verano un trenecito recorre las playas — bájate donde más te guste"
+            ]
+          },
+          {
+            "name": "Mouraria",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio donde nació el fado. Mucho más auténtico y menos turístico que Alfama. Las casas de fado aquí son las de verdad"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Belém",
+        "description": "Torre → Monasterio → Pastéis → Monumento Descubrimientos. SIEMPRE juntos, ruta recta a lo largo del río.",
+        "order": [
+          "Torre de Belém",
+          "Monasterio de los Jerónimos",
+          "Pastéis de Belém",
+          "Monumento a los Descubrimientos"
+        ]
+      },
+      "B": {
+        "name": "Alfama",
+        "description": "Alfama → Castillo → Mirador de Santa Lucía. Bajar desde el Castillo.",
+        "order": [
+          "Castillo de San Jorge",
+          "Alfama",
+          "Mirador de Santa Lucía",
+          "Panteón Nacional"
+        ]
+      },
+      "C": {
+        "name": "Baixa",
+        "description": "Plaza del Comercio → Rua Augusta → Elevador Santa Justa. Ruta recta subiendo.",
+        "order": [
+          "Plaza del Comercio",
+          "Rua Augusta",
+          "Elevador de Santa Justa"
+        ]
+      }
+    }
+  },
+  "madrid": {
+    "destination_type": "city",
+    "country": "España",
+    "max_days_recommended": 5,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Toledo",
+      "Segovia",
+      "El Escorial",
+      "Ávila"
+    ],
+    "timezone": "Europe/Madrid",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Museo del Prado",
+            "zone": "Paseo del Arte",
+            "type": "interior_largo",
+            "duration_min": 180,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Los 5 imprescindibles: Las Meninas (Velázquez), El Jardín de las Delicias (El Bosco), Las Tres Gracias (Rubens), La Maja Desnuda (Goya) y El Caballero de la Mano en el Pecho (El Greco)",
+              "Entrada gratuita de lunes a sábado de 18:00 a 20:00 y domingos de 17:00 a 19:00 — pero la cola es enorme",
+              "Es inmenso — elige 2-3 salas o te agotarás"
+            ]
+          },
+          {
+            "name": "Museo Reina Sofía",
+            "zone": "Paseo del Arte",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "El Guernica de Picasso es la pieza estrella — sala 205, segunda planta. Impresiona más en persona que en fotos",
+              "Entrada gratuita lunes, miércoles a sábado de 19:00 a 21:00 y domingos de 12:30 a 14:30"
+            ]
+          },
+          {
+            "name": "Parque del Retiro",
+            "zone": "Retiro",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El Palacio de Cristal es la joya escondida — exposiciones de arte contemporáneo gratuitas dentro de un invernadero del siglo XIX",
+              "El estanque tiene barcas de remo (6€) — la foto con el monumento de Alfonso XII de fondo es la clásica"
+            ]
+          },
+          {
+            "name": "Puerta del Sol",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El kilómetro cero de España está en el suelo frente a la Casa de Correos — búscalo y pisa sobre él",
+              "El Oso y el Madroño es la estatua más fotografiada de Madrid"
+            ]
+          },
+          {
+            "name": "Plaza Mayor",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "NO comas en los restaurantes de la plaza (son caros y malos). Entra por el Arco de Cuchilleros y come en las calles de alrededor",
+              "La foto clásica se hace desde el centro, con las dos torres de la Casa de la Panadería"
+            ]
+          },
+          {
+            "name": "Mercado de San Miguel",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "Es turístico y caro, pero merece la pena para probar un poco de todo — tapas, vino, jamón, aceitunas",
+              "A 1 minuto de la Plaza Mayor"
+            ]
+          },
+          {
+            "name": "Palacio Real",
+            "zone": "Madrid de los Austrias",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "El palacio real más grande de Europa occidental — 3.418 habitaciones (se visitan unas 50)",
+              "Entrada gratuita para ciudadanos de la UE de 16:00 a 18:00 (octubre a marzo) y de 18:00 a 20:00 (abril a septiembre)"
+            ]
+          },
+          {
+            "name": "Catedral de la Almudena",
+            "zone": "Madrid de los Austrias",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Justo enfrente del Palacio Real. La entrada es gratuita (donativo sugerido 1€)",
+              "Sube a la cúpula (6€) para vistas del Palacio Real y la Sierra de Madrid"
+            ]
+          },
+          {
+            "name": "Jardines de Sabatini",
+            "zone": "Madrid de los Austrias",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "Justo detrás del Palacio Real. Pocos turistas los visitan — es donde van los madrileños a leer"
+            ]
+          },
+          {
+            "name": "Templo de Debod",
+            "zone": "Moncloa",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "Un templo egipcio REAL del siglo II a.C. regalado a España — en medio de un parque con las mejores vistas del atardecer de Madrid",
+              "Llega 30 min antes del atardecer para tener buen sitio"
+            ]
+          },
+          {
+            "name": "Gran Vía",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El Broadway de Madrid. Los edificios Metrópolis y Telefónica son las estrellas arquitectónicas",
+              "De noche las luces de los teatros y cines la convierten en otra experiencia"
+            ]
+          },
+          {
+            "name": "Barrio de La Latina",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "EL barrio de tapas de Madrid. La Cava Baja es la calle con más bares de tapas por metro cuadrado de España",
+              "Los domingos el Rastro (mercadillo de antigüedades) ocupa todo el barrio — de 09:00 a 15:00"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Museo Thyssen-Bornemisza",
+            "zone": "Paseo del Arte",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 4,
+            "is_free_access": false,
+            "tips": [
+              "El tercer vértice del Triángulo del Arte. Cubre del siglo XIII al XX — lo que le falta al Prado en impresionismo, lo tiene el Thyssen",
+              "Entrada gratuita los lunes de 12:00 a 16:00"
+            ]
+          },
+          {
+            "name": "Barrio de Malasaña",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio alternativo de Madrid. Tiendas vintage, bares de cócteles y la plaza del Dos de Mayo como centro neurálgico",
+              "Los sábados por la mañana hay mercado de segunda mano en Fuencarral"
+            ]
+          },
+          {
+            "name": "Barrio de Chueca",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio LGTBI+ de Madrid. Boutiques de diseño, restaurantes de moda y la mejor vida nocturna"
+            ]
+          },
+          {
+            "name": "Real Jardín Botánico",
+            "zone": "Retiro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Justo al lado del Prado. Perfecto para descansar después del museo — 8 hectáreas de paz en el centro de Madrid"
+            ]
+          },
+          {
+            "name": "Estadio Santiago Bernabéu",
+            "zone": "Chamartín",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La visita al tour del estadio incluye el museo, los vestuarios y el palco. Recientemente renovado con techo retráctil"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días",
+        "places": [
+          {
+            "name": "Matadero Madrid",
+            "zone": "Sur",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Antiguo matadero reconvertido en centro cultural — exposiciones, cine al aire libre en verano y mercados de diseño"
+            ]
+          },
+          {
+            "name": "Casa de Campo",
+            "zone": "Oeste",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El parque más grande de Madrid (5 veces el Retiro). Tiene teleférico (ida y vuelta 6€), zoo y parque de atracciones"
+            ]
+          },
+          {
+            "name": "Museo Sorolla",
+            "zone": "Chamberí",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La casa-estudio del pintor de la luz. El jardín andaluz es una joya escondida. Casi sin turistas",
+              "Sábados a partir de 14:00 entrada gratuita"
+            ]
+          },
+          {
+            "name": "Mercado de San Ildefonso",
+            "zone": "Malasaña",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Street food market en tres plantas. Más auténtico y barato que San Miguel. La terraza del segundo piso tiene vistas de los tejados"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Paseo del Arte",
+        "description": "Prado → Reina Sofía → Retiro (→ Thyssen si Nivel 2). Los tres museos en línea recta + el parque.",
+        "order": [
+          "Museo del Prado",
+          "Museo Reina Sofía",
+          "Parque del Retiro",
+          "Museo Thyssen-Bornemisza"
+        ]
+      },
+      "B": {
+        "name": "Centro histórico",
+        "description": "Sol → Plaza Mayor → San Miguel. El corazón de Madrid.",
+        "order": [
+          "Puerta del Sol",
+          "Plaza Mayor",
+          "Mercado de San Miguel"
+        ]
+      },
+      "C": {
+        "name": "Madrid de los Austrias",
+        "description": "Palacio Real → Almudena → Jardines de Sabatini. Todo junto.",
+        "order": [
+          "Palacio Real",
+          "Catedral de la Almudena",
+          "Jardines de Sabatini"
+        ]
+      }
+    }
+  },
+  "amsterdam": {
+    "destination_type": "city",
+    "country": "Países Bajos",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Zaanse Schans",
+      "Keukenhof",
+      "Róterdam",
+      "Brujas",
+      "La Haya"
+    ],
+    "timezone": "Europe/Amsterdam",
+    "walking_friendly": true,
+    "metro_useful": false,
+    "bike_friendly": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Museo de Ana Frank",
+            "zone": "Jordaan",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Las entradas se venden SOLO online y se agotan semanas antes — se liberan cada martes a las 10:00 para 6 semanas después. Pon alarma",
+              "La experiencia es sobrecogedora. La escalera empinada que sube al anexo secreto es el momento más impactante",
+              "No se permiten fotos dentro. La visita dura 1 hora exacta"
+            ]
+          },
+          {
+            "name": "Rijksmuseum",
+            "zone": "Museumplein",
+            "type": "interior_largo",
+            "duration_min": 150,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La Ronda de Noche de Rembrandt es la estrella — está en la Galería de Honor al fondo, no te la puedes perder",
+              "El pasaje bajo el museo (entre las dos torres) es gratuito y tiene puestos de comida y música callejera",
+              "Si no tienes mucho tiempo, ve directo a la planta 2 — ahí está el Siglo de Oro holandés con Rembrandt, Vermeer y Frans Hals"
+            ]
+          },
+          {
+            "name": "Museo Van Gogh",
+            "zone": "Museumplein",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La mayor colección de Van Gogh del mundo — 200 pinturas y 500 dibujos. Los Girasoles y La Habitación en Arlés están aquí",
+              "Reserva online obligatoria con hora fija. La tienda del museo tiene las mejores reproducciones",
+              "La audioguía es excelente — te cuenta la historia detrás de cada obra y su estado mental al pintarla"
+            ]
+          },
+          {
+            "name": "Plaza de los Museos",
+            "zone": "Museumplein",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El letrero 'I amsterdam' que estaba aquí se retiró en 2018, pero la explanada sigue siendo la foto clásica con el Rijksmuseum de fondo",
+              "En invierno montan una pista de hielo. En verano hay conciertos al aire libre"
+            ]
+          },
+          {
+            "name": "Vondelpark",
+            "zone": "Museumplein",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 4,
+            "is_free_access": true,
+            "tips": [
+              "El Central Park de Ámsterdam. Perfecto para descansar después de los museos — lleva algo para picnic",
+              "En verano hay teatro al aire libre gratuito en el teatro del parque"
+            ]
+          },
+          {
+            "name": "Barrio Jordaan",
+            "zone": "Jordaan",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más encantador de Ámsterdam. Canales estrechos, tiendas vintage, galerías y cafeterías acogedoras",
+              "Los 'hofjes' (patios interiores escondidos) son la joya secreta — empuja las puertas que parezcan antiguas, muchos son accesibles",
+              "El mercado de los lunes en Noordermarkt (09:00-13:00) tiene los mejores productos orgánicos de la ciudad"
+            ]
+          },
+          {
+            "name": "Canales del centro",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Los tres canales principales (Herengracht, Keizersgracht, Prinsengracht) son Patrimonio de la Humanidad",
+              "La intersección de los 7 puentes se ve desde el Reguliersgracht con Herengracht — la foto más icónica de Ámsterdam",
+              "Las casas torcidas no es un defecto — se inclinan a propósito para subir muebles con la polea del tejado sin golpear la fachada"
+            ]
+          },
+          {
+            "name": "Paseo en barco por los canales",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 60,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": false,
+            "best_time": "atardecer",
+            "tips": [
+              "Hay dos opciones: los barcos grandes turísticos (~18€) o las lanchas pequeñas privadas (~35€/persona pero más íntimas)",
+              "Al atardecer los puentes se iluminan y la experiencia es completamente distinta — merece la versión nocturna",
+              "Sale desde Centraal Station o desde los embarcaderos del Rijksmuseum"
+            ]
+          },
+          {
+            "name": "Plaza Dam",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El corazón de Ámsterdam. El Palacio Real domina la plaza — se puede visitar por dentro cuando no hay eventos oficiales",
+              "El Monumento Nacional en el centro conmemora a las víctimas de la Segunda Guerra Mundial"
+            ]
+          },
+          {
+            "name": "Barrio Rojo",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "De día es un barrio histórico normal con iglesias medievales (Oude Kerk, la más antigua de Ámsterdam). De noche se encienden las luces rojas",
+              "NUNCA hagas fotos a las trabajadoras en las ventanas — está prohibido y es una falta de respeto grave",
+              "Está justo al lado de Chinatown — la mejor comida asiática de la ciudad"
+            ]
+          },
+          {
+            "name": "Mercado Albert Cuyp",
+            "zone": "De Pijp",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercado callejero más grande de Ámsterdam — 260 puestos. Prueba el stroopwafel recién hecho y las croquetas de los puestos",
+              "De lunes a sábado hasta las 17:00. El barrio De Pijp alrededor tiene los restaurantes más multiculturales"
+            ]
+          },
+          {
+            "name": "Begijnhof",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Un patio medieval escondido en pleno centro — silencio absoluto detrás de una puerta sin señalizar. La casa de madera más antigua de Ámsterdam (1528) está aquí",
+              "Respeta el silencio — es un lugar habitado. Abierto hasta las 17:00"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 3-4 días",
+        "places": [
+          {
+            "name": "Heineken Experience",
+            "zone": "De Pijp",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La antigua fábrica de Heineken convertida en experiencia interactiva. Incluye 2 cervezas al final",
+              "Reserva online más barato que en taquilla. Mejor ir después de los museos, no antes"
+            ]
+          },
+          {
+            "name": "Museo Stedelijk",
+            "zone": "Museumplein",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 5,
+            "is_free_access": false,
+            "tips": [
+              "El museo de arte moderno y contemporáneo de Ámsterdam — Mondrian, Malevich, Warhol. El edificio en sí (la 'bañera') es icónico",
+              "Completa el trío de la Museumplein con Rijksmuseum y Van Gogh"
+            ]
+          },
+          {
+            "name": "NDSM Werf",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Antiguo astillero reconvertido en zona creativa — street art, mercado de pulgas mensual (IJ-Hallen), restaurantes en contenedores",
+              "Cruza gratis en el ferry desde Centraal Station (5 min) — es una experiencia en sí"
+            ]
+          },
+          {
+            "name": "A'DAM Lookout",
+            "zone": "Norte",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "atardecer",
+            "tips": [
+              "El mejor mirador de Ámsterdam — vistas 360° desde la planta 20. Tiene un columpio en el borde del edificio para valientes ('Over the Edge')",
+              "Cruza en ferry gratuito desde Centraal Station. La terraza del restaurante tiene las mismas vistas sin pagar entrada"
+            ]
+          },
+          {
+            "name": "Museo Casa de Rembrandt",
+            "zone": "Barrio Judío",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La casa donde vivió y trabajó Rembrandt durante 20 años. Las demostraciones de grabado en vivo son fascinantes",
+              "Mucho menos masificado que el Rijksmuseum — aquí entiendes al artista como persona"
+            ]
+          },
+          {
+            "name": "Waterlooplein",
+            "zone": "Barrio Judío",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercadillo de pulgas más antiguo de Ámsterdam (desde 1886). De lunes a sábado",
+              "Al lado está la Sinagoga Portuguesa — una de las más grandes de Europa, se puede visitar"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 5+ días",
+        "places": [
+          {
+            "name": "Museo Fotografía FOAM",
+            "zone": "Canal Belt",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El mejor museo de fotografía de Europa — exposiciones rotativas siempre de nivel. En una casa-canal preciosa"
+            ]
+          },
+          {
+            "name": "Museo Moco",
+            "zone": "Museumplein",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Banksy, Kusama, Haring, Basquiat — arte moderno y urbano en una villa junto al Rijksmuseum. Muy instagrameable"
+            ]
+          },
+          {
+            "name": "Hortus Botanicus",
+            "zone": "Plantage",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Uno de los jardines botánicos más antiguos del mundo (1638). La casa de las mariposas tropical es espectacular en invierno",
+              "La cafetería del invernadero es uno de los secretos mejor guardados de Ámsterdam"
+            ]
+          },
+          {
+            "name": "Ámsterdam Noord (barrio)",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más hipster de Ámsterdam. Cervecerías artesanales, estudios de artistas, y el EYE Film Museum (arquitectura espectacular, cafetería con vistas gratuitas)",
+              "Todo accesible en ferry gratuito desde Centraal Station"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Museumplein",
+        "description": "Rijksmuseum → Van Gogh → Plaza Museos → Vondelpark. Todos en la misma plaza.",
+        "order": [
+          "Rijksmuseum",
+          "Museo Van Gogh",
+          "Plaza de los Museos",
+          "Vondelpark",
+          "Museo Stedelijk"
+        ]
+      },
+      "B": {
+        "name": "Canales",
+        "description": "Paseo por canales a pie → barco. Complementarios.",
+        "order": [
+          "Canales del centro",
+          "Paseo en barco por los canales"
+        ]
+      },
+      "C": {
+        "name": "Centro histórico",
+        "description": "Dam → Barrio Rojo. Contiguos.",
+        "order": [
+          "Plaza Dam",
+          "Barrio Rojo"
+        ]
+      }
+    }
+  },
+  "praga": {
+    "destination_type": "city",
+    "country": "República Checa",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Český Krumlov",
+      "Kutná Hora",
+      "Karlovy Vary",
+      "Dresde"
+    ],
+    "timezone": "Europe/Prague",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Castillo de Praga",
+            "zone": "Hradčany",
+            "type": "interior_largo",
+            "duration_min": 150,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "El complejo de castillo más grande del mundo. El circuito B (el más popular) incluye Catedral, Antiguo Palacio Real, Basílica de San Jorge y Callejón del Oro",
+              "Entra a las 09:00 en punto — a las 10:00 ya está masificado. La entrada al recinto es gratuita, solo pagas los interiores",
+              "El Cambio de Guardia es cada hora en punto, pero el ceremonial completo con banda de música es a las 12:00"
+            ]
+          },
+          {
+            "name": "Catedral de San Vito",
+            "zone": "Hradčany",
+            "type": "interior_largo",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La catedral gótica más impresionante de Centroeuropa. Las vidrieras de Alfons Mucha (nave lateral izquierda) son la joya",
+              "Subir a la torre sur (287 escalones) tiene las mejores vistas de toda Praga",
+              "La entrada a la nave principal es gratuita — solo pagas si quieres ver las capillas interiores y la cripta"
+            ]
+          },
+          {
+            "name": "Callejón del Oro",
+            "zone": "Hradčany",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Casitas diminutas de colores donde vivían los orfebres del castillo. Kafka vivió en el número 22",
+              "Incluido en la entrada del Castillo. Después de las 17:00 en verano (16:00 en invierno) es gratis"
+            ]
+          },
+          {
+            "name": "Puente de Carlos",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "best_time": "primera_hora",
+            "tips": [
+              "El puente más fotografiado de Europa. A las 06:00-07:00 de la mañana lo tienes casi vacío con niebla sobre el Moldava — LA foto de Praga",
+              "Toca la placa de bronce de San Juan Nepomuceno (la estatua con las 5 estrellas) — la leyenda dice que te traerá suerte",
+              "30 estatuas barrocas a cada lado. Las originales están en el Museo Nacional — estas son copias, pero igual de impresionantes"
+            ]
+          },
+          {
+            "name": "Malá Strana",
+            "zone": "Malá Strana",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El barrio barroco bajo el Castillo. Las calles que suben desde el Puente de Carlos hacia el Castillo son la ruta natural",
+              "La Iglesia de San Nicolás tiene el interior barroco más espectacular de Praga — entrada 4€, merece la pena"
+            ]
+          },
+          {
+            "name": "Plaza de la Ciudad Vieja",
+            "zone": "Staré Město",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El Reloj Astronómico hace su show cada hora en punto (de 09:00 a 23:00) — llega 5 min antes para tener buen sitio, pero no esperes demasiado: dura 45 segundos",
+              "La Torre del Ayuntamiento tiene un mirador con las mejores vistas de la plaza — ascensor disponible",
+              "La Iglesia de Týn con sus dos torres puntiagudas es la silueta más icónica de Praga"
+            ]
+          },
+          {
+            "name": "Reloj Astronómico",
+            "zone": "Staré Město",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Funciona desde 1410 — es el reloj astronómico más antiguo del mundo en funcionamiento",
+              "La parte superior muestra la posición del sol y la luna, la inferior el calendario de los meses con medallones pintados"
+            ]
+          },
+          {
+            "name": "Barrio Judío (Josefov)",
+            "zone": "Josefov",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El gueto judío mejor conservado de Europa. La entrada combinada incluye 6 sinagogas y el Cementerio Viejo",
+              "El Cementerio Viejo tiene 12.000 lápidas apiladas en 12 capas — impactante. Franz Kafka está enterrado en el Cementerio Nuevo (otro sitio)",
+              "La Sinagoga Española tiene el interior más bello — azulejos de estilo mudéjar"
+            ]
+          },
+          {
+            "name": "Muro de John Lennon",
+            "zone": "Malá Strana",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Desde los años 80 los jóvenes checos pintaban mensajes de paz y letras de los Beatles como protesta contra el régimen comunista",
+              "Se repinta constantemente — cada visita es diferente. Puedes añadir tu propio mensaje"
+            ]
+          },
+          {
+            "name": "Petřín",
+            "zone": "Malá Strana",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "La colina verde de Praga. Sube en funicular (billete de transporte público normal) y baja andando por los jardines",
+              "La Torre de Petřín es una mini Torre Eiffel — las vistas de todo Praga al atardecer son las mejores de la ciudad",
+              "Los jardines del monasterio de Strahov están a mitad de bajada — la biblioteca del monasterio es una de las más bonitas del mundo"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 3-4 días",
+        "places": [
+          {
+            "name": "Biblioteca del Monasterio de Strahov",
+            "zone": "Hradčany",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Dos salas barrocas con frescos y estanterías de suelo a techo — la Sala Teológica y la Sala Filosófica. Una de las bibliotecas más fotografiadas del mundo",
+              "Solo se ve desde la puerta (no se puede entrar) pero es impresionante igualmente. La cervecería del monasterio al lado tiene vistas del castillo"
+            ]
+          },
+          {
+            "name": "Casa Danzante",
+            "zone": "Nueva Ciudad",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El edificio deconstructivista de Frank Gehry que parece una pareja bailando. La terraza del último piso tiene bar y vistas panorámicas"
+            ]
+          },
+          {
+            "name": "Vyšehrad",
+            "zone": "Vyšehrad",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La fortaleza original de Praga, antes del Castillo. Vistas del Moldava sin turistas",
+              "El cementerio tiene las tumbas de Dvořák, Smetana y Mucha — el Père-Lachaise checo",
+              "Los túneles subterráneos (casematas) se pueden visitar con guía"
+            ]
+          },
+          {
+            "name": "Plaza de Wenceslao",
+            "zone": "Nueva Ciudad",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Más una avenida que una plaza. Aquí se proclamó la independencia checa en 1918 y la Revolución de Terciopelo en 1989",
+              "El Museo Nacional está en la cabecera — la escalinata es el punto de encuentro clásico"
+            ]
+          },
+          {
+            "name": "Clementinum",
+            "zone": "Staré Město",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La biblioteca barroca rival de Strahov — aquí sí puedes entrar (con visita guiada)",
+              "La torre astronómica tiene vistas espectaculares del Puente de Carlos y el Castillo"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 5+ días",
+        "places": [
+          {
+            "name": "Žižkov y la Torre de Televisión",
+            "zone": "Žižkov",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El barrio bohemio de Praga — más bares per cápita que cualquier otro barrio de Europa. La torre de TV tiene bebés de David Černý gateando por fuera",
+              "El mirador de la torre (8€) es el más alto de Praga pero la torre es tan fea que los locales dicen que es la mejor vista porque es la única desde la que no la ves"
+            ]
+          },
+          {
+            "name": "DOX Centro de Arte Contemporáneo",
+            "zone": "Holešovice",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El centro de arte más provocador de Praga. El zepelín de madera en el tejado (Gulliver) es una instalación accesible"
+            ]
+          },
+          {
+            "name": "Naplavka (ribera del Moldava)",
+            "zone": "Nueva Ciudad",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La ribera donde van los locales. Los sábados hay mercado de granjeros (08:00-14:00) y en verano hay bares en barcos amarrados",
+              "Al atardecer, sentarse en los escalones con una cerveza y ver el Castillo iluminarse es la experiencia más local de Praga"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Castillo de Praga",
+        "description": "Castillo → Catedral San Vito → Callejón del Oro. Todo dentro del complejo.",
+        "order": [
+          "Castillo de Praga",
+          "Catedral de San Vito",
+          "Callejón del Oro"
+        ]
+      },
+      "B": {
+        "name": "Puente y Malá Strana",
+        "description": "Puente de Carlos → Malá Strana. Cruzas el puente y estás en el barrio.",
+        "order": [
+          "Puente de Carlos",
+          "Malá Strana"
+        ]
+      },
+      "C": {
+        "name": "Plaza Vieja",
+        "description": "Plaza Ciudad Vieja → Reloj Astronómico. El reloj está en la plaza.",
+        "order": [
+          "Plaza de la Ciudad Vieja",
+          "Reloj Astronómico"
+        ]
+      }
+    }
+  },
+  "berlin": {
+    "destination_type": "city",
+    "country": "Alemania",
+    "max_days_recommended": 5,
+    "excursion_trigger_from_day": 4,
+    "suggested_extensions": [
+      "Potsdam",
+      "Dresde",
+      "Sachsenhausen"
+    ],
+    "timezone": "Europe/Berlin",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Puerta de Brandeburgo",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "EL símbolo de Berlín. La mejor foto se hace desde la Pariser Platz (lado este) con la puerta completa",
+              "De noche se ilumina y es espectacular — merece una segunda visita nocturna"
+            ]
+          },
+          {
+            "name": "Memorial del Holocausto",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "2.711 bloques de hormigón de diferentes alturas. Camina entre ellos — la sensación de desorientación es intencionada",
+              "El centro de información subterráneo (gratuito) cuenta historias individuales de víctimas — impactante. Cierra los lunes"
+            ]
+          },
+          {
+            "name": "Reichstag",
+            "zone": "Mitte",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "La cúpula de cristal de Norman Foster es GRATUITA pero requiere reserva online con días/semanas de antelación",
+              "La audioguía (gratuita, incluida) te explica los edificios de Berlín que ves desde arriba. Al atardecer es mágico",
+              "Sin reserva NO se puede subir — no vayas sin ella"
+            ]
+          },
+          {
+            "name": "Muro de Berlín (East Side Gallery)",
+            "zone": "Friedrichshain",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "1,3 km de muro pintado por artistas de todo el mundo. El beso entre Brézhnev y Honecker es la imagen más famosa",
+              "El muro está al aire libre junto al Spree — se puede ver a cualquier hora. Madruga para fotos sin gente",
+              "En la Bernauer Straße hay otro tramo de muro con el Memorial del Muro (centro de visitantes gratuito) — más informativo que la East Side Gallery"
+            ]
+          },
+          {
+            "name": "Checkpoint Charlie",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La caseta es una réplica y los soldados son actores que cobran por las fotos — no pagues. Lo interesante es el museo de al lado",
+              "El Museo del Muro en Checkpoint Charlie cuenta las historias de fugas reales — globos, túneles, coches con doble fondo. Merece la entrada"
+            ]
+          },
+          {
+            "name": "Gendarmenmarkt",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La plaza más bonita de Berlín — dos iglesias gemelas (francesa y alemana) y la Sala de Conciertos en medio",
+              "En diciembre tiene el mercadillo navideño más elegante de Berlín (con entrada de pago, 1€)"
+            ]
+          },
+          {
+            "name": "Isla de los Museos",
+            "zone": "Mitte",
+            "type": "interior_largo",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "5 museos de nivel mundial en una isla. Si solo vas a uno: el Museo de Pérgamo (Puerta de Ishtar, Altar de Pérgamo) o el Museo Nuevo (busto de Nefertiti)",
+              "El pase combinado de un día (22€) incluye los 5 museos — mucho más barato que entrar por separado",
+              "Los jueves algunos museos abren hasta las 20:00 — perfecto para evitar multitudes"
+            ]
+          },
+          {
+            "name": "Catedral de Berlín",
+            "zone": "Mitte",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La cúpula tiene vistas de 360° de toda la Isla de los Museos y el centro de Berlín — 270 escalones pero merece cada uno",
+              "La cripta de los Hohenzollern en el sótano es impresionante y la mayoría de visitantes no baja"
+            ]
+          },
+          {
+            "name": "Alexanderplatz y Torre de TV",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La Torre de TV (Fernsehturm) es el edificio más alto de Alemania — las vistas desde la esfera giratoria son impresionantes",
+              "Compra online para evitar colas de 1-2 horas. El restaurante giratorio (Sphere) es caro pero la experiencia es única",
+              "La plaza en sí es fea (herencia soviética) pero es el punto de referencia para moverse por el este"
+            ]
+          },
+          {
+            "name": "Unter den Linden",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El bulevar más famoso de Berlín — conecta la Puerta de Brandeburgo con la Isla de los Museos en un paseo recto",
+              "Los edificios a ambos lados cuentan la historia de Prusia, la RDA y la reunificación"
+            ]
+          },
+          {
+            "name": "Tiergarten",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El Central Park de Berlín. La Columna de la Victoria (Siegessäule) en el centro tiene un mirador accesible (285 escalones)",
+              "Perfecto para alquilar una bici y recorrerlo — es enorme (210 hectáreas)"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 4-5 días",
+        "places": [
+          {
+            "name": "Topografía del Terror",
+            "zone": "Mitte",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. Sobre el solar donde estaban las sedes de la Gestapo y las SS. La exposición exterior al aire libre recorre un tramo original del Muro"
+            ]
+          },
+          {
+            "name": "Monumento Soviético de Treptower Park",
+            "zone": "Treptow",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El memorial soviético más impresionante fuera de Rusia — un soldado gigante con un niño en brazos pisando una esvástica rota. Sobrecogedor",
+              "Pocos turistas llegan aquí — es una experiencia muy distinta al Berlín turístico"
+            ]
+          },
+          {
+            "name": "Kreuzberg",
+            "zone": "Kreuzberg",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio multicultural de Berlín. La mejor comida turca de Europa fuera de Turquía está aquí — el döner kebab se inventó en Berlín",
+              "Markthalle Neun tiene street food market los jueves por la noche — la experiencia gastronómica más auténtica de Berlín"
+            ]
+          },
+          {
+            "name": "Museo Judío de Berlín",
+            "zone": "Kreuzberg",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El edificio de Daniel Libeskind es una obra maestra — los vacíos, los pasillos inclinados y el Jardín del Exilio son tan impactantes como la exposición",
+              "La Torre del Holocausto (una sala oscura y vacía de 24 metros) es el momento más intenso"
+            ]
+          },
+          {
+            "name": "Potsdamer Platz",
+            "zone": "Mitte",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "De tierra de nadie del Muro a centro ultramoderno en 30 años. El Sony Center con su techo de cristal iluminado por la noche es la foto",
+              "Restos del Muro original visibles en la calle — marcados en el suelo con adoquines dobles"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 6+ días",
+        "places": [
+          {
+            "name": "Tempelhofer Feld",
+            "zone": "Neukölln",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Un aeropuerto abandonado convertido en parque público — las pistas de aterrizaje son ahora para bicicletas, patines y kitesurf. Único en el mundo"
+            ]
+          },
+          {
+            "name": "Barrio de Neukölln",
+            "zone": "Neukölln",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más alternativo del Berlín actual. Weserstraße tiene los bares más creativos — algunos son salones de antigüedades con cerveza"
+            ]
+          },
+          {
+            "name": "Charlottenburg (palacio y jardines)",
+            "zone": "Charlottenburg",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El Versalles berlinés — mucho menos visitado que la Isla de los Museos. Los jardines son gratuitos y preciosos en cualquier estación"
+            ]
+          },
+          {
+            "name": "Museo de la RDA",
+            "zone": "Mitte",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Interactivo y divertido — puedes sentarte en un Trabant, ver un piso reconstruido de la RDA y entender cómo era la vida en la Alemania del Este"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Eje monumental",
+        "description": "Puerta de Brandeburgo → Memorial Holocausto → Reichstag. A 5 minutos entre sí.",
+        "order": [
+          "Puerta de Brandeburgo",
+          "Memorial del Holocausto",
+          "Reichstag"
+        ]
+      },
+      "B": {
+        "name": "Berlín histórico",
+        "description": "Checkpoint Charlie → Gendarmenmarkt. A 5 minutos.",
+        "order": [
+          "Checkpoint Charlie",
+          "Gendarmenmarkt"
+        ]
+      }
+    }
+  },
+  "viena": {
+    "destination_type": "city",
+    "country": "Austria",
+    "max_days_recommended": 5,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Salzburgo",
+      "Hallstatt",
+      "Bratislava",
+      "Wachau"
+    ],
+    "timezone": "Europe/Vienna",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Palacio de Schönbrunn",
+            "zone": "Schönbrunn",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "El Versalles de Austria — residencia de verano de los Habsburgo. El tour Imperial (22 salas) dura 40 min, el Grand Tour (40 salas) 60 min",
+              "Llega a las 09:00 — a las 11:00 las salas están masificadas",
+              "Los jardines son GRATUITOS y enormes. El Gloriette en lo alto de la colina tiene las mejores vistas (subir gratis, entrar al mirador 4,50€)"
+            ]
+          },
+          {
+            "name": "Jardines de Schönbrunn",
+            "zone": "Schönbrunn",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El laberinto de setos es divertido incluso para adultos. La subida al Gloriette merece la pena por las vistas de todo Viena",
+              "En verano hay conciertos al aire libre en los jardines — consulta programación"
+            ]
+          },
+          {
+            "name": "Catedral de San Esteban",
+            "zone": "Innere Stadt",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El tejado de azulejos de colores es inconfundible. Subir a la torre sur (343 escalones) tiene las mejores vistas del centro — la torre norte tiene ascensor pero vistas peores",
+              "La entrada a la nave es gratuita. Las catacumbas (visita guiada, 6€) tienen los restos de 10.000 personas y órganos de la peste"
+            ]
+          },
+          {
+            "name": "Graben y Kohlmarkt",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Las calles peatonales más elegantes de Viena. La Columna de la Peste (Pestsäule) en el Graben es barroca e impactante",
+              "Kohlmarkt lleva directamente al Hofburg — la transición natural entre San Esteban y el palacio imperial"
+            ]
+          },
+          {
+            "name": "Palacio Imperial Hofburg",
+            "zone": "Innere Stadt",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La residencia de invierno de los Habsburgo — 600 años de poder imperial. Los Apartamentos Imperiales, el Museo de Sisí y la Platería Imperial están incluidos en una entrada",
+              "El Museo de Sisí cuenta la historia real de la emperatriz — muy distinta de la película. La obsesión de Isabel por su peso y su belleza es sorprendente"
+            ]
+          },
+          {
+            "name": "Plaza de los Héroes",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Aquí Hitler proclamó la anexión de Austria en 1938. Ahora es un espacio público con el Hofburg de fondo — la historia pesa en cada piedra"
+            ]
+          },
+          {
+            "name": "Ópera Estatal de Viena",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Las visitas guiadas al interior (9€, 40 min) merecen la pena aunque no vayas a un espectáculo — el interior es opulento",
+              "Las entradas de pie (Stehplätze) cuestan solo 4€ — se venden 80 minutos antes de cada función. La cola empieza 2-3 horas antes para las mejores posiciones"
+            ]
+          },
+          {
+            "name": "Ringstraße",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El bulevar circular que rodea el centro histórico — todos los grandes edificios de Viena están aquí: Ópera, Parlamento, Ayuntamiento, Burgtheater, Universidad",
+              "El tranvía 1 y 2 recorren la Ringstraße entera — es un tour panorámico por el precio de un billete de transporte"
+            ]
+          },
+          {
+            "name": "Museo de Historia del Arte",
+            "zone": "Innere Stadt",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "La colección de los Habsburgo — Vermeer, Brueghel, Velázquez, Caravaggio. La sala de Brueghel (sala X) es la más completa del mundo",
+              "El café en la cúpula central es uno de los más bonitos de Viena — toma algo solo por sentarte bajo los frescos"
+            ]
+          },
+          {
+            "name": "MuseumsQuartier",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Uno de los complejos culturales más grandes del mundo. Los bancos de colores en el patio son el punto de encuentro de los jóvenes vieneses",
+              "El MUMOK (arte contemporáneo) y el Leopold Museum (Klimt, Schiele, Kokoschka) son los dos mejores — elige uno si no tienes tiempo para ambos"
+            ]
+          },
+          {
+            "name": "Naschmarkt",
+            "zone": "Innere Stadt",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El mercado más famoso de Viena — 120 puestos de comida de todo el mundo. Prueba los falafel, el queso austríaco y un Melange (café vienés)",
+              "De lunes a viernes es mercado, los sábados se añade el mercadillo de antigüedades — el sábado es el mejor día",
+              "Los restaurantes del lado izquierdo son más baratos que los del derecho"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 3-4 días",
+        "places": [
+          {
+            "name": "Palacio Belvedere",
+            "zone": "Landstraße",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El Beso de Klimt está aquí — la obra de arte más famosa de Austria. Belvedere Superior, segunda planta",
+              "Los jardines entre el Belvedere Superior e Inferior son gratuitos y tienen la mejor vista de la silueta de Viena con San Esteban al fondo"
+            ]
+          },
+          {
+            "name": "Prater y Noria Gigante",
+            "zone": "Leopoldstadt",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La Noria Gigante (Riesenrad) de 1897 es el icono de Viena — se ve toda la ciudad. Famosa por la película El Tercer Hombre",
+              "El parque de atracciones es de entrada libre (pagas por atracción). El Prater verde más allá es enorme para pasear o ir en bici"
+            ]
+          },
+          {
+            "name": "Hundertwasserhaus",
+            "zone": "Landstraße",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El edificio más colorido y loco de Viena — diseñado por Hundertwasser con suelos ondulados, árboles en las ventanas y fachada multicolor",
+              "No se puede entrar (es vivienda), pero el Hundertwasser Village enfrente tiene tiendas y el Kunst Haus Wien (museo) está a 5 minutos"
+            ]
+          },
+          {
+            "name": "Café Central",
+            "zone": "Innere Stadt",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El café más célebre de Viena — aquí se sentaban Freud, Trotsky y Stefan Zweig. El Apfelstrudel es el mejor de la ciudad",
+              "La cola a partir de las 11:00 puede ser de 20-30 min. Ve a primera hora o a media tarde"
+            ]
+          },
+          {
+            "name": "Iglesia de San Carlos Borromeo",
+            "zone": "Innere Stadt",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La iglesia barroca más espectacular de Viena. Hay un ascensor panorámico que te sube hasta los frescos de la cúpula — los ves desde 1 metro de distancia",
+              "Conciertos de música clásica por la noche dentro de la iglesia — una experiencia única"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 5+ días",
+        "places": [
+          {
+            "name": "Cementerio Central de Viena",
+            "zone": "Simmering",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Beethoven, Mozart (cenotafio), Schubert, Brahms, Johann Strauss — todos en la misma sección (32A). Es como un paseo por la historia de la música",
+              "El cementerio es enorme (2,5 km²) — coge el bus 6A que lo recorre por dentro"
+            ]
+          },
+          {
+            "name": "Biblioteca Nacional de Austria",
+            "zone": "Innere Stadt",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La sala de gala (Prunksaal) es la biblioteca barroca más bonita del mundo — 200.000 libros antiguos bajo frescos de techo espectaculares",
+              "Dentro del complejo del Hofburg — combina con la visita al palacio"
+            ]
+          },
+          {
+            "name": "Freud Museum",
+            "zone": "Alsergrund",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El piso donde Freud vivió y trabajó 47 años. El diván original no está (se lo llevó a Londres) pero la sala de espera está intacta"
+            ]
+          },
+          {
+            "name": "Kahlenberg",
+            "zone": "Afueras",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "La colina de los viñedos — vistas de todo Viena y del Danubio. Los Heurigen (tabernas de vino) de Grinzing al pie de la colina son una tradición vienesa imprescindible"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Schönbrunn",
+        "description": "Palacio → Jardines. Todo en el mismo recinto.",
+        "order": [
+          "Palacio de Schönbrunn",
+          "Jardines de Schönbrunn"
+        ]
+      },
+      "B": {
+        "name": "Centro histórico",
+        "description": "San Esteban → Graben/Kohlmarkt. La catedral es el corazón, las calles salen de ella.",
+        "order": [
+          "Catedral de San Esteban",
+          "Graben y Kohlmarkt"
+        ]
+      },
+      "C": {
+        "name": "Hofburg",
+        "description": "Palacio Hofburg → Plaza de los Héroes. La plaza está delante del palacio.",
+        "order": [
+          "Palacio Imperial Hofburg",
+          "Plaza de los Héroes"
+        ]
+      },
+      "D": {
+        "name": "Zona de museos",
+        "description": "Museo Historia del Arte → MuseumsQuartier. Uno enfrente del otro.",
+        "order": [
+          "Museo de Historia del Arte",
+          "MuseumsQuartier"
+        ]
+      }
+    }
+  },
+  "florencia": {
+    "destination_type": "city",
+    "country": "Italia",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Pisa",
+      "Siena",
+      "San Gimignano",
+      "Cinque Terre",
+      "Val d'Orcia"
+    ],
+    "timezone": "Europe/Rome",
+    "walking_friendly": true,
+    "metro_useful": false,
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Catedral de Santa Maria del Fiore (Duomo)",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La entrada a la catedral es GRATUITA pero la cola puede ser larga. Llega temprano",
+              "Subir a la Cúpula de Brunelleschi (463 escalones, reserva obligatoria online) es la experiencia más impresionante de Florencia — pasas entre las dos capas del domo viendo los frescos a centímetros"
+            ]
+          },
+          {
+            "name": "Campanario de Giotto",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "414 escalones, más fácil que la Cúpula y con mejores vistas porque VES la cúpula desde aquí",
+              "Incluido en el pase combinado del Duomo (20€) junto con el Baptisterio y la Cúpula"
+            ]
+          },
+          {
+            "name": "Baptisterio de San Juan",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Las Puertas del Paraíso (la puerta este) de Ghiberti son las que ves desde la plaza — Miguel Ángel las bautizó así. Las originales están en el Museo dell'Opera",
+              "El mosaico del techo interior es bizantino y espectacular — mira hacia arriba nada más entrar"
+            ]
+          },
+          {
+            "name": "Galería Uffizi",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "La colección de arte renacentista más importante del mundo. Los 5 imprescindibles: El Nacimiento de Venus (Botticelli), La Primavera (Botticelli), La Anunciación (Leonardo), el Tondo Doni (Miguel Ángel) y la Venus de Urbino (Tiziano)",
+              "Reserva online obligatoria — las colas sin reserva superan las 3 horas en verano",
+              "La terraza del café de la última planta tiene vistas del Ponte Vecchio — tómate algo aunque sea caro"
+            ]
+          },
+          {
+            "name": "Ponte Vecchio",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El puente más famoso de Italia — las joyerías que lo cubren están ahí desde el siglo XVI (antes eran carnicerías)",
+              "LA foto del Ponte Vecchio se hace desde el Ponte Santa Trinita (el puente de al lado) o desde la orilla sur del Arno",
+              "Al atardecer la luz dorada sobre el puente y el Arno es mágica"
+            ]
+          },
+          {
+            "name": "Palacio Pitti",
+            "zone": "Oltrarno",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La residencia de los Medici y después de los reyes de Italia. La Galería Palatina tiene obras de Rafael, Tiziano y Rubens en salones opulentos",
+              "La entrada incluye los Jardines de Boboli — no te los saltes"
+            ]
+          },
+          {
+            "name": "Jardines de Boboli",
+            "zone": "Oltrarno",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Los jardines renacentistas más famosos de Italia. Sube hasta el Forte di Belvedere para las mejores vistas de Florencia",
+              "Incluidos en la entrada del Palacio Pitti"
+            ]
+          },
+          {
+            "name": "Galería de la Academia",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El David de Miguel Ángel es la razón de venir — la primera vez que lo ves de cerca quita el aliento. Tiene 5,17 metros de mármol",
+              "Reserva online — la cola sin reserva puede ser de 2-3 horas. El museo es pequeño, en 45-60 min ves todo",
+              "Los 'Prisioneros' (esculturas inacabadas de Miguel Ángel) en el pasillo de entrada son casi tan impresionantes como el David — figuras que parecen luchar por salir de la piedra"
+            ]
+          },
+          {
+            "name": "Plaza de la Señoría",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El museo al aire libre de Florencia — la copia del David, el Perseo de Cellini, la Fuente de Neptuno, el Rapto de las Sabinas. Todo en una plaza",
+              "El Palazzo Vecchio se puede visitar por dentro — la Sala de los Quinientos tiene frescos gigantescos"
+            ]
+          },
+          {
+            "name": "Palazzo Vecchio",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La Sala de los Quinientos es la sala más grande de Florencia — 54 metros de largo, con frescos de Vasari en techo y paredes",
+              "Los 'Passaggi Segreti' (pasadizos secretos) se visitan solo con guía — incluyen el paso elevado hasta los Uffizi"
+            ]
+          },
+          {
+            "name": "Plaza de Miguel Ángel",
+            "zone": "Oltrarno",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "EL mirador de Florencia. Al atardecer ves toda la ciudad con el Duomo, el Ponte Vecchio y las colinas — la foto de postal",
+              "Sube a pie desde el Ponte Vecchio (15 min) o en bus 12 o 13. Lleva algo para beber — los puestos de arriba son caros",
+              "San Miniato al Monte está 5 minutos más arriba — la fachada románica más bonita de Florencia y menos gente que en la Piazzale"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 3-4 días",
+        "places": [
+          {
+            "name": "Basílica de Santa Croce",
+            "zone": "Santa Croce",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El Panteón de Florencia — tumbas de Miguel Ángel, Galileo, Maquiavelo y Rossini. La tumba vacía de Dante (que está enterrado en Rávena) es simbólica",
+              "Los frescos de Giotto en la Capilla Bardi son de los más importantes del Renacimiento temprano"
+            ]
+          },
+          {
+            "name": "Barrio de San Lorenzo y Mercado",
+            "zone": "San Lorenzo",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El mercado de piel y souvenirs más grande de Florencia. Regatear es posible y esperado",
+              "El Mercado Central (dentro del edificio de hierro) tiene los mejores puestos de comida — lampredotto, trufa, chianti"
+            ]
+          },
+          {
+            "name": "Capillas Mediceas",
+            "zone": "San Lorenzo",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "Las tumbas de la familia Medici diseñadas por Miguel Ángel. Las esculturas de la Noche, el Día, el Crepúsculo y la Aurora son obras maestras"
+            ]
+          },
+          {
+            "name": "Barrio de Oltrarno",
+            "zone": "Oltrarno",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El Trastevere de Florencia — talleres artesanos, trattorias auténticas y la Florencia que no sale en las guías",
+              "Santo Spirito tiene una plaza con mercado y la iglesia diseñada por Brunelleschi — mucho menos turístico que el centro"
+            ]
+          },
+          {
+            "name": "San Miniato al Monte",
+            "zone": "Oltrarno",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "5 minutos más arriba que la Piazzale Michelangelo. La fachada románica de mármol verde y blanco es la más bonita de Florencia",
+              "Entrada gratuita. Los monjes cantan gregoriano a las 17:30 — si coincides, es una experiencia única"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 5+ días",
+        "places": [
+          {
+            "name": "Jardín de las Rosas",
+            "zone": "Oltrarno",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Justo debajo de la Piazzale Michelangelo — 1.000 rosales con las mismas vistas pero sin la gente. Tiene esculturas de Folon entre las flores"
+            ]
+          },
+          {
+            "name": "Farmacia de Santa Maria Novella",
+            "zone": "Santa Maria Novella",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La farmacia más antigua del mundo (1221) — los frailes dominicos la fundaron. Los productos (jabones, perfumes, licores) se siguen haciendo con recetas de siglos",
+              "El interior es tan opulento como un museo — frescos, estucos y vitrinas de madera"
+            ]
+          },
+          {
+            "name": "Corredor Vasariano",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El pasadizo elevado que conecta los Uffizi con el Palacio Pitti pasando por encima del Ponte Vecchio — construido para que los Medici no tuvieran que mezclarse con el pueblo",
+              "Reabierto recientemente después de años de restauración. Las entradas son limitadas — reserva con mucha antelación"
+            ]
+          },
+          {
+            "name": "Fiesole",
+            "zone": "Colinas",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Pueblo etrusco en la colina sobre Florencia — 20 min en bus (número 7). Las vistas de Florencia desde la plaza principal son espectaculares",
+              "El teatro romano y las termas se pueden visitar. La heladería de la plaza es la excusa perfecta para sentarse y disfrutar del panorama"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Complejo del Duomo",
+        "description": "Catedral → Campanario → Baptisterio. Todo en la misma plaza.",
+        "order": [
+          "Catedral de Santa Maria del Fiore (Duomo)",
+          "Campanario de Giotto",
+          "Baptisterio de San Juan"
+        ]
+      },
+      "B": {
+        "name": "Oltrarno monumental",
+        "description": "Ponte Vecchio → Pitti → Boboli. Cruzas el puente y subes.",
+        "order": [
+          "Ponte Vecchio",
+          "Palacio Pitti",
+          "Jardines de Boboli"
+        ]
+      },
+      "C": {
+        "name": "Plaza de la Señoría",
+        "description": "Plaza → Palazzo Vecchio. El palacio domina la plaza.",
+        "order": [
+          "Plaza de la Señoría",
+          "Palazzo Vecchio"
+        ]
+      },
+      "D": {
+        "name": "San Lorenzo",
+        "description": "Mercado → Capillas Mediceas. Todo en el mismo barrio.",
+        "order": [
+          "Barrio de San Lorenzo y Mercado",
+          "Capillas Mediceas"
+        ]
+      }
+    }
+  },
+  "venecia": {
+    "destination_type": "city",
+    "country": "Italia",
+    "max_days_recommended": 3,
+    "excursion_trigger_from_day": 2,
+    "suggested_extensions": [
+      "Murano",
+      "Burano",
+      "Torcello",
+      "Verona",
+      "Padua"
+    ],
+    "timezone": "Europe/Rome",
+    "walking_friendly": true,
+    "metro_useful": false,
+    "special_transport": "vaporetto",
+    "levels": {
+      "1": {
+        "description": "Imprescindibles — viajes de 1-2 días",
+        "places": [
+          {
+            "name": "Plaza de San Marcos",
+            "zone": "San Marco",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Napoleón la llamó 'el salón más bonito de Europa'. A primera hora de la mañana (antes de las 09:00) la tienes casi para ti solo",
+              "Cuando sube el acqua alta (marea alta), la plaza se inunda y montan pasarelas — es una experiencia única",
+              "NO te sientes en los cafés de la plaza (Florian, Quadri) a menos que quieras pagar 15€ por un café — hay un suplemento por la orquesta en vivo"
+            ]
+          },
+          {
+            "name": "Basílica de San Marcos",
+            "zone": "San Marco",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La entrada es GRATUITA pero la cola puede ser de 1-2 horas. Reserva online (3€) para acceso rápido — merece la pena",
+              "Los mosaicos dorados del techo son los más impresionantes del mundo — 8.000 m² de oro. Lleva prismáticos si puedes",
+              "La Pala d'Oro (retablo de oro y joyas) tiene entrada aparte (5€) — es espectacular"
+            ]
+          },
+          {
+            "name": "Campanario de San Marcos",
+            "zone": "San Marco",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "El único sitio desde donde ves toda Venecia Y la laguna a la vez. Tiene ascensor — no hay que subir escaleras",
+              "El original se derrumbó en 1902 y se reconstruyó exactamente igual. Galileo presentó aquí su telescopio al Dux"
+            ]
+          },
+          {
+            "name": "Palacio Ducal",
+            "zone": "San Marco",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 4,
+            "is_free_access": false,
+            "tips": [
+              "La sede del poder de la República de Venecia durante 1.000 años. La Sala del Gran Consejo tiene el cuadro más grande del mundo (El Paraíso de Tintoretto, 22×7 metros)",
+              "El Puente de los Suspiros se cruza por dentro durante la visita — es el puente que conecta el palacio con las celdas",
+              "La visita a los 'Itinerarios Secretos' (reserva aparte) te lleva por las cárceles, los archivos y las salas de tortura — fascinante"
+            ]
+          },
+          {
+            "name": "Puente de Rialto",
+            "zone": "San Polo",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El puente más antiguo del Gran Canal (1591). La mejor foto se hace desde el embarcadero del vaporetto de Rialto o desde los puentes laterales",
+              "Las tiendas sobre el puente son caras — los puestos del Mercado de Rialto (al otro lado) son más interesantes"
+            ]
+          },
+          {
+            "name": "Mercado de Rialto",
+            "zone": "San Polo",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El mercado de pescado y verduras donde compran los venecianos — solo por las mañanas (07:00-12:00). Los sábados es el día grande",
+              "Los bàcari (bares de tapas venecianas) alrededor del mercado tienen los mejores cicchetti de Venecia — prueba el baccalà mantecato"
+            ]
+          },
+          {
+            "name": "Paseo en vaporetto por el Gran Canal",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La línea 1 recorre todo el Gran Canal con paradas — es el tour panorámico más barato de Venecia (billete simple 9,50€ o pase 24h 25€)",
+              "Siéntate en la parte delantera o trasera del vaporetto (al aire libre) para las mejores vistas. El trayecto de Piazzale Roma a San Marcos dura 45 min",
+              "AL ATARDECER es espectacular — los palacios se iluminan con luz dorada"
+            ]
+          },
+          {
+            "name": "Paseo en góndola",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Precio fijo: 80€ de día (40 min), 100€ de noche (35 min), para hasta 6 personas — no es por persona. Cuantos más seáis, más barato sale",
+              "Evita los canales principales (Gran Canal) — pide al gondolero que vaya por los canales pequeños, es mucho más íntimo y auténtico",
+              "Si te parece caro, el traghetto es una góndola que cruza el Gran Canal por 2€ — dura 2 minutos pero es la experiencia góndola más barata"
+            ]
+          },
+          {
+            "name": "Barrio de Dorsoduro",
+            "zone": "Dorsoduro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio universitario de Venecia — menos turístico, más auténtico. Campo Santa Margherita es la plaza con más vida local (bares, heladerías)",
+              "La Punta della Dogana tiene vistas espectaculares de San Marcos y San Giorgio — perfecto para atardecer"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "description": "Muy recomendables — viajes de 2-3 días",
+        "places": [
+          {
+            "name": "Isla de Murano",
+            "zone": "Laguna",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La isla del cristal. Las demostraciones de soplado de vidrio en los hornos son gratuitas (te intentarán vender después, sin presión)",
+              "El Museo del Vidrio cuenta 700 años de historia — vale la pena si te interesa el arte. La Basílica de Santos María y Donato tiene un suelo de mosaicos del siglo XII espectacular"
+            ]
+          },
+          {
+            "name": "Isla de Burano",
+            "zone": "Laguna",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La isla más fotogénica de Venecia — casas de colores brillantes reflejadas en los canales. La leyenda dice que los pescadores las pintaban así para ver sus casas desde el mar",
+              "El encaje de Burano es famoso — el Museo del Encaje explica la tradición. Los restaurantes de la isla tienen el mejor pescado fresco de la laguna"
+            ]
+          },
+          {
+            "name": "Galería de la Academia",
+            "zone": "Dorsoduro",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La mayor colección de pintura veneciana del mundo — Bellini, Carpaccio, Tiziano, Tintoretto, Veronés. El Hombre de Vitruvio de Leonardo se expone ocasionalmente",
+              "Mucho menos masificada que los Uffizi de Florencia — puedes disfrutar las obras sin empujones"
+            ]
+          },
+          {
+            "name": "Basílica de Santa Maria della Salute",
+            "zone": "Dorsoduro",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La cúpula blanca que domina la entrada del Gran Canal — la silueta más reconocible de Venecia después de San Marcos",
+              "Construida como agradecimiento por el fin de la peste de 1631. El interior es austero pero majestuoso"
+            ]
+          },
+          {
+            "name": "Iglesia de San Giorgio Maggiore",
+            "zone": "San Giorgio",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Cruza en vaporetto (2 min) desde San Marcos. El campanario tiene las mejores vistas de Venecia — ves toda la plaza de San Marcos desde el agua, sin las multitudes",
+              "Diseñada por Palladio — el interior blanco y luminoso es la antítesis de San Marcos"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "description": "Joyas para conocedores — viajes de 4+ días",
+        "places": [
+          {
+            "name": "Isla de Torcello",
+            "zone": "Laguna",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La isla donde nació Venecia — ahora casi deshabitada. La Catedral de Santa María Assunta tiene mosaicos bizantinos del siglo XI tan impresionantes como San Marcos, sin nadie",
+              "El Puente del Diablo y la leyenda asociada merecen la visita. Hay un restaurante (Locanda Cipriani) donde iba Hemingway"
+            ]
+          },
+          {
+            "name": "Scuola Grande di San Rocco",
+            "zone": "San Polo",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La Capilla Sixtina de Venecia — 60 pinturas de Tintoretto cubren techos y paredes. Espejos disponibles para ver el techo sin romper el cuello"
+            ]
+          },
+          {
+            "name": "Librería Acqua Alta",
+            "zone": "Castello",
+            "type": "interior_corto",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La librería más original del mundo — libros apilados en góndolas, bañeras y kayaks para protegerlos del acqua alta. Los gatos del dueño pasean entre los estantes",
+              "La escalera de libros en el patio trasero es la foto más instagrameable de Venecia"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "San Marcos",
+        "description": "Plaza → Basílica → Campanario → Palacio Ducal. Todo en la misma plaza.",
+        "order": [
+          "Plaza de San Marcos",
+          "Basílica de San Marcos",
+          "Campanario de San Marcos",
+          "Palacio Ducal"
+        ]
+      },
+      "B": {
+        "name": "Rialto",
+        "description": "Puente → Mercado. Al otro lado del puente.",
+        "order": [
+          "Puente de Rialto",
+          "Mercado de Rialto"
+        ]
+      },
+      "C": {
+        "name": "Islas de la laguna",
+        "description": "Murano → Burano. Excursión de medio día en vaporetto.",
+        "order": [
+          "Isla de Murano",
+          "Isla de Burano"
+        ]
+      }
+    }
+  }
+}

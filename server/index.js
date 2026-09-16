@@ -2,8 +2,26 @@ import express from 'express'
 import { config } from 'dotenv'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 config({ path: '.env.local' })
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+// Fuente de verdad para la Fase 1 (generate-day-places) de los destinos ya curados a mano — ver
+// DESTINATION_ALIASES/findDestinationData más abajo. fs.readFileSync (no un import JSON estático) a
+// propósito: evita depender de la sintaxis de import attributes (soporte distinto según la versión
+// exacta de Node del runtime serverless de Vercel) — vercel.json declara este archivo en
+// "includeFiles" para garantizar que viaje en el bundle de la función.
+let DESTINATIONS_DATA = {}
+try {
+  DESTINATIONS_DATA = JSON.parse(readFileSync(join(__dirname, '../data/destinations.json'), 'utf8'))
+  console.log(`[curated-destinations] cargados ${Object.keys(DESTINATIONS_DATA).filter((k) => !['version', 'last_updated', 'notes'].includes(k)).length} destinos curados`)
+} catch (error) {
+  console.warn('[curated-destinations] no se pudo cargar data/destinations.json — la Fase 1 usará siempre IA para todos los destinos:', error.message)
+}
 
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 8787
 const MODEL = 'claude-sonnet-4-6'
@@ -1433,10 +1451,12 @@ MEALS ARE NEVER A NUMBERED STOP — this is a hard rule that has been violated b
 - Wrong: a stop named "Pausa para almuerzo" or "Almuerzo en Prati" appearing in "stops" right after (or instead of) the "lunch" entry in "meals". If the traveler is eating, it is a meals entry, period.
 
 REQUIRED PLACES — for every "city" day in this block, the trip context below gives you the EXACT, complete list of places to visit that day, already in a sensible visiting order (decided by an earlier step that saw the whole trip at once):
-- Every single place in that list MUST appear as its own numbered stop in your response for that day — you may NOT drop, skip, merge, rename or substitute any of them.
+- Every single place in that list MUST appear as its own numbered stop in your response for that day — you may NOT drop, skip, merge, rename or substitute any of them. Reproduce each place's "name" EXACTLY as given below, character for character — do NOT translate it, "improve" it, or apply the PLACE NAMES rule to it, even if it's not in Spanish or looks inconsistent with other stops. That exact string is what makes a stop recognized as fulfilling this requirement; a translated or reworded version of it will be treated as a DIFFERENT, unrequested place and may get removed.
 - You may NOT add any additional visitable place beyond that exact list for a "city" day — the selection is already final; your job here is only to enrich it (realistic schedule, description, tip, category, hours, coordinates, connectors to the next stop).
 - Keep the given order by default (it already reflects a sensible walking route) — only reorder within the day if strictly necessary to respect real opening hours or physically-impossible timing, and even then change as little as possible.
 - "relax" days DO get a required list too (below) — enrich it exactly the same way as a "city" day, it's just naturally lighter/shorter. Only "road" days were NOT given a place list — use your own judgment for realistic content there. "excursion" days are covered separately below.
+- Some places in the list come with extra hints already decided by a human curator: a "tips YA DADOS" note means you MUST use those exact tips (verbatim or only lightly reworded for flow) as that place's "tip" field instead of writing your own — they're more reliable than anything you'd compose from general knowledge. A "horario ideal ya decidido" note tells you the best_time to schedule that stop (primera_hora → start it 08:30-09:30; atardecer → 1-2h before sunset; noche → after 19:00) — follow it, even if it means the day runs later than your other stops would suggest; a "noche" stop is not optional just because the rest of the day already feels complete. An "acceso libre confirmado" note means set "hours": null for that stop, no exceptions.
+- If the SAME place name appears in the required list of two different days of this trip, that is a deliberate second visit (see REPEAT VISITS below) — include it BOTH times, once per day, even though it feels redundant to schedule the "same" stop twice. Do not silently skip the second occurrence just because you already covered it on another day.
 
 TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possible, not just plausible on paper:
 - suggested_time and travel_to_next are your own real-world estimate of when the day actually happens — treat them as a real schedule, not decoration.
@@ -1448,7 +1468,7 @@ REAL OPENING HOURS — you already know the approximate real opening hours of ma
 - This overrides the traveler's chronotype/schedule preference for THIS specific stop's start time — "early riser" describes when the traveler is awake and ready to go, not when a ticketed site opens. If the day starts before the first real stop's opening time, either open the day with something genuinely always-open (a sunrise walk, a viewpoint, a market that's already trading) and place the ticketed stop once it actually opens, or simply start that first stop at its real opening time — never at the chronotype's generic start hour regardless of whether the place is open yet.
 - Decide the "hours" field (below) by what the traveler is actually entering for THIS stop, not by what's visible for free from the street. A monument whose duration_minutes implies going inside — a ticket, a checkpoint, a visiting schedule (Colosseum, Vatican Museums, a cathedral's interior, any museum) — is NEVER "hours": null, even though its exterior is always visible/photographable for free. Only genuinely free-standing, no-ticket, no-schedule places (a fountain, a square, an arch, a viewpoint, a street) get "hours": null. Wrong example: marking the Colosseum "hours": null/"Acceso libre" — it has real, specific opening hours (~08:30-19:00 depending on season) and those must be used, not treated as an always-open landmark.
 
-TIPS — for EVERY stop, if you genuinely know something of real practical value, put it in "tip" (1-3 sentences, only what applies — never pad with generic filler like "lleva calzado cómodo"):
+TIPS — for EVERY stop, if you genuinely know something of real practical value, put it in "tip" (1-3 sentences, only what applies — never pad with generic filler like "lleva calzado cómodo"). EXCEPTION: if REQUIRED PLACES below already gives you tips for a specific stop ("tips YA DADOS"), use those instead of writing your own for that stop — they were curated by a human expert, don't override them with your own knowledge.
 - Combined tickets: does this place's entry also cover another place in this same trip (e.g. "La entrada del Coliseo incluye el Foro Romano y el Palatino, puedes usarla 24h antes o después")? Say so, and mention the other place by its exact name as used elsewhere in this trip.
 - Partial free access: is part of it free and part paid (e.g. "La Basílica es gratuita, pero subir a la cúpula tiene coste")? Say exactly which part.
 - Strategic timing to avoid crowds: a genuinely useful best-time-to-go detail, specific to this place, not generic advice.
@@ -1879,12 +1899,22 @@ ${formatSkeletonDays(cityDays)}${formatMustIncludePlaces(mustIncludePlaces)}`
 }
 
 /** La lista EXACTA de lugares decidida en Fase 1 (generate-day-places) para los días de este bloque — ver REQUIRED PLACES en DAY_BLOCK_SYSTEM_PROMPT. Vacío para un día "road" (no lleva lista) o "excursion" (su contenido lo decide DAY_BLOCK_SYSTEM_PROMPT por su cuenta, ver EXCURSION DAYS). */
+/** Un lugar del JSON curado (ver buildCuratedDayPlaces) trae tips/best_time/is_free_access ya decididos por un humano — se formatean aparte por lugar (en vez de en una sola línea) porque, a diferencia del resto de campos, estos SUSTITUYEN el propio criterio de Claude para ese lugar concreto (ver TIPS y REAL OPENING HOURS en DAY_BLOCK_SYSTEM_PROMPT). Un lugar elegido por la Fase 1 de Claude no trae ninguno de estos tres campos — la línea queda igual que antes. */
+function formatRequiredPlaceItem(place) {
+  const base = `${place.name} [${place.type}, ~${place.duration_min}min]`
+  const extras = []
+  if (place.best_time) extras.push(`horario ideal ya decidido: ${place.best_time}`)
+  if (place.is_free_access === true) extras.push('acceso libre confirmado, sin horario de taquilla (hours: null)')
+  if (Array.isArray(place.tips) && place.tips.length > 0) extras.push(`tips YA DADOS, úsalos tal cual o solo levemente adaptados, NO inventes otros para este lugar: ${place.tips.join(' | ')}`)
+  return extras.length > 0 ? `${base} — ${extras.join(' — ')}` : base
+}
+
 function formatRequiredPlaces(placesForBlock) {
   if (!Array.isArray(placesForBlock) || placesForBlock.length === 0) return ''
   const sections = placesForBlock
     .filter((entry) => Array.isArray(entry?.places) && entry.places.length > 0)
     .map((entry) => {
-      const items = entry.places.map((place) => `${place.name} [${place.type}, ~${place.duration_min}min]`).join('; ')
+      const items = entry.places.map(formatRequiredPlaceItem).join('; ')
       return `  - Day ${entry.day_number}: ${items}`
     })
   if (sections.length === 0) return ''
@@ -2686,6 +2716,219 @@ function enforceNeverMissLandmarks(days, destination, skeletonDays) {
   return days
 }
 
+// ── FASE 1 basada en JSON curado (data/destinations.json) ──────────────────────────────────
+//
+// Para los destinos que están en el JSON, la Fase 1 deja de pedirle a Claude que ELIJA los lugares
+// (eso ya lo decidió un humano) — en su lugar los lee del JSON y los reparte por días de forma
+// puramente programática (sin llamada a Claude, gratis e instantánea). Claude sigue interviniendo en
+// la Fase 2 (generate-day-block) para horarios/descripciones/comidas/Free Tour, pero usa los tips ya
+// dados en vez de inventarlos (ver formatRequiredPlaces). Destinos NO cubiertos por el JSON siguen el
+// camino de siempre (DAY_PLACES_SYSTEM_PROMPT, Claude elige) — el JSON es un upgrade, no un reemplazo.
+
+const DESTINATION_ALIASES = {
+  roma: ['roma', 'rome'],
+  paris: ['paris', 'parís'],
+  londres: ['londres', 'london'],
+  barcelona: ['barcelona'],
+  lisboa: ['lisboa', 'lisbon'],
+  madrid: ['madrid'],
+  amsterdam: ['amsterdam', 'ámsterdam'],
+  praga: ['praga', 'prague'],
+  berlin: ['berlin', 'berlín'],
+  viena: ['viena', 'vienna'],
+  florencia: ['florencia', 'florence', 'firenze'],
+  venecia: ['venecia', 'venice', 'venezia'],
+}
+
+/** Mismo patrón de coincidencia por palabra completa (alias de una palabra) o substring (alias multi-palabra) que findNeverMissLandmarks, para evitar falsos positivos. */
+function findDestinationData(destination) {
+  const norm = stripAccentsLower(destination)
+  if (!norm) return null
+  const words = new Set(norm.split(/[^a-z]+/).filter(Boolean))
+  for (const [key, aliases] of Object.entries(DESTINATION_ALIASES)) {
+    for (const alias of aliases) {
+      const isMultiWord = alias.includes(' ')
+      if (isMultiWord ? norm.includes(alias) : words.has(alias)) {
+        return DESTINATIONS_DATA[key] ?? null
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * 2-3 días → solo Nivel 1. 4-5 días → Nivel 1+2. 6+ días → los tres niveles. "Fuera de lo típico"
+ * (joyas_ocultas) sube un nivel más sobre esa base (sin pasar nunca del 3). `cityDayCount` es el
+ * número de días "city"/"relax" de ESTE destino en el esqueleto, no el total del viaje — así un
+ * destino que solo ocupa parte de un viaje multi-ciudad no coge más niveles de los que le tocan.
+ */
+function selectDestinationLevels(cityDayCount, experiences) {
+  let maxLevel = cityDayCount <= 3 ? 1 : cityDayCount <= 5 ? 2 : 3
+  if (Array.isArray(experiences) && experiences.includes('joyas_ocultas') && maxLevel < 3) maxLevel += 1
+  const levels = []
+  for (let i = 1; i <= maxLevel; i++) levels.push(String(i))
+  return levels
+}
+
+function collectDestinationPlaces(destData, levels) {
+  const places = []
+  const seenNames = new Set()
+  for (const levelKey of levels) {
+    for (const place of destData.levels?.[levelKey]?.places ?? []) {
+      if (typeof place?.name !== 'string' || !place.name.trim()) continue
+      const key = place.name.toLowerCase()
+      if (seenNames.has(key)) continue
+      seenNames.add(key)
+      places.push(place)
+    }
+  }
+  return places
+}
+
+/** Agrupa en "clusters": cada `group` del JSON se convierte en UN bloque indivisible (orden interno por group_order, nunca se separan ni reordenan entre sí); cada lugar suelto (group=null) es su propio cluster de un solo elemento. */
+function buildDestinationClusters(places) {
+  const byGroup = new Map()
+  const clusters = []
+  for (const place of places) {
+    if (place.group) {
+      if (!byGroup.has(place.group)) byGroup.set(place.group, [])
+      byGroup.get(place.group).push(place)
+    } else {
+      clusters.push({ zone: place.zone ?? 'General', totalDuration: place.duration_min ?? 30, places: [place] })
+    }
+  }
+  for (const members of byGroup.values()) {
+    members.sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0))
+    clusters.push({
+      zone: members[0]?.zone ?? 'General',
+      totalDuration: members.reduce((sum, m) => sum + (m.duration_min ?? 30), 0),
+      places: members,
+    })
+  }
+  return clusters
+}
+
+/**
+ * Reparte los clusters entre los días disponibles: agrupados por zona (mismo campo `zone` que ya
+ * traen los lugares del JSON) y procesados de mayor a menor duración total, cada cluster va entero
+ * al día con MENOS carga acumulada hasta ese momento — manteniendo zonas juntas la mayoría de las
+ * veces (los primeros clusters de una zona grande tienden a caer en el mismo día recién vaciado)
+ * mientras se auto-equilibra sin poder desbordar un solo día. Un cluster/grupo NUNCA se divide.
+ */
+/** Duración típica de un Free Tour (ver rule 7 de DAY_PLACES_SYSTEM_PROMPT / la sección FREE TOUR de DAY_BLOCK_SYSTEM_PROMPT — 150-180min, aquí el punto medio). */
+const FREE_TOUR_TYPICAL_MINUTES = 165
+
+function distributeClustersToDays(clusters, dayNumbers, initialLoads) {
+  const byZone = new Map()
+  for (const cluster of clusters) {
+    if (!byZone.has(cluster.zone)) byZone.set(cluster.zone, [])
+    byZone.get(cluster.zone).push(cluster)
+  }
+  const zoneBuckets = [...byZone.values()]
+    .map((zoneClusters) => ({ clusters: zoneClusters, totalDuration: zoneClusters.reduce((sum, c) => sum + c.totalDuration, 0) }))
+    .sort((a, b) => b.totalDuration - a.totalDuration)
+
+  // `initialLoads` deja un día "precargado" antes de repartir nada — por ejemplo, el día 1 cuando
+  // hay Free Tour seleccionado, para que el reparto le asigne de entrada menos contenido real y deje
+  // sitio de verdad para las 2.5-3h del tour (ver buildCuratedDayPlaces).
+  const dayLoads = new Map(dayNumbers.map((n) => [n, initialLoads?.get(n) ?? 0]))
+  const dayPlaces = new Map(dayNumbers.map((n) => [n, []]))
+
+  const leastLoadedDay = () => [...dayLoads.entries()].sort((a, b) => a[1] - b[1])[0][0]
+  const totalDuration = clusters.reduce((sum, c) => sum + c.totalDuration, 0)
+  const fairShareMinutes = totalDuration / dayNumbers.length
+
+  for (const bucket of zoneBuckets) {
+    // Toda la zona intenta caer en el MISMO día (el que menos carga tenga al empezar este bucket) —
+    // solo se pasa a otro día si esta zona por sí sola ya desbordaría muy por encima de lo que le
+    // tocaría a un día de media (1.4x), para no partir zonas normales solo porque otro día distinto
+    // sigue vacío en ese momento del reparto.
+    let targetDay = leastLoadedDay()
+    for (const cluster of bucket.clusters) {
+      if (dayLoads.get(targetDay) > 0 && dayLoads.get(targetDay) + cluster.totalDuration > fairShareMinutes * 1.4) {
+        targetDay = leastLoadedDay()
+      }
+      dayPlaces.get(targetDay).push(...cluster.places)
+      dayLoads.set(targetDay, dayLoads.get(targetDay) + cluster.totalDuration)
+    }
+  }
+  return dayPlaces
+}
+
+/** Si un lugar tiene `double_visit: true` y solo quedó asignado a un día, se añade una segunda vez en OTRO día distinto (el que menos paradas tenga) — dos visitas en momentos distintos es intencional, no un error (ver Fontana di Trevi día/noche). */
+function applyDoubleVisits(dayPlacesMap, allPlaces) {
+  for (const place of allPlaces) {
+    if (!place.double_visit) continue
+    const daysWithIt = [...dayPlacesMap.entries()].filter(([, places]) => places.some((p) => p.name === place.name)).map(([day]) => day)
+    if (daysWithIt.length !== 1) continue
+    const candidates = [...dayPlacesMap.keys()].filter((day) => day !== daysWithIt[0])
+    if (candidates.length === 0) continue
+    const targetDay = candidates.sort((a, b) => dayPlacesMap.get(a).length - dayPlacesMap.get(b).length)[0]
+    dayPlacesMap.get(targetDay).push(place)
+  }
+}
+
+/** "primera_hora" primero, "atardecer"/"noche" al final, el resto mantiene su orden original (sort estable) — una ordenación aproximada por franja horaria; el horario fino real lo decide la Fase 2 con las horas de apertura reales. */
+const BEST_TIME_SORT_WEIGHT = { primera_hora: 0, atardecer: 2, noche: 2 }
+function sortDayPlacesByBestTime(places) {
+  return places
+    .map((place, index) => ({ place, index }))
+    .sort((a, b) => {
+      const weightA = BEST_TIME_SORT_WEIGHT[a.place.best_time] ?? 1
+      const weightB = BEST_TIME_SORT_WEIGHT[b.place.best_time] ?? 1
+      return weightA !== weightB ? weightA - weightB : a.index - b.index
+    })
+    .map((entry) => entry.place)
+}
+
+/** "exterior_interior" (ej. Altar de la Patria: mirador exterior gratis + terraza de pago) y "actividad" (paseos en barco/tranvía/góndola) no existen en el esquema de Fase 2 — se aproximan al tipo más parecido de los tres que sí entiende (interior_corto / exterior). */
+const CURATED_TYPE_MAP = { interior_largo: 'interior_largo', interior_corto: 'interior_corto', exterior: 'exterior', exterior_interior: 'interior_corto', actividad: 'exterior' }
+
+function mapCuratedPlace(place) {
+  return {
+    name: place.name,
+    type: CURATED_TYPE_MAP[place.type] ?? 'interior_corto',
+    duration_min: Number.isFinite(place.duration_min) ? place.duration_min : 30,
+    tips: Array.isArray(place.tips) ? place.tips.slice(0, 4) : [],
+    is_free_access: typeof place.is_free_access === 'boolean' ? place.is_free_access : undefined,
+    best_time: typeof place.best_time === 'string' ? place.best_time : null,
+  }
+}
+
+/** Construye la lista de lugares por día directamente desde el JSON curado — sin llamada a Claude. Devuelve el mismo formato que sanitizeDayPlaces (day_number + places[]) para que el resto del pipeline (generate-day-block) no note la diferencia. */
+function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePlaces) {
+  const levels = selectDestinationLevels(listDayNumbers.length, answers.experiences)
+  const rawPlaces = collectDestinationPlaces(destData, levels)
+  const clusters = buildDestinationClusters(rawPlaces)
+
+  // Free Tour ocupa la mañana del día 1 (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) — sin esto, el
+  // reparto no sabe que hay que dejarle sitio y el día 1 puede acabar tan lleno con paradas
+  // requeridas que Fase 2 no tenga margen real para añadir el tour (visto en vivo).
+  const wantsFreeTour = Array.isArray(answers.experiences) && answers.experiences.includes('free_tour')
+  const initialLoads =
+    wantsFreeTour && listDayNumbers.includes(1) ? new Map([[1, FREE_TOUR_TYPICAL_MINUTES]]) : undefined
+
+  const dayPlacesMap = distributeClustersToDays(clusters, listDayNumbers, initialLoads)
+  applyDoubleVisits(dayPlacesMap, rawPlaces)
+
+  // Los lugares que el usuario marcó en "Elige lugares" ya suelen estar cubiertos por el JSON — solo
+  // se añaden sueltos (al primer día) si de verdad no hay ninguna coincidencia razonable.
+  const allNames = [...dayPlacesMap.values()].flat().map((place) => place.name)
+  for (const rawName of Array.isArray(mustIncludePlaces) ? mustIncludePlaces : []) {
+    if (typeof rawName !== 'string' || !rawName.trim()) continue
+    const name = rawName.trim().slice(0, 150)
+    if (allNames.some((existing) => isFuzzyPlaceMatch(existing, name))) continue
+    dayPlacesMap.get(listDayNumbers[0])?.push({ name, type: 'interior_corto', duration_min: 45, tips: [], best_time: null })
+  }
+
+  return listDayNumbers
+    .map((dayNumber) => ({
+      day_number: dayNumber,
+      places: sortDayPlacesByBestTime(dayPlacesMap.get(dayNumber) ?? []).map(mapCuratedPlace),
+    }))
+    .sort((a, b) => a.day_number - b.day_number)
+}
+
 /**
  * Fase 1 (generate-day-places) — saneo de la respuesta. Solo se aceptan días "city" del esqueleto
  * (road/excursion nunca llevan lista, ver DAY_PLACES_SYSTEM_PROMPT); cada día se deduplica
@@ -2749,8 +2992,24 @@ app.post('/api/generate-day-places', async (req, res) => {
   }
 
   const transportContext = readTransportContext(req.body)
-  if (!skeleton_days.some((day) => day.type === 'city' || day.type === 'relax')) {
+  const listDayNumbers = skeleton_days
+    .filter((day) => day.type === 'city' || day.type === 'relax')
+    .map((day) => Number(day.day_number))
+  if (listDayNumbers.length === 0) {
     res.json({ days: [] })
+    return
+  }
+
+  const curatedDestination = findDestinationData(destination)
+  if (curatedDestination) {
+    try {
+      const days = buildCuratedDayPlaces(curatedDestination, listDayNumbers, answers, must_include_places)
+      console.log(`[curated-destinations] "${destination}" — Fase 1 resuelta desde el JSON curado, sin llamada a Claude`)
+      res.json({ days })
+    } catch (error) {
+      console.error('[curated-destinations] fallo organizando el JSON curado:', error)
+      res.status(502).json({ error: 'No se pudo organizar la lista curada de lugares del viaje.' })
+    }
     return
   }
 
@@ -2947,11 +3206,40 @@ function filterFreeTourDuplicateStops(day, requiredPlaces) {
  * lo repite en la Fase 2 (ej. "Museo del Louvre" vs "Louvre", "Coliseo" vs "Coliseo de Roma") —
  * contención de substring en ambos sentidos sobre el nombre ya normalizado, mismo espíritu que
  * isNameAlreadyInRoute en el cliente (routeStopsIndex.ts). */
+/** Palabras "significativas" (>3 letras, sin acentos) de un nombre — ignora artículos/preposiciones cortos (de/la/von/di/...) que no aportan nada a la comparación. */
+function significantNameWords(name) {
+  return stripAccentsLower(name)
+    .replace(/[^a-z\s]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 3)
+}
+
+/** Dos palabras "casi iguales" si comparten los primeros ~5 caracteres — cubre variantes de idioma con la misma raíz (conciliaZIONE/conciliaCIÓN, TREVi/TREVi) sin necesitar diccionario de traducción. */
+function wordsRoughlyMatch(wordA, wordB) {
+  if (wordA === wordB) return true
+  const prefixLength = Math.min(5, wordA.length, wordB.length)
+  return prefixLength >= 4 && wordA.slice(0, prefixLength) === wordB.slice(0, prefixLength)
+}
+
+/**
+ * Contención de substring (rápido, cubre la mayoría de casos: "Coliseo" ⊂ "Coliseo de Roma") con una
+ * segunda pasada de solapamiento de palabras-raíz para variantes de idioma que ninguna cadena
+ * contiene literalmente (visto en vivo: Claude tradujo "Via della Conciliazione" del JSON curado a
+ * "Vía de la Conciliación" — mismo lugar, pero un substring puro nunca las habría emparejado). El
+ * umbral 60% está calibrado para NO confundir lugares distintos que comparten una sola palabra
+ * (ej. "Piazza Navona" vs "Piazza del Popolo", "Galería Borghese" vs "Jardines de Villa Borghese").
+ */
 function isFuzzyPlaceMatch(nameA, nameB) {
   const a = normalizePlaceNameForMatch(nameA)
   const b = normalizePlaceNameForMatch(nameB)
   if (!a || !b) return false
-  return a === b || a.includes(b) || b.includes(a)
+  if (a === b || a.includes(b) || b.includes(a)) return true
+
+  const wordsA = significantNameWords(nameA)
+  const wordsB = significantNameWords(nameB)
+  if (wordsA.length === 0 || wordsB.length === 0) return false
+  const matched = wordsA.filter((wordA) => wordsB.some((wordB) => wordsRoughlyMatch(wordA, wordB)))
+  return matched.length / Math.min(wordsA.length, wordsB.length) >= 0.6
 }
 
 /**
