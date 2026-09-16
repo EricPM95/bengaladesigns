@@ -340,6 +340,52 @@ function toLightDaySummary(day: SkeletonDay): LightDaySummary {
   return { day_number: day.day_number, city: day.city, zone_focus: day.zone_focus, experience_focus: day.experience_focus }
 }
 
+interface DayBlockResult {
+  days: GeneratedDay[]
+  not_included: GeneratedRouteResponse['not_included']
+  excursions_available: GeneratedRouteResponse['excursions_available']
+}
+
+// Encontrado en vivo (Vercel, 2026-09-17): un bloque de un solo día se quedó colgado a mitad de
+// respuesta de Claude (primer byte a 1.2s, luego silencio total) hasta que Vercel mató la función a
+// los 200s en seco — un cuelgue puntual de la API, no un bug de max_tokens ni del JSON curado. Antes
+// de este reintento, ESE bloque hacía fallar la generación entera; ahora se reintenta él solo (hasta
+// 2 veces más) antes de darse por vencido, sin tocar los demás bloques.
+const DAY_BLOCK_MAX_ATTEMPTS = 3
+
+async function requestDayBlockWithRetry(
+  destination: string,
+  answers: QuestionnaireAnswers,
+  block: SkeletonDay[],
+  dayPlaces: DayPlaces[],
+  allDaysLight: LightDaySummary[],
+  transportContext: TransportContext,
+): Promise<DayBlockResult> {
+  const dayNumbers = block.map((day) => day.day_number).join(',')
+  let lastError: unknown
+  for (let attempt = 1; attempt <= DAY_BLOCK_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await postJson<DayBlockResult>('/api/generate-day-block', {
+        destination,
+        answers,
+        block_days: block,
+        places_for_block: placesForBlockDays(dayPlaces, block),
+        all_days: allDaysLight,
+        is_first_block_of_trip: block.some((day) => day.day_number === 1),
+        ...transportContext,
+      })
+    } catch (error) {
+      lastError = error
+      const willRetry = attempt < DAY_BLOCK_MAX_ATTEMPTS
+      console.warn(
+        `[day-block-retry] día(s) ${dayNumbers} — intento ${attempt}/${DAY_BLOCK_MAX_ATTEMPTS} falló${willRetry ? ', reintentando' : ', sin más intentos'}:`,
+        error,
+      )
+    }
+  }
+  throw lastError
+}
+
 /** Un día ya generado (con contenido real) no se vuelve a pedir al reanudar una generación a medias — ver el filtro de pendingBlocks más abajo. */
 function isDayAlreadyGenerated(generated: GeneratedRouteResponse, dayNumber: number): boolean {
   const day = generated.days.find((candidate) => candidate.day_number === dayNumber)
@@ -371,6 +417,83 @@ function mergeBlockDaysIntoGenerated(
   }
 }
 
+type BlockOutcome = { block: SkeletonDay[]; status: 'ok'; result: DayBlockResult } | { block: SkeletonDay[]; status: 'error'; error: unknown }
+
+interface SettlePendingBlocksArgs {
+  destination: string
+  answers: QuestionnaireAnswers
+  pendingBlocks: SkeletonDay[][]
+  dayPlaces: DayPlaces[]
+  allDaysLight: LightDaySummary[]
+  transportContext: TransportContext
+  generated: GeneratedRouteResponse
+  completedBlocks: number
+  totalBlocks: number
+  params: GenerationParams
+  recommendedRevisits: RawRecommendedRevisit[]
+  skeleton: SkeletonResponse
+  onCheckpoint: OnCheckpoint
+}
+
+/**
+ * Dispara TODOS los bloques pendientes de golpe (cada uno con su propio reintento interno, ver
+ * requestDayBlockWithRetry) y los procesa por orden de finalización REAL, no por el orden en que se
+ * listaron — un bloque que necesita sus 2 reintentos (hasta ~10min en el peor caso) no debe bloquear
+ * que uno más rápido, ya resuelto con éxito, se fusione y checkpointee. Así, si el Día 2 se cuelga
+ * pero el Día 1 y el Día 3 ya terminaron, esos dos quedan guardados en el checkpoint aunque el Día 2
+ * tarde mucho más o acabe fallando del todo — un "Reintentar" posterior solo repetirá el Día 2 (ver
+ * isDayAlreadyGenerated), nunca los que ya se generaron bien.
+ *
+ * NOTA sobre `status: 'ok' | 'error'`: la primera versión usaba `ok: true | false` (booleano) como
+ * discriminante — TypeScript 5.9 dejaba de estrechar el tipo con ese patrón exacto (`.then().catch()`
+ * devolviendo un literal booleano, consumido después vía `Promise.race`), aunque el mismo código
+ * aislado en un archivo aparte SÍ estrechaba bien; nunca se aisló la causa exacta. Cambiar el
+ * discriminante a un literal de texto (`'ok'`/`'error'`) lo arregló sin tocar nada más — si se toca
+ * este tipo en el futuro, mejor mantenerlo como string en vez de volver a boolean.
+ */
+async function settlePendingBlocks(args: SettlePendingBlocksArgs): Promise<{ generated: GeneratedRouteResponse; completedBlocks: number }> {
+  const { destination, answers, pendingBlocks, dayPlaces, allDaysLight, transportContext, params, recommendedRevisits, skeleton, onCheckpoint, totalBlocks } = args
+  let { generated, completedBlocks } = args
+
+  interface SettleEntry {
+    index: number
+    promise: Promise<BlockOutcome>
+  }
+  let settleQueue: SettleEntry[] = pendingBlocks.map((block, index) => ({
+    index,
+    promise: requestDayBlockWithRetry(destination, answers, block, dayPlaces, allDaysLight, transportContext)
+      .then((result): BlockOutcome => ({ block, status: 'ok', result }))
+      .catch((error): BlockOutcome => ({ block, status: 'error', error })),
+  }))
+
+  let firstFailure: { block: SkeletonDay[]; error: unknown } | null = null
+  while (settleQueue.length > 0) {
+    const winnerIndex = await Promise.race(settleQueue.map((entry) => entry.promise.then(() => entry.index)))
+    const winner = settleQueue.find((entry) => entry.index === winnerIndex)!
+    settleQueue = settleQueue.filter((entry) => entry.index !== winnerIndex)
+    const outcome: BlockOutcome = await winner.promise
+
+    if (outcome.status === 'error') {
+      const failedBlock = outcome.block
+      const failedError = outcome.error
+      if (!firstFailure) firstFailure = { block: failedBlock, error: failedError }
+      continue
+    }
+    generated = mergeBlockDaysIntoGenerated(generated, outcome.result.days, outcome.result.not_included, outcome.result.excursions_available)
+    completedBlocks += 1
+    const done = completedBlocks >= totalBlocks
+    await onCheckpoint({ phase: done ? 'done' : 'blocks', params, dayPlaces, recommendedRevisits, skeleton, generated, completedBlocks, totalBlocks })
+  }
+
+  // Se lanza DESPUÉS de procesar (y checkpointear) todos los bloques que sí tuvieron éxito — nunca
+  // antes, o se perdería el progreso real de los demás bloques por culpa de uno solo.
+  if (firstFailure) {
+    const dayNumbers = firstFailure.block.map((day) => day.day_number).join(',')
+    throw firstFailure.error instanceof Error ? firstFailure.error : new Error(`No se pudo generar el día ${dayNumbers} del viaje con IA.`)
+  }
+
+  return { generated, completedBlocks }
+}
 
 /**
  * Genera (o retoma) una ruta encadenando llamadas pequeñas: esqueleto (forma) → lugares (Fase 1,
@@ -448,43 +571,23 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
 
   if (pendingBlocks.length > 0) {
     const allDaysLight = skeleton.days.map(toLightDaySummary)
-
-    // Las peticiones se disparan TODAS aquí, de golpe (sin ningún await entre una y otra) — la
-    // concurrencia real ocurre en este `.map`, no en cómo se procesan los resultados después.
-    // Procesarlos uno a uno en el orden del array (en vez de con Promise.all) evita que dos bloques
-    // que terminan casi a la vez pisen el checkpoint de Supabase del otro (ver
-    // saveGenerationCheckpoint en tripPersistence.ts) — el coste en tiempo de esto es mínimo, porque
-    // el fetch de todos ya está en marcha desde el principio; el tiempo total pasa a ser el del
-    // bloque más lento, no la suma de todos.
-    const blockPromises = pendingBlocks.map((block) => {
-      const promise = postJson<{
-        days: GeneratedDay[]
-        not_included: GeneratedRouteResponse['not_included']
-        excursions_available: GeneratedRouteResponse['excursions_available']
-      }>('/api/generate-day-block', {
-        destination,
-        answers,
-        block_days: block,
-        places_for_block: placesForBlockDays(dayPlaces, block),
-        all_days: allDaysLight,
-        is_first_block_of_trip: block.some((day) => day.day_number === 1),
-        ...transportContext,
-      })
-      // Si otro bloque falla primero y abortamos el bucle de abajo antes de llegar a este `await`,
-      // esta promesa sigue en marcha en segundo plano — este catch mudo solo evita el warning de
-      // "unhandled rejection" si también termina fallando; el error real se sigue propagando a
-      // través del `await blockPromise` correspondiente más abajo.
-      promise.catch(() => {})
-      return promise
+    const settled = await settlePendingBlocks({
+      destination,
+      answers,
+      pendingBlocks,
+      dayPlaces,
+      allDaysLight,
+      transportContext,
+      generated,
+      completedBlocks,
+      totalBlocks,
+      params,
+      recommendedRevisits,
+      skeleton,
+      onCheckpoint,
     })
-
-    for (const blockPromise of blockPromises) {
-      const result = await blockPromise
-      generated = mergeBlockDaysIntoGenerated(generated, result.days, result.not_included, result.excursions_available)
-      completedBlocks += 1
-      const done = completedBlocks >= totalBlocks
-      await onCheckpoint({ phase: done ? 'done' : 'blocks', params, dayPlaces, recommendedRevisits, skeleton, generated, completedBlocks, totalBlocks })
-    }
+    generated = settled.generated
+    completedBlocks = settled.completedBlocks
   }
 
   // Ruta generada de cero — se guarda como entrada nueva de route_cache para que futuras peticiones
