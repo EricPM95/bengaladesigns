@@ -567,7 +567,12 @@ app.post('/api/anchor-tips', async (req, res) => {
 
     if (tips.length > 0 && supabaseAdmin) {
       try {
-        await supabaseAdmin.from('tips_anclas').insert(tips.map((tip) => ({ destino, lugar, tipo: tip.tipo, texto: tip.texto })))
+        // El cliente de Supabase NO lanza en un error de Postgrest — hay que comprobar `error`
+        // explícitamente (ver feedback_supabase_js_silent_insert.md).
+        const { error: insertError } = await supabaseAdmin
+          .from('tips_anclas')
+          .insert(tips.map((tip) => ({ destino, lugar, tipo: tip.tipo, texto: tip.texto })))
+        if (insertError) throw insertError
       } catch (error) {
         // El tip ya se generó y se puede devolver igual — un fallo guardándolo en caché solo
         // significa que la próxima vez se vuelve a generar, no es motivo para dar error al viajero.
@@ -647,7 +652,8 @@ app.post('/api/nearby-transit', async (req, res) => {
 
     if (supabaseAdmin) {
       try {
-        await supabaseAdmin.from('transporte_cercano').insert({ destino, lugar, metro, bus })
+        const { error: insertError } = await supabaseAdmin.from('transporte_cercano').insert({ destino, lugar, metro, bus })
+        if (insertError) throw insertError
       } catch (error) {
         logAnthropicError('nearby-transit (write cache)', error)
       }
@@ -752,7 +758,8 @@ app.post('/api/meal-recommendations', async (req, res) => {
 
     if (supabaseAdmin) {
       try {
-        await supabaseAdmin.from('zona_restaurantes').insert({ destino, zona, franja, seleccion })
+        const { error: insertError } = await supabaseAdmin.from('zona_restaurantes').insert({ destino, zona, franja, seleccion })
+        if (insertError) throw insertError
       } catch (error) {
         logAnthropicError('meal-recommendations (write cache)', error)
       }
@@ -834,7 +841,8 @@ app.post('/api/zona-turistica', async (req, res) => {
 
     if (supabaseAdmin) {
       try {
-        await supabaseAdmin.from('zona_turistica').insert({ destino, zona_bruta: zonaBruta, zona_turistica: zonaTuristica })
+        const { error: insertError } = await supabaseAdmin.from('zona_turistica').insert({ destino, zona_bruta: zonaBruta, zona_turistica: zonaTuristica })
+        if (insertError) throw insertError
       } catch (error) {
         logAnthropicError('zona-turistica (write cache)', error)
       }
