@@ -214,6 +214,14 @@ export interface Stop {
   checkedInAt?: string | null
   /** Modo Hoy: instante real (ISO) en que el viajero pulsó "Sí, dame más tiempo" en el aviso "¿Sigues aquí?" — solo anota el retraso, no cambia nada más; se usa para no volver a preguntar de inmediato. */
   delayNotedAt?: string | null
+  /** true solo para la parada de Free Tour generada por el pipeline (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT, server/index.js) — StopAccordion/StopDetailSheet le dan un tratamiento especial: icono propio y ficha con contenido nativo del pipeline (freeTour*) en vez de pedir descripción bajo demanda. */
+  isFreeTour?: boolean
+  /** Solo isFreeTour: punto de encuentro real donde arrancan los free tours de este destino. */
+  freeTourMeetingPoint?: string
+  /** Solo isFreeTour: lugares reales que este free tour recorre por fuera, para que el viajero sepa qué esperar y sepa que volverá a visitarlos con calma otro día del viaje. */
+  freeTourHighlights?: string[]
+  /** Solo isFreeTour: exactamente 3 tips (persuasivo/propina/práctico) — a diferencia del resto de paradas, generados directamente por el pipeline, nunca bajo demanda. */
+  freeTourTips?: string[]
 }
 
 /**

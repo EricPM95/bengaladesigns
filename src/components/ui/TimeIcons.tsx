@@ -20,3 +20,13 @@ export function HourglassIcon({ className = '' }: TimeIconProps) {
     </svg>
   )
 }
+
+/** Icono específico de Free Tour (grupo guiado a pie) — distingue esta parada del resto en StopAccordion.tsx/StopDetailSheet.tsx, ver Stop.isFreeTour en types.ts. */
+export function FreeTourIcon({ className = '' }: TimeIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-3.5 w-3.5 shrink-0 ${className}`}>
+      <circle cx="12" cy="5" r="2" />
+      <path d="M12 7v5l-2.5 6M12 12l2.5 6M9 12l-4 2M15 12l4 2" />
+    </svg>
+  )
+}

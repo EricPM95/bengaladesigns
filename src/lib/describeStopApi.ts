@@ -5,15 +5,21 @@
  * pierde al recargar la página, igual que el cache de getRoutedDistance en mapboxDirections.ts.
  */
 
+import type { StopTip } from './anchorTipsApi'
+
 export interface StopDescription {
   description: string
   whatYoullSee: string
   whyRecommended: string
   address: string | null
   officialWebsite: string | null
-  /** Tip generado solo con el conocimiento de Claude (sin búsqueda web) — para paradas que NO son
-      ancla, ver anchorTipsApi.ts para esas. null si Claude no tenía nada genuinamente bueno. */
-  localTip: string | null
+  /** Horario con matices (temporada/día de la semana) cuando aplica — null si el rango simple de
+      Stop.hours ya lo dice todo. Ver "TIPS DE ORO"/"HORARIOS" del feedback de calidad. */
+  hoursDetail: string | null
+  /** 0-3 tips generados solo con el conocimiento de Claude (sin búsqueda web) — para paradas que NO
+      son ancla, ver anchorTipsApi.ts para esas (esas sí usan búsqueda web). Entradas combinadas,
+      acceso gratuito parcial, horarios estratégicos, datos prácticos — nunca relleno genérico. */
+  tips: StopTip[]
 }
 
 const cache = new Map<string, StopDescription>()
@@ -46,7 +52,8 @@ export async function describeStop(name: string, city: string, category?: string
         whyRecommended: data.why_recommended ?? '',
         address: data.address ?? null,
         officialWebsite: data.official_website ?? null,
-        localTip: data.local_tip ?? null,
+        hoursDetail: data.hours_detail ?? null,
+        tips: Array.isArray(data.tips) ? data.tips : [],
       }
       if (!result.description) return null
       cache.set(key, result)

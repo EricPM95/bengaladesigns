@@ -51,6 +51,11 @@ interface GeneratedStop {
   entry_fee?: string
   entry_options?: GeneratedEntryOption[]
   travel_to_next?: GeneratedTravelToNext
+  /** Ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT (server/index.js) — Stop.isFreeTour/freeTour* en types.ts. */
+  is_free_tour?: boolean
+  free_tour_meeting_point?: string
+  free_tour_highlights?: string[]
+  free_tour_tips?: string[]
 }
 
 interface GeneratedMealOption {
@@ -219,6 +224,15 @@ function mapEntryOptions(stopId: string, options?: GeneratedEntryOption[]): Tick
   }))
 }
 
+/** Placeholder determinista mientras no hay ninguna foto real — se sustituye asíncronamente por un
+    thumbnail real de Wikipedia si lo hay, ver enrichRoutePhotos en placePhoto.ts (App.tsx la llama
+    tras mapear la ruta). picsum.photos NO busca por contenido, solo asigna una imagen de stock
+    aleatoria a partir del hash de la seed — por eso este placeholder es solo un último recurso, no
+    un intento real de mostrar el lugar correcto. */
+function buildPlaceholderPhotoUrl(id: string, name: string): string {
+  return `https://picsum.photos/seed/${encodeURIComponent(id || name)}/600/400`
+}
+
 function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
   return {
     id: generated.id || `stop-${dayNumber}-${slugify(generated.name)}`,
@@ -227,7 +241,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     description: generated.description,
     durationMinutes: generated.duration_minutes,
     coordinates: { lat: generated.latitude, lng: generated.longitude },
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(generated.id || generated.name)}/600/400`,
+    photoUrl: buildPlaceholderPhotoUrl(generated.id, generated.name),
     category: (generated.category && CATEGORY_MAP[generated.category]) || 'sight',
     categoryLabel: generated.category_label,
     hours: generated.hours ?? null,
@@ -235,6 +249,14 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     insiderTip: generated.tip,
     ticketOptions: mapEntryOptions(generated.id || slugify(generated.name), generated.entry_options),
     ...mapTravelToNext(generated.travel_to_next),
+    ...(generated.is_free_tour
+      ? {
+          isFreeTour: true,
+          freeTourMeetingPoint: generated.free_tour_meeting_point,
+          freeTourHighlights: generated.free_tour_highlights,
+          freeTourTips: generated.free_tour_tips,
+        }
+      : {}),
   }
 }
 

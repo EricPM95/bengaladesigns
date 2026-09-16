@@ -212,6 +212,11 @@ export interface MockStopDetail {
   sections?: StopSection[]
   tips: string[]
   purchase: PlacePurchaseInfo | null
+  /** Ver Stop.isFreeTour/freeTour* en types.ts — StopDetailSheet le da un tratamiento especial (ficha con contenido nativo del pipeline en vez de describeStop bajo demanda). */
+  isFreeTour?: boolean
+  freeTourMeetingPoint?: string
+  freeTourHighlights?: string[]
+  freeTourTips?: string[]
 }
 
 type StopTemplate = (city: string, rand: () => number) => MockStopDetail
@@ -411,6 +416,10 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     description: stop.description,
     tips: stop.insiderTip ? [stop.insiderTip] : [],
     purchase: mapStopTicketsToPurchase(stop),
+    isFreeTour: stop.isFreeTour,
+    freeTourMeetingPoint: stop.freeTourMeetingPoint,
+    freeTourHighlights: stop.freeTourHighlights,
+    freeTourTips: stop.freeTourTips,
   }
 }
 

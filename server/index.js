@@ -283,6 +283,12 @@ app.post('/api/suggest-experiences', async (req, res) => {
 
 const DESCRIBE_STOP_SYSTEM_PROMPT = `You are an expert local travel guide. Someone is looking at the detail card for ONE specific place inside a trip you already helped plan. Write genuinely useful, specific content — never generic filler that could apply to any place. Write every text field in SPANISH (the traveler's language), regardless of what language your own knowledge of the place is in.
 
+TIPS — up to 3 tips of genuinely high practical value, only from your own knowledge (no web search). For each one that genuinely applies, cover:
+1. Combined tickets: does this place's entry also cover another nearby place (e.g. "La entrada incluye también el Foro Romano y el Palatino, puedes usarla 24h antes o después")?
+2. Partial free access: is part of it free and part paid (e.g. "El acceso a la basílica es gratuito, pero subir a la cúpula tiene coste")?
+3. Strategic timing or a practical logistics detail that saves time or money: best time to avoid crowds, typical wait without booking ahead, a reservation quirk, a genuinely surprising local detail.
+Only include a tip you're genuinely confident about — an empty array is better than a generic or made-up one. Never write filler like "lleva calzado cómodo" or "haz fotos".
+
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
   "description": "2-3 sentences: what this place is, historical/general context.",
@@ -290,18 +296,29 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "why_recommended": "1-2 sentences: why this specific place is worth including in a trip to this city.",
   "address": "Real, specific street address as 'Street, City' — or null if you don't genuinely know it.",
   "official_website": "Real official website URL (just the domain or full URL) if this place has one — or null if it doesn't have one or you're not confident.",
-  "local_tip": "Something a LOCAL or a repeat visitor would know — not the typical advice already in every guidebook. A genuinely surprising angle, a lesser-known detail, a good photo spot, a small anecdote. Only from your own knowledge, no web search. If you don't have anything good enough, use null — never force a mediocre tip."
-}`
+  "hours_detail": "Only when opening hours genuinely have seasonal/weekday nuance worth knowing (e.g. 'Lunes a sábado: 8:00–20:00 (última entrada 18:00). Último domingo del mes: 9:00–14:00 (última entrada 12:30)') — null if you don't have specific nuance beyond a simple range, never invent precision you don't have.",
+  "tips": [
+    { "tipo": "practico", "texto": "One tip following the TIPS guidance above" }
+  ]
+}
+"tipo" is "practico" for combined-tickets/free-access/logistics tips, "secreto" for a genuinely surprising lesser-known angle. Return between 0 and 3 tips.`
 
 function sanitizeStopDescription(parsed) {
   const text = (value, max) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : '')
+  const tips = Array.isArray(parsed?.tips)
+    ? parsed.tips
+        .filter((tip) => tip && typeof tip.texto === 'string' && tip.texto.trim())
+        .slice(0, 3)
+        .map((tip) => ({ tipo: tip.tipo === 'secreto' ? 'secreto' : 'practico', texto: tip.texto.trim().slice(0, 400) }))
+    : []
   return {
     description: text(parsed?.description, 500),
     what_youll_see: text(parsed?.what_youll_see, 500),
     why_recommended: text(parsed?.why_recommended, 300),
     address: text(parsed?.address, 200) || null,
     official_website: text(parsed?.official_website, 200) || null,
-    local_tip: text(parsed?.local_tip, 400) || null,
+    hours_detail: text(parsed?.hours_detail, 400) || null,
+    tips,
   }
 }
 
@@ -315,7 +332,7 @@ app.post('/api/describe-stop', async (req, res) => {
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 700,
+      max_tokens: 900,
       system: DESCRIBE_STOP_SYSTEM_PROMPT,
       messages: [
         {
@@ -345,19 +362,24 @@ app.post('/api/describe-stop', async (req, res) => {
 // ancla es lo bastante genérica (Coliseo Romano, Torre Eiffel...) para que MUCHOS viajeros distintos
 // generen una ruta con ella — cachear en Supabase (tabla `tips_anclas`, ver database.sql) hace que
 // el coste de la búsqueda web + Claude se pague UNA sola vez por lugar, nunca por usuario.
-const ANCHOR_TIPS_SYSTEM_PROMPT = `You are an expert local travel guide with web search access. Someone is planning a visit to ONE specific, well-known place. Use web search to find the most current, specific tips you can — real access points, real ways to skip lines, real lesser-known viewpoints. Do not rely only on your training knowledge for logistics that change over time (opening hours, specific entrances, transit lines).
+const ANCHOR_TIPS_SYSTEM_PROMPT = `You are an expert local travel guide with web search access. Someone is planning a visit to ONE specific, well-known place. Use web search to find the most current, specific tips you can — real access points, real ways to skip lines, real lesser-known viewpoints, real combined-ticket deals. Do not rely only on your training knowledge for logistics that change over time (opening hours, specific entrances, transit lines, ticket bundles).
 
-Find exactly two kinds of tip:
-1. A PRACTICAL tip: how to skip the line, the best time to go, what to bring — genuinely useful, verified logistics.
-2. A SECRET/WOW tip: something most visitors don't know — a lesser-known free viewpoint, an alternative access with fewer people, a specific photo angle locals use, a real little-known fact. This is the one meant to impress, not just inform.
+Find up to 3 tips, prioritizing whichever of these genuinely apply and are verifiable via web search — skip any that don't apply rather than forcing one:
+1. Combined ticket: does the entry to this place also cover another nearby site, and within what time window (e.g. "La entrada incluye también el Foro Romano y el Palatino, puedes usarla 24h antes o después")?
+2. Partial free access: is part of the place free and part paid (e.g. "El acceso a la basílica es gratuito, pero subir a la cúpula tiene coste")?
+3. Strategic timing: the best verified time to go to avoid crowds, specific to this place (not generic "go early").
+4. A genuinely surprising SECRET/WOW angle: a lesser-known free viewpoint, an alternative access with fewer people, a specific photo angle locals use — meant to impress, not just inform.
+5. A practical logistics detail: real wait times without booking, a reservation quirk, something that saves real time or money.
 
-Write both tips in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language, never quote or leave them in the source language.
+Write every tip in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language, never quote or leave them in the source language. Never write filler like "lleva calzado cómodo" — every tip must carry real, specific, verifiable value.
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
-  "practico": "The practical tip, 1-2 sentences — or null if you couldn't verify anything genuinely useful.",
-  "secreto": "The secret/wow tip, 1-2 sentences — or null if you couldn't find anything genuinely surprising."
-}`
+  "tips": [
+    { "tipo": "practico", "texto": "1-2 sentences, in Spanish" }
+  ]
+}
+"tipo" is "practico" for combined-ticket/free-access/timing/logistics tips (1-5 above except the wow angle), "secreto" for the surprising wow angle. Return between 0 and 3 tips — only what you can genuinely verify, never pad to fill the quota.`
 
 // Mismo endpoint/tabla/caché que ANCHOR_TIPS_SYSTEM_PROMPT (una fila más en tips_anclas, esta vez
 // con `lugar` = nombre del aeropuerto/estación de llegada en vez de un lugar turístico) — el
@@ -365,26 +387,26 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 // saltarte la cola de un monumento"), así que usa su propio prompt, ver ArrivalDetailSheet.tsx.
 const AIRPORT_TIPS_SYSTEM_PROMPT = `You are an expert local travel guide with web search access. Someone is about to arrive at ONE specific airport/train station and travel from there into the city. Use web search to find the most current, specific tips you can about this exact arrival point — real ticketing gotchas, real logistics quirks. Do not rely only on your training knowledge for details that change over time.
 
-Find exactly two kinds of tip:
-1. A PRACTICAL tip: a genuinely useful logistics detail about arriving here — e.g. a ticket that does NOT cover the next connection and must be bought separately, a validation machine that's easy to miss, a luggage quirk, a real gotcha that catches visitors out.
-2. A SECRET/WOW tip: something most visitors arriving here don't know — a shortcut, a lesser-known exit/platform, a free amenity, a real little-known fact about this specific arrival point.
+Find up to 3 tips:
+1-2. PRACTICAL tips: genuinely useful logistics details about arriving here — e.g. a ticket that does NOT cover the next connection and must be bought separately, a validation machine that's easy to miss, a luggage quirk, a real gotcha that catches visitors out.
+3. A SECRET/WOW tip: something most visitors arriving here don't know — a shortcut, a lesser-known exit/platform, a free amenity, a real little-known fact about this specific arrival point.
 
-Write both tips in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language.
+Write every tip in SPANISH (the traveler's language) — translate/rewrite in Spanish even if the web sources you found were in another language.
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
-  "practico": "The practical tip, 1-2 sentences — or null if you couldn't verify anything genuinely useful.",
-  "secreto": "The secret/wow tip, 1-2 sentences — or null if you couldn't find anything genuinely surprising."
-}`
+  "tips": [
+    { "tipo": "practico", "texto": "1-2 sentences, in Spanish" }
+  ]
+}
+"tipo" is "practico" for logistics gotchas, "secreto" for the wow angle. Return between 0 and 3 tips — only what you can genuinely verify.`
 
 function sanitizeAnchorTips(parsed) {
-  const text = (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 500) : null)
-  const tips = []
-  const practico = text(parsed?.practico)
-  const secreto = text(parsed?.secreto)
-  if (practico) tips.push({ tipo: 'practico', texto: practico })
-  if (secreto) tips.push({ tipo: 'secreto', texto: secreto })
-  return tips
+  if (!Array.isArray(parsed?.tips)) return []
+  return parsed.tips
+    .filter((tip) => tip && typeof tip.texto === 'string' && tip.texto.trim())
+    .slice(0, 3)
+    .map((tip) => ({ tipo: tip.tipo === 'secreto' ? 'secreto' : 'practico', texto: tip.texto.trim().slice(0, 500) }))
 }
 
 app.post('/api/anchor-tips', async (req, res) => {
@@ -1184,16 +1206,17 @@ CRITICAL RULES:
 - Prioritize genuine variety across the traveler's chosen experience categories over cramming in every possible attraction
 - Pick roughly 2-3 anchors per day of the trip (fewer for very short trips, more for long multi-city trips) — real, well-known-enough places that genuinely fit the destination and the chosen experience focus
 - Among these, mark 1-3 (only for trips of 2+ days, never more than 3) that are genuinely iconic enough to reward TWO separate visits at different times of day (a famous fountain, plaza, or illuminated landmark that looks and feels different at dawn vs. at night) with "double_visit": true — be selective, most anchors should NOT get this, only the destination's true signature sights
+- "name" is ONLY the clean, official Spanish name of the place — no parentheses, no advice, no timing context (e.g. "Coliseo" not "Colosseo (sin colas por la mañana)"). Use the Spanish exonym when one commonly exists ("Torre Eiffel" not "Tour Eiffel").
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
 {
   "anchors": [
     {
-      "name": "Real place or activity name",
+      "name": "Real place or activity name, in Spanish — see CRITICAL RULES above",
       "city": "Which city/town it's in — use the exact destination name for single-city trips",
       "category": "temple|museum|nature|viewpoint|neighborhood|market|park|landmark|experience|beach",
-      "reason": "One short phrase — why this fits the traveler's chosen experience focus",
+      "reason": "One short phrase, in Spanish — why this fits the traveler's chosen experience focus",
       "double_visit": false
     }
   ]
@@ -1243,6 +1266,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
 const DAY_BLOCK_SYSTEM_PROMPT = `You are an expert travel route planner. You're filling in the stops and meals for ONE BLOCK of days within a longer trip — the overall shape (which city/zone and what type each day is) has ALREADY been decided, given to you below; do not change it, just fill in realistic, detailed content for EXACTLY the days listed, nothing more and nothing less.
 
+LANGUAGE — the app is in Spanish, EVERY text field you write (place names, titles, descriptions, tips, category labels, restaurant descriptions, everything) MUST be in Spanish, regardless of what language your own knowledge of the place is in.
+
 CRITICAL RULES:
 - Every place MUST be real and currently open/accessible
 - Prices MUST be real and current
@@ -1252,11 +1277,22 @@ CRITICAL RULES:
 - Consider the season/dates for weather, events, closures and seasonal tips
 - Do NOT repeat any place or restaurant already used earlier in the trip (see "context from earlier" below) — keep the trip varied, favor categories that haven't been overused yet where it still fits the traveler's experience focus
 
-STOP COUNT — a sparse day is a failure, never leave a half-empty afternoon:
-- A normal "city" day needs a MINIMUM of 4-6 real, visitable stops (not counting meals), spread across morning AND afternoon — never front-load the morning and leave the afternoon with a single stop before dinner.
-- The afternoon (14:00-20:00) alone needs at least 2-3 real stops before dinner. If you only have one afternoon idea, find one or two more that genuinely fit — a smaller church, viewpoint, market or neighborhood walk counts, it does not need to be a headline attraction.
-- Pace adjusts the exact range, but the afternoon-coverage rule above always applies: zen pace → 4 stops minimum (fewer, longer visits, but still no empty afternoon); balanced → 4-6 stops; nonstop → 6-8 stops.
-- "road"/"excursion"/"relax" day types are exempt from this minimum — their content works differently (driving stops along the way, one big excursion, or a deliberately light day).
+PLACE NAMES — "name" is ONLY the clean, official name of the place, in Spanish:
+- No parentheses, no added context, no advice, no timing notes inside the name. Wrong: "Colosseo (primera visita — madrugada sin masas)" or "Musei Vaticani e Cappella Sistina". Right: "Coliseo" / "Museos Vaticanos y Capilla Sixtina".
+- Any advice, recommendation or context ("mejor sin masas", "ideal al amanecer", "primera visita") belongs ONLY in the "tip" or "description" fields — NEVER inside "name".
+- Use the Spanish name travelers would recognize (official Spanish exonym/translation when one commonly exists — "Coliseo" not "Colosseo", "Torre Eiffel" not "Tour Eiffel"), not the local-language name, unless the place has no real Spanish name (then use its actual proper name as-is).
+
+MEALS ARE NEVER A NUMBERED STOP — this is a hard rule that has been violated before, do not repeat that mistake:
+- A restaurant, lunch break, dinner break, or any "pausa para comer/cenar" must NEVER appear inside a day's "stops" array. Meals exist ONLY inside that day's "meals" array.
+- Each day has EXACTLY one lunch entry (if the day includes it) and exactly one dinner entry — never two meal blocks for the same time slot, and never a stop AND a meal covering the same break.
+- Wrong: a stop named "Pausa para almuerzo" or "Almuerzo en Prati" appearing in "stops" right after (or instead of) the "lunch" entry in "meals". If the traveler is eating, it is a meals entry, period.
+
+STOP COUNT — realistic pacing, not a fixed quota: fill the day based on how long things actually take, never force stops into a morning that's already full, but never leave an afternoon half-empty either.
+- Estimate each visit's real duration honestly. A LONG visit (2-3h+: large museums, extensive archaeological sites, guided interior tours — e.g. Vatican Museums, Colosseum interior, the Louvre) can legitimately be the ONLY thing scheduled in a morning or afternoon block — that is correct pacing, not a sparse day, do not pad it with more stops just to hit a number.
+- A SHORT visit (10-45 min: fountains, squares, arches, viewpoints, façades, quick churches) does NOT justify occupying an entire 3-4 hour block alone — chain it with the nearest long visit, or with other short visits nearby.
+- Golden rule: if a free-access place is within a 5-minute walk of a stop you already scheduled, ALWAYS include it alongside that stop — it costs no real extra time and skipping it would be absurd. Concrete pattern (apply the same logic to any destination): the small arch/gate/square right next to a major monument, or the plaza that is physically inseparable from a landmark (its façade square) — always add these next to the anchor they sit beside, and if two such places from the same day's context sit on the natural walking path between two scheduled stops, mention that path as part of travel_to_next rather than silently skipping it.
+- Net effect per day block (not counting meals): if a block (morning or afternoon) is spent entirely on one long visit, that is fine — but the OTHER block of that same day (afternoon if morning had the long visit, or vice versa) still needs its own realistic content, at least 2-3 stops (short visits count, nearby free-access places count) before the day ends in a meal. Never let a day be "one long visit in the morning, one single stop in the afternoon, then straight to dinner" — that afternoon is under-filled.
+- "road"/"excursion"/"relax" day types are exempt from all of the above — their content works differently (driving stops along the way, one big excursion, or a deliberately light day).
 
 TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possible, not just plausible on paper:
 - suggested_time and travel_to_next are your own real-world estimate of when the day actually happens — treat them as a real schedule, not decoration.
@@ -1268,9 +1304,21 @@ REAL OPENING HOURS — you already know the approximate real opening hours of ma
 - This overrides the traveler's chronotype/schedule preference for THIS specific stop's start time — "early riser" describes when the traveler is awake and ready to go, not when a ticketed site opens. If the day starts before the first real stop's opening time, either open the day with something genuinely always-open (a sunrise walk, a viewpoint, a market that's already trading) and place the ticketed stop once it actually opens, or simply start that first stop at its real opening time — never at the chronotype's generic start hour regardless of whether the place is open yet.
 - Decide the "hours" field (below) by what the traveler is actually entering for THIS stop, not by what's visible for free from the street. A monument whose duration_minutes implies going inside — a ticket, a checkpoint, a visiting schedule (Colosseum, Vatican Museums, a cathedral's interior, any museum) — is NEVER "hours": null, even though its exterior is always visible/photographable for free. Only genuinely free-standing, no-ticket, no-schedule places (a fountain, a square, an arch, a viewpoint, a street) get "hours": null. Wrong example: marking the Colosseum "hours": null/"Acceso libre" — it has real, specific opening hours (~08:30-19:00 depending on season) and those must be used, not treated as an always-open landmark.
 
+TIPS — for EVERY stop, if you genuinely know something of real practical value, put it in "tip" (1-3 sentences, only what applies — never pad with generic filler like "lleva calzado cómodo"):
+- Combined tickets: does this place's entry also cover another place in this same trip (e.g. "La entrada del Coliseo incluye el Foro Romano y el Palatino, puedes usarla 24h antes o después")? Say so, and mention the other place by its exact name as used elsewhere in this trip.
+- Partial free access: is part of it free and part paid (e.g. "La Basílica es gratuita, pero subir a la cúpula tiene coste")? Say exactly which part.
+- Strategic timing to avoid crowds: a genuinely useful best-time-to-go detail, specific to this place, not generic advice.
+- Practical logistics that save time or money: reservation requirements, typical wait times without booking ahead, anything a first-time visitor would not know to check.
+- If you don't have anything genuinely specific and valuable for this place, leave "tip" empty rather than inventing generic advice.
+
 FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience focus below:
-- Reserve ONE 2.5-3 hour block on whichever day of this block is most logical for it (normally an early day of the trip, morning start) — represent it as a single stop with name "Free Tour: <a real, specific suggested free tour for this destination>", description covering what the tour covers, tip covering the exact meeting point plus the customary recommended tip amount for a free tour in this destination, duration_minutes between 150-180.
-- Do NOT also list, as separate individual stops that same day, places this free tour itself already covers — that would double them up.
+- Place it on day 1 of the WHOLE trip if this block includes day 1 (morning start, ideally 10:00-12:30) — that first-contact walk belongs on day one. If day 1 is not part of this block, place it on day 2 instead. Represent it as a single stop, duration_minutes between 150-180 (2.5-3h).
+- "name": "Free Tour: <destination or zone>" (e.g. "Free Tour: Centro Histórico de Roma"). "description" must summarize what the tour covers in general terms (it walks past several landmarks from the outside, with historical context) — do NOT claim it enters any paid/ticketed site, free tours are always exterior/walking tours.
+- "free_tour_meeting_point": the specific real square/point where free tours in this destination customarily start (you know this — e.g. in Rome it's commonly Piazza Venezia or Piazza di Spagna).
+- "free_tour_highlights": an array of 3-6 real place names this free tour walks past/covers from the outside — places within this same trip's destination that a typical free tour of that city would include.
+- "free_tour_tips": an array of exactly 3 short tips in Spanish: (1) a persuasive one about why it's worth it especially for a first-time visitor, (2) a practical one about the customary tip amount for a free tour in this destination (typically 10-15€/person), (3) a practical one about arriving early since groups fill up.
+- Do NOT also list, as separate individual stops THAT SAME DAY, any place already listed in "free_tour_highlights" — that would double them up. On OTHER days of the trip, those same places ARE allowed and encouraged as their own proper stops when they deserve a deeper visit (e.g. the Pantheon from the outside during the tour, then a proper 30-45min interior visit as its own stop on a different day; a fountain seen on the tour, then again at night on a different day as an evening stop) — a free tour only sees things from outside in passing, a dedicated stop on another day is a genuinely different experience, not a repeat.
+- Places with paid/ticketed interior access (Colosseum, Vatican Museums, any museum or gallery) are NEVER covered by a free tour and always get their own individual stop, on any day, free tour or not.
 
 REPEAT / DOUBLE-VISIT ANCHORS — some mandatory anchors below may be worth two different-context visits on purpose (a famous fountain, plaza or illuminated landmark seen once by day and once by night is a deliberate, intentional repeat, not an error):
 - If a given anchor is the kind of place that rewards two visits, and the natural timing of today's plan lands at a different moment than usual (early morning, or evening/night), lean into that angle: title/description should explain why THIS visit is worth it at THIS specific time (e.g. "sin aglomeraciones al amanecer" vs. "iluminada de noche") — a short, distinct note, not the full description you'd give it on a single visit.
@@ -1292,13 +1340,13 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "days": [
     {
       "day_number": 1,
-      "title": "Short evocative title",
+      "title": "Short evocative title, in Spanish",
       "stops": [
         {
           "id": "unique-id",
-          "name": "Real Place Name",
-          "description": "2 sentences max",
-          "tip": "Genuinely useful insider tip",
+          "name": "Clean official place name, in Spanish, no parentheses, no advice, no timing notes — see PLACE NAMES above",
+          "description": "2 sentences max, in Spanish",
+          "tip": "1-3 sentences of genuinely high-value practical tip (combined tickets, partial free access, strategic timing, logistics) — see TIPS above, in Spanish, empty string if you have nothing genuinely good",
           "suggested_time": "HH:MM",
           "duration_minutes": 90,
           "latitude": 00.0000,
@@ -1314,6 +1362,10 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
               "description": "What is included"
             }
           ],
+          "is_free_tour": false,
+          "free_tour_meeting_point": "Only when is_free_tour is true — see FREE TOUR above, omit/null otherwise",
+          "free_tour_highlights": ["Only when is_free_tour is true — see FREE TOUR above, omit/empty otherwise"],
+          "free_tour_tips": ["Only when is_free_tour is true — exactly 3 tips, see FREE TOUR above, omit/empty otherwise"],
           "travel_to_next": {
             "method": "walk|metro|train|bus|taxi|car|ferry",
             "duration_minutes": 15,
@@ -1329,8 +1381,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
             {
               "name": "Real Restaurant Name",
               "price_level": "€|€€|€€€",
-              "cuisine": "Type",
-              "description": "What to order and why",
+              "cuisine": "Type, in Spanish",
+              "description": "What to order and why, in Spanish",
               "price_range": "€X-€X per person",
               "latitude": 00.0000,
               "longitude": 00.0000
@@ -1338,24 +1390,24 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
           ]
         }
       ],
-      "rainy_alternative": "What to do instead if bad weather"
+      "rainy_alternative": "What to do instead if bad weather, in Spanish"
     }
   ],
   "not_included": [
     {
-      "name": "Place Name — only include places relevant to THIS block's city/cities",
-      "reason": "Why it did not make the cut",
-      "where_it_fits": "Specific suggestion of where to add it",
+      "name": "Place Name, in Spanish (see PLACE NAMES above) — only include places relevant to THIS block's city/cities",
+      "reason": "Why it did not make the cut, in Spanish",
+      "where_it_fits": "Specific suggestion of where to add it, in Spanish",
       "latitude": 00.0000,
       "longitude": 00.0000
     }
   ],
   "excursions_available": [
     {
-      "name": "Excursion name — only if one of this block's days is type \\"excursion\\", omit array entirely otherwise",
+      "name": "Excursion name, in Spanish — only if one of this block's days is type \\"excursion\\", omit array entirely otherwise",
       "duration": "half_day|full_day",
-      "description": "What you do",
-      "transport_suggestion": "Real, specific way to get there and back (train/bus/organized tour), with realistic total duration",
+      "description": "What you do, in Spanish",
+      "transport_suggestion": "Real, specific way to get there and back (train/bus/organized tour), with realistic total duration, in Spanish",
       "estimated_price": "€XX",
       "suggested_day": 4
     }
@@ -1365,7 +1417,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 CRITICAL VALIDATION — NEVER VIOLATE THESE:
 - NEVER set suggested_time earlier than the place's real opening hour — not even for the first stop of the day, not even if the traveler's chronotype/schedule preference asks for an earlier start.
 - NEVER set "hours" to null for a place with indoor/ticketed access (museum, monument interior, church with a visiting schedule) — always give real hours for those, "hours": null is ONLY for genuinely free-standing outdoor places with no ticket and no schedule.
-- If you don't know the exact real hours of a specific place, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.`
+- If you don't know the exact real hours of a specific place, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.
+- NEVER put a restaurant, meal, or food break inside "stops" — meals only ever go in "meals". NEVER write a "name" with parentheses, advice, or timing context in it — see PLACE NAMES above. Every text field must be in Spanish.`
 
 /** "Elige tus experiencias" (reemplaza el antiguo "¿Qué mueve tu viaje?" de 5 opciones) — traduce los ids elegidos a texto legible para el prompt de generación. */
 /** 'free_tour' es un pseudo-id fuera del banco de 18 (ver FREE_TOUR handling en DAY_BLOCK_SYSTEM_PROMPT) — no está en EXPERIENCE_BANK a propósito, para no colar "Free Tour" como categoría al etiquetar lugares sueltos en suggest-places/suggest-experiences (ver EXPERIENCE_IDS). Aquí solo se traduce a texto legible para el prompt de generación. */
@@ -2158,23 +2211,35 @@ function countAfternoonStops(stops) {
   }).length
 }
 
-/** Cuántas paradas más hace falta pedir — 0 si el día ya cumple el mínimo total Y la cobertura de tarde. Solo aplica a días "city" (o sin type, por compatibilidad); road/excursion/relax quedan exentos, igual que en el prompt. */
+/** Un visita de 2.5h+ (museo grande, sitio arqueológico extenso...) puede ser legítimamente la
+ * única parada de su franja — ver STOP COUNT en DAY_BLOCK_SYSTEM_PROMPT — así que su presencia
+ * relaja el MÍNIMO TOTAL (no la cobertura de tarde, que sigue exigiéndose siempre: es justo la que
+ * detecta el patrón real reportado — "Domus Aurea sola por la mañana + tarde con 1 parada + cena").
+ */
+const LONG_VISIT_MINUTES = 150
+
+/** Cuántas paradas más hace falta pedir — 0 si el día ya cumple el mínimo total (salvo que haya una visita larga, ver LONG_VISIT_MINUTES) Y la cobertura de tarde. Solo aplica a días "city" (o sin type, por compatibilidad); road/excursion/relax quedan exentos, igual que en el prompt. */
 function computeStopDeficit(stops, dayType, pace) {
   if (dayType && dayType !== 'city') return 0
+  const afternoonDeficit = Math.max(MIN_AFTERNOON_STOPS - countAfternoonStops(stops), 0)
+  const hasLongVisit = stops.some((stop) => typeof stop?.duration_minutes === 'number' && stop.duration_minutes >= LONG_VISIT_MINUTES)
+  if (hasLongVisit) return afternoonDeficit
   const minTotal = MIN_STOPS_BY_PACE[pace] ?? MIN_STOPS_BY_PACE.balanced
   const totalDeficit = Math.max(minTotal - stops.length, 0)
-  const afternoonDeficit = Math.max(MIN_AFTERNOON_STOPS - countAfternoonStops(stops), 0)
   return Math.max(totalDeficit, afternoonDeficit)
 }
 
 const DAY_BLOCK_TOPUP_SYSTEM_PROMPT = `You are an expert travel route planner. A day of an itinerary you already helped plan came back with too few stops, or an empty afternoon — your ONLY job now is to add EXTRA real, visitable stops to fill that gap, without touching or repeating anything already there.
 
+LANGUAGE — the app is in Spanish, EVERY text field you write MUST be in Spanish, regardless of what language your own knowledge of the place is in.
+
 CRITICAL RULES:
 - Every place MUST be real and currently open/accessible, and MUST NOT already be in the "already in this day" list given to you
-- Prioritize the afternoon window (14:00-20:00) if that is where the gap is — a smaller church, viewpoint, market or neighborhood walk is a perfectly good fill-in, it does not need to be a headline attraction
+- NEVER add a restaurant, meal, or food break as a stop — this list is only for visitable places, meals are handled separately
+- "name" is ONLY the clean official place name in Spanish — no parentheses, no advice, no timing context in it (that goes in "tip"/"description" instead). Prefer nearby SHORT visits (10-45min: a small church, viewpoint, square, market, neighborhood walk) over another headline attraction — especially anything within a 5-minute walk of a stop already in the day.
 - Fit realistically into the existing schedule (geography, time of day)
 - suggested_time must never be earlier than the stop's own real opening time (you already know the approximate real hours of major attractions — e.g. the Colosseum opens around 08:30, never schedule it at 07:30) — reorder or push later if needed
-- Tips must be genuinely useful insider knowledge, not generic advice
+- Tips must be genuinely useful insider knowledge (combined tickets, partial free access, strategic timing, real logistics) — never generic advice, and empty if you have nothing genuinely good
 
 RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 
@@ -2182,9 +2247,9 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
   "extra_stops": [
     {
       "id": "unique-id",
-      "name": "Real Place Name",
-      "description": "2 sentences max",
-      "tip": "Genuinely useful insider tip",
+      "name": "Clean official place name, in Spanish, no parentheses/advice — see CRITICAL RULES above",
+      "description": "2 sentences max, in Spanish",
+      "tip": "Genuinely useful insider tip, in Spanish, empty string if nothing genuinely good",
       "suggested_time": "HH:MM",
       "duration_minutes": 90,
       "latitude": 00.0000,
@@ -2200,7 +2265,8 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 CRITICAL VALIDATION — NEVER VIOLATE THESE:
 - NEVER set suggested_time earlier than the place's real opening hour.
 - NEVER set "hours" to null for a place with indoor/ticketed access — only genuinely free-standing outdoor places with no ticket and no schedule get null.
-- If you don't know the exact real hours, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.`
+- If you don't know the exact real hours, use a conservative default rather than guessing "always open": museums/monuments 09:00-18:00, churches 08:00-19:00.
+- NEVER add a restaurant/meal as a stop. Every text field must be in Spanish.`
 
 function buildDayBlockTopUpPrompt(destination, day, addCount, answers) {
   const existing = day.stops.map((stop) => `${stop?.suggested_time ?? '??:??'} — ${stop?.name ?? 'sin nombre'}`).join('\n  - ')
@@ -2315,6 +2381,54 @@ function validateStopHours(day) {
   }
 }
 
+// ── Red de seguridad post-generación: comidas coladas como parada numerada ─────────────────
+//
+// El prompt (MEALS ARE NEVER A NUMBERED STOP en DAY_BLOCK_SYSTEM_PROMPT) ya lo prohíbe
+// explícitamente, pero un prompt es una petición, no una garantía (feedback de calidad: "Pausa
+// para almuerzo"/"Almuerzo en Prati" aparecieron como parada 3 justo después del bloque dorado de
+// "Hora de comer", literalmente duplicando la comida). Coincidencia ANCLADA al string COMPLETO
+// (^...$, no solo al principio) a propósito — una parada gastronómica real y con nombre propio como
+// "Cena maridaje en bodega histórica" o "Mercado de la Comida de Madrid" NO debe caer aquí, solo el
+// patrón desnudo "Almuerzo"/"Cena en Prati"/"Pausa para almuerzo" sin ningún contenido propio detrás.
+const MEAL_LIKE_STOP_NAME = /^(pausa para|parada para)?\s*(almuerzo|comida|cena|desayuno|brunch)(\s+en\s+.+)?$/i
+
+function filterMealLikeStops(day) {
+  if (!Array.isArray(day?.stops)) return
+  const kept = []
+  for (const stop of day.stops) {
+    if (typeof stop?.name === 'string' && MEAL_LIKE_STOP_NAME.test(stop.name.trim())) {
+      console.log(`[meal-dedup] day ${day.day_number} — parada "${stop.name}" descartada por parecer una comida (las comidas van solo en "meals")`)
+      continue
+    }
+    kept.push(stop)
+  }
+  day.stops = kept
+}
+
+// ── Red de seguridad post-generación: un highlight del Free Tour repetido como parada del MISMO día ──
+//
+// El prompt (FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) ya pide explícitamente no repetir ese mismo día
+// ningún lugar de "free_tour_highlights" como parada individual (sí se permite en OTROS días) — pero
+// en la práctica Claude a veces lo hace igual (visto en real: "Foro Romano (vista exterior)" en los
+// highlights del Free Tour Y "Foro Romano" como parada 5 numerada del mismo día). Comparación
+// tolerante a paréntesis ("Foro Romano" == "Foro Romano (vista exterior)") para pillar el caso real.
+function normalizePlaceNameForMatch(name) {
+  return typeof name === 'string' ? name.toLowerCase().replace(/\s*\([^)]*\)\s*/g, '').trim() : ''
+}
+
+function filterFreeTourDuplicateStops(day) {
+  if (!Array.isArray(day?.stops)) return
+  const freeTourStop = day.stops.find((stop) => stop?.is_free_tour)
+  const highlights = Array.isArray(freeTourStop?.free_tour_highlights) ? freeTourStop.free_tour_highlights.map(normalizePlaceNameForMatch) : []
+  if (highlights.length === 0) return
+  day.stops = day.stops.filter((stop) => {
+    if (stop === freeTourStop) return true
+    if (!highlights.includes(normalizePlaceNameForMatch(stop?.name))) return true
+    console.log(`[free-tour-dedup] day ${day.day_number} — parada "${stop.name}" descartada por repetir un highlight del Free Tour de ese mismo día`)
+    return false
+  })
+}
+
 app.post('/api/generate-day-block', async (req, res) => {
   const { destination, answers, block_days, anchors_for_block, must_include_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
@@ -2369,8 +2483,12 @@ app.post('/api/generate-day-block', async (req, res) => {
     const days = sanitizeDayBlockDays(parsed?.days, blockDayNumbers)
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos para este bloque')
 
+    for (const day of days) filterFreeTourDuplicateStops(day)
     await topUpShortDays(destination, days, block_days, answers)
-    for (const day of days) validateStopHours(day)
+    for (const day of days) {
+      filterMealLikeStops(day)
+      validateStopHours(day)
+    }
 
     res.json({
       days,

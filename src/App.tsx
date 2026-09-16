@@ -8,6 +8,7 @@ import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
 import { mapGeneratedRouteToRoute } from './lib/mapGeneratedRoute'
 import { applyRealStopSchedule } from './lib/stopScheduling'
+import { enrichRoutePhotos } from './lib/placePhoto'
 import { saveGenerationCheckpoint } from './lib/tripPersistence'
 import type { QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
@@ -81,6 +82,10 @@ function LoadingScreenContainer() {
     // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero antes
     // de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
     const scheduled = await applyRealStopSchedule(mapped, params.answers.chronotype, params.answers.pace ?? 'balanced')
+    // Mejor esfuerzo, nunca bloquea: sustituye el placeholder aleatorio de picsum por una foto real
+    // de Wikipedia cuando la encuentra (ver placePhoto.ts) — si falla o tarda, la ruta sigue con el
+    // placeholder tal cual, nunca se queda colgada por esto.
+    await enrichRoutePhotos(scheduled).catch(() => {})
     return scheduled
   }
 

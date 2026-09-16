@@ -15,7 +15,7 @@ import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
-import { ClockIcon, HourglassIcon } from '../../ui/TimeIcons'
+import { ClockIcon, HourglassIcon, FreeTourIcon } from '../../ui/TimeIcons'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -91,6 +91,7 @@ function BusIcon() {
   )
 }
 
+
 /**
  * Ficha de una parada — pantalla completa con el mismo patrón mapa arriba + panel deslizable abajo
  * (tirador gris) ya usado en DIAS (ver RouteView.tsx), sustituye al acordeón inline que expandía
@@ -109,11 +110,15 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   const [nearbyTransit, setNearbyTransit] = useState<NearbyTransit>({ metro: [], bus: [] })
   const [directionsOpen, setDirectionsOpen] = useState(false)
 
+  // El Free Tour trae su propio contenido nativo del pipeline (freeTourMeetingPoint/Highlights/Tips,
+  // ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) — nunca pide descripción bajo demanda, ni tiene
+  // sentido (no es un lugar con web/dirección propia) ni cuesta una llamada extra a Claude.
   useEffect(() => {
     if (!stop) return
     setTab('resumen')
     setDescription(null)
     setDescFailed(false)
+    if (stop.isFreeTour) return
     setDescLoading(true)
     let cancelled = false
     describeStop(stop.name, city, stop.category).then((result) => {
@@ -125,7 +130,7 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, stop?.category, city])
+  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city])
 
   // Tips de ancla — llamada aparte (caché en Supabase + búsqueda web, ver anchorTipsApi.ts), solo
   // para lugares obligatorios del destino. Las paradas normales no llaman aquí: su tip (si lo hay)
@@ -198,10 +203,15 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   const tickets = stop?.purchase?.afiliacion_disponible ? buildMockStopTickets(stop.id, stop.name) : []
   const hasTickets = tickets.length > 0
-  // Ancla: tips reales con búsqueda web (0-2, práctico/secreto). Parada normal: el `localTip` de
-  // describeStopApi.ts, si Claude encontró algo genuinamente bueno — siempre tipo "secreto" (es el
-  // mismo espíritu "esto no lo sabe todo el mundo", solo que sin caché ni búsqueda web).
-  const tips: StopTip[] = isAnchor ? anchorTips : description?.localTip ? [{ tipo: 'secreto', texto: description.localTip }] : []
+  // Free Tour: 3 tips nativos del pipeline (persuasivo/propina/práctico), nunca bajo demanda.
+  // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada
+  // normal: 0-3 tips de describeStopApi.ts (entradas combinadas, acceso gratuito parcial, horarios
+  // estratégicos, datos prácticos — ver DESCRIBE_STOP_SYSTEM_PROMPT en server/index.js).
+  const tips: StopTip[] = stop?.isFreeTour
+    ? (stop.freeTourTips ?? []).map((texto, index) => ({ tipo: index === 0 ? 'secreto' : 'practico', texto }))
+    : isAnchor
+      ? anchorTips
+      : (description?.tips ?? [])
   const hasTips = tips.length > 0
 
   const visibleTabs: Tab[] = ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])]
@@ -241,7 +251,10 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
               <div className="flex items-start gap-3">
                 <img src={stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1 space-y-1.5">
-                  <h1 className="font-display text-h2 font-semibold text-text">{stop.name}</h1>
+                  <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
+                    {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
+                    {stop.name}
+                  </h1>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-caption font-medium text-accent-hover">
                       <HourglassIcon />
@@ -287,7 +300,50 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                 </div>
               )}
 
-              {activeTab === 'resumen' && (
+              {activeTab === 'resumen' && stop.isFreeTour && (
+                <div className="space-y-4">
+                  <p className="text-small text-text-soft">{stop.description}</p>
+
+                  {stop.freeTourMeetingPoint && (
+                    <div className="space-y-1">
+                      <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
+                        <PinIcon />
+                        Punto de encuentro
+                      </h3>
+                      <p className="text-small text-text-soft">{stop.freeTourMeetingPoint}</p>
+                    </div>
+                  )}
+
+                  {stop.freeTourHighlights && stop.freeTourHighlights.length > 0 && (
+                    <div className="space-y-1">
+                      <h3 className="text-body font-semibold text-text">Lugares que verás durante el tour</h3>
+                      <p className="text-small text-text-soft">{stop.freeTourHighlights.join(' · ')}</p>
+                      <p className="text-caption italic text-text-muted">
+                        Volverás a visitar algunos de estos lugares con más calma en los próximos días de tu ruta.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-1 border-t border-border pt-3">
+                    <h3 className="text-body font-semibold text-text">Horario</h3>
+                    <p className="text-small text-text-soft">
+                      Los free tours suelen tener salidas por la mañana (10:00-10:30) y por la tarde (16:00-17:00). Consulta la disponibilidad al
+                      reservar.
+                    </p>
+                  </div>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`free tour gratis ${city} reserva`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-body font-medium text-white transition-colors hover:bg-accent-hover"
+                  >
+                    Reservar →
+                  </a>
+                </div>
+              )}
+
+              {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
                   {descLoading ? (
                     <p className="flex items-center gap-2 text-small italic text-text-soft">
@@ -313,6 +369,23 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                   ) : descFailed ? (
                     <p className="text-small text-text-soft">{stop.description}</p>
                   ) : null}
+
+                  {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
+                      de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
+                      nunca redactado por Claude, para garantizar que aparece siempre igual. */}
+                  {(description?.hoursDetail || hoursTag) && (
+                    <div className="space-y-1 border-t border-border pt-3">
+                      <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
+                        <ClockIcon />
+                        Horario
+                      </h3>
+                      {description?.hoursDetail && <p className="text-small text-text-soft">{description.hoursDetail}</p>}
+                      <p className="text-caption text-text-muted">
+                        Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
+                        {description?.officialWebsite ? ' (enlace más abajo).' : '.'}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="space-y-2 border-t border-border pt-3">
                     {description?.address && (
