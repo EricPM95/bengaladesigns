@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import type { DestinationArchetype, Place, TransportOption, TravelMode, VehicleOwnership, VehicleType } from '../../lib/types'
-import { PlaceAutocomplete } from '../ui/PlaceAutocomplete'
-import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
+import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
 import { RoadtripTransportFlow } from './RoadtripTransportFlow'
 import { BaseYExcursionesTransportFlow } from './BaseYExcursionesTransportFlow'
@@ -10,9 +9,10 @@ import { UrbanoTransportFlow } from './UrbanoTransportFlow'
 import { MultidestinoTrenOVueloTransportFlow } from './MultidestinoTrenOVueloTransportFlow'
 import { MultidestinoMixtoTransportFlow } from './MultidestinoMixtoTransportFlow'
 
-interface OriginInputProps {
+interface TransportResolutionStepProps {
   destination: string
   destinationPlace: Place | null
+  originPlace: Place | null
   archetype: DestinationArchetype | null
   /** true cuando Claude no pudo decidir con seguridad entre roadtrip_exclusivo y base_y_excursiones. */
   archetypeAmbiguous: boolean
@@ -32,7 +32,6 @@ interface OriginInputProps {
   knownCamperAccess: boolean | null
   vehicleResolved: boolean
   travelMode: TravelMode | null
-  onOriginResolved: (origin: string, originPlace?: Place) => void
   onResolveArchetype: (archetype: DestinationArchetype) => void
   onTransportOptionChange: (option: TransportOption | null) => void
   onVehicleTypeChange: (vehicleType: VehicleType | null) => void
@@ -114,9 +113,17 @@ function ArchetypeChoiceQuestion({
   )
 }
 
-export function OriginInput({
+/**
+ * Resuelve transporte/vehículo/arquetipo — antes vivía junto con la captura de origen
+ * (OriginInput.tsx); el origen ahora se captura en LandingScreen, así que este paso arranca
+ * directamente con `originPlace` ya resuelto (ver Q1 confirmada por el usuario: sigue siendo su
+ * propio paso del cuestionario, solo revestido con la estética nueva — la lógica de resolución de
+ * arquetipo/transporte no se toca).
+ */
+export function TransportResolutionStep({
   destination,
   destinationPlace,
+  originPlace,
   archetype,
   archetypeAmbiguous,
   archetypeClassificationFailed,
@@ -130,7 +137,6 @@ export function OriginInput({
   knownCamperAccess,
   vehicleResolved,
   travelMode,
-  onOriginResolved,
   onResolveArchetype,
   onTransportOptionChange,
   onVehicleTypeChange,
@@ -138,59 +144,26 @@ export function OriginInput({
   onVehicleResolvedChange,
   onTravelModeChange,
   onTravelPassConfirmedChange,
-}: OriginInputProps) {
-  const [originText, setOriginText] = useState('')
-  const [originPlace, setOriginPlace] = useState<Place | null>(null)
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmitCity = () => {
-    if (!originPlace || submitted) return
-    setSubmitted(true)
-    onOriginResolved(originPlace.name, originPlace)
-  }
-
+}: TransportResolutionStepProps) {
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <PlaceAutocomplete
-          value={originText}
-          onChange={(text) => {
-            setOriginText(text)
-            setOriginPlace(null)
-          }}
-          onSelect={(place) => {
-            setOriginText(place.fullName)
-            setOriginPlace(place)
-          }}
-          disabled={submitted}
-          placeholder="Barcelona"
-          autoFocus
-          wrapperClassName="flex-1"
-        />
-        {!submitted && (
-          <Button onClick={handleSubmitCity} disabled={!originPlace}>
-            Continuar
-          </Button>
-        )}
-      </div>
-
-      {submitted && !archetype && !archetypeAmbiguous && !archetypeClassificationFailed && (
+      {!archetype && !archetypeAmbiguous && !archetypeClassificationFailed && (
         <p className="flex items-center gap-2 text-small italic text-text-soft">
           <Spinner className="text-accent" />
           Viendo qué tipo de destino es {destination}...
         </p>
       )}
 
-      {submitted && archetypeClassificationFailed && (
+      {archetypeClassificationFailed && (
         <div className="space-y-2">
           <p className="text-small text-text-soft">No hemos podido determinar qué tipo de destino es {destination} ahora mismo.</p>
           <Button onClick={onRetryClassification}>Reintentar</Button>
         </div>
       )}
 
-      {submitted && archetypeAmbiguous && <ArchetypeChoiceQuestion destination={destination} onResolveArchetype={onResolveArchetype} />}
+      {archetypeAmbiguous && <ArchetypeChoiceQuestion destination={destination} onResolveArchetype={onResolveArchetype} />}
 
-      {submitted && archetype === 'roadtrip_exclusivo' && (
+      {archetype === 'roadtrip_exclusivo' && (
         <RoadtripTransportFlow
           origin={originPlace}
           destinationPlace={destinationPlace}
@@ -205,7 +178,7 @@ export function OriginInput({
         />
       )}
 
-      {submitted && archetype === 'base_y_excursiones' && (
+      {archetype === 'base_y_excursiones' && (
         <BaseYExcursionesTransportFlow
           origin={originPlace}
           destinationPlace={destinationPlace}
@@ -223,7 +196,7 @@ export function OriginInput({
         />
       )}
 
-      {submitted && archetype === 'urbano_clasico' && (
+      {archetype === 'urbano_clasico' && (
         <UrbanoTransportFlow
           origin={originPlace}
           destinationPlace={destinationPlace}
@@ -239,7 +212,7 @@ export function OriginInput({
         />
       )}
 
-      {submitted && archetype === 'multidestino_tren_o_vuelo' && (
+      {archetype === 'multidestino_tren_o_vuelo' && (
         <MultidestinoTrenOVueloTransportFlow
           origin={originPlace}
           destinationPlace={destinationPlace}
@@ -252,7 +225,7 @@ export function OriginInput({
         />
       )}
 
-      {submitted && archetype === 'multidestino_mixto_o_circuito' && (
+      {archetype === 'multidestino_mixto_o_circuito' && (
         <MultidestinoMixtoTransportFlow
           origin={originPlace}
           destinationPlace={destinationPlace}
@@ -262,8 +235,7 @@ export function OriginInput({
         />
       )}
 
-      {submitted &&
-        archetype &&
+      {archetype &&
         archetype !== 'roadtrip_exclusivo' &&
         archetype !== 'base_y_excursiones' &&
         archetype !== 'urbano_clasico' &&

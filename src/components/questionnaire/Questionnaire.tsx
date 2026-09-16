@@ -9,8 +9,7 @@ import { classifyInBackground } from '../../lib/classifyInBackground'
 import { suggestExperiencesInBackground } from '../../lib/suggestExperiencesInBackground'
 import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
-import { ChoiceButton } from './ChoiceButton'
-import { OriginInput } from './OriginInput'
+import { TransportResolutionStep } from './TransportResolutionStep'
 import { DurationSelector } from './DurationSelector'
 import { CompanionSelector } from './CompanionSelector'
 import { ExperienceSelector } from './ExperienceSelector'
@@ -18,21 +17,31 @@ import { PlaceSelector } from './PlaceSelector'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
 
+// Solo 2 de las 3 opciones de TripPace son alcanzables desde este selector (confirmado por el
+// usuario) — 'nonstop' se queda sin UI propia, pero el tipo/lógica de backend (MIN_STOPS_BY_PACE,
+// stopScheduling.ts, etc.) no se toca.
 const paceOptions: { value: TripPace; icon: string; label: string; description: string }[] = [
-  { value: 'zen', icon: '🌿', label: 'Zen', description: '2-3 paradas/día, mañanas tranquilas, pausas largas' },
-  { value: 'balanced', icon: '⚖️', label: 'Equilibrado', description: '4-5 paradas/día, flexible' },
-  { value: 'nonstop', icon: '⚡', label: 'Sin parar', description: '6+, de sol a sol, verlo todo' },
+  { value: 'zen', icon: '🌿', label: 'Tranquilo', description: '2-3 paradas/día, mañanas tranquilas, pausas largas' },
+  { value: 'balanced', icon: '⚡', label: 'Completo', description: '4-5 paradas/día, flexible' },
 ]
 
-type StepId = 'origin' | 'days' | 'companion' | 'experiences' | 'pace' | 'places'
+type StepId = 'transport' | 'days' | 'companion' | 'experiences' | 'pace' | 'places'
 
-const STEP_TITLES: Record<StepId, { title: string; subtitle?: string }> = {
-  origin: { title: '¿Desde dónde viajas?' },
-  days: { title: '¿Cuántos días?' },
-  companion: { title: 'Elige tus acompañantes' },
-  experiences: { title: 'Elige tus experiencias' },
-  pace: { title: 'Tu ritmo' },
-  places: { title: 'Elige lugares' },
+function getStepTitle(step: StepId, destination: string): { title: string; subtitle?: string } {
+  switch (step) {
+    case 'transport':
+      return { title: '¿Cómo llegas?' }
+    case 'days':
+      return { title: `Tu viaje a ${destination}` }
+    case 'companion':
+      return { title: 'Elige tus acompañantes' }
+    case 'experiences':
+      return { title: 'Elige tus experiencias' }
+    case 'pace':
+      return { title: 'Tu ritmo' }
+    case 'places':
+      return { title: 'Elige lugares' }
+  }
 }
 
 /**
@@ -103,20 +112,24 @@ export function Questionnaire() {
   // estaban contados desde la primera vez), así que el auto-avance nunca se disparaba y el usuario
   // se quedaba bloqueado sin poder continuar (BUG 1).
   const arrivedAtStepRef = useRef<{ index: number; nextExisted: boolean }>({ index: 0, nextExisted: false })
+  // Dirección del último cambio de paso (adelante/atrás) — decide de qué lado entra/sale la
+  // pantalla en la transición de abajo (450ms cubic-bezier(0.22,1,0.36,1), como el prototipo).
+  // Mismo patrón que arrivedAtStepRef: se compara contra el índice anterior en un useLayoutEffect
+  // para no depender de guardar "por qué botón se llegó aquí" en ningún otro sitio.
+  const [direction, setDirection] = useState<1 | -1>(1)
+  const prevIndexRef = useRef(0)
 
-  const showDays =
-    answers.origin !== undefined &&
-    isTransportFullyResolved(
-      archetype,
-      transportOption,
-      vehicleType,
-      vehicleOwnership,
-      vehicleResolved,
-      travelMode,
-      requiereCoche,
-      paseDominante,
-      travelPassConfirmed,
-    )
+  const showDays = isTransportFullyResolved(
+    archetype,
+    transportOption,
+    vehicleType,
+    vehicleOwnership,
+    vehicleResolved,
+    travelMode,
+    requiereCoche,
+    paseDominante,
+    travelPassConfirmed,
+  )
   const showCompanion = showDays && answers.days !== undefined
   const showExperiences =
     showCompanion &&
@@ -138,7 +151,7 @@ export function Questionnaire() {
   const showPlaces = showPace && answers.pace !== undefined
 
   const steps: StepId[] = [
-    'origin',
+    'transport',
     ...(showDays ? (['days'] as const) : []),
     ...(showCompanion ? (['companion'] as const) : []),
     ...(showExperiences ? (['experiences'] as const) : []),
@@ -184,6 +197,13 @@ export function Questionnaire() {
     }
   }, [safeIndex, nextStepExists, activeStep])
 
+  useLayoutEffect(() => {
+    if (safeIndex !== prevIndexRef.current) {
+      setDirection(safeIndex > prevIndexRef.current ? 1 : -1)
+      prevIndexRef.current = safeIndex
+    }
+  }, [safeIndex])
+
   if (!destination) return null
 
   const handleBack = () => {
@@ -212,21 +232,21 @@ export function Questionnaire() {
     setScreen('loading')
   }
 
-  const { title, subtitle } = STEP_TITLES[activeStep]
+  const { title, subtitle } = getStepTitle(activeStep, destination)
 
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-onb-bg">
       <div className="flex items-center justify-between px-6 pt-6">
         <button
           type="button"
           onClick={handleBack}
           aria-label="Volver"
           title="Volver"
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-bg-card text-lg text-text transition-colors hover:border-border-accent hover:bg-bg-hover"
+          className="flex h-11 w-11 items-center justify-center rounded-onb-md border border-onb-border bg-onb-card text-lg text-onb-text transition-colors hover:border-onb-accent/50 hover:bg-onb-accent-light"
         >
           ←
         </button>
-        <p className="text-caption font-medium uppercase tracking-wide text-text-muted">
+        <p className="font-dmsans text-caption font-medium uppercase tracking-wide text-onb-text-muted">
           {destination} · Paso {safeIndex + 1} de {steps.length}
         </p>
       </div>
@@ -235,25 +255,29 @@ export function Questionnaire() {
           contenido en vez de dejarlo hacer scroll con normalidad) — centra la pantalla entera en
           ambos ejes cuando el contenido cabe (fechas, ritmo, horario...) y, si no cabe (el
           formulario de familia, la lista de lugares...), simplemente permite scroll desde arriba,
-          sin recortes. */}
-      <div className="flex flex-1 overflow-y-auto px-6 pb-10 pt-6">
-        <AnimatePresence mode="wait">
+          sin recortes. Transición slide+fade 450ms cubic-bezier(0.22,1,0.36,1) — misma curva y
+          duración exactas del prototipo, con dirección invertida al volver atrás (`direction`,
+          ver el useLayoutEffect de arriba). */}
+      <div className="flex flex-1 overflow-y-auto overflow-x-hidden px-6 pb-10 pt-6">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeStep}
-            initial={{ opacity: 0, x: 24 }}
+            custom={direction}
+            initial={{ opacity: 0, x: direction * 60 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            exit={{ opacity: 0, x: direction * -60 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="m-auto w-full max-w-lg"
           >
-            <h1 className="font-display text-h1 font-semibold text-text">{title}</h1>
-            {subtitle && <p className="mt-1 text-small text-text-soft">{subtitle}</p>}
+            <h1 className="font-playfair text-h1 font-bold text-onb-text">{title}</h1>
+            {subtitle && <p className="mt-1 font-dmsans text-small text-onb-text-soft">{subtitle}</p>}
 
             <div className="mt-6">
-              {activeStep === 'origin' && (
-                <OriginInput
+              {activeStep === 'transport' && (
+                <TransportResolutionStep
                   destination={destination}
                   destinationPlace={destinationPlace}
+                  originPlace={answers.originPlace ?? null}
                   archetype={archetype}
                   archetypeAmbiguous={archetypeAmbiguous}
                   archetypeClassificationFailed={archetypeClassificationFailed}
@@ -267,7 +291,6 @@ export function Questionnaire() {
                   knownCamperAccess={knownCamperAccess}
                   vehicleResolved={vehicleResolved}
                   travelMode={travelMode}
-                  onOriginResolved={(origin, originPlace) => updateAnswers({ origin, originPlace })}
                   onResolveArchetype={resolveArchetypeChoice}
                   onTransportOptionChange={setTransportOption}
                   onVehicleTypeChange={setVehicleType}
@@ -290,7 +313,8 @@ export function Questionnaire() {
                       Claude ya resolvió, se lanza aquí mismo; si no, la lanzará ella sola en
                       cuanto resuelva (dates_confirmed ya estará en true para entonces). */}
                   {answers.days !== undefined && (
-                    <Button
+                    <button
+                      type="button"
                       onClick={() => {
                         setDatesConfirmed(true)
                         if (suggestedExperiences.length > 0) {
@@ -298,10 +322,10 @@ export function Questionnaire() {
                         }
                         goToNextStep()
                       }}
-                      className="w-full"
+                      className="w-full rounded-onb-full bg-onb-accent py-3.5 font-dmsans text-body font-semibold text-white transition-colors hover:bg-onb-accent-hover"
                     >
                       Continuar →
-                    </Button>
+                    </button>
                   )}
                 </div>
               )}
@@ -346,20 +370,27 @@ export function Questionnaire() {
               )}
 
               {activeStep === 'pace' && (
-                <div className="space-y-2">
-                  {paceOptions.map((option) => (
-                    <ChoiceButton
-                      key={option.value}
-                      icon={option.icon}
-                      label={option.label}
-                      description={option.description}
-                      selected={answers.pace === option.value}
-                      onClick={() => {
-                        updateAnswers({ pace: option.value })
-                        goToNextStep()
-                      }}
-                    />
-                  ))}
+                <div className="grid grid-cols-2 gap-3">
+                  {paceOptions.map((option) => {
+                    const active = answers.pace === option.value
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          updateAnswers({ pace: option.value })
+                          goToNextStep()
+                        }}
+                        className={`flex flex-col items-center gap-2 rounded-onb-lg border p-6 text-center transition-colors ${
+                          active ? 'border-onb-accent bg-onb-accent-light' : 'border-onb-border bg-onb-card hover:border-onb-accent/50'
+                        }`}
+                      >
+                        <span className="text-3xl leading-none">{option.icon}</span>
+                        <span className={`font-dmsans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.label}</span>
+                        <span className="font-dmsans text-small text-onb-text-soft">{option.description}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
 
@@ -376,7 +407,7 @@ export function Questionnaire() {
       </div>
 
       {activeStep === 'places' && (
-        <div className="sticky bottom-0 z-10 border-t border-border bg-bg-card px-6 py-4">
+        <div className="sticky bottom-0 z-10 border-t border-onb-border bg-onb-card px-6 py-4">
           <div className="mx-auto w-full max-w-lg">
             <PlacesCreateRouteButton onCreateRoute={handleCreateRoute} />
           </div>

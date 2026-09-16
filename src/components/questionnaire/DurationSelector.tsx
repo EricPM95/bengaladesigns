@@ -5,7 +5,6 @@ import { es } from 'date-fns/locale'
 import type { DateRange, QuestionnaireAnswers, Season } from '../../lib/types'
 import { daysBetweenInclusive, todayIso } from '../../lib/dateRange'
 import { SEASON_META, getCurrentSeason } from '../../lib/season'
-import { ChoiceButton } from './ChoiceButton'
 
 interface DurationSelectorProps {
   days?: number
@@ -115,12 +114,12 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
   if (hasDateRange && dateRange) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-accent/40 bg-accent-soft px-4 py-3">
+        <div className="flex items-center justify-between gap-3 rounded-onb-md border border-onb-accent/40 bg-onb-accent-light px-4 py-3">
           <div>
-            <p className="text-body font-medium text-text">📅 {formatRangeEs(dateRange)}</p>
-            <p className="text-small text-text-soft">{days} días exactos</p>
+            <p className="font-dmsans text-body font-medium text-onb-text">📅 {formatRangeEs(dateRange)}</p>
+            <p className="font-dmsans text-small text-onb-text-soft">{days} días exactos</p>
           </div>
-          <button type="button" onClick={clearDateRange} className="shrink-0 text-caption font-medium text-accent hover:text-accent-hover">
+          <button type="button" onClick={clearDateRange} className="shrink-0 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover">
             Quitar fechas
           </button>
         </div>
@@ -131,13 +130,25 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-5 gap-2">
-        {QUICK_DAY_OPTIONS.map((option) => (
-          <ChoiceButton key={option} label={String(option)} selected={days === option} onClick={() => selectQuickDays(option)} />
-        ))}
+        {QUICK_DAY_OPTIONS.map((option) => {
+          const active = days === option
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => selectQuickDays(option)}
+              className={`rounded-onb-sm border py-2.5 text-center font-dmsans text-body font-medium transition-colors ${
+                active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
+              }`}
+            >
+              {option}
+            </button>
+          )
+        })}
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-small text-text-soft">Otro:</span>
+        <span className="font-dmsans text-small text-onb-text-soft">Otro:</span>
         <input
           type="number"
           inputMode="numeric"
@@ -147,9 +158,9 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
           onChange={(event) => handleCustomDaysInput(event.target.value)}
           onBlur={handleCustomDaysBlur}
           placeholder="9"
-          className="w-16 rounded-xl border border-border bg-bg px-3 py-2 text-body text-text focus:border-accent focus:outline-none"
+          className="w-16 rounded-onb-sm border border-onb-border bg-onb-card px-3 py-2 font-dmsans text-body text-onb-text focus:border-onb-accent focus:outline-none"
         />
-        <span className="text-caption text-text-muted">días (máx. {MAX_DAYS})</span>
+        <span className="font-dmsans text-caption text-onb-text-muted">días (máx. {MAX_DAYS})</span>
       </div>
 
       <button
@@ -161,14 +172,14 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
             return next
           })
         }
-        className="flex items-center gap-2 text-caption font-medium text-accent hover:text-accent-hover"
+        className="flex items-center gap-2 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover"
       >
         <span className="text-2xl leading-none">📅</span>
         {showCalendar ? 'Ocultar fechas exactas' : '¿Ya tienes fecha para tu viaje?'}
       </button>
 
       {showCalendar && (
-        <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
+        <div className="space-y-2 rounded-onb-md border border-onb-border bg-onb-card p-3">
           <div className="calendar-scope flex justify-center">
             <DayPicker
               mode="range"
@@ -182,28 +193,35 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
               showOutsideDays
             />
           </div>
-          <p className="text-caption text-text-soft">
+          <p className="font-dmsans text-caption text-onb-text-soft">
             Con fechas exactas, cruzamos el itinerario con estacionalidad, clima, festivos, cierres y eventos especiales.
           </p>
-          {dateError && <p className="text-caption text-red-500">{dateError}</p>}
+          {dateError && <p className="font-dmsans text-caption text-red-500">{dateError}</p>}
         </div>
       )}
 
       {days !== undefined && !seasonHidden && (
         <div className="space-y-2 pt-1">
-          <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">¿En qué época viajas? (opcional)</p>
+          <p className="font-dmsans text-caption font-semibold uppercase tracking-wide text-onb-text-muted">¿En qué época viajas? (opcional)</p>
           <div className="grid grid-cols-2 gap-2">
-            {(Object.keys(SEASON_META) as Season[]).map((key) => (
-              <ChoiceButton
-                key={key}
-                icon={SEASON_META[key].icon}
-                label={SEASON_META[key].label}
-                selected={season === key}
-                onClick={() => onChange({ season: key })}
-              />
-            ))}
+            {(Object.keys(SEASON_META) as Season[]).map((key) => {
+              const active = season === key
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onChange({ season: key })}
+                  className={`flex items-center gap-2 rounded-onb-sm border px-3 py-2.5 font-dmsans text-body transition-colors ${
+                    active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
+                  }`}
+                >
+                  <span className="text-lg leading-none">{SEASON_META[key].icon}</span>
+                  {SEASON_META[key].label}
+                </button>
+              )
+            })}
           </div>
-          <p className="text-caption text-text-muted">
+          <p className="font-dmsans text-caption text-onb-text-muted">
             Si no eliges, usaremos la estación actual ({SEASON_META[getCurrentSeason()].label.toLowerCase()}) para que la ruta tenga sentido.
           </p>
         </div>

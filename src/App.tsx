@@ -2,86 +2,21 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { useSyncStore } from './store/useSyncStore'
-import { DestinationInput } from './components/destination/DestinationInput'
-import { RouteSearch, type ConfirmedRoute } from './components/destination/RouteSearch'
+import { LandingScreen } from './components/destination/LandingScreen'
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
 import { mapGeneratedRouteToRoute } from './lib/mapGeneratedRoute'
 import { applyRealStopSchedule } from './lib/stopScheduling'
 import { saveGenerationCheckpoint } from './lib/tripPersistence'
-import type { Place, QuestionnaireAnswers } from './lib/types'
+import type { QuestionnaireAnswers } from './lib/types'
 import { RouteView } from './components/route/RouteView'
 import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
-import { classifyInBackground } from './lib/classifyInBackground'
-import { suggestExperiencesInBackground } from './lib/suggestExperiencesInBackground'
 import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { SyncStatusBanner } from './components/sync/SyncStatusBanner'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
-
-function DestinationScreen() {
-  const setDestination = useRouteStore((state) => state.setDestination)
-  const setArchetype = useRouteStore((state) => state.setArchetype)
-  const setKnownCamperAccess = useRouteStore((state) => state.setKnownCamperAccess)
-  const setScreen = useRouteStore((state) => state.setScreen)
-
-  const handleSelectPlace = (place: Place) => {
-    setDestination(place.name, place)
-    classifyInBackground(place.name)
-    suggestExperiencesInBackground(place.name)
-    setScreen('questionnaire')
-  }
-
-  // Rutas panorámicas confirmadas ("¿No encuentras tu destino?") son inherentemente
-  // roadtrip_exclusivo — se fija el arquetipo directo, sin pasar por /api/classify-destination.
-  const handleConfirmRoute = (route: ConfirmedRoute) => {
-    setDestination(route.name, route.startPlace)
-    setArchetype('roadtrip_exclusivo', true)
-    setKnownCamperAccess(route.camperAccess)
-    suggestExperiencesInBackground(route.name)
-    setScreen('questionnaire')
-  }
-
-  return (
-    <motion.div
-      key="destination"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -24 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="flex min-h-[100svh] flex-col items-center justify-center bg-white px-6"
-    >
-      <div className="flex w-full max-w-xl flex-col items-center gap-6">
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="text-center font-display text-4xl font-bold leading-[1.1] text-text sm:text-5xl"
-        >
-          Tu próxima aventura
-          <br />
-          <span className="text-accent">empieza aquí.</span>
-        </motion.h1>
-
-        <div className="w-full space-y-2">
-          <DestinationInput onSubmit={handleSelectPlace} />
-          <RouteSearch onConfirm={handleConfirmRoute} />
-        </div>
-
-        {import.meta.env.DEV && (
-          <button
-            type="button"
-            onClick={() => setScreen('devQuickRoute')}
-            className="text-caption font-medium text-text-muted underline hover:text-text-soft"
-          >
-            🧪 Dev: ruta rápida (sin IA)
-          </button>
-        )}
-      </div>
-    </motion.div>
-  )
-}
 
 function QuestionnaireScreen() {
   return (
@@ -269,6 +204,7 @@ function LoadingScreenContainer() {
 
   return (
     <LoadingScreen
+      origin={answers.origin ?? ''}
       destination={destination}
       status={status}
       phase={checkpoint?.phase ?? 'anchors'}
@@ -335,7 +271,7 @@ function App() {
       <TripSync />
       <SyncStatusBanner />
       <AnimatePresence mode="wait">
-        {screen === 'destination' && <DestinationScreen />}
+        {screen === 'destination' && <LandingScreen />}
         {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
         {screen === 'questionnaire' && <QuestionnaireScreen />}
         {screen === 'loading' && <LoadingScreenContainer key="loading" />}

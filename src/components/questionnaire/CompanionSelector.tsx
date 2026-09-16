@@ -22,11 +22,18 @@ interface CompanionSelectorProps {
 }
 
 const COMPANION_META: { value: Companion; icon: string; title: string; description: string }[] = [
-  { value: 'solo', icon: '🎒', title: 'A MI AIRE', description: 'Viajo solo y a mi ritmo.' },
-  { value: 'couple', icon: '💞', title: 'EN COMPAÑÍA', description: 'Una escapada para dos.' },
-  { value: 'family', icon: '👨‍👩‍👧', title: 'AVENTURA EN TRIBU', description: 'Viaje en familia' },
-  { value: 'group', icon: '🎉', title: 'CON MI CREW', description: 'La ruta perfecta con amigos o cuadrilla.' },
+  { value: 'solo', icon: '🎒', title: 'A mi aire', description: 'Viajo solo y a mi ritmo.' },
+  { value: 'couple', icon: '💞', title: 'En pareja', description: 'Una escapada para dos.' },
+  { value: 'family', icon: '👨‍👩‍👧', title: 'En familia', description: 'Viaje en familia' },
+  { value: 'group', icon: '🎉', title: 'Con amigos', description: 'La ruta perfecta con amigos o cuadrilla.' },
 ]
+
+/** Tras elegir A mi aire/En pareja, se resuelve solo con el tap — la pausa deja ver la tarjeta
+    marcada antes de que Questionnaire.tsx avance solo al siguiente paso (que reacciona en cuanto
+    `answers.companion` queda definido). En familia/Con amigos NO se retrasa: llevan a un
+    formulario dentro de este MISMO paso (adultos+edades / tamaño de grupo), no a un avance de
+    paso, así que no hay nada que "dejar ver" primero. */
+const AUTO_ADVANCE_DELAY_MS = 350
 
 function formatFamilySummary(adults: number, ages: number[]): string {
   const adultsPart = `${adults} adulto${adults === 1 ? '' : 's'}`
@@ -58,26 +65,45 @@ export function CompanionSelector({
   const [childrenCountDraft, setChildrenCountDraft] = useState('')
   const [childAgesDraft, setChildAgesDraft] = useState<string[]>([])
   const [groupSizeDraft, setGroupSizeDraft] = useState('')
+  // Solo para el destello visual de A mi aire/En pareja durante AUTO_ADVANCE_DELAY_MS — el valor
+  // real (`companion`) no cambia hasta que expira el timeout, ver selectCompanion más abajo.
+  const [pendingSelection, setPendingSelection] = useState<Companion | null>(null)
 
   const resetToTypeSelection = () => {
     onChange({ companion: undefined, companionAdults: undefined, companionChildrenAges: undefined, companionGroupSize: undefined })
     onCapacityAcknowledgedChange(false)
   }
 
+  const selectCompanion = (value: Companion) => {
+    if (value === 'solo' || value === 'couple') {
+      setPendingSelection(value)
+      setTimeout(() => onChange({ companion: value }), AUTO_ADVANCE_DELAY_MS)
+      return
+    }
+    onChange({ companion: value })
+  }
+
   // ── Paso 1 — sin tipo elegido todavía ────────────────────────────────
   if (!companion) {
     return (
-      <div className="space-y-2">
-        {COMPANION_META.map((option) => (
-          <ChoiceButton
-            key={option.value}
-            icon={option.icon}
-            label={option.title}
-            description={option.description}
-            selected={false}
-            onClick={() => onChange({ companion: option.value })}
-          />
-        ))}
+      <div className="grid grid-cols-2 gap-2.5">
+        {COMPANION_META.map((option) => {
+          const active = pendingSelection === option.value
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => selectCompanion(option.value)}
+              className={`flex flex-col items-start gap-2 rounded-onb-md border p-4 text-left transition-colors ${
+                active ? 'border-onb-accent bg-onb-accent-light shadow-sm' : 'border-onb-border bg-onb-card hover:border-onb-accent/50'
+              }`}
+            >
+              <span className="text-2xl leading-none">{option.icon}</span>
+              <span className={`font-dmsans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.title}</span>
+              <span className="font-dmsans text-small text-onb-text-soft">{option.description}</span>
+            </button>
+          )
+        })}
       </div>
     )
   }

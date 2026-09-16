@@ -4,6 +4,7 @@ import type { GenerationPhase, SkeletonDay } from '../../lib/routeGenerationOrch
 import { addDaysToIso, formatShortDateEs } from '../../lib/dateRange'
 
 interface LoadingScreenProps {
+  origin: string
   destination: string
   status: 'loading' | 'done' | 'error'
   /** Fase real del pipeline (anclas → esqueleto → bloques de días → done), ver GenerationResumeState en routeGenerationOrchestrator.ts. El paso 1 ("Creando tu viaje") ya está resuelto antes de llegar a esta pantalla (arquetipo/transporte), así que siempre se muestra completo desde el primer render. */
@@ -192,20 +193,20 @@ function StepRow({ step }: { step: StepRowDef }) {
   return (
     <motion.div
       layout
-      className={`flex items-center gap-3 rounded-2xl bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-opacity ${state === 'pending' ? 'opacity-50' : 'opacity-100'}`}
+      className={`flex items-center gap-3 rounded-onb-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-opacity ${state === 'pending' ? 'opacity-40' : 'opacity-100'}`}
     >
       <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white ${step.circleClass}`}>
         <Icon className="h-5 w-5" />
       </span>
 
       <div className="min-w-0 flex-1 text-left">
-        <p className="truncate text-small font-semibold text-neutral-900">{step.title}</p>
-        <p className="truncate text-caption text-neutral-600">{step.subtitle}</p>
+        <p className="truncate font-dmsans text-small font-semibold text-white">{step.title}</p>
+        <p className="truncate font-dmsans text-caption text-white/60">{step.subtitle}</p>
       </div>
 
       <span className="flex h-6 w-6 shrink-0 items-center justify-center">
         {state === 'done' && (
-          <motion.span initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-accent">
+          <motion.span initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-onb-accent">
             <CheckIcon className="h-5 w-5" />
           </motion.span>
         )}
@@ -213,12 +214,57 @@ function StepRow({ step }: { step: StepRowDef }) {
           <motion.span
             animate={{ rotate: 360 }}
             transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
-            className="block h-4 w-4 rounded-full border-2 border-neutral-300 border-t-accent"
+            className="block h-4 w-4 rounded-full border-2 border-white/20 border-t-onb-accent"
           />
         )}
-        {state === 'pending' && <span className="block h-3.5 w-3.5 rounded-full border-2 border-neutral-300" />}
+        {state === 'pending' && <span className="block h-3.5 w-3.5 rounded-full border-2 border-white/20" />}
       </span>
     </motion.div>
+  )
+}
+
+/** Código decorativo de 3 letras derivado del nombre (no es un código IATA real) — para la línea
+    de progreso origen→destino del avión, ver PlaneProgress más abajo. */
+function threeLetterCode(name: string): string {
+  const cleaned = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z]/g, '')
+  return (cleaned.slice(0, 3) || '···').toUpperCase()
+}
+
+function PlaneIcon({ className }: StepIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22l3.5-1 3.5 1v-1.5L12 19v-5.5z" />
+    </svg>
+  )
+}
+
+/** Línea de progreso con avión viajando origen→destino — el porcentaje viene de los mismos pasos
+    con progreso real de arriba (proporción de `done` sobre el total), nunca de un timer fijo: si
+    un bloque tarda más de lo normal, el avión simplemente se queda quieto más tiempo en ese punto,
+    reflejando la generación real en vez de una animación de mentira con tiempos inventados. */
+function PlaneProgress({ origin, destination, steps }: { origin: string; destination: string; steps: StepRowDef[] }) {
+  const doneCount = steps.filter((step) => step.state === 'done').length
+  const progressPct = steps.length > 0 ? Math.min(100, Math.max(4, (doneCount / steps.length) * 100)) : 4
+
+  return (
+    <div className="w-full max-w-sm">
+      <div className="flex items-center justify-between font-dmsans text-caption font-semibold tracking-wide text-white/70">
+        <span>{threeLetterCode(origin)}</span>
+        <span>{threeLetterCode(destination)}</span>
+      </div>
+      <div className="relative mt-2 h-px w-full bg-white/20">
+        <motion.div
+          className="absolute -top-2.5 flex h-5 w-5 -translate-x-1/2 items-center justify-center text-onb-accent"
+          animate={{ left: `${progressPct}%` }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <PlaneIcon className="h-4 w-4 rotate-90" />
+        </motion.div>
+      </div>
+    </div>
   )
 }
 
@@ -235,6 +281,7 @@ function StepRow({ step }: { step: StepRowDef }) {
  * del body, sin cambios.
  */
 export function LoadingScreen({
+  origin,
   destination,
   status,
   phase,
@@ -255,14 +302,14 @@ export function LoadingScreen({
   const steps = buildSteps(destination, phase, totalBlocks, skeletonDays, completedDayNumbers, tripStartIso, status === 'done')
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-gradient-to-br from-orange-200 via-rose-200 to-sky-100 px-6 py-12 text-center">
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-onb-dark px-6 py-12 text-center">
       {status === 'error' ? (
         <div className="flex flex-col items-center gap-4">
-          <p className="text-body text-neutral-800">⚠️ {errorMessage ?? 'No se pudo generar la ruta.'}</p>
+          <p className="font-dmsans text-body text-white">⚠️ {errorMessage ?? 'No se pudo generar la ruta.'}</p>
           <button
             type="button"
             onClick={onRetry}
-            className="rounded-xl bg-accent px-5 py-2.5 text-body font-medium text-white transition-colors hover:bg-accent-hover"
+            className="rounded-onb-full bg-onb-accent px-5 py-2.5 font-dmsans text-body font-medium text-white transition-colors hover:bg-onb-accent-hover"
           >
             Reintentar
           </button>
@@ -270,9 +317,11 @@ export function LoadingScreen({
       ) : (
         <>
           <div className="space-y-1">
-            <h1 className="font-display text-h2 font-bold text-neutral-900">Creando tu ruta</h1>
-            <p className="text-small text-neutral-700">Esto puede tardar un minuto — no cierres la app.</p>
+            <h1 className="font-playfair text-h2 font-bold text-white">Creando tu ruta</h1>
+            <p className="font-dmsans text-small text-white/60">Esto puede tardar un minuto — no cierres la app.</p>
           </div>
+
+          <PlaneProgress origin={origin} destination={destination} steps={steps} />
 
           <div className="w-full max-w-sm space-y-2.5">
             {steps.map((stepDef) => (
