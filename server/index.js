@@ -1452,7 +1452,7 @@ MEALS ARE NEVER A NUMBERED STOP — this is a hard rule that has been violated b
 
 REQUIRED PLACES — for every "city" day in this block, the trip context below gives you the EXACT, complete list of places to visit that day, already in a sensible visiting order (decided by an earlier step that saw the whole trip at once):
 - Every single place in that list MUST appear as its own numbered stop in your response for that day — you may NOT drop, skip, merge, rename or substitute any of them. Reproduce each place's "name" EXACTLY as given below, character for character — do NOT translate it, "improve" it, or apply the PLACE NAMES rule to it, even if it's not in Spanish or looks inconsistent with other stops. That exact string is what makes a stop recognized as fulfilling this requirement; a translated or reworded version of it will be treated as a DIFFERENT, unrequested place and may get removed.
-- You may NOT add any additional visitable place beyond that exact list for a "city" day — the selection is already final; your job here is only to enrich it (realistic schedule, description, tip, category, hours, coordinates, connectors to the next stop). The ONE explicit exception is the Free Tour (see FREE TOUR below): when it applies to this day, it is REQUIRED exactly like every place in this list, not "extra" — this "no additional places" rule does not forbid it, it is not optional, and it must be added even though it isn't itemized in the list below.
+- You may NOT add any additional visitable place beyond that exact list for a "city" day — the selection is already final; your job here is only to enrich it (realistic schedule, description, tip, category, hours, coordinates, connectors to the next stop).
 - Keep the given order by default (it already reflects a sensible walking route) — only reorder within the day if strictly necessary to respect real opening hours or physically-impossible timing, and even then change as little as possible.
 - "relax" days DO get a required list too (below) — enrich it exactly the same way as a "city" day, it's just naturally lighter/shorter. Only "road" days were NOT given a place list — use your own judgment for realistic content there. "excursion" days are covered separately below.
 - Some places in the list come with extra hints already decided by a human curator: a "tips YA DADOS" note means you MUST use those exact tips (verbatim or only lightly reworded for flow) as that place's "tip" field instead of writing your own — they're more reliable than anything you'd compose from general knowledge. A "horario ideal ya decidido" note tells you the best_time to schedule that stop (primera_hora → start it 08:30-09:30; atardecer → 1-2h before sunset; noche → after 19:00) — follow it, even if it means the day runs later than your other stops would suggest; a "noche" stop is not optional just because the rest of the day already feels complete. An "acceso libre confirmado" note means set "hours": null for that stop, no exceptions.
@@ -1464,7 +1464,7 @@ TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possib
 - Apply the exact same logic to dinner: real travel time before it, at least 1h15min for the meal itself, real travel time after if anything else follows that day.
 
 REAL OPENING HOURS — you already know the approximate real opening hours of major monuments, museums and attractions; use that knowledge, never guess or default to "always open":
-- suggested_time for a stop with real opening hours must NEVER be earlier than that place's own opening time — even if that pushes the whole morning later, or means reordering the day so an earlier-opening or always-open place goes first. Do not assume every stop opens at whatever generic hour the day happens to start. Wrong example: scheduling the Colosseum at 07:30 when it actually opens around 08:30 — that stop must move to 08:30 or later, not stay where the day's rhythm would otherwise put it.
+- suggested_time for a stop with real opening hours must NEVER be earlier than that place's own opening time — even if that pushes the whole morning later, or means reordering the day so an earlier-opening or always-open place goes first. Do not assume every stop opens at whatever generic hour the day happens to start. Wrong example: scheduling the Colosseum at 07:30 when it actually opens around 08:30 — that stop must move to 08:30 or later, not stay where the day's rhythm would otherwise put it. EXCEPTION: on a day with a Free Tour, this never means moving another stop to START BEFORE the Free Tour just because that stop opens early — the Free Tour's first-slot rule (see FREE TOUR below) always wins for the day's very first slot; an early-opening museum simply moves to right after the Free Tour ends instead, same as any other stop that day.
 - This overrides the traveler's chronotype/schedule preference for THIS specific stop's start time — "early riser" describes when the traveler is awake and ready to go, not when a ticketed site opens. If the day starts before the first real stop's opening time, either open the day with something genuinely always-open (a sunrise walk, a viewpoint, a market that's already trading) and place the ticketed stop once it actually opens, or simply start that first stop at its real opening time — never at the chronotype's generic start hour regardless of whether the place is open yet.
 - Decide the "hours" field (below) by what the traveler is actually entering for THIS stop, not by what's visible for free from the street. A monument whose duration_minutes implies going inside — a ticket, a checkpoint, a visiting schedule (Colosseum, Vatican Museums, a cathedral's interior, any museum) — is NEVER "hours": null, even though its exterior is always visible/photographable for free. Only genuinely free-standing, no-ticket, no-schedule places (a fountain, a square, an arch, a viewpoint, a street) get "hours": null. Wrong example: marking the Colosseum "hours": null/"Acceso libre" — it has real, specific opening hours (~08:30-19:00 depending on season) and those must be used, not treated as an always-open landmark.
 
@@ -1476,9 +1476,8 @@ TIPS — for EVERY stop, if you genuinely know something of real practical value
 - If you don't have anything genuinely specific and valuable for this place, leave "tip" empty rather than inventing generic advice.
 
 FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience focus below:
-- NON-NEGOTIABLE: if it applies to this block, the Free Tour MUST appear as a stop, no exceptions — never skip it to make the required-places list fit more comfortably, and never drop a required place to make room for it either. Both must appear, even if that makes the day unusually long or late-finishing — extend the schedule (start earlier, end later) rather than dropping either one. The traveler can always trim the day manually afterward; a day that's too long is a much smaller problem than silently missing the Free Tour or a required place.
-- Place it on day 1 of the WHOLE trip if this block includes day 1 (morning start) — that first-contact walk belongs on day one. Default to a 10:00 start when no specific arrival/flight time is known yet (which is the normal case at this stage of generation — flight details get adjusted separately later); only shift it later than 10:00 if something else genuinely scheduled earlier that morning justifies it (e.g. a known late arrival). If day 1 is not part of this block, place it on day 2 instead. Represent it as a single stop, duration_minutes between 150-180 (2.5-3h).
-- ORDER — do not schedule any required stop that the free tour's own route would typically cover (a well-known central square, fountain, or landmark it walks past — see free_tour_highlights below) BEFORE the free tour that same day. If such a place is in today's required list, it belongs AFTER the tour, as its own proper deeper visit (the tour only saw it briefly from outside in passing) — never as a "preview" scheduled earlier in the day.
+- Mandatory and always FIRST. If day 1 is in this block, the Free Tour is day 1's opening stop, 10:00 start by default, before every other stop that day — no exceptions for another place's opening hours, crowds, or "logical" morning slot. If day 1 is not in this block, place it on day 2 instead. Single stop, duration_minutes 150-180.
+- Everything else required for that day is scheduled after it ends. Anything the tour itself would pass (a central square/fountain/landmark, see free_tour_highlights) goes even later, as its own proper deeper visit, not a "preview".
 - "name": "Free Tour: <destination or zone>" (e.g. "Free Tour: Centro Histórico de Roma"). "description" must summarize what the tour covers in general terms (it walks past several landmarks from the outside, with historical context) — do NOT claim it enters any paid/ticketed site, free tours are always exterior/walking tours.
 - "free_tour_meeting_point": the specific real square/point where free tours in this destination customarily start (you know this — e.g. in Rome it's commonly Piazza Venezia or Piazza di Spagna).
 - "free_tour_highlights": an array of 3-6 real place names this free tour walks past/covers from the outside — places within this same trip's destination that a typical free tour of that city would include.
@@ -1904,7 +1903,7 @@ ${formatSkeletonDays(cityDays)}${formatMustIncludePlaces(mustIncludePlaces)}`
 /** Un lugar del JSON curado (ver buildCuratedDayPlaces) trae tips/best_time/is_free_access ya decididos por un humano — se formatean aparte por lugar (en vez de en una sola línea) porque, a diferencia del resto de campos, estos SUSTITUYEN el propio criterio de Claude para ese lugar concreto (ver TIPS y REAL OPENING HOURS en DAY_BLOCK_SYSTEM_PROMPT). Un lugar elegido por la Fase 1 de Claude no trae ninguno de estos tres campos — la línea queda igual que antes. */
 function formatRequiredPlaceItem(place) {
   if (place.name === FREE_TOUR_REQUIRED_PLACE_MARKER) {
-    return `THE FREE TOUR ITSELF [~${place.duration_min}min] — this list entry represents the Free Tour, it is NOT a real place with this literal name. You must still produce exactly one stop for it, formatted per the FREE TOUR section above: "name": "Free Tour: <destination or zone>", "is_free_tour": true, plus free_tour_meeting_point/free_tour_highlights/free_tour_tips. Treat it as satisfying this required-list entry the same way any other required place satisfies its own entry — it is just as mandatory, do not skip it because the rest of this list already feels complete.`
+    return `THE FREE TOUR ITSELF [~${place.duration_min}min] — not a real place, expand this entry into the Free Tour stop per the FREE TOUR section above (is_free_tour:true, real name, meeting point, highlights, tips). Mandatory like every other entry in this list.`
   }
   const base = `${place.name} [${place.type}, ~${place.duration_min}min]`
   const extras = []
@@ -2873,32 +2872,36 @@ function distributeClustersToDays(clusters, dayNumbers) {
 }
 
 /**
- * El Free Tour es indiscutible: si el día que lo recibe (día 1) tiene clusters de Nivel 2/3, se
- * evacúan ENTEROS (nunca se parte un grupo) a los demás días (el que menos carga tenga en cada
- * momento) para dejarle sitio real. Los clusters con algún lugar de Nivel 1 (imprescindible) NUNCA se
- * tocan, aunque el día quede muy cargado — en ese caso se deja así a propósito: el Free Tour se añade
- * igual encima y el viajero recorta manualmente después (ya existe esa función en DIAS, ver
- * project_route_planner_explore_and_stop_editing en memoria).
+ * El Free Tour tiene PRIORIDAD ABSOLUTA sobre cualquier otra parada del día 1 — es la toma de
+ * contacto con la ciudad, siempre debe ir primero (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT). Si el
+ * contenido "real" del día 1 (todo menos el propio tour) es tan grande que empezar a las 10:00 y
+ * meterlo TODO después del tour dejaría un día irrealmente largo, se evacúan clusters enteros
+ * (nunca se parte un grupo) a los demás días hasta caber en un presupuesto razonable —
+ * PRIMERO los de Nivel 2/3 (nunca imprescindibles), y si con eso no basta, también los de Nivel 1
+ * más grandes (encontrado en vivo: dejar SIEMPRE intactos los de Nivel 1 hacía que un día 1 con
+ * mucho contenido imprescindible — ej. el complejo completo del Vaticano — invitara a Claude a
+ * anteponerlo al Free Tour "porque ya estaba primero en la lista"; mover ese contenido a otro día
+ * es la única forma de que el Free Tour sea de verdad la primera parada, sin ninguna excepción).
  */
-function evictNonEssentialForFreeTour(dayClustersMap, freeTourDayNumber) {
-  const freeTourClusters = dayClustersMap.get(freeTourDayNumber)
-  const otherDays = [...dayClustersMap.keys()].filter((day) => day !== freeTourDayNumber)
-  if (!freeTourClusters || freeTourClusters.length === 0 || otherDays.length === 0) return
+const FREE_TOUR_DAY_CONTENT_BUDGET_MINUTES = 420
 
-  const kept = []
-  const evicted = []
-  for (const cluster of freeTourClusters) {
-    if (cluster.minLevel <= 1) kept.push(cluster)
-    else evicted.push(cluster)
-  }
-  if (evicted.length === 0) return
-  dayClustersMap.set(freeTourDayNumber, kept)
+function evictForFreeTour(dayClustersMap, freeTourDayNumber) {
+  const otherDays = [...dayClustersMap.keys()].filter((day) => day !== freeTourDayNumber)
+  const initial = dayClustersMap.get(freeTourDayNumber)
+  if (!initial || initial.length === 0 || otherDays.length === 0) return
 
   const dayLoad = (day) => dayClustersMap.get(day).reduce((sum, c) => sum + c.totalDuration, 0)
-  for (const cluster of evicted) {
+  let remaining = [...initial]
+
+  while (remaining.reduce((sum, c) => sum + c.totalDuration, 0) > FREE_TOUR_DAY_CONTENT_BUDGET_MINUTES && remaining.length > 1) {
+    const nonEssential = remaining.filter((cluster) => cluster.minLevel > 1)
+    const pool = nonEssential.length > 0 ? nonEssential : remaining
+    const biggest = [...pool].sort((a, b) => b.totalDuration - a.totalDuration)[0]
+    remaining = remaining.filter((cluster) => cluster !== biggest)
     const targetDay = otherDays.sort((a, b) => dayLoad(a) - dayLoad(b))[0]
-    dayClustersMap.get(targetDay).push(cluster)
+    dayClustersMap.get(targetDay).push(biggest)
   }
+  dayClustersMap.set(freeTourDayNumber, remaining)
 }
 
 function flattenDayClusters(dayClustersMap) {
@@ -2935,12 +2938,22 @@ function collectDoubleVisitRecommendations(dayPlacesMap, allPlaces) {
 
 /** "primera_hora" primero, "atardecer"/"noche" al final, el resto mantiene su orden original (sort estable) — una ordenación aproximada por franja horaria; el horario fino real lo decide la Fase 2 con las horas de apertura reales. */
 const BEST_TIME_SORT_WEIGHT = { primera_hora: 0, atardecer: 2, noche: 2 }
+/** El marcador de Free Tour SIEMPRE va antes que cualquier otro lugar, incluidos los "primera_hora" —
+ * si empatara con ellos (peso 0) un sort estable lo dejaría detrás de lo que ya estuviera antes en el
+ * array (visto en vivo: Museos Vaticanos, también "primera_hora", quedaba delante del Free Tour y
+ * Claude "mantenía el orden dado" tal cual, poniendo el museo antes del tour). Peso -1 le garantiza el
+ * primer puesto pase lo que pase. */
+function bestTimeSortWeight(place) {
+  if (place.name === FREE_TOUR_REQUIRED_PLACE_MARKER) return -1
+  return BEST_TIME_SORT_WEIGHT[place.best_time] ?? 1
+}
+
 function sortDayPlacesByBestTime(places) {
   return places
     .map((place, index) => ({ place, index }))
     .sort((a, b) => {
-      const weightA = BEST_TIME_SORT_WEIGHT[a.place.best_time] ?? 1
-      const weightB = BEST_TIME_SORT_WEIGHT[b.place.best_time] ?? 1
+      const weightA = bestTimeSortWeight(a.place)
+      const weightB = bestTimeSortWeight(b.place)
       return weightA !== weightB ? weightA - weightB : a.index - b.index
     })
     .map((entry) => entry.place)
@@ -2973,12 +2986,12 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
 
-  // Free Tour ocupa la mañana del día 1 (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) y es indiscutible
-  // — se evacúan los clusters de Nivel 2/3 del día 1 para dejarle sitio real; los de Nivel 1 nunca se
-  // tocan (ver evictNonEssentialForFreeTour).
+  // Free Tour SIEMPRE la primera parada del día 1 — se evacúa lo que no quepa después (Nivel 2/3
+  // primero, Nivel 1 si aun así no basta) para que nunca haya un motivo real para anteponer otra
+  // parada (ver evictForFreeTour).
   const wantsFreeTour = Array.isArray(answers.experiences) && answers.experiences.includes('free_tour')
   if (wantsFreeTour && listDayNumbers.includes(1)) {
-    evictNonEssentialForFreeTour(dayClustersMap, 1)
+    evictForFreeTour(dayClustersMap, 1)
   }
 
   const dayPlacesMap = flattenDayClusters(dayClustersMap)
@@ -3048,9 +3061,11 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
       // Tope defensivo — ver [timing] real en logs: la Fase 2 tiene que escribir contenido completo
       // (descripción/tip/horario/coordenadas/conectores) para CADA lugar de la lista en una sola
       // llamada, así que más lugares = más tokens de salida = más tiempo. 14+/día medidos en vivo
-      // tardaban 130-150s, por encima del límite de la función serverless — 11 deja margen real sin
-      // recortar el "visita todo lo que esté en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
-      if (places.length >= 11) break
+      // tardaban 130-150s; con 11 se vio un stop_reason=max_tokens real en un día de 10 tras crecer
+      // el prompt de Fase 2 con más reglas a lo largo de la sesión (REQUIRED PLACES, Free Tour,
+      // nombres exactos...) — 9 deja margen real de nuevo sin recortar el "visita todo lo que esté
+      // en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
+      if (places.length >= 9) break
     }
     byDayNumber.set(dayNumber, places)
   }
@@ -3234,6 +3249,38 @@ function validateStopHours(day) {
     if ((stop?.hours === null || stop?.hours === undefined) && TYPICALLY_INDOOR_CATEGORIES.has(stop?.category)) {
       console.log(`[hours-validation] day ${day.day_number} — "${stop?.name}" (${stop?.category}) sin horario real (hours=null) — revisar si debería tener taquilla/horario`)
     }
+  }
+}
+
+// ── Red de seguridad post-generación: el Free Tour debe ser la parada MÁS TEMPRANA del día ──
+//
+// El prompt (FREE TOUR + la excepción añadida en REAL OPENING HOURS) ya pide esto, pero visto en
+// vivo: Claude a veces igual programa otra parada (ej. un museo de apertura temprana) ANTES del Free
+// Tour, aplicando la regla de horarios de apertura reales por encima de la del Free Tour. Regla simple:
+// el Free Tour mantiene su hora tal cual la puso Claude (normalmente 10:00) y cualquier parada que
+// quedó antes se mueve a justo después de que termine el tour — sin intercambios ni recálculos del
+// resto del día.
+function enforceFreeTourFirst(day) {
+  if (!Array.isArray(day?.stops) || day.stops.length < 2) return
+  const freeTourStop = day.stops.find((stop) => stop?.is_free_tour)
+  if (!freeTourStop) return
+  const freeTourMinutes = parseHHMM(freeTourStop.suggested_time)
+  if (freeTourMinutes == null) return
+
+  const freeTourDuration = typeof freeTourStop.duration_minutes === 'number' ? freeTourStop.duration_minutes : 165
+  let nextAvailable = freeTourMinutes + freeTourDuration + 30
+
+  const earlyStops = day.stops
+    .filter((stop) => stop !== freeTourStop && parseHHMM(stop?.suggested_time) != null && parseHHMM(stop.suggested_time) < freeTourMinutes)
+    .sort((a, b) => parseHHMM(a.suggested_time) - parseHHMM(b.suggested_time))
+
+  for (const stop of earlyStops) {
+    console.log(
+      `[free-tour-order] day ${day.day_number} — "${stop.name}" empezaba antes (${stop.suggested_time}) que el Free Tour (${freeTourStop.suggested_time}) — se mueve después`,
+    )
+    stop.suggested_time = formatMinutesAsHHMM(nextAvailable)
+    const stopDuration = typeof stop.duration_minutes === 'number' ? stop.duration_minutes : 45
+    nextAvailable += stopDuration + 20
   }
 }
 
@@ -3465,6 +3512,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       stripNonRequiredStops(day, requiredPlaces)
       filterMealLikeStops(day)
       validateStopHours(day)
+      enforceFreeTourFirst(day)
       logMissingRequiredPlaces(day, requiredPlaces)
       logStopCountWarning(day, typeByDayNumber.get(day.day_number), answers.pace)
       logGeographicCoherence(day)
