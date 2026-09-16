@@ -288,7 +288,12 @@ async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnChec
   touchRouteCache(cached.id)
   await onCheckpoint({ phase: 'done', params, dayPlaces: [], recommendedRevisits: [], skeleton, generated, completedBlocks: 1, totalBlocks: 1 })
 
-  const finalRoute = mapGeneratedRouteToRoute(generated, destination, answers, transportContext, [])
+  // applyHighMatchReuse/applyMediumMatchRedistribute devuelven `{ ...cached.route_data, ... }`, así
+  // que recommended_revisits (guardado dentro del blob por saveRouteCache) sobrevive el reparto
+  // intacto salvo que uno de esos días haya cambiado de verdad — no hay forma barata de saber si la
+  // recomendación seguía siendo válida tras el ajuste, así que se conserva tal cual (mismo criterio
+  // que el resto de contenido reutilizado en un match alto/medio).
+  const finalRoute = mapGeneratedRouteToRoute(generated, destination, answers, transportContext, [], generated.recommended_revisits ?? [])
   saveRouteCache(destination, answers.days, answers.experiences, answers.pace, generated)
   return finalRoute
 }
@@ -485,7 +490,11 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // Ruta generada de cero — se guarda como entrada nueva de route_cache para que futuras peticiones
   // parecidas (mismo destino/experiencias/ritmo/días) puedan reutilizarla vía tryRouteCacheReuse en
   // vez de pasar por el pipeline completo otra vez. Fire-and-forget, nunca bloquea la ruta actual.
-  saveRouteCache(destination, answers.days, answers.experiences, answers.pace, generated)
+  // recommendedRevisits viaja anidado dentro del propio blob cacheado (recommended_revisits, ver su
+  // comentario en GeneratedRouteResponse) — si no se guardara aquí, una ruta servida desde caché
+  // perdería para siempre sus tarjetas de "segunda visita recomendada" (bug real encontrado en vivo:
+  // tryRouteCacheReuse llamaba a mapGeneratedRouteToRoute sin ese argumento en absoluto).
+  saveRouteCache(destination, answers.days, answers.experiences, answers.pace, { ...generated, recommended_revisits: recommendedRevisits })
 
   // anchorNames alimenta el caché de tips con búsqueda web (ver StopDetailSheet.tsx/anchor-tips) —
   // antes solo cubría 2-3 "anclas" sueltas por día, ahora cubre la lista completa de lugares elegida

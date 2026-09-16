@@ -2871,6 +2871,40 @@ function distributeClustersToDays(clusters, dayNumbers) {
   return dayClusters
 }
 
+// Mismo tope que sanitizeDayPlaces aplica al camino Claude-driven (ver su comentario junto al
+// `if (places.length >= 9) break`): más lugares/día = más tokens de salida en Fase 2 = más riesgo real
+// de stop_reason=max_tokens. distributeClustersToDays reparte por DURACIÓN total, no por número de
+// paradas, así que un día puede acabar con más lugares que otro con la misma carga si son cortos
+// (ej. varios miradores/plazas de 15-20min) — encontrado en vivo: un Roma 5 días acabó con un día de
+// 11 lugares (390min, dentro del 1.4x de la duración media) que sí disparó max_tokens real. El camino
+// curado necesita su propio tope de CANTIDAD además del de duración.
+const MAX_PLACES_PER_CURATED_DAY = 9
+
+/**
+ * Red de seguridad de cantidad tras distributeClustersToDays: si un día quedó con más clusters/lugares
+ * que el tope, se mueven clusters enteros (nunca se parte uno) al día con más hueco — empezando por
+ * los menos imprescindibles (minLevel más alto) y, entre esos, por los más pequeños primero (para
+ * sacar el mínimo de lugares posible en cada paso en vez de mover un cluster grande de golpe).
+ */
+function rebalanceClustersForPlaceCount(dayClustersMap, maxPlacesPerDay) {
+  const placeCount = (day) => dayClustersMap.get(day).reduce((sum, c) => sum + c.places.length, 0)
+  const days = [...dayClustersMap.keys()]
+  if (days.length < 2) return
+
+  for (const day of days) {
+    let guard = 0
+    while (placeCount(day) > maxPlacesPerDay && guard++ < 20) {
+      const dayList = dayClustersMap.get(day)
+      if (dayList.length <= 1) break
+      const movable = [...dayList].sort((a, b) => (b.minLevel !== a.minLevel ? b.minLevel - a.minLevel : a.places.length - b.places.length))
+      const cluster = movable[0]
+      const targetDay = days.filter((d) => d !== day).sort((a, b) => placeCount(a) - placeCount(b))[0]
+      dayClustersMap.set(day, dayList.filter((c) => c !== cluster))
+      dayClustersMap.get(targetDay).push(cluster)
+    }
+  }
+}
+
 /**
  * El Free Tour tiene PRIORIDAD ABSOLUTA sobre cualquier otra parada del día 1 — es la toma de
  * contacto con la ciudad, siempre debe ir primero (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT). Si el
@@ -2985,6 +3019,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
   const rawPlaces = collectDestinationPlaces(destData, levels)
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
+  rebalanceClustersForPlaceCount(dayClustersMap, MAX_PLACES_PER_CURATED_DAY)
 
   // Free Tour SIEMPRE la primera parada del día 1 — se evacúa lo que no quepa después (Nivel 2/3
   // primero, Nivel 1 si aun así no basta) para que nunca haya un motivo real para anteponer otra
@@ -3065,7 +3100,7 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
       // el prompt de Fase 2 con más reglas a lo largo de la sesión (REQUIRED PLACES, Free Tour,
       // nombres exactos...) — 9 deja margen real de nuevo sin recortar el "visita todo lo que esté
       // en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
-      if (places.length >= 9) break
+      if (places.length >= MAX_PLACES_PER_CURATED_DAY) break
     }
     byDayNumber.set(dayNumber, places)
   }

@@ -156,6 +156,10 @@ export interface GeneratedRouteResponse {
   excursions_available?: GeneratedExcursion[]
   city_transitions?: GeneratedCityTransition[]
   phase_transitions?: GeneratedPhaseTransition[]
+  /** Solo transporta el dato a través de route_cache (ver saveRouteCache/tryRouteCacheReuse en
+   * routeGenerationOrchestrator.ts) — no lo usa nada de mapGeneratedRouteToRoute directamente, que
+   * sigue recibiendo recommendedRevisits como su propio parámetro aparte. */
+  recommended_revisits?: { name: string; day_number: number; reason: string }[]
 }
 
 // ── Helpers ───────────────────────────────────────────────
