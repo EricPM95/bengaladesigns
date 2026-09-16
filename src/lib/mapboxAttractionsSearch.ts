@@ -48,8 +48,19 @@ function toResult(feature: MapboxSearchBoxFeature): AttractionSearchResult {
  * por defecto, sin traducción manual). `forward` en vez de `suggest`+`retrieve`: un único fetch por
  * tecleo en vez de dos pasos con session_token, más simple para un autocompletado que no necesita
  * optimizar la facturación por sesión.
+ *
+ * `bbox` (opcional, ver buildBoundingBox en nearbyPlacesSearch.ts): a diferencia de `proximity`
+ * (solo reordena, nunca excluye), esto SÍ acota el área — usado por AddStopScreen.tsx, donde el
+ * feedback de calidad pedía explícitamente que "museos" en Roma nunca devolviera resultados de otra
+ * ciudad. El resto de usos (AttractionsFinder.tsx) se quedan solo con `proximity`, sin bbox, para no
+ * cambiarles el comportamiento ya validado.
  */
-export async function searchAttractions(query: string, proximity?: Coordinates | null, signal?: AbortSignal): Promise<AttractionSearchResult[]> {
+export async function searchAttractions(
+  query: string,
+  proximity?: Coordinates | null,
+  signal?: AbortSignal,
+  bbox?: [number, number, number, number],
+): Promise<AttractionSearchResult[]> {
   const trimmed = query.trim()
   if (!trimmed || !MAPBOX_TOKEN) return []
 
@@ -58,7 +69,9 @@ export async function searchAttractions(query: string, proximity?: Coordinates |
   url.searchParams.set('access_token', MAPBOX_TOKEN)
   url.searchParams.set('language', 'es')
   url.searchParams.set('limit', '8')
+  url.searchParams.set('types', 'poi')
   if (proximity) url.searchParams.set('proximity', `${proximity.lng},${proximity.lat}`)
+  if (bbox) url.searchParams.set('bbox', bbox.join(','))
 
   const response = await fetch(url.toString(), { signal })
   if (!response.ok) return []

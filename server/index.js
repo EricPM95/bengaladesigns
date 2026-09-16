@@ -356,6 +356,120 @@ app.post('/api/describe-stop', async (req, res) => {
   }
 })
 
+// ── Ficha completa de un POI de "Añadir parada" (AddStopScreen.tsx) — caché PERMANENTE por
+// lugar+destino en Supabase (place_content_cache), a diferencia de describe-stop de arriba (que
+// nunca persiste, solo cache en memoria del cliente para esa sesión). El primer viajero que toca
+// "Ver detalle" de un lugar paga la llamada a Claude; todos los siguientes (de cualquier ruta,
+// cualquier usuario) la reciben gratis — efecto progresivo pedido en el feedback de calidad.
+const POI_CONTENT_SYSTEM_PROMPT = `Genera contenido turístico en español para un lugar concreto de un destino. Sé específico y genuinamente útil — nunca relleno genérico que podría aplicar a cualquier sitio.
+
+TIPS — 1-3 tips de alto valor práctico, solo los que genuinamente apliquen: entradas combinadas con otro lugar cercano, acceso gratuito parcial, mejor hora para evitar masas, trucos reales que ahorren tiempo o dinero. Nunca "lleva calzado cómodo" ni relleno similar — si no tienes nada genuinamente bueno, deja el array vacío.
+
+RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
+{
+  "summary": "2-3 frases: qué es, contexto real, por qué visitarlo",
+  "tips": ["1-3 tips siguiendo la guía de arriba, o array vacío"],
+  "hours_detail": "Horario detallado con matices de temporada/día si los hay, en español — null si es acceso libre 24h o no hay matices que añadir",
+  "hours_short": "Formato 'HH:MM–HH:MM' para la cabecera — null si es de acceso libre",
+  "category": "Categoría específica en español (ej. 'Anfiteatro histórico'), nunca genérica como 'Punto de interés'",
+  "visit_duration_min": 60,
+  "is_free_access": false,
+  "official_url": "URL de la web oficial si existe y la conoces con confianza, o null"
+}`
+
+function sanitizePoiContent(parsed) {
+  const text = (value, max) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : '')
+  const tips = Array.isArray(parsed?.tips)
+    ? parsed.tips
+        .filter((tip) => typeof tip === 'string' && tip.trim())
+        .slice(0, 3)
+        .map((tip) => tip.trim().slice(0, 400))
+    : []
+  const visitDurationMin = Number(parsed?.visit_duration_min)
+  return {
+    summary: text(parsed?.summary, 500),
+    tips,
+    hours_detail: text(parsed?.hours_detail, 400) || null,
+    hours_short: text(parsed?.hours_short, 40) || null,
+    category: text(parsed?.category, 80) || 'Punto de interés',
+    visit_duration_min: Number.isFinite(visitDurationMin) && visitDurationMin > 0 ? Math.round(visitDurationMin) : 60,
+    is_free_access: Boolean(parsed?.is_free_access),
+    official_url: text(parsed?.official_url, 200) || null,
+  }
+}
+
+app.post('/api/poi-content', async (req, res) => {
+  const { place_name: placeName, destination, mapbox_id: mapboxId } = req.body ?? {}
+  if (!placeName || !destination) {
+    res.status(400).json({ error: 'Se requiere place_name y destination.' })
+    return
+  }
+
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('place_content_cache')
+        .select('id, content, hit_count')
+        .eq('place_name', placeName)
+        .eq('destination', destination)
+        .maybeSingle()
+      if (error) throw error
+      if (data) {
+        // Fire-and-forget — un fallo bumpeando el contador nunca debe retrasar la respuesta al viajero.
+        supabaseAdmin
+          .from('place_content_cache')
+          .update({ hit_count: (data.hit_count ?? 1) + 1, last_used_at: new Date().toISOString() })
+          .eq('id', data.id)
+          .then(({ error: touchError }) => {
+            if (touchError) logAnthropicError('poi-content (touch)', touchError)
+          })
+        res.json({ content: data.content, cached: true })
+        return
+      }
+    } catch (error) {
+      // Fallo leyendo el caché no debe bloquear — sigue como si no hubiera caché (cache miss).
+      logAnthropicError('poi-content (read cache)', error)
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 900,
+      system: POI_CONTENT_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Lugar: "${placeName}"\nDestino: "${destination}"` }],
+    })
+    logCallCost('poi-content', response)
+
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const content = sanitizePoiContent(parsed)
+    if (!content.summary) throw new Error('Respuesta de Claude sin resumen válido')
+
+    if (supabaseAdmin) {
+      try {
+        // El cliente de Supabase NO lanza en un error de Postgrest — hay que comprobar `error`
+        // explícitamente (mismo bug ya encontrado y arreglado en route-cache/save).
+        const { error: insertError } = await supabaseAdmin
+          .from('place_content_cache')
+          .insert({ place_name: placeName, destination, mapbox_id: mapboxId ?? null, content })
+        if (insertError) throw insertError
+      } catch (error) {
+        // El contenido ya se generó y se puede devolver igual — un fallo guardándolo en caché solo
+        // significa que la próxima vez se vuelve a generar, no es motivo para dar error al viajero.
+        logAnthropicError('poi-content (write cache)', error)
+      }
+    }
+
+    res.json({ content, cached: false })
+  } catch (error) {
+    logAnthropicError('poi-content', error)
+    res.status(502).json({ error: 'No se pudo generar el contenido del lugar con IA.' })
+  }
+})
+
 // ── Tips de ANCLAS (StopDetailSheet, pestaña "Tips") — SOLO para anclas (Paso 1 del pipeline,
 // lugares obligatorios del destino, ver /api/generate-anchors), nunca para paradas normales del
 // pool (esas usan `local_tip` de /api/describe-stop de arriba, sin caché ni búsqueda web). Una

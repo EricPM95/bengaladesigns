@@ -49,6 +49,16 @@ interface StopDetailSheetProps {
   /** true si este lugar es una ancla (Paso 1 del pipeline, ver Route.anchorNames) — decide si los tips vienen del caché con búsqueda web (tips_anclas) o del `localTip` simple de describeStopApi.ts. */
   isAnchor: boolean
   onClose: () => void
+  /**
+   * Cuando se da (incluso `{ description: null, loading: true }`), sustituye por completo la
+   * llamada interna a describeStop()/describeStopApi.ts — usado por AddStopScreen.tsx para mostrar
+   * la ficha de un POI de Mapbox aún no añadido a la ruta, cuyo contenido viene de la caché
+   * PERMANENTE place_content_cache (poiContentApi.ts) en vez del caché solo-en-memoria de
+   * describeStopApi.ts. `undefined` (valor por defecto) = comportamiento de siempre, sin cambios.
+   */
+  externalContent?: { description: StopDescription | null; loading: boolean }
+  /** Barra inferior fija con un único CTA — usado por AddStopScreen.tsx para "Añadir a Día {N} →". Ausente (por defecto) en el uso normal de una parada ya en la ruta, que no necesita ningún CTA aquí. */
+  footerAction?: { label: string; onClick: () => void }
 }
 
 function GlobeIcon() {
@@ -100,15 +110,18 @@ function BusIcon() {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache); "Tickets &
  * Entradas" sigue siendo mock (mockStopTickets.ts) hasta conectar Civitatis/GetYourGuide reales.
  */
-export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAnchor, onClose }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
-  const [description, setDescription] = useState<StopDescription | null>(null)
-  const [descLoading, setDescLoading] = useState(false)
+  const [internalDescription, setInternalDescription] = useState<StopDescription | null>(null)
+  const [internalDescLoading, setInternalDescLoading] = useState(false)
   const [descFailed, setDescFailed] = useState(false)
   const [anchorTips, setAnchorTips] = useState<StopTip[]>([])
   const [nearbyTransit, setNearbyTransit] = useState<NearbyTransit>({ metro: [], bus: [] })
   const [directionsOpen, setDirectionsOpen] = useState(false)
+
+  const description = externalContent ? externalContent.description : internalDescription
+  const descLoading = externalContent ? externalContent.loading : internalDescLoading
 
   // El Free Tour trae su propio contenido nativo del pipeline (freeTourMeetingPoint/Highlights/Tips,
   // ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) — nunca pide descripción bajo demanda, ni tiene
@@ -116,21 +129,25 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   useEffect(() => {
     if (!stop) return
     setTab('resumen')
-    setDescription(null)
     setDescFailed(false)
-    if (stop.isFreeTour) return
-    setDescLoading(true)
+    // externalContent presente (aunque sea null) = AddStopScreen.tsx ya gestiona su propio fetch
+    // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
+    if (externalContent || stop.isFreeTour) {
+      setInternalDescription(null)
+      return
+    }
+    setInternalDescLoading(true)
     let cancelled = false
     describeStop(stop.name, city, stop.category).then((result) => {
       if (cancelled) return
-      setDescLoading(false)
-      if (result) setDescription(result)
+      setInternalDescLoading(false)
+      if (result) setInternalDescription(result)
       else setDescFailed(true)
     })
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city])
+  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city, Boolean(externalContent)])
 
   // Tips de ancla — llamada aparte (caché en Supabase + búsqueda web, ver anchorTipsApi.ts), solo
   // para lugares obligatorios del destino. Las paradas normales no llaman aquí: su tip (si lo hay)
@@ -459,6 +476,18 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
               )}
             </div>
           </div>
+
+          {footerAction && (
+            <div className="shrink-0 border-t border-border bg-bg-card px-4 py-3">
+              <button
+                type="button"
+                onClick={footerAction.onClick}
+                className="w-full rounded-xl bg-accent py-2.5 text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+              >
+                {footerAction.label}
+              </button>
+            </div>
+          )}
 
           <HowToGetThereSheet open={directionsOpen} onClose={() => setDirectionsOpen(false)} destination={description?.address ?? stop.name} />
         </motion.div>

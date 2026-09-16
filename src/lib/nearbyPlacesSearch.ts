@@ -56,7 +56,7 @@ function enrichWithMockRating(feature: MapboxSearchBoxFeature, categoryLabel: st
 const METERS_PER_DEGREE_LAT = 111_320
 
 /** Caja delimitadora cuadrada de `radiusMeters` alrededor de `center` — `bbox` de la Search Box API de Mapbox, la única forma real de limitar (o ampliar) el radio efectivo de búsqueda: `proximity` por sí sola solo ordena por cercanía, no acota el área (ver BLOQUE C, feedback de calidad: el radio efectivo se sentía demasiado estrecho). */
-function buildBoundingBox(center: Coordinates, radiusMeters: number): [number, number, number, number] {
+export function buildBoundingBox(center: Coordinates, radiusMeters: number): [number, number, number, number] {
   const latDelta = radiusMeters / METERS_PER_DEGREE_LAT
   const lngDelta = radiusMeters / (METERS_PER_DEGREE_LAT * Math.cos((center.lat * Math.PI) / 180))
   return [center.lng - lngDelta, center.lat - latDelta, center.lng + lngDelta, center.lat + latDelta]

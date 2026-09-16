@@ -18,7 +18,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
-import { AttractionsFinder } from '../attractionsFinder/AttractionsFinder'
+import { AddStopScreen } from '../addStop/AddStopScreen'
 import { MealDetailSheet } from './MealDetailSheet'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
@@ -621,11 +621,15 @@ export function DayDetailPanel({
             renderConnector(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
 
           {route && (
-            <AttractionsFinder
+            <AddStopScreen
               route={route}
               city={day.city}
+              dayNumber={day.dayNumber}
               open={insertAt !== null}
-              title="Añadir una parada"
+              beforeStopName={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.name ?? null) : null}
+              afterStopName={insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null}
+              anchorCoordinates={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.coordinates ?? null) : null}
+              dayMarkers={dayMarkers}
               onPick={(newStop) => {
                 if (day.stops.length === 0) seedDayStops(day.id, realStops)
                 if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
