@@ -18,11 +18,16 @@ import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
 
 // Solo 2 de las 3 opciones de TripPace son alcanzables desde este selector (confirmado por el
-// usuario) — 'nonstop' se queda sin UI propia, pero el tipo/lógica de backend (MIN_STOPS_BY_PACE,
-// stopScheduling.ts, etc.) no se toca.
+// usuario) — bug real encontrado en vivo: "Completo" enviaba 'balanced', pero el backend
+// (PACE_LABEL/MIN_STOPS_BY_PACE en server/index.js) trata 'balanced' como una variante de
+// "Tranquilo" (mismo espíritu que 'zen', min. 4 paradas) — 'nonstop' es el valor que de verdad
+// significa "Completo" ahí (min. 6 paradas, puede apilar dos visitas largas el mismo día). Con
+// 'balanced', el pipeline generaba rutas mucho más ligeras de lo esperado para "Completo" — en un
+// viaje de pocos días, esto hacía que el esqueleto prefiriera meter una excursión de día completo
+// en vez de aprovechar los días en el propio destino.
 const paceOptions: { value: TripPace; icon: string; label: string; description: string }[] = [
   { value: 'zen', icon: '🌿', label: 'Tranquilo', description: '2-3 paradas/día, mañanas tranquilas, pausas largas' },
-  { value: 'balanced', icon: '⚡', label: 'Completo', description: '4-5 paradas/día, flexible' },
+  { value: 'nonstop', icon: '⚡', label: 'Completo', description: '7-8 paradas/día, aprovechando el día al máximo' },
 ]
 
 type StepId = 'transport' | 'days' | 'companion' | 'experiences' | 'pace' | 'places'

@@ -39,7 +39,7 @@ export interface SavedTrip extends TripPayload {
  * que no hace falta migrar datos cuando eso pase. Requiere "Allow anonymous sign-ins" activado en
  * el dashboard (Authentication → Sign In / Providers) — ver supabase/migrations/0001_*.sql.
  */
-export async function bootstrapTraveler(): Promise<string> {
+async function bootstrapTravelerUncached(): Promise<string> {
   if (!supabase) throw new Error('Supabase no configurado.')
 
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
@@ -58,6 +58,33 @@ export async function bootstrapTraveler(): Promise<string> {
   if (upsertError) throw upsertError
 
   return userId
+}
+
+/**
+ * Bug real encontrado en vivo: TripSync.tsx llama a esto en un `useEffect` sin guarda contra doble
+ * invocación — en dev, React StrictMode monta el componente dos veces, y las dos invocaciones
+ * arrancan `bootstrapTravelerUncached()` en paralelo ANTES de que ninguna resuelva. Como ninguna ve
+ * todavía una sesión existente, AMBAS llaman a `signInAnonymously()` — se crean dos usuarios
+ * anónimos distintos, y el cliente de Supabase persiste en localStorage la sesión de quien responda
+ * último, mientras el store se queda con el `userId` de quien RESUELVA la promesa último (dos
+ * carreras independientes que no tienen por qué coincidir). Resultado: el `travelerId` del store
+ * deja de ser el mismo usuario que el token realmente persistido, y cada guardado posterior falla
+ * (RLS rechaza el `traveler_id` de un usuario que ya no es el autenticado) — el aviso "Cambios sin
+ * guardar" que ve el usuario. Fix: una única promesa compartida a nivel de módulo — la segunda
+ * invocación reutiliza la misma sesión en vez de crear una nueva.
+ */
+let bootstrapPromise: Promise<string> | null = null
+
+export function bootstrapTraveler(): Promise<string> {
+  if (!bootstrapPromise) {
+    bootstrapPromise = bootstrapTravelerUncached().catch((error) => {
+      // Un intento fallido no debe dejar el módulo bloqueado para siempre — el siguiente montaje
+      // (o un reintento manual) debe poder volver a intentarlo desde cero.
+      bootstrapPromise = null
+      throw error
+    })
+  }
+  return bootstrapPromise
 }
 
 /** Todos los viajes guardados de este traveler, más recientes primero — [] si todavía no tiene ninguno. */

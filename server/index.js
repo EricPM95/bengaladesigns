@@ -1455,7 +1455,7 @@ REQUIRED PLACES — for every "city" day in this block, the trip context below g
 - You may NOT add any additional visitable place beyond that exact list for a "city" day — the selection is already final; your job here is only to enrich it (realistic schedule, description, tip, category, hours, coordinates, connectors to the next stop).
 - Keep the given order by default (it already reflects a sensible walking route) — only reorder within the day if strictly necessary to respect real opening hours or physically-impossible timing, and even then change as little as possible.
 - "relax" days DO get a required list too (below) — enrich it exactly the same way as a "city" day, it's just naturally lighter/shorter. Only "road" days were NOT given a place list — use your own judgment for realistic content there. "excursion" days are covered separately below.
-- Some places in the list come with extra hints already decided by a human curator: a "tips YA DADOS" note means you MUST use those exact tips (verbatim or only lightly reworded for flow) as that place's "tip" field instead of writing your own — they're more reliable than anything you'd compose from general knowledge. A "horario ideal ya decidido" note tells you the best_time to schedule that stop (primera_hora → start it 08:30-09:30; atardecer → 1-2h before sunset; noche → after 19:00) — follow it, even if it means the day runs later than your other stops would suggest; a "noche" stop is not optional just because the rest of the day already feels complete. An "acceso libre confirmado" note means set "hours": null for that stop, no exceptions.
+- Some places in the list come with extra hints already decided by a human curator: a "tip ya decidido" note means that place already has its final tip text — leave "tip": "" (empty string) for it in your response, it gets filled in automatically afterward from the curator's exact words; do NOT copy the given text into your response, that would just cost you output tokens for text that gets overwritten anyway. A "horario ideal ya decidido" note tells you the best_time to schedule that stop (primera_hora → start it 08:30-09:30; atardecer → 1-2h before sunset; noche → after 19:00) — follow it, even if it means the day runs later than your other stops would suggest; a "noche" stop is not optional just because the rest of the day already feels complete. An "acceso libre confirmado" note means set "hours": null for that stop, no exceptions.
 - If the SAME place name appears in the required list of two different days of this trip, that is a deliberate second visit (see REPEAT VISITS below) — include it BOTH times, once per day, even though it feels redundant to schedule the "same" stop twice. Do not silently skip the second occurrence just because you already covered it on another day.
 
 TIMING BETWEEN STOPS AND MEALS — the times you write must be physically possible, not just plausible on paper:
@@ -1468,7 +1468,7 @@ REAL OPENING HOURS — you already know the approximate real opening hours of ma
 - This overrides the traveler's chronotype/schedule preference for THIS specific stop's start time — "early riser" describes when the traveler is awake and ready to go, not when a ticketed site opens. If the day starts before the first real stop's opening time, either open the day with something genuinely always-open (a sunrise walk, a viewpoint, a market that's already trading) and place the ticketed stop once it actually opens, or simply start that first stop at its real opening time — never at the chronotype's generic start hour regardless of whether the place is open yet.
 - Decide the "hours" field (below) by what the traveler is actually entering for THIS stop, not by what's visible for free from the street. A monument whose duration_minutes implies going inside — a ticket, a checkpoint, a visiting schedule (Colosseum, Vatican Museums, a cathedral's interior, any museum) — is NEVER "hours": null, even though its exterior is always visible/photographable for free. Only genuinely free-standing, no-ticket, no-schedule places (a fountain, a square, an arch, a viewpoint, a street) get "hours": null. Wrong example: marking the Colosseum "hours": null/"Acceso libre" — it has real, specific opening hours (~08:30-19:00 depending on season) and those must be used, not treated as an always-open landmark.
 
-TIPS — for EVERY stop, if you genuinely know something of real practical value, put it in "tip" (1-3 sentences, only what applies — never pad with generic filler like "lleva calzado cómodo"). EXCEPTION: if REQUIRED PLACES below already gives you tips for a specific stop ("tips YA DADOS"), use those instead of writing your own for that stop — they were curated by a human expert, don't override them with your own knowledge.
+TIPS — for EVERY stop, if you genuinely know something of real practical value, put it in "tip" (1-3 sentences, only what applies — never pad with generic filler like "lleva calzado cómodo"). EXCEPTION: if REQUIRED PLACES below already gives you a "tip ya decidido" for a specific stop, leave "tip": "" for it instead — see REQUIRED PLACES above, it gets filled in automatically, don't write anything there.
 - Combined tickets: does this place's entry also cover another place in this same trip (e.g. "La entrada del Coliseo incluye el Foro Romano y el Palatino, puedes usarla 24h antes o después")? Say so, and mention the other place by its exact name as used elsewhere in this trip.
 - Partial free access: is part of it free and part paid (e.g. "La Basílica es gratuita, pero subir a la cúpula tiene coste")? Say exactly which part.
 - Strategic timing to avoid crowds: a genuinely useful best-time-to-go detail, specific to this place, not generic advice.
@@ -1909,7 +1909,13 @@ function formatRequiredPlaceItem(place) {
   const extras = []
   if (place.best_time) extras.push(`horario ideal ya decidido: ${place.best_time}`)
   if (place.is_free_access === true) extras.push('acceso libre confirmado, sin horario de taquilla (hours: null)')
-  if (Array.isArray(place.tips) && place.tips.length > 0) extras.push(`tips YA DADOS, úsalos tal cual o solo levemente adaptados, NO inventes otros para este lugar: ${place.tips.join(' | ')}`)
+  // El texto del tip NO se le pide a Claude que lo reescriba en su respuesta — se lo damos aquí solo
+  // como contexto de qué tipo de lugar es, y aplyCuratedTips lo inyecta después directamente en el
+  // JSON final. Antes se le pedía "cópialo tal cual" en el campo "tip" de su respuesta, lo que
+  // significaba pagar esas mismas palabras dos veces (una en el prompt, otra en cada respuesta) sin
+  // ganar nada — encontrado en vivo como una causa real de cortes por max_tokens en días con muchos
+  // lugares curados.
+  if (Array.isArray(place.tips) && place.tips.length > 0) extras.push(`tip ya decidido por un curador humano (NO lo escribas en tu respuesta, deja "tip": "" para este lugar — se añade automáticamente después): ${place.tips.join(' | ')}`)
   return extras.length > 0 ? `${base} — ${extras.join(' — ')}` : base
 }
 
@@ -3437,6 +3443,23 @@ function stripNonRequiredStops(day, requiredPlaces) {
   })
 }
 
+/**
+ * A Claude ya no se le pide que reescriba en su respuesta el tip de un lugar que el JSON curado ya
+ * trae decidido (ver formatRequiredPlaceItem/DAY_BLOCK_SYSTEM_PROMPT — se le dice explícitamente que
+ * deje "tip": "" para esos lugares) — pagar ese mismo texto dos veces (una vez en el prompt, otra en
+ * cada respuesta) no ganaba nada y era una causa real de cortes por max_tokens en días con muchos
+ * lugares curados. Esta función es la otra mitad: inyecta el tip real directamente en el JSON final,
+ * por el lugar requerido que haga match (misma lógica de emparejado que stripNonRequiredStops).
+ */
+function applyCuratedTips(day, requiredPlaces) {
+  if (!Array.isArray(requiredPlaces) || requiredPlaces.length === 0 || !Array.isArray(day?.stops)) return
+  for (const place of requiredPlaces) {
+    if (!Array.isArray(place.tips) || place.tips.length === 0) continue
+    const stop = day.stops.find((candidate) => isFuzzyPlaceMatch(place.name, candidate?.name))
+    if (stop) stop.tip = place.tips.join(' ')
+  }
+}
+
 // ── Red de seguridad post-generación: lugares requeridos que no aparecieron ────────────────
 //
 // La Fase 1 (generate-day-places) decide la lista EXACTA de lugares de un día "city" — el prompt de
@@ -3514,7 +3537,12 @@ app.post('/api/generate-day-block', async (req, res) => {
     // puede acercarse a ese límite en viajes de ritmo intenso.
     const stream = anthropic.messages.stream({
       model: MODEL,
-      max_tokens: 16000,
+      // Sonnet 4.6 soporta hasta 128K de salida en streaming (ya usado aquí) — 16000 se quedaba
+      // corto en días con muchos lugares curados y ritmo "Completo" real, provocando cortes por
+      // max_tokens reales en producción (ver también applyCuratedTips: ya no se le pide a Claude
+      // que reescriba tips que el JSON curado ya trae, así que esto es margen adicional, no el
+      // único fix).
+      max_tokens: 24000,
       system: DAY_BLOCK_SYSTEM_PROMPT,
       messages: [
         {
@@ -3545,6 +3573,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       const requiredPlaces = requiredPlacesByDayNumber.get(day.day_number)
       filterFreeTourDuplicateStops(day, requiredPlaces)
       stripNonRequiredStops(day, requiredPlaces)
+      applyCuratedTips(day, requiredPlaces)
       filterMealLikeStops(day)
       validateStopHours(day)
       enforceFreeTourFirst(day)
