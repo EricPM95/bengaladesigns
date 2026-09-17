@@ -2780,12 +2780,34 @@ function findDestinationData(destination) {
  * número de días "city"/"relax" de ESTE destino en el esqueleto, no el total del viaje — así un
  * destino que solo ocupa parte de un viaje multi-ciudad no coge más niveles de los que le tocan.
  */
+// Umbrales dados explícitamente por el usuario: 1-2 días → solo los intocables del Nivel 1 (ver
+// filterToIntocablesForShortTrips, se aplica aparte porque es un FILTRO dentro del propio Nivel 1,
+// no un nivel distinto); 3-4 días → Nivel 1 completo; 5-6 días → Nivel 1+2; 7+ días → los tres
+// niveles (el "Claude rellena extras" del prompt original para 7+ días NO está implementado todavía
+// — requeriría relajar la regla "no añadas nada fuera de la lista" de REQUIRED PLACES solo para
+// viajes largos, cambio más delicado que se deja para una pasada aparte).
 function selectDestinationLevels(cityDayCount, experiences) {
-  let maxLevel = cityDayCount <= 3 ? 1 : cityDayCount <= 5 ? 2 : 3
+  let maxLevel = cityDayCount <= 4 ? 1 : cityDayCount <= 6 ? 2 : 3
   if (Array.isArray(experiences) && experiences.includes('joyas_ocultas') && maxLevel < 3) maxLevel += 1
   const levels = []
   for (let i = 1; i <= maxLevel; i++) levels.push(String(i))
   return levels
+}
+
+/**
+ * 1-2 días: ni siquiera el Nivel 1 completo cabe (21 lugares en 1-2 días sería una ruta imposible)
+ * — se recorta a solo los "intocables" del destino (10-12 lugares, los más icónicos, curados a
+ * mano). Filtrar la lista de lugares YA RECOLECTADA (no los niveles en sí) deja que buildDestinationClusters
+ * siga funcionando igual: un grupo con solo 2 de sus 5 miembros en la lista de intocables se convierte
+ * automáticamente en un cluster de esos 2, en su mismo orden relativo — no hace falta tocar nada más.
+ * Sin `intocables` en el JSON (destino todavía no actualizado), no se filtra nada — mejor pasarse de
+ * contenido que dejar un viaje de 1-2 días sin lugares.
+ */
+function filterToIntocablesForShortTrips(rawPlaces, destData, cityDayCount) {
+  if (cityDayCount > 2) return rawPlaces
+  if (!Array.isArray(destData.intocables) || destData.intocables.length === 0) return rawPlaces
+  const intocableNames = new Set(destData.intocables.map((name) => name.toLowerCase()))
+  return rawPlaces.filter((place) => intocableNames.has(place.name.toLowerCase()))
 }
 
 /** `_level` se propaga a cada lugar (no viene en el JSON en sí, lo añade esta función) para que evictNonEssentialForFreeTour más abajo sepa qué puede evacuar (Nivel 2/3) y qué es intocable (Nivel 1). */
@@ -3030,7 +3052,8 @@ function mapCuratedPlace(place) {
 /** Construye la lista de lugares por día directamente desde el JSON curado — sin llamada a Claude. Devuelve el mismo formato que sanitizeDayPlaces (day_number + places[]) para que el resto del pipeline (generate-day-block) no note la diferencia. */
 function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePlaces) {
   const levels = selectDestinationLevels(listDayNumbers.length, answers.experiences)
-  const rawPlaces = collectDestinationPlaces(destData, levels)
+  const collectedPlaces = collectDestinationPlaces(destData, levels)
+  const rawPlaces = filterToIntocablesForShortTrips(collectedPlaces, destData, listDayNumbers.length)
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
   rebalanceClustersForPlaceCount(dayClustersMap, MAX_PLACES_PER_CURATED_DAY)
