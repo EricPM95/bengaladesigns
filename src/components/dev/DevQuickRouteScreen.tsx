@@ -216,6 +216,8 @@ export function DevQuickRouteScreen() {
           dateRange: { start: startIso, end: endIso },
           companion: 'solo',
           experiences: [],
+          experiencesPositive: ['imprescindibles'],
+          experiencesNegative: [],
           pace: 'balanced',
           chronotype: 'normal',
           budgetLevel: 'comfortable',

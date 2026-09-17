@@ -6,13 +6,13 @@ import { getCurrentSeason } from '../../lib/season'
 import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
 import { classifyInBackground } from '../../lib/classifyInBackground'
-import { suggestExperiencesInBackground } from '../../lib/suggestExperiencesInBackground'
 import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { TransportResolutionStep } from './TransportResolutionStep'
 import { DurationSelector } from './DurationSelector'
 import { CompanionSelector } from './CompanionSelector'
-import { ExperienceSelector } from './ExperienceSelector'
+import { ExperienceCategorySelector } from './ExperienceCategorySelector'
+import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { PlaceSelector } from './PlaceSelector'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
@@ -90,7 +90,6 @@ export function Questionnaire() {
   const companionCapacityAcknowledged = useRouteStore((state) => state.companion_capacity_acknowledged)
   const suggestedExperiences = useRouteStore((state) => state.suggested_experiences)
   const suggestedExperiencesLoading = useRouteStore((state) => state.suggested_experiences_loading)
-  const suggestedExperiencesFailed = useRouteStore((state) => state.suggested_experiences_failed)
   const placesStepStarted = useRouteStore((state) => state.places_step_started)
   const setDatesConfirmed = useRouteStore((state) => state.setDatesConfirmed)
   const resolveArchetypeChoice = useRouteStore((state) => state.resolveArchetypeChoice)
@@ -354,21 +353,24 @@ export function Questionnaire() {
               )}
 
               {activeStep === 'experiences' && (
-                <ExperienceSelector
-                  destinationName={destination}
-                  suggested={suggestedExperiences}
-                  loading={suggestedExperiencesLoading}
-                  failed={suggestedExperiencesFailed}
-                  selected={answers.experiences ?? []}
-                  onChange={(experiences) => updateAnswers({ experiences })}
-                  onRetry={() => suggestExperiencesInBackground(destination)}
+                <ExperienceCategorySelector
+                  season={answers.season}
+                  positive={answers.experiencesPositive ?? ['imprescindibles']}
+                  negative={answers.experiencesNegative ?? []}
+                  onChange={(experiencesPositive, experiencesNegative) =>
+                    updateAnswers({ experiencesPositive, experiencesNegative, experiences: deriveLegacyExperienceIds(experiencesPositive) })
+                  }
                   onConfirm={() => {
+                    const experiencesPositive = answers.experiencesPositive ?? ['imprescindibles']
+                    const experiencesNegative = answers.experiencesNegative ?? []
+                    const experiences = deriveLegacyExperienceIds(experiencesPositive)
                     // BUG 1: `showPace` (y por tanto el auto-avance basado en que `steps` crezca)
                     // no cambia si `placesStepStarted` ya era true de una vuelta anterior — al
                     // revisitar esta pantalla, cambiar la selección y volver a confirmar, nunca se
                     // disparaba el avance. Igual que pace, se navega explícitamente
                     // en el mismo tap en vez de depender solo del efecto pasivo.
-                    suggestPlacesOnDemand(destination, answers.experiences ?? [])
+                    updateAnswers({ experiencesPositive, experiencesNegative, experiences })
+                    suggestPlacesOnDemand(destination, experiences)
                     goToNextStep()
                   }}
                 />

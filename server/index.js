@@ -2086,22 +2086,51 @@ const ANCHOR_CATEGORIES = new Set(['temple', 'museum', 'nature', 'viewpoint', 'n
 // guarda SIEMPRE como una fila NUEVA de route_cache (nunca se sobreescribe una existente) — ver
 // supabase/migrations/0008_route_cache.sql.
 //
-// Clave de coincidencia: destino (obligatorio) + días + experiencias + ritmo. Los acompañantes NO
-// forman parte de la clave — companion_id/edades/tamaño de grupo no cambian qué lugares visitar,
-// solo el tono del contenido (ver formatCompanion), así que dos peticiones con las mismas
-// experiencias/días/ritmo pero distinto acompañante SÍ deben coincidir al 100%.
+// Clave de coincidencia (punto 4 del prompt DEFINITIVO): destino (obligatorio) + días + ritmo_exacto
+// + experiencias_positivas + experiencias_negativas. Los acompañantes NO forman parte de la clave —
+// companion_id/edades/tamaño de grupo no cambian qué lugares visitar, solo el tono del contenido
+// (ver formatCompanion), así que dos peticiones con las mismas experiencias/días/ritmo pero distinto
+// acompañante SÍ deben coincidir al 100%.
 function normalizeDestinationForMatch(value) {
   return typeof value === 'string' ? value.trim().toLowerCase() : ''
 }
 
-function jaccardOverlap(a, b) {
-  const setA = new Set(Array.isArray(a) ? a : [])
-  const setB = new Set(Array.isArray(b) ? b : [])
-  if (setA.size === 0 && setB.size === 0) return 1
-  let intersection = 0
-  for (const value of setA) if (setB.has(value)) intersection += 1
-  const union = setA.size + setB.size - intersection
-  return union === 0 ? 1 : intersection / union
+// La columna `experiences text[]` de route_cache no cambió de esquema — el cliente codifica cada
+// categoría positiva/negativa con un prefijo +/- (ver deriveExperienceCategoryIds/encodeExperienceCategories
+// en el cliente) para no necesitar una migración de Supabase solo por esto. Una fila anterior al
+// punto 4 (ids del banco de 18 sin prefijo) se decodifica como "sin opinión" en ambas listas —
+// degrada con gracia en vez de romper, ver experienceCategoryScore.
+function decodeExperienceCategories(encoded) {
+  const positive = []
+  const negative = []
+  for (const entry of Array.isArray(encoded) ? encoded : []) {
+    if (typeof entry !== 'string') continue
+    if (entry.startsWith('+')) positive.push(entry.slice(1))
+    else if (entry.startsWith('-')) negative.push(entry.slice(1))
+  }
+  return { positive, negative }
+}
+
+/**
+ * Compara categoría a categoría (unión de todas las mencionadas en cualquiera de los dos lados):
+ * misma polaridad en ambos (positiva-positiva o negativa-negativa) = coincide del todo en esa
+ * dimensión; polaridad OPUESTA (positiva en un lado, negativa en el otro) = 0% en esa dimensión
+ * concreta — petición explícita del usuario ("si una ruta cacheada tiene 'Museos' en positivo y la
+ * nueva tiene 'Museos' en negativo, es 0% match en esa dimensión"); una parte tiene opinión formada
+ * y la otra ninguna = coincidencia parcial (0.5), ni premia ni penaliza del todo.
+ */
+function experienceCategoryScore(rowPositive, rowNegative, queryPositive, queryNegative) {
+  const allCategories = new Set([...rowPositive, ...rowNegative, ...queryPositive, ...queryNegative])
+  if (allCategories.size === 0) return 1
+  let total = 0
+  for (const category of allCategories) {
+    const rowState = rowPositive.includes(category) ? 1 : rowNegative.includes(category) ? -1 : 0
+    const queryState = queryPositive.includes(category) ? 1 : queryNegative.includes(category) ? -1 : 0
+    if (rowState === queryState) total += 1
+    else if (rowState !== 0 && queryState !== 0) total += 0
+    else total += 0.5
+  }
+  return total / allCategories.size
 }
 
 function daysMatchScore(a, b) {
@@ -2115,14 +2144,20 @@ function daysMatchScore(a, b) {
 /**
  * Porcentaje de coincidencia (0-100) de una fila de route_cache contra la petición actual — pesos
  * exactos dados por el usuario: destino obligatorio (si no coincide, 0), experiencias 50%
- * (intersección/unión), ritmo 25% (coincide o no), días 25% (igual=100%, ±1=75%, ±2=50%, más=0%).
+ * (positivas+negativas por categoría, ver experienceCategoryScore), ritmo 25%, días 25% (igual=100%,
+ * ±1=75%, ±2=50%, más=0%). El ritmo debe ser EXACTO para poder llegar a "alta" coincidencia (≥75%,
+ * ver routeCacheLevel) — si no coincide, el resultado se limita a "medium" como mucho, aunque
+ * experiencias/días coincidan perfectamente (misma petición explícita del punto 4).
  */
 function computeRouteCacheMatch(row, query) {
   if (normalizeDestinationForMatch(row.destination) !== normalizeDestinationForMatch(query.destination)) return 0
-  const expScore = jaccardOverlap(row.experiences, query.experiences)
-  const paceScore = row.pace === query.pace ? 1 : 0
+  const rowCategories = decodeExperienceCategories(row.experiences)
+  const queryCategories = decodeExperienceCategories(query.experiences)
+  const expScore = experienceCategoryScore(rowCategories.positive, rowCategories.negative, queryCategories.positive, queryCategories.negative)
+  const paceExact = row.pace === query.pace
   const daysScore = daysMatchScore(row.days, query.days)
-  return Math.round((expScore * 0.5 + paceScore * 0.25 + daysScore * 0.25) * 100)
+  const score = Math.round((expScore * 0.5 + (paceExact ? 1 : 0) * 0.25 + daysScore * 0.25) * 100)
+  return paceExact ? score : Math.min(score, 74)
 }
 
 /** 'high' → reutilizar 80-90% (solo ajustar lo que cambia); 'medium' → reutilizar 60-70% (redistribuir); 'none' → generación nueva completa. */
@@ -2299,6 +2334,12 @@ function sanitizeRouteCacheNewStop(entry) {
   return entry
 }
 
+/** Título legible de cada categoría (EXPERIENCE_CATEGORY_BANK) para el prompt de diff del punto 4 — ver formatExperiences para el equivalente del banco de 18. */
+function formatExperienceCategoryLabels(categoryIds) {
+  if (!Array.isArray(categoryIds) || categoryIds.length === 0) return '(ninguna)'
+  return categoryIds.map((id) => EXPERIENCE_CATEGORY_BANK.find((entry) => entry.id === id)?.title ?? id).join(', ')
+}
+
 app.post('/api/regenerate-route-experiences', async (req, res) => {
   const { destination, days, old_experiences: oldExperiences, new_experiences: newExperiences } = req.body ?? {}
   if (!destination || !Array.isArray(days) || !Array.isArray(oldExperiences) || !Array.isArray(newExperiences)) {
@@ -2306,8 +2347,19 @@ app.post('/api/regenerate-route-experiences', async (req, res) => {
     return
   }
 
-  const removed = oldExperiences.filter((id) => !newExperiences.includes(id))
-  const added = newExperiences.filter((id) => !oldExperiences.includes(id))
+  // old_experiences/new_experiences llegan codificados +/- (mismo formato que route_cache, ver
+  // decodeExperienceCategories) — "removido" es una categoría que perdió su Me interesa O ganó un
+  // No recomiendes nuevo; "añadido" es una categoría que ganó Me interesa. Perder un No recomiendes
+  // (pasar a neutra) no dispara ninguna acción por sí solo, ver el propio ROUTE_CACHE_EXPERIENCES_SYSTEM_PROMPT.
+  const oldCategories = decodeExperienceCategories(oldExperiences)
+  const newCategories = decodeExperienceCategories(newExperiences)
+  const removed = [
+    ...new Set([
+      ...oldCategories.positive.filter((id) => !newCategories.positive.includes(id)),
+      ...newCategories.negative.filter((id) => !oldCategories.negative.includes(id)),
+    ]),
+  ]
+  const added = [...new Set(newCategories.positive.filter((id) => !oldCategories.positive.includes(id)))]
 
   // Nada cambió en las experiencias (el ±1 día o el ritmo fueron lo único distinto) — reutilización
   // gratis, sin gastar nada en Claude.
@@ -2323,7 +2375,9 @@ app.post('/api/regenerate-route-experiences', async (req, res) => {
       model: MODEL,
       max_tokens: 4096,
       system: ROUTE_CACHE_EXPERIENCES_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildRouteCacheExperiencesPrompt(destination, compactDays, formatExperiences(removed), formatExperiences(added)) }],
+      messages: [
+        { role: 'user', content: buildRouteCacheExperiencesPrompt(destination, compactDays, formatExperienceCategoryLabels(removed), formatExperienceCategoryLabels(added)) },
+      ],
     })
     logCallCost('regenerate-route-experiences', response)
 
@@ -2774,6 +2828,128 @@ function findDestinationData(destination) {
   return null
 }
 
+// ── "Elige tus experiencias" v2 — 6 categorías (7 en invierno) con clasificación Me interesa /
+// No me lo recomiendes / neutra (punto 4 del prompt DEFINITIVO) ─────────────────────────────────
+//
+// Reemplaza la cara visible del banco de 18 (EXPERIENCE_BANK, más arriba) solo para el pipeline
+// curado — "Elige lugares"/suggest-places siguen usando el banco de 18 tal cual (ver
+// deriveLegacyExperienceIds en el cliente para el puente entre ambos sistemas). `theme` es el campo
+// nuevo por lugar en destinations.json (museo/mirador/joya_oculta/gastronomico/mercado/
+// imprescindible/exterior_rapido/actividad) — cada categoría temática de aquí abajo controla un
+// subconjunto de esos themes.
+const EXPERIENCE_CATEGORY_BANK = [
+  { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
+  { id: 'sabores_locales', icon: '🍝', title: 'Sabores locales', description: 'Gastronomía real, mercados y comida local' },
+  { id: 'fuera_de_lo_tipico', icon: '💎', title: 'Fuera de lo típico', description: 'Joyas ocultas, barrios auténticos' },
+  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos y arte' },
+  { id: 'miradores_atardeceres', icon: '📸', title: 'Miradores y Atardeceres', description: 'Vistas panorámicas y puntos fotogénicos' },
+  { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
+  { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
+]
+
+// Qué `theme` de lugar controla cada categoría temática (positivo = se añade relleno de ese theme
+// desde Nivel 2/3; negativo = se quita del pool lo que no sea intocable). 'imprescindibles' y
+// 'free_tour' no están aquí porque tienen su propio mecanismo dedicado (ver selectDestinationLevels
+// y wantsFreeTour) en vez de operar sobre un theme concreto; 'mercadillos_navidenos' tampoco, tira
+// directo de `destData.winter_markets` (ver buildWinterMarketPlaces).
+const CATEGORY_THEME_MAP = {
+  sabores_locales: ['mercado', 'gastronomico'],
+  fuera_de_lo_tipico: ['joya_oculta'],
+  arte_museos: ['museo'],
+  miradores_atardeceres: ['mirador'],
+}
+
+function isIntocable(placeName, destData) {
+  return Array.isArray(destData.intocables) && destData.intocables.some((name) => name.toLowerCase() === placeName.toLowerCase())
+}
+
+/** Todos los lugares de cualquier nivel (1-3) cuyo `theme` esté en la lista dada — usado para el "relleno" que una categoría positiva añade más allá de los niveles ya seleccionados por selectDestinationLevels. */
+function collectAllDestinationPlacesByTheme(destData, themes) {
+  const themeSet = new Set(themes)
+  const places = []
+  const seenNames = new Set()
+  for (const levelKey of ['1', '2', '3']) {
+    for (const place of destData.levels?.[levelKey]?.places ?? []) {
+      if (!themeSet.has(place.theme)) continue
+      const key = place.name.toLowerCase()
+      if (seenNames.has(key)) continue
+      seenNames.add(key)
+      places.push({ ...place, _level: Number(levelKey) })
+    }
+  }
+  return places
+}
+
+/** `winter_markets` del JSON curado (lugares aparte, sin nivel propio) mapeados a la misma forma que un lugar normal — solo se usan cuando la categoría "Mercadillos Navideños" está en positivo Y la época elegida es invierno (ver applyExperienceCategoryEffects). */
+function buildWinterMarketPlaces(destData) {
+  return (Array.isArray(destData.winter_markets) ? destData.winter_markets : []).map((market) => ({
+    name: market.name,
+    zone: market.zone ?? 'Centro',
+    type: 'exterior',
+    duration_min: Number.isFinite(market.duration_min) ? market.duration_min : 30,
+    is_free_access: true,
+    best_time: market.best_time ?? 'noche',
+    tips: Array.isArray(market.tips) ? market.tips : [],
+    theme: 'actividad',
+    group: null,
+    group_order: null,
+    _level: 2,
+  }))
+}
+
+/**
+ * Punto 4 del prompt DEFINITIVO — efecto de cada categoría de experiencia POSITIVA/NEGATIVA sobre el
+ * pool de lugares de un destino curado, aplicado tras el filtro de Nivel/intocables y ANTES de
+ * clusterizar (ver buildCuratedDayPlaces). "Me interesa" en una categoría temática AÑADE lugares de
+ * ese `theme` que los niveles ya elegidos no cubrían, tirando de Nivel 2/3 directamente si hace
+ * falta; "No recomiendes" QUITA del pool los lugares no-intocables de ese `theme`. Los lugares
+ * `theme: 'imprescindible'` Y cualquier lugar que esté en `destData.intocables` (aunque su theme sea
+ * más específico, ej. un museo que también es intocable) NUNCA se tocan aquí — "los intocables nunca
+ * se sustituyen" es una regla explícita del punto 4, más fuerte que cualquier preferencia de
+ * categoría. `miradores_atardeceres` en negativo tiene una excepción parcial: un mirador que forma
+ * parte de un `group` se queda (va "en el camino" con el resto de su grupo — los grupos son
+ * absolutos, ver punto 1, no se puede romperlos quitando solo un miembro), solo se filtran los
+ * miradores sueltos (sin grupo).
+ */
+function applyExperienceCategoryEffects(rawPlaces, destData, levels, positiveCategories, negativeCategories, season) {
+  const positive = new Set(Array.isArray(positiveCategories) ? positiveCategories : [])
+  const negative = new Set(Array.isArray(negativeCategories) ? negativeCategories : [])
+
+  let places = rawPlaces
+  for (const [category, themes] of Object.entries(CATEGORY_THEME_MAP)) {
+    if (!negative.has(category)) continue
+    places = places.filter((place) => {
+      if (!themes.includes(place.theme)) return true
+      if (place.theme === 'imprescindible' || isIntocable(place.name, destData)) return true
+      if (category === 'miradores_atardeceres' && place.group) return true
+      return false
+    })
+  }
+
+  places = [...places]
+  const existingNames = new Set(places.map((place) => place.name.toLowerCase()))
+  for (const [category, themes] of Object.entries(CATEGORY_THEME_MAP)) {
+    if (!positive.has(category)) continue
+    for (const place of collectAllDestinationPlacesByTheme(destData, themes)) {
+      const key = place.name.toLowerCase()
+      if (existingNames.has(key)) continue
+      existingNames.add(key)
+      places.push(place)
+    }
+  }
+
+  if (season === 'winter' && positive.has('mercadillos_navidenos')) {
+    for (const market of buildWinterMarketPlaces(destData)) {
+      const key = market.name.toLowerCase()
+      if (existingNames.has(key)) continue
+      existingNames.add(key)
+      places.push(market)
+    }
+  }
+
+  return places
+}
+
 /**
  * 2-3 días → solo Nivel 1. 4-5 días → Nivel 1+2. 6+ días → los tres niveles. "Fuera de lo típico"
  * (joyas_ocultas) sube un nivel más sobre esa base (sin pasar nunca del 3). `cityDayCount` es el
@@ -2786,9 +2962,18 @@ function findDestinationData(destination) {
 // niveles (el "Claude rellena extras" del prompt original para 7+ días NO está implementado todavía
 // — requeriría relajar la regla "no añadas nada fuera de la lista" de REQUIRED PLACES solo para
 // viajes largos, cambio más delicado que se deja para una pasada aparte).
-function selectDestinationLevels(cityDayCount, experiences) {
-  let maxLevel = cityDayCount <= 4 ? 1 : cityDayCount <= 6 ? 2 : 3
-  if (Array.isArray(experiences) && experiences.includes('joyas_ocultas') && maxLevel < 3) maxLevel += 1
+//
+// Punto 4: "Imprescindibles" (siempre positiva por defecto, el usuario puede arrastrarla a neutra
+// pero nunca a negativa) decide si estos umbrales se aplican tal cual ("Me interesa" = Nivel 1
+// completo + más relleno si cabe, que es exactamente lo que ya dan estos umbrales para viajes de
+// 3+ días) o se recorta todo a Nivel 1 puro sin importar la duración ("Neutra" = Nivel 1 base, sin
+// el relleno de Nivel 2/3 de los umbrales largos). "Fuera de lo típico" sigue sumando +1 nivel sobre
+// el resultado (antes ligado a 'joyas_ocultas' del banco de 18, ahora a la categoría nueva).
+function selectDestinationLevels(cityDayCount, positiveCategories) {
+  const positive = new Set(Array.isArray(positiveCategories) ? positiveCategories : [])
+  const imprescindiblesNeutral = !positive.has('imprescindibles')
+  let maxLevel = imprescindiblesNeutral ? 1 : cityDayCount <= 4 ? 1 : cityDayCount <= 6 ? 2 : 3
+  if (positive.has('fuera_de_lo_tipico') && maxLevel < 3) maxLevel += 1
   const levels = []
   for (let i = 1; i <= maxLevel; i++) levels.push(String(i))
   return levels
@@ -3098,9 +3283,18 @@ function mapCuratedPlace(place) {
 
 /** Construye la lista de lugares por día directamente desde el JSON curado — sin llamada a Claude. Devuelve el mismo formato que sanitizeDayPlaces (day_number + places[]) para que el resto del pipeline (generate-day-block) no note la diferencia. */
 function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePlaces) {
-  const levels = selectDestinationLevels(listDayNumbers.length, answers.experiences)
+  const positiveCategories = Array.isArray(answers.experiencesPositive) ? answers.experiencesPositive : []
+  const negativeCategories = Array.isArray(answers.experiencesNegative) ? answers.experiencesNegative : []
+  const levels = selectDestinationLevels(listDayNumbers.length, positiveCategories)
   const collectedPlaces = collectDestinationPlaces(destData, levels)
-  const rawPlaces = filterToIntocablesForShortTrips(collectedPlaces, destData, listDayNumbers.length)
+  const shortTripFiltered = filterToIntocablesForShortTrips(collectedPlaces, destData, listDayNumbers.length)
+  // 1-2 días: el recorte a solo intocables es un límite de CAPACIDAD (21 lugares no caben en 1-2
+  // días), no una preferencia — ninguna categoría de experiencia debe poder añadir NI quitar nada
+  // por encima de ese límite duro, así que applyExperienceCategoryEffects se salta entero ahí.
+  const rawPlaces =
+    listDayNumbers.length > 2
+      ? applyExperienceCategoryEffects(shortTripFiltered, destData, levels, positiveCategories, negativeCategories, answers.season)
+      : shortTripFiltered
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
   rebalanceClustersForPlaceCount(dayClustersMap, maxPlacesForPace(answers.pace))
@@ -3108,7 +3302,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
   // Free Tour SIEMPRE la primera parada del día 1 — se evacúa lo que no quepa después (Nivel 2/3
   // primero, Nivel 1 si aun así no basta) para que nunca haya un motivo real para anteponer otra
   // parada (ver evictForFreeTour).
-  const wantsFreeTour = Array.isArray(answers.experiences) && answers.experiences.includes('free_tour')
+  const wantsFreeTour = positiveCategories.includes('free_tour')
   if (wantsFreeTour && listDayNumbers.includes(1)) {
     evictForFreeTour(dayClustersMap, 1)
   }

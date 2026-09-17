@@ -88,6 +88,24 @@ export type ExperienceId =
   | 'free_tour'
 
 /**
+ * "Elige tus experiencias" v2 (punto 4 del prompt DEFINITIVO) — 6 categorías fijas + una condicional
+ * de invierno, con clasificación Me interesa (máx. 3) / No me lo recomiendes (máx. 2) / neutra, ver
+ * ExperienceCategorySelector.tsx. Reemplaza la cara visible del banco de 18 de arriba SOLO para el
+ * pipeline de destinos curados (server: EXPERIENCE_CATEGORY_BANK) — "Elige lugares"/suggest-places
+ * siguen recibiendo ExperienceId del banco de 18 tal cual, derivados de estas categorías (ver
+ * deriveLegacyExperienceIds en experienceCategoryBank.ts) para no tener que tocar ese otro sistema.
+ */
+export type ExperienceCategoryId =
+  | 'imprescindibles'
+  | 'sabores_locales'
+  | 'fuera_de_lo_tipico'
+  | 'arte_museos'
+  | 'miradores_atardeceres'
+  | 'free_tour'
+  /** Solo visible/seleccionable cuando `answers.season === 'winter'`, ver EXPERIENCE_CATEGORY_BANK. */
+  | 'mercadillos_navidenos'
+
+/**
  * Un lugar concreto y real del destino, sugerido por Claude tras elegir experiencias (ver
  * /api/suggest-places) — no una de las 18 categorías del banco, sino un sitio con nombre propio
  * (ej. "Coliseo", "Mercado de Testaccio"). `category` es la categoría del banco de 18 a la que
@@ -136,6 +154,10 @@ export interface QuestionnaireAnswers {
   companionGroupSize?: number
   /** Selección final del banco de 18 experiencias (+ el pseudo-id bloqueado si aplica) — el "ADN" de la ruta. */
   experiences: ExperienceId[]
+  /** Categorías en "Me interesa" (máx. 3, siempre incluye 'imprescindibles' salvo que el usuario la arrastre a neutra) — ver ExperienceCategorySelector.tsx. Fuente de verdad del pipeline curado y de la clave de route_cache; `experiences` de arriba se sigue derivando de esto para "Elige lugares". */
+  experiencesPositive: ExperienceCategoryId[]
+  /** Categorías en "No me lo recomiendes" (máx. 2, nunca incluye 'imprescindibles'). */
+  experiencesNegative: ExperienceCategoryId[]
   pace: TripPace
   chronotype: Chronotype
   budgetLevel: BudgetLevel
