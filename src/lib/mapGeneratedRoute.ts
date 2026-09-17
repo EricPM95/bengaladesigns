@@ -429,6 +429,28 @@ function mapBudget(estimated?: GeneratedRouteResponse['estimated_budget']): Budg
   return { items, total: amount }
 }
 
+/**
+ * Red de seguridad server-side ya existe para "el Free Tour siempre va primero dentro de un día"
+ * (enforceFreeTourFirst, server/index.js) — pero ninguna capa protegía contra un Free Tour
+ * DUPLICADO en dos días distintos del mismo viaje. Encontrado en vivo: con BLOCK_SIZE=1 cada día se
+ * genera con su propia llamada aislada a Claude, sin ver el contenido de los demás — si el esqueleto
+ * deja el día 1 y, por ejemplo, el día 3 como los únicos días "city" de Roma (con una excursión en
+ * medio), la llamada del día 3 también decidía añadir su propio Free Tour por su cuenta. Se corrigió
+ * el texto del prompt (FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) para que solo el día 1 pueda tenerlo,
+ * pero esto es el cinturón de seguridad: si aun así llegara un segundo, se elimina aquí, quedándose
+ * siempre con el del día con menor `day_number` (day 1, o el más cercano si el 1 no lo tiene).
+ */
+function dedupeFreeTour(days: DayPlan[]): void {
+  let kept = false
+  for (const day of days) {
+    if (!kept) {
+      if (day.stops.some((stop) => stop.isFreeTour)) kept = true
+      continue
+    }
+    day.stops = day.stops.filter((stop) => !stop.isFreeTour)
+  }
+}
+
 export function mapGeneratedRouteToRoute(
   generated: GeneratedRouteResponse,
   destination: string,
@@ -463,6 +485,7 @@ export function mapGeneratedRouteToRoute(
   const mappedDays = generated.days.map((day) =>
     mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay),
   )
+  dedupeFreeTour(mappedDays)
   const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
 
   return {

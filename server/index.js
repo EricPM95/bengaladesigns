@@ -1476,7 +1476,8 @@ TIPS — for EVERY stop, if you genuinely know something of real practical value
 - If you don't have anything genuinely specific and valuable for this place, leave "tip" empty rather than inventing generic advice.
 
 FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience focus below:
-- Mandatory and always FIRST. If day 1 is in this block, the Free Tour is day 1's opening stop, 10:00 start by default, before every other stop that day — no exceptions for another place's opening hours, crowds, or "logical" morning slot. ONE explicit exception: if REQUIRED PLACES below marks a place with a "muy temprano, ANTES del Free Tour" hint, that specific place (only that one, never any other) goes at 08:00-09:30, strictly before the tour — it exists precisely to fill the dead time between an 08:00 day start and a 10:00 tour, not to compete with it. If day 1 is not in this block, place it on day 2 instead. Single stop, duration_minutes 150-180.
+- Belongs EXCLUSIVELY to day 1 of the trip, and ONLY when day 1 is literally one of the days you are writing in THIS block. If day 1 is not in this block, do NOT add a Free Tour to any day here — day 1's own separate call already owns it, adding one in a different block would create a duplicate tour in the same trip, which is a real bug, not a safe fallback. This applies no matter which day you're writing (day 2, day 3, the last day...) — none of them ever get a Free Tour, only day 1 does.
+- When day 1 IS in this block: mandatory and always FIRST, day 1's opening stop, 10:00 start by default, before every other stop that day — no exceptions for another place's opening hours, crowds, or "logical" morning slot. ONE explicit exception: if REQUIRED PLACES below marks a place with a "muy temprano, ANTES del Free Tour" hint, that specific place (only that one, never any other) goes at 08:00-09:30, strictly before the tour — it exists precisely to fill the dead time between an 08:00 day start and a 10:00 tour, not to compete with it. Single stop, duration_minutes 150-180.
 - Everything else required for that day is scheduled after it ends. Anything the tour itself would pass (a central square/fountain/landmark, see free_tour_highlights) goes even later, as its own proper deeper visit, not a "preview".
 - "name": "Free Tour: <destination or zone>" (e.g. "Free Tour: Centro Histórico de Roma"). "description" must summarize what the tour covers in general terms (it walks past several landmarks from the outside, with historical context) — do NOT claim it enters any paid/ticketed site, free tours are always exterior/walking tours.
 - "free_tour_meeting_point": the specific real square/point where free tours in this destination customarily start (you know this — e.g. in Rome it's commonly Piazza Venezia or Piazza di Spagna).
@@ -2167,6 +2168,26 @@ function routeCacheLevel(matchPct) {
   return 'none'
 }
 
+// Umbral mínimo de cobertura de intocables para poder servir una fila de route_cache — encontrado en
+// vivo (2026-09-17): una fila cacheada durante el desarrollo de esta misma sesión (con Arte y Museos
+// en negativo) le faltaba Museos Vaticanos aunque es un intocable de Roma — el endpoint de reutilización
+// (/api/regenerate-route-experiences) no conoce `intocables`/`theme`, así que Claude lo quitó por su
+// cuenta sin esa protección (que SÍ existe, pero solo en el camino fresco — ver applyExperienceCategoryEffects/
+// isIntocable). Esta validación es la red de seguridad genérica: cualquier fila que no cumpla el
+// mínimo de cobertura se descarta ENTERA antes de poder ganar el matching, sin importar cuánto
+// puntúe en destino/días/ritmo/experiencias — así una mejora futura del pipeline (un intocable nuevo,
+// una regla nueva) invalida solas las filas viejas que ya no la cumplen, en vez de servirlas para
+// siempre hasta el próximo borrado manual de caché.
+const MIN_INTOCABLES_COVERAGE = 0.8
+
+/** Sin `intocables` definidos para el destino (no está en el JSON curado, o el campo está vacío) no hay nada que validar — devuelve 1 (cobertura completa) para no bloquear esos casos, mismo criterio de "mejor pasarse de contenido que bloquear" que el resto del pipeline curado. */
+function intocablesCoverageRatio(routeData, destData) {
+  if (!Array.isArray(destData?.intocables) || destData.intocables.length === 0) return 1
+  const stopNames = new Set((routeData?.days ?? []).flatMap((day) => (day.stops ?? []).map((stop) => stripAccentsLower(stop?.name ?? ''))))
+  const covered = destData.intocables.filter((name) => stopNames.has(stripAccentsLower(name))).length
+  return covered / destData.intocables.length
+}
+
 app.post('/api/route-cache/lookup', async (req, res) => {
   const { destination, days, experiences, pace } = req.body ?? {}
   if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !pace) {
@@ -2186,14 +2207,17 @@ app.post('/api/route-cache/lookup', async (req, res) => {
       .limit(50)
     if (error) throw error
 
+    const destData = findDestinationData(destination)
     let best = null
     let bestScore = -1
     for (const row of data ?? []) {
       const score = computeRouteCacheMatch(row, { destination, days, experiences, pace })
-      if (score > bestScore) {
-        bestScore = score
-        best = row
-      }
+      if (score <= bestScore) continue
+      // Fila descartada del todo si no cubre el mínimo de intocables — nunca gana el matching, sin
+      // importar cuánto puntúe en el resto (ver MIN_INTOCABLES_COVERAGE más arriba).
+      if (destData && intocablesCoverageRatio(row.route_data, destData) < MIN_INTOCABLES_COVERAGE) continue
+      bestScore = score
+      best = row
     }
 
     const level = best ? routeCacheLevel(bestScore) : 'none'
@@ -2385,8 +2409,26 @@ app.post('/api/regenerate-route-experiences', async (req, res) => {
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const removedStopIds = Array.isArray(parsed?.removed_stop_ids) ? parsed.removed_stop_ids.filter((id) => typeof id === 'string') : []
+    let removedStopIds = Array.isArray(parsed?.removed_stop_ids) ? parsed.removed_stop_ids.filter((id) => typeof id === 'string') : []
     const newStops = Array.isArray(parsed?.new_stops) ? parsed.new_stops.map(sanitizeRouteCacheNewStop).filter(Boolean) : []
+
+    // Este endpoint no conoce `intocables`/`theme` (solo ve name/category/hora, ver compactStopForCache)
+    // — a diferencia del camino fresco (applyExperienceCategoryEffects/isIntocable), aquí Claude podía
+    // quitar un intocable real por su cuenta (encontrado en vivo: Museos Vaticanos desaparecido tras
+    // pedir Arte y Museos en negativo). Bloqueo a nivel de código, no de prompt — nunca se confía en
+    // que el prompt baste para una regla "nunca".
+    const destData = findDestinationData(destination)
+    if (destData) {
+      const idsToName = new Map(days.flatMap((day) => (day.stops ?? []).map((stop) => [stop.id, stop.name])))
+      removedStopIds = removedStopIds.filter((id) => {
+        const name = idsToName.get(id)
+        if (name && isIntocable(name, destData)) {
+          console.log(`[regenerate-route-experiences] "${name}" es intocable de "${destination}" — se ignora la eliminación pedida por Claude`)
+          return false
+        }
+        return true
+      })
+    }
 
     res.json({ removed_stop_ids: removedStopIds, new_stops: newStops })
   } catch (error) {
