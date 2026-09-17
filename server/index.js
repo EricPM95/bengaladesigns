@@ -2748,6 +2748,14 @@ const DESTINATION_ALIASES = {
   viena: ['viena', 'vienna'],
   florencia: ['florencia', 'florence', 'firenze'],
   venecia: ['venecia', 'venice', 'venezia'],
+  atenas: ['atenas', 'athens'],
+  estambul: ['estambul', 'istanbul'],
+  budapest: ['budapest'],
+  sevilla: ['sevilla', 'seville'],
+  dublin: ['dublin', 'dublín'],
+  edimburgo: ['edimburgo', 'edinburgh'],
+  napoles: ['napoles', 'nápoles', 'naples', 'napoli'],
+  dubrovnik: ['dubrovnik'],
 }
 
 /** Mismo patrón de coincidencia por palabra completa (alias de una palabra) o substring (alias multi-palabra) que findNeverMissLandmarks, para evitar falsos positivos. */

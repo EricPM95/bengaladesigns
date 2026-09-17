@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-09-16",
+  "last_updated": "2026-09-17",
   "notes": "Fuente de verdad para selección de lugares. La Fase 1 del pipeline lee de aquí. Claude solo organiza los días y genera contenido rico.",
   "roma": {
     "destination_type": "city",
@@ -662,7 +662,137 @@
           "Monte Testaccio"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Coliseo",
+      "Foro Romano y Palatino",
+      "Panteón",
+      "Fontana di Trevi",
+      "Museos Vaticanos y Capilla Sixtina",
+      "Basílica de San Pedro",
+      "Plaza de San Pedro",
+      "Piazza Navona",
+      "Escalinata de Plaza de España",
+      "Arco de Constantino"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Roma en un día — lo esencial a pie, todo exteriores",
+        "places": [
+          {
+            "ref": "Coliseo",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Arco de Constantino",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Foro Romano y Palatino",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Altar de la Patria",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Panteón",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Fontana di Trevi",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Escalinata de Plaza de España",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza de San Pedro",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Basílica de San Pedro",
+            "mode": "exterior",
+            "duration_override": 15
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Roma Antigua + Centro Histórico",
+          "places": [
+            {
+              "ref": "Coliseo"
+            },
+            {
+              "ref": "Arco de Constantino"
+            },
+            {
+              "ref": "Foro Romano y Palatino"
+            },
+            {
+              "ref": "Plaza del Campidoglio"
+            },
+            {
+              "ref": "Altar de la Patria"
+            },
+            {
+              "ref": "Panteón"
+            },
+            {
+              "ref": "Santa Maria sopra Minerva"
+            },
+            {
+              "ref": "Piazza Navona"
+            },
+            {
+              "ref": "Fontana di Trevi"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Vaticano + Norte",
+          "places": [
+            {
+              "ref": "Museos Vaticanos y Capilla Sixtina"
+            },
+            {
+              "ref": "Plaza de San Pedro"
+            },
+            {
+              "ref": "Basílica de San Pedro"
+            },
+            {
+              "ref": "Castel Sant'Angelo"
+            },
+            {
+              "ref": "Escalinata de Plaza de España"
+            },
+            {
+              "ref": "Piazza del Popolo"
+            },
+            {
+              "ref": "Terraza del Pincio"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de Piazza Navona",
+        "zone": "Centro Histórico",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "El mercadillo navideño más famoso de Roma — puestos de dulces, belenes y artesanía. De mediados de diciembre a Reyes"
+        ]
+      }
+    ]
   },
   "paris": {
     "destination_type": "city",
@@ -1235,7 +1365,149 @@
           "Los Inválidos"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Torre Eiffel",
+      "Museo del Louvre",
+      "Catedral de Notre-Dame",
+      "Arco de Triunfo",
+      "Basílica del Sacré-Cœur",
+      "Museo de Orsay",
+      "Avenida de los Campos Elíseos",
+      "Trocadéro",
+      "Sainte-Chapelle",
+      "Jardín de Luxemburgo"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "París en un día — los iconos desde fuera + un museo",
+        "places": [
+          {
+            "ref": "Trocadéro",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Torre Eiffel",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Arco de Triunfo",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Avenida de los Campos Elíseos",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Jardín de las Tullerías",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Catedral de Notre-Dame",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Basílica del Sacré-Cœur",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Barrio de Montmartre",
+            "mode": "exterior",
+            "duration_override": 30
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Île de la Cité + Barrio Latino + Rive Gauche",
+          "places": [
+            {
+              "ref": "Catedral de Notre-Dame"
+            },
+            {
+              "ref": "Sainte-Chapelle"
+            },
+            {
+              "ref": "Panteón de París"
+            },
+            {
+              "ref": "Barrio Latino"
+            },
+            {
+              "ref": "Jardín de Luxemburgo"
+            },
+            {
+              "ref": "Museo de Orsay"
+            },
+            {
+              "ref": "Saint-Germain-des-Prés"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Torre Eiffel + Campos Elíseos + Montmartre",
+          "places": [
+            {
+              "ref": "Trocadéro"
+            },
+            {
+              "ref": "Torre Eiffel"
+            },
+            {
+              "ref": "Campo de Marte"
+            },
+            {
+              "ref": "Jardín de las Tullerías"
+            },
+            {
+              "ref": "Avenida de los Campos Elíseos"
+            },
+            {
+              "ref": "Arco de Triunfo"
+            },
+            {
+              "ref": "Basílica del Sacré-Cœur"
+            },
+            {
+              "ref": "Barrio de Montmartre"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de los Campos Elíseos",
+        "zone": "Campos Elíseos",
+        "duration_min": 45,
+        "best_time": "noche",
+        "tips": [
+          "El más grande de París — chalets de madera a lo largo de la avenida iluminada"
+        ]
+      },
+      {
+        "name": "Mercadillo de Trocadéro",
+        "zone": "Torre Eiffel",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Con la Torre Eiffel iluminada de fondo — la postal navideña perfecta"
+        ]
+      },
+      {
+        "name": "Mercadillo de Notre-Dame",
+        "zone": "Île de la Cité",
+        "duration_min": 30,
+        "tips": [
+          "Más pequeño e íntimo, con artesanía francesa de calidad"
+        ]
+      }
+    ]
   },
   "londres": {
     "destination_type": "city",
@@ -1630,7 +1902,142 @@
           "Museo V&A"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Torre de Londres",
+      "Tower Bridge",
+      "Abadía de Westminster",
+      "Casas del Parlamento y Big Ben",
+      "British Museum",
+      "Palacio de Buckingham",
+      "Catedral de San Pablo",
+      "Trafalgar Square",
+      "Hyde Park",
+      "London Eye"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Londres en un día — Westminster + City",
+        "places": [
+          {
+            "ref": "Palacio de Buckingham",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "St. James's Park",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Casas del Parlamento y Big Ben",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Abadía de Westminster",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "London Eye",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Trafalgar Square",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Tower Bridge",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Torre de Londres",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Catedral de San Pablo",
+            "mode": "exterior",
+            "duration_override": 15
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Westminster + South Bank",
+          "places": [
+            {
+              "ref": "Palacio de Buckingham"
+            },
+            {
+              "ref": "St. James's Park"
+            },
+            {
+              "ref": "Abadía de Westminster"
+            },
+            {
+              "ref": "Casas del Parlamento y Big Ben"
+            },
+            {
+              "ref": "London Eye"
+            },
+            {
+              "ref": "Borough Market"
+            },
+            {
+              "ref": "Torre de Londres"
+            },
+            {
+              "ref": "Tower Bridge"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "West End + City + Museos",
+          "places": [
+            {
+              "ref": "British Museum"
+            },
+            {
+              "ref": "Trafalgar Square"
+            },
+            {
+              "ref": "Piccadilly Circus"
+            },
+            {
+              "ref": "Covent Garden"
+            },
+            {
+              "ref": "Catedral de San Pablo"
+            },
+            {
+              "ref": "Hyde Park"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Winter Wonderland (Hyde Park)",
+        "zone": "West End",
+        "duration_min": 90,
+        "best_time": "noche",
+        "tips": [
+          "El mayor evento navideño de Londres — mercadillo, noria, pista de hielo. Entrada gratuita pero las atracciones se pagan"
+        ]
+      },
+      {
+        "name": "Mercadillo de South Bank",
+        "zone": "South Bank",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "A lo largo del Támesis con vistas al Parlamento iluminado"
+        ]
+      }
+    ]
   },
   "barcelona": {
     "destination_type": "city",
@@ -2021,7 +2428,136 @@
           "Fuente Mágica de Montjuïc"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Sagrada Familia",
+      "Parque Güell",
+      "La Rambla",
+      "Casa Batlló",
+      "La Pedrera (Casa Milà)",
+      "Barrio Gótico",
+      "Catedral de Barcelona",
+      "El Born",
+      "Montjuïc",
+      "La Barceloneta"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Barcelona en un día — Gaudí + Gótico + Mar",
+        "places": [
+          {
+            "ref": "Sagrada Familia",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Paseo de Gracia",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Casa Batlló",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "La Pedrera (Casa Milà)",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "La Rambla",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Mercado de La Boquería",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Barrio Gótico",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "La Barceloneta",
+            "mode": "exterior",
+            "duration_override": 30
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Gaudí + Eixample",
+          "places": [
+            {
+              "ref": "Sagrada Familia"
+            },
+            {
+              "ref": "Paseo de Gracia"
+            },
+            {
+              "ref": "Casa Batlló"
+            },
+            {
+              "ref": "La Pedrera (Casa Milà)"
+            },
+            {
+              "ref": "Parque Güell"
+            },
+            {
+              "ref": "La Barceloneta"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Gótico + Born + Montjuïc",
+          "places": [
+            {
+              "ref": "La Rambla"
+            },
+            {
+              "ref": "Mercado de La Boquería"
+            },
+            {
+              "ref": "Barrio Gótico"
+            },
+            {
+              "ref": "Catedral de Barcelona"
+            },
+            {
+              "ref": "El Born"
+            },
+            {
+              "ref": "Basílica de Santa Maria del Mar"
+            },
+            {
+              "ref": "Montjuïc"
+            },
+            {
+              "ref": "Fuente Mágica de Montjuïc"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Fira de Santa Llúcia",
+        "zone": "Catedral",
+        "duration_min": 30,
+        "tips": [
+          "El mercadillo navideño más tradicional de Barcelona — belenes, musgo y el caganer. Frente a la Catedral"
+        ]
+      },
+      {
+        "name": "Fira de Nadal de la Sagrada Familia",
+        "zone": "Eixample",
+        "duration_min": 20,
+        "tips": [
+          "Mercadillo más pequeño pero con la Sagrada Familia de fondo"
+        ]
+      }
+    ]
   },
   "lisboa": {
     "destination_type": "city",
@@ -2366,7 +2902,114 @@
           "Elevador de Santa Justa"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Torre de Belém",
+      "Monasterio de los Jerónimos",
+      "Alfama",
+      "Castillo de San Jorge",
+      "Plaza del Comercio",
+      "Tranvía 28",
+      "Barrio Alto",
+      "Pastéis de Belém",
+      "LX Factory",
+      "Mirador de Santa Lucía"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Lisboa en un día — Belém + Alfama + Baixa",
+        "places": [
+          {
+            "ref": "Torre de Belém",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Monasterio de los Jerónimos",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Pastéis de Belém",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza del Comercio",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Rua Augusta",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Mirador de Santa Lucía",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Alfama",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Barrio Alto",
+            "mode": "exterior",
+            "duration_override": 20
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Belém + Baixa + Alfama",
+          "places": [
+            {
+              "ref": "Torre de Belém"
+            },
+            {
+              "ref": "Monasterio de los Jerónimos"
+            },
+            {
+              "ref": "Pastéis de Belém"
+            },
+            {
+              "ref": "Monumento a los Descubrimientos"
+            },
+            {
+              "ref": "Plaza del Comercio"
+            },
+            {
+              "ref": "Rua Augusta"
+            },
+            {
+              "ref": "Elevador de Santa Justa"
+            },
+            {
+              "ref": "Castillo de San Jorge"
+            },
+            {
+              "ref": "Alfama"
+            },
+            {
+              "ref": "Mirador de Santa Lucía"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Barrio Alto + LX Factory",
+          "places": [
+            {
+              "ref": "Tranvía 28"
+            },
+            {
+              "ref": "Barrio Alto"
+            },
+            {
+              "ref": "LX Factory"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": []
   },
   "madrid": {
     "destination_type": "city",
@@ -2698,7 +3341,129 @@
           "Jardines de Sabatini"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Museo del Prado",
+      "Museo Reina Sofía",
+      "Parque del Retiro",
+      "Palacio Real",
+      "Puerta del Sol",
+      "Plaza Mayor",
+      "Gran Vía",
+      "Templo de Debod",
+      "Barrio de La Latina",
+      "Catedral de la Almudena"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Madrid en un día — Centro + Prado + Retiro",
+        "places": [
+          {
+            "ref": "Puerta del Sol",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza Mayor",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Palacio Real",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Catedral de la Almudena",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Gran Vía",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Museo del Prado",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Parque del Retiro",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Templo de Debod",
+            "mode": "exterior"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Centro + Madrid de los Austrias",
+          "places": [
+            {
+              "ref": "Puerta del Sol"
+            },
+            {
+              "ref": "Plaza Mayor"
+            },
+            {
+              "ref": "Mercado de San Miguel"
+            },
+            {
+              "ref": "Palacio Real"
+            },
+            {
+              "ref": "Catedral de la Almudena"
+            },
+            {
+              "ref": "Jardines de Sabatini"
+            },
+            {
+              "ref": "Templo de Debod"
+            },
+            {
+              "ref": "Gran Vía"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Paseo del Arte + Retiro + La Latina",
+          "places": [
+            {
+              "ref": "Museo del Prado"
+            },
+            {
+              "ref": "Museo Reina Sofía"
+            },
+            {
+              "ref": "Parque del Retiro"
+            },
+            {
+              "ref": "Barrio de La Latina"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de la Plaza Mayor",
+        "zone": "Centro",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "El mercadillo navideño más tradicional de Madrid — belenes, zambombas y dulces. Toda la plaza decorada"
+        ]
+      },
+      {
+        "name": "Cortylandia (El Corte Inglés)",
+        "zone": "Centro",
+        "duration_min": 10,
+        "tips": [
+          "El espectáculo animado de la fachada de El Corte Inglés de Sol — tradición madrileña desde 1979"
+        ]
+      }
+    ]
   },
   "amsterdam": {
     "destination_type": "city",
@@ -3056,7 +3821,127 @@
           "Barrio Rojo"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Rijksmuseum",
+      "Museo Van Gogh",
+      "Museo de Ana Frank",
+      "Canales del centro",
+      "Plaza Dam",
+      "Barrio Jordaan",
+      "Vondelpark",
+      "Begijnhof",
+      "Paseo en barco por los canales",
+      "Barrio Rojo"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Ámsterdam en un día — Museos + Canales + Centro",
+        "places": [
+          {
+            "ref": "Plaza Dam",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Begijnhof",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Canales del centro",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Museo de Ana Frank",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Barrio Jordaan",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Rijksmuseum",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Plaza de los Museos",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Vondelpark",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Barrio Rojo",
+            "mode": "exterior",
+            "duration_override": 20
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Centro + Jordaan + Canales",
+          "places": [
+            {
+              "ref": "Museo de Ana Frank"
+            },
+            {
+              "ref": "Barrio Jordaan"
+            },
+            {
+              "ref": "Canales del centro"
+            },
+            {
+              "ref": "Paseo en barco por los canales"
+            },
+            {
+              "ref": "Plaza Dam"
+            },
+            {
+              "ref": "Begijnhof"
+            },
+            {
+              "ref": "Barrio Rojo"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Museumplein + De Pijp",
+          "places": [
+            {
+              "ref": "Rijksmuseum"
+            },
+            {
+              "ref": "Museo Van Gogh"
+            },
+            {
+              "ref": "Plaza de los Museos"
+            },
+            {
+              "ref": "Vondelpark"
+            },
+            {
+              "ref": "Mercado Albert Cuyp"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Ice Village (Museumplein)",
+        "zone": "Museumplein",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Pista de hielo con el Rijksmuseum iluminado de fondo — la postal navideña de Ámsterdam"
+        ]
+      }
+    ]
   },
   "praga": {
     "destination_type": "city",
@@ -3357,7 +4242,130 @@
           "Reloj Astronómico"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Castillo de Praga",
+      "Catedral de San Vito",
+      "Puente de Carlos",
+      "Plaza de la Ciudad Vieja",
+      "Reloj Astronómico",
+      "Barrio Judío (Josefov)",
+      "Malá Strana",
+      "Petřín",
+      "Callejón del Oro"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Praga en un día — Castillo + Puente + Plaza Vieja",
+        "places": [
+          {
+            "ref": "Castillo de Praga",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Catedral de San Vito",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Callejón del Oro",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Malá Strana",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Puente de Carlos",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza de la Ciudad Vieja",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Reloj Astronómico",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Muro de John Lennon",
+            "mode": "exterior"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Castillo + Malá Strana + Puente",
+          "places": [
+            {
+              "ref": "Castillo de Praga"
+            },
+            {
+              "ref": "Catedral de San Vito"
+            },
+            {
+              "ref": "Callejón del Oro"
+            },
+            {
+              "ref": "Malá Strana"
+            },
+            {
+              "ref": "Muro de John Lennon"
+            },
+            {
+              "ref": "Puente de Carlos"
+            },
+            {
+              "ref": "Petřín"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Ciudad Vieja + Josefov",
+          "places": [
+            {
+              "ref": "Plaza de la Ciudad Vieja"
+            },
+            {
+              "ref": "Reloj Astronómico"
+            },
+            {
+              "ref": "Barrio Judío (Josefov)"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de la Plaza de la Ciudad Vieja",
+        "zone": "Staré Město",
+        "duration_min": 45,
+        "best_time": "noche",
+        "tips": [
+          "Uno de los mejores de Europa — el árbol gigante iluminado, trdelník (dulce checo enrollado), ponche caliente y el reloj astronómico de fondo"
+        ]
+      },
+      {
+        "name": "Mercadillo de la Plaza de Wenceslao",
+        "zone": "Nueva Ciudad",
+        "duration_min": 30,
+        "tips": [
+          "Más grande que el de la Ciudad Vieja pero menos atmosférico. Comida callejera checa"
+        ]
+      },
+      {
+        "name": "Mercadillo del Castillo de Praga",
+        "zone": "Hradčany",
+        "duration_min": 20,
+        "tips": [
+          "Pequeño pero con el castillo iluminado de fondo"
+        ]
+      }
+    ]
   },
   "berlin": {
     "destination_type": "city",
@@ -3666,7 +4674,134 @@
           "Gendarmenmarkt"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Puerta de Brandeburgo",
+      "Memorial del Holocausto",
+      "Reichstag",
+      "Muro de Berlín (East Side Gallery)",
+      "Checkpoint Charlie",
+      "Isla de los Museos",
+      "Catedral de Berlín",
+      "Alexanderplatz y Torre de TV",
+      "Tiergarten"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Berlín en un día — Historia + Muro + Centro",
+        "places": [
+          {
+            "ref": "Puerta de Brandeburgo",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Memorial del Holocausto",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Reichstag",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Unter den Linden",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Catedral de Berlín",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Alexanderplatz y Torre de TV",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Checkpoint Charlie",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Muro de Berlín (East Side Gallery)",
+            "mode": "exterior",
+            "duration_override": 30
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Eje monumental + Isla de los Museos",
+          "places": [
+            {
+              "ref": "Puerta de Brandeburgo"
+            },
+            {
+              "ref": "Memorial del Holocausto"
+            },
+            {
+              "ref": "Reichstag"
+            },
+            {
+              "ref": "Unter den Linden"
+            },
+            {
+              "ref": "Isla de los Museos"
+            },
+            {
+              "ref": "Catedral de Berlín"
+            },
+            {
+              "ref": "Alexanderplatz y Torre de TV"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Muro + Kreuzberg + Tiergarten",
+          "places": [
+            {
+              "ref": "Muro de Berlín (East Side Gallery)"
+            },
+            {
+              "ref": "Checkpoint Charlie"
+            },
+            {
+              "ref": "Gendarmenmarkt"
+            },
+            {
+              "ref": "Tiergarten"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de Gendarmenmarkt",
+        "zone": "Mitte",
+        "duration_min": 45,
+        "best_time": "noche",
+        "tips": [
+          "El más elegante de Berlín — entre las dos iglesias gemelas. Entrada simbólica de 1€"
+        ]
+      },
+      {
+        "name": "Mercadillo del Palacio de Charlottenburg",
+        "zone": "Charlottenburg",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Con el palacio barroco iluminado de fondo — el más atmosférico"
+        ]
+      },
+      {
+        "name": "Mercadillo de Alexanderplatz",
+        "zone": "Mitte",
+        "duration_min": 30,
+        "tips": [
+          "El más grande — con noria y pista de hielo. Más comercial pero divertido"
+        ]
+      }
+    ]
   },
   "viena": {
     "destination_type": "city",
@@ -3993,7 +5128,142 @@
           "MuseumsQuartier"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Palacio de Schönbrunn",
+      "Catedral de San Esteban",
+      "Palacio Imperial Hofburg",
+      "Museo de Historia del Arte",
+      "Ópera Estatal de Viena",
+      "Ringstraße",
+      "Naschmarkt",
+      "MuseumsQuartier",
+      "Plaza de los Héroes",
+      "Jardines de Schönbrunn"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Viena en un día — Innere Stadt + Schönbrunn",
+        "places": [
+          {
+            "ref": "Catedral de San Esteban",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Graben y Kohlmarkt",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Palacio Imperial Hofburg",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Plaza de los Héroes",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Ópera Estatal de Viena",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "MuseumsQuartier",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Naschmarkt",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Palacio de Schönbrunn",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Jardines de Schönbrunn",
+            "mode": "exterior",
+            "duration_override": 20
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Innere Stadt + Museos",
+          "places": [
+            {
+              "ref": "Catedral de San Esteban"
+            },
+            {
+              "ref": "Graben y Kohlmarkt"
+            },
+            {
+              "ref": "Palacio Imperial Hofburg"
+            },
+            {
+              "ref": "Plaza de los Héroes"
+            },
+            {
+              "ref": "Museo de Historia del Arte"
+            },
+            {
+              "ref": "MuseumsQuartier"
+            },
+            {
+              "ref": "Naschmarkt"
+            },
+            {
+              "ref": "Ópera Estatal de Viena"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Schönbrunn + Ringstraße",
+          "places": [
+            {
+              "ref": "Palacio de Schönbrunn"
+            },
+            {
+              "ref": "Jardines de Schönbrunn"
+            },
+            {
+              "ref": "Ringstraße"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo del Ayuntamiento (Christkindlmarkt)",
+        "zone": "Innere Stadt",
+        "duration_min": 45,
+        "best_time": "noche",
+        "tips": [
+          "El más grande y famoso — 150 puestos frente al Ayuntamiento iluminado. El Punsch (ponche caliente) es obligatorio"
+        ]
+      },
+      {
+        "name": "Mercadillo de Schönbrunn",
+        "zone": "Schönbrunn",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Más íntimo, con el palacio iluminado de fondo"
+        ]
+      },
+      {
+        "name": "Mercadillo de Spittelberg",
+        "zone": "Neubau",
+        "duration_min": 30,
+        "tips": [
+          "El favorito de los vieneses — artesanía real en calles estrechas con luces"
+        ]
+      }
+    ]
   },
   "florencia": {
     "destination_type": "city",
@@ -4326,7 +5596,113 @@
           "Capillas Mediceas"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Catedral de Santa Maria del Fiore (Duomo)",
+      "Galería Uffizi",
+      "Ponte Vecchio",
+      "Galería de la Academia",
+      "Plaza de la Señoría",
+      "Palazzo Vecchio",
+      "Palacio Pitti",
+      "Plaza de Miguel Ángel",
+      "Campanario de Giotto",
+      "Baptisterio de San Juan"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Florencia en un día — Duomo + Uffizi exteriores + Ponte Vecchio",
+        "places": [
+          {
+            "ref": "Catedral de Santa Maria del Fiore (Duomo)",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Campanario de Giotto",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Baptisterio de San Juan",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Plaza de la Señoría",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Palazzo Vecchio",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Ponte Vecchio",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza de Miguel Ángel",
+            "mode": "exterior"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Duomo + Uffizi + Señoría",
+          "places": [
+            {
+              "ref": "Catedral de Santa Maria del Fiore (Duomo)"
+            },
+            {
+              "ref": "Campanario de Giotto"
+            },
+            {
+              "ref": "Baptisterio de San Juan"
+            },
+            {
+              "ref": "Galería de la Academia"
+            },
+            {
+              "ref": "Plaza de la Señoría"
+            },
+            {
+              "ref": "Palazzo Vecchio"
+            },
+            {
+              "ref": "Galería Uffizi"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Oltrarno + Pitti + Piazzale",
+          "places": [
+            {
+              "ref": "Ponte Vecchio"
+            },
+            {
+              "ref": "Palacio Pitti"
+            },
+            {
+              "ref": "Jardines de Boboli"
+            },
+            {
+              "ref": "Plaza de Miguel Ángel"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de Santa Croce (Weihnachtsmarkt)",
+        "zone": "Santa Croce",
+        "duration_min": 30,
+        "tips": [
+          "Mercadillo de estilo alemán en la plaza de Santa Croce — vin brulé y strudel con la basílica de fondo"
+        ]
+      }
+    ]
   },
   "venecia": {
     "destination_type": "city",
@@ -4613,6 +5989,2738 @@
           "Isla de Burano"
         ]
       }
-    }
+    },
+    "intocables": [
+      "Plaza de San Marcos",
+      "Basílica de San Marcos",
+      "Palacio Ducal",
+      "Puente de Rialto",
+      "Campanario de San Marcos",
+      "Paseo en vaporetto por el Gran Canal",
+      "Barrio de Dorsoduro"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Venecia en un día — San Marcos + Rialto + Perderse",
+        "places": [
+          {
+            "ref": "Plaza de San Marcos",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Basílica de San Marcos",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Campanario de San Marcos",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Puente de Rialto",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Mercado de Rialto",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Barrio de Dorsoduro",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Paseo en vaporetto por el Gran Canal"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "San Marcos + Rialto + Dorsoduro",
+          "places": [
+            {
+              "ref": "Plaza de San Marcos"
+            },
+            {
+              "ref": "Basílica de San Marcos"
+            },
+            {
+              "ref": "Campanario de San Marcos"
+            },
+            {
+              "ref": "Palacio Ducal"
+            },
+            {
+              "ref": "Puente de Rialto"
+            },
+            {
+              "ref": "Mercado de Rialto"
+            },
+            {
+              "ref": "Barrio de Dorsoduro"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Islas + Vaporetto",
+          "places": [
+            {
+              "ref": "Isla de Murano"
+            },
+            {
+              "ref": "Isla de Burano"
+            },
+            {
+              "ref": "Paseo en vaporetto por el Gran Canal"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": []
+  },
+  "atenas": {
+    "destination_type": "city",
+    "country": "Grecia",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Santorini",
+      "Mykonos",
+      "Meteora",
+      "Delfos",
+      "Hidra"
+    ],
+    "timezone": "Europe/Athens",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Acrópolis",
+            "zone": "Acrópolis",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Entra a las 08:00 — a las 10:00 es un horno sin sombra. Lleva agua, gorra y calzado con suela buena (el mármol resbala)",
+              "La entrada combinada (30€) incluye 6 sitios arqueológicos válida 5 días",
+              "La mejor foto se hace desde la esquina noroeste, con el Erecteión de fondo"
+            ]
+          },
+          {
+            "name": "Museo de la Acrópolis",
+            "zone": "Acrópolis",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "El suelo de cristal deja ver excavaciones debajo — pisas sobre la antigua Atenas",
+              "Las Cariátides originales (5 de 6) están en la primera planta",
+              "La terraza del restaurante tiene la mejor vista de la Acrópolis"
+            ]
+          },
+          {
+            "name": "Ágora Antigua",
+            "zone": "Acrópolis",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Aquí nació la democracia. El Templo de Hefesto es el templo griego mejor conservado del mundo",
+              "Incluida en la entrada combinada. Mucho menos masificada"
+            ]
+          },
+          {
+            "name": "Barrio de Plaka",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más antiguo al pie de la Acrópolis. Anafiotika es la joya escondida — mini pueblo de casas blancas estilo isla griega",
+              "Para comer, métete en las calles de atrás de Adrianou"
+            ]
+          },
+          {
+            "name": "Monastiraki",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "Los bares de azotea tienen la mejor vista de la Acrópolis iluminada al atardecer",
+              "El mercadillo de los domingos tiene de todo — regatear es parte del juego"
+            ]
+          },
+          {
+            "name": "Templo de Zeus Olímpico",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Solo quedan 15 de 104 columnas, pero cada una tiene 17 metros. Incluido en la entrada combinada",
+              "La mejor foto con la Acrópolis de fondo"
+            ]
+          },
+          {
+            "name": "Arco de Adriano",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Un lado dice 'Esta es la ciudad de Teseo' y el otro 'Esta es la ciudad de Adriano'"
+            ]
+          },
+          {
+            "name": "Plaza Sintagma y Cambio de Guardia",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El ceremonial completo es los DOMINGOS a las 11:00. Entre semana cada hora en punto",
+              "Llega 45 min antes para buen sitio el domingo"
+            ]
+          },
+          {
+            "name": "Estadio Panatenaico",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El único estadio del mundo hecho de mármol — los primeros Juegos Olímpicos modernos de 1896",
+              "Puedes correr por la pista y subir al podio"
+            ]
+          },
+          {
+            "name": "Colina de Licabeto",
+            "zone": "Kolonaki",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "EL mejor mirador de Atenas — ves la Acrópolis, el mar y las islas",
+              "Sube en funicular (10€) o a pie (25 min desde Kolonaki)"
+            ]
+          },
+          {
+            "name": "Barrio de Psyrri",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "El barrio alternativo — street art, bares de moda, tabernas con música en vivo"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Museo Arqueológico Nacional",
+            "zone": "Exarchia",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La Máscara de Agamenón, el Mecanismo de Anticitera y el Poseidón de bronce"
+            ]
+          },
+          {
+            "name": "Barrio de Exarchia",
+            "zone": "Exarchia",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Barrio anarquista y universitario — street art espectacular y las mejores tabernas baratas"
+            ]
+          },
+          {
+            "name": "Biblioteca de Adriano",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Incluida en la entrada combinada. Se visita de paso entre Monastiraki y el Ágora"
+            ]
+          },
+          {
+            "name": "Barrio de Gazi",
+            "zone": "Gazi",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Antigua fábrica de gas reconvertida en el barrio más nocturno de Atenas"
+            ]
+          },
+          {
+            "name": "Mercado Central de Atenas",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Mercado de carne y pescado auténtico. Las tabernas 24h dentro sirven sopa de callos"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Cabo Sunión (Templo de Poseidón)",
+            "zone": "Ática",
+            "type": "exterior",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "A 70 km. El templo sobre el acantilado al atardecer es espectacular. Byron grabó su nombre en una columna"
+            ]
+          },
+          {
+            "name": "Pireo y puerto",
+            "zone": "Pireo",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Mikrolimano tiene los mejores restaurantes de pescado con vistas a los barcos"
+            ]
+          },
+          {
+            "name": "Colina de Filopappos",
+            "zone": "Acrópolis",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Las mejores vistas del Partenón sin pagar entrada. La prisión de Sócrates está en la ladera"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Acrópolis completa",
+        "order": [
+          "Acrópolis",
+          "Museo de la Acrópolis",
+          "Ágora Antigua"
+        ]
+      },
+      "B": {
+        "name": "Barrios históricos",
+        "order": [
+          "Barrio de Plaka",
+          "Monastiraki"
+        ]
+      },
+      "C": {
+        "name": "Zeus y Adriano",
+        "order": [
+          "Templo de Zeus Olímpico",
+          "Arco de Adriano"
+        ]
+      }
+    },
+    "intocables": [
+      "Acrópolis",
+      "Museo de la Acrópolis",
+      "Ágora Antigua",
+      "Barrio de Plaka",
+      "Monastiraki",
+      "Templo de Zeus Olímpico",
+      "Plaza Sintagma y Cambio de Guardia",
+      "Estadio Panatenaico",
+      "Colina de Licabeto"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Atenas en un día — Acrópolis + Plaka + Centro",
+        "places": [
+          {
+            "ref": "Acrópolis",
+            "mode": "exterior",
+            "duration_override": 45
+          },
+          {
+            "ref": "Museo de la Acrópolis",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Barrio de Plaka",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Templo de Zeus Olímpico",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Arco de Adriano",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza Sintagma y Cambio de Guardia",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Monastiraki",
+            "mode": "exterior",
+            "duration_override": 20
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Acrópolis + Plaka + Ágora",
+          "places": [
+            {
+              "ref": "Acrópolis"
+            },
+            {
+              "ref": "Museo de la Acrópolis"
+            },
+            {
+              "ref": "Ágora Antigua"
+            },
+            {
+              "ref": "Barrio de Plaka"
+            },
+            {
+              "ref": "Monastiraki"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Centro + Licabeto",
+          "places": [
+            {
+              "ref": "Templo de Zeus Olímpico"
+            },
+            {
+              "ref": "Arco de Adriano"
+            },
+            {
+              "ref": "Plaza Sintagma y Cambio de Guardia"
+            },
+            {
+              "ref": "Estadio Panatenaico"
+            },
+            {
+              "ref": "Colina de Licabeto"
+            },
+            {
+              "ref": "Barrio de Psyrri"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": []
+  },
+  "estambul": {
+    "destination_type": "city",
+    "country": "Turquía",
+    "max_days_recommended": 5,
+    "excursion_trigger_from_day": 4,
+    "suggested_extensions": [
+      "Capadocia",
+      "Pamukkale",
+      "Éfeso",
+      "Islas de los Príncipes"
+    ],
+    "timezone": "Europe/Istanbul",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Santa Sofía",
+            "zone": "Sultanahmet",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Fue iglesia, mezquita, museo y ahora mezquita. Las mujeres deben cubrirse la cabeza",
+              "Los mosaicos bizantinos de la galería superior son espectaculares"
+            ]
+          },
+          {
+            "name": "Mezquita Azul",
+            "zone": "Sultanahmet",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La única con 6 minaretes. 20.000 azulejos azules. Cierra durante las 5 oraciones diarias"
+            ]
+          },
+          {
+            "name": "Plaza de Sultanahmet",
+            "zone": "Sultanahmet",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "El antiguo Hipódromo. Desde el centro ves Santa Sofía y la Mezquita Azul enfrentadas"
+            ]
+          },
+          {
+            "name": "Palacio de Topkapi",
+            "zone": "Sultanahmet",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "El Harén tiene entrada aparte y es lo más impresionante. Cerrado los martes",
+              "Las vistas del Bósforo desde el Cuarto Patio son las mejores de Sultanahmet"
+            ]
+          },
+          {
+            "name": "Cisterna Basílica",
+            "zone": "Sultanahmet",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "336 columnas reflejadas en el agua con iluminación dramática. Las dos cabezas de Medusa son el misterio"
+            ]
+          },
+          {
+            "name": "Gran Bazar",
+            "zone": "Beyazıt",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "4.000 tiendas en 61 calles cubiertas. Regatear obligatorio — empieza ofreciendo el 40-50%",
+              "Cerrado los domingos"
+            ]
+          },
+          {
+            "name": "Bazar de las Especias",
+            "zone": "Eminönü",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Más pequeño y enfocado — especias, frutos secos, dulces turcos"
+            ]
+          },
+          {
+            "name": "Puente Gálata",
+            "zone": "Eminönü",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Los pescadores con caña son la imagen icónica. Debajo hay restaurantes — pide un balık ekmek por 2-3€"
+            ]
+          },
+          {
+            "name": "Torre Gálata",
+            "zone": "Beyoğlu",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "C",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Vistas 360° del Cuerno de Oro, Bósforo y Sultanahmet"
+            ]
+          },
+          {
+            "name": "Avenida Istiklal",
+            "zone": "Beyoğlu",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "D",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "1,4 km peatonales con el tranvía histórico rojo. Los pasajes cubiertos esconden restaurantes con encanto"
+            ]
+          },
+          {
+            "name": "Plaza Taksim",
+            "zone": "Beyoğlu",
+            "type": "exterior",
+            "duration_min": 10,
+            "group": "D",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El centro del Estambul moderno"
+            ]
+          },
+          {
+            "name": "Paseo en barco por el Bósforo",
+            "zone": "Eminönü",
+            "type": "actividad",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "atardecer",
+            "tips": [
+              "El ferry público de Şehir Hatları es mucho más barato que los tours privados",
+              "Al atardecer ves mezquitas y palacios iluminarse desde el agua"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Mezquita de Süleymaniye",
+            "zone": "Süleymaniye",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Más impresionante que la Mezquita Azul y con una décima parte de turistas"
+            ]
+          },
+          {
+            "name": "Palacio de Dolmabahçe",
+            "zone": "Beşiktaş",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El Versalles otomano. Todos los relojes parados a las 09:05, la hora de la muerte de Atatürk"
+            ]
+          },
+          {
+            "name": "Barrio de Balat",
+            "zone": "Balat",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más colorido y fotogénico de Estambul — casas otomanas de colores"
+            ]
+          },
+          {
+            "name": "Barrio de Kadiköy",
+            "zone": "Lado Asiático",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Cruzar al lado asiático en ferry (20 min, 0,50€) es una experiencia en sí"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Islas de los Príncipes",
+            "zone": "Mar de Mármara",
+            "type": "exterior",
+            "duration_min": 300,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "4 islas sin coches. Büyükada es la más grande. Ferry 1,5h"
+            ]
+          },
+          {
+            "name": "Murallas de Constantinopla",
+            "zone": "Fatih",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "6,5 km todavía en pie. La zona de Yedikule es la más impresionante"
+            ]
+          },
+          {
+            "name": "Iglesia de San Salvador en Chora",
+            "zone": "Fatih",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Los mosaicos y frescos bizantinos más impresionantes de Estambul"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Sultanahmet",
+        "order": [
+          "Santa Sofía",
+          "Mezquita Azul",
+          "Plaza de Sultanahmet"
+        ]
+      },
+      "B": {
+        "name": "Topkapi zona",
+        "order": [
+          "Palacio de Topkapi",
+          "Cisterna Basílica"
+        ]
+      },
+      "C": {
+        "name": "Eminönü-Gálata",
+        "order": [
+          "Bazar de las Especias",
+          "Puente Gálata",
+          "Torre Gálata"
+        ]
+      },
+      "D": {
+        "name": "Beyoğlu moderno",
+        "order": [
+          "Avenida Istiklal",
+          "Plaza Taksim"
+        ]
+      }
+    },
+    "intocables": [
+      "Santa Sofía",
+      "Mezquita Azul",
+      "Palacio de Topkapi",
+      "Cisterna Basílica",
+      "Gran Bazar",
+      "Bazar de las Especias",
+      "Torre Gálata",
+      "Puente Gálata",
+      "Paseo en barco por el Bósforo",
+      "Avenida Istiklal"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Estambul en un día — Sultanahmet + Gálata",
+        "places": [
+          {
+            "ref": "Santa Sofía",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Mezquita Azul",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Plaza de Sultanahmet",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Cisterna Basílica"
+          },
+          {
+            "ref": "Bazar de las Especias",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Puente Gálata",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Torre Gálata",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Avenida Istiklal",
+            "mode": "exterior",
+            "duration_override": 20
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Sultanahmet + Topkapi",
+          "places": [
+            {
+              "ref": "Santa Sofía"
+            },
+            {
+              "ref": "Mezquita Azul"
+            },
+            {
+              "ref": "Plaza de Sultanahmet"
+            },
+            {
+              "ref": "Palacio de Topkapi"
+            },
+            {
+              "ref": "Cisterna Basílica"
+            },
+            {
+              "ref": "Gran Bazar"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Eminönü + Gálata + Bósforo",
+          "places": [
+            {
+              "ref": "Bazar de las Especias"
+            },
+            {
+              "ref": "Puente Gálata"
+            },
+            {
+              "ref": "Torre Gálata"
+            },
+            {
+              "ref": "Avenida Istiklal"
+            },
+            {
+              "ref": "Plaza Taksim"
+            },
+            {
+              "ref": "Paseo en barco por el Bósforo"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": []
+  },
+  "budapest": {
+    "destination_type": "city",
+    "country": "Hungría",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Viena",
+      "Bratislava",
+      "Lago Balaton",
+      "Szentendre"
+    ],
+    "timezone": "Europe/Budapest",
+    "walking_friendly": true,
+    "metro_useful": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Parlamento de Budapest",
+            "zone": "Pest",
+            "type": "interior_largo",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El parlamento más bonito del mundo — 40 kg de oro. Visita guiada obligatoria, disponible en español",
+              "La mejor foto exterior desde el Bastión de los Pescadores o un crucero nocturno"
+            ]
+          },
+          {
+            "name": "Bastión de los Pescadores",
+            "zone": "Buda",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "LA foto de Budapest. La terraza inferior es gratuita y las vistas casi iguales a la superior",
+              "Al amanecer lo tienes vacío"
+            ]
+          },
+          {
+            "name": "Iglesia de Matías",
+            "zone": "Buda",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "El interior de azulejos parece una mezquita — fue mezquita durante la ocupación otomana"
+            ]
+          },
+          {
+            "name": "Castillo de Buda",
+            "zone": "Buda",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "Sube en funicular desde el Puente de las Cadenas. El recinto exterior es gratuito"
+            ]
+          },
+          {
+            "name": "Puente de las Cadenas",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "De noche iluminado es espectacular. Recientemente restaurado (2023)"
+            ]
+          },
+          {
+            "name": "Basílica de San Esteban",
+            "zone": "Pest",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La cúpula panorámica tiene vistas 360°. La mano momificada de San Esteban está en una capilla lateral"
+            ]
+          },
+          {
+            "name": "Balneario Széchenyi",
+            "zone": "Pest",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "El más grande de Europa. En invierno, el vapor con nieve es mágico",
+              "Los sábados por la noche hay fiestas en las piscinas (sparties)"
+            ]
+          },
+          {
+            "name": "Parque de la Ciudad",
+            "zone": "Pest",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "El Castillo de Vajdahunyad dentro es muy fotogénico"
+            ]
+          },
+          {
+            "name": "Avenida Andrássy",
+            "zone": "Pest",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "C",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Patrimonio de la Humanidad. El metro M1 debajo es el más antiguo de Europa continental"
+            ]
+          },
+          {
+            "name": "Plaza de los Héroes",
+            "zone": "Pest",
+            "type": "exterior",
+            "duration_min": 15,
+            "group": "C",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "Monumento a las 7 tribus magiares fundadoras de Hungría"
+            ]
+          },
+          {
+            "name": "Crucero nocturno por el Danubio",
+            "zone": "Centro",
+            "type": "actividad",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "noche",
+            "tips": [
+              "Los cruceros simples con bebida (15-20€) tienen las mismas vistas que los de cena (50-80€)"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Barrio Judío y Ruinbars",
+            "zone": "Pest",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Szimpla Kert es el ruin bar original. La Gran Sinagoga es la segunda más grande del mundo"
+            ]
+          },
+          {
+            "name": "Balneario Gellért",
+            "zone": "Buda",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Art nouveau, mosaicos y piscina de olas. Más elegante que Széchenyi"
+            ]
+          },
+          {
+            "name": "Colina y Ciudadela de Gellért",
+            "zone": "Buda",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "Las mejores vistas panorámicas de Budapest"
+            ]
+          },
+          {
+            "name": "Mercado Central",
+            "zone": "Pest",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Prueba el lángos (pan frito con nata y queso) en el primer piso"
+            ]
+          },
+          {
+            "name": "Isla Margarita",
+            "zone": "Danubio",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Isla peatonal con piscinas, jardines japoneses y cero coches"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Hospital en la Roca",
+            "zone": "Buda",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Hospital secreto WWII y búnker nuclear bajo el Castillo. Solo visita guiada"
+            ]
+          },
+          {
+            "name": "Memento Park",
+            "zone": "Afueras",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Las estatuas comunistas gigantes retiradas en 1989 — Lenin, Marx, soldados soviéticos"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Colina de Buda",
+        "order": [
+          "Bastión de los Pescadores",
+          "Iglesia de Matías",
+          "Castillo de Buda"
+        ]
+      },
+      "B": {
+        "name": "Parque y termas",
+        "order": [
+          "Balneario Széchenyi",
+          "Parque de la Ciudad"
+        ]
+      },
+      "C": {
+        "name": "Eje Andrássy",
+        "order": [
+          "Avenida Andrássy",
+          "Plaza de los Héroes"
+        ]
+      }
+    },
+    "intocables": [
+      "Parlamento de Budapest",
+      "Bastión de los Pescadores",
+      "Castillo de Buda",
+      "Puente de las Cadenas",
+      "Basílica de San Esteban",
+      "Balneario Széchenyi",
+      "Avenida Andrássy",
+      "Plaza de los Héroes",
+      "Iglesia de Matías"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Budapest en un día — Buda + Pest",
+        "places": [
+          {
+            "ref": "Bastión de los Pescadores",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Iglesia de Matías",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Castillo de Buda",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Puente de las Cadenas",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Basílica de San Esteban",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Parlamento de Budapest",
+            "mode": "exterior",
+            "duration_override": 15
+          },
+          {
+            "ref": "Avenida Andrássy",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Plaza de los Héroes",
+            "mode": "exterior"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Buda + Termas",
+          "places": [
+            {
+              "ref": "Bastión de los Pescadores"
+            },
+            {
+              "ref": "Iglesia de Matías"
+            },
+            {
+              "ref": "Castillo de Buda"
+            },
+            {
+              "ref": "Puente de las Cadenas"
+            },
+            {
+              "ref": "Balneario Széchenyi"
+            },
+            {
+              "ref": "Parque de la Ciudad"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Pest + Parlamento + Andrássy",
+          "places": [
+            {
+              "ref": "Parlamento de Budapest"
+            },
+            {
+              "ref": "Basílica de San Esteban"
+            },
+            {
+              "ref": "Avenida Andrássy"
+            },
+            {
+              "ref": "Plaza de los Héroes"
+            },
+            {
+              "ref": "Crucero nocturno por el Danubio"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de la Plaza Vörösmarty",
+        "zone": "Centro",
+        "duration_min": 45,
+        "best_time": "noche",
+        "tips": [
+          "El mercadillo principal de Budapest — artesanía húngara, kürtőskalács (pastel de chimenea) y vino caliente. Muy bien decorado"
+        ]
+      },
+      {
+        "name": "Mercadillo de la Basílica de San Esteban",
+        "zone": "Centro",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Pista de hielo frente a la basílica iluminada — la postal navideña de Budapest"
+        ]
+      }
+    ]
+  },
+  "sevilla": {
+    "destination_type": "city",
+    "country": "España",
+    "max_days_recommended": 4,
+    "excursion_trigger_from_day": 3,
+    "suggested_extensions": [
+      "Córdoba",
+      "Granada",
+      "Ronda",
+      "Cádiz",
+      "Jerez"
+    ],
+    "timezone": "Europe/Madrid",
+    "walking_friendly": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Real Alcázar",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Reserva online OBLIGATORIA. Juego de Tronos se rodó aquí (Dorne)",
+              "El Patio de las Doncellas es la foto estrella"
+            ]
+          },
+          {
+            "name": "Catedral de Sevilla y Giralda",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La catedral gótica más grande del mundo. La tumba de Colón está dentro",
+              "Subir la Giralda son 35 rampas, no escalones — se diseñó para subir a caballo"
+            ]
+          },
+          {
+            "name": "Barrio de Santa Cruz",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": true,
+            "tips": [
+              "Antigua judería — calles estrechas con naranjos y patios con fuentes"
+            ]
+          },
+          {
+            "name": "Plaza de España",
+            "zone": "Parque María Luisa",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La plaza más espectacular de España. Busca el banco de tu provincia. Salió en Star Wars Episodio II",
+              "Paseo en barca por el canal 6€"
+            ]
+          },
+          {
+            "name": "Parque de María Luisa",
+            "zone": "Parque María Luisa",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "La Plaza de América tiene palomas y pavos reales"
+            ]
+          },
+          {
+            "name": "Setas de Sevilla",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La estructura de madera más grande del mundo. Mirador 5€ (incluye consumición)",
+              "Al atardecer la luz es espectacular"
+            ]
+          },
+          {
+            "name": "Triana",
+            "zone": "Triana",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Barrio flamenco y ceramista. El Mercado de Triana tiene las mejores tapas a precio local",
+              "Calle Betis tiene terrazas con vistas al río iluminado"
+            ]
+          },
+          {
+            "name": "Torre del Oro",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 15,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Torre almohade del XIII. Las vistas merecen los 3€. La mejor foto desde la orilla de Triana"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Palacio de la Condesa de Lebrija",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La mejor colección de mosaicos romanos privada de Europa"
+            ]
+          },
+          {
+            "name": "Casa de Pilatos",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El palacio mudéjar mejor conservado después del Alcázar"
+            ]
+          },
+          {
+            "name": "Espectáculo de flamenco",
+            "zone": "Varios",
+            "type": "actividad",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "noche",
+            "tips": [
+              "Mejores tablaos: Museo del Baile Flamenco, Casa de la Memoria. Reservar con antelación"
+            ]
+          },
+          {
+            "name": "Alameda de Hércules",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Donde salen los sevillanos, no los turistas"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Itálica",
+            "zone": "Afueras",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Ruinas romanas a 9 km. El anfiteatro salió en Juego de Tronos"
+            ]
+          },
+          {
+            "name": "Barrio de la Macarena",
+            "zone": "Macarena",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El barrio más castizo. La Basílica de la Macarena tiene la imagen más venerada de Sevilla"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Triángulo monumental",
+        "order": [
+          "Real Alcázar",
+          "Catedral de Sevilla y Giralda",
+          "Barrio de Santa Cruz"
+        ]
+      },
+      "B": {
+        "name": "Plaza de España y parque",
+        "order": [
+          "Plaza de España",
+          "Parque de María Luisa"
+        ]
+      }
+    },
+    "intocables": [
+      "Real Alcázar",
+      "Catedral de Sevilla y Giralda",
+      "Barrio de Santa Cruz",
+      "Plaza de España",
+      "Triana",
+      "Setas de Sevilla",
+      "Torre del Oro",
+      "Parque de María Luisa"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Sevilla en un día — Alcázar + Catedral + Plaza de España",
+        "places": [
+          {
+            "ref": "Real Alcázar",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Catedral de Sevilla y Giralda",
+            "mode": "exterior",
+            "duration_override": 20
+          },
+          {
+            "ref": "Barrio de Santa Cruz",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Plaza de España",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Torre del Oro",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Setas de Sevilla",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Triana",
+            "mode": "exterior",
+            "duration_override": 30
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Centro Monumental + Santa Cruz",
+          "places": [
+            {
+              "ref": "Real Alcázar"
+            },
+            {
+              "ref": "Catedral de Sevilla y Giralda"
+            },
+            {
+              "ref": "Barrio de Santa Cruz"
+            },
+            {
+              "ref": "Setas de Sevilla"
+            },
+            {
+              "ref": "Torre del Oro"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Plaza de España + Triana",
+          "places": [
+            {
+              "ref": "Plaza de España"
+            },
+            {
+              "ref": "Parque de María Luisa"
+            },
+            {
+              "ref": "Triana"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Mercadillo de la Catedral",
+        "zone": "Centro",
+        "duration_min": 20,
+        "tips": [
+          "Belenes artesanales sevillanos y dulces conventuales. Más pequeño que los del norte pero con encanto andaluz"
+        ]
+      }
+    ]
+  },
+  "dublin": {
+    "destination_type": "city",
+    "country": "Irlanda",
+    "max_days_recommended": 3,
+    "excursion_trigger_from_day": 2,
+    "suggested_extensions": [
+      "Acantilados de Moher",
+      "Galway",
+      "Giant's Causeway",
+      "Wicklow"
+    ],
+    "timezone": "Europe/Dublin",
+    "walking_friendly": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Trinity College y Libro de Kells",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "Las entradas se agotan semanas antes. La Long Room es tan espectacular como el libro"
+            ]
+          },
+          {
+            "name": "Temple Bar",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "noche",
+            "tips": [
+              "Música en vivo en cada esquina. Las pintas son las más caras de Dublín (7-8€)"
+            ]
+          },
+          {
+            "name": "Guinness Storehouse",
+            "zone": "Liberties",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Termina en el Gravity Bar — cerveza gratis con vistas 360°. Compra online más barato"
+            ]
+          },
+          {
+            "name": "Catedral de San Patricio",
+            "zone": "Liberties",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "tips": [
+              "Jonathan Swift fue deán aquí. Su tumba está dentro"
+            ]
+          },
+          {
+            "name": "Catedral de la Santísima Trinidad",
+            "zone": "Centro",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La más antigua de Dublín (1030, fundada por vikingos). El gato y rata momificados ('Tom and Jerry')"
+            ]
+          },
+          {
+            "name": "Grafton Street",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Músicos callejeros de alto nivel. La estatua de Molly Malone al inicio"
+            ]
+          },
+          {
+            "name": "St. Stephen's Green",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El parque más bonito del centro"
+            ]
+          },
+          {
+            "name": "Puente Ha'penny",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 5,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Costaba medio penique cruzarlo. De noche iluminado es precioso"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Cárcel de Kilmainham",
+            "zone": "Oeste",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Reservar con MUCHA antelación — la más demandada de Dublín"
+            ]
+          },
+          {
+            "name": "Destilería Jameson",
+            "zone": "Smithfield",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Cata comparativa Jameson vs Scotch vs Bourbon"
+            ]
+          },
+          {
+            "name": "Galería Nacional de Irlanda",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITA. Caravaggio, Vermeer y pintura irlandesa"
+            ]
+          },
+          {
+            "name": "Phoenix Park",
+            "zone": "Oeste",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El doble de Central Park. Los ciervos campan libres"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Howth",
+            "zone": "Costa norte",
+            "type": "exterior",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "25 min en DART. El Cliff Walk tiene vistas espectaculares. Fish & chips del puerto"
+            ]
+          },
+          {
+            "name": "Cementerio de Glasnevin",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Michael Collins, Éamon de Valera. Las visitas guiadas cuentan la historia de Irlanda"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Catedrales",
+        "order": [
+          "Catedral de San Patricio",
+          "Catedral de la Santísima Trinidad"
+        ]
+      }
+    },
+    "intocables": [
+      "Trinity College y Libro de Kells",
+      "Temple Bar",
+      "Guinness Storehouse",
+      "Catedral de San Patricio",
+      "Grafton Street",
+      "St. Stephen's Green",
+      "Catedral de la Santísima Trinidad",
+      "Puente Ha'penny"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Dublín en un día — Trinity + Temple Bar + Guinness",
+        "places": [
+          {
+            "ref": "Trinity College y Libro de Kells"
+          },
+          {
+            "ref": "Grafton Street",
+            "mode": "exterior"
+          },
+          {
+            "ref": "St. Stephen's Green",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Catedral de San Patricio",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Catedral de la Santísima Trinidad",
+            "mode": "exterior",
+            "duration_override": 10
+          },
+          {
+            "ref": "Temple Bar",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Puente Ha'penny",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Guinness Storehouse"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Centro + Temple Bar",
+          "places": [
+            {
+              "ref": "Trinity College y Libro de Kells"
+            },
+            {
+              "ref": "Grafton Street"
+            },
+            {
+              "ref": "St. Stephen's Green"
+            },
+            {
+              "ref": "Catedral de San Patricio"
+            },
+            {
+              "ref": "Catedral de la Santísima Trinidad"
+            },
+            {
+              "ref": "Temple Bar"
+            },
+            {
+              "ref": "Puente Ha'penny"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Guinness + Kilmainham",
+          "places": [
+            {
+              "ref": "Guinness Storehouse"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Christmas at the Castle (Castillo de Dublín)",
+        "zone": "Centro",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Mercadillo en el patio del castillo — más pequeño que los centroeuropeos pero con encanto. Mulled wine y mince pies"
+        ]
+      }
+    ]
+  },
+  "edimburgo": {
+    "destination_type": "city",
+    "country": "Reino Unido",
+    "max_days_recommended": 3,
+    "excursion_trigger_from_day": 2,
+    "suggested_extensions": [
+      "Highlands",
+      "Isla de Skye",
+      "Loch Ness",
+      "Glasgow",
+      "St Andrews"
+    ],
+    "timezone": "Europe/London",
+    "walking_friendly": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Castillo de Edimburgo",
+            "zone": "Old Town",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "La Piedra del Destino y las Joyas de la Corona de Escocia. A las 13:00 se dispara el cañonazo (excepto domingos)"
+            ]
+          },
+          {
+            "name": "Royal Mile",
+            "zone": "Old Town",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": true,
+            "tips": [
+              "1 milla exacta cuesta abajo del Castillo al Palacio. Los 'closes' laterales son la joya escondida"
+            ]
+          },
+          {
+            "name": "Palacio de Holyroodhouse",
+            "zone": "Old Town",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "Los aposentos de María Estuardo donde asesinaron a su secretario. Las ruinas de la abadía son atmosféricas"
+            ]
+          },
+          {
+            "name": "Arthur's Seat",
+            "zone": "Holyrood",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Volcán extinto — 45 min subida, vistas 360°. Lleva calzado con agarre"
+            ]
+          },
+          {
+            "name": "Calton Hill",
+            "zone": "New Town",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "5 minutos de subida. El Monumento Nacional (Partenón inacabado) es la foto icónica"
+            ]
+          },
+          {
+            "name": "Museo Nacional de Escocia",
+            "zone": "Old Town",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "GRATUITO. Dolly la oveja clonada. La terraza de la azotea tiene vistas del Castillo"
+            ]
+          },
+          {
+            "name": "Princes Street y jardines",
+            "zone": "New Town",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Las vistas del Castillo desde los jardines son la postal clásica"
+            ]
+          },
+          {
+            "name": "Victoria Street y Grassmarket",
+            "zone": "Old Town",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Victoria Street inspiró el Callejón Diagon de Harry Potter"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Mary King's Close",
+            "zone": "Old Town",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Barrio del XVII enterrado bajo la Royal Mile — sellado durante la peste"
+            ]
+          },
+          {
+            "name": "Scotch Whisky Experience",
+            "zone": "Old Town",
+            "type": "interior_corto",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "3.384 botellas — la colección más grande del mundo"
+            ]
+          },
+          {
+            "name": "Dean Village",
+            "zone": "West End",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Pueblo medieval escondido en un valle dentro de la ciudad"
+            ]
+          },
+          {
+            "name": "Leith",
+            "zone": "Norte",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El antiguo puerto reconvertido en barrio gastronómico. El Royal Yacht Britannia"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Rosslyn Chapel",
+            "zone": "Afueras",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "La capilla de El Código Da Vinci. 25 min en bus"
+            ]
+          },
+          {
+            "name": "Cementerio de Greyfriars",
+            "zone": "Old Town",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "La tumba de Tom Riddell (Voldemort). La estatua de Greyfriars Bobby en la puerta"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Royal Mile completa",
+        "order": [
+          "Castillo de Edimburgo",
+          "Royal Mile",
+          "Palacio de Holyroodhouse"
+        ]
+      }
+    },
+    "intocables": [
+      "Castillo de Edimburgo",
+      "Royal Mile",
+      "Palacio de Holyroodhouse",
+      "Arthur's Seat",
+      "Calton Hill",
+      "Museo Nacional de Escocia",
+      "Victoria Street y Grassmarket",
+      "Princes Street y jardines"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Edimburgo en un día — Castillo + Royal Mile + Calton Hill",
+        "places": [
+          {
+            "ref": "Castillo de Edimburgo",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Royal Mile",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Victoria Street y Grassmarket",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Princes Street y jardines",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Calton Hill",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Palacio de Holyroodhouse",
+            "mode": "exterior",
+            "duration_override": 15
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Old Town completa",
+          "places": [
+            {
+              "ref": "Castillo de Edimburgo"
+            },
+            {
+              "ref": "Royal Mile"
+            },
+            {
+              "ref": "Victoria Street y Grassmarket"
+            },
+            {
+              "ref": "Museo Nacional de Escocia"
+            },
+            {
+              "ref": "Palacio de Holyroodhouse"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Arthur's Seat + New Town",
+          "places": [
+            {
+              "ref": "Arthur's Seat"
+            },
+            {
+              "ref": "Princes Street y jardines"
+            },
+            {
+              "ref": "Calton Hill"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Edinburgh's Christmas (Princes Street Gardens)",
+        "zone": "New Town",
+        "duration_min": 60,
+        "best_time": "noche",
+        "tips": [
+          "Noria gigante, pista de hielo y mercadillo con el Castillo iluminado de fondo — una de las mejores experiencias navideñas de Europa"
+        ]
+      },
+      {
+        "name": "Hogmanay (Nochevieja)",
+        "zone": "Centro",
+        "duration_min": 240,
+        "best_time": "noche",
+        "tips": [
+          "La Nochevieja más famosa del mundo — fiesta callejera masiva el 31 de diciembre con fuegos artificiales sobre el Castillo. Entradas se agotan meses antes"
+        ]
+      }
+    ]
+  },
+  "napoles": {
+    "destination_type": "city",
+    "country": "Italia",
+    "max_days_recommended": 3,
+    "excursion_trigger_from_day": 2,
+    "suggested_extensions": [
+      "Pompeya",
+      "Costa Amalfitana",
+      "Capri",
+      "Herculano",
+      "Procida"
+    ],
+    "timezone": "Europe/Rome",
+    "walking_friendly": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Spaccanapoli",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "La calle que 'parte Nápoles en dos' — caótica, ruidosa y auténtica"
+            ]
+          },
+          {
+            "name": "Nápoles Subterránea",
+            "zone": "Centro Histórico",
+            "type": "interior_largo",
+            "duration_min": 90,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "40 metros bajo la ciudad — acueductos griegos y refugios WWII. Hay un tramo estrecho"
+            ]
+          },
+          {
+            "name": "Capilla Sansevero",
+            "zone": "Centro Histórico",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 3,
+            "is_free_access": false,
+            "tips": [
+              "El Cristo Velado es la escultura más impresionante que verás en tu vida. Reserva online OBLIGATORIA"
+            ]
+          },
+          {
+            "name": "Pizza en la calle",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Da Michele, Sorbillo y Di Matteo en Via dei Tribunali. La pizza a portafoglio cuesta 1-2€"
+            ]
+          },
+          {
+            "name": "Museo Arqueológico Nacional",
+            "zone": "Centro",
+            "type": "interior_largo",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Todos los mosaicos y frescos de Pompeya están aquí. El Gabinete Secreto (arte erótico romano)"
+            ]
+          },
+          {
+            "name": "Castel dell'Ovo",
+            "zone": "Lungomare",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "Vistas del Vesubio desde las terrazas. La leyenda del huevo mágico de Virgilio"
+            ]
+          },
+          {
+            "name": "Lungomare",
+            "zone": "Lungomare",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": "B",
+            "group_order": 2,
+            "is_free_access": true,
+            "best_time": "atardecer",
+            "tips": [
+              "Paseo marítimo con el Vesubio de fondo al atardecer"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Barrio Español",
+            "zone": "Centro",
+            "type": "exterior",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Altares callejeros a Maradona y la vida napolitana sin filtros"
+            ]
+          },
+          {
+            "name": "Catacumbas de San Gennaro",
+            "zone": "Sanità",
+            "type": "interior_corto",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Frescos del siglo II. Solo con visita guiada"
+            ]
+          },
+          {
+            "name": "Certosa de San Martino",
+            "zone": "Vomero",
+            "type": "interior_largo",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Sube en funicular desde Via Toledo. Las vistas de la bahía son las mejores"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Cementerio de Fontanelle",
+            "zone": "Sanità",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Miles de cráneos adoptados por napolitanos. GRATUITO"
+            ]
+          },
+          {
+            "name": "Via San Gregorio Armeno",
+            "zone": "Centro Histórico",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Calle de los belenes — figuras de famosos actuales todo el año"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Centro Histórico",
+        "order": [
+          "Spaccanapoli",
+          "Nápoles Subterránea",
+          "Capilla Sansevero"
+        ]
+      },
+      "B": {
+        "name": "Lungomare",
+        "order": [
+          "Castel dell'Ovo",
+          "Lungomare"
+        ]
+      }
+    },
+    "intocables": [
+      "Spaccanapoli",
+      "Nápoles Subterránea",
+      "Capilla Sansevero",
+      "Museo Arqueológico Nacional",
+      "Castel dell'Ovo",
+      "Lungomare",
+      "Pizza en la calle"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Nápoles en un día — Centro Histórico + Lungomare + Pizza",
+        "places": [
+          {
+            "ref": "Spaccanapoli",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Capilla Sansevero"
+          },
+          {
+            "ref": "Pizza en la calle"
+          },
+          {
+            "ref": "Castel dell'Ovo",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Lungomare",
+            "mode": "exterior"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Centro Histórico",
+          "places": [
+            {
+              "ref": "Spaccanapoli"
+            },
+            {
+              "ref": "Nápoles Subterránea"
+            },
+            {
+              "ref": "Capilla Sansevero"
+            },
+            {
+              "ref": "Pizza en la calle"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Museo + Lungomare",
+          "places": [
+            {
+              "ref": "Museo Arqueológico Nacional"
+            },
+            {
+              "ref": "Castel dell'Ovo"
+            },
+            {
+              "ref": "Lungomare"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": []
+  },
+  "dubrovnik": {
+    "destination_type": "city",
+    "country": "Croacia",
+    "max_days_recommended": 3,
+    "excursion_trigger_from_day": 2,
+    "suggested_extensions": [
+      "Isla de Lokrum",
+      "Islas Elafitas",
+      "Montenegro (Kotor)",
+      "Mostar",
+      "Split"
+    ],
+    "timezone": "Europe/Zagreb",
+    "walking_friendly": true,
+    "levels": {
+      "1": {
+        "places": [
+          {
+            "name": "Murallas de Dubrovnik",
+            "zone": "Ciudad Vieja",
+            "type": "exterior",
+            "duration_min": 90,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "primera_hora",
+            "tips": [
+              "2 km con vistas de tejados rojos y el Adriático. A las 08:00 menos gente y calor. Entrada 35€"
+            ]
+          },
+          {
+            "name": "Stradun",
+            "zone": "Ciudad Vieja",
+            "type": "exterior",
+            "duration_min": 20,
+            "group": "A",
+            "group_order": 1,
+            "is_free_access": true,
+            "tips": [
+              "300 metros de mármol pulido. De noche iluminada es mágica"
+            ]
+          },
+          {
+            "name": "Fuerte Lovrijenac",
+            "zone": "Ciudad Vieja",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": "A",
+            "group_order": 2,
+            "is_free_access": false,
+            "tips": [
+              "La Fortaleza Roja de Juego de Tronos. Entrada incluida con las Murallas"
+            ]
+          },
+          {
+            "name": "Teleférico de Dubrovnik",
+            "zone": "Monte Srđ",
+            "type": "actividad",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "best_time": "atardecer",
+            "tips": [
+              "Vistas de toda la ciudad amurallada y el Adriático. Al atardecer la luz es la foto definitiva"
+            ]
+          },
+          {
+            "name": "Casco antiguo",
+            "zone": "Ciudad Vieja",
+            "type": "exterior",
+            "duration_min": 45,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Bar Buža escondido en las murallas — cerveza con el Adriático a tus pies"
+            ]
+          },
+          {
+            "name": "Isla de Lokrum",
+            "zone": "Isla",
+            "type": "exterior",
+            "duration_min": 180,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "15 min en ferry. Monasterio, pavos reales, lago salado y el Trono de Hierro (réplica)"
+            ]
+          },
+          {
+            "name": "Playas de Dubrovnik",
+            "zone": "Varios",
+            "type": "exterior",
+            "duration_min": 60,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "Banje Beach la más cercana. Sveti Jakov más privacidad. Agua cristalina, playas de piedra"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "places": [
+          {
+            "name": "Kayak alrededor de las murallas",
+            "zone": "Mar",
+            "type": "actividad",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Ver las murallas desde el agua. Los tours al atardecer incluyen parada para bañarse"
+            ]
+          },
+          {
+            "name": "Palacio del Rector",
+            "zone": "Ciudad Vieja",
+            "type": "interior_corto",
+            "duration_min": 30,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "El rector no podía salir durante su mandato de un mes para evitar corrupción"
+            ]
+          },
+          {
+            "name": "Islas Elafitas",
+            "zone": "Islas",
+            "type": "actividad",
+            "duration_min": 360,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Lopud tiene la playa de Šunj — la mejor playa de arena de la zona"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "places": [
+          {
+            "name": "Cavtat",
+            "zone": "Sur",
+            "type": "exterior",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": true,
+            "tips": [
+              "El 'Dubrovnik tranquilo'. 20 min en bus"
+            ]
+          },
+          {
+            "name": "Tour de Juego de Tronos",
+            "zone": "Ciudad Vieja",
+            "type": "actividad",
+            "duration_min": 120,
+            "group": null,
+            "group_order": null,
+            "is_free_access": false,
+            "tips": [
+              "Guías con tablets para comparar escenas con localizaciones reales"
+            ]
+          }
+        ]
+      }
+    },
+    "groups": {
+      "A": {
+        "name": "Stradun y fortaleza",
+        "order": [
+          "Stradun",
+          "Fuerte Lovrijenac"
+        ]
+      }
+    },
+    "intocables": [
+      "Murallas de Dubrovnik",
+      "Stradun",
+      "Fuerte Lovrijenac",
+      "Teleférico de Dubrovnik",
+      "Isla de Lokrum",
+      "Casco antiguo",
+      "Playas de Dubrovnik"
+    ],
+    "short_trips": {
+      "1_day": {
+        "description": "Dubrovnik en un día — Murallas + Casco Antiguo",
+        "places": [
+          {
+            "ref": "Murallas de Dubrovnik"
+          },
+          {
+            "ref": "Stradun",
+            "mode": "exterior"
+          },
+          {
+            "ref": "Fuerte Lovrijenac"
+          },
+          {
+            "ref": "Casco antiguo",
+            "mode": "exterior",
+            "duration_override": 30
+          },
+          {
+            "ref": "Teleférico de Dubrovnik"
+          }
+        ]
+      },
+      "2_days": {
+        "day_1": {
+          "zone_name": "Murallas + Ciudad Vieja",
+          "places": [
+            {
+              "ref": "Murallas de Dubrovnik"
+            },
+            {
+              "ref": "Stradun"
+            },
+            {
+              "ref": "Fuerte Lovrijenac"
+            },
+            {
+              "ref": "Casco antiguo"
+            },
+            {
+              "ref": "Teleférico de Dubrovnik"
+            }
+          ]
+        },
+        "day_2": {
+          "zone_name": "Lokrum + Playas",
+          "places": [
+            {
+              "ref": "Isla de Lokrum"
+            },
+            {
+              "ref": "Playas de Dubrovnik"
+            }
+          ]
+        }
+      }
+    },
+    "winter_markets": [
+      {
+        "name": "Dubrovnik Winter Festival",
+        "zone": "Ciudad Vieja",
+        "duration_min": 30,
+        "best_time": "noche",
+        "tips": [
+          "Pequeño pero mágico — la Stradun iluminada con decoración navideña y puestos de comida croata"
+        ]
+      }
+    ]
   }
 }
