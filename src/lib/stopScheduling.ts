@@ -1,4 +1,4 @@
-import type { Chronotype, Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
+import type { Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 import { parseOpeningMinutes } from './stopHoursTag'
@@ -16,11 +16,20 @@ import { minutesToTime, roundUpToQuarterHour } from './time'
  * por el ritmo elegido de antemano.
  */
 
-/** Hora de inicio de la PRIMERA parada del día, según el cronotipo elegido en "Elige tu horario" — sin calcular ningún traslado desde el alojamiento: el viajero decide cómo/cuándo llegar hasta ahí por su cuenta (Modo Hoy ya se encarga de readaptar todo en tiempo real si va desajustado). */
-export const CHRONOTYPE_START_MINUTES: Record<Chronotype, number> = {
-  sunrise: 7 * 60 + 30, // 07:30
-  normal: 9 * 60 + 30, // 09:30
-  nightowl: 11 * 60, // 11:00
+/**
+ * Hora de inicio de la PRIMERA parada del día, según el RITMO elegido (ya no el cronotipo — decisión
+ * explícita del usuario: el ritmo manda sobre la hora de inicio, el cronotipo deja de influir en
+ * ella aunque la pregunta se siga usando para dar tono al contenido que sugiere Claude). Completo
+ * siempre arranca a las 08:00 para aprovechar el día entero; Tranquilo arranca a las 10:00, sin prisa
+ * (balanced comparte el mismo valor que zen — ambos son variantes de "Tranquilo" en el backend, ver
+ * PACE_LABEL en server/index.js). Sin calcular ningún traslado desde el alojamiento: el viajero
+ * decide cómo/cuándo llegar hasta ahí por su cuenta (Modo Hoy ya se encarga de readaptar todo en
+ * tiempo real si va desajustado).
+ */
+export const PACE_START_MINUTES: Record<TripPace, number> = {
+  zen: 10 * 60, // 10:00
+  balanced: 10 * 60, // 10:00
+  nonstop: 8 * 60, // 08:00
 }
 
 /** Colchón (minutos) entre el fin de una parada y el inicio de la siguiente, además del tiempo a pie real — más margen cuanto más "zen" el ritmo elegido. */
@@ -161,13 +170,13 @@ export function overflowToDidntMakeCut(overflow: Stop[]): DidntMakeCutItem[] {
 /**
  * Aplica el horario real a TODOS los días de una ruta recién generada — un solo paso tras
  * `mapGeneratedRouteToRoute` (ver App.tsx `LoadingScreenContainer`), antes de mostrarle la ruta al
- * viajero. Día 1 y el último día usan la MISMA hora de cronotipo que el resto por ahora (todavía no
+ * viajero. Día 1 y el último día usan la MISMA hora de inicio según ritmo que el resto por ahora (todavía no
  * existe un horario de transporte real en este punto — el viajero lo introduce más tarde en
  * RESERVAS); en cuanto lo hace, `optimizeDayWithRealTransport` vuelve a calcular solo ese día con la
  * hora real. Los días sin paradas (de plantilla, o el sintético de vuelta) se dejan tal cual.
  */
-export async function applyRealStopSchedule(route: Route, chronotype: Chronotype, pace: TripPace): Promise<Route> {
-  const firstStopStartMinutes = CHRONOTYPE_START_MINUTES[chronotype] ?? CHRONOTYPE_START_MINUTES.normal
+export async function applyRealStopSchedule(route: Route, pace: TripPace): Promise<Route> {
+  const firstStopStartMinutes = PACE_START_MINUTES[pace] ?? PACE_START_MINUTES.balanced
   const days = await Promise.all(
     route.days.map(async (day) => {
       if (day.stops.length === 0) return day
@@ -194,7 +203,7 @@ export async function optimizeDayWithRealTransport(
   flightTimeMinutes: number,
   pace: TripPace,
 ): Promise<{ stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }> {
-  const firstStopStartMinutes = kind === 'arrival' ? flightTimeMinutes + REAL_TRANSPORT_TRANSFER_MINUTES : CHRONOTYPE_START_MINUTES.normal
+  const firstStopStartMinutes = kind === 'arrival' ? flightTimeMinutes + REAL_TRANSPORT_TRANSFER_MINUTES : PACE_START_MINUTES[pace]
   const dayEndMinutes = kind === 'departure' ? flightTimeMinutes - REAL_TRANSPORT_TRANSFER_MINUTES : undefined
   const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes, pace, dayEndMinutes)
   if (overflow.length === 0) return { ...day, stops: scheduled }

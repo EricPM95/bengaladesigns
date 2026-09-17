@@ -77,11 +77,11 @@ function LoadingScreenContainer() {
   // vez de esperar a que la promesa suspendida se reanude por su cuenta.
   const finalizeRoute = async (finalCheckpoint: GenerationResumeState, params: GenerationParams) => {
     const mapped = mapGeneratedRouteToRoute(finalCheckpoint.generated, destination, params.answers, params.transportContext)
-    // Horario real por parada (cronotipo + colchón de ritmo + tiempo a pie real, ver
+    // Horario real por parada (hora de inicio + colchón según ritmo + tiempo a pie real, ver
     // stopScheduling.ts) — sustituye al suggested_time/travel_to_next de Claude, que es solo una
     // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero antes
     // de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
-    const scheduled = await applyRealStopSchedule(mapped, params.answers.chronotype, params.answers.pace ?? 'balanced')
+    const scheduled = await applyRealStopSchedule(mapped, params.answers.pace ?? 'balanced')
     // Mejor esfuerzo, nunca bloquea: sustituye el placeholder aleatorio de picsum por una foto real
     // de Wikipedia cuando la encuentra (ver placePhoto.ts) — si falla o tarda, la ruta sigue con el
     // placeholder tal cual, nunca se queda colgada por esto.

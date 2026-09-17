@@ -1604,9 +1604,9 @@ const ARCHETYPE_LABEL = {
 }
 
 const PACE_LABEL = {
-  zen: 'zen/"Tranquilo" — no rush, slower mornings, longer time at each place, roughly 4-5 full visits as a typical feel (never a hard cap — a cluster of quick nearby exterior stops is always visited in full, see REQUIRED PLACES). NEVER stack two long (2h+) visits in the same day, morning and afternoon — pick one.',
+  zen: 'zen/"Tranquilo" — starts around 10:00, no rush, slower mornings, longer time at each place, roughly 4-5 full visits as a typical feel — can stretch to 7-8 ONLY when the zone has many quick (<10min walk apart) exterior stops clustered together (never a hard cap in that case, see REQUIRED PLACES). NEVER stack two long (2h+) visits in the same day, morning and afternoon — pick one.',
   balanced: 'balanced/"Tranquilo" — same spirit as zen (see above), slightly more flexible.',
-  nonstop: 'nonstop/"Completo" — make the most of the whole day, chain stops with no dead gaps, comfortably 7-8 places when the zone supports it. CAN stack two long (2h+) visits in the same day, one morning and one afternoon, if the geography/logistics genuinely allow it.',
+  nonstop: 'nonstop/"Completo" — ALWAYS starts at 08:00, make the most of the whole day, chain stops with no dead gaps, fit everything that reasonably fits once meals/travel time are respected. No rigid cap on the number of stops — real time and logistics decide, not a fixed count; comfortably 7-8 places is typical but more is fine when the day genuinely has room. CAN stack two long (2h+) visits in the same day, one morning and one afternoon, if the geography/logistics genuinely allow it.',
 }
 
 /** Mínimo de paradas visitables (sin contar comidas) para un día "city" normal, según ritmo — usado para validar y autocompletar la respuesta de generate-day-block, ver MIN_STOPS_BY_PACE más abajo. El propio prompt (PACE_LABEL/DAY_BLOCK_SYSTEM_PROMPT) ya pide este rango, esto es la red de seguridad server-side por si Claude no lo cumple. */
@@ -2908,13 +2908,21 @@ function distributeClustersToDays(clusters, dayNumbers) {
 }
 
 // Mismo tope que sanitizeDayPlaces aplica al camino Claude-driven (ver su comentario junto al
-// `if (places.length >= 9) break`): más lugares/día = más tokens de salida en Fase 2 = más riesgo real
-// de stop_reason=max_tokens. distributeClustersToDays reparte por DURACIÓN total, no por número de
-// paradas, así que un día puede acabar con más lugares que otro con la misma carga si son cortos
-// (ej. varios miradores/plazas de 15-20min) — encontrado en vivo: un Roma 5 días acabó con un día de
-// 11 lugares (390min, dentro del 1.4x de la duración media) que sí disparó max_tokens real. El camino
-// curado necesita su propio tope de CANTIDAD además del de duración.
-const MAX_PLACES_PER_CURATED_DAY = 9
+// `if (places.length >= maxPlacesForPace(pace)) break`): más lugares/día = más tokens de salida en
+// Fase 2 = más riesgo real de stop_reason=max_tokens. distributeClustersToDays reparte por DURACIÓN
+// total, no por número de paradas, así que un día puede acabar con más lugares que otro con la misma
+// carga si son cortos (ej. varios miradores/plazas de 15-20min) — encontrado en vivo: un Roma 5 días
+// acabó con un día de 11 lugares (390min, dentro del 1.4x de la duración media) que sí disparó
+// max_tokens real. El camino curado necesita su propio tope de CANTIDAD además del de duración.
+// Ritmo "Completo" pide explícitamente "sin tope rígido de paradas" — no se puede tomar 100% literal
+// (Vercel sigue teniendo maxDuration real y Fase 2 sigue teniendo un max_tokens real, ver
+// applyCuratedTips/max_tokens=24000 más abajo), pero desde que ese ahorro de tokens se implementó el
+// margen real creció mucho (16000→6234 tokens en el mismo día de prueba) — así que Completo recibe un
+// tope bastante más alto que Tranquilo en vez de compartir el mismo número.
+const MAX_PLACES_PER_CURATED_DAY_BY_PACE = { zen: 9, balanced: 9, nonstop: 12 }
+function maxPlacesForPace(pace) {
+  return MAX_PLACES_PER_CURATED_DAY_BY_PACE[pace] ?? MAX_PLACES_PER_CURATED_DAY_BY_PACE.balanced
+}
 
 /**
  * Red de seguridad de cantidad tras distributeClustersToDays: si un día quedó con más clusters/lugares
@@ -3056,7 +3064,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
   const rawPlaces = filterToIntocablesForShortTrips(collectedPlaces, destData, listDayNumbers.length)
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
-  rebalanceClustersForPlaceCount(dayClustersMap, MAX_PLACES_PER_CURATED_DAY)
+  rebalanceClustersForPlaceCount(dayClustersMap, maxPlacesForPace(answers.pace))
 
   // Free Tour SIEMPRE la primera parada del día 1 — se evacúa lo que no quepa después (Nivel 2/3
   // primero, Nivel 1 si aun así no basta) para que nunca haya un motivo real para anteponer otra
@@ -3113,7 +3121,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
  * lugares que el usuario marcó en "Elige lugares" (mustIncludePlaces) se fuerzan aquí si Claude se
  * dejó alguno fuera — mismo espíritu que el topUpUnassignedNames que existía antes para las anclas.
  */
-function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
+function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces, pace) {
   const cityDayNumbers = new Set(
     (skeletonDays ?? []).filter((day) => day.type === 'city' || day.type === 'relax').map((day) => Number(day.day_number)),
   )
@@ -3135,9 +3143,9 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
       // llamada, así que más lugares = más tokens de salida = más tiempo. 14+/día medidos en vivo
       // tardaban 130-150s; con 11 se vio un stop_reason=max_tokens real en un día de 10 tras crecer
       // el prompt de Fase 2 con más reglas a lo largo de la sesión (REQUIRED PLACES, Free Tour,
-      // nombres exactos...) — 9 deja margen real de nuevo sin recortar el "visita todo lo que esté
-      // en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
-      if (places.length >= MAX_PLACES_PER_CURATED_DAY) break
+      // nombres exactos...) — tope pace-aware (ver maxPlacesForPace) deja margen real sin recortar el
+      // "visita todo lo que esté en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
+      if (places.length >= maxPlacesForPace(pace)) break
     }
     byDayNumber.set(dayNumber, places)
   }
@@ -3207,7 +3215,7 @@ app.post('/api/generate-day-places', async (req, res) => {
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places)
+    const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places, answers.pace)
     enforceNeverMissLandmarks(days, destination, skeleton_days)
     // El camino con IA (destino no cubierto por el JSON curado) no tiene concepto estructurado de
     // double_visit — la "segunda visita" que decide Claude por su cuenta (ver regla 9 de
