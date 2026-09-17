@@ -1476,7 +1476,7 @@ TIPS — for EVERY stop, if you genuinely know something of real practical value
 - If you don't have anything genuinely specific and valuable for this place, leave "tip" empty rather than inventing generic advice.
 
 FREE TOUR — only if "Free Tour" appears in the traveler's chosen experience focus below:
-- Mandatory and always FIRST. If day 1 is in this block, the Free Tour is day 1's opening stop, 10:00 start by default, before every other stop that day — no exceptions for another place's opening hours, crowds, or "logical" morning slot. If day 1 is not in this block, place it on day 2 instead. Single stop, duration_minutes 150-180.
+- Mandatory and always FIRST. If day 1 is in this block, the Free Tour is day 1's opening stop, 10:00 start by default, before every other stop that day — no exceptions for another place's opening hours, crowds, or "logical" morning slot. ONE explicit exception: if REQUIRED PLACES below marks a place with a "muy temprano, ANTES del Free Tour" hint, that specific place (only that one, never any other) goes at 08:00-09:30, strictly before the tour — it exists precisely to fill the dead time between an 08:00 day start and a 10:00 tour, not to compete with it. If day 1 is not in this block, place it on day 2 instead. Single stop, duration_minutes 150-180.
 - Everything else required for that day is scheduled after it ends. Anything the tour itself would pass (a central square/fountain/landmark, see free_tour_highlights) goes even later, as its own proper deeper visit, not a "preview".
 - "name": "Free Tour: <destination or zone>" (e.g. "Free Tour: Centro Histórico de Roma"). "description" must summarize what the tour covers in general terms (it walks past several landmarks from the outside, with historical context) — do NOT claim it enters any paid/ticketed site, free tours are always exterior/walking tours.
 - "free_tour_meeting_point": the specific real square/point where free tours in this destination customarily start (you know this — e.g. in Rome it's commonly Piazza Venezia or Piazza di Spagna).
@@ -3067,6 +3067,12 @@ function isCentroHistoricoZone(zone) {
  * ver Fontana di Trevi) — para esos, un vistazo rápido de camino por la mañana es precisamente el
  * tipo de segunda visita que ese campo existe para describir.
  */
+// Marca el `best_time` de un lugar de relleno pre-Free-Tour (ver buildFreeTourPrefillStops) — el
+// mismo string sirve de marcador reconocible más abajo en la Fase 2, en enforceFreeTourFirst: esa
+// red de seguridad mueve a cualquier parada que Claude programó antes que el Free Tour, así que sin
+// esta excepción explícita se comería el propio relleno que este punto pide dejar ahí.
+const FREE_TOUR_PREFILL_BEST_TIME = 'muy temprano, ANTES del Free Tour (hueco 08:00-10:00)'
+
 function buildFreeTourPrefillStops(rawPlaces, usedNames) {
   const candidates = rawPlaces.filter(
     (place) =>
@@ -3076,7 +3082,7 @@ function buildFreeTourPrefillStops(rawPlaces, usedNames) {
       isCentroHistoricoZone(place.zone) &&
       (place.double_visit === true || !usedNames.has(place.name.toLowerCase())),
   )
-  return candidates.slice(0, 2).map((place) => ({ ...place, best_time: 'muy temprano, ANTES del Free Tour (hueco 08:00-10:00)', _prefillBeforeFreeTour: true }))
+  return candidates.slice(0, 2).map((place) => ({ ...place, best_time: FREE_TOUR_PREFILL_BEST_TIME, _prefillBeforeFreeTour: true }))
 }
 
 function mapCuratedPlace(place) {
@@ -3417,19 +3423,28 @@ function validateStopHours(day) {
 // Tour, aplicando la regla de horarios de apertura reales por encima de la del Free Tour. Regla simple:
 // el Free Tour mantiene su hora tal cual la puso Claude (normalmente 10:00) y cualquier parada que
 // quedó antes se mueve a justo después de que termine el tour — sin intercambios ni recálculos del
-// resto del día.
-function enforceFreeTourFirst(day) {
+// resto del día. EXCEPCIÓN explícita: las paradas de relleno pre-Free-Tour del ritmo Completo (ver
+// buildFreeTourPrefillStops/FREE_TOUR_PREFILL_BEST_TIME) tienen que quedarse ANTES a propósito — sin
+// `requiredPlaces` aquí, esta misma función se comería el relleno que el punto 5 pide dejar ahí.
+function enforceFreeTourFirst(day, requiredPlaces) {
   if (!Array.isArray(day?.stops) || day.stops.length < 2) return
   const freeTourStop = day.stops.find((stop) => stop?.is_free_tour)
   if (!freeTourStop) return
   const freeTourMinutes = parseHHMM(freeTourStop.suggested_time)
   if (freeTourMinutes == null) return
 
+  const prefillNames = Array.isArray(requiredPlaces)
+    ? requiredPlaces.filter((place) => place.best_time === FREE_TOUR_PREFILL_BEST_TIME).map((place) => place.name)
+    : []
+  const isPrefillStop = (stop) => prefillNames.some((name) => isFuzzyPlaceMatch(name, stop?.name))
+
   const freeTourDuration = typeof freeTourStop.duration_minutes === 'number' ? freeTourStop.duration_minutes : 165
   let nextAvailable = freeTourMinutes + freeTourDuration + 30
 
   const earlyStops = day.stops
-    .filter((stop) => stop !== freeTourStop && parseHHMM(stop?.suggested_time) != null && parseHHMM(stop.suggested_time) < freeTourMinutes)
+    .filter(
+      (stop) => stop !== freeTourStop && !isPrefillStop(stop) && parseHHMM(stop?.suggested_time) != null && parseHHMM(stop.suggested_time) < freeTourMinutes,
+    )
     .sort((a, b) => parseHHMM(a.suggested_time) - parseHHMM(b.suggested_time))
 
   for (const stop of earlyStops) {
@@ -3693,7 +3708,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       applyCuratedTips(day, requiredPlaces)
       filterMealLikeStops(day)
       validateStopHours(day)
-      enforceFreeTourFirst(day)
+      enforceFreeTourFirst(day, requiredPlaces)
       logMissingRequiredPlaces(day, requiredPlaces)
       logStopCountWarning(day, typeByDayNumber.get(day.day_number), answers.pace)
       logGeographicCoherence(day)
