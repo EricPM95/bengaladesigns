@@ -3023,6 +3023,7 @@ const BEST_TIME_SORT_WEIGHT = { primera_hora: 0, atardecer: 2, noche: 2 }
  * primer puesto pase lo que pase. */
 function bestTimeSortWeight(place) {
   if (place.name === FREE_TOUR_REQUIRED_PLACE_MARKER) return -1
+  if (place._prefillBeforeFreeTour) return -2
   return BEST_TIME_SORT_WEIGHT[place.best_time] ?? 1
 }
 
@@ -3045,6 +3046,38 @@ const FREE_TOUR_TYPICAL_MINUTES = 165
 
 /** Nombre-marcador (nunca un lugar real) que representa "aquí va el Free Tour" dentro de la lista REQUIRED PLACES de un día — ver formatRequiredPlaceItem para cómo se traduce a instrucciones para Claude, y stripNonRequiredStops/logMissingRequiredPlaces para cómo se excluye de sus comprobaciones normales (el Free Tour real que Claude escribe tiene is_free_tour:true, no este nombre literal). */
 const FREE_TOUR_REQUIRED_PLACE_MARKER = '[FREE TOUR — obligatorio, ver instrucciones]'
+
+/** Zonas "centro histórico" — el JSON no tiene un campo dedicado para esto, se aproxima por nombre de
+ * zona (sin acentos, en minúsculas) conteniendo "centro" (cubre "Centro Histórico"/"Centro" en todos
+ * los destinos que lo tienen). Algunos destinos reparten su núcleo en varias zonas sin ese nombre (ej.
+ * Londres: "City"/"Westminster") — ahí simplemente no hay candidatos, ver buildFreeTourPrefillStops. */
+function isCentroHistoricoZone(zone) {
+  return typeof zone === 'string' && stripAccentsLower(zone).includes('centro')
+}
+
+/**
+ * Ritmo Completo + Free Tour (ver buildCuratedDayPlaces): cubre el hueco 08:00-10:00 con 1-2 lugares
+ * realmente rápidos (≤30min), de acceso libre (sin taquilla que pueda abrir tarde) y del centro
+ * histórico, sacados del propio pool ya filtrado del destino para este viaje (rawPlaces — respeta el
+ * mismo recorte de Nivel/intocables que el resto del día). `usedNames` evita repetir un lugar que ya
+ * vaya a visitarse de verdad en algún día. Si no hay ningún candidato que cumpla las tres condiciones
+ * a la vez, devuelve un array vacío — mejor no rellenar nada que forzar un relleno de mala calidad.
+ * `usedNames` solo descarta un candidato que YA esté asignado a otro día SALVO que el propio JSON lo
+ * marque `double_visit: true` (un lugar que el curador humano ya decidió que merece verse dos veces,
+ * ver Fontana di Trevi) — para esos, un vistazo rápido de camino por la mañana es precisamente el
+ * tipo de segunda visita que ese campo existe para describir.
+ */
+function buildFreeTourPrefillStops(rawPlaces, usedNames) {
+  const candidates = rawPlaces.filter(
+    (place) =>
+      place.is_free_access === true &&
+      Number.isFinite(place.duration_min) &&
+      place.duration_min <= 30 &&
+      isCentroHistoricoZone(place.zone) &&
+      (place.double_visit === true || !usedNames.has(place.name.toLowerCase())),
+  )
+  return candidates.slice(0, 2).map((place) => ({ ...place, best_time: 'muy temprano, ANTES del Free Tour (hueco 08:00-10:00)', _prefillBeforeFreeTour: true }))
+}
 
 function mapCuratedPlace(place) {
   return {
@@ -3101,6 +3134,17 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
       tips: [],
       best_time: 'primera_hora',
     })
+  }
+
+  // Ritmo Completo + Free Tour: el día empieza a las 08:00 (ver PACE_START_MINUTES en
+  // stopScheduling.ts) pero un Free Tour real no suele arrancar hasta ~10:00 — quedarían 2h muertas
+  // si no se rellenan. Solo para este caso concreto se permite contenido real ANTES del Free Tour
+  // (ver buildFreeTourPrefillStops) — el resto del día sigue con el Free Tour como primera parada
+  // "de verdad", sin excepciones.
+  if (wantsFreeTour && listDayNumbers.includes(1) && answers.pace === 'nonstop') {
+    const usedNames = new Set([...dayPlacesMap.values()].flat().map((place) => place.name.toLowerCase()))
+    const prefillStops = buildFreeTourPrefillStops(rawPlaces, usedNames)
+    if (prefillStops.length > 0) dayPlacesMap.get(1)?.push(...prefillStops)
   }
 
   const days = listDayNumbers
