@@ -63,7 +63,11 @@ export function LandingScreen() {
     }
 
     updateAnswers({ origin: originPlace.name, originPlace })
-    setScreen('questionnaire')
+    // Punto 6 del prompt DEFINITIVO: antes del cuestionario se muestra el "Pool de lugares" del
+    // destino (solo consulta, ver PlacesPoolScreen) — esa pantalla se salta sola y pasa directo a
+    // 'questionnaire' si el destino no está en el JSON curado, así que aquí siempre se puede
+    // apuntar a 'placesPool' sin comprobar nada primero.
+    setScreen('placesPool')
   }
 
   return (

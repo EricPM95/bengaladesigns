@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { useSyncStore } from './store/useSyncStore'
 import { LandingScreen } from './components/destination/LandingScreen'
+import { PlacesPoolScreen } from './components/destination/PlacesPoolScreen'
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
@@ -278,6 +279,7 @@ function App() {
       <AnimatePresence mode="wait">
         {screen === 'destination' && <LandingScreen />}
         {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
+        {screen === 'placesPool' && <PlacesPoolScreen />}
         {screen === 'questionnaire' && <QuestionnaireScreen />}
         {screen === 'loading' && <LoadingScreenContainer key="loading" />}
         {screen === 'route' && <RouteScreen />}

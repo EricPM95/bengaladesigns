@@ -3214,6 +3214,40 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces, pace) {
   return [...byDayNumber.entries()].map(([day_number, places]) => ({ day_number, places })).sort((a, b) => a.day_number - b.day_number)
 }
 
+/**
+ * Punto 6 del prompt DEFINITIVO — "Pool de lugares" que se muestra al confirmar destino, ANTES de
+ * generar la ruta, puramente informativo (el usuario NO selecciona nada aquí). Devuelve un nivel
+ * completo del JSON curado tal cual, sin pasar por Claude — coste cero, respuesta instantánea. El
+ * cliente decide cuándo pedir Nivel 2/3 (carga bajo demanda, ver "Ver más lugares" en PlacesPoolScreen)
+ * y cachea el resultado en localStorage para que la siguiente vez sea instantáneo también sin llamar
+ * aquí (ver placePoolCache.ts). `category` usa la zona del JSON como aproximación legible de "tipo de
+ * lugar" — cuando exista el campo temático (museo/mirador/mercado/joya_oculta/...) del punto 4 se
+ * puede sustituir aquí sin tocar el resto del pipeline.
+ */
+app.post('/api/curated-places-pool', (req, res) => {
+  const { destination, level } = req.body ?? {}
+  const levelKey = String(level)
+  if (!destination || !['1', '2', '3'].includes(levelKey)) {
+    res.status(400).json({ error: 'Faltan datos necesarios (destination, level 1-3).' })
+    return
+  }
+
+  const destData = findDestinationData(destination)
+  if (!destData) {
+    res.json({ found: false, places: [] })
+    return
+  }
+
+  const places = (destData.levels?.[levelKey]?.places ?? []).map((place) => ({
+    name: place.name,
+    category: place.zone ?? null,
+    type: place.type ?? null,
+    duration_min: Number.isFinite(place.duration_min) ? place.duration_min : null,
+    is_free_access: typeof place.is_free_access === 'boolean' ? place.is_free_access : null,
+  }))
+  res.json({ found: true, level: Number(levelKey), places })
+})
+
 app.post('/api/generate-day-places', async (req, res) => {
   const { destination, answers, must_include_places, skeleton_days } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(skeleton_days) || skeleton_days.length === 0) {

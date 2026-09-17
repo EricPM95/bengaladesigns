@@ -1,6 +1,6 @@
 // ── App flow ──────────────────────────────────────────────
 
-export type AppScreen = 'destination' | 'myTrips' | 'questionnaire' | 'loading' | 'route' | 'devQuickRoute'
+export type AppScreen = 'destination' | 'myTrips' | 'placesPool' | 'questionnaire' | 'loading' | 'route' | 'devQuickRoute'
 
 export type RouteMode = 'today' | 'route' | 'days' | 'bookings' | 'explore'
 
