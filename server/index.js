@@ -3853,6 +3853,25 @@ function logMissingRequiredPlaces(day, requiredPlaces) {
   }
 }
 
+/**
+ * A diferencia de logMissingRequiredPlaces (solo avisa), esto LANZA si falta un intocable del
+ * destino — "los intocables nunca se sustituyen" es una regla dura (punto 4), así que perder uno se
+ * trata como un fallo real del bloque, no una nota informativa. Sin `destData` (destino no curado, o
+ * sin `intocables` en el JSON) no hay nada que verificar. El marcador de Free Tour nunca es intocable
+ * en sí mismo, se ignora aquí (ya lo cubre logMissingRequiredPlaces).
+ */
+function assertNoMissingIntocables(day, requiredPlaces, destData) {
+  if (!destData || !Array.isArray(requiredPlaces) || requiredPlaces.length === 0) return
+  const stops = day.stops ?? []
+  for (const place of requiredPlaces) {
+    if (place.name === FREE_TOUR_REQUIRED_PLACE_MARKER) continue
+    if (!isIntocable(place.name, destData)) continue
+    if (!stops.some((stop) => isFuzzyPlaceMatch(place.name, stop?.name))) {
+      throw new Error(`El intocable "${place.name}" (día ${day.day_number}) no aparece en la respuesta — se reintenta el bloque.`)
+    }
+  }
+}
+
 // ── Red de seguridad post-generación: coherencia geográfica del día ────────────────────────
 //
 // Más de 15km en línea recta entre paradas consecutivas de un mismo día probablemente significa que
@@ -3937,6 +3956,7 @@ app.post('/api/generate-day-block', async (req, res) => {
     const days = sanitizeDayBlockDays(parsed?.days, blockDayNumbers)
     if (days.length === 0) throw new Error('Respuesta de Claude sin días válidos para este bloque')
 
+    const destData = findDestinationData(destination)
     for (const day of days) {
       const requiredPlaces = requiredPlacesByDayNumber.get(day.day_number)
       filterFreeTourDuplicateStops(day, requiredPlaces)
@@ -3948,6 +3968,13 @@ app.post('/api/generate-day-block', async (req, res) => {
       logMissingRequiredPlaces(day, requiredPlaces)
       logStopCountWarning(day, typeByDayNumber.get(day.day_number), answers.pace)
       logGeographicCoherence(day)
+      // Encontrado en vivo: en un día denso (Free Tour + varios grupos + horarios reales que encajar),
+      // Claude a veces omite un intocable pese a estar en REQUIRED PLACES — sin previo aviso de error,
+      // solo pasaba desapercibido (logMissingRequiredPlaces solo deja un console.log). "Los intocables
+      // nunca se sustituyen" es una regla dura del punto 4 — si falta uno, se trata como fallo real del
+      // bloque y se lanza, para que requestDayBlockWithRetry (cliente) reintente la llamada entera con
+      // una tirada nueva, en vez de servir en silencio una ruta incompleta.
+      assertNoMissingIntocables(day, requiredPlaces, destData)
     }
 
     res.json({
