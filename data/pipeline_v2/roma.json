@@ -1,0 +1,1044 @@
+{
+  "destination": "Roma",
+  "country": "Italia",
+  "timezone": "Europe/Rome",
+  "default_free_tour": {
+    "name": "Free Tour Centro Histórico",
+    "meeting_point": "Piazza di Spagna",
+    "coordinates": [41.9058, 12.4823],
+    "duration_minutes": 150,
+    "default_time": "10:00",
+    "zone": "centro_historico",
+    "tip": "Reserva con antelación en Civitatis. Lleva agua y gorra en verano."
+  },
+  "joyas": [
+    "Coliseo",
+    "Fontana di Trevi",
+    "Museos Vaticanos y Capilla Sixtina",
+    "Panteón"
+  ],
+  "night_experiences": [
+    {
+      "place": "Fontana di Trevi",
+      "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
+      "best_time": "22:00-23:30",
+      "duration_minutes": 20
+    },
+    {
+      "place": "Coliseo",
+      "description": "El Coliseo iluminado desde el exterior, con el Arco de Constantino — foto icónica nocturna",
+      "best_time": "21:30-23:00",
+      "duration_minutes": 20
+    },
+    {
+      "place": "Escalinata de Piazza di Spagna",
+      "description": "La escalinata iluminada con la iglesia Trinità dei Monti al fondo",
+      "best_time": "21:30-23:00",
+      "duration_minutes": 15
+    },
+    {
+      "place": "Piazza Navona",
+      "description": "Las fuentes de Bernini iluminadas, artistas callejeros y ambiente nocturno romano",
+      "best_time": "21:00-23:00",
+      "duration_minutes": 20
+    }
+  ],
+  "closed_on": {
+    "Museos Vaticanos y Capilla Sixtina": ["domingo"],
+    "Galería Borghese": ["lunes"]
+  },
+  "meal_zones": {
+    "roma_antigua": {
+      "comida": ["Via dei Serpenti", "Monti"],
+      "cena": ["Monti", "Celio"]
+    },
+    "centro_historico": {
+      "comida": ["Via del Corso zona", "Largo di Torre Argentina zona"],
+      "cena": ["Campo de' Fiori", "Piazza Navona zona"]
+    },
+    "vaticano": {
+      "comida": ["Borgo Pio", "Prati"],
+      "cena": ["Prati"]
+    },
+    "trastevere": {
+      "comida": ["Trastevere"],
+      "cena": ["Trastevere"]
+    },
+    "villa_borghese": {
+      "comida": ["Via Veneto zona", "Salario"],
+      "cena": ["Via Veneto zona"]
+    }
+  },
+  "evening_blocks": [
+    {
+      "id": "trastevere_evening",
+      "name": "Trastevere al atardecer",
+      "zone": "trastevere",
+      "type": "neighborhood_evening",
+      "description": "Paseo por las calles empedradas de Trastevere → subida al Gianicolo para el atardecer sobre Roma → cena en trattoria auténtica",
+      "components": [
+        {
+          "name": "Paseo por Trastevere",
+          "duration_minutes": 45,
+          "tip": "Piérdete por Via della Scala y Via del Moro — las calles más fotogénicas"
+        },
+        {
+          "name": "Mirador del Gianicolo",
+          "duration_minutes": 30,
+          "tip": "La mejor panorámica de Roma al atardecer. Llega 20 min antes de la puesta de sol"
+        },
+        {
+          "name": "Cena en Trastevere",
+          "duration_minutes": 90,
+          "tip": "Evita los restaurantes con fotos en el menú. Busca los que tienen manteles de papel"
+        }
+      ],
+      "total_duration_minutes": 165,
+      "ideal_start": "17:00",
+      "best_season": "all"
+    }
+  ],
+  "zones": {
+    "roma_antigua": {
+      "name": "Roma Antigua",
+      "center": [41.8902, 12.4922],
+      "places": ["Coliseo", "Foro Romano y Palatino", "Arco de Constantino", "Bocca della Verità", "Circo Máximo"]
+    },
+    "centro_historico": {
+      "name": "Centro Histórico",
+      "center": [41.8986, 12.4769],
+      "places": ["Fontana di Trevi", "Panteón", "Piazza Navona", "Escalinata de Piazza di Spagna", "Piazza del Popolo", "Via del Corso"]
+    },
+    "vaticano": {
+      "name": "Vaticano",
+      "center": [41.9022, 12.4539],
+      "places": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"]
+    },
+    "trastevere": {
+      "name": "Trastevere y Gianicolo",
+      "center": [41.8893, 12.4700],
+      "places": ["Trastevere", "Mirador del Gianicolo"]
+    },
+    "villa_borghese": {
+      "name": "Villa Borghese",
+      "center": [41.9142, 12.4856],
+      "places": ["Galería Borghese", "Villa Borghese (parque)"]
+    }
+  },
+  "places": [
+    {
+      "name": "Coliseo",
+      "level": 1,
+      "tier": "joya",
+      "zone": "roma_antigua",
+      "coordinates": [41.8902, 12.4922],
+      "duration_minutes": 75,
+      "type": "interior",
+      "group": "roma_antigua_core",
+      "group_order": 1,
+      "group_order_evening": 3,
+      "night_experience": true,
+      "tip": "Compra entrada combinada Coliseo + Foro + Palatino online. La arena superior tiene la mejor vista — merece la pena el suplemento.",
+      "photo_tip": "Desde el nivel superior del Coliseo miras hacia abajo a la arena — la foto más icónica. Exterior: desde Via dei Fori Imperiali con el Coliseo de fondo.",
+      "best_time": "primera hora (08:30) o última hora (16:00) para evitar multitudes"
+    },
+    {
+      "name": "Foro Romano y Palatino",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "roma_antigua",
+      "coordinates": [41.8925, 12.4853],
+      "duration_minutes": 90,
+      "type": "interior",
+      "group": "roma_antigua_core",
+      "group_order": 2,
+      "group_order_evening": 2,
+      "tip": "Entra por la entrada del Palatino (menos cola). El Foro se ve desde arriba del Palatino — esa perspectiva es mejor que caminar por abajo.",
+      "photo_tip": "Desde la terraza del Palatino, el Foro se extiende a tus pies con el Coliseo al fondo."
+    },
+    {
+      "name": "Arco de Constantino",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "roma_antigua",
+      "coordinates": [41.8897, 12.4905],
+      "duration_minutes": 10,
+      "type": "exterior",
+      "group": "roma_antigua_core",
+      "group_order": 3,
+      "group_order_evening": 1,
+      "tip": "Está justo al lado del Coliseo. No tiene entrada — es una parada rápida para foto.",
+      "photo_tip": "Con el Coliseo detrás del arco — la composición perfecta. Mejor luz por la mañana."
+    },
+    {
+      "name": "Bocca della Verità",
+      "level": 2,
+      "zone": "roma_antigua",
+      "coordinates": [41.8881, 12.4815],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "tip": "Cola de 10-15 min habitual. Está en el pórtico de Santa Maria in Cosmedin — la iglesia merece un vistazo rápido.",
+      "photo_tip": "Mete la mano en la boca y pon cara de susto — la foto clásica."
+    },
+    {
+      "name": "Circo Máximo",
+      "level": 2,
+      "zone": "roma_antigua",
+      "coordinates": [41.8859, 12.4853],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "tip": "Espacio abierto donde estaban las carreras de cuadrigas. Perfecto para un descanso si vienes del Palatino.",
+      "photo_tip": "Panorámica del valle con el Palatino al fondo — se intuye la forma del antiguo circo."
+    },
+    {
+      "name": "Fontana di Trevi",
+      "level": 1,
+      "tier": "joya",
+      "zone": "centro_historico",
+      "coordinates": [41.9009, 12.4833],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "night_experience": true,
+      "tip": "Ven a primera hora (07:30-08:00) o de noche (22:00+) para verla sin multitudes. De día es un caos. Tira la moneda con la mano derecha por encima del hombro izquierdo.",
+      "photo_tip": "De noche, iluminada y reflejada en el agua — incomparable. De día, desde la esquina superior derecha tienes la mejor perspectiva.",
+      "best_time": "primera hora o noche"
+    },
+    {
+      "name": "Panteón",
+      "level": 1,
+      "tier": "joya",
+      "zone": "centro_historico",
+      "coordinates": [41.8986, 12.4769],
+      "duration_minutes": 30,
+      "type": "interior",
+      "group": "centro_historico_walk",
+      "group_order": 1,
+      "group_order_evening": 2,
+      "tip": "Entrada gratuita con reserva online obligatoria. Si llueve, el agua entra por el óculo y se drena por el suelo — un espectáculo único. Reserva con días de antelación.",
+      "photo_tip": "Mira hacia arriba al óculo — el rayo de luz que entra es la foto. Si llueve, el efecto de la lluvia cayendo dentro es mágico."
+    },
+    {
+      "name": "Piazza Navona",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "centro_historico",
+      "coordinates": [41.8992, 12.4730],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "group": "centro_historico_walk",
+      "group_order": 2,
+      "group_order_evening": 1,
+      "night_experience": true,
+      "tip": "Las tres fuentes de Bernini son el atractivo. No comas en los restaurantes de la plaza — son caros y mediocres. Camina 2 calles y comerás mejor por la mitad.",
+      "photo_tip": "La Fontana dei Quattro Fiumi con Sant'Agnese in Agone detrás — la composición barroca perfecta."
+    },
+    {
+      "name": "Escalinata de Piazza di Spagna",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "centro_historico",
+      "coordinates": [41.9060, 12.4825],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "night_experience": true,
+      "tip": "Prohibido sentarse en los escalones (multa de 250€). Sube hasta Trinità dei Monti para la vista. En primavera los escalones se cubren de azaleas.",
+      "photo_tip": "Desde arriba (Trinità dei Monti) miras hacia abajo con Via Condotti y los tejados de Roma — la foto más bonita."
+    },
+    {
+      "name": "Piazza del Popolo",
+      "level": 2,
+      "zone": "centro_historico",
+      "coordinates": [41.9106, 12.4764],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "tip": "Las iglesias gemelas (Santa Maria dei Miracoli y Santa Maria in Montesanto) enmarcan Via del Corso. Sube al Pincio para la mejor vista de la plaza con la cúpula de San Pedro al fondo.",
+      "photo_tip": "Desde la terraza del Pincio al atardecer — la cúpula de San Pedro recortada contra el cielo dorado."
+    },
+    {
+      "name": "Via del Corso",
+      "level": 3,
+      "zone": "centro_historico",
+      "coordinates": [41.9030, 12.4800],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "tip": "La calle comercial principal de Roma. Conéctala caminando entre Piazza del Popolo y el centro — no es un destino, es un paseo."
+    },
+    {
+      "name": "Museos Vaticanos y Capilla Sixtina",
+      "level": 1,
+      "tier": "joya",
+      "zone": "vaticano",
+      "coordinates": [41.9065, 12.4536],
+      "duration_minutes": 180,
+      "type": "interior",
+      "group": "vaticano_core",
+      "group_order": 1,
+      "group_order_evening": 3,
+      "closed_on": ["domingo"],
+      "tip": "Reserva SIEMPRE online con antelación (se agotan). Primera hora (08:00) o viernes noche (19:00-23:00 en temporada). La Capilla Sixtina está al FINAL del recorrido — no intentes ir directa. Calcula 3 horas mínimo.",
+      "photo_tip": "Prohibido hacer fotos en la Capilla Sixtina (pero todo el mundo las hace). En la Galería de los Mapas, la perspectiva del pasillo infinito es espectacular.",
+      "best_time": "primera hora (08:00) o viernes noche"
+    },
+    {
+      "name": "Basílica de San Pedro",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "vaticano",
+      "coordinates": [41.9022, 12.4539],
+      "duration_minutes": 60,
+      "type": "interior",
+      "group": "vaticano_core",
+      "group_order": 2,
+      "group_order_evening": 2,
+      "tip": "Gratis la entrada a la basílica. La cúpula (subida) cuesta 8€ con ascensor + escaleras — MERECE LA PENA, la mejor vista de Roma. Código de vestimenta: hombros y rodillas cubiertas.",
+      "photo_tip": "Desde la cúpula miras hacia abajo a la Plaza de San Pedro — la perspectiva que ves en todas las postales. Dentro, la Pietà de Miguel Ángel está nada más entrar a la derecha."
+    },
+    {
+      "name": "Plaza de San Pedro",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "vaticano",
+      "coordinates": [41.9022, 12.4567],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "group": "vaticano_core",
+      "group_order": 3,
+      "group_order_evening": 1,
+      "tip": "Las columnatas de Bernini abrazan la plaza. Busca el punto en el suelo donde las 4 filas de columnas se alinean en una sola — efecto óptico increíble.",
+      "photo_tip": "Desde el centro de la plaza mirando hacia la basílica con el obelisco en primer plano."
+    },
+    {
+      "name": "Castel Sant'Angelo",
+      "level": 2,
+      "zone": "vaticano",
+      "coordinates": [41.9031, 12.4663],
+      "duration_minutes": 60,
+      "type": "interior",
+      "tip": "La terraza superior tiene una de las mejores vistas de Roma. El puente de los ángeles (Ponte Sant'Angelo) de Bernini es precioso — crúzalo sí o sí.",
+      "photo_tip": "Desde Ponte Sant'Angelo mirando al castillo al atardecer. Desde la terraza del castillo, panorámica del Tíber con San Pedro al fondo."
+    },
+    {
+      "name": "Trastevere",
+      "level": 1,
+      "tier": "imprescindible",
+      "zone": "trastevere",
+      "coordinates": [41.8893, 12.4700],
+      "duration_minutes": 60,
+      "type": "exterior",
+      "tip": "El barrio más auténtico de Roma. Ven por la tarde — las calles cobran vida a partir de las 17:00. Santa Maria in Trastevere tiene mosaicos dorados del siglo XII. Cena aquí.",
+      "photo_tip": "Las calles con hiedra y ropa tendida son la foto más 'romana'. Via della Scala y las callejuelas alrededor de Piazza de Santa Maria."
+    },
+    {
+      "name": "Mirador del Gianicolo",
+      "level": 2,
+      "zone": "trastevere",
+      "coordinates": [41.8912, 12.4596],
+      "duration_minutes": 30,
+      "type": "exterior",
+      "tip": "La mejor panorámica de Roma — se ven todas las cúpulas. Cada día a las 12:00 disparan un cañón (tradición desde 1847). Ideal para el atardecer subiendo desde Trastevere.",
+      "photo_tip": "Panorámica de 180° con todas las cúpulas de Roma — la foto que resume la ciudad. Al atardecer el cielo se tiñe de naranja."
+    },
+    {
+      "name": "Galería Borghese",
+      "level": 2,
+      "zone": "villa_borghese",
+      "coordinates": [41.9142, 12.4921],
+      "duration_minutes": 120,
+      "type": "interior",
+      "closed_on": ["lunes"],
+      "tip": "Reserva OBLIGATORIA con semanas de antelación — aforo limitado a 360 personas cada 2 horas. Bernini (Apolo y Dafne, David) y Caravaggio. Solo 2 horas por visita — ve directa a lo imprescindible.",
+      "photo_tip": "La escultura de Apolo y Dafne de Bernini — rodéala para ver cómo la transformación cambia según el ángulo."
+    },
+    {
+      "name": "Villa Borghese (parque)",
+      "level": 3,
+      "zone": "villa_borghese",
+      "coordinates": [41.9142, 12.4856],
+      "duration_minutes": 30,
+      "type": "exterior",
+      "tip": "El pulmón verde de Roma. Desde la terraza del Pincio (dentro del parque) tienes la vista clásica de Roma con San Pedro. Perfecto para un descanso con gelato."
+    }
+  ],
+  "groups": {
+    "roma_antigua_core": {
+      "name": "Roma Antigua",
+      "places": ["Coliseo", "Foro Romano y Palatino", "Arco de Constantino"],
+      "order": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+      "order_evening": ["Foro Romano y Palatino", "Coliseo", "Arco de Constantino"],
+      "note": "En mañana: llegas al Arco, entras al Coliseo, sales al Foro. En tarde: empiezas por Foro, bajas al Coliseo, terminas en el Arco con la luz dorada.",
+      "breakable_if_short": false,
+      "combined_duration_minutes": 175
+    },
+    "vaticano_core": {
+      "name": "Vaticano",
+      "places": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro"],
+      "order": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro"],
+      "order_evening": ["Plaza de San Pedro", "Basílica de San Pedro", "Museos Vaticanos y Capilla Sixtina"],
+      "note": "Museos siempre primero — necesitan la mañana entera. Basílica y Plaza después de comer.",
+      "breakable_if_short": false,
+      "combined_duration_minutes": 255
+    },
+    "centro_historico_walk": {
+      "name": "Paseo Centro Histórico",
+      "places": ["Panteón", "Piazza Navona"],
+      "order": ["Panteón", "Piazza Navona"],
+      "order_evening": ["Piazza Navona", "Panteón"],
+      "note": "Están a 5 minutos andando. Naturalmente se visitan juntas.",
+      "breakable_if_short": true,
+      "combined_duration_minutes": 50
+    }
+  },
+  "zone_distribution": {
+    "1_day": {
+      "without_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo completo Roma Antigua — la esencia de Roma"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Panteón", "Piazza Navona"],
+              "note": "Las 3 joyas + imprescindible del centro, todas exteriores y cercanas"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Volver de noche a Trevi — visitada de día, ahora sin gente"
+            }
+          }
+        ],
+        "excluded_joyas": ["Museos Vaticanos y Capilla Sixtina"],
+        "note": "Con 1 día, Vaticano queda fuera — necesita media jornada solo para los Museos"
+      },
+      "with_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Free Tour Centro Histórico"],
+              "note": "Trevi a primera hora (08:00, sin gente) → Free Tour 10:00 desde Piazza di Spagna"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo"],
+              "note": "Solo exterior Coliseo + Arco si el tiempo aprieta. Sin Foro en 1 día con FT"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado — visitado por la tarde, ahora de noche"
+            }
+          }
+        ],
+        "excluded_joyas": ["Museos Vaticanos y Capilla Sixtina", "Panteón"],
+        "note": "Free Tour consume la mañana. Solo quedan las joyas más icónicas"
+      }
+    },
+    "2_days": {
+      "without_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo completo Roma Antigua por la mañana"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Panteón", "Piazza Navona", "Escalinata de Piazza di Spagna"],
+              "note": "Paseo por el centro histórico — todo exterior y cercano"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi iluminada de noche"
+            }
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos a primera hora — 3 horas mínimo"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro"],
+              "note": "Basílica + Plaza después de comer. Subir a la cúpula"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado — visitado el día 1, noche del día 2"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "2 días cubren las 4 joyas + Trastevere al atardecer"
+      },
+      "with_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Free Tour Centro Histórico"],
+              "note": "Trevi 08:00 (Completo) o Free Tour 10:00 directamente (Tranquilo)"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo Roma Antigua completo por la tarde"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Vuelta nocturna a Trevi"
+            }
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos Vaticanos primera hora"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro"],
+              "note": "Completar el grupo Vaticano"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado — visitado día 1 tarde"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "Con Free Tour + 2 días se cubren las 4 joyas"
+      }
+    },
+    "3_days": {
+      "without_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo completo Roma Antigua"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Completar la zona + nivel 2"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": null
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos a primera hora"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"],
+              "note": "Completar Vaticano + Castel Sant'Angelo"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado — visitado día 1"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Panteón", "Piazza Navona"],
+              "note": "Centro histórico con calma — Trevi a primera hora"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Escalinata de Piazza di Spagna", "Piazza del Popolo", "Via del Corso"],
+              "note": "Norte del centro — paseo de compras y miradores"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche — último recuerdo de Roma"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "3 días: cada zona tiene su día. Nivel 2 entra con naturalidad"
+      },
+      "with_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Free Tour Centro Histórico"],
+              "note": "Trevi 08:00 + Free Tour 10:00"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Panteón", "Piazza Navona", "Escalinata de Piazza di Spagna"],
+              "note": "Completar centro tras el Free Tour"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Piazza Navona",
+              "note": "Fuentes de Bernini iluminadas"
+            }
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo Roma Antigua completo"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Nivel 2 zona antigua"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos a primera hora"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"],
+              "note": "Vaticano completo"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche — visitada día 1 mañana"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "3 días con Free Tour — misma cobertura, diferente orden"
+      }
+    },
+    "4_days": {
+      "without_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Grupo Roma Antigua completo"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Completar zona antigua"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": null
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos Vaticanos — mañana entera"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"],
+              "note": "Vaticano completo + Castel Sant'Angelo"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Panteón", "Piazza Navona"],
+              "note": "Centro histórico con calma"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Escalinata de Piazza di Spagna", "Piazza del Popolo", "Via del Corso"],
+              "note": "Norte centro + compras"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche"
+            }
+          },
+          {
+            "day": 4,
+            "morning": {
+              "zone": "villa_borghese",
+              "places": ["Galería Borghese"],
+              "note": "Galería Borghese con reserva — 2 horas justas"
+            },
+            "afternoon": {
+              "zone": "villa_borghese",
+              "places": ["Villa Borghese (parque)"],
+              "note": "Paseo por el parque + terraza del Pincio"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Escalinata de Piazza di Spagna",
+              "note": "Escalinata iluminada — bajando desde Villa Borghese"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "4 días: todas las zonas con calma + Galería Borghese"
+      },
+      "with_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Free Tour Centro Histórico"],
+              "note": "Trevi 08:00 + Free Tour 10:00"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Panteón", "Piazza Navona", "Escalinata de Piazza di Spagna"],
+              "note": "Completar centro"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Piazza Navona",
+              "note": "Fuentes iluminadas"
+            }
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Roma Antigua completa"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Nivel 2 antigua"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo de noche"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos primera hora"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"],
+              "note": "Vaticano completo"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche"
+            }
+          },
+          {
+            "day": 4,
+            "morning": {
+              "zone": "villa_borghese",
+              "places": ["Galería Borghese"],
+              "note": "Borghese reserva 2h"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Piazza del Popolo", "Via del Corso"],
+              "note": "Norte centro + compras + Pincio"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Escalinata de Piazza di Spagna",
+              "note": "Escalinata iluminada"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "4 días con Free Tour — cobertura total"
+      }
+    },
+    "5_days": {
+      "without_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Roma Antigua con calma"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Completar zona antigua + descanso"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": null
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos Vaticanos con calma — mañana entera"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro"],
+              "note": "Basílica + subir a la cúpula"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo iluminado"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Panteón", "Piazza Navona"],
+              "note": "Centro histórico — Trevi a primera hora"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Escalinata de Piazza di Spagna", "Piazza del Popolo"],
+              "note": "Norte del centro"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche"
+            }
+          },
+          {
+            "day": 4,
+            "morning": {
+              "zone": "villa_borghese",
+              "places": ["Galería Borghese"],
+              "note": "Galería Borghese con reserva"
+            },
+            "afternoon": {
+              "zone": "villa_borghese",
+              "places": ["Villa Borghese (parque)"],
+              "note": "Parque + terraza Pincio + gelato"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Escalinata de Piazza di Spagna",
+              "note": "Escalinata iluminada — baja desde el Pincio"
+            }
+          },
+          {
+            "day": 5,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Castel Sant'Angelo"],
+              "note": "Castel Sant'Angelo con calma + Ponte Sant'Angelo"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Via del Corso"],
+              "note": "Paseo libre, compras, últimos rincones"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Piazza Navona",
+              "note": "Última noche — fuentes iluminadas y gelato"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "5 días: Roma completa con calma. Nivel 2 y 3 entran natural. Día 5 más relajado"
+      },
+      "with_free_tour": {
+        "franjas": [
+          {
+            "day": 1,
+            "morning": {
+              "zone": "centro_historico",
+              "places": ["Fontana di Trevi", "Free Tour Centro Histórico"],
+              "note": "Trevi 08:00 + Free Tour 10:00"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Panteón", "Piazza Navona"],
+              "note": "Completar centro tras Free Tour"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Piazza Navona",
+              "note": "Fuentes iluminadas primera noche"
+            }
+          },
+          {
+            "day": 2,
+            "morning": {
+              "zone": "roma_antigua",
+              "places": ["Arco de Constantino", "Coliseo", "Foro Romano y Palatino"],
+              "note": "Roma Antigua completa"
+            },
+            "afternoon": {
+              "zone": "roma_antigua",
+              "places": ["Bocca della Verità", "Circo Máximo"],
+              "note": "Nivel 2 antigua"
+            },
+            "evening_block": "trastevere_evening",
+            "night_experience": {
+              "place": "Coliseo",
+              "note": "Coliseo de noche"
+            }
+          },
+          {
+            "day": 3,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Museos Vaticanos y Capilla Sixtina"],
+              "note": "Museos primera hora"
+            },
+            "afternoon": {
+              "zone": "vaticano",
+              "places": ["Basílica de San Pedro", "Plaza de San Pedro"],
+              "note": "Vaticano grupo completo"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Fontana di Trevi",
+              "note": "Trevi de noche"
+            }
+          },
+          {
+            "day": 4,
+            "morning": {
+              "zone": "villa_borghese",
+              "places": ["Galería Borghese"],
+              "note": "Borghese con reserva"
+            },
+            "afternoon": {
+              "zone": "centro_historico",
+              "places": ["Escalinata de Piazza di Spagna", "Piazza del Popolo", "Via del Corso"],
+              "note": "Norte centro + compras"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Escalinata de Piazza di Spagna",
+              "note": "Escalinata iluminada"
+            }
+          },
+          {
+            "day": 5,
+            "morning": {
+              "zone": "vaticano",
+              "places": ["Castel Sant'Angelo"],
+              "note": "Castel + Ponte Sant'Angelo"
+            },
+            "afternoon": {
+              "zone": "villa_borghese",
+              "places": ["Villa Borghese (parque)"],
+              "note": "Parque + Pincio + despedida"
+            },
+            "evening_block": null,
+            "night_experience": {
+              "place": "Piazza Navona",
+              "note": "Última noche en Navona"
+            }
+          }
+        ],
+        "excluded_joyas": [],
+        "note": "5 días con Free Tour — Roma completísima"
+      }
+    }
+  },
+  "short_trips": {
+    "1_day": {
+      "completo": {
+        "start_time": "08:00",
+        "route": [
+          {"time": "08:00", "place": "Fontana di Trevi", "duration": 20, "note": "Sin nadie — el momento mágico"},
+          {"time": "08:30", "place": "Panteón", "duration": 30, "note": "Reserva online para las 08:30"},
+          {"time": "09:15", "place": "Piazza Navona", "duration": 20, "note": "Las fuentes con calma"},
+          {"time": "10:00", "place": "Arco de Constantino", "duration": 10, "note": "Foto icónica"},
+          {"time": "10:15", "place": "Coliseo", "duration": 75, "note": "Visita interior con entrada anticipada"},
+          {"time": "11:45", "place": "Foro Romano y Palatino", "duration": 90, "note": "Subir al Palatino para la vista"},
+          {"time": "13:30", "place": "Comida en Monti", "duration": 75, "note": "Barrio auténtico junto al Foro"},
+          {"time": "15:00", "place": "Escalinata de Piazza di Spagna", "duration": 15, "note": "Subir a Trinità dei Monti"},
+          {"time": "15:30", "place": "Piazza del Popolo", "duration": 15, "note": "Vista desde el Pincio"},
+          {"time": "20:00", "place": "Cena en centro", "duration": 90, "note": "Campo de' Fiori zona"},
+          {"time": "22:00", "place": "Fontana di Trevi (noche)", "duration": 15, "note": "Vuelta nocturna — iluminada y vacía"}
+        ]
+      },
+      "tranquilo": {
+        "start_time": "10:00",
+        "route": [
+          {"time": "10:00", "place": "Coliseo", "duration": 75, "note": "Entrada con hora reservada"},
+          {"time": "11:30", "place": "Arco de Constantino", "duration": 10, "note": "Parada rápida exterior"},
+          {"time": "13:00", "place": "Comida en Monti", "duration": 90, "note": "Sin prisa"},
+          {"time": "15:00", "place": "Fontana di Trevi", "duration": 20, "note": "Más gente pero obligatoria"},
+          {"time": "15:30", "place": "Panteón", "duration": 30, "note": "Reserva online"},
+          {"time": "16:15", "place": "Piazza Navona", "duration": 20, "note": "Helado en la plaza"},
+          {"time": "20:00", "place": "Cena en centro", "duration": 90, "note": "Campo de' Fiori zona"},
+          {"time": "22:00", "place": "Fontana di Trevi (noche)", "duration": 15, "note": "Despedida nocturna"}
+        ]
+      }
+    }
+  },
+  "algorithm_hints": {
+    "vaticano_needs_full_morning": true,
+    "trastevere_always_evening": true,
+    "trevi_best_early_or_night": true,
+    "day1_priority_zones": ["roma_antigua", "centro_historico"],
+    "never_combine_zones": [["vaticano", "roma_antigua"]],
+    "walking_time_matrix": {
+      "roma_antigua_to_centro_historico": 15,
+      "roma_antigua_to_vaticano": 30,
+      "roma_antigua_to_trastevere": 20,
+      "centro_historico_to_vaticano": 25,
+      "centro_historico_to_trastevere": 15,
+      "centro_historico_to_villa_borghese": 15,
+      "vaticano_to_trastevere": 20,
+      "villa_borghese_to_centro_historico": 15
+    }
+  }
+}

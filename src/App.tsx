@@ -82,7 +82,15 @@ function LoadingScreenContainer() {
     // stopScheduling.ts) — sustituye al suggested_time/travel_to_next de Claude, que es solo una
     // estimación de la propia IA sin verificar contra Mapbox. Se hace aquí, tras mapear pero antes
     // de mostrar la ruta, para que el viajero nunca vea el horario "en bruto" de la IA.
-    const scheduled = await applyRealStopSchedule(mapped, params.answers.pace ?? 'balanced')
+    // EXCEPCIÓN: el pipeline v2 (algoritmo JS puro, ver routeAlgorithm.js) ya calculó horarios
+    // reales definitivos él mismo (franjas/night experiences/evening blocks/Mapbox) — recalcularlos
+    // aquí con la lógica genérica de ritmo los rompería (night experience a las 22:00 pasaría a
+    // "lo que caiga tras la parada anterior"). `finalCheckpoint.skeleton` es el único dato que
+    // sobrevive intacto todo el pipeline sin pasar por el merge por bloques, así que es donde vive
+    // esta señal (ver times_are_final en SkeletonResponse).
+    const scheduled = finalCheckpoint.skeleton?.times_are_final
+      ? mapped
+      : await applyRealStopSchedule(mapped, params.answers.pace ?? 'balanced')
     // Mejor esfuerzo, nunca bloquea: sustituye el placeholder aleatorio de picsum por una foto real
     // de Wikipedia cuando la encuentra (ver placePhoto.ts) — si falla o tarda, la ruta sigue con el
     // placeholder tal cual, nunca se queda colgada por esto.

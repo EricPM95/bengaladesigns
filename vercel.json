@@ -3,7 +3,7 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
-      "includeFiles": "data/destinations.json"
+      "includeFiles": "data/**"
     }
   }
 }

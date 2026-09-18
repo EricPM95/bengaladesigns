@@ -65,6 +65,11 @@ export interface SkeletonResponse {
   days: SkeletonDay[]
   city_transitions?: GeneratedRouteResponse['city_transitions']
   phase_transitions?: GeneratedRouteResponse['phase_transitions']
+  /** true solo cuando generate-skeleton resolvió con el algoritmo JS puro (pipeline v2, ver
+   * routeAlgorithm.js en el servidor) en vez de Claude — esas rutas ya traen horarios reales
+   * definitivos (franjas/night experiences/evening blocks/Mapbox), así que App.tsx se salta
+   * applyRealStopSchedule para ellas en vez de recalcular la hora de cada parada desde cero. */
+  times_are_final?: boolean
 }
 
 export type GenerationPhase = 'skeleton' | 'places' | 'blocks' | 'done'

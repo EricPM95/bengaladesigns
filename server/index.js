@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { findPipelineV2Data, hasFreeTourFromAnswers, buildSkeletonV2, buildDayPlacesV2, buildDayBlockV2 } from './routeAlgorithm.js'
 
 config({ path: '.env.local' })
 
@@ -25,6 +26,10 @@ try {
 
 const PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 8787
 const MODEL = 'claude-sonnet-4-6'
+
+// Token público de Mapbox (mismo que usa el cliente, ver .env.local) — seguro reutilizarlo aquí,
+// solo para calcular tiempos reales a pie entre paradas del pipeline v2 (ver routeAlgorithm.js).
+const MAPBOX_TOKEN = process.env.VITE_MAPBOX_TOKEN
 
 // Mismas credenciales que el cliente (src/lib/supabaseClient.ts) — reutilizadas aquí SOLO para el
 // caché global de tips_anclas (server/index.js:ANCHOR_TIPS_SYSTEM_PROMPT), una tabla sin datos de
@@ -2194,6 +2199,14 @@ app.post('/api/route-cache/lookup', async (req, res) => {
     res.status(400).json({ error: 'Se requiere destination, days, experiences y pace.' })
     return
   }
+  // Pipeline v2 (algoritmo JS puro, gratis e instantáneo, ver routeAlgorithm.js) no necesita
+  // caché — generar de cero cuesta lo mismo que reutilizar. Además, esta misma sesión encontró
+  // dos veces bugs reales de contenido obsoleto servido desde route_cache; mejor no reabrir esa
+  // superficie aquí. `days > 5` sigue consultando caché normal — cae al pipeline curado antiguo.
+  if (days <= 5 && findPipelineV2Data(destination)) {
+    res.json({ level: 'none', entry: null, match_pct: 0 })
+    return
+  }
   if (!supabaseAdmin) {
     res.json({ level: 'none', entry: null, match_pct: 0 })
     return
@@ -2624,6 +2637,19 @@ app.post('/api/generate-skeleton', async (req, res) => {
 
   const transportContext = readTransportContext(req.body)
   const totalDays = Number(answers.days) > 0 ? Number(answers.days) : 1
+
+  // Pipeline v2 (algoritmo JS puro, ver routeAlgorithm.js) — solo Roma por ahora, y solo hasta 5
+  // días (zone_distribution no cubre más). Fuera de ese rango, o para cualquier otro destino,
+  // buildSkeletonV2 devuelve null y se sigue exactamente con el camino de Claude de siempre.
+  const pipelineV2Data = findPipelineV2Data(destination)
+  if (pipelineV2Data) {
+    const skeletonV2 = buildSkeletonV2(pipelineV2Data, totalDays, hasFreeTourFromAnswers(answers))
+    if (skeletonV2) {
+      console.log(`[pipeline-v2] "${destination}" — esqueleto resuelto con el algoritmo JS, sin llamada a Claude`)
+      res.json(skeletonV2)
+      return
+    }
+  }
 
   const t0 = Date.now()
   console.log(`[timing] generate-skeleton START ${new Date(t0).toISOString()} (totalDays=${totalDays})`)
@@ -3531,6 +3557,23 @@ app.post('/api/generate-day-places', async (req, res) => {
     return
   }
 
+  // Pipeline v2 — mismo criterio de rango que generate-skeleton (solo Roma, hasta 5 días). Si
+  // algún día de este bloque cae fuera de ese rango (buildDayPlacesV2 devuelve null para ESE día
+  // en concreto), se salta solo ese día y se sigue con el resto — no debería pasar en la práctica
+  // ya que el esqueleto que originó esta petición ya vino del mismo v2, pero por si acaso.
+  const pipelineV2Data = findPipelineV2Data(destination)
+  if (pipelineV2Data) {
+    const hasFreeTour = hasFreeTourFromAnswers(answers)
+    const v2Days = listDayNumbers
+      .map((dayNumber) => ({ day_number: dayNumber, places: buildDayPlacesV2(pipelineV2Data, listDayNumbers.length, hasFreeTour, dayNumber) }))
+      .filter((entry) => Array.isArray(entry.places))
+    if (v2Days.length === listDayNumbers.length) {
+      console.log(`[pipeline-v2] "${destination}" — Fase 1 resuelta con el algoritmo JS, sin llamada a Claude`)
+      res.json({ days: v2Days, recommended_revisits: [] })
+      return
+    }
+  }
+
   const curatedDestination = findDestinationData(destination)
   if (curatedDestination) {
     try {
@@ -3940,6 +3983,37 @@ app.post('/api/generate-day-block', async (req, res) => {
   const requiredPlacesByDayNumber = new Map(
     (Array.isArray(places_for_block) ? places_for_block : []).map((entry) => [Number(entry.day_number), entry.places]),
   )
+
+  // Pipeline v2 — BLOCK_SIZE=1 en todo el pipeline (ver routeGenerationOrchestrator.ts), así que
+  // `block_days` siempre trae un único día aquí; `all_days` (resumen ligero de TODO el viaje, ver
+  // generate-skeleton) da el número total de días de Roma para indexar zone_distribution. Si el
+  // algoritmo v2 no cubre este día (destino distinto, o 6+ días), buildDayBlockV2 devuelve null y
+  // se sigue exactamente con la llamada a Claude de siempre, más abajo.
+  const pipelineV2Data = findPipelineV2Data(destination)
+  if (pipelineV2Data && blockDayNumbers.length === 1) {
+    const totalDaysV2 = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : blockDayNumbers[0]
+    try {
+      const dayBlockV2 = await buildDayBlockV2(
+        pipelineV2Data,
+        totalDaysV2,
+        hasFreeTourFromAnswers(answers),
+        blockDayNumbers[0],
+        answers.pace,
+        MAPBOX_TOKEN,
+        answers.dateRange?.start,
+      )
+      if (dayBlockV2) {
+        console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)
+        res.json({ days: [dayBlockV2], not_included: dayBlockV2.not_included ?? [], excursions_available: [] })
+        return
+      }
+    } catch (error) {
+      // Nunca debe poder bloquear la generación — si el algoritmo v2 falla por lo que sea
+      // (Mapbox caído, dato inesperado), se cae al camino de Claude de toda la vida, igual que
+      // cualquier otro fallo best-effort de este pipeline.
+      console.error(`[pipeline-v2] fallo construyendo el día ${blockDayNumbers[0]} con el algoritmo JS, cae a Claude:`, error)
+    }
+  }
 
   const t0 = Date.now()
   console.log(`[timing] generate-day-block START ${new Date(t0).toISOString()} (days=${blockDayNumbers.join(',')})`)
