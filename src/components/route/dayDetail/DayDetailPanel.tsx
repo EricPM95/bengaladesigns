@@ -6,6 +6,7 @@ import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
 import { buildCombinedDaysMarkers } from '../../../lib/routeMapMarkers'
 import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../../../lib/time'
+import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
   buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
@@ -727,6 +728,15 @@ export function DayDetailPanel({
         dateIso={dateIso}
         dayStops={dayStopRefs}
         isAnchor={detailIndex !== null && anchorNamesLower.has(stops[detailIndex].name.toLowerCase())}
+        // Fix 7 bonus (ronda 2): en días del pipeline v2, la parada ya trae description/tip reales
+        // del JSON curado (ver routeAlgorithm.js) — sustituye la llamada interna a describe-stop
+        // (Claude) por ese contenido tal cual, sin gastar nada. Free Tour queda fuera a propósito
+        // (StopDetailSheet ya lo trata aparte, nunca llama a describe-stop para él de todos modos).
+        externalContent={
+          detailIndex !== null && day.timesAreFinal && !stops[detailIndex].isFreeTour && stops[detailIndex].description
+            ? { description: buildCuratedStopDescription(stops[detailIndex].description, stops[detailIndex].tips[0]), loading: false }
+            : undefined
+        }
         onClose={() => setDetailIndex(null)}
       />
 

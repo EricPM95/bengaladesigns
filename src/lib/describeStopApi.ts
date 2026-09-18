@@ -68,3 +68,23 @@ export async function describeStop(name: string, city: string, category?: string
   inFlight.set(key, request)
   return request
 }
+
+/**
+ * StopDescription "local", sin llamar a Claude — para paradas del pipeline v2 (ver
+ * routeAlgorithm.js) que ya traen `description`/`tip` reales del JSON curado a mano. describe-stop
+ * es puro coste evitable ahí: la parada ya tiene contenido editorial real, pedírselo a Claude de
+ * nuevo al abrir la ficha no añade nada, solo gasta. whatYoullSee/whyRecommended/address/
+ * officialWebsite quedan vacíos (el JSON curado no los tiene) — StopDetailSheet.tsx ya omite esas
+ * secciones cuando faltan, así que la ficha se queda sin ellas en vez de inventarlas.
+ */
+export function buildCuratedStopDescription(description: string, tip?: string | null): StopDescription {
+  return {
+    description,
+    whatYoullSee: '',
+    whyRecommended: '',
+    address: null,
+    officialWebsite: null,
+    hoursDetail: null,
+    tips: tip ? [{ tipo: 'practico', texto: tip }] : [],
+  }
+}

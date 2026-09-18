@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { findPipelineV2Data, hasFreeTourFromAnswers, buildSkeletonV2, buildDayPlacesV2, buildDayBlockV2 } from './routeAlgorithm.js'
 
 config({ path: '.env.local' })
@@ -56,6 +57,51 @@ if (!process.env.ANTHROPIC_API_KEY) {
 const anthropic = new Anthropic()
 const app = express()
 app.use(express.json())
+
+// ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
+//
+// Objetivo: poder responder "¿cuántas llamadas reales dispara generar una ruta de Roma (pipeline
+// v2) sin tocar ninguna parada individual, y desde qué endpoint Express exactamente?" sin tener que
+// instrumentar cada uno de los ~15 puntos de llamada a mano (y sin arriesgarse a que alguno futuro
+// se quede sin loguear). Envuelve el cliente UNA sola vez aquí — cualquier `anthropic.messages.*`
+// que se llame desde cualquier endpoint queda cubierto automáticamente, con el nombre del endpoint
+// Express (req.path) que lo disparó, gracias a AsyncLocalStorage (propaga correctamente a través de
+// awaits/promesas, a diferencia de una variable global compartida).
+const requestContext = new AsyncLocalStorage()
+app.use((req, _res, next) => requestContext.run(req.path, next))
+
+let apiCallCounter = 0
+function currentEndpointLabel() {
+  return requestContext.getStore() ?? '(fuera de una request — arranque/otro)'
+}
+
+const originalMessagesCreate = anthropic.messages.create.bind(anthropic.messages)
+anthropic.messages.create = async (...args) => {
+  const id = ++apiCallCounter
+  const endpoint = currentEndpointLabel()
+  const startedAt = new Date().toISOString()
+  console.log(`[api-call #${id}] ${startedAt} INICIO create() — endpoint=${endpoint}`)
+  try {
+    const result = await originalMessagesCreate(...args)
+    console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() OK — endpoint=${endpoint}`)
+    return result
+  } catch (error) {
+    console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() ERROR — endpoint=${endpoint} — ${error?.message ?? error}`)
+    throw error
+  }
+}
+
+const originalMessagesStream = anthropic.messages.stream.bind(anthropic.messages)
+anthropic.messages.stream = (...args) => {
+  const id = ++apiCallCounter
+  const endpoint = currentEndpointLabel()
+  const startedAt = new Date().toISOString()
+  console.log(`[api-call #${id}] ${startedAt} INICIO stream() — endpoint=${endpoint}`)
+  const streamObj = originalMessagesStream(...args)
+  streamObj.on('end', () => console.log(`[api-call #${id}] ${new Date().toISOString()} FIN stream() OK — endpoint=${endpoint}`))
+  streamObj.on('error', (error) => console.log(`[api-call #${id}] ${new Date().toISOString()} FIN stream() ERROR — endpoint=${endpoint} — ${error?.message ?? error}`))
+  return streamObj
+}
 
 function extractJsonText(text) {
   const fenced = text.trim().match(/```(?:json)?\s*([\s\S]*?)```/i)
@@ -115,7 +161,7 @@ function logCallCost(endpoint, response) {
   if (cacheWriteTokens) parts.push(`cache_write=${cacheWriteTokens}tok`)
   if (cacheReadTokens) parts.push(`cache_read=${cacheReadTokens}tok`)
   if (webSearches) parts.push(`web_searches=${webSearches}`)
-  console.log(`[cost] ${endpoint} — ${parts.join(' ')} — $${cost.toFixed(4)}`)
+  console.log(`[cost] ${new Date().toISOString()} ${endpoint} — ${parts.join(' ')} — $${cost.toFixed(4)}`)
 }
 
 const DESTINATION_ARCHETYPES = new Set([

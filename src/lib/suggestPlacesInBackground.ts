@@ -1,6 +1,7 @@
 import type { ExperienceId } from './types'
 import { useRouteStore } from '../store/useRouteStore'
 import { suggestPlaces } from './suggestPlaces'
+import { fetchPoolLevel } from './placePoolCache'
 
 /**
  * Precarga la lista amplia de lugares en cuanto se conoce el destino Y la sugerencia de
@@ -12,9 +13,20 @@ import { suggestPlaces } from './suggestPlaces'
  * común). Streaming (ver suggestPlaces.ts): cada lugar se añade al store en cuanto llega, así que
  * si el viajero llega a "Elige lugares" antes de que termine, ya ve los que hay hasta ese momento
  * en vez de esperar a los 18-30 completos.
+ *
+ * Fix 7 (ronda 2, pipeline v2): un destino con pool curado (fetchPoolLevel encuentra Nivel 1, ver
+ * placePoolCache.ts/CuratedPlacesPool.tsx) NUNCA lee `suggested_places` — su paso "Elige lugares"
+ * usa directamente su propio pool. Antes esta función llamaba a Claude (/api/suggest-places, un
+ * streaming de 18-30 lugares con descripción — el más caro de los "background prefetch") igual,
+ * sin comprobarlo, puro coste tirado para cualquier destino curado (v2 o el JSON antiguo). El
+ * check en sí es gratis (curated-places-pool no llama a Claude, solo lee el JSON en el servidor).
  */
-export function suggestPlacesInBackground(destination: string, experienceIds: ExperienceId[]): void {
+export async function suggestPlacesInBackground(destination: string, experienceIds: ExperienceId[]): Promise<void> {
   if (experienceIds.length === 0) return
+  const { found } = await fetchPoolLevel(destination, 1)
+  if (found) return
+  if (useRouteStore.getState().destination !== destination) return
+
   const { appendSuggestedPlace, setSuggestedPlaces, setSuggestedPlacesFailed, setSuggestedPlacesLoading } = useRouteStore.getState()
   setSuggestedPlaces([], experienceIds)
   setSuggestedPlacesLoading(true)
