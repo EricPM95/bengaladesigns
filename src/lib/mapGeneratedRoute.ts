@@ -93,6 +93,8 @@ export interface GeneratedDay {
   stops: GeneratedStop[]
   meals: GeneratedMeal[]
   rainy_alternative?: string
+  /** Solo pipeline v2 (ver routeAlgorithm.js) — DayPlan.timesAreFinal en types.ts. */
+  times_are_final?: boolean
 }
 
 interface GeneratedFeasibilityLeg {
@@ -420,6 +422,7 @@ function mapDay(
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
     isRelaxedDay: generated.type === 'relax',
+    timesAreFinal: generated.times_are_final,
   }
 }
 

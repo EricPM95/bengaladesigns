@@ -440,6 +440,8 @@ export interface DayPlan {
   countryCode?: string | null
   /** true solo para el día sintético de vuelta a origen añadido al final del viaje (ver appendReturnLegDay) — no representa una noche real, se excluye del recuento de noches en buildDestinationSegments. */
   isReturnLeg?: boolean
+  /** true solo para días del pipeline v2 (ver routeAlgorithm.js) — sus horas ya son definitivas y sus paradas de relleno no llevan `isNightExperience` aunque caigan de noche, así que DayDetailPanel.tsx no debe usar la hora como criterio de la sección "NOCHE" para este día (solo el flag). Los días de la ruta Claude-driven (todos los demás destinos) siguen clasificando "NOCHE" por hora, comportamiento de siempre. */
+  timesAreFinal?: boolean
 }
 
 // ── Budget ────────────────────────────────────────────────

@@ -362,6 +362,49 @@ function findLeftoverZonePlaces(destData, zone, usedNames) {
     .sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))
 }
 
+// Distancia en línea recta (km) — solo para DECIDIR dónde insertar un lugar de relleno dentro de un
+// orden ya construido (Fix 3, ronda 2: "Via della Conciliazione" — el paseo que conecta Plaza de San
+// Pedro con Castel Sant'Angelo — se colaba al FINAL en vez de entre medias). El horario real que se
+// muestra sigue calculándose aparte con Mapbox (buildStopsForPlaces) — esto es puramente geométrico
+// y gratis, no sustituye ese cálculo.
+function haversineKm(a, b) {
+  if (!a || !b) return Infinity
+  const [lat1, lng1] = a
+  const [lat2, lng2] = b
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))
+}
+
+/** Inserta `candidate` en `orderedPlaces` en la posición (índice) que menos alarga el recorrido total
+en línea recta — "cheapest insertion". El orden de las paradas YA decididas por el JSON (curadas a
+mano, incluida la coreografía de un grupo) nunca se toca; solo se decide DÓNDE cae el candidato nuevo
+entre ellas, al principio, o al final. */
+function insertByProximity(orderedPlaces, candidate) {
+  if (orderedPlaces.length === 0) return [candidate]
+  let bestIndex = orderedPlaces.length
+  let bestCost = haversineKm(orderedPlaces[orderedPlaces.length - 1].coordinates, candidate.coordinates)
+  const startCost = haversineKm(candidate.coordinates, orderedPlaces[0].coordinates)
+  if (startCost < bestCost) {
+    bestCost = startCost
+    bestIndex = 0
+  }
+  for (let i = 0; i < orderedPlaces.length - 1; i++) {
+    const direct = haversineKm(orderedPlaces[i].coordinates, orderedPlaces[i + 1].coordinates)
+    const viaCandidate = haversineKm(orderedPlaces[i].coordinates, candidate.coordinates) + haversineKm(candidate.coordinates, orderedPlaces[i + 1].coordinates)
+    const cost = viaCandidate - direct
+    if (cost < bestCost) {
+      bestCost = cost
+      bestIndex = i + 1
+    }
+  }
+  const result = [...orderedPlaces]
+  result.splice(bestIndex, 0, candidate)
+  return result
+}
+
 /** Zonas vecinas de `zone` según `algorithm_hints.walking_time_matrix`, dentro de `maxMinutes`, más cercanas primero — para la Regla A cuando una zona se queda sin lugares sueltos que añadir. */
 function findAdjacentZones(destData, zone, maxMinutes) {
   const matrix = destData.algorithm_hints?.walking_time_matrix ?? {}
@@ -571,28 +614,39 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // Regla C: si el día trae paradas de tarde junto a un evening_block, son paradas de TRANSICIÓN
     // hacia la zona del evening_block (p.ej. Bocca della Verità + Circo Máximo de camino a
     // Trastevere) — antes se descartaban del todo, dejando 2-3h muertas hasta `ideal_start`.
+    // Fix 1 (ronda 2): la tarde SIEMPRE empieza a las 15:00 en punto (13:00-14:30 comida, 14:30-15:00
+    // trayecto) — igual que la tarde sin evening_block, nunca antes aunque la mañana acabe pronto.
     if (afternoonPlaces.length > 0) {
-      const transitionStart = Math.max(morningEndMinutes, 14 * 60 + 30)
-      afternoonStops = await buildStopsForPlaces(afternoonPlaces, transitionStart, mapboxToken, null)
+      afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
     }
   } else {
-    afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
-
     // Regla A: en Completo, si tras las paradas de tarde ya asignadas sigue siendo pronto (<19:30),
-    // rellena con lugares sueltos de la misma zona y, si se agotan, de zonas vecinas cercanas.
+    // rellena con lugares sueltos de la misma zona y, si se agotan, de zonas vecinas cercanas (Fix 4,
+    // ronda 2: hasta 30min andando, no 20 — así vaticano SÍ encuentra centro_historico como vecina).
+    // Fix 3 (ronda 2): el relleno se INSERTA en la posición geográfica que menos alarga el recorrido
+    // (insertByProximity, línea recta) en vez de añadirse siempre al final — un lugar "de camino"
+    // entre dos paradas ya colocadas (p.ej. Via della Conciliazione entre Plaza de San Pedro y
+    // Castel Sant'Angelo) cae ahí, no después de la última. El orden curado a mano del JSON (incluida
+    // la coreografía de un grupo) nunca se reordena, solo se decide dónde entra lo nuevo.
+    let afternoonOrder = [...afternoonPlaces]
+    afternoonStops = await buildStopsForPlaces(afternoonOrder, 15 * 60, mapboxToken, null)
+
     if (isCompleto) {
-      let afternoonEndMinutes = afternoonStops.length
-        ? timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
-        : 15 * 60
       const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
       if (afternoonZone) {
-        const fillUntil = (c) => c >= 19 * 60 + 30
-        let previousCoords = afternoonStops.length ? [afternoonStops[afternoonStops.length - 1].latitude, afternoonStops[afternoonStops.length - 1].longitude] : null
-        afternoonEndMinutes = await fillStopsUntil(afternoonStops, findLeftoverZonePlaces(destData, afternoonZone, usedNames), afternoonEndMinutes, previousCoords, mapboxToken, usedNames, fillUntil)
-        for (const adjZone of findAdjacentZones(destData, afternoonZone, 20)) {
-          if (fillUntil(afternoonEndMinutes)) break
-          previousCoords = afternoonStops.length ? [afternoonStops[afternoonStops.length - 1].latitude, afternoonStops[afternoonStops.length - 1].longitude] : previousCoords
-          afternoonEndMinutes = await fillStopsUntil(afternoonStops, findLeftoverZonePlaces(destData, adjZone, usedNames), afternoonEndMinutes, previousCoords, mapboxToken, usedNames, fillUntil)
+        const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
+        let added = 0
+        fillLoop: for (const zone of fillZones) {
+          for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames)) {
+            const currentEnd = afternoonStops.length
+              ? timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
+              : 15 * 60
+            if (currentEnd >= 19 * 60 + 30 || added >= MAX_FILL_STOPS_PER_DAY) break fillLoop
+            afternoonOrder = insertByProximity(afternoonOrder, candidate)
+            afternoonStops = await buildStopsForPlaces(afternoonOrder, 15 * 60, mapboxToken, null)
+            usedNames.add(candidate.name)
+            added += 1
+          }
         }
       }
     }
@@ -649,7 +703,9 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     const nightExperience = destData.night_experiences?.find((n) => n.place === franja.night_experience.place)
     const rawPlace = findRawPlace(destData, franja.night_experience.place)
     if (nightExperience && rawPlace) {
-      const startMinutes = timeToMinutes(nightExperience.best_time?.split('-')[0]?.trim() ?? '21:30')
+      // Fix 2 (ronda 2): redondeo al alza a cuarto de hora, defensivo — best_time del JSON ya viene
+      // alineado hoy, pero cualquier hora se muestra siempre en múltiplos de 15, sin excepción.
+      const startMinutes = roundUpToQuarterHour(timeToMinutes(nightExperience.best_time?.split('-')[0]?.trim() ?? '21:30'))
       stops.push({
         name: `${rawPlace.name} (noche)`,
         suggested_time: minutesToTime(startMinutes),

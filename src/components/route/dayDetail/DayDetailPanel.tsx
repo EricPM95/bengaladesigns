@@ -357,7 +357,22 @@ export function DayDetailPanel({
           const parsed = rawTime ? parseTimeToMinutes(rawTime) : NaN
           const startMinutes = Number.isNaN(parsed) ? DAY_START_MINUTES : parsed
           const endMinutes = startMinutes + stop.durationMinutes
-          const slot: TimeSlot = startMinutes < 13 * 60 ? 'mañana' : startMinutes < 19 * 60 ? 'tarde' : 'noche'
+          // Para días del pipeline v2 (day.timesAreFinal), NOCHE es SOLO para paradas de "experiencia
+          // nocturna" reales (stop.isNightExperience) — no un umbral de hora, o una parada de relleno
+          // normal a las 19:00+ (p.ej. Regla A del algoritmo) se clasificaría como NOCHE por error.
+          // El resto de destinos (Claude-driven) sigue usando el umbral de hora de siempre — ahí no
+          // existe el flag, y quitar el umbral les dejaría sin sección NOCHE en absoluto.
+          const slot: TimeSlot = day.timesAreFinal
+            ? realStops[index]?.isNightExperience
+              ? 'noche'
+              : startMinutes < 13 * 60
+                ? 'mañana'
+                : 'tarde'
+            : startMinutes < 13 * 60
+              ? 'mañana'
+              : startMinutes < 19 * 60
+                ? 'tarde'
+                : 'noche'
           return { slot, startMinutes, endMinutes }
         })
       : computeStopSchedule(stops, (index) => connectorEntries[index].connector.walkMinutes ?? DEFAULT_WALK_MINUTES, DAY_START_MINUTES)
