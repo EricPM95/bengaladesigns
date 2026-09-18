@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { useSyncStore } from './store/useSyncStore'
 import { LandingScreen } from './components/destination/LandingScreen'
-import { PlacesPoolScreen } from './components/destination/PlacesPoolScreen'
 import { Questionnaire } from './components/questionnaire/Questionnaire'
 import { LoadingScreen } from './components/loading/LoadingScreen'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './lib/routeGenerationOrchestrator'
@@ -50,6 +49,7 @@ function LoadingScreenContainer() {
   const answers = useRouteStore((state) => state.answers)
   const suggestedPlaces = useRouteStore((state) => state.suggested_places)
   const selectedPlaceIds = useRouteStore((state) => state.selected_place_ids)
+  const selectedCuratedPlaceNames = useRouteStore((state) => state.selected_curated_place_names)
   const setRoute = useRouteStore((state) => state.setRoute)
   const setScreen = useRouteStore((state) => state.setScreen)
   const pendingResume = useSyncStore((state) => state.pendingResume)
@@ -116,7 +116,15 @@ function LoadingScreenContainer() {
             vehiculo_altamente_recomendado: vehiculoAltamenteRecomendado,
             travel_pass_confirmed: travelPassConfirmed,
           },
-          mustIncludePlaces: suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
+          // Dos fuentes posibles, mutuamente excluyentes según si el destino es curado o no (ver
+          // Questionnaire.tsx/CuratedPlacesPool.tsx): suggestedPlaces+selectedPlaceIds es el camino
+          // Claude-driven de siempre (destinos sin JSON curado); selectedCuratedPlaceNames es la
+          // selección manual del pool de Nivel 1/2/3 para destinos curados. Solo una de las dos
+          // tendrá contenido en cualquier viaje dado, así que unirlas es seguro.
+          mustIncludePlaces: [
+            ...suggestedPlaces.filter((place) => selectedPlaceIds.includes(place.id)).map((place) => place.name),
+            ...selectedCuratedPlaceNames,
+          ],
         }
 
     paramsRef.current = params
@@ -279,7 +287,6 @@ function App() {
       <AnimatePresence mode="wait">
         {screen === 'destination' && <LandingScreen />}
         {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
-        {screen === 'placesPool' && <PlacesPoolScreen />}
         {screen === 'questionnaire' && <QuestionnaireScreen />}
         {screen === 'loading' && <LoadingScreenContainer key="loading" />}
         {screen === 'route' && <RouteScreen />}

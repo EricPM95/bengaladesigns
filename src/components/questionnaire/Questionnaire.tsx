@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
 import type { ExperienceId, TripPace } from '../../lib/types'
@@ -8,12 +8,14 @@ import { isCompanionFullyResolved } from '../../lib/companionFlow'
 import { classifyInBackground } from '../../lib/classifyInBackground'
 import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
+import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
 import { TransportResolutionStep } from './TransportResolutionStep'
 import { DurationSelector } from './DurationSelector'
 import { CompanionSelector } from './CompanionSelector'
 import { ExperienceCategorySelector } from './ExperienceCategorySelector'
 import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { PlaceSelector } from './PlaceSelector'
+import { CuratedPlacesPool } from './CuratedPlacesPool'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
 
@@ -104,6 +106,27 @@ export function Questionnaire() {
   const updateAnswers = useRouteStore((state) => state.updateAnswers)
   const setScreen = useRouteStore((state) => state.setScreen)
   const resetQuestionnaire = useRouteStore((state) => state.resetQuestionnaire)
+  const setPlacesStepStarted = useRouteStore((state) => state.setPlacesStepStarted)
+  const selectedCuratedPlaceNames = useRouteStore((state) => state.selected_curated_place_names)
+  const toggleCuratedPlaceSelection = useRouteStore((state) => state.toggleCuratedPlaceSelection)
+
+  // "Elige lugares" (último paso, ver showPlaces) sustituye el flujo de Claude por el pool curado
+  // cuando el destino está en el JSON — un solo lookup barato (sin coste, JSON directo, ver
+  // /api/curated-places-pool) en cuanto se conoce el destino decide qué versión del paso mostrar.
+  // `null` = todavía no se sabe, `false` = destino no curado (PlaceSelector de siempre).
+  const [curatedLevel1, setCuratedLevel1] = useState<PoolPlace[] | null | false>(null)
+  useEffect(() => {
+    if (!destination) return
+    let cancelled = false
+    setCuratedLevel1(null)
+    fetchPoolLevel(destination, 1).then((result) => {
+      if (cancelled) return
+      setCuratedLevel1(result.found ? result.places : false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [destination])
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   // Para el paso actualmente en pantalla: ¿ya existía el paso siguiente en el momento en que se
@@ -370,7 +393,14 @@ export function Questionnaire() {
                     // disparaba el avance. Igual que pace, se navega explícitamente
                     // en el mismo tap en vez de depender solo del efecto pasivo.
                     updateAnswers({ experiencesPositive, experiencesNegative, experiences })
-                    suggestPlacesOnDemand(destination, experiences)
+                    // Precarga temprana SOLO si ya sabemos que el destino no es curado — para uno
+                    // curado, "Elige lugares" muestra el pool del JSON (cero coste, ver
+                    // CuratedPlacesPool) y jamás debe llamar a Claude. Si `curatedLevel1` todavía no
+                    // resolvió (raro, el lookup ya lleva varios pasos corriendo en paralelo), el
+                    // propio paso "places" dispara el fallback al llegar (ver PlacesGrid más abajo)
+                    // en vez de arriesgarse aquí a gastar una llamada de más en un destino curado.
+                    if (curatedLevel1 === false) suggestPlacesOnDemand(destination, experiences)
+                    else setPlacesStepStarted(true)
                     goToNextStep()
                   }}
                 />
@@ -401,7 +431,23 @@ export function Questionnaire() {
                 </div>
               )}
 
-              {activeStep === 'places' && (
+              {activeStep === 'places' && curatedLevel1 === null && (
+                <p className="flex items-center gap-2 text-small italic text-onb-text-soft">
+                  <Spinner className="text-onb-accent" />
+                  Viendo qué lugares hay en {destination}...
+                </p>
+              )}
+
+              {activeStep === 'places' && curatedLevel1 && (
+                <CuratedPlacesPool
+                  destination={destination}
+                  level1={curatedLevel1}
+                  selectedNames={selectedCuratedPlaceNames}
+                  onToggle={toggleCuratedPlaceSelection}
+                />
+              )}
+
+              {activeStep === 'places' && curatedLevel1 === false && (
                 <PlacesGrid
                   destination={destination}
                   experiences={answers.experiences ?? []}
@@ -416,7 +462,19 @@ export function Questionnaire() {
       {activeStep === 'places' && (
         <div className="sticky bottom-0 z-10 border-t border-onb-border bg-onb-card px-6 py-4">
           <div className="mx-auto w-full max-w-lg">
-            <PlacesCreateRouteButton onCreateRoute={handleCreateRoute} />
+            {curatedLevel1 ? (
+              // Destino curado: el pool ya está cargado (cero coste), nunca depende de Claude — el
+              // botón siempre puede avanzar, marque o no marque nada el viajero.
+              <button
+                type="button"
+                onClick={handleCreateRoute}
+                className="w-full rounded-onb-full bg-onb-accent py-3.5 font-dmsans text-body font-semibold text-white transition-colors hover:bg-onb-accent-hover"
+              >
+                ✨ Crear mi ruta
+              </button>
+            ) : (
+              <PlacesCreateRouteButton onCreateRoute={handleCreateRoute} />
+            )}
           </div>
         </div>
       )}
@@ -442,6 +500,16 @@ function PlacesGrid({ destination, experiences, onRetry }: PlacesGridProps) {
   const selectedPlaceIds = useRouteStore((state) => state.selected_place_ids)
   const toggleSelectedPlace = useRouteStore((state) => state.toggleSelectedPlace)
   const toggleSelectAllPlaces = useRouteStore((state) => state.toggleSelectAllPlaces)
+
+  // Red de seguridad: normalmente ya se disparó al confirmar experiencias (precarga con ventaja, ver
+  // el onConfirm de ExperienceCategorySelector), pero si `curatedLevel1` todavía no había resuelto en
+  // ese momento (destino confirmado no-curado detectado tarde), este paso puede llegar sin haber
+  // pedido nunca la sugerencia — suggestPlacesOnDemand ya es idempotente (no repite si el conjunto de
+  // experiencias no cambió), así que llamarlo aquí también es seguro.
+  useEffect(() => {
+    suggestPlacesOnDemand(destination, experiences)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destination])
 
   return (
     <PlaceSelector

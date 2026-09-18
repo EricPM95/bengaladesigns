@@ -163,6 +163,8 @@ interface RouteStoreState {
   suggested_places_source_ids: ExperienceId[]
   /** ids de `suggested_places` que el viajero marcó — entran en la generación como anclas de alta prioridad (ver must_include_places). */
   selected_place_ids: string[]
+  /** Nombres marcados a mano en el "Pool de lugares" del último paso del cuestionario, SOLO para destinos curados (ver CuratedPlacesPool.tsx) — el pool no tiene ids sintéticos como PlaceCandidate, usa el propio nombre como clave. Misma función que selected_place_ids pero para ese otro camino (curado vs Claude-driven), ambos se unen en must_include_places al generar (ver App.tsx). */
+  selected_curated_place_names: string[]
 
   answers: Partial<QuestionnaireAnswers>
   route: Route | null
@@ -221,6 +223,7 @@ interface RouteStoreState {
   toggleSelectedPlace: (placeId: string) => void
   /** "Selecciona todo" — si ya están todos marcados, los desmarca todos; si no, los marca todos. */
   toggleSelectAllPlaces: () => void
+  toggleCuratedPlaceSelection: (name: string) => void
   updateAnswers: (partial: Partial<QuestionnaireAnswers>) => void
   resetQuestionnaire: () => void
 
@@ -340,6 +343,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   suggested_places_loading: false,
   suggested_places_failed: false,
   selected_place_ids: [],
+  selected_curated_place_names: [],
   // chronotype/budgetLevel vienen con valor por defecto desde el arranque — el formulario
   // rediseñado ya no los pregunta (el viajero puede ajustar horarios más tarde a mano desde DIAS/
   // Modo Hoy), así que necesitan un valor razonable aquí para que hasRequiredAnswers (server/
@@ -391,6 +395,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       suggested_places_loading: false,
       suggested_places_failed: false,
       selected_place_ids: [],
+      selected_curated_place_names: [],
     }),
   setArchetype: (archetype, isRegion, requiereCoche = false, paseDominante = null, vehiculoAltamenteRecomendado = false) =>
     set({
@@ -467,6 +472,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => ({
       selected_place_ids: state.selected_place_ids.length === state.suggested_places.length ? [] : state.suggested_places.map((place) => place.id),
     })),
+  toggleCuratedPlaceSelection: (name) =>
+    set((state) => ({
+      selected_curated_place_names: state.selected_curated_place_names.includes(name)
+        ? state.selected_curated_place_names.filter((existing) => existing !== name)
+        : [...state.selected_curated_place_names, name],
+    })),
   updateAnswers: (partial) => set((state) => ({ answers: { ...state.answers, ...partial } })),
   resetQuestionnaire: () =>
     set({
@@ -499,6 +510,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       suggested_places_loading: false,
       suggested_places_failed: false,
       selected_place_ids: [],
+      selected_curated_place_names: [],
     }),
 
   setRoute: (route) =>

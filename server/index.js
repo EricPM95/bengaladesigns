@@ -2905,6 +2905,16 @@ function isIntocable(placeName, destData) {
   return Array.isArray(destData.intocables) && destData.intocables.some((name) => name.toLowerCase() === placeName.toLowerCase())
 }
 
+/** Busca un lugar por nombre (fuzzy) en cualquiera de los 3 niveles del destino — usado para el pool de "Elige lugares" reescrito (punto 6): un lugar marcado a mano ahí que el algoritmo automático no habría incluido por su cuenta hereda sus datos reales (zona/duración/tips/theme) en vez de rellenos genéricos al forzarlo, ver el bucle de mustIncludePlaces en buildCuratedDayPlaces. */
+function findDestinationPlaceByName(destData, name) {
+  for (const levelKey of ['1', '2', '3']) {
+    for (const place of destData.levels?.[levelKey]?.places ?? []) {
+      if (isFuzzyPlaceMatch(place.name, name)) return { ...place, _level: Number(levelKey) }
+    }
+  }
+  return null
+}
+
 /** Todos los lugares de cualquier nivel (1-3) cuyo `theme` esté en la lista dada — usado para el "relleno" que una categoría positiva añade más allá de los niveles ya seleccionados por selectDestinationLevels. */
 function collectAllDestinationPlacesByTheme(destData, themes) {
   const themeSet = new Set(themes)
@@ -3352,14 +3362,29 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
   const dayPlacesMap = flattenDayClusters(dayClustersMap)
   const recommendedRevisits = collectDoubleVisitRecommendations(dayPlacesMap, rawPlaces)
 
-  // Los lugares que el usuario marcó en "Elige lugares" ya suelen estar cubiertos por el JSON — solo
-  // se añaden sueltos (al primer día) si de verdad no hay ninguna coincidencia razonable.
+  // Los lugares que el viajero marcó a mano en el pool de "Elige lugares" (punto 6 reescrito —
+  // selección real, no solo consulta) entran SÍ O SÍ, además de lo que ya añada automáticamente el
+  // ritmo/experiencias — ya suelen estar cubiertos por el JSON (Nivel/categoría normal), pero si el
+  // viajero marcó algo que el algoritmo no habría incluido por su cuenta (ej. un Nivel 3 en un viaje
+  // corto, recortado por filterToIntocablesForShortTrips), se añade suelto al primer día. Se busca el
+  // lugar real en destData para heredar sus datos curados (zona/duración/tips/acceso libre) en vez de
+  // rellenos genéricos — sigue siendo el mismo lugar del JSON, solo que el algoritmo automático no lo
+  // había seleccionado. Limitación conocida (ya existía antes de este cambio, no es nueva): un lugar
+  // forzado así se añade suelto, sin pasar por buildDestinationClusters — si formaba parte de un
+  // `group`, entra sin sus compañeros de grupo ni su group_order. En la práctica es poco probable
+  // (el algoritmo normal ya cubre casi siempre los grupos completos), pero si se quiere blindar del
+  // todo habría que re-clusterizar después de esta inyección, cambio más grande que se deja aparte.
   const allNames = [...dayPlacesMap.values()].flat().map((place) => place.name)
   for (const rawName of Array.isArray(mustIncludePlaces) ? mustIncludePlaces : []) {
     if (typeof rawName !== 'string' || !rawName.trim()) continue
     const name = rawName.trim().slice(0, 150)
     if (allNames.some((existing) => isFuzzyPlaceMatch(existing, name))) continue
-    dayPlacesMap.get(listDayNumbers[0])?.push({ name, type: 'interior_corto', duration_min: 45, tips: [], best_time: null })
+    const curatedMatch = findDestinationPlaceByName(destData, name)
+    dayPlacesMap.get(listDayNumbers[0])?.push(
+      curatedMatch
+        ? { ...curatedMatch }
+        : { name, type: 'interior_corto', duration_min: 45, tips: [], best_time: null },
+    )
   }
 
   // El Free Tour, pedido como instrucción de prompt aparte, se saltaba en vivo incluso marcándolo

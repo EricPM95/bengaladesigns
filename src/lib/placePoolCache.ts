@@ -59,11 +59,12 @@ function writeCache(destination: string, level: 1 | 2 | 3, places: PoolPlace[]):
 /**
  * Trae un nivel del pool de lugares — primero localStorage (instantáneo), si no hay nada pide al
  * backend (cero coste, JSON curado directo, ver /api/curated-places-pool) y cachea el resultado.
- * Las fotos NO se cachean aquí — el propio PlacesPoolScreen las pide por separado con
+ * Las fotos NO se cachean aquí — el propio CuratedPlacesPool las pide por separado con
  * fetchPlacePhoto (misma fuente gratuita, Wikipedia, que ya usa el resto de la app) para poder
  * pintar la lista al instante y dejar que cada foto aparezca según va llegando, en vez de esperar a
- * todas antes de mostrar nada. Devuelve `found: false` si el destino no está en el JSON curado (la
- * pantalla entera no debe mostrarse en ese caso, ver PlacesPoolScreen).
+ * todas antes de mostrar nada. Devuelve `found: false` si el destino no está en el JSON curado —
+ * Questionnaire.tsx usa esto para decidir si el último paso ("Elige lugares") muestra el pool curado
+ * o el flujo de siempre con sugerencias de Claude (PlaceSelector).
  */
 export async function fetchPoolLevel(destination: string, level: 1 | 2 | 3): Promise<{ found: boolean; places: PoolPlace[] }> {
   const cached = readCache(destination, level)
