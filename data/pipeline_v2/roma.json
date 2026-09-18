@@ -22,25 +22,25 @@
       "place": "Fontana di Trevi",
       "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
       "best_time": "22:00-23:30",
-      "duration_minutes": 20
+      "duration_minutes": 45
     },
     {
       "place": "Coliseo",
       "description": "El Coliseo iluminado desde el exterior, con el Arco de Constantino — foto icónica nocturna",
       "best_time": "21:30-23:00",
-      "duration_minutes": 20
+      "duration_minutes": 45
     },
     {
       "place": "Escalinata de Piazza di Spagna",
       "description": "La escalinata iluminada con la iglesia Trinità dei Monti al fondo",
       "best_time": "21:30-23:00",
-      "duration_minutes": 15
+      "duration_minutes": 45
     },
     {
       "place": "Piazza Navona",
       "description": "Las fuentes de Bernini iluminadas, artistas callejeros y ambiente nocturno romano",
       "best_time": "21:00-23:00",
-      "duration_minutes": 20
+      "duration_minutes": 45
     }
   ],
   "closed_on": {
@@ -49,24 +49,54 @@
   },
   "meal_zones": {
     "roma_antigua": {
-      "comida": ["Monti", "Via dei Serpenti"],
-      "cena": ["Monti", "Celio"]
+      "comida": {
+        "display": "en el barrio de Monti",
+        "options": ["Monti", "Via dei Serpenti"]
+      },
+      "cena": {
+        "display": "en el barrio de Monti",
+        "options": ["Monti", "Celio"]
+      }
     },
     "centro_historico": {
-      "comida": ["Largo di Torre Argentina zona", "Via del Corso zona"],
-      "cena": ["Campo de' Fiori", "Piazza Navona zona"]
+      "comida": {
+        "display": "en el Centro Histórico",
+        "options": ["Largo di Torre Argentina zona", "Via del Corso zona"]
+      },
+      "cena": {
+        "display": "en Campo de' Fiori",
+        "options": ["Campo de' Fiori", "Piazza Navona zona"]
+      }
     },
     "vaticano": {
-      "comida": ["Borgo Pio", "Prati"],
-      "cena": ["Prati", "Borgo Pio"]
+      "comida": {
+        "display": "cerca del Vaticano",
+        "options": ["Borgo Pio", "Prati"]
+      },
+      "cena": {
+        "display": "cerca del Vaticano",
+        "options": ["Prati", "Borgo Pio"]
+      }
     },
     "trastevere": {
-      "comida": ["Trastevere"],
-      "cena": ["Trastevere"]
+      "comida": {
+        "display": "en Trastevere",
+        "options": ["Trastevere"]
+      },
+      "cena": {
+        "display": "en Trastevere",
+        "options": ["Trastevere"]
+      }
     },
     "villa_borghese": {
-      "comida": ["Via Veneto zona", "Salario"],
-      "cena": ["Via Veneto zona"]
+      "comida": {
+        "display": "cerca de Via Veneto",
+        "options": ["Via Veneto zona", "Salario"]
+      },
+      "cena": {
+        "display": "cerca de Via Veneto",
+        "options": ["Via Veneto zona"]
+      }
     }
   },
   "evening_blocks": [
@@ -115,7 +145,7 @@
     "vaticano": {
       "name": "Vaticano",
       "center": [41.9022, 12.4539],
-      "places": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro", "Castel Sant'Angelo"]
+      "places": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro", "Via della Conciliazione", "Castel Sant'Angelo"]
     },
     "trastevere": {
       "name": "Trastevere y Gianicolo",
@@ -321,6 +351,16 @@
       "photo_tip": "Desde el centro de la plaza mirando hacia la basílica con el obelisco en primer plano."
     },
     {
+      "name": "Via della Conciliazione",
+      "level": 2,
+      "zone": "vaticano",
+      "coordinates": [41.9024, 12.4601],
+      "duration_minutes": 30,
+      "type": "exterior",
+      "tip": "La avenida monumental que conecta Plaza de San Pedro con Castel Sant'Angelo. Paseo icónico con la cúpula de San Pedro enmarcada al fondo. Mussolini la mandó construir demoliendo el barrio medieval — hoy es la perspectiva más famosa del Vaticano.",
+      "photo_tip": "Desde el extremo de Castel Sant'Angelo mirando hacia San Pedro — la cúpula centrada entre los edificios es la postal clásica."
+    },
+    {
       "name": "Castel Sant'Angelo",
       "level": 2,
       "zone": "vaticano",
@@ -387,8 +427,13 @@
       "places": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro"],
       "order": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro", "Plaza de San Pedro"],
       "order_evening": ["Plaza de San Pedro", "Basílica de San Pedro", "Museos Vaticanos y Capilla Sixtina"],
-      "note": "Museos siempre primero — necesitan la mañana entera. Basílica y Plaza después de comer.",
-      "breakable_if_short": false,
+      "note": "Museos siempre primero. Basílica puede ir en la misma mañana (Museos 08:00-11:00 + Basílica 11:00-12:15) o después de comer. Plaza siempre después de Basílica.",
+      "breakable_if_short": true,
+      "break_after": "Museos Vaticanos y Capilla Sixtina",
+      "preferred_split": {
+        "morning": ["Museos Vaticanos y Capilla Sixtina", "Basílica de San Pedro"],
+        "afternoon": ["Plaza de San Pedro"]
+      },
       "combined_duration_minutes": 285
     },
     "centro_historico_walk": {

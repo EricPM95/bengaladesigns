@@ -15,7 +15,7 @@ import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
-import { ClockIcon, HourglassIcon, FreeTourIcon } from '../../ui/TimeIcons'
+import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -270,9 +270,16 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
                     {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
+                    {stop.isNightExperience && <MoonIcon className="text-[#5B6BC0]" />}
                     {stop.name}
                   </h1>
                   <div className="flex flex-wrap items-center gap-1.5">
+                    {stop.isNightExperience && (
+                      <span className="flex items-center gap-1 rounded-full bg-[#1a1a2e] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">
+                        <MoonIcon />
+                        Experiencia nocturna
+                      </span>
+                    )}
                     <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-caption font-medium text-accent-hover">
                       <HourglassIcon />
                       {formatDuration(stop.durationMinutes)}

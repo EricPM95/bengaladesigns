@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { ClockIcon, FreeTourIcon } from '../../ui/TimeIcons'
+import { addMinutesToTime } from '../../../lib/time'
+import { ClockIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
+
+const NIGHT_GRADIENT = 'linear-gradient(135deg, #1a1a2e, #16213e)'
+const NIGHT_BORDER = '#2d3561'
 
 interface StopAccordionProps {
   index: number
@@ -22,6 +26,36 @@ interface StopAccordionProps {
  * completa (StopDetailSheet), ya no expande contenido inline debajo de la tarjeta como antes.
  */
 export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText, startTime }: StopAccordionProps) {
+  if (stop.isNightExperience) {
+    const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
+    return (
+      <div className="relative rounded-xl border shadow-sm" style={{ background: NIGHT_GRADIENT, borderColor: NIGHT_BORDER }}>
+        <button type="button" onClick={onOpen} className="flex w-full items-start gap-3 rounded-xl p-3 text-left">
+          <span
+            className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-caption font-semibold"
+            style={{ backgroundColor: circleBg, color: circleText }}
+          >
+            {index + 1}
+          </span>
+
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <p className="flex items-center gap-1.5 text-caption font-bold uppercase tracking-wide text-[#AEBBF0]">
+              <MoonIcon />
+              {startTime ? `Noche · ${startTime}${endTime ? `–${endTime}` : ''}` : 'Noche'}
+            </p>
+            <p className="text-body font-semibold text-white">{stop.name}</p>
+            <span className="inline-block rounded-full bg-[#2d3561] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">Experiencia nocturna</span>
+          </div>
+
+          <img src={stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover opacity-90" />
+        </button>
+
+        {/* Fuera del botón a propósito — insignia flotante sobre el borde, y para que su menú desplegable nunca quede recortado por la tarjeta. */}
+        {menu && <div className="absolute -right-2 -top-2 z-20">{menu}</div>}
+      </div>
+    )
+  }
+
   return (
     <div className="relative rounded-xl border border-border bg-bg-card shadow-sm">
       <button type="button" onClick={onOpen} className="flex w-full items-start gap-3 rounded-xl p-3 text-left transition-colors hover:bg-bg-hover">

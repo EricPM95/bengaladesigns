@@ -11,8 +11,10 @@ interface MealTimeAccordionProps {
   city: string
   /** Coordenadas de la parada tras la que cae esta franja — ancla tanto para geocodificar el barrio como para "Rápido y cerca" dentro de MealDetailSheet. */
   coordinates: Coordinates
-  /** Zona curada a mano (ver MealSlot.curatedZone) — cuando existe, se usa tal cual en vez de geocodificar en vivo. */
+  /** Barrio curado a mano (ver MealSlot.curatedZone) — cuando existe, se usa tal cual en vez de geocodificar en vivo (alimenta la búsqueda de restaurantes, ver useZonaTuristica). */
   curatedZone?: string | null
+  /** Texto legible curado a mano para el TÍTULO (ver MealSlot.curatedZoneDisplay, Regla E — "en el Centro Histórico") — solo para mostrar, nunca para buscar. */
+  curatedZoneDisplay?: string | null
   franja: 'comida' | 'cena'
   /** Abre MealDetailSheet (pantalla completa) — gestionado por DayDetailPanel.tsx, igual que StopDetailSheet/ArrivalDetailSheet, para poder desmontar el mapa de este panel mientras esa pantalla está abierta encima (ver mapHiddenBySheet). */
   onOpen: () => void
@@ -29,9 +31,12 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, franja, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
+  // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
+  // en el fallback geocodificado en vivo hace falta anteponerle el conector "en" aquí.
+  const zoneText = curatedZoneDisplay ?? (zonaMostrada ? `en ${zonaMostrada}` : null)
 
   return (
     <button
@@ -44,7 +49,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, fra
         🍽️
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-body font-semibold text-text">{zonaMostrada ? `${franjaLabel} en ${zonaMostrada}` : franjaLabel}</p>
+        <p className="text-body font-semibold text-text">{zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}</p>
         <p className="text-caption text-text-soft">Recomendaciones de restaurantes cerca</p>
       </div>
     </button>

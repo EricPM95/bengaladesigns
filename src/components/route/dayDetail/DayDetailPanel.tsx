@@ -368,6 +368,8 @@ export function DayDetailPanel({
   // solo falta en rutas sin generar aún (no debería pasar aquí, pero evita reventar el render).
   const lunchCuratedZone = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZone ?? null
   const dinnerCuratedZone = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZone ?? null
+  const lunchCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZoneDisplay ?? null
+  const dinnerCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZoneDisplay ?? null
   const lunchInsertionIndex = findMealInsertionIndex(schedule, LUNCH_WINDOW)
   const dinnerInsertionIndex = findMealInsertionIndex(schedule, DINNER_WINDOW)
   const destino = route?.destination ?? day.city
@@ -596,6 +598,7 @@ export function DayDetailPanel({
                         city={day.city}
                         coordinates={realStops[index].coordinates}
                         curatedZone={lunchCuratedZone}
+                        curatedZoneDisplay={lunchCuratedZoneDisplay}
                         franja="comida"
                         onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
                       />
@@ -612,6 +615,7 @@ export function DayDetailPanel({
                         city={day.city}
                         coordinates={realStops[index].coordinates}
                         curatedZone={dinnerCuratedZone}
+                        curatedZoneDisplay={dinnerCuratedZoneDisplay}
                         franja="cena"
                         onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
                       />
@@ -726,6 +730,7 @@ export function DayDetailPanel({
         city={day.city}
         coordinates={mealSheet ? realStops[mealSheet.stopIndex].coordinates : { lat: 0, lng: 0 }}
         curatedZone={mealSheet?.franja === 'cena' ? dinnerCuratedZone : lunchCuratedZone}
+        curatedZoneDisplay={mealSheet?.franja === 'cena' ? dinnerCuratedZoneDisplay : lunchCuratedZoneDisplay}
         franja={mealSheet?.franja ?? 'comida'}
         dayStops={dayStopRefs}
         onClose={() => setMealSheet(null)}

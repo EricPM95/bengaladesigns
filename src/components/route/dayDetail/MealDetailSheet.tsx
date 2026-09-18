@@ -34,8 +34,10 @@ interface MealDetailSheetProps {
   city: string
   /** Coordenadas de la parada tras la que cae esta franja — ancla de zona/búsqueda, ver useZonaTuristica/useMealRecommendations. */
   coordinates: Coordinates
-  /** Zona curada a mano (ver MealSlot.curatedZone) — cuando existe, se usa tal cual en vez de geocodificar en vivo, igual que MealTimeAccordion. */
+  /** Barrio curado a mano (ver MealSlot.curatedZone) — cuando existe, se usa tal cual en vez de geocodificar en vivo, igual que MealTimeAccordion (alimenta la búsqueda de restaurantes). */
   curatedZone?: string | null
+  /** Texto legible curado a mano para el TÍTULO (ver MealSlot.curatedZoneDisplay, Regla E) — solo para mostrar, nunca para buscar (la búsqueda sigue usando `curatedZone`/`zonaBusqueda`). */
+  curatedZoneDisplay?: string | null
   franja: 'comida' | 'cena'
   /** Todas las paradas REALES del día (con coordenadas), para el mapa de contexto. */
   dayStops: DayStopRef[]
@@ -131,7 +133,7 @@ function NearbyRow({ place }: { place: NearbyPlaceResult }) {
  * nuevo lo deselecciona y la cámara vuelve al encuadre general). Tocar su marcador en el mapa hace
  * lo mismo en sentido inverso, con scroll automático de la lista hasta su tarjeta.
  */
-export function MealDetailSheet({ open, destino, city, coordinates, curatedZone, franja, dayStops, onClose }: MealDetailSheetProps) {
+export function MealDetailSheet({ open, destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, dayStops, onClose }: MealDetailSheetProps) {
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null)
   const [justHighlighted, setJustHighlighted] = useState<string | null>(null)
@@ -221,6 +223,10 @@ export function MealDetailSheet({ open, destino, city, coordinates, curatedZone,
   }
 
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
+  // Regla E: título con la zona curada ya formateada ("en el Centro Histórico") si existe; si no,
+  // el fallback geocodificado en vivo de siempre. La línea "Buscando los mejores sitios de..." más
+  // abajo sigue usando `zonaMostrada` sin este prefijo — es una zona de búsqueda, no un título.
+  const zoneText = curatedZoneDisplay ?? (zonaMostrada ? `en ${zonaMostrada}` : null)
 
   return (
     <AnimatePresence>
@@ -247,7 +253,7 @@ export function MealDetailSheet({ open, destino, city, coordinates, curatedZone,
           <div className="flex-1 overflow-y-auto bg-bg-card">
             <div className="mx-auto w-full max-w-lg space-y-4 px-4 pb-8 pt-2">
               <div>
-                <h1 className="font-display text-h2 font-semibold text-text">{zonaMostrada ? `${franjaLabel} en ${zonaMostrada}` : franjaLabel}</h1>
+                <h1 className="font-display text-h2 font-semibold text-text">{zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}</h1>
                 <p className="text-small text-text-soft">Recomendaciones de restaurantes cerca</p>
               </div>
 

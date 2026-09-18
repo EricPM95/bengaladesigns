@@ -244,6 +244,8 @@ export interface Stop {
   freeTourHighlights?: string[]
   /** Solo isFreeTour: exactamente 3 tips (persuasivo/propina/práctico) — a diferencia del resto de paradas, generados directamente por el pipeline, nunca bajo demanda. */
   freeTourTips?: string[]
+  /** true solo para paradas de "experiencia nocturna" del pipeline v2 (ver night_experience en routeAlgorithm.js — un lugar ya visitado de día, revisitado de noche otro día del viaje). StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado (gradiente noche + icono de luna) en vez de la tarjeta normal. */
+  isNightExperience?: boolean
 }
 
 /**
@@ -357,8 +359,10 @@ export interface MealSlot {
   restaurants: Restaurant[]
   /** 'breakfast'|'lunch'|'dinner' — para encontrar el MealSlot correcto por franja sin comparar contra `label` (texto ya traducido). */
   mealTime: 'breakfast' | 'lunch' | 'dinner'
-  /** Zona curada a mano (ver `meal_zones` en el JSON del pipeline v2, routeAlgorithm.js) — cuando existe, MealTimeAccordion/MealDetailSheet la usan directamente como título en vez de geocodificar en vivo con Mapbox+Claude (ver useZonaTuristica). null/undefined = comportamiento de siempre (geocodificación en vivo). */
+  /** Barrio curado a mano (ver `meal_zones[...].options[0]` en el JSON del pipeline v2, routeAlgorithm.js) — cuando existe, se usa directamente como zona de BÚSQUEDA de restaurantes en vez de geocodificar en vivo con Mapbox+Claude (ver useZonaTuristica/useMealRecommendations). null/undefined = comportamiento de siempre (geocodificación en vivo). No confundir con `curatedZoneDisplay` (solo para el título). */
   curatedZone?: string | null
+  /** Texto legible curado a mano para el TÍTULO del bloque ("en el Centro Histórico", ver `meal_zones[...].display`, Regla E) — nunca se usa para buscar restaurantes, solo para componer "Hora de comer/cenar {esto}". null/undefined = el título cae al formato genérico con `curatedZone`/zona geocodificada. */
+  curatedZoneDisplay?: string | null
 }
 
 // ── Excursions ────────────────────────────────────────────

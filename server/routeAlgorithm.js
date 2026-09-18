@@ -308,15 +308,102 @@ function placeToDayPlaceEntry(destData, name) {
   }
 }
 
-// Nombre de zona curado para el título del bloque de comida (destData.meal_zones[zoneKey].comida/cena,
-// ver roma_pipeline_v2_fixed.json) — MealTimeAccordion.tsx usa esto tal cual en vez de geocodificar
-// en vivo (useZonaTuristica). zoneKey puede faltar (día sin zona asignada) o no tener entrada en
-// meal_zones todavía (destino/zona sin ese dato) — en ambos casos devuelve null y el frontend cae
-// a su comportamiento de siempre.
-function mealZoneName(destData, zoneKey, mealType) {
-  if (!zoneKey) return null
-  const list = destData.meal_zones?.[zoneKey]?.[mealType]
-  return Array.isArray(list) && list.length > 0 ? list[0] : null
+// Info de zona curada para el bloque de comida (destData.meal_zones[zoneKey].comida/cena = { display,
+// options }, ver roma_pipeline_v2_fixed.json). `name` (options[0]) es el barrio real que ya se usa
+// para BUSCAR restaurantes (useZonaTuristica → useMealRecommendations) — nunca sustituir eso por
+// `display`, rompería la búsqueda. `display` es solo el texto legible para el título ("en el Centro
+// Histórico" en vez de "en Largo di Torre Argentina zona", Regla E). zoneKey puede faltar (día sin
+// zona asignada) o no tener entrada en meal_zones todavía — en ambos casos ambos campos quedan null
+// y el frontend cae a su comportamiento de siempre.
+function mealZoneInfo(destData, zoneKey, mealType) {
+  const entry = zoneKey ? destData.meal_zones?.[zoneKey]?.[mealType] : null
+  const options = entry?.options
+  return {
+    name: Array.isArray(options) && options.length > 0 ? options[0] : null,
+    display: entry?.display ?? null,
+  }
+}
+
+// ── Reglas A/B/D — "lugares sobrantes" de una zona para rellenar huecos ─────────────────────
+//
+// Un lugar es candidato a relleno solo si: pertenece a la zona pedida, NO pertenece a ningún grupo
+// (los grupos ya tienen su propio orden/hueco decidido a mano en zone_distribution — insertarlos
+// sueltos rompería ese orden, misma limitación ya documentada para mustIncludePlaces en index.js) y
+// no se usa YA en NINGÚN día del viaje. "Ningún día del viaje" se calcula sobre `variant.franjas`
+// completo (que ya tenemos en memoria, sin llamadas extra) — no hace falta estado entre días aunque
+// cada día se genere en una llamada HTTP aislada (BLOCK_SIZE=1).
+
+function collectUsedPlaceNames(variant, destData) {
+  const used = new Set()
+  for (const franja of variant?.franjas ?? []) {
+    for (const name of franja.morning?.places ?? []) used.add(name)
+    for (const name of franja.afternoon?.places ?? []) used.add(name)
+    // La zona de un evening_block ya tiene su propio día dedicado (p.ej. Trastevere) — sus lugares
+    // nunca deben colarse como "relleno" suelto de otro día vía zona adyacente (Regla A), aunque no
+    // aparezcan tal cual en morning/afternoon.places (el evening_block los referencia por su cuenta,
+    // con nombres de componente distintos, p.ej. "Paseo por Trastevere" vs el lugar "Trastevere").
+    if (franja.evening_block) {
+      const block = destData?.evening_blocks?.find((b) => b.id === franja.evening_block)
+      for (const name of destData?.zones?.[block?.zone]?.places ?? []) used.add(name)
+    }
+  }
+  return used
+}
+
+const LEVEL_ORDER = { 1: 0, 2: 1, 3: 2 }
+
+// Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
+// exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
+// Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
+// esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
+function findLeftoverZonePlaces(destData, zone, usedNames) {
+  return (destData.places ?? [])
+    .filter((place) => place.zone === zone && place.type === 'exterior' && !place.group && !usedNames.has(place.name))
+    .sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))
+}
+
+/** Zonas vecinas de `zone` según `algorithm_hints.walking_time_matrix`, dentro de `maxMinutes`, más cercanas primero — para la Regla A cuando una zona se queda sin lugares sueltos que añadir. */
+function findAdjacentZones(destData, zone, maxMinutes) {
+  const matrix = destData.algorithm_hints?.walking_time_matrix ?? {}
+  const results = []
+  for (const [key, minutes] of Object.entries(matrix)) {
+    if (minutes > maxMinutes) continue
+    const [a, b] = key.split('_to_')
+    if (a === zone) results.push({ zone: b, minutes })
+    else if (b === zone) results.push({ zone: a, minutes })
+  }
+  return results.sort((x, y) => x.minutes - y.minutes).map((r) => r.zone)
+}
+
+const MAX_FILL_STOPS_PER_DAY = 4
+
+/** Regla A/B/D: añade paradas de `candidates` (ya filtradas/ordenadas) a `stops`, secuencial desde
+el cursor actual, hasta que `stopCondition` sea true, se agoten los candidatos, o se llegue a
+`MAX_FILL_STOPS_PER_DAY` añadidas en esta llamada. `stopCondition` se evalúa contra la hora de
+INICIO real que tendría el próximo candidato (tras sumar caminata+colchón) — no contra el cursor
+previo — para que un límite estricto (p.ej. la Regla B, que nunca puede retrasar el Free Tour) no se
+salte por añadir "un último" candidato cuyo propio inicio ya lo incumple; para límites blandos (Regla
+A, donde terminar un poco después de las 19:30 es aceptable) el efecto es el mismo salvo que ya no
+arranca una parada nueva una vez cruzado el objetivo. Devuelve el cursor final. Muta `stops` y
+`usedNames` (para que llamadas encadenadas — p.ej. zona propia y luego zonas vecinas — no repitan un
+lugar). */
+async function fillStopsUntil(stops, candidates, cursor, previousCoords, mapboxToken, usedNames, stopCondition) {
+  let added = 0
+  for (const place of candidates) {
+    if (added >= MAX_FILL_STOPS_PER_DAY) break
+    let startMinutes = cursor
+    if (previousCoords) {
+      startMinutes = cursor + (await fetchWalkingMinutes(previousCoords, place.coordinates, mapboxToken)) + 10
+    }
+    startMinutes = roundUpToQuarterHour(startMinutes)
+    if (stopCondition(startMinutes)) break
+    stops.push(buildRegularStop(place, startMinutes))
+    cursor = startMinutes + place.duration_minutes
+    previousCoords = place.coordinates
+    usedNames.add(place.name)
+    added += 1
+  }
+  return cursor
 }
 
 // ── Fase "contenido del día" — el núcleo: arma stops/meals con horario real ──────────────────
@@ -360,6 +447,7 @@ function buildShortTripDay(destData, pace) {
       tip: item.note || place.tip || '',
       description: item.note || place.tip || '',
       hours: null,
+      ...(isNight ? { is_night_experience: true } : {}),
       ...categoryFor(place.name),
     })
   }
@@ -398,28 +486,125 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   const morningPlaces = filterClosed(resolvePlaceList(destData, franja.morning?.places))
   const eveningBlockData = franja.evening_block ? destData.evening_blocks?.find((b) => b.id === franja.evening_block) : null
-  // Regla 7: un evening_block reemplaza la tarde normal + cena — si el día lo tiene, se ignora
-  // `franja.afternoon` del todo (aunque el JSON lo trajera relleno).
-  const afternoonPlaces = eveningBlockData ? [] : filterClosed(resolvePlaceList(destData, franja.afternoon?.places))
 
   const isCompleto = pace === 'nonstop'
   const morningStart = isCompleto ? 8 * 60 : 10 * 60
   const freeTourClampMinutes = hasFreeTour ? timeToMinutes(destData.default_free_tour?.default_time ?? '10:00') : null
 
-  const stops = await buildStopsForPlaces(morningPlaces, morningStart, mapboxToken, freeTourClampMinutes)
+  // Lugares ya usados en CUALQUIER día de este viaje (mismo variant, ya en memoria) — evita que las
+  // Reglas A/B/D repitan un lugar que zone_distribution ya asignó a otro día/franja.
+  const usedNames = collectUsedPlaceNames(variant, destData)
 
-  // Zona curada para el título del bloque de comida (ver meal_zones en el JSON) — "activa" es la
-  // zona de la franja justo antes de esa comida: mañana para el almuerzo, tarde (o el evening_block
-  // si sustituye la tarde) para la cena. Sin entrada en meal_zones (destino/zona sin ese dato),
-  // `zone` queda null — MealTimeAccordion.tsx cae entonces a la geocodificación en vivo de siempre.
-  const lunchZone = mealZoneName(destData, franja.morning?.zone, 'comida')
-  const meals = [{ time: 'lunch', options: [], zone: lunchZone }]
+  // Regla B: con Completo + Free Tour, rellena el hueco real entre la(s) parada(s) previa(s) y el
+  // Free Tour (que siempre arranca clavado a las 10:00, regla 4) con 1-2 lugares exteriores cercanos
+  // al punto de encuentro — en vez de dejar 1-1.5h muertas. Fuera de ese caso, construcción normal.
+  let stops
+  if (isCompleto && hasFreeTour && morningPlaces.some((p) => p.isFreeTour)) {
+    const ftIndex = morningPlaces.findIndex((p) => p.isFreeTour)
+    const beforeFT = morningPlaces.slice(0, ftIndex)
+    const fromFT = morningPlaces.slice(ftIndex)
 
-  const afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
+    stops = await buildStopsForPlaces(beforeFT, morningStart, mapboxToken, null)
+    let cursor = stops.length ? timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes : morningStart
+    const gapEnd = freeTourClampMinutes - 15
+    if (gapEnd - cursor >= 30) {
+      const ftZone = destData.default_free_tour?.zone
+      const meetingCoords = destData.default_free_tour?.coordinates
+      const candidates = []
+      if (ftZone && meetingCoords) {
+        for (const place of findLeftoverZonePlaces(destData, ftZone, usedNames)) {
+          if (place.type !== 'exterior') continue
+          if ((await fetchWalkingMinutes(meetingCoords, place.coordinates, mapboxToken)) <= 12) candidates.push(place)
+        }
+      }
+      const previousCoords = stops.length ? [stops[stops.length - 1].latitude, stops[stops.length - 1].longitude] : null
+      cursor = await fillStopsUntil(stops, candidates.slice(0, 2), cursor, previousCoords, mapboxToken, usedNames, (c) => c >= gapEnd)
+    }
+    stops.push(...(await buildStopsForPlaces(fromFT, cursor, mapboxToken, freeTourClampMinutes)))
+  } else {
+    stops = await buildStopsForPlaces(morningPlaces, morningStart, mapboxToken, freeTourClampMinutes)
+  }
+
+  let morningEndMinutes = stops.length ? timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes : morningStart
+
+  let afternoonPlaces = filterClosed(resolvePlaceList(destData, franja.afternoon?.places))
+
+  // Regla D: una mañana de una sola visita larga (p.ej. Museos Vaticanos, acaba ~11:00) deja hueco
+  // hasta la comida (13:00). 1) si la mañana pertenece a un grupo partible con preferred_split,
+  // adelanta su siguiente miembro (típicamente ya listado en la tarde de hoy — se retira de ahí para
+  // no duplicarlo). 2) si sigue sobrando hueco, 1 lugar suelto de la misma zona.
+  if (morningEndMinutes < 12 * 60) {
+    const groupKey = morningPlaces.find((p) => !p.isFreeTour && p.group && destData.groups?.[p.group]?.breakable_if_short && destData.groups[p.group]?.preferred_split)?.group
+    if (groupKey) {
+      const group = destData.groups[groupKey]
+      const missing = (group.preferred_split.morning ?? []).filter((name) => !morningPlaces.some((p) => p.name === name))
+      for (const name of missing) {
+        const place = findRawPlace(destData, name)
+        if (!place) continue
+        afternoonPlaces = afternoonPlaces.filter((p) => p.name !== name)
+        const lastStop = stops[stops.length - 1]
+        let startMinutes = morningEndMinutes
+        if (lastStop) startMinutes = morningEndMinutes + (await fetchWalkingMinutes([lastStop.latitude, lastStop.longitude], place.coordinates, mapboxToken)) + 10
+        startMinutes = roundUpToQuarterHour(startMinutes)
+        stops.push(buildRegularStop(place, startMinutes))
+        morningEndMinutes = startMinutes + place.duration_minutes
+        usedNames.add(name)
+      }
+    }
+    if (morningEndMinutes < 12 * 60 && franja.morning?.zone) {
+      const lastStop = stops[stops.length - 1]
+      const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
+      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames).slice(0, 1)
+      morningEndMinutes = await fillStopsUntil(stops, candidate, morningEndMinutes, previousCoords, mapboxToken, usedNames, () => false)
+    }
+  }
+
+  // Zona curada para el título del bloque de comida (ver meal_zones en el JSON, Regla E) — "activa"
+  // es la zona de la franja justo antes de esa comida: mañana para el almuerzo, tarde (o el
+  // evening_block si sustituye la tarde) para la cena. Sin entrada en meal_zones, ambos campos
+  // quedan null y el frontend cae a su geocodificación en vivo de siempre.
+  const lunchZoneInfo = mealZoneInfo(destData, franja.morning?.zone, 'comida')
+  const meals = [{ time: 'lunch', options: [], zone: lunchZoneInfo.name, zone_display: lunchZoneInfo.display }]
+
+  let afternoonStops = []
+  if (eveningBlockData) {
+    // Regla C: si el día trae paradas de tarde junto a un evening_block, son paradas de TRANSICIÓN
+    // hacia la zona del evening_block (p.ej. Bocca della Verità + Circo Máximo de camino a
+    // Trastevere) — antes se descartaban del todo, dejando 2-3h muertas hasta `ideal_start`.
+    if (afternoonPlaces.length > 0) {
+      const transitionStart = Math.max(morningEndMinutes, 14 * 60 + 30)
+      afternoonStops = await buildStopsForPlaces(afternoonPlaces, transitionStart, mapboxToken, null)
+    }
+  } else {
+    afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
+
+    // Regla A: en Completo, si tras las paradas de tarde ya asignadas sigue siendo pronto (<19:30),
+    // rellena con lugares sueltos de la misma zona y, si se agotan, de zonas vecinas cercanas.
+    if (isCompleto) {
+      let afternoonEndMinutes = afternoonStops.length
+        ? timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
+        : 15 * 60
+      const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
+      if (afternoonZone) {
+        const fillUntil = (c) => c >= 19 * 60 + 30
+        let previousCoords = afternoonStops.length ? [afternoonStops[afternoonStops.length - 1].latitude, afternoonStops[afternoonStops.length - 1].longitude] : null
+        afternoonEndMinutes = await fillStopsUntil(afternoonStops, findLeftoverZonePlaces(destData, afternoonZone, usedNames), afternoonEndMinutes, previousCoords, mapboxToken, usedNames, fillUntil)
+        for (const adjZone of findAdjacentZones(destData, afternoonZone, 20)) {
+          if (fillUntil(afternoonEndMinutes)) break
+          previousCoords = afternoonStops.length ? [afternoonStops[afternoonStops.length - 1].latitude, afternoonStops[afternoonStops.length - 1].longitude] : previousCoords
+          afternoonEndMinutes = await fillStopsUntil(afternoonStops, findLeftoverZonePlaces(destData, adjZone, usedNames), afternoonEndMinutes, previousCoords, mapboxToken, usedNames, fillUntil)
+        }
+      }
+    }
+  }
   stops.push(...afternoonStops)
 
   if (eveningBlockData) {
     let cursor = timeToMinutes(eveningBlockData.ideal_start)
+    if (afternoonStops.length > 0) {
+      const transitionEnd = timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
+      cursor = Math.max(cursor, transitionEnd)
+    }
     let previousCoords = stops.length > 0 ? [stops[stops.length - 1].latitude, stops[stops.length - 1].longitude] : null
     // Fallback al centro de la zona solo por si un destino futuro no trae coordenadas por
     // componente (la propia Roma corregida sí las trae ya, ver roma_pipeline_v2_fixed.json).
@@ -427,7 +612,8 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     for (const component of eveningBlockData.components ?? []) {
       const coords = component.coordinates ?? fallbackCoords
       if (/cena/i.test(component.name)) {
-        meals.push({ time: 'dinner', options: [], zone: mealZoneName(destData, eveningBlockData.zone, 'cena') })
+        const dinnerZoneInfo = mealZoneInfo(destData, eveningBlockData.zone, 'cena')
+        meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
         cursor += component.duration_minutes
         previousCoords = coords
         continue
@@ -451,7 +637,8 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       previousCoords = coords
     }
   } else {
-    meals.push({ time: 'dinner', options: [], zone: mealZoneName(destData, franja.afternoon?.zone, 'cena') })
+    const dinnerZoneInfo = mealZoneInfo(destData, franja.afternoon?.zone, 'cena')
+    meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
   }
 
   // Regla 6: la night experience de un lugar SIEMPRE cae en un día distinto al de su visita
@@ -472,6 +659,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         tip: nightExperience.description || '',
         description: nightExperience.description || '',
         hours: null,
+        is_night_experience: true,
         ...categoryFor(rawPlace.name),
       })
     }

@@ -30,3 +30,12 @@ export function FreeTourIcon({ className = '' }: TimeIconProps) {
     </svg>
   )
 }
+
+/** Luna creciente — distingue las paradas de "experiencia nocturna" del pipeline v2 en StopAccordion.tsx/StopDetailSheet.tsx, ver Stop.isNightExperience en types.ts. */
+export function MoonIcon({ className = '' }: TimeIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-3.5 w-3.5 shrink-0 ${className}`}>
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" />
+    </svg>
+  )
+}

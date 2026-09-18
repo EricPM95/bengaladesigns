@@ -57,6 +57,8 @@ interface GeneratedStop {
   free_tour_meeting_point?: string
   free_tour_highlights?: string[]
   free_tour_tips?: string[]
+  /** Solo pipeline v2 (ver routeAlgorithm.js) — Stop.isNightExperience en types.ts. */
+  is_night_experience?: boolean
 }
 
 interface GeneratedMealOption {
@@ -72,8 +74,10 @@ interface GeneratedMealOption {
 interface GeneratedMeal {
   time: 'breakfast' | 'lunch' | 'dinner'
   options: GeneratedMealOption[]
-  /** Solo presente en rutas del pipeline v2 (ver routeAlgorithm.js, meal_zones) — zona curada a mano para mostrar directamente sin geocodificar en vivo, ver MealSlot.curatedZone. */
+  /** Solo presente en rutas del pipeline v2 (ver routeAlgorithm.js, meal_zones) — barrio curado a mano, usado para BUSCAR restaurantes (ver MealSlot.curatedZone) — no confundir con `zone_display`. */
   zone?: string | null
+  /** Solo pipeline v2 — texto legible para el título ("en el Centro Histórico", Regla E), ver MealSlot.curatedZoneDisplay. Nunca se usa para buscar. */
+  zone_display?: string | null
 }
 
 export interface GeneratedDay {
@@ -264,6 +268,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
           freeTourTips: generated.free_tour_tips,
         }
       : {}),
+    ...(generated.is_night_experience ? { isNightExperience: true } : {}),
   }
 }
 
@@ -288,6 +293,7 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     restaurants: generated.options.map((option, index) => mapRestaurant(dayNumber, generated.time, index, option)),
     mealTime: generated.time,
     curatedZone: generated.zone ?? null,
+    curatedZoneDisplay: generated.zone_display ?? null,
   }
 }
 

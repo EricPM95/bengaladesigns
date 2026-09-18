@@ -217,6 +217,8 @@ export interface MockStopDetail {
   freeTourMeetingPoint?: string
   freeTourHighlights?: string[]
   freeTourTips?: string[]
+  /** Ver Stop.isNightExperience en types.ts — StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado. */
+  isNightExperience?: boolean
 }
 
 type StopTemplate = (city: string, rand: () => number) => MockStopDetail
@@ -420,6 +422,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     freeTourMeetingPoint: stop.freeTourMeetingPoint,
     freeTourHighlights: stop.freeTourHighlights,
     freeTourTips: stop.freeTourTips,
+    isNightExperience: stop.isNightExperience,
   }
 }
 
