@@ -308,6 +308,17 @@ function placeToDayPlaceEntry(destData, name) {
   }
 }
 
+// Nombre de zona curado para el título del bloque de comida (destData.meal_zones[zoneKey].comida/cena,
+// ver roma_pipeline_v2_fixed.json) — MealTimeAccordion.tsx usa esto tal cual en vez de geocodificar
+// en vivo (useZonaTuristica). zoneKey puede faltar (día sin zona asignada) o no tener entrada en
+// meal_zones todavía (destino/zona sin ese dato) — en ambos casos devuelve null y el frontend cae
+// a su comportamiento de siempre.
+function mealZoneName(destData, zoneKey, mealType) {
+  if (!zoneKey) return null
+  const list = destData.meal_zones?.[zoneKey]?.[mealType]
+  return Array.isArray(list) && list.length > 0 ? list[0] : null
+}
+
 // ── Fase "contenido del día" — el núcleo: arma stops/meals con horario real ──────────────────
 
 function buildShortTripDay(destData, pace) {
@@ -318,12 +329,16 @@ function buildShortTripDay(destData, pace) {
   const stops = []
   const meals = []
   for (const item of trip.route) {
+    // short_trips ya trae la zona incrustada en el propio texto ("Comida en Monti", "Cena en
+    // centro") — se extrae de ahí en vez de mirar meal_zones (que es por zona GEOGRÁFICA de
+    // destData.zones, no tiene entrada para "el propio recorrido de 1 día").
+    const mealZoneMatch = item.place.match(/^(?:comida|almuerzo|cena)\s+en\s+(.+)$/i)
     if (/comida|almuerzo/i.test(item.place)) {
-      meals.push({ time: 'lunch', options: [] })
+      meals.push({ time: 'lunch', options: [], zone: mealZoneMatch?.[1] ?? null })
       continue
     }
     if (/^cena/i.test(item.place)) {
-      meals.push({ time: 'dinner', options: [] })
+      meals.push({ time: 'dinner', options: [], zone: mealZoneMatch?.[1] ?? null })
       continue
     }
     if (item.place.startsWith('Free Tour')) {
@@ -393,35 +408,50 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   const stops = await buildStopsForPlaces(morningPlaces, morningStart, mapboxToken, freeTourClampMinutes)
 
-  const meals = [{ time: 'lunch', options: [] }]
+  // Zona curada para el título del bloque de comida (ver meal_zones en el JSON) — "activa" es la
+  // zona de la franja justo antes de esa comida: mañana para el almuerzo, tarde (o el evening_block
+  // si sustituye la tarde) para la cena. Sin entrada en meal_zones (destino/zona sin ese dato),
+  // `zone` queda null — MealTimeAccordion.tsx cae entonces a la geocodificación en vivo de siempre.
+  const lunchZone = mealZoneName(destData, franja.morning?.zone, 'comida')
+  const meals = [{ time: 'lunch', options: [], zone: lunchZone }]
 
   const afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
   stops.push(...afternoonStops)
 
   if (eveningBlockData) {
     let cursor = timeToMinutes(eveningBlockData.ideal_start)
-    const zoneCenter = destData.zones?.[eveningBlockData.zone]?.center
+    let previousCoords = stops.length > 0 ? [stops[stops.length - 1].latitude, stops[stops.length - 1].longitude] : null
+    // Fallback al centro de la zona solo por si un destino futuro no trae coordenadas por
+    // componente (la propia Roma corregida sí las trae ya, ver roma_pipeline_v2_fixed.json).
+    const fallbackCoords = destData.zones?.[eveningBlockData.zone]?.center
     for (const component of eveningBlockData.components ?? []) {
+      const coords = component.coordinates ?? fallbackCoords
       if (/cena/i.test(component.name)) {
-        meals.push({ time: 'dinner', options: [] })
+        meals.push({ time: 'dinner', options: [], zone: mealZoneName(destData, eveningBlockData.zone, 'cena') })
         cursor += component.duration_minutes
+        previousCoords = coords
         continue
       }
+      if (previousCoords && coords) {
+        cursor += await fetchWalkingMinutes(previousCoords, coords, mapboxToken)
+      }
+      cursor = roundUpToQuarterHour(cursor)
       stops.push({
         name: component.name,
-        suggested_time: minutesToTime(roundUpToQuarterHour(cursor)),
+        suggested_time: minutesToTime(cursor),
         duration_minutes: component.duration_minutes,
-        latitude: zoneCenter?.[0],
-        longitude: zoneCenter?.[1],
+        latitude: coords?.[0],
+        longitude: coords?.[1],
         tip: component.tip || '',
         description: component.tip || '',
         hours: null,
         ...categoryFor(component.name),
       })
-      cursor += component.duration_minutes + 10
+      cursor += component.duration_minutes
+      previousCoords = coords
     }
   } else {
-    meals.push({ time: 'dinner', options: [] })
+    meals.push({ time: 'dinner', options: [], zone: mealZoneName(destData, franja.afternoon?.zone, 'cena') })
   }
 
   // Regla 6: la night experience de un lugar SIEMPRE cae en un día distinto al de su visita

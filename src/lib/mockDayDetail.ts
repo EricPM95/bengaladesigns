@@ -633,5 +633,6 @@ export function buildMockMealForWindow(day: DayPlan, window: 'lunch' | 'dinner')
     label: meta.label,
     nearbyNote: 'Cerca de donde estás ahora.',
     restaurants,
+    mealTime: window,
   }
 }

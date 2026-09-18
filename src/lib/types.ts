@@ -355,6 +355,10 @@ export interface MealSlot {
   label: string
   nearbyNote: string
   restaurants: Restaurant[]
+  /** 'breakfast'|'lunch'|'dinner' — para encontrar el MealSlot correcto por franja sin comparar contra `label` (texto ya traducido). */
+  mealTime: 'breakfast' | 'lunch' | 'dinner'
+  /** Zona curada a mano (ver `meal_zones` en el JSON del pipeline v2, routeAlgorithm.js) — cuando existe, MealTimeAccordion/MealDetailSheet la usan directamente como título en vez de geocodificar en vivo con Mapbox+Claude (ver useZonaTuristica). null/undefined = comportamiento de siempre (geocodificación en vivo). */
+  curatedZone?: string | null
 }
 
 // ── Excursions ────────────────────────────────────────────

@@ -18,12 +18,26 @@ export interface ZonaTuristicaResult {
  * MealTimeAccordion.tsx (título de la fila cerrada) y MealDetailSheet.tsx (título de la pantalla
  * completa) — mismo resultado, el segundo uso es gratis gracias al caché en memoria de
  * zonaTuristicaApi.ts.
+ *
+ * `curatedZone`, cuando llega (rutas del pipeline v2, ver MealSlot.curatedZone/meal_zones en
+ * routeAlgorithm.js), se usa TAL CUAL — se salta la geocodificación en vivo entera (ni Mapbox ni
+ * Claude), tanto para `zonaMostrada` como para `zonaBusqueda` (la zona curada, ej. "Monti", es un
+ * ancla de búsqueda de restaurantes igual de buena o mejor que un barrio administrativo en bruto).
+ * Encontrado en vivo: la geocodificación en vivo no tiene por qué coincidir con la zona que el
+ * propio destino curado considera "la zona del día" (ej. Foro Romano cae geográficamente cerca del
+ * límite con "Centro Storico" aunque el curador lo clasifique como "Roma Antigua") — con datos
+ * curados de por medio, mejor confiar en ellos que en una geocodificación independiente.
  */
-export function useZonaTuristica(destino: string, city: string, coordinates: Coordinates): ZonaTuristicaResult {
-  const [zonaBusqueda, setZonaBusqueda] = useState(city)
-  const [zonaMostrada, setZonaMostrada] = useState<string | null>(null)
+export function useZonaTuristica(destino: string, city: string, coordinates: Coordinates, curatedZone?: string | null): ZonaTuristicaResult {
+  const [zonaBusqueda, setZonaBusqueda] = useState(curatedZone || city)
+  const [zonaMostrada, setZonaMostrada] = useState<string | null>(curatedZone || null)
 
   useEffect(() => {
+    if (curatedZone) {
+      setZonaBusqueda(curatedZone)
+      setZonaMostrada(curatedZone)
+      return
+    }
     setZonaMostrada(null)
     if (!hasRealCoordinates(coordinates)) return
     let cancelled = false
@@ -38,7 +52,7 @@ export function useZonaTuristica(destino: string, city: string, coordinates: Coo
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coordinates.lat, coordinates.lng, destino])
+  }, [coordinates.lat, coordinates.lng, destino, curatedZone])
 
   return { zonaBusqueda, zonaMostrada }
 }

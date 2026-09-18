@@ -366,6 +366,8 @@ export function DayDetailPanel({
   // del timeline (ver findMealInsertionIndex), anclado a las coordenadas de ESA parada tanto para
   // geocodificar el barrio como para "Rápido y cerca" (MealTimeAccordion.tsx). route?.destination
   // solo falta en rutas sin generar aún (no debería pasar aquí, pero evita reventar el render).
+  const lunchCuratedZone = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZone ?? null
+  const dinnerCuratedZone = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZone ?? null
   const lunchInsertionIndex = findMealInsertionIndex(schedule, LUNCH_WINDOW)
   const dinnerInsertionIndex = findMealInsertionIndex(schedule, DINNER_WINDOW)
   const destino = route?.destination ?? day.city
@@ -593,6 +595,7 @@ export function DayDetailPanel({
                         destino={destino}
                         city={day.city}
                         coordinates={realStops[index].coordinates}
+                        curatedZone={lunchCuratedZone}
                         franja="comida"
                         onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
                       />
@@ -608,6 +611,7 @@ export function DayDetailPanel({
                         destino={destino}
                         city={day.city}
                         coordinates={realStops[index].coordinates}
+                        curatedZone={dinnerCuratedZone}
                         franja="cena"
                         onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
                       />
@@ -721,6 +725,7 @@ export function DayDetailPanel({
         destino={destino}
         city={day.city}
         coordinates={mealSheet ? realStops[mealSheet.stopIndex].coordinates : { lat: 0, lng: 0 }}
+        curatedZone={mealSheet?.franja === 'cena' ? dinnerCuratedZone : lunchCuratedZone}
         franja={mealSheet?.franja ?? 'comida'}
         dayStops={dayStopRefs}
         onClose={() => setMealSheet(null)}

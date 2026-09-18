@@ -34,6 +34,8 @@ interface MealDetailSheetProps {
   city: string
   /** Coordenadas de la parada tras la que cae esta franja — ancla de zona/búsqueda, ver useZonaTuristica/useMealRecommendations. */
   coordinates: Coordinates
+  /** Zona curada a mano (ver MealSlot.curatedZone) — cuando existe, se usa tal cual en vez de geocodificar en vivo, igual que MealTimeAccordion. */
+  curatedZone?: string | null
   franja: 'comida' | 'cena'
   /** Todas las paradas REALES del día (con coordenadas), para el mapa de contexto. */
   dayStops: DayStopRef[]
@@ -129,13 +131,13 @@ function NearbyRow({ place }: { place: NearbyPlaceResult }) {
  * nuevo lo deselecciona y la cámara vuelve al encuadre general). Tocar su marcador en el mapa hace
  * lo mismo en sentido inverso, con scroll automático de la lista hasta su tarjeta.
  */
-export function MealDetailSheet({ open, destino, city, coordinates, franja, dayStops, onClose }: MealDetailSheetProps) {
+export function MealDetailSheet({ open, destino, city, coordinates, curatedZone, franja, dayStops, onClose }: MealDetailSheetProps) {
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null)
   const [justHighlighted, setJustHighlighted] = useState<string | null>(null)
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map())
 
-  const { zonaBusqueda, zonaMostrada } = useZonaTuristica(destino, city, coordinates)
+  const { zonaBusqueda, zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const { curated, nearby, loading } = useMealRecommendations(open, destino, zonaBusqueda, franja, coordinates)
 
   // Se resetea cada vez que la pantalla se cierra — reabrir siempre empieza en el encuadre general.

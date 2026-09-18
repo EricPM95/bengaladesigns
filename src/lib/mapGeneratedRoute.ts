@@ -72,6 +72,8 @@ interface GeneratedMealOption {
 interface GeneratedMeal {
   time: 'breakfast' | 'lunch' | 'dinner'
   options: GeneratedMealOption[]
+  /** Solo presente en rutas del pipeline v2 (ver routeAlgorithm.js, meal_zones) — zona curada a mano para mostrar directamente sin geocodificar en vivo, ver MealSlot.curatedZone. */
+  zone?: string | null
 }
 
 export interface GeneratedDay {
@@ -284,6 +286,8 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     label: meta.label,
     nearbyNote: '',
     restaurants: generated.options.map((option, index) => mapRestaurant(dayNumber, generated.time, index, option)),
+    mealTime: generated.time,
+    curatedZone: generated.zone ?? null,
   }
 }
 
