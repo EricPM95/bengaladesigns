@@ -26,8 +26,23 @@ function sanitizePlace(raw: unknown): PoolPlace | null {
   }
 }
 
+// Ronda 8D (issue A — bug real de fondo de 6 rondas de "el pool no aparece"): esta caché nunca
+// caduca por diseño ("el JSON curado cambia solo cuando cambia, no con el tiempo") — cierto para
+// ediciones normales de contenido, FALSO para un cambio de FUENTE de datos. Roma cambió de origen
+// (destinations.json antiguo → data/pipeline_v2/roma.json, ronda 5) con nombres de lugar distintos —
+// cualquier navegador que hubiera cargado el pool de Roma ANTES de ese cambio se quedó con los
+// nombres viejos en localStorage para siempre, sin volver a pedirle nada al servidor jamás
+// (readCache no tiene TTL ni versión — si hay algo cacheado, se devuelve tal cual). Cada fix de
+// backend desde entonces (BUG 14, related_to, fuzzy matching...) era invisible para cualquier
+// navegador que ya hubiera visitado Roma una vez — exactamente el patrón reportado: funciona en las
+// pruebas nuevas de Code (sin caché previa), nunca en la app real del usuario (con 8+ rondas de
+// caché acumulada). CACHE_VERSION en la propia clave — cualquier cambio de fuente/forma de los datos
+// futuro solo necesita subir este número para invalidar toda caché vieja de un plumazo, sin tener
+// que enumerar ni borrar claves a mano.
+const CACHE_VERSION = 2
+
 function cacheKey(destination: string, level: 1 | 2 | 3): string {
-  return `pool:${destination.trim().toLowerCase()}:level${level}`
+  return `pool:v${CACHE_VERSION}:${destination.trim().toLowerCase()}:level${level}`
 }
 
 /**
@@ -35,7 +50,8 @@ function cacheKey(destination: string, level: 1 | 2 | 3): string {
  * sesiones/pestañas para que el siguiente viajero que confirme el mismo destino vea los lugares al
  * instante, sin ni siquiera pasar por /api/curated-places-pool. Solo guarda destinos curados (found:
  * true) — un destino no encontrado nunca llega a llamarse con `set`. Sin fecha de expiración: es el
- * mismo JSON curado del servidor, cambia solo cuando el propio JSON cambia, no con el tiempo.
+ * mismo JSON curado del servidor, cambia solo cuando el propio JSON cambia, no con el tiempo — ver
+ * CACHE_VERSION arriba para el caso real en que sí hace falta invalidar todo.
  */
 function readCache(destination: string, level: 1 | 2 | 3): PoolPlace[] | null {
   try {

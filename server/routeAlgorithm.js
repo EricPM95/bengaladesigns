@@ -118,6 +118,19 @@ function parseOpeningMinutes(schedule) {
   return Number(match[1]) * 60 + Number(match[2])
 }
 
+// Ronda 8D: la pareja de parseOpeningMinutes — el SEGUNDO "HH:MM" del texto libre (p.ej. "09:00-19:00"
+// → cierra a las 19:00). Encontrado de verdad: sin esto, nada impedía programar Galería Borghese
+// (cierra 19:00) empezando a las 18:55, forzada por must_include_places en un bloque ya casi lleno —
+// el clamp de apertura (Issue B) evita empezar ANTES de que abra, pero no evita empezar tan tarde que
+// ni le da tiempo a cerrar. null si el texto no trae un segundo rango (mismo criterio que
+// parseOpeningMinutes: mejor no bloquear nada que adivinar mal).
+function parseClosingMinutes(schedule) {
+  const matches = typeof schedule === 'string' ? [...schedule.matchAll(/(\d{1,2}):(\d{2})/g)] : []
+  if (matches.length < 2) return null
+  const [, h, m] = matches[1]
+  return Number(h) * 60 + Number(m)
+}
+
 // Ronda 8 (issue H): dos paradas realmente pegadas (p.ej. Plaza de San Pedro → Basílica de San
 // Pedro, 232m con las coordenadas reales del JSON; Piazza Venezia → Altar de la Patria, 130m) no
 // deben sumar caminata+colchón de 10min — ese colchón existe para trayectos reales entre sitios
@@ -573,12 +586,76 @@ function resolveMustIncludePlace(destData, rawName, interestTags) {
   return { place: substitute ? partner : place, viaRelatedTo: substitute }
 }
 
+// Ronda 8D: cuánto ocupa ya un bloque (mañana/tarde) con su lista CORE tal cual — para no forzar
+// más contenido encima de un bloque que ya está lleno. Solo suma duraciones reales, ignora Free Tour
+// (no tiene duración fija comparable).
+function estimateListMinutes(destData, names) {
+  return (names ?? []).reduce((sum, name) => {
+    if (typeof name !== 'string' || name.startsWith('Free Tour')) return sum
+    return sum + (findRawPlace(destData, name)?.duration_minutes ?? 0)
+  }, 0)
+}
+
+// Cuánto añadiría ESTE lugar si se fuerza aquí — incluye su `contained_in` si ese contenedor no está
+// ya en la lista (ver expandContainedIn: se insertaría automáticamente delante, así que cuenta para
+// el hueco real que ocupa).
+function estimatePlaceLoadMinutes(destData, place, existingNames) {
+  let total = place.duration_minutes ?? 0
+  if (place.contained_in && !existingNames.includes(place.contained_in)) {
+    total += findRawPlace(destData, place.contained_in)?.duration_minutes ?? 0
+  }
+  return total
+}
+
+// Ronda 8D (bug real encontrado en el propio testing): un bloque ya son ~5h reales (mañana
+// 08:00-13:00, tarde 15:00-20:00) — más de esto y se está forzando contenido encima de un día que ya
+// tenía suficiente, en vez de dejarlo simplemente sin sitio (mejor "no cabe" que una mañana de 6
+// paradas que se come la hora de comer). Encontrado de verdad: Roma 3 días no tiene ningún día propio
+// de villa_borghese — "Galería Borghese (museo)" (del pool, sustituida desde "Villa Borghese") caía
+// por adyacencia en la mañana del Día 3, que YA tenía 4 paradas core — sumarle Parque (contained_in,
+// automático) + Galería (120min) desbordaba la mañana hasta las 14:45, chocando con la comida.
+// 270 (4h30) en vez de un tope más estricto: el usuario pide explícitamente que una selección del
+// pool SIEMPRE aparezca si hay sitio real (ver issue L, ronda 7) — un bloque de tarde que ya sube a
+// 270min de contenido CORE (sin relleno) sigue siendo un día razonable, terminando sobre las 19:30
+// sin margen para relleno extra, pero no roto; por debajo de ese tope se prefiere "no cabe" antes que
+// desbordar la comida/cena.
+const MUST_INCLUDE_SLOT_BUDGET_MINUTES = 270
+
 function planMustIncludePlacement(destData, variant, mustIncludeNames, interestTags = new Set()) {
   const placement = new Map()
   if (!Array.isArray(mustIncludeNames) || mustIncludeNames.length === 0) return placement
 
   const usedNames = collectUsedPlaceNames(variant, destData)
   const franjas = variant?.franjas ?? []
+  // Extras ya planificados para OTROS lugares del pool en esta misma llamada — para que el 2º lugar
+  // forzado también vea el hueco ya ocupado por el 1º, no solo lo que trae el JSON.
+  const extrasLoad = new Map()
+  const slotLoad = (franja, slotKey) => {
+    const baseNames = franja[slotKey]?.places ?? []
+    const extra = extrasLoad.get(`${franja.day}:${slotKey}`) ?? []
+    return estimateListMinutes(destData, baseNames) + estimateListMinutes(destData, extra)
+  }
+  // Estimación gruesa de a qué hora arrancaría el bloque — sin pace aquí (planMustIncludePlacement no
+  // lo recibe), 10:00 es la mañana más corta posible (Tranquilo) y la tarde siempre arranca a las
+  // 15:00 en punto en TODA la construcción real (ver buildOrderedAfternoon/Regla C) — usar el peor
+  // caso (mañana más corta) es lo conservador: si cabe con 10:00, cabe también con el 08:00 real de
+  // Completo.
+  const SLOT_START_ESTIMATE = { morning: 10 * 60, afternoon: 15 * 60 }
+  const fitsBudget = (franja, slotKey, place) => {
+    const baseNames = [...(franja[slotKey]?.places ?? []), ...(extrasLoad.get(`${franja.day}:${slotKey}`) ?? [])]
+    const existingLoad = slotLoad(franja, slotKey)
+    if (existingLoad + estimatePlaceLoadMinutes(destData, place, baseNames) > MUST_INCLUDE_SLOT_BUDGET_MINUTES) return false
+    // Ronda 8D (issue real encontrado en testing): sin esto, nada impedía forzar Galería Borghese
+    // (cierra 19:00) a las 18:55 en un bloque ya casi lleno — el presupuesto de arriba solo mira
+    // duración total, no A QUÉ HORA arrancaría de verdad. `contained_in` cuenta aparte: el contenedor
+    // se visita ANTES, así que la atracción arranca después de él, no al principio del hueco.
+    const containerMinutes =
+      place.contained_in && !baseNames.includes(place.contained_in) ? (findRawPlace(destData, place.contained_in)?.duration_minutes ?? 0) : 0
+    const estimatedStart = SLOT_START_ESTIMATE[slotKey] + existingLoad + containerMinutes
+    const closing = parseClosingMinutes(place.schedule)
+    if (closing != null && estimatedStart + (place.duration_minutes ?? 0) > closing) return false
+    return true
+  }
 
   const ensureDay = (day) => {
     if (!placement.has(day)) placement.set(day, { morning: [], afternoon: [] })
@@ -609,10 +686,12 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
       continue
     }
 
-    let targetFranja = franjas.find((f) => f.morning?.zone === place.zone)
+    let targetFranja = franjas.find((f) => f.morning?.zone === place.zone && fitsBudget(f, 'morning', place))
     let slot = 'morning'
     if (!targetFranja) {
-      targetFranja = franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block) ?? franjas.find((f) => f.afternoon?.zone === place.zone)
+      targetFranja =
+        franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block && fitsBudget(f, 'afternoon', place)) ??
+        franjas.find((f) => f.afternoon?.zone === place.zone && fitsBudget(f, 'afternoon', place))
       slot = 'afternoon'
     }
     if (!targetFranja) {
@@ -625,7 +704,7 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
         ]) {
           if (!zoneKey || (candidateSlot === 'afternoon' && franja.evening_block)) continue
           const rank = adjacency.indexOf(zoneKey)
-          if (rank === -1) continue
+          if (rank === -1 || !fitsBudget(franja, candidateSlot, place)) continue
           if (!best || rank < best.rank) best = { franja, slot: candidateSlot, rank }
         }
       }
@@ -635,12 +714,16 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
       }
     }
     if (!targetFranja) {
-      console.log(`[pool] "${place.name}" → DESCARTADO: su zona ("${place.zone}") no tiene ningún día compatible en este viaje (ni propia ni adyacente ≤30min)`)
+      console.log(
+        `[pool] "${place.name}" → DESCARTADO: ningún día tiene hueco real (zona propia o adyacente ≤30min, sin desbordar el bloque — mejor no forzarlo que amontonarlo encima de un bloque ya lleno)`,
+      )
       continue
     }
 
     console.log(`[pool] "${place.name}" → asignado al día ${targetFranja.day} (${slot}, zona "${place.zone}")`)
     ensureDay(targetFranja.day)[slot].push(place.name)
+    const extrasKey = `${targetFranja.day}:${slot}`
+    extrasLoad.set(extrasKey, [...(extrasLoad.get(extrasKey) ?? []), place.name])
     usedNames.add(place.name)
   }
   return placement
