@@ -214,7 +214,8 @@
         "Foro Romano y Palatino",
         "Arco de Constantino",
         "Bocca della Verità",
-        "Circo Máximo"
+        "Circo Máximo",
+        "Altar de la Patria"
       ]
     },
     "centro_historico": {
@@ -589,6 +590,19 @@
       "duration_minutes": 45,
       "type": "exterior",
       "tip": "El pulmón verde de Roma. Desde la terraza del Pincio (dentro del parque) tienes la vista clásica de Roma con San Pedro. Perfecto para un descanso con gelato."
+    },
+    {
+      "name": "Altar de la Patria",
+      "level": 2,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8946,
+        12.4833
+      ],
+      "duration_minutes": 60,
+      "type": "exterior",
+      "tip": "El ascensor a la terraza cuesta 7€ y merece cada céntimo. Las vistas son 360° sobre Roma.",
+      "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba."
     }
   ],
   "groups": {
@@ -1042,10 +1056,9 @@
             "afternoon": {
               "zone": "villa_borghese",
               "places": [
-                "Villa Borghese (parque)",
-                "Piazza del Popolo"
+                "Villa Borghese (parque)"
               ],
-              "note": "Parque + terraza del Pincio + bajar a Popolo"
+              "note": "Parque + terraza del Pincio con vistas a Piazza del Popolo (sin bajar — ya visitada día 3)"
             },
             "evening_block": null
           }

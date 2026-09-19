@@ -418,6 +418,58 @@ function nightExperienceConflictNames(destData) {
   return names
 }
 
+/**
+ * Fix 12 (ronda 4): antes, cada día calculaba su relleno totalmente aislado (BLOQUE_SIZE=1, sin
+ * estado compartido entre llamadas) — dos días distintos podían "descubrir" el mismo lugar suelto
+ * como relleno cada uno por su cuenta (pasó de verdad: "Via del Corso" y "Piazza del Popolo" en Día 1
+ * Y Día 3 del mismo viaje), porque `usedNames` solo conocía los places CORE del JSON, nunca lo que
+ * OTRO día decidiera rellenar. Esta función precalcula — determinista, sin Mapbox, mismos datos
+ * estáticos que `assignNightExperiences` — qué día "es dueño" de cada lugar de relleno disponible:
+ * recorre los días en orden y cada uno reclama, primero de su propia zona (mañana y tarde) y luego de
+ * las vecinas, todos los candidatos libres que encuentre; el primer día que llega a un lugar se lo
+ * queda, ningún día posterior puede repetirlo (aunque no llegue a usarlo — "sobra", no se reparte).
+ */
+function planFillerOwnership(destData, variant) {
+  const usedByCore = collectUsedPlaceNames(variant, destData)
+  const nightConflicts = nightExperienceConflictNames(destData)
+  const claimed = new Set()
+  const owner = new Map()
+
+  const isEligible = (place) =>
+    place.type === 'exterior' &&
+    !place.group &&
+    place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
+    !usedByCore.has(place.name) &&
+    !nightConflicts.has(place.name) &&
+    !claimed.has(place.name)
+
+  const claimForZone = (zone, day) => {
+    if (!zone) return
+    for (const place of (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))) {
+      owner.set(place.name, day)
+      claimed.add(place.name)
+    }
+  }
+
+  // Dos fases — si un día reclamara zonas vecinas en la MISMA pasada que su propia zona, un día cuya
+  // zona principal es solo VECINA de otro (p.ej. Día 1 en centro_historico, adyacente a vaticano a
+  // 25min) podría robarle a ese otro día sus propios sobrantes antes de que le tocara su turno (pasó
+  // de verdad: Día 1 se quedaba con "Via della Conciliazione" — zona vaticano — dejando a Día 3, cuya
+  // zona PRINCIPAL es vaticano, sin nada). Fase 1: cada día reclama solo de su(s) zona(s) propia(s).
+  // Fase 2: lo que sobra tras la fase 1 se reparte por zonas vecinas, en el mismo orden de días.
+  const days = variant?.franjas ?? []
+  for (const franja of days) {
+    claimForZone(franja.morning?.zone, franja.day)
+    if (!franja.evening_block) claimForZone(franja.afternoon?.zone, franja.day)
+  }
+  for (const franja of days) {
+    const zone = franja.afternoon?.zone ?? franja.morning?.zone
+    if (!zone) continue
+    for (const adjacent of findAdjacentZones(destData, zone, 30)) claimForZone(adjacent, franja.day)
+  }
+  return owner
+}
+
 // Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
@@ -453,55 +505,112 @@ function haversineKm(a, b) {
   return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s))
 }
 
-/** Inserta `candidate` en `orderedPlaces` en la posición (índice) que menos alarga el recorrido total
-en línea recta — "cheapest insertion". El orden de las paradas YA decididas por el JSON (curadas a
-mano, incluida la coreografía de un grupo) nunca se toca; solo se decide DÓNDE cae el candidato nuevo
-entre ellas, al principio, o al final. */
-function insertByProximity(orderedPlaces, candidate) {
-  if (orderedPlaces.length === 0) return [candidate]
-  let bestIndex = orderedPlaces.length
-  let bestCost = haversineKm(orderedPlaces[orderedPlaces.length - 1].coordinates, candidate.coordinates)
-  const startCost = haversineKm(candidate.coordinates, orderedPlaces[0].coordinates)
+// ── Fix 11 (ronda 4): reordenación geográfica del conjunto COMPLETO (core + relleno) ────────
+//
+// Antes (Fix 3, ronda 2) solo se decidía DÓNDE insertar un relleno dentro de un orden CORE fijo —
+// pero el propio orden CORE, tal como lo listó el JSON, puede zigzaguear por su cuenta (p.ej. Día 1:
+// Panteón/Piazza Navona al sur → Escalinata de Piazza di Spagna al norte → Largo di Torre Argentina
+// de vuelta al sur). Insertar rellenos con cuidado alrededor de un zigzag ya existente no lo arregla.
+// Ahora se reordena TODO el conjunto por proximidad — salvo los grupos (`place.group`, coreografía
+// curada a mano, ver destData.groups), que se mueven siempre en bloque y en su orden interno, nunca
+// se separan ni se reordenan entre sí.
+
+/** Agrupa una lista de lugares ya resueltos en "unidades" atómicas — un grupo es una sola unidad
+(todos sus miembros, en su orden), un lugar sin grupo es una unidad de 1. */
+function buildUnits(places) {
+  const units = []
+  const seenGroups = new Set()
+  for (const place of places) {
+    if (place.group) {
+      if (seenGroups.has(place.group)) continue
+      seenGroups.add(place.group)
+      units.push({ places: places.filter((p) => p.group === place.group) })
+    } else {
+      units.push({ places: [place] })
+    }
+  }
+  return units
+}
+
+/** Cheapest-insertion generalizado a unidades — usa el primer/último lugar de cada unidad como sus
+extremos de entrada/salida para decidir dónde encaja mejor una unidad nueva completa. */
+function insertUnitByProximity(orderedUnits, candidateUnit) {
+  if (orderedUnits.length === 0) return [candidateUnit]
+  const candStart = candidateUnit.places[0].coordinates
+  const candEnd = candidateUnit.places[candidateUnit.places.length - 1].coordinates
+  let bestIndex = orderedUnits.length
+  let bestCost = haversineKm(orderedUnits[orderedUnits.length - 1].places.at(-1).coordinates, candStart)
+  const startCost = haversineKm(candEnd, orderedUnits[0].places[0].coordinates)
   if (startCost < bestCost) {
     bestCost = startCost
     bestIndex = 0
   }
-  for (let i = 0; i < orderedPlaces.length - 1; i++) {
-    const direct = haversineKm(orderedPlaces[i].coordinates, orderedPlaces[i + 1].coordinates)
-    const viaCandidate = haversineKm(orderedPlaces[i].coordinates, candidate.coordinates) + haversineKm(candidate.coordinates, orderedPlaces[i + 1].coordinates)
+  for (let i = 0; i < orderedUnits.length - 1; i++) {
+    const a = orderedUnits[i].places.at(-1).coordinates
+    const b = orderedUnits[i + 1].places[0].coordinates
+    const direct = haversineKm(a, b)
+    const viaCandidate = haversineKm(a, candStart) + haversineKm(candEnd, b)
     const cost = viaCandidate - direct
     if (cost < bestCost) {
       bestCost = cost
       bestIndex = i + 1
     }
   }
-  const result = [...orderedPlaces]
-  result.splice(bestIndex, 0, candidate)
+  const result = [...orderedUnits]
+  result.splice(bestIndex, 0, candidateUnit)
   return result
 }
 
 /**
- * Fix 9 (ronda 3): orden geográfico curado a mano para el paseo de tarde de una zona (ver
- * `destData.afternoon_flow[zone]`, lista de nombres en el orden natural de recorrido — p.ej. saliendo
- * del Vaticano hacia el centro, nunca alejándose primero al norte y volviendo). `insertByProximity`
- * (línea recta) no sabe distinguir "hacia el centro" de "en dirección contraria" sin ese contexto, así
- * que cuando el candidato aparece en esta lista, su posición relativa a las paradas YA colocadas que
- * también estén en la lista manda sobre la heurística geométrica. Devuelve `null` (para que el llamador
- * caiga a `insertByProximity`) si el candidato no está en `flowNames`, o si no hay lista para esa zona.
+ * Construye el orden geográfico final de un conjunto de unidades (core + relleno) para una zona.
+ * Fix 9 (ronda 3) sigue mandando cuando aplica: las unidades cuyo lugar aparece en
+ * `destData.afternoon_flow[zone]` se colocan primero, en ESE orden curado a mano (saliendo del
+ * Vaticano hacia el centro, nunca al revés) — el resto se intercala alrededor por cheapest-insertion
+ * (Fix 11). Sin lista de flujo para la zona, cae a nearest-neighbor puro sobre todo el conjunto,
+ * empezando por la primera unidad tal como la dio el JSON.
  */
-function insertByFlowOrder(orderedPlaces, candidate, flowNames) {
-  const candidateIndex = flowNames.indexOf(candidate.name)
-  if (candidateIndex === -1) return null
-  let insertAt = orderedPlaces.length
-  for (let i = 0; i < orderedPlaces.length; i++) {
-    const placeIndex = flowNames.indexOf(orderedPlaces[i].name)
-    if (placeIndex !== -1 && placeIndex > candidateIndex) {
-      insertAt = i
-      break
+function buildGeographicOrder(destData, zone, units) {
+  const flowNames = destData.afternoon_flow?.[zone] ?? []
+  const flowIndexOf = (unit) => flowNames.indexOf(unit.places[0]?.name)
+  const flowUnits = units.filter((u) => flowIndexOf(u) !== -1).sort((a, b) => flowIndexOf(a) - flowIndexOf(b))
+  const otherUnits = units.filter((u) => flowIndexOf(u) === -1)
+
+  let ordered
+  let remaining
+  if (flowUnits.length > 0) {
+    ordered = flowUnits
+    remaining = otherUnits
+  } else if (otherUnits.length > 0) {
+    ordered = [otherUnits[0]]
+    remaining = otherUnits.slice(1)
+  } else {
+    return []
+  }
+  for (const unit of remaining) ordered = insertUnitByProximity(ordered, unit)
+  return ordered
+}
+
+/**
+ * Fix 13 (ronda 4): si el día tiene una night experience asignada, la tarde debe fluir HACIA ella —
+ * mueve al final la unidad cuyo último lugar está más cerca de la night experience (si no es ya la
+ * última), para que la cena caiga en su zona y solo quede un paseo corto después (ver Fix 8, zona de
+ * cena = zona de la última parada real de la tarde). No hace nada con 0-1 unidades.
+ */
+function biasOrderTowardNightExperience(orderedUnits, nightExperience) {
+  if (!nightExperience || orderedUnits.length < 2) return orderedUnits
+  let bestIndex = orderedUnits.length - 1
+  let bestDist = haversineKm(orderedUnits[bestIndex].places.at(-1).coordinates, nightExperience.coordinates)
+  for (let i = 0; i < orderedUnits.length - 1; i++) {
+    const dist = haversineKm(orderedUnits[i].places.at(-1).coordinates, nightExperience.coordinates)
+    if (dist < bestDist) {
+      bestDist = dist
+      bestIndex = i
     }
   }
-  const result = [...orderedPlaces]
-  result.splice(insertAt, 0, candidate)
+  if (bestIndex === orderedUnits.length - 1) return orderedUnits
+  const result = [...orderedUnits]
+  const [unit] = result.splice(bestIndex, 1)
+  result.push(unit)
   return result
 }
 
@@ -642,6 +751,15 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // Lugares ya usados en CUALQUIER día de este viaje (mismo variant, ya en memoria) — evita que las
   // Reglas A/B/D repitan un lugar que zone_distribution ya asignó a otro día/franja.
   const usedNames = collectUsedPlaceNames(variant, destData)
+  // Fix 12: ningún lugar de relleno "propiedad" de OTRO día (ver planFillerOwnership) puede aparecer
+  // hoy — sin esto, dos días podían rellenar de forma independiente con el mismo lugar suelto.
+  for (const [name, ownerDay] of planFillerOwnership(destData, variant)) {
+    if (ownerDay !== dayNumber) usedNames.add(name)
+  }
+
+  // Fix 10, calculado aquí (antes de construir la tarde) para que Fix 13 pueda usar sus coordenadas
+  // como sesgo de dirección — ver assignNightExperiences.
+  const nightExperience = assignNightExperiences(destData, variant).get(dayNumber)
 
   // Regla B: con Completo + Free Tour, rellena el hueco real entre la(s) parada(s) previa(s) y el
   // Free Tour (que siempre arranca clavado a las 10:00, regla 4) con 1-2 lugares exteriores cercanos
@@ -729,52 +847,55 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
     }
   } else {
-    // Regla A: en Completo, si tras las paradas de tarde ya asignadas sigue siendo pronto (<19:30),
-    // rellena con lugares sueltos de la misma zona y, si se agotan, de zonas vecinas cercanas (Fix 4,
-    // ronda 2: hasta 30min andando, no 20 — así vaticano SÍ encuentra centro_historico como vecina).
-    // Fix 3 (ronda 2): el relleno se INSERTA en la posición geográfica que menos alarga el recorrido
-    // (insertByProximity, línea recta) en vez de añadirse siempre al final — un lugar "de camino"
-    // entre dos paradas ya colocadas (p.ej. Via della Conciliazione entre Plaza de San Pedro y
-    // Castel Sant'Angelo) cae ahí, no después de la última. El orden curado a mano del JSON (incluida
-    // la coreografía de un grupo) nunca se reordena, solo se decide dónde entra lo nuevo.
-    afternoonOrder = [...afternoonPlaces]
-    afternoonStops = await buildStopsForPlaces(afternoonOrder, 15 * 60, mapboxToken, null)
-
-    if (isCompleto) {
-      const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
-      if (afternoonZone) {
-        const flowNames = destData.afternoon_flow?.[afternoonZone] ?? []
-        const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
-        let added = 0
-        fillLoop: for (const zone of fillZones) {
-          for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames)) {
-            const currentEnd = afternoonStops.length
-              ? timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
-              : 15 * 60
-            if (currentEnd >= 19 * 60 + 30 || added >= MAX_FILL_STOPS_PER_DAY) break fillLoop
-
-            // Fix 9 (ronda 3): orden de paseo curado si existe para esta zona, si no la heurística
-            // geométrica de siempre.
-            const trialOrder = insertByFlowOrder(afternoonOrder, candidate, flowNames) ?? insertByProximity(afternoonOrder, candidate)
-            const trialStops = await buildStopsForPlaces(trialOrder, 15 * 60, mapboxToken, null)
-            const trialEnd = trialStops.length
-              ? timeToMinutes(trialStops[trialStops.length - 1].suggested_time) + trialStops[trialStops.length - 1].duration_minutes
-              : 15 * 60
-
-            // Regla F (ronda 3): la Regla A nunca puede empujar una parada normal hasta la hora de
-            // cenar — si este candidato (esté donde esté insertado) deja la última parada terminando
-            // a la hora de cenar o después, se descarta ENTERA la inserción y se para de rellenar del
-            // todo (seguir probando candidatos más cortos podría colarse igual en el hueco de cena).
-            if (trialEnd > DINNER_CUTOFF_MINUTES) break fillLoop
-
-            afternoonOrder = trialOrder
-            afternoonStops = trialStops
-            usedNames.add(candidate.name)
-            added += 1
-          }
+    // Regla A: en Completo, recopila hasta MAX_FILL_STOPS_PER_DAY lugares sueltos de relleno — primero
+    // de la propia zona de la tarde, luego de zonas vecinas (Fix 4, ronda 2: hasta 30min andando) —
+    // ANTES de decidir ningún orden. Fix 12 (usedNames ya trae los lugares "propiedad" de otro día)
+    // garantiza que ningún relleno elegido aquí pueda repetirse en otro día del viaje.
+    const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
+    let fillerCandidates = []
+    if (isCompleto && afternoonZone) {
+      const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
+      fillZoneLoop: for (const zone of fillZones) {
+        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames)) {
+          if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
+          fillerCandidates.push(candidate)
+          usedNames.add(candidate.name)
         }
       }
     }
+
+    // Fix 11: se reordena el conjunto COMPLETO (core + relleno) por proximidad geográfica — ya no
+    // solo dónde insertar el relleno dentro de un orden CORE fijo, que podía zigzaguear por su cuenta
+    // (Día 1: Panteón/Navona sur → Escalinata norte → Largo di Torre Argentina sur de nuevo). Fix 9
+    // (afternoon_flow) sigue mandando cuando existe para la zona. Fix 13: si el día tiene night
+    // experience asignada, la tarde acaba cerca de ella.
+    //
+    // Regla F: como el relleno ya no queda necesariamente al final de la secuencia (puede caer en
+    // medio, geográficamente), recortar "desde la cola" ya no vale — si la última unidad resulta ser
+    // CORE, un relleno de mitad de tarde (p.ej. Villa Borghese, lejos) se quedaría sin poder quitarse
+    // aunque sea el verdadero causante de terminar después de la cena. En vez de eso, si el resultado
+    // real (Mapbox) se pasa de `DINNER_CUTOFF_MINUTES`, se descarta el candidato de MENOS prioridad
+    // (el último de `fillerCandidates`, ya ordenados por cercanía/nivel) y se reconstruye el orden
+    // entero desde cero — nunca se toca un candidato CORE, esos nunca están en `fillerCandidates`.
+    async function buildOrderedAfternoon(candidates) {
+      const allUnits = [...buildUnits(afternoonPlaces), ...candidates.map((c) => ({ places: [c], isFiller: true }))]
+      let units = buildGeographicOrder(destData, afternoonZone, allUnits)
+      units = biasOrderTowardNightExperience(units, nightExperience)
+      const order = units.flatMap((u) => u.places)
+      const scheduled = order.length ? await buildStopsForPlaces(order, 15 * 60, mapboxToken, null) : []
+      return { units, order, scheduled }
+    }
+
+    let built = await buildOrderedAfternoon(fillerCandidates)
+    while (fillerCandidates.length > 0) {
+      const lastStop = built.scheduled[built.scheduled.length - 1]
+      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : 15 * 60
+      if (lastEnd <= DINNER_CUTOFF_MINUTES) break
+      fillerCandidates = fillerCandidates.slice(0, -1)
+      built = await buildOrderedAfternoon(fillerCandidates)
+    }
+    afternoonOrder = built.order
+    afternoonStops = built.scheduled
   }
   stops.push(...afternoonStops)
 
@@ -828,10 +949,9 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
   }
 
-  // Fix 10: asignación automática (ver assignNightExperiences) — sustituye la asignación manual por
-  // día que traía antes zone_distribution. "Regla complementaria" del fix: siempre después de la cena,
+  // Fix 10: asignación automática (ver assignNightExperiences, calculada más arriba para que Fix 13
+  // pudiera usarla al ordenar la tarde). "Regla complementaria" del fix: siempre después de la cena,
   // hora fija 21:30, duración estándar 45min (el catálogo ya no trae un best_time por experiencia).
-  const nightExperience = assignNightExperiences(destData, variant).get(dayNumber)
   if (nightExperience) {
     const startMinutes = roundUpToQuarterHour(timeToMinutes('21:30'))
     stops.push({
