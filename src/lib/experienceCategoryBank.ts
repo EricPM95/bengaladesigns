@@ -12,14 +12,15 @@ export interface ExperienceCategoryDefinition {
 }
 
 /**
- * "Elige tus experiencias" v2 (punto 4 del prompt DEFINITIVO) — mismos 7 ids que EXPERIENCE_CATEGORY_BANK
- * en server/index.js, solo icono/título/descripción visibles aquí (la lógica de qué hace cada
- * categoría sobre el pipeline vive en el backend, igual que el banco de 18 en experienceBank.ts).
+ * "Elige tus experiencias" v2 (punto 4 del prompt DEFINITIVO) — mismos 6 ids que EXPERIENCE_CATEGORY_BANK
+ * en server/index.js (Ronda 5: "Fuera de lo típico" se eliminó — sus lugares "secretos" siguen en el
+ * JSON como Nivel 2-3 y entran como relleno normal, el usuario los encuentra vía "Añadir parada"),
+ * solo icono/título/descripción visibles aquí (la lógica de qué hace cada categoría sobre el pipeline
+ * vive en el backend, igual que el banco de 18 en experienceBank.ts).
  */
 export const EXPERIENCE_CATEGORY_BANK: ExperienceCategoryDefinition[] = [
   { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
   { id: 'sabores_locales', icon: '🍝', title: 'Sabores locales', description: 'Gastronomía real, mercados y comida local' },
-  { id: 'fuera_de_lo_tipico', icon: '💎', title: 'Fuera de lo típico', description: 'Joyas ocultas, barrios auténticos' },
   { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos y arte' },
   { id: 'miradores_atardeceres', icon: '📸', title: 'Miradores y Atardeceres', description: 'Vistas panorámicas y puntos fotogénicos' },
   { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
@@ -48,7 +49,6 @@ export function encodeExperienceCategories(positive: ExperienceCategoryId[], neg
 const LEGACY_ID_BY_CATEGORY: Partial<Record<ExperienceCategoryId, ExperienceId>> = {
   imprescindibles: 'atracciones',
   sabores_locales: 'gastronomia',
-  fuera_de_lo_tipico: 'joyas_ocultas',
   arte_museos: 'arte_cultura',
   miradores_atardeceres: 'paisajes_miradores',
   free_tour: 'free_tour',

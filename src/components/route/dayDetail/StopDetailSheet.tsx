@@ -2,7 +2,8 @@ import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'rea
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { formatDuration } from '../../../lib/format'
+import { displayStopName, formatDuration } from '../../../lib/format'
+import { tagColor, tagLabel } from '../../../lib/tagColors'
 import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
@@ -271,7 +272,7 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                   <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
                     {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
                     {stop.isNightExperience && <MoonIcon className="text-[#5B6BC0]" />}
-                    {stop.name}
+                    {displayStopName(stop.name)}
                   </h1>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {stop.isNightExperience && (
@@ -295,7 +296,24 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                       </span>
                     )}
                     <span className="rounded-full bg-bg-hover px-2 py-0.5 text-caption font-medium text-text-muted">{stop.category}</span>
+                    {stop.tags?.map((tag) => {
+                      const { bg, text } = tagColor(tag)
+                      return (
+                        <span key={tag} className="rounded-full px-2 py-0.5 text-caption font-medium" style={{ backgroundColor: bg, color: text }}>
+                          {tagLabel(tag)}
+                        </span>
+                      )
+                    })}
                   </div>
+                  {stop.scheduleText && (
+                    <div className="space-y-0.5">
+                      <p className="flex items-center gap-1 text-caption text-text-soft">
+                        <ClockIcon />
+                        {stop.scheduleText}
+                      </p>
+                      <p className="text-caption text-text-muted">Horarios orientativos — verificar antes de visitar</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

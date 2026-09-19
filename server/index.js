@@ -2954,7 +2954,6 @@ function findDestinationData(destination) {
 const EXPERIENCE_CATEGORY_BANK = [
   { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
   { id: 'sabores_locales', icon: '🍝', title: 'Sabores locales', description: 'Gastronomía real, mercados y comida local' },
-  { id: 'fuera_de_lo_tipico', icon: '💎', title: 'Fuera de lo típico', description: 'Joyas ocultas, barrios auténticos' },
   { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos y arte' },
   { id: 'miradores_atardeceres', icon: '📸', title: 'Miradores y Atardeceres', description: 'Vistas panorámicas y puntos fotogénicos' },
   { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
@@ -2968,7 +2967,6 @@ const EXPERIENCE_CATEGORY_BANK = [
 // directo de `destData.winter_markets` (ver buildWinterMarketPlaces).
 const CATEGORY_THEME_MAP = {
   sabores_locales: ['mercado', 'gastronomico'],
-  fuera_de_lo_tipico: ['joya_oculta'],
   arte_museos: ['museo'],
   miradores_atardeceres: ['mirador'],
 }
@@ -3091,13 +3089,13 @@ function applyExperienceCategoryEffects(rawPlaces, destData, levels, positiveCat
 // pero nunca a negativa) decide si estos umbrales se aplican tal cual ("Me interesa" = Nivel 1
 // completo + más relleno si cabe, que es exactamente lo que ya dan estos umbrales para viajes de
 // 3+ días) o se recorta todo a Nivel 1 puro sin importar la duración ("Neutra" = Nivel 1 base, sin
-// el relleno de Nivel 2/3 de los umbrales largos). "Fuera de lo típico" sigue sumando +1 nivel sobre
-// el resultado (antes ligado a 'joyas_ocultas' del banco de 18, ahora a la categoría nueva).
+// el relleno de Nivel 2/3 de los umbrales largos). Ronda 5: "Fuera de lo típico" se eliminó del banco
+// (ya no sube +1 nivel) — sus lugares "secretos" siguen como Nivel 2-3 normales, alcanzables por los
+// umbrales de duración de siempre o por el usuario vía "Añadir parada".
 function selectDestinationLevels(cityDayCount, positiveCategories) {
   const positive = new Set(Array.isArray(positiveCategories) ? positiveCategories : [])
   const imprescindiblesNeutral = !positive.has('imprescindibles')
-  let maxLevel = imprescindiblesNeutral ? 1 : cityDayCount <= 4 ? 1 : cityDayCount <= 6 ? 2 : 3
-  if (positive.has('fuera_de_lo_tipico') && maxLevel < 3) maxLevel += 1
+  const maxLevel = imprescindiblesNeutral ? 1 : cityDayCount <= 4 ? 1 : cityDayCount <= 6 ? 2 : 3
   const levels = []
   for (let i = 1; i <= maxLevel; i++) levels.push(String(i))
   return levels
@@ -3571,6 +3569,28 @@ app.post('/api/curated-places-pool', (req, res) => {
     return
   }
 
+  // Ronda 5 (BUG 14, parte 2 de 2): antes esta ruta SIEMPRE leía el JSON curado antiguo
+  // (findDestinationData/destinations.json), incluso para Roma, que ya tiene su propio JSON v2
+  // (data/pipeline_v2/roma.json) con nombres de lugar DISTINTOS ("Plaza España y Escalinata" en vez
+  // de "Escalinata de Plaza de España", etc.) — el pool que veía el usuario nunca podía coincidir
+  // con `findRawPlace` en routeAlgorithm.js, así que sus marcas jamás entraban en la ruta generada
+  // (ver planMustIncludePlacement). Para un destino con datos v2, el pool sale de ahí directamente.
+  const pipelineV2Data = findPipelineV2Data(destination)
+  if (pipelineV2Data) {
+    const levelNumber = Number(levelKey)
+    const places = (pipelineV2Data.places ?? [])
+      .filter((place) => place.level === levelNumber)
+      .map((place) => ({
+        name: place.name,
+        category: pipelineV2Data.zones?.[place.zone]?.name ?? place.zone ?? null,
+        type: place.type ?? null,
+        duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,
+        is_free_access: place.type === 'exterior',
+      }))
+    res.json({ found: true, level: levelNumber, places })
+    return
+  }
+
   const destData = findDestinationData(destination)
   if (!destData) {
     res.json({ found: false, places: [] })
@@ -3611,7 +3631,7 @@ app.post('/api/generate-day-places', async (req, res) => {
   if (pipelineV2Data) {
     const hasFreeTour = hasFreeTourFromAnswers(answers)
     const v2Days = listDayNumbers
-      .map((dayNumber) => ({ day_number: dayNumber, places: buildDayPlacesV2(pipelineV2Data, listDayNumbers.length, hasFreeTour, dayNumber) }))
+      .map((dayNumber) => ({ day_number: dayNumber, places: buildDayPlacesV2(pipelineV2Data, listDayNumbers.length, hasFreeTour, dayNumber, must_include_places) }))
       .filter((entry) => Array.isArray(entry.places))
     if (v2Days.length === listDayNumbers.length) {
       console.log(`[pipeline-v2] "${destination}" — Fase 1 resuelta con el algoritmo JS, sin llamada a Claude`)
@@ -4017,7 +4037,7 @@ function logGeographicCoherence(day) {
 }
 
 app.post('/api/generate-day-block', async (req, res) => {
-  const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip } = req.body ?? {}
+  const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip, must_include_places } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
     res.status(400).json({ error: 'Faltan datos necesarios para generar este bloque de días.' })
     return
@@ -4047,6 +4067,8 @@ app.post('/api/generate-day-block', async (req, res) => {
         answers.pace,
         MAPBOX_TOKEN,
         answers.dateRange?.start,
+        must_include_places,
+        answers.experiencesPositive,
       )
       if (dayBlockV2) {
         console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)

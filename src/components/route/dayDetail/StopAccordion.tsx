@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
-import { ClockIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
+import { displayStopName, formatDuration } from '../../../lib/format'
+import { tagColor, tagLabel } from '../../../lib/tagColors'
+import { ClockIcon, FreeTourIcon, HourglassIcon, MoonIcon } from '../../ui/TimeIcons'
 
 const NIGHT_GRADIENT = 'linear-gradient(135deg, #1a1a2e, #16213e)'
 const NIGHT_BORDER = '#2d3561'
@@ -43,7 +45,7 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
               <MoonIcon />
               {startTime ? `Noche · ${startTime}${endTime ? `–${endTime}` : ''}` : 'Noche'}
             </p>
-            <p className="text-body font-semibold text-white">{stop.name}</p>
+            <p className="text-body font-semibold text-white">{displayStopName(stop.name)}</p>
             <span className="inline-block rounded-full bg-[#2d3561] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">Experiencia nocturna</span>
           </div>
 
@@ -68,9 +70,13 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
 
         <div className="min-w-0 flex-1 space-y-1.5">
           {startTime && <p className="text-caption font-bold text-accent-hover">{startTime}</p>}
-          <p className="flex items-center gap-1 text-body font-semibold text-text">
+          <p className="flex items-center gap-1.5 text-body font-semibold text-text">
             {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
-            {stop.name}
+            <span className="min-w-0 flex-1">{displayStopName(stop.name)}</span>
+            <span className="flex shrink-0 items-center gap-0.5 text-caption font-normal text-text-muted">
+              <HourglassIcon />
+              {formatDuration(stop.durationMinutes)}
+            </span>
           </p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-soft">
@@ -80,6 +86,19 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
             </span>
             <span className="rounded-full bg-bg-hover px-2 py-0.5 font-medium text-text-muted">{stop.category}</span>
           </div>
+
+          {stop.tags && stop.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {stop.tags.map((tag) => {
+                const { bg, text } = tagColor(tag)
+                return (
+                  <span key={tag} className="rounded-full px-2 py-0.5 text-caption font-medium" style={{ backgroundColor: bg, color: text }}>
+                    {tagLabel(tag)}
+                  </span>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <img src={stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />

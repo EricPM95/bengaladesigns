@@ -371,6 +371,7 @@ async function requestDayBlockWithRetry(
   dayPlaces: DayPlaces[],
   allDaysLight: LightDaySummary[],
   transportContext: TransportContext,
+  mustIncludePlaces: string[],
 ): Promise<DayBlockResult> {
   const dayNumbers = block.map((day) => day.day_number).join(',')
   let lastError: unknown
@@ -383,6 +384,11 @@ async function requestDayBlockWithRetry(
         places_for_block: placesForBlockDays(dayPlaces, block),
         all_days: allDaysLight,
         is_first_block_of_trip: block.some((day) => day.day_number === 1),
+        // BUG 14 (ronda 5): el camino pipeline v2 (buildDayBlockV2) recalcula la colocación de
+        // must_include_places de forma determinista por su cuenta (ver planMustIncludePlacement en
+        // routeAlgorithm.js) — necesita la lista aquí, no solo en generate-day-places, porque este
+        // endpoint relee zone_distribution desde cero y no confía en `places_for_block`.
+        must_include_places: mustIncludePlaces,
         ...transportContext,
       })
     } catch (error) {
@@ -472,7 +478,7 @@ async function settlePendingBlocks(args: SettlePendingBlocksArgs): Promise<{ gen
   }
   let settleQueue: SettleEntry[] = pendingBlocks.map((block, index) => ({
     index,
-    promise: requestDayBlockWithRetry(destination, answers, block, dayPlaces, allDaysLight, transportContext)
+    promise: requestDayBlockWithRetry(destination, answers, block, dayPlaces, allDaysLight, transportContext, params.mustIncludePlaces)
       .then((result): BlockOutcome => ({ block, status: 'ok', result }))
       .catch((error): BlockOutcome => ({ block, status: 'error', error })),
   }))

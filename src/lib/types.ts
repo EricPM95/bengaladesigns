@@ -98,7 +98,6 @@ export type ExperienceId =
 export type ExperienceCategoryId =
   | 'imprescindibles'
   | 'sabores_locales'
-  | 'fuera_de_lo_tipico'
   | 'arte_museos'
   | 'miradores_atardeceres'
   | 'free_tour'
@@ -246,6 +245,10 @@ export interface Stop {
   freeTourTips?: string[]
   /** true solo para paradas de "experiencia nocturna" del pipeline v2 (ver night_experience en routeAlgorithm.js — un lugar ya visitado de día, revisitado de noche otro día del viaje). StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado (gradiente noche + icono de luna) en vez de la tarjeta normal. */
   isNightExperience?: boolean
+  /** Ronda 5: categorías temáticas del lugar (ver `tags` en data/pipeline_v2/roma.json — "museo", "mirador", "iglesia"...) — solo el pipeline v2 las trae hoy; StopAccordion/StopDetailSheet las pintan como píldoras de color (ver tagColors.ts). Ausente/vacío no oculta nada más, solo no hay píldoras. */
+  tags?: string[]
+  /** Ronda 5: horario de apertura tal cual lo trae el JSON curado (p.ej. "Lun-Sáb 09:00-19:00, Dom 09:00-18:00") — distinto de `hours` (rango calculado para ESTA visita); es informativo, general del lugar, y siempre se muestra con el disclaimer "orientativo" (ver StopDetailSheet). Solo el pipeline v2 lo trae hoy. */
+  scheduleText?: string | null
 }
 
 /**

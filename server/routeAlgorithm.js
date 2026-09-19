@@ -61,6 +61,26 @@ export function hasFreeTourFromAnswers(answers) {
   return Array.isArray(answers?.experiencesPositive) && answers.experiencesPositive.includes('free_tour')
 }
 
+// ── Ronda 5 — tags por experiencia positiva ──────────────────────────────────────────────────
+// Mapea las categorías de experiencia (ExperienceCategoryId, ver experienceCategoryBank.ts) a los
+// `tags` de un place (Parte 2B) — cuando el usuario marca una de estas como positiva, sus lugares
+// de relleno con ese tag suben de prioridad (se eligen antes que relleno sin tag coincidente). No
+// existe hoy un mecanismo de exclusión ("no me lo recomiendes") en el selector — solo multi-select
+// positivo — así que solo se implementa el sesgo positivo, no la exclusión negativa del documento.
+const TAG_INTEREST_MAP = {
+  sabores_locales: ['gastronomia', 'mercado'],
+  arte_museos: ['museo', 'arte'],
+  miradores_atardeceres: ['mirador'],
+}
+
+function interestedTagsFromAnswers(answers) {
+  const tags = new Set()
+  for (const id of answers?.experiencesPositive ?? []) {
+    for (const tag of TAG_INTEREST_MAP[id] ?? []) tags.add(tag)
+  }
+  return tags
+}
+
 // ── Helpers de tiempo (reimplementados aquí a propósito — el backend Node no comparte bundle
 // con el cliente Vite, así que no se importa nada de src/) ──────────────────────────────────
 
@@ -184,6 +204,10 @@ function buildRegularStop(place, startMinutes) {
     // filtrado antes de llegar aquí) — null = acceso libre / horario no verificado, mismo
     // criterio que "sin taquilla" en el resto del pipeline.
     hours: null,
+    // Ronda 5 (Parte 2B/8): tags temáticos y horario informativo tal cual del JSON — ambos opcionales,
+    // solo un puñado de lugares trae `schedule` (ver mapStop/shellFromStop en el cliente).
+    tags: Array.isArray(place.tags) ? place.tags : [],
+    schedule: place.schedule ?? null,
     ...categoryFor(place.name),
   }
 }
@@ -259,7 +283,7 @@ export function buildSkeletonV2(destData, totalDays, hasFreeTour) {
 // v2 NO usa esta lista (relee zone_distribution directamente con más contexto — night experience,
 // evening block, Free Tour), así que no hace falta que sea perfecta, solo válida. ──────────────
 
-export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber) {
+export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mustIncludePlaces) {
   if (totalDays === 1) {
     const key = /* pace no se conoce aquí, se listan ambos ritmos combinados */ null
     void key
@@ -279,7 +303,12 @@ export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber) {
   const franja = variant?.franjas?.find((f) => f.day === dayNumber)
   if (!franja) return null
 
-  const names = [...(franja.morning?.places ?? []), ...(franja.afternoon?.places ?? [])]
+  // BUG 14: mismo cálculo determinista que buildDayBlockV2 (ver planMustIncludePlacement) — así el
+  // lugar forzado por el usuario ya aparece en esta lista "Fase 1", que es la que el cliente reenvía
+  // como `places_for_block` a generate-day-block (aunque ese endpoint, en el camino v2, la ignore y
+  // recalcule el mismo resultado por su cuenta desde `mustIncludePlaces`, no desde esta lista).
+  const extrasForDay = planMustIncludePlacement(destData, variant, mustIncludePlaces).get(dayNumber)
+  const names = [...(franja.morning?.places ?? []), ...(extrasForDay?.morning ?? []), ...(franja.afternoon?.places ?? []), ...(extrasForDay?.afternoon ?? [])]
   const seen = new Set()
   const places = []
   for (const name of names) {
@@ -333,11 +362,16 @@ function mealZoneInfo(destData, zoneKey, mealType) {
 // completo (que ya tenemos en memoria, sin llamadas extra) — no hace falta estado entre días aunque
 // cada día se genere en una llamada HTTP aislada (BLOCK_SIZE=1).
 
-function collectUsedPlaceNames(variant, destData) {
+function collectUsedPlaceNames(variant, destData, mustIncludePlacement = null) {
   const used = new Set()
   for (const franja of variant?.franjas ?? []) {
     for (const name of franja.morning?.places ?? []) used.add(name)
     for (const name of franja.afternoon?.places ?? []) used.add(name)
+    const extras = mustIncludePlacement?.get(franja.day)
+    if (extras) {
+      for (const name of extras.morning) used.add(name)
+      for (const name of extras.afternoon) used.add(name)
+    }
     // La zona de un evening_block ya tiene su propio día dedicado (p.ej. Trastevere) — sus lugares
     // nunca deben colarse como "relleno" suelto de otro día vía zona adyacente (Regla A), aunque no
     // aparezcan tal cual en morning/afternoon.places (el evening_block los referencia por su cuenta,
@@ -395,6 +429,78 @@ function assignNightExperiences(destData, variant) {
   return assignment
 }
 
+/**
+ * BUG 14 (ronda 5): las selecciones del pool pre-generación ("Elige lugares") no llegaban a influir
+ * en la ruta de Roma en absoluto — buildSkeletonV2/buildDayPlacesV2/buildDayBlockV2 solo leían
+ * `zone_distribution`, sin ningún parámetro para lugares forzados por el usuario. Esta función decide,
+ * de forma determinista (mismos datos estáticos que assignNightExperiences/planFillerOwnership, sin
+ * estado entre llamadas), a qué día de `variant.franjas` — y a qué franja (mañana/tarde) de ese día —
+ * se añade cada lugar marcado por el usuario, como parada EXTRA de tipo CORE (nunca se recorta por la
+ * Regla F ni se le puede robar a otro día):
+ *
+ * 1. Se descarta un nombre si no resuelve a un lugar real del JSON, si ya está usado en cualquier día
+ *    (core o un mustInclude anterior de esta misma llamada) o si su pareja `related_to` ya está usada
+ *    (nunca las dos versiones del mismo sitio, ver relatedToAlreadyUsed).
+ * 2. Se busca el primer día (en orden) cuya zona de MAÑANA coincida con la zona del lugar → va a la
+ *    mañana de ese día. Si ninguna coincide, el primer día cuya zona de TARDE coincida (preferiendo
+ *    uno sin evening_block, donde la Regla A puede acomodarlo con más naturalidad) → va a la tarde.
+ * 3. Si la zona del lugar no aparece en ningún día de este viaje corto (p.ej. Villa Borghese en un
+ *    viaje de 2 días), se busca el día cuya zona (mañana o tarde, sin evening_block) esté más cerca
+ *    por adyacencia (`algorithm_hints.walking_time_matrix`, ≤30min) y se añade a su tarde.
+ * 4. Si nada de lo anterior encaja, el lugar se descarta en silencio — igual criterio que el resto del
+ *    pipeline (nunca debe poder romper la generación).
+ */
+function planMustIncludePlacement(destData, variant, mustIncludeNames) {
+  const placement = new Map()
+  if (!Array.isArray(mustIncludeNames) || mustIncludeNames.length === 0) return placement
+
+  const usedNames = collectUsedPlaceNames(variant, destData)
+  const franjas = variant?.franjas ?? []
+
+  const ensureDay = (day) => {
+    if (!placement.has(day)) placement.set(day, { morning: [], afternoon: [] })
+    return placement.get(day)
+  }
+
+  for (const rawName of mustIncludeNames) {
+    if (typeof rawName !== 'string') continue
+    const place = findRawPlace(destData, rawName)
+    if (!place) continue
+    if (usedNames.has(place.name) || relatedToAlreadyUsed(place, usedNames)) continue
+
+    let targetFranja = franjas.find((f) => f.morning?.zone === place.zone)
+    let slot = 'morning'
+    if (!targetFranja) {
+      targetFranja = franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block) ?? franjas.find((f) => f.afternoon?.zone === place.zone)
+      slot = 'afternoon'
+    }
+    if (!targetFranja) {
+      const adjacency = findAdjacentZones(destData, place.zone, 30)
+      let best = null
+      for (const franja of franjas) {
+        for (const [candidateSlot, zoneKey] of [
+          ['morning', franja.morning?.zone],
+          ['afternoon', franja.afternoon?.zone],
+        ]) {
+          if (!zoneKey || (candidateSlot === 'afternoon' && franja.evening_block)) continue
+          const rank = adjacency.indexOf(zoneKey)
+          if (rank === -1) continue
+          if (!best || rank < best.rank) best = { franja, slot: candidateSlot, rank }
+        }
+      }
+      if (best) {
+        targetFranja = best.franja
+        slot = best.slot
+      }
+    }
+    if (!targetFranja) continue
+
+    ensureDay(targetFranja.day)[slot].push(place.name)
+    usedNames.add(place.name)
+  }
+  return placement
+}
+
 const LEVEL_ORDER = { 1: 0, 2: 1, 3: 2 }
 
 // Regla G (ronda 3): un lugar de 2h+ (parque grande, palacio, zona arqueológica extensa) es una
@@ -429,8 +535,8 @@ function nightExperienceConflictNames(destData) {
  * las vecinas, todos los candidatos libres que encuentre; el primer día que llega a un lugar se lo
  * queda, ningún día posterior puede repetirlo (aunque no llegue a usarlo — "sobra", no se reparte).
  */
-function planFillerOwnership(destData, variant) {
-  const usedByCore = collectUsedPlaceNames(variant, destData)
+function planFillerOwnership(destData, variant, mustIncludePlacement = null, interestTags = new Set()) {
+  const usedByCore = collectUsedPlaceNames(variant, destData, mustIncludePlacement)
   const nightConflicts = nightExperienceConflictNames(destData)
   const claimed = new Set()
   const owner = new Map()
@@ -441,12 +547,14 @@ function planFillerOwnership(destData, variant) {
     place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
     !usedByCore.has(place.name) &&
     !nightConflicts.has(place.name) &&
-    !claimed.has(place.name)
+    !claimed.has(place.name) &&
+    !relatedToAlreadyUsed(place, usedByCore) &&
+    !(place.related_to && claimed.has(place.related_to))
 
   const claimForZone = (zone, day, limit = Infinity) => {
     if (!zone) return
     let claimedCount = 0
-    for (const place of (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))) {
+    for (const place of (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).sort((a, b) => compareFillerPlaces(a, b, interestTags))) {
       if (claimedCount >= limit) break
       owner.set(place.name, day)
       claimed.add(place.name)
@@ -485,11 +593,37 @@ function planFillerOwnership(destData, variant) {
   return owner
 }
 
+// Ronda 5 (Parte 2C): un lugar `related_to` es la versión alternativa (rápida vs completa) del MISMO
+// sitio físico — nunca deben aparecer los dos en la misma ruta. Solo se aplica a lo que decide el
+// PROPIO algoritmo (relleno improvisado, pool forzado) — el contenido CORE que ya trae a mano
+// `zone_distribution` no se toca aunque incluya ambos lados de una pareja (el JSON manda, ver
+// Galería Borghese + Villa Borghese (parque) el mismo día 4, una combinación deliberada, no un bug).
+function relatedToAlreadyUsed(place, usedNames) {
+  return Boolean(place.related_to) && usedNames.has(place.related_to)
+}
+
+// Ronda 5 (Parte 2B): con una zona empatada por nivel, los lugares cuyo `tags` coincide con una
+// experiencia que el usuario marcó como positiva (interestTags) se eligen antes — comparación
+// primero por coincidencia de tag, luego por nivel, igual criterio de siempre.
+function fillerSortKey(interestTags) {
+  return (place) => {
+    const tagRank = interestTags.size > 0 && (place.tags ?? []).some((tag) => interestTags.has(tag)) ? 0 : 1
+    return [tagRank, LEVEL_ORDER[place.level] ?? 9]
+  }
+}
+
+function compareFillerPlaces(a, b, interestTags) {
+  const keyFn = fillerSortKey(interestTags)
+  const [aTag, aLevel] = keyFn(a)
+  const [bTag, bLevel] = keyFn(b)
+  return aTag - bTag || aLevel - bLevel
+}
+
 // Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
 // esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
-function findLeftoverZonePlaces(destData, zone, usedNames) {
+function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Set()) {
   const nightConflicts = nightExperienceConflictNames(destData)
   return (destData.places ?? [])
     .filter(
@@ -499,9 +633,10 @@ function findLeftoverZonePlaces(destData, zone, usedNames) {
         !place.group &&
         place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
         !usedNames.has(place.name) &&
-        !nightConflicts.has(place.name),
+        !nightConflicts.has(place.name) &&
+        !relatedToAlreadyUsed(place, usedNames),
     )
-    .sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))
+    .sort((a, b) => compareFillerPlaces(a, b, interestTags))
 }
 
 // Distancia en línea recta (km) — solo para DECIDIR dónde insertar un lugar de relleno dentro de un
@@ -717,7 +852,7 @@ function buildShortTripDay(destData, pace) {
  * (ver weekdayNameForDay). Devuelve `null` si el destino/día no está cubierto por pipeline v2 — el
  * llamador cae al camino que ya existía.
  */
-export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumber, pace, mapboxToken, dateRangeStartIso) {
+export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumber, pace, mapboxToken, dateRangeStartIso, mustIncludePlaces, experiencesPositive) {
   if (totalDays === 1) return buildShortTripDay(destData, pace)
   if (totalDays > 5) return null
 
@@ -727,6 +862,11 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   const notIncluded = []
   const weekday = weekdayNameForDay(dateRangeStartIso, dayNumber)
+  const interestTags = interestedTagsFromAnswers({ experiencesPositive })
+  // BUG 14: mismo cálculo determinista en cada llamada aislada (BLOQUE_SIZE=1) que ya usan
+  // assignNightExperiences/planFillerOwnership — ver planMustIncludePlacement.
+  const mustIncludePlacement = planMustIncludePlacement(destData, variant, mustIncludePlaces)
+  const extrasForDay = mustIncludePlacement.get(dayNumber) ?? { morning: [], afternoon: [] }
 
   function filterClosed(places) {
     return places.filter((place) => {
@@ -739,7 +879,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     })
   }
 
-  const morningPlaces = filterClosed(resolvePlaceList(destData, franja.morning?.places))
+  const morningPlaces = filterClosed(resolvePlaceList(destData, [...(franja.morning?.places ?? []), ...extrasForDay.morning]))
   const eveningBlockData = franja.evening_block ? destData.evening_blocks?.find((b) => b.id === franja.evening_block) : null
 
   const isCompleto = pace === 'nonstop'
@@ -747,11 +887,12 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   const freeTourClampMinutes = hasFreeTour ? timeToMinutes(destData.default_free_tour?.default_time ?? '10:00') : null
 
   // Lugares ya usados en CUALQUIER día de este viaje (mismo variant, ya en memoria) — evita que las
-  // Reglas A/B/D repitan un lugar que zone_distribution ya asignó a otro día/franja.
-  const usedNames = collectUsedPlaceNames(variant, destData)
+  // Reglas A/B/D repitan un lugar que zone_distribution (o el BUG 14 — mustIncludePlacement) ya
+  // asignó a otro día/franja.
+  const usedNames = collectUsedPlaceNames(variant, destData, mustIncludePlacement)
   // Fix 12: ningún lugar de relleno "propiedad" de OTRO día (ver planFillerOwnership) puede aparecer
   // hoy — sin esto, dos días podían rellenar de forma independiente con el mismo lugar suelto.
-  for (const [name, ownerDay] of planFillerOwnership(destData, variant)) {
+  for (const [name, ownerDay] of planFillerOwnership(destData, variant, mustIncludePlacement, interestTags)) {
     if (ownerDay !== dayNumber) usedNames.add(name)
   }
 
@@ -776,7 +917,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       const meetingCoords = destData.default_free_tour?.coordinates
       const candidates = []
       if (ftZone && meetingCoords) {
-        for (const place of findLeftoverZonePlaces(destData, ftZone, usedNames)) {
+        for (const place of findLeftoverZonePlaces(destData, ftZone, usedNames, interestTags)) {
           if (place.type !== 'exterior') continue
           if ((await fetchWalkingMinutes(meetingCoords, place.coordinates, mapboxToken)) <= 12) candidates.push(place)
         }
@@ -791,7 +932,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   let morningEndMinutes = stops.length ? timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes : morningStart
 
-  let afternoonPlaces = filterClosed(resolvePlaceList(destData, franja.afternoon?.places))
+  let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...(franja.afternoon?.places ?? []), ...extrasForDay.afternoon]))
 
   // Regla D: una mañana de una sola visita larga (p.ej. Museos Vaticanos, acaba ~11:00) deja hueco
   // hasta la comida (13:00). 1) si la mañana pertenece a un grupo partible con preferred_split,
@@ -818,7 +959,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (morningEndMinutes < 12 * 60 && franja.morning?.zone) {
       const lastStop = stops[stops.length - 1]
       const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
-      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames).slice(0, 1)
+      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags).slice(0, 1)
       morningEndMinutes = await fillStopsUntil(stops, candidate, morningEndMinutes, previousCoords, mapboxToken, usedNames, () => false)
     }
   }
@@ -854,7 +995,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (isCompleto && afternoonZone) {
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
       fillZoneLoop: for (const zone of fillZones) {
-        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames)) {
+        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames, interestTags)) {
           if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
           fillerCandidates.push(candidate)
           usedNames.add(candidate.name)

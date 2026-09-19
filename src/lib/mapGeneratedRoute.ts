@@ -59,6 +59,10 @@ interface GeneratedStop {
   free_tour_tips?: string[]
   /** Solo pipeline v2 (ver routeAlgorithm.js) — Stop.isNightExperience en types.ts. */
   is_night_experience?: boolean
+  /** Solo pipeline v2 — Stop.tags en types.ts. */
+  tags?: string[]
+  /** Solo pipeline v2, algunos lugares — Stop.scheduleText en types.ts. */
+  schedule?: string | null
 }
 
 interface GeneratedMealOption {
@@ -271,6 +275,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
         }
       : {}),
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
+    ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
+    ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
   }
 }
 
