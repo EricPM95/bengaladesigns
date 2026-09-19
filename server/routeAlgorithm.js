@@ -1093,6 +1093,14 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         cursor += await fetchWalkingMinutes(previousCoords, coords, mapboxToken)
       }
       cursor = roundUpToQuarterHour(cursor)
+      // Ronda 6 bis: un componente de evening_block es un objeto sintético propio del bloque
+      // (name/coordinates/duration_minutes/tip), separado de `destData.places` — por eso nunca
+      // llevaba `tags`/`schedule` aunque exista una entrada real con el mismo nombre que sí los
+      // tiene (encontrado de verdad: "Paseo por Trastevere"/"Mirador del Janículo" sin píldoras de
+      // tag ni horario en pantalla, a diferencia de cualquier otra parada). Si el nombre coincide
+      // con un lugar real, se toman sus tags/schedule tal cual — el resto (tip/coordenadas/duración)
+      // sigue mandando el propio componente, que es la versión curada a mano para este recorrido.
+      const matchingPlace = findRawPlace(destData, component.name)
       stops.push({
         name: component.name,
         suggested_time: minutesToTime(cursor),
@@ -1102,6 +1110,8 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         tip: component.tip || '',
         description: component.tip || '',
         hours: null,
+        tags: matchingPlace?.tags ?? [],
+        schedule: matchingPlace?.schedule ?? null,
         ...categoryFor(component.name),
       })
       cursor += component.duration_minutes
