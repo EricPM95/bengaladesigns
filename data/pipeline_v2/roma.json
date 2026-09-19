@@ -215,7 +215,9 @@
         "Arco de Constantino",
         "Bocca della Verità",
         "Circo Máximo",
-        "Altar de la Patria"
+        "Altar de la Patria",
+        "Isla Tiberina",
+        "Via dei Fori Imperiali"
       ]
     },
     "centro_historico": {
@@ -231,7 +233,8 @@
         "Escalinata de Piazza di Spagna",
         "Piazza del Popolo",
         "Via del Corso",
-        "Largo di Torre Argentina"
+        "Largo di Torre Argentina",
+        "Campo de' Fiori"
       ]
     },
     "vaticano": {
@@ -245,7 +248,9 @@
         "Basílica de San Pedro",
         "Plaza de San Pedro",
         "Via della Conciliazione",
-        "Castel Sant'Angelo"
+        "Castel Sant'Angelo",
+        "Ponte Sant'Angelo",
+        "Borgo Pio"
       ]
     },
     "trastevere": {
@@ -604,6 +609,71 @@
       "tip": "El ascensor a la terraza cuesta 7€ y merece cada céntimo. Las vistas son 360° sobre Roma.",
       "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba.",
       "tier": "imprescindible"
+    },
+    {
+      "name": "Ponte Sant'Angelo",
+      "level": 3,
+      "zone": "vaticano",
+      "coordinates": [
+        41.9032,
+        12.4657
+      ],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "tip": "El puente de los ángeles de Bernini, justo saliendo de Castel Sant'Angelo — crúzalo despacio, cada ángel lleva un símbolo de la Pasión.",
+      "photo_tip": "Desde el centro del puente, el castillo detrás y la cúpula de San Pedro asomando a lo lejos."
+    },
+    {
+      "name": "Isla Tiberina",
+      "level": 2,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8897,
+        12.4776
+      ],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "tip": "La única isla del Tíber en Roma, unida por dos de los puentes más antiguos de la ciudad (Ponte Fabricio y Ponte Cestio). Rincón tranquilo, poca gente.",
+      "photo_tip": "Desde Ponte Fabricio (el puente más antiguo de Roma, año 62 a.C.) mirando hacia la basílica de San Bartolomeo en la isla."
+    },
+    {
+      "name": "Via dei Fori Imperiali",
+      "level": 3,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8938,
+        12.4857
+      ],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "tip": "La avenida que conecta Piazza Venezia con el Coliseo, con los Foros Imperiales a ambos lados — el paseo que Mussolini abrió sobre las ruinas.",
+      "photo_tip": "Mirando hacia el Coliseo al fondo de la avenida — la postal más repetida de Roma, y con razón."
+    },
+    {
+      "name": "Campo de' Fiori",
+      "level": 2,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8955,
+        12.4723
+      ],
+      "duration_minutes": 25,
+      "type": "exterior",
+      "tip": "Plaza con mercado de flores y fruta por la mañana, terrazas y ambiente animado por la tarde/noche. Estatua de Giordano Bruno en el centro.",
+      "photo_tip": "Desde una de las terrazas con la estatua de Bruno y las fachadas coloridas de fondo."
+    },
+    {
+      "name": "Borgo Pio",
+      "level": 3,
+      "zone": "vaticano",
+      "coordinates": [
+        41.904,
+        12.4602
+      ],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "tip": "La calle con más carácter del barrio del Vaticano — adoquines, macetas en los balcones y ambiente de pueblo a dos pasos de la plaza de San Pedro.",
+      "photo_tip": "La propia calle, con sus fachadas bajas y colgantes de flores — el contraste con la grandiosidad de San Pedro a la vuelta de la esquina."
     }
   ],
   "groups": {

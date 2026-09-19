@@ -443,11 +443,14 @@ function planFillerOwnership(destData, variant) {
     !nightConflicts.has(place.name) &&
     !claimed.has(place.name)
 
-  const claimForZone = (zone, day) => {
+  const claimForZone = (zone, day, limit = Infinity) => {
     if (!zone) return
+    let claimedCount = 0
     for (const place of (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))) {
+      if (claimedCount >= limit) break
       owner.set(place.name, day)
       claimed.add(place.name)
+      claimedCount++
     }
   }
 
@@ -457,12 +460,24 @@ function planFillerOwnership(destData, variant) {
   // de verdad: Día 1 se quedaba con "Via della Conciliazione" — zona vaticano — dejando a Día 3, cuya
   // zona PRINCIPAL es vaticano, sin nada). Fase 1: cada día reclama solo de su(s) zona(s) propia(s).
   // Fase 2: lo que sobra tras la fase 1 se reparte por zonas vecinas, en el mismo orden de días.
+  //
+  // Ronda 5 (bug urgente): la zona de MAÑANA se reclamaba SIN LÍMITE para todos los días, pero solo
+  // la Regla D (mañanas cortas) puede llegar a usarla, y como mucho 1 lugar — reservar más era puro
+  // desperdicio, sobre todo en un día CON evening_block, que además nunca ejecuta Regla A en su tarde
+  // (Regla C solo usa las paradas de transición que ya trae el JSON, no busca relleno): reservaba
+  // TODA su zona de mañana sin poder usar nada de eso jamás, dejándosela sin remedio a otros días que
+  // sí podrían necesitarla (pasó de verdad: Día 2, con evening_block, se quedaba con "Isla Tiberina"
+  // de su zona de mañana roma_antigua, y Día 3 —vaticano, sin evening_block, con Regla A activa—
+  // nunca podía llegar a ella ni de zona vecina). Ahora: zona de mañana, límite 1 para todos los días;
+  // zona de tarde, sin límite pero SOLO para días sin evening_block; fase 2 (zonas vecinas) también
+  // se salta los días con evening_block — ninguno de los dos jamás los va a consumir.
   const days = variant?.franjas ?? []
   for (const franja of days) {
-    claimForZone(franja.morning?.zone, franja.day)
+    claimForZone(franja.morning?.zone, franja.day, 1)
     if (!franja.evening_block) claimForZone(franja.afternoon?.zone, franja.day)
   }
   for (const franja of days) {
+    if (franja.evening_block) continue
     const zone = franja.afternoon?.zone ?? franja.morning?.zone
     if (!zone) continue
     for (const adjacent of findAdjacentZones(destData, zone, 30)) claimForZone(adjacent, franja.day)
@@ -590,29 +605,12 @@ function buildGeographicOrder(destData, zone, units) {
   return ordered
 }
 
-/**
- * Fix 13 (ronda 4): si el día tiene una night experience asignada, la tarde debe fluir HACIA ella —
- * mueve al final la unidad cuyo último lugar está más cerca de la night experience (si no es ya la
- * última), para que la cena caiga en su zona y solo quede un paseo corto después (ver Fix 8, zona de
- * cena = zona de la última parada real de la tarde). No hace nada con 0-1 unidades.
- */
-function biasOrderTowardNightExperience(orderedUnits, nightExperience) {
-  if (!nightExperience || orderedUnits.length < 2) return orderedUnits
-  let bestIndex = orderedUnits.length - 1
-  let bestDist = haversineKm(orderedUnits[bestIndex].places.at(-1).coordinates, nightExperience.coordinates)
-  for (let i = 0; i < orderedUnits.length - 1; i++) {
-    const dist = haversineKm(orderedUnits[i].places.at(-1).coordinates, nightExperience.coordinates)
-    if (dist < bestDist) {
-      bestDist = dist
-      bestIndex = i
-    }
-  }
-  if (bestIndex === orderedUnits.length - 1) return orderedUnits
-  const result = [...orderedUnits]
-  const [unit] = result.splice(bestIndex, 1)
-  result.push(unit)
-  return result
-}
+// Fix 13 (ronda 4) quitado — el usuario lo bajó de prioridad tras el bug de la Regla A (ronda 5):
+// "la night experience es una sugerencia para el usuario, no debe condicionar la ruta de la tarde".
+// La prioridad real es que la Regla A rellene hasta las 19:30 con todo el relleno disponible; sesgar
+// el orden hacia la night experience competía con eso. La función (biasOrderTowardNightExperience,
+// movía al final la unidad más cercana a la night experience) queda en el historial de git si se
+// retoma más adelante como mejora "nice to have".
 
 /** Zonas vecinas de `zone` según `algorithm_hints.walking_time_matrix`, dentro de `maxMinutes`, más cercanas primero — para la Regla A cuando una zona se queda sin lugares sueltos que añadir. */
 function findAdjacentZones(destData, zone, maxMinutes) {
@@ -879,8 +877,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // entero desde cero — nunca se toca un candidato CORE, esos nunca están en `fillerCandidates`.
     async function buildOrderedAfternoon(candidates) {
       const allUnits = [...buildUnits(afternoonPlaces), ...candidates.map((c) => ({ places: [c], isFiller: true }))]
-      let units = buildGeographicOrder(destData, afternoonZone, allUnits)
-      units = biasOrderTowardNightExperience(units, nightExperience)
+      const units = buildGeographicOrder(destData, afternoonZone, allUnits)
       const order = units.flatMap((u) => u.places)
       const scheduled = order.length ? await buildStopsForPlaces(order, 15 * 60, mapboxToken, null) : []
       return { units, order, scheduled }
