@@ -966,6 +966,14 @@ const SMALL_ZONE_MAX_PLACES = 5
 // un margen real antes de esa franja en vez de rozarla justo.
 const DINNER_CUTOFF_MINUTES = 20 * 60
 
+// Ronda 8D (pregunta directa del usuario): igual que DINNER_CUTOFF_MINUTES para la Regla A, pero
+// para el relleno de mañana corta de la Regla D. Primer intento con 12:30 — demasiado ajustado: con
+// el colchón fijo de 10min + caminata por defecto (15min sin token real de Mapbox en las pruebas) +
+// redondeo, el SEGUNDO candidato aterrizaba justo en 12:30 y el corte (inclusivo, `>=`) lo excluía —
+// exactamente el caso que motivó la pregunta. El propio usuario pidió el rango "12:30-13:00" como
+// IDEAL, no como tope — usar 13:00 (la comida en sí) da el margen real que antes faltaba.
+const LUNCH_CUTOFF_MINUTES = 13 * 60
+
 // Ronda 7 (Issue M): los cortes de Regla F (tarde) y de la Regla C nueva (transición) no son un
 // horario de trenes — la ruta es una recomendación, el viajero ajusta tiempos reales en "Hoy". Un
 // candidato que solo se pasa por poco (hasta 20min) se queda; solo se recorta si se pasa de verdad.
@@ -1205,11 +1213,18 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // perdía Campo de' Fiori de la mañana y acababa a las 11:10 en vez de las 12:15 de antes). Ahora
     // el salto solo aplica a zonas realmente pequeñas — mismo umbral que agrupa fillers "pegados".
     const morningZoneIsSmall = (destData.zones?.[franja.morning?.zone]?.places?.length ?? Infinity) <= SMALL_ZONE_MAX_PLACES
+    // Ronda 8D (pregunta directa del usuario: "¿por qué no salta un filler ahí?"): esto añadía
+    // exactamente 1 lugar suelto y paraba ahí — el diseño original de la Regla D (ronda 3) literalmente
+    // decía "1 lugar suelto", nunca fue un bucle. Con eso, un solo candidato que aterrizara a las 12:05
+    // ya bloqueaba cualquier otro (sobraba casi una hora real hasta la comida a las 13:00) — a
+    // diferencia de la Regla A (tarde), que SÍ sigue añadiendo hasta un corte real. Ahora usa el mismo
+    // patrón: sigue añadiendo candidatos de la zona hasta LUNCH_CUTOFF_MINUTES (12:30, deja margen real
+    // antes de comer) o hasta agotar candidatos — nunca se para en seco tras el primero.
     if (morningEndMinutes < 12 * 60 && franja.morning?.zone && !(franja.morning.zone === franja.afternoon?.zone && morningZoneIsSmall)) {
       const lastStop = stops[stops.length - 1]
       const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
-      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes).slice(0, 1)
-      morningEndMinutes = await fillStopsUntil(stops, candidate, morningEndMinutes, previousCoords, mapboxToken, usedNames, () => false)
+      const candidates = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes)
+      morningEndMinutes = await fillStopsUntil(stops, candidates, morningEndMinutes, previousCoords, mapboxToken, usedNames, (c) => c >= LUNCH_CUTOFF_MINUTES)
     }
   }
 
