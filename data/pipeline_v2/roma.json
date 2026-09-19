@@ -1091,5 +1091,16 @@
       "vaticano_to_trastevere": 20,
       "villa_borghese_to_centro_historico": 15
     }
+  },
+  "afternoon_flow": {
+    "vaticano": [
+      "Plaza de San Pedro",
+      "Via della Conciliazione",
+      "Castel Sant'Angelo",
+      "Via del Corso",
+      "Piazza del Popolo",
+      "Largo di Torre Argentina",
+      "Escalinata de Piazza di Spagna"
+    ]
   }
 }

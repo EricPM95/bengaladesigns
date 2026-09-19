@@ -352,13 +352,26 @@ function collectUsedPlaceNames(variant, destData) {
 
 const LEVEL_ORDER = { 1: 0, 2: 1, 3: 2 }
 
+// Regla G (ronda 3): un lugar de 2h+ (parque grande, palacio, zona arqueológica extensa) es una
+// experiencia completa, no un hueco que rellenar de paso — solo puede aparecer como parada CORE ya
+// decidida a mano en zone_distribution (p.ej. Galería Borghese, Villa Borghese como parque del día
+// dedicado). Insertarlo como relleno de 1h desvirtúa tanto el lugar como el resto del día.
+const MAX_FILLER_DURATION_MINUTES = 120
+
 // Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
 // esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
 function findLeftoverZonePlaces(destData, zone, usedNames) {
   return (destData.places ?? [])
-    .filter((place) => place.zone === zone && place.type === 'exterior' && !place.group && !usedNames.has(place.name))
+    .filter(
+      (place) =>
+        place.zone === zone &&
+        place.type === 'exterior' &&
+        !place.group &&
+        place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
+        !usedNames.has(place.name),
+    )
     .sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))
 }
 
@@ -405,6 +418,31 @@ function insertByProximity(orderedPlaces, candidate) {
   return result
 }
 
+/**
+ * Fix 9 (ronda 3): orden geográfico curado a mano para el paseo de tarde de una zona (ver
+ * `destData.afternoon_flow[zone]`, lista de nombres en el orden natural de recorrido — p.ej. saliendo
+ * del Vaticano hacia el centro, nunca alejándose primero al norte y volviendo). `insertByProximity`
+ * (línea recta) no sabe distinguir "hacia el centro" de "en dirección contraria" sin ese contexto, así
+ * que cuando el candidato aparece en esta lista, su posición relativa a las paradas YA colocadas que
+ * también estén en la lista manda sobre la heurística geométrica. Devuelve `null` (para que el llamador
+ * caiga a `insertByProximity`) si el candidato no está en `flowNames`, o si no hay lista para esa zona.
+ */
+function insertByFlowOrder(orderedPlaces, candidate, flowNames) {
+  const candidateIndex = flowNames.indexOf(candidate.name)
+  if (candidateIndex === -1) return null
+  let insertAt = orderedPlaces.length
+  for (let i = 0; i < orderedPlaces.length; i++) {
+    const placeIndex = flowNames.indexOf(orderedPlaces[i].name)
+    if (placeIndex !== -1 && placeIndex > candidateIndex) {
+      insertAt = i
+      break
+    }
+  }
+  const result = [...orderedPlaces]
+  result.splice(insertAt, 0, candidate)
+  return result
+}
+
 /** Zonas vecinas de `zone` según `algorithm_hints.walking_time_matrix`, dentro de `maxMinutes`, más cercanas primero — para la Regla A cuando una zona se queda sin lugares sueltos que añadir. */
 function findAdjacentZones(destData, zone, maxMinutes) {
   const matrix = destData.algorithm_hints?.walking_time_matrix ?? {}
@@ -419,6 +457,11 @@ function findAdjacentZones(destData, zone, maxMinutes) {
 }
 
 const MAX_FILL_STOPS_PER_DAY = 4
+
+// Regla F (ronda 3): ningún relleno de la Regla A puede dejar la última parada terminando a esta hora
+// o después — la cena es un corte (ver DINNER_WINDOW en DayDetailPanel.tsx, 20:30-22:00); 20:00 deja
+// un margen real antes de esa franja en vez de rozarla justo.
+const DINNER_CUTOFF_MINUTES = 20 * 60
 
 /** Regla A/B/D: añade paradas de `candidates` (ya filtradas/ordenadas) a `stops`, secuencial desde
 el cursor actual, hasta que `stopCondition` sea true, se agoten los candidatos, o se llegue a
@@ -610,6 +653,10 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   const meals = [{ time: 'lunch', options: [], zone: lunchZoneInfo.name, zone_display: lunchZoneInfo.display }]
 
   let afternoonStops = []
+  // Lugares reales (crudos, con `.zone`) detrás de `afternoonStops`, en el mismo orden — declarado
+  // aquí (fuera del if/else) para que Fix 8 pueda leer la zona de la ÚLTIMA parada de tarde real
+  // después de que la Regla A termine de rellenar, sin importar qué rama se ejecutó.
+  let afternoonOrder = []
   if (eveningBlockData) {
     // Regla C: si el día trae paradas de tarde junto a un evening_block, son paradas de TRANSICIÓN
     // hacia la zona del evening_block (p.ej. Bocca della Verità + Circo Máximo de camino a
@@ -628,12 +675,13 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // entre dos paradas ya colocadas (p.ej. Via della Conciliazione entre Plaza de San Pedro y
     // Castel Sant'Angelo) cae ahí, no después de la última. El orden curado a mano del JSON (incluida
     // la coreografía de un grupo) nunca se reordena, solo se decide dónde entra lo nuevo.
-    let afternoonOrder = [...afternoonPlaces]
+    afternoonOrder = [...afternoonPlaces]
     afternoonStops = await buildStopsForPlaces(afternoonOrder, 15 * 60, mapboxToken, null)
 
     if (isCompleto) {
       const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
       if (afternoonZone) {
+        const flowNames = destData.afternoon_flow?.[afternoonZone] ?? []
         const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
         let added = 0
         fillLoop: for (const zone of fillZones) {
@@ -642,8 +690,23 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
               ? timeToMinutes(afternoonStops[afternoonStops.length - 1].suggested_time) + afternoonStops[afternoonStops.length - 1].duration_minutes
               : 15 * 60
             if (currentEnd >= 19 * 60 + 30 || added >= MAX_FILL_STOPS_PER_DAY) break fillLoop
-            afternoonOrder = insertByProximity(afternoonOrder, candidate)
-            afternoonStops = await buildStopsForPlaces(afternoonOrder, 15 * 60, mapboxToken, null)
+
+            // Fix 9 (ronda 3): orden de paseo curado si existe para esta zona, si no la heurística
+            // geométrica de siempre.
+            const trialOrder = insertByFlowOrder(afternoonOrder, candidate, flowNames) ?? insertByProximity(afternoonOrder, candidate)
+            const trialStops = await buildStopsForPlaces(trialOrder, 15 * 60, mapboxToken, null)
+            const trialEnd = trialStops.length
+              ? timeToMinutes(trialStops[trialStops.length - 1].suggested_time) + trialStops[trialStops.length - 1].duration_minutes
+              : 15 * 60
+
+            // Regla F (ronda 3): la Regla A nunca puede empujar una parada normal hasta la hora de
+            // cenar — si este candidato (esté donde esté insertado) deja la última parada terminando
+            // a la hora de cenar o después, se descarta ENTERA la inserción y se para de rellenar del
+            // todo (seguir probando candidatos más cortos podría colarse igual en el hueco de cena).
+            if (trialEnd > DINNER_CUTOFF_MINUTES) break fillLoop
+
+            afternoonOrder = trialOrder
+            afternoonStops = trialStops
             usedNames.add(candidate.name)
             added += 1
           }
@@ -691,7 +754,15 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       previousCoords = coords
     }
   } else {
-    const dinnerZoneInfo = mealZoneInfo(destData, franja.afternoon?.zone, 'cena')
+    // Fix 8 (ronda 3): se cena donde ACABA la tarde, no en la zona "principal" del día — con la
+    // Regla A rellenando con zonas vecinas, la última parada real puede quedar en otra zona distinta
+    // a `franja.afternoon.zone` (p.ej. Día 3 Vaticano acabando en Centro Histórico). Si esa zona no
+    // tiene entrada propia en meal_zones, cae a la zona principal de la tarde de siempre.
+    const lastAfternoonZone = afternoonOrder[afternoonOrder.length - 1]?.zone ?? franja.afternoon?.zone
+    let dinnerZoneInfo = mealZoneInfo(destData, lastAfternoonZone, 'cena')
+    if (!dinnerZoneInfo.name && lastAfternoonZone !== franja.afternoon?.zone) {
+      dinnerZoneInfo = mealZoneInfo(destData, franja.afternoon?.zone, 'cena')
+    }
     meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
   }
 
