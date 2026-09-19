@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
-import { displayStopName, formatDuration } from '../../../lib/format'
+import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagColor, tagLabel } from '../../../lib/tagColors'
 import { ClockIcon, FreeTourIcon, HourglassIcon, MoonIcon } from '../../ui/TimeIcons'
 
@@ -58,6 +58,10 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
     )
   }
 
+  // Ronda 6, Fix 2: horario resumido ("HH:MM-HH:MM") en la línea de tags del acordeón CERRADO —
+  // distinto del hoursTag completo que ya muestra StopDetailSheet al abrir la ficha.
+  const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
+
   return (
     <div className="relative rounded-xl border border-border bg-bg-card shadow-sm">
       <button type="button" onClick={onOpen} className="flex w-full items-start gap-3 rounded-xl p-3 text-left transition-colors hover:bg-bg-hover">
@@ -87,9 +91,9 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
             <span className="rounded-full bg-bg-hover px-2 py-0.5 font-medium text-text-muted">{stop.category}</span>
           </div>
 
-          {stop.tags && stop.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {stop.tags.map((tag) => {
+          {((stop.tags && stop.tags.length > 0) || scheduleShort) && (
+            <div className="flex flex-wrap items-center gap-1">
+              {stop.tags?.map((tag) => {
                 const { bg, text } = tagColor(tag)
                 return (
                   <span key={tag} className="rounded-full px-2 py-0.5 text-caption font-medium" style={{ backgroundColor: bg, color: text }}>
@@ -97,6 +101,12 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
                   </span>
                 )
               })}
+              {scheduleShort && (
+                <span className="flex items-center gap-1 text-caption text-text-muted">
+                  <ClockIcon />
+                  {scheduleShort}
+                </span>
+              )}
             </div>
           )}
         </div>

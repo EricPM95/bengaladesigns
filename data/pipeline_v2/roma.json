@@ -537,7 +537,8 @@
       "tip": "La calle comercial principal de Roma. Conéctala caminando entre Piazza del Popolo y el centro — paseo + shopping.",
       "tags": [
         "calle"
-      ]
+      ],
+      "not_before": "10:00"
     },
     {
       "name": "Museos Vaticanos y Capilla Sixtina",
@@ -730,7 +731,10 @@
       "tags": [
         "monumento",
         "mirador"
-      ]
+      ],
+      "group": "altar_patria_group",
+      "group_order": 2,
+      "group_order_evening": 1
     },
     {
       "name": "Ponte Sant'Angelo",
@@ -830,7 +834,10 @@
       ],
       "tip": "Parada rápida. Desde aquí se ve el Altar de la Patria en toda su magnitud. Es el cruce natural entre zonas",
       "photo_tip": null,
-      "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo"
+      "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo",
+      "group": "altar_patria_group",
+      "group_order": 1,
+      "group_order_evening": 2
     },
     {
       "name": "Mercados de Trajano",
@@ -1452,6 +1459,24 @@
       "note": "Están a 5 minutos andando. Naturalmente se visitan juntas.",
       "breakable_if_short": true,
       "combined_duration_minutes": 60
+    },
+    "altar_patria_group": {
+      "name": "Altar de la Patria y Piazza Venezia",
+      "places": [
+        "Piazza Venezia",
+        "Altar de la Patria (Vittoriano)"
+      ],
+      "order": [
+        "Piazza Venezia",
+        "Altar de la Patria (Vittoriano)"
+      ],
+      "order_evening": [
+        "Altar de la Patria (Vittoriano)",
+        "Piazza Venezia"
+      ],
+      "note": "A 0m de distancia — Piazza Venezia es la rotonda con el Vittoriano (Altar de la Patria) encima. Se visitan siempre juntas, nunca por separado.",
+      "breakable_if_short": false,
+      "combined_duration_minutes": 70
     }
   },
   "zone_distribution": {
@@ -1503,6 +1528,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Arco de Constantino",
                 "Coliseo"
               ],
@@ -1583,6 +1609,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Arco de Constantino",
                 "Coliseo",
                 "Foro Romano y Palatino"
@@ -1633,6 +1660,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1726,6 +1754,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1776,6 +1805,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1887,6 +1917,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1956,6 +1987,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -2082,6 +2114,7 @@
               "zone": "roma_antigua",
               "places": [
                 "Altar de la Patria (Vittoriano)",
+                "Piazza Venezia",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],

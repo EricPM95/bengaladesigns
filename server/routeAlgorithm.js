@@ -372,13 +372,18 @@ function collectUsedPlaceNames(variant, destData, mustIncludePlacement = null) {
       for (const name of extras.morning) used.add(name)
       for (const name of extras.afternoon) used.add(name)
     }
-    // La zona de un evening_block ya tiene su propio día dedicado (p.ej. Trastevere) — sus lugares
-    // nunca deben colarse como "relleno" suelto de otro día vía zona adyacente (Regla A), aunque no
-    // aparezcan tal cual en morning/afternoon.places (el evening_block los referencia por su cuenta,
-    // con nombres de componente distintos, p.ej. "Paseo por Trastevere" vs el lugar "Trastevere").
+    // Fix 6 (ronda 6): los COMPONENTES concretos de un evening_block (p.ej. "Paseo por Trastevere",
+    // "Mirador del Janículo") ya tienen su propio día dedicado — nunca deben colarse como "relleno"
+    // suelto de otro día vía zona adyacente (Regla A). Antes esto excluía la zona ENTERA del
+    // evening_block (destData.zones[zone].places) — demasiado amplio: cualquier lugar nuevo añadido
+    // a esa zona en el futuro (p.ej. Ronda 5: Santa Maria in Trastevere, Piazza Trilussa) quedaba
+    // bloqueado para SIEMPRE sin haber sido visitado nunca, aunque no tenga nada que ver con el
+    // recorrido concreto del evening_block — root cause real del Día 3 (Vaticano) quedándose sin
+    // relleno en zona vecina trastevere (bug urgente, ronda 6, Fix 6). Ahora solo se excluyen los
+    // nombres que el propio evening_block usa de verdad.
     if (franja.evening_block) {
       const block = destData?.evening_blocks?.find((b) => b.id === franja.evening_block)
-      for (const name of destData?.zones?.[block?.zone]?.places ?? []) used.add(name)
+      for (const component of block?.components ?? []) used.add(component.name)
     }
   }
   return used
@@ -580,14 +585,30 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
   // zona de tarde, sin límite pero SOLO para días sin evening_block; fase 2 (zonas vecinas) también
   // se salta los días con evening_block — ninguno de los dos jamás los va a consumir.
   const days = variant?.franjas ?? []
+
+  // Ronda 6 (Fix 6): la fase 2 recorría los días en orden de número de día — un día cuya zona propia
+  // ya tenía mucho sobrante (p.ej. Día 1 en centro_historico) podía reclamar zonas vecinas ANTES que un
+  // día con poco sobrante propio (p.ej. Día 3 en vaticano, solo 3 lugares elegibles en total), aunque
+  // ese segundo día lo necesitara más — mismo patrón "most-constrained-first" que ya usa
+  // assignNightExperiences. El sobrante de cada zona se mide ANTES de que la fase 1 reclame nada
+  // (si no, la zona propia de un día ya estaría vacía tras su propia fase 1 y la comparación no
+  // diría nada) — luego fase 1 se ejecuta normal, y la fase 2 recorre los días en ese orden
+  // (menos sobrante propio primero). Sin esto, Día 3 se quedaba sin un 4º relleno aunque Trastevere
+  // (zona vecina a 20min) tuviera candidatos reales nuevos (Ronda 5: Santa Maria in Trastevere,
+  // Piazza Trilussa) — Día 1 se los llevaba antes de que le tocara el turno.
+  const rawZoneSupply = (zone) => (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).length
+  const phase2Order = days
+    .filter((franja) => !franja.evening_block && (franja.afternoon?.zone ?? franja.morning?.zone))
+    .map((franja) => ({ franja, supply: rawZoneSupply(franja.afternoon?.zone ?? franja.morning?.zone) }))
+    .sort((a, b) => a.supply - b.supply)
+    .map(({ franja }) => franja)
+
   for (const franja of days) {
     claimForZone(franja.morning?.zone, franja.day, 1)
     if (!franja.evening_block) claimForZone(franja.afternoon?.zone, franja.day)
   }
-  for (const franja of days) {
-    if (franja.evening_block) continue
+  for (const franja of phase2Order) {
     const zone = franja.afternoon?.zone ?? franja.morning?.zone
-    if (!zone) continue
     for (const adjacent of findAdjacentZones(destData, zone, 30)) claimForZone(adjacent, franja.day)
   }
   return owner
@@ -619,11 +640,22 @@ function compareFillerPlaces(a, b, interestTags) {
   return aTag - bTag || aLevel - bLevel
 }
 
+// Ronda 6 (Fix 3): un lugar con `not_before` ("HH:MM") no debe entrar como relleno improvisado antes
+// de esa hora — encontrado de verdad: Via del Corso (calle comercial, tiendas abren a las 10:00)
+// colándose como relleno de la Regla B a las 08:45, antes del Free Tour. `nowMinutes` es la hora a la
+// que EMPEZARÍA este candidato en el punto de la llamada (el cursor del hueco/tramo que se está
+// rellenando) — una cota inferior razonable, no el minuto exacto tras sumar caminata real (eso solo
+// se sabe después, con Mapbox, en fillStopsUntil) — suficiente para el caso real que motiva el fix.
+function respectsNotBefore(place, nowMinutes) {
+  if (!place.not_before || nowMinutes == null) return true
+  return nowMinutes >= timeToMinutes(place.not_before)
+}
+
 // Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
 // esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
-function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Set()) {
+function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Set(), nowMinutes = null) {
   const nightConflicts = nightExperienceConflictNames(destData)
   return (destData.places ?? [])
     .filter(
@@ -634,7 +666,8 @@ function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Se
         place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
         !usedNames.has(place.name) &&
         !nightConflicts.has(place.name) &&
-        !relatedToAlreadyUsed(place, usedNames),
+        !relatedToAlreadyUsed(place, usedNames) &&
+        respectsNotBefore(place, nowMinutes),
     )
     .sort((a, b) => compareFillerPlaces(a, b, interestTags))
 }
@@ -917,7 +950,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       const meetingCoords = destData.default_free_tour?.coordinates
       const candidates = []
       if (ftZone && meetingCoords) {
-        for (const place of findLeftoverZonePlaces(destData, ftZone, usedNames, interestTags)) {
+        for (const place of findLeftoverZonePlaces(destData, ftZone, usedNames, interestTags, cursor)) {
           if (place.type !== 'exterior') continue
           if ((await fetchWalkingMinutes(meetingCoords, place.coordinates, mapboxToken)) <= 12) candidates.push(place)
         }
@@ -959,7 +992,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (morningEndMinutes < 12 * 60 && franja.morning?.zone) {
       const lastStop = stops[stops.length - 1]
       const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
-      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags).slice(0, 1)
+      const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes).slice(0, 1)
       morningEndMinutes = await fillStopsUntil(stops, candidate, morningEndMinutes, previousCoords, mapboxToken, usedNames, () => false)
     }
   }
@@ -995,7 +1028,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (isCompleto && afternoonZone) {
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
       fillZoneLoop: for (const zone of fillZones) {
-        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames, interestTags)) {
+        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames, interestTags, 15 * 60)) {
           if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
           fillerCandidates.push(candidate)
           usedNames.add(candidate.name)
