@@ -564,7 +564,7 @@
         "museo",
         "arte"
       ],
-      "schedule": "Lun-Sáb 09:00-18:00 (última entrada 16:00). Cerrado domingos (excepto último domingo del mes: gratis)"
+      "schedule": "Lun-Sáb 08:00-20:00 (última entrada 18:00). Cerrado domingos (excepto último domingo del mes: 09:00-14:00, gratis)"
     },
     {
       "name": "Basílica de San Pedro",
@@ -1428,17 +1428,16 @@
         "Basílica de San Pedro",
         "Museos Vaticanos y Capilla Sixtina"
       ],
-      "note": "Museos siempre primero. Basílica puede ir en la misma mañana (Museos 08:00-11:00 + Basílica 11:00-12:15) o después de comer. Plaza siempre después de Basílica.",
+      "note": "Museos siempre primero. Mañana corta (pasa siempre, Museos solo ya son 3h) → Plaza y Basílica se mueven juntas a la mañana (par inseparable, 0m de distancia) — Plaza primero, luego se entra a la Basílica. La tarde queda libre para relleno real de zona vaticano/Prati camino a Trastevere.",
       "breakable_if_short": true,
       "break_after": "Museos Vaticanos y Capilla Sixtina",
       "preferred_split": {
         "morning": [
           "Museos Vaticanos y Capilla Sixtina",
+          "Plaza de San Pedro",
           "Basílica de San Pedro"
         ],
-        "afternoon": [
-          "Plaza de San Pedro"
-        ]
+        "afternoon": []
       },
       "combined_duration_minutes": 285
     },

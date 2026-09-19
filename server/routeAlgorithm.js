@@ -283,7 +283,7 @@ export function buildSkeletonV2(destData, totalDays, hasFreeTour) {
 // v2 NO usa esta lista (relee zone_distribution directamente con más contexto — night experience,
 // evening block, Free Tour), así que no hace falta que sea perfecta, solo válida. ──────────────
 
-export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mustIncludePlaces) {
+export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mustIncludePlaces, experiencesPositive) {
   if (totalDays === 1) {
     const key = /* pace no se conoce aquí, se listan ambos ritmos combinados */ null
     void key
@@ -307,7 +307,7 @@ export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mu
   // lugar forzado por el usuario ya aparece en esta lista "Fase 1", que es la que el cliente reenvía
   // como `places_for_block` a generate-day-block (aunque ese endpoint, en el camino v2, la ignore y
   // recalcule el mismo resultado por su cuenta desde `mustIncludePlaces`, no desde esta lista).
-  const extrasForDay = planMustIncludePlacement(destData, variant, mustIncludePlaces).get(dayNumber)
+  const extrasForDay = planMustIncludePlacement(destData, variant, mustIncludePlaces, interestedTagsFromAnswers({ experiencesPositive })).get(dayNumber)
   const names = [...(franja.morning?.places ?? []), ...(extrasForDay?.morning ?? []), ...(franja.afternoon?.places ?? []), ...(extrasForDay?.afternoon ?? [])]
   const seen = new Set()
   const places = []
@@ -410,14 +410,21 @@ function collectUsedPlaceNames(variant, destData, mustIncludePlacement = null) {
  *    experiencia y cada día se usan como máximo una vez. Sobran experiencias → se quedan sin usar.
  *    Sobran días → esos días quedan sin night experience (Regla F: entonces es "Fin del día").
  */
-function assignNightExperiences(destData, variant) {
+// Ronda 7 (issue I): en viajes de 2 días (y de 1, pero esos usan short_trips/buildShortTripDay, ya
+// hardcodeado así — el propio 1_day.completo ya visita "Fontana di Trevi" de día Y de noche) hay tan
+// pocos días que la exclusión por `conflicts_with` deja casi todo el catálogo sin poder asignarse a
+// ningún día — con solo 2 franjas, cualquier joya visitada de día bloquea su propia experiencia
+// nocturna para SIEMPRE en ese viaje. La versión de noche es una experiencia distinta (iluminación,
+// sin multitudes) — repetir el lugar es el punto, no un error. `relaxConflicts` desactiva el filtro
+// de conflictos (todos los días pasan a ser candidatos) solo para viajes cortos.
+function assignNightExperiences(destData, variant, relaxConflicts = false) {
   const days = (variant?.franjas ?? []).map((franja) => ({
     day: franja.day,
     placeNames: new Set([...(franja.morning?.places ?? []), ...(franja.afternoon?.places ?? [])]),
   }))
   const experiences = destData.night_experiences ?? []
 
-  const candidateDaysFor = (ne) => days.filter((d) => !(ne.conflicts_with ?? []).some((name) => d.placeNames.has(name)))
+  const candidateDaysFor = (ne) => (relaxConflicts ? days : days.filter((d) => !(ne.conflicts_with ?? []).some((name) => d.placeNames.has(name))))
 
   const ordered = experiences
     .map((ne, index) => ({ ne, index, candidates: candidateDaysFor(ne) }))
@@ -455,7 +462,26 @@ function assignNightExperiences(destData, variant) {
  * 4. Si nada de lo anterior encaja, el lugar se descarta en silencio — igual criterio que el resto del
  *    pipeline (nunca debe poder romper la generación).
  */
-function planMustIncludePlacement(destData, variant, mustIncludeNames) {
+// Ronda 7 (issue L): un lugar del pool con `related_to` (versión rápida/exterior de un sitio que
+// también tiene versión museo/completa) se sustituye por su pareja cuando el viaje tiene una
+// experiencia positiva cuyos tags coinciden con la pareja y NO con el lugar pedido — exactamente la
+// regla que ya describía la Parte 2C de la Ronda 5 ("Si marca Arte y Museos → elige la versión
+// museo"), pero que solo estaba implementada para el relleno improvisado (compareFillerPlaces), no
+// para una selección EXPLÍCITA del usuario vía must_include_places. Sin esto, seleccionar a mano
+// "Piazza del Campidoglio" con "Arte y Museos" activo nunca podía convertirse en "Museos
+// Capitolinos" — literal (fuerza el nombre pedido tal cual) y forzado (nunca ambos, related_to) sí
+// funcionaban, la sustitución en sí no existía.
+function resolveMustIncludePlace(destData, rawName, interestTags) {
+  const place = findRawPlace(destData, rawName)
+  if (!place) return null
+  if (!place.related_to || interestTags.size === 0) return place
+  const partner = findRawPlace(destData, place.related_to)
+  if (!partner) return place
+  const matches = (p) => (p.tags ?? []).some((tag) => interestTags.has(tag))
+  return !matches(place) && matches(partner) ? partner : place
+}
+
+function planMustIncludePlacement(destData, variant, mustIncludeNames, interestTags = new Set()) {
   const placement = new Map()
   if (!Array.isArray(mustIncludeNames) || mustIncludeNames.length === 0) return placement
 
@@ -469,7 +495,7 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames) {
 
   for (const rawName of mustIncludeNames) {
     if (typeof rawName !== 'string') continue
-    const place = findRawPlace(destData, rawName)
+    const place = resolveMustIncludePlace(destData, rawName, interestTags)
     if (!place) continue
     if (usedNames.has(place.name) || relatedToAlreadyUsed(place, usedNames)) continue
 
@@ -576,14 +602,17 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
   //
   // Ronda 5 (bug urgente): la zona de MAÑANA se reclamaba SIN LÍMITE para todos los días, pero solo
   // la Regla D (mañanas cortas) puede llegar a usarla, y como mucho 1 lugar — reservar más era puro
-  // desperdicio, sobre todo en un día CON evening_block, que además nunca ejecuta Regla A en su tarde
-  // (Regla C solo usa las paradas de transición que ya trae el JSON, no busca relleno): reservaba
-  // TODA su zona de mañana sin poder usar nada de eso jamás, dejándosela sin remedio a otros días que
-  // sí podrían necesitarla (pasó de verdad: Día 2, con evening_block, se quedaba con "Isla Tiberina"
-  // de su zona de mañana roma_antigua, y Día 3 —vaticano, sin evening_block, con Regla A activa—
-  // nunca podía llegar a ella ni de zona vecina). Ahora: zona de mañana, límite 1 para todos los días;
-  // zona de tarde, sin límite pero SOLO para días sin evening_block; fase 2 (zonas vecinas) también
-  // se salta los días con evening_block — ninguno de los dos jamás los va a consumir.
+  // desperdicio. Ahora: zona de mañana, límite 1 para todos los días.
+  //
+  // Ronda 7 (issue K): la zona de TARDE de un día CON evening_block se reclamaba en absoluto (se
+  // saltaba del todo) porque, en su momento, Regla C solo secuenciaba las paradas de transición que
+  // ya traía el JSON, sin buscar relleno — reservarla no servía de nada. Ahora Regla C SÍ busca
+  // relleno de su propia zona (ver más abajo, en buildDayBlockV2) para las paradas que están
+  // literalmente de camino hacia la zona del evening_block (p.ej. Día 2 en 2 días: Vía della
+  // Conciliazione + Castel Sant'Angelo + Ponte Sant'Angelo, zona vaticano, camino real hacia
+  // Trastevere) — así que ahora SÍ reclama su zona de tarde en fase 1, sin límite, igual que
+  // cualquier otro día. Solo la fase 2 (zonas VECINAS) sigue saltando estos días: Regla C busca
+  // únicamente en SU zona, nunca en zonas vecinas, así que ellos nunca consumirían ese reparto.
   const days = variant?.franjas ?? []
 
   // Ronda 6 (Fix 6): la fase 2 recorría los días en orden de número de día — un día cuya zona propia
@@ -605,7 +634,7 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
 
   for (const franja of days) {
     claimForZone(franja.morning?.zone, franja.day, 1)
-    if (!franja.evening_block) claimForZone(franja.afternoon?.zone, franja.day)
+    claimForZone(franja.afternoon?.zone, franja.day)
   }
   for (const franja of phase2Order) {
     const zone = franja.afternoon?.zone ?? franja.morning?.zone
@@ -800,6 +829,32 @@ const MAX_FILL_STOPS_PER_DAY = 4
 // un margen real antes de esa franja en vez de rozarla justo.
 const DINNER_CUTOFF_MINUTES = 20 * 60
 
+// Ronda 7 (Issue M): los cortes de Regla F (tarde) y de la Regla C nueva (transición) no son un
+// horario de trenes — la ruta es una recomendación, el viajero ajusta tiempos reales en "Hoy". Un
+// candidato que solo se pasa por poco (hasta 20min) se queda; solo se recorta si se pasa de verdad.
+const SOFT_MARGIN_MINUTES = 20
+
+// Ronda 7 (Issue K): cuánto puede retrasarse el INICIO de un evening_block sobre su `ideal_start`
+// por culpa del relleno de transición de Regla C antes de empezar a recortar — 2h da margen real
+// (p.ej. trastevere_evening, ideal_start 15:30 → tope 17:30, que es justo cuándo el propio issue K
+// pide que arranque el paseo por Trastevere) sin dejar que la cena del bloque se vaya de madrugada.
+const TRANSITION_MAX_DELAY_MINUTES = 120
+
+// Ronda 7 (Issue G): un mirador (tag "mirador") elegido como RELLENO se reserva para el final del
+// bloque de tarde — se va a un mirador para el atardecer, no a las 15:00 recién empezada la tarde.
+// Solo afecta a relleno (isFiller) nunca a contenido CORE ya ordenado a mano en zone_distribution/
+// afternoon_flow (un mirador que el JSON listó a propósito en cierta posición se queda donde el JSON
+// lo puso). Estable: varios miradores de relleno mantienen su orden geográfico relativo entre sí.
+function pushMiradorFillersToEnd(units) {
+  const miradorFillers = []
+  const rest = []
+  for (const unit of units) {
+    if (unit.isFiller && unit.places.some((place) => (place.tags ?? []).includes('mirador'))) miradorFillers.push(unit)
+    else rest.push(unit)
+  }
+  return [...rest, ...miradorFillers]
+}
+
 /** Regla A/B/D: añade paradas de `candidates` (ya filtradas/ordenadas) a `stops`, secuencial desde
 el cursor actual, hasta que `stopCondition` sea true, se agoten los candidatos, o se llegue a
 `MAX_FILL_STOPS_PER_DAY` añadidas en esta llamada. `stopCondition` se evalúa contra la hora de
@@ -898,7 +953,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   const interestTags = interestedTagsFromAnswers({ experiencesPositive })
   // BUG 14: mismo cálculo determinista en cada llamada aislada (BLOQUE_SIZE=1) que ya usan
   // assignNightExperiences/planFillerOwnership — ver planMustIncludePlacement.
-  const mustIncludePlacement = planMustIncludePlacement(destData, variant, mustIncludePlaces)
+  const mustIncludePlacement = planMustIncludePlacement(destData, variant, mustIncludePlaces, interestTags)
   const extrasForDay = mustIncludePlacement.get(dayNumber) ?? { morning: [], afternoon: [] }
 
   function filterClosed(places) {
@@ -931,7 +986,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   // Fix 10, calculado aquí (antes de construir la tarde) para que Fix 13 pueda usar sus coordenadas
   // como sesgo de dirección — ver assignNightExperiences.
-  const nightExperience = assignNightExperiences(destData, variant).get(dayNumber)
+  const nightExperience = assignNightExperiences(destData, variant, totalDays <= 2).get(dayNumber)
 
   // Regla B: con Completo + Free Tour, rellena el hueco real entre la(s) parada(s) previa(s) y el
   // Free Tour (que siempre arranca clavado a las 10:00, regla 4) con 1-2 lugares exteriores cercanos
@@ -1009,21 +1064,73 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // aquí (fuera del if/else) para que Fix 8 pueda leer la zona de la ÚLTIMA parada de tarde real
   // después de que la Regla A termine de rellenar, sin importar qué rama se ejecutó.
   let afternoonOrder = []
-  if (eveningBlockData) {
-    // Regla C: si el día trae paradas de tarde junto a un evening_block, son paradas de TRANSICIÓN
-    // hacia la zona del evening_block (p.ej. Bocca della Verità + Circo Máximo de camino a
-    // Trastevere) — antes se descartaban del todo, dejando 2-3h muertas hasta `ideal_start`.
-    // Fix 1 (ronda 2): la tarde SIEMPRE empieza a las 15:00 en punto (13:00-14:30 comida, 14:30-15:00
-    // trayecto) — igual que la tarde sin evening_block, nunca antes aunque la mañana acabe pronto.
-    if (afternoonPlaces.length > 0) {
-      afternoonStops = await buildStopsForPlaces(afternoonPlaces, 15 * 60, mapboxToken, null)
+  const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
+
+  // Compartido entre Regla A (tarde normal) y Regla C (tarde de transición a un evening_block):
+  // intercala el conjunto CORE + relleno por proximidad geográfica (Fix 11, afternoon_flow sigue
+  // mandando cuando existe para la zona), reserva los miradores de relleno para el final (Ronda 7,
+  // issue G) y programa el horario real.
+  async function buildOrderedAfternoon(candidates) {
+    const allUnits = [...buildUnits(afternoonPlaces), ...candidates.map((c) => ({ places: [c], isFiller: true }))]
+    const units = pushMiradorFillersToEnd(buildGeographicOrder(destData, afternoonZone, allUnits))
+    const order = units.flatMap((u) => u.places)
+    const scheduled = order.length ? await buildStopsForPlaces(order, 15 * 60, mapboxToken, null) : []
+    return { units, order, scheduled }
+  }
+
+  // Regla F — común a Regla A y Regla C, cada una con su propio corte (ver más abajo). Recorta el
+  // ÚLTIMO relleno en el ORDEN GEOGRÁFICO real (units, ya con los miradores al final) en vez de a
+  // ciegas el de menor prioridad en `candidates` — casi siempre coinciden, pero cuando no, el
+  // candidato que de verdad causa que la tarde se pase de hora es el que queda al final del
+  // recorrido, no el de nivel/tag más bajo (encontrado de verdad, ronda 7: Día 1 en 2 días tardaba 3
+  // recortes en converger y terminaba con solo 1 relleno de los 4 recolectados). Issue M: margen
+  // soft de SOFT_MARGIN_MINUTES — pasarse un poco no recorta nada. Issue G: si hay que recortar,
+  // primero un relleno normal antes que un mirador (reservado para el final a propósito) — el
+  // mirador solo se recorta si es el único relleno que queda.
+  async function fitWithinCutoff(candidates, cutoffMinutes) {
+    let built = await buildOrderedAfternoon(candidates)
+    while (candidates.length > 0) {
+      const lastStop = built.scheduled[built.scheduled.length - 1]
+      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : 15 * 60
+      if (lastEnd <= cutoffMinutes + SOFT_MARGIN_MINUTES) break
+      const isMirador = (unit) => unit.places.some((place) => (place.tags ?? []).includes('mirador'))
+      const reversedUnits = [...built.units].reverse()
+      const toTrim = reversedUnits.find((u) => u.isFiller && !isMirador(u)) ?? reversedUnits.find((u) => u.isFiller)
+      if (!toTrim) break
+      candidates = candidates.filter((c) => c.name !== toTrim.places[0].name)
+      built = await buildOrderedAfternoon(candidates)
     }
+    return built
+  }
+
+  if (eveningBlockData) {
+    // Regla C (Ronda 7, issue K): además de secuenciar las paradas de transición que ya trae el JSON
+    // (p.ej. Bocca della Verità + Circo Máximo de camino a Trastevere), ahora TAMBIÉN busca relleno
+    // suelto de su propia zona — lugares que están literalmente de camino hacia la zona del
+    // evening_block (p.ej. Día 2 en 2 días: Vía della Conciliazione + Castel Sant'Angelo + Ponte
+    // Sant'Angelo, zona vaticano, camino real hacia Trastevere) — antes se ignoraban del todo, y
+    // planFillerOwnership ni siquiera los reservaba para este día (ver el fix hermano ahí arriba).
+    // Solo SU zona, nunca zonas vecinas — esto es una tarde de TRANSICIÓN, no una tarde libre. El
+    // corte no es la cena (va dentro del propio evening_block) sino cuánto se puede retrasar el
+    // bloque sin que se le eche la noche encima — TRANSITION_MAX_DELAY_MINUTES de margen sobre su
+    // ideal_start, con el mismo margen soft (issue M) por encima de eso.
+    let fillerCandidates = []
+    if (isCompleto && afternoonZone) {
+      for (const candidate of findLeftoverZonePlaces(destData, afternoonZone, usedNames, interestTags, 15 * 60)) {
+        if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break
+        fillerCandidates.push(candidate)
+        usedNames.add(candidate.name)
+      }
+    }
+    const transitionCutoff = timeToMinutes(eveningBlockData.ideal_start) + TRANSITION_MAX_DELAY_MINUTES
+    const built = await fitWithinCutoff(fillerCandidates, transitionCutoff)
+    afternoonOrder = built.order
+    afternoonStops = built.scheduled
   } else {
     // Regla A: en Completo, recopila hasta MAX_FILL_STOPS_PER_DAY lugares sueltos de relleno — primero
     // de la propia zona de la tarde, luego de zonas vecinas (Fix 4, ronda 2: hasta 30min andando) —
     // ANTES de decidir ningún orden. Fix 12 (usedNames ya trae los lugares "propiedad" de otro día)
     // garantiza que ningún relleno elegido aquí pueda repetirse en otro día del viaje.
-    const afternoonZone = franja.afternoon?.zone ?? franja.morning?.zone
     let fillerCandidates = []
     if (isCompleto && afternoonZone) {
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
@@ -1035,36 +1142,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         }
       }
     }
-
-    // Fix 11: se reordena el conjunto COMPLETO (core + relleno) por proximidad geográfica — ya no
-    // solo dónde insertar el relleno dentro de un orden CORE fijo, que podía zigzaguear por su cuenta
-    // (Día 1: Panteón/Navona sur → Escalinata norte → Largo di Torre Argentina sur de nuevo). Fix 9
-    // (afternoon_flow) sigue mandando cuando existe para la zona. Fix 13: si el día tiene night
-    // experience asignada, la tarde acaba cerca de ella.
-    //
-    // Regla F: como el relleno ya no queda necesariamente al final de la secuencia (puede caer en
-    // medio, geográficamente), recortar "desde la cola" ya no vale — si la última unidad resulta ser
-    // CORE, un relleno de mitad de tarde (p.ej. Villa Borghese, lejos) se quedaría sin poder quitarse
-    // aunque sea el verdadero causante de terminar después de la cena. En vez de eso, si el resultado
-    // real (Mapbox) se pasa de `DINNER_CUTOFF_MINUTES`, se descarta el candidato de MENOS prioridad
-    // (el último de `fillerCandidates`, ya ordenados por cercanía/nivel) y se reconstruye el orden
-    // entero desde cero — nunca se toca un candidato CORE, esos nunca están en `fillerCandidates`.
-    async function buildOrderedAfternoon(candidates) {
-      const allUnits = [...buildUnits(afternoonPlaces), ...candidates.map((c) => ({ places: [c], isFiller: true }))]
-      const units = buildGeographicOrder(destData, afternoonZone, allUnits)
-      const order = units.flatMap((u) => u.places)
-      const scheduled = order.length ? await buildStopsForPlaces(order, 15 * 60, mapboxToken, null) : []
-      return { units, order, scheduled }
-    }
-
-    let built = await buildOrderedAfternoon(fillerCandidates)
-    while (fillerCandidates.length > 0) {
-      const lastStop = built.scheduled[built.scheduled.length - 1]
-      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : 15 * 60
-      if (lastEnd <= DINNER_CUTOFF_MINUTES) break
-      fillerCandidates = fillerCandidates.slice(0, -1)
-      built = await buildOrderedAfternoon(fillerCandidates)
-    }
+    const built = await fitWithinCutoff(fillerCandidates, DINNER_CUTOFF_MINUTES)
     afternoonOrder = built.order
     afternoonStops = built.scheduled
   }

@@ -3631,7 +3631,7 @@ app.post('/api/generate-day-places', async (req, res) => {
   if (pipelineV2Data) {
     const hasFreeTour = hasFreeTourFromAnswers(answers)
     const v2Days = listDayNumbers
-      .map((dayNumber) => ({ day_number: dayNumber, places: buildDayPlacesV2(pipelineV2Data, listDayNumbers.length, hasFreeTour, dayNumber, must_include_places) }))
+      .map((dayNumber) => ({ day_number: dayNumber, places: buildDayPlacesV2(pipelineV2Data, listDayNumbers.length, hasFreeTour, dayNumber, must_include_places, answers.experiencesPositive) }))
       .filter((entry) => Array.isArray(entry.places))
     if (v2Days.length === listDayNumbers.length) {
       console.log(`[pipeline-v2] "${destination}" — Fase 1 resuelta con el algoritmo JS, sin llamada a Claude`)

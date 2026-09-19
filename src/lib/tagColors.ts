@@ -8,13 +8,18 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   parque: { bg: '#E8F5E9', text: '#2E7D32' },
   jardin: { bg: '#E8F5E9', text: '#2E7D32' },
   ruinas: { bg: '#EFEBE9', text: '#5D4037' },
-  monumento: { bg: '#EFEBE9', text: '#5D4037' },
+  // Ronda 7, Issue D: antes compartía color con "ruinas" (#EFEBE9/#5D4037) — mismo marrón,
+  // imposible distinguirlos de un vistazo. Ocre/arena propio, sigue leyendo como "piedra/histórico"
+  // pero ya no se confunde con las ruinas.
+  monumento: { bg: '#FFF3E0', text: '#E65100' },
   iglesia: { bg: '#F3E5F5', text: '#7B1FA2' },
   museo: { bg: '#E3F2FD', text: '#1565C0' },
   arte: { bg: '#E3F2FD', text: '#1565C0' },
-  plaza: { bg: '#F5F5F5', text: '#616161' },
-  calle: { bg: '#F5F5F5', text: '#616161' },
-  barrio: { bg: '#F5F5F5', text: '#616161' },
+  // Ronda 7, Issue C: el gris #F5F5F5/#616161 original apenas se distinguía del fondo de la
+  // tarjeta — azul grisáceo, sigue leyendo "neutro" pero ya es visible.
+  plaza: { bg: '#ECEFF1', text: '#546E7A' },
+  calle: { bg: '#ECEFF1', text: '#546E7A' },
+  barrio: { bg: '#ECEFF1', text: '#546E7A' },
   fuente: { bg: '#E0F7FA', text: '#00838F' },
   mirador: { bg: '#FFF8E1', text: '#F57F17' },
   gastronomia: { bg: '#FBE9E7', text: '#D84315' },
@@ -24,7 +29,7 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   isla: { bg: '#FFF9C4', text: '#F57F17' },
 }
 
-const DEFAULT_TAG_COLOR = { bg: '#F5F5F5', text: '#616161' }
+const DEFAULT_TAG_COLOR = { bg: '#ECEFF1', text: '#546E7A' }
 
 export function tagColor(tag: string): { bg: string; text: string } {
   return TAG_COLORS[tag] ?? DEFAULT_TAG_COLOR

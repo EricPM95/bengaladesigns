@@ -295,7 +295,11 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                         {hoursTag.label}
                       </span>
                     )}
-                    <span className="rounded-full bg-bg-hover px-2 py-0.5 text-caption font-medium text-text-muted">{stop.category}</span>
+                    {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags
+                        curados reales — ver mismo criterio en StopAccordion.tsx. */}
+                    {(!stop.tags || stop.tags.length === 0) && (
+                      <span className="rounded-full bg-bg-hover px-2 py-0.5 text-caption font-medium text-text-muted">{stop.category}</span>
+                    )}
                     {stop.tags?.map((tag) => {
                       const { bg, text } = tagColor(tag)
                       return (

@@ -84,16 +84,24 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
           </p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-soft">
+            {/* Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez — con schedule, el
+                horario ocupa esta misma posición y sustituye por completo a "Acceso libre". */}
             <span className="flex items-center gap-1">
               <ClockIcon />
-              {stop.hours ?? 'Acceso libre'}
+              {scheduleShort ?? stop.hours ?? 'Acceso libre'}
             </span>
-            <span className="rounded-full bg-bg-hover px-2 py-0.5 font-medium text-text-muted">{stop.category}</span>
+            {/* Ronda 7, Issue A: la píldora de categoría genérica (Monumento/Ruinas/Basílica...,
+                inferida por palabras clave del nombre, ver categoryFor en routeAlgorithm.js) solo se
+                muestra cuando NO hay tags curados reales — si los hay, son estrictamente mejores y
+                la píldora genérica es puro ruido duplicado. */}
+            {(!stop.tags || stop.tags.length === 0) && (
+              <span className="rounded-full bg-bg-hover px-2 py-0.5 font-medium text-text-muted">{stop.category}</span>
+            )}
           </div>
 
-          {((stop.tags && stop.tags.length > 0) || scheduleShort) && (
+          {stop.tags && stop.tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1">
-              {stop.tags?.map((tag) => {
+              {stop.tags.map((tag) => {
                 const { bg, text } = tagColor(tag)
                 return (
                   <span key={tag} className="rounded-full px-2 py-0.5 text-caption font-medium" style={{ backgroundColor: bg, color: text }}>
@@ -101,12 +109,6 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
                   </span>
                 )
               })}
-              {scheduleShort && (
-                <span className="flex items-center gap-1 text-caption text-text-muted">
-                  <ClockIcon />
-                  {scheduleShort}
-                </span>
-              )}
             </div>
           )}
         </div>
