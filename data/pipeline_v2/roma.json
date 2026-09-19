@@ -697,7 +697,8 @@
         "arte"
       ],
       "related_to": "Parque Villa Borghese",
-      "schedule": "Mar-Dom 09:00-19:00. Cerrado lunes. Solo con reserva (turnos de 2h)"
+      "schedule": "Mar-Dom 09:00-19:00. Cerrado lunes. Solo con reserva (turnos de 2h)",
+      "contained_in": "Parque Villa Borghese"
     },
     {
       "name": "Parque Villa Borghese",
@@ -1860,10 +1861,9 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
-                "Parque Villa Borghese",
                 "Galería Borghese (museo)"
               ],
-              "note": "Paseo por el parque nada más llegar, Galería Borghese cuando abre (09:00) — misma zona, un solo bloque"
+              "note": "Galería Borghese con reserva — Parque Villa Borghese se añade automáticamente antes (contained_in), como paseo de llegada"
             },
             "afternoon": {
               "zone": "villa_borghese",
@@ -2039,10 +2039,9 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
-                "Parque Villa Borghese",
                 "Galería Borghese (museo)"
               ],
-              "note": "Paseo por el parque nada más llegar, Galería Borghese cuando abre (09:00) — misma zona, un solo bloque"
+              "note": "Galería Borghese con reserva — Parque Villa Borghese se añade automáticamente antes (contained_in), como paseo de llegada"
             },
             "afternoon": {
               "zone": "villa_borghese",

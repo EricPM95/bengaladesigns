@@ -208,7 +208,7 @@ function findPlaceFuzzy(destData, name) {
 }
 
 /** Convierte una lista de nombres (tal como vienen en `zone_distribution[...].franjas[].morning/afternoon.places`) en objetos resueltos con coordenadas/duración reales — la entrada "Free Tour ..." se convierte en un marcador especial (`isFreeTour`) que arrastra los datos de `default_free_tour` en vez de buscar en `places[]` (el Free Tour no es un lugar real del array). Nombres que no se encuentran en el JSON se descartan silenciosamente (no debería pasar con datos bien formados, pero nunca debe romper la generación entera). */
-function resolvePlaceList(destData, names) {
+function resolvePlaceList(destData, names, usedElsewhere = null) {
   const resolved = []
   for (const name of names ?? []) {
     if (typeof name !== 'string') continue
@@ -220,7 +220,36 @@ function resolvePlaceList(destData, names) {
     const place = findRawPlace(destData, name)
     if (place) resolved.push(place)
   }
-  return resolved
+  return expandContainedIn(destData, resolved, usedElsewhere)
+}
+
+/**
+ * Ronda 8C (issue 8) — `contained_in`: una atracción físicamente DENTRO de un parque/jardín
+ * visitable (p.ej. Galería Borghese dentro de Parque Villa Borghese) siempre se visita con un
+ * paseo por el contenedor justo antes — "el paseo es la llegada", mismo concepto que plaza→
+ * monumento en los pares inseparables, pero automático: basta con declarar `contained_in` en el
+ * place, sin mantener una entrada de `groups` aparte a mano por destino. Genérico de verdad: funciona
+ * para cualquier lugar futuro (Roma o cualquier otro destino con datos pipeline v2) sin tocar código,
+ * solo el dato. Si el contenedor YA está en la lista (en cualquier posición — el JSON lo puso a
+ * mano), no se toca ni se reordena; solo se rellena lo que falte, insertado justo antes de la
+ * atracción. El horario real de apertura de la atracción (parseOpeningMinutes, ya existente) hace el
+ * resto: buildStopsForPlaces recorre la lista en orden y clava la atracción a su hora de apertura si
+ * el paseo termina antes — sin necesidad de una regla de horario aparte para esto.
+ */
+function expandContainedIn(destData, places, usedElsewhere = null) {
+  const present = new Set(places.map((p) => p.name))
+  const expanded = []
+  for (const place of places) {
+    if (place.contained_in && !present.has(place.contained_in) && !usedElsewhere?.has(place.contained_in)) {
+      const container = findRawPlace(destData, place.contained_in)
+      if (container) {
+        expanded.push(container)
+        present.add(container.name)
+      }
+    }
+    expanded.push(place)
+  }
+  return expanded
 }
 
 // ── Construcción de paradas con horario real ─────────────────────────────────────────────────
@@ -830,9 +859,19 @@ function buildUnits(places) {
       if (seenGroups.has(place.group)) continue
       seenGroups.add(place.group)
       units.push({ places: places.filter((p) => p.group === place.group) })
-    } else {
-      units.push({ places: [place] })
+      continue
     }
+    // Ronda 8C (issue 8): un `contained_in` recién expandido (ver expandContainedIn) siempre queda
+    // ADYACENTE a su contenedor en la lista de entrada — se funde en esa misma unidad para que Fix
+    // 11 (reordenación geográfica) los mueva siempre juntos, nunca por separado. Solo si el
+    // contenedor es la unidad INMEDIATAMENTE anterior (nunca busca más atrás — si el JSON los separó
+    // a mano con algo en medio, esa es una decisión curada, no se deshace).
+    const previousUnit = units[units.length - 1]
+    if (place.contained_in && previousUnit && !previousUnit.places[0].group && previousUnit.places.some((p) => p.name === place.contained_in)) {
+      previousUnit.places.push(place)
+      continue
+    }
+    units.push({ places: [place] })
   }
   return units
 }
@@ -1065,17 +1104,22 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     })
   }
 
-  const morningPlaces = filterClosed(resolvePlaceList(destData, [...(franja.morning?.places ?? []), ...extrasForDay.morning]))
+  // Lugares ya usados en CUALQUIER día de este viaje (mismo variant, ya en memoria) — evita que las
+  // Reglas A/B/D repitan un lugar que zone_distribution (o el BUG 14 — mustIncludePlacement) ya
+  // asignó a otro día/franja. Calculado ANTES de resolver morningPlaces (issue 8, ronda 8C):
+  // expandContainedIn necesita saberlo para no insertar un contenedor (p.ej. "Parque Villa
+  // Borghese") que YA es contenido core de OTRO día (encontrado de verdad: 5 días con Free Tour
+  // separa Galería Borghese —día 4— de Parque Villa Borghese —día 5, día distinto— a propósito;
+  // insertarlo también en el día 4 lo duplicaba).
+  const usedNames = collectUsedPlaceNames(variant, destData, mustIncludePlacement)
+
+  const morningPlaces = filterClosed(resolvePlaceList(destData, [...(franja.morning?.places ?? []), ...extrasForDay.morning], usedNames))
   const eveningBlockData = franja.evening_block ? destData.evening_blocks?.find((b) => b.id === franja.evening_block) : null
 
   const isCompleto = pace === 'nonstop'
   const morningStart = isCompleto ? 8 * 60 : 10 * 60
   const freeTourClampMinutes = hasFreeTour ? timeToMinutes(destData.default_free_tour?.default_time ?? '10:00') : null
 
-  // Lugares ya usados en CUALQUIER día de este viaje (mismo variant, ya en memoria) — evita que las
-  // Reglas A/B/D repitan un lugar que zone_distribution (o el BUG 14 — mustIncludePlacement) ya
-  // asignó a otro día/franja.
-  const usedNames = collectUsedPlaceNames(variant, destData, mustIncludePlacement)
   // Fix 12: ningún lugar de relleno "propiedad" de OTRO día (ver planFillerOwnership) puede aparecer
   // hoy — sin esto, dos días podían rellenar de forma independiente con el mismo lugar suelto.
   for (const [name, ownerDay] of planFillerOwnership(destData, variant, mustIncludePlacement, interestTags)) {
@@ -1118,7 +1162,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   let morningEndMinutes = stops.length ? timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes : morningStart
 
-  let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...(franja.afternoon?.places ?? []), ...extrasForDay.afternoon]))
+  let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...(franja.afternoon?.places ?? []), ...extrasForDay.afternoon], usedNames))
 
   // Regla D: una mañana de una sola visita larga (p.ej. Museos Vaticanos, acaba ~11:00) deja hueco
   // hasta la comida (13:00). 1) si la mañana pertenece a un grupo partible con preferred_split,
