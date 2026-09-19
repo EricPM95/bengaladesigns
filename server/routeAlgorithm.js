@@ -350,6 +350,51 @@ function collectUsedPlaceNames(variant, destData) {
   return used
 }
 
+/**
+ * Fix 10 (asignación automática de night experiences): antes cada franja de `zone_distribution`
+ * traía su `night_experience` decidida a mano — no escalaba (limitado a los días que alguien se
+ * acordó de rellenar) y quedaba fuera del alcance del propio JSON en cuanto se tocaba la distribución.
+ * Ahora `destData.night_experiences[]` es solo un CATÁLOGO (con `conflicts_with`, los nombres de
+ * lugares reales que la invalidan si se visitan ESE mismo día) y esta función reparte el catálogo
+ * entre los días del viaje, determinística y gratis (sin Mapbox) — cada día_block la vuelve a calcular
+ * por su cuenta (BLOQUE_SIZE=1, sin estado entre llamadas) y todas llegan al mismo resultado porque
+ * parten de los mismos datos estáticos (`variant.franjas` completo, no solo el día que se está
+ * construyendo).
+ *
+ * Algoritmo (most-constrained-first, ver fix_night_experiences_auto.md):
+ * 1. Para cada night experience, sus "días candidatos" son los días cuyo morning+afternoon.places (tal
+ *    como los declaró el JSON — no se simulan los rellenos de las Reglas A/B/D, ninguno coincide hoy
+ *    con un nombre de `conflicts_with`) no incluyen ninguno de sus `conflicts_with`.
+ * 2. Se asignan primero las experiencias con MENOS días candidatos (más restringidas), y entre
+ *    empates, por su orden en el array — igual que pide el fix.
+ * 3. Asignación voraz: la primera experiencia se lleva el primer día candidato aún libre; cada
+ *    experiencia y cada día se usan como máximo una vez. Sobran experiencias → se quedan sin usar.
+ *    Sobran días → esos días quedan sin night experience (Regla F: entonces es "Fin del día").
+ */
+function assignNightExperiences(destData, variant) {
+  const days = (variant?.franjas ?? []).map((franja) => ({
+    day: franja.day,
+    placeNames: new Set([...(franja.morning?.places ?? []), ...(franja.afternoon?.places ?? [])]),
+  }))
+  const experiences = destData.night_experiences ?? []
+
+  const candidateDaysFor = (ne) => days.filter((d) => !(ne.conflicts_with ?? []).some((name) => d.placeNames.has(name)))
+
+  const ordered = experiences
+    .map((ne, index) => ({ ne, index, candidates: candidateDaysFor(ne) }))
+    .sort((a, b) => a.candidates.length - b.candidates.length || a.index - b.index)
+
+  const assignment = new Map()
+  const usedDays = new Set()
+  for (const { ne, candidates } of ordered) {
+    const day = candidates.find((d) => !usedDays.has(d.day))
+    if (!day) continue
+    assignment.set(day.day, ne)
+    usedDays.add(day.day)
+  }
+  return assignment
+}
+
 const LEVEL_ORDER = { 1: 0, 2: 1, 3: 2 }
 
 // Regla G (ronda 3): un lugar de 2h+ (parque grande, palacio, zona arqueológica extensa) es una
@@ -358,11 +403,27 @@ const LEVEL_ORDER = { 1: 0, 2: 1, 3: 2 }
 // dedicado). Insertarlo como relleno de 1h desvirtúa tanto el lugar como el resto del día.
 const MAX_FILLER_DURATION_MINUTES = 120
 
+// Fix 10: assignNightExperiences reparte el catálogo mirando SOLO morning/afternoon.places tal como
+// los declaró el JSON — no simula los rellenos de las Reglas A/B/D (harían falta llamadas a Mapbox
+// por cada día del viaje solo para calcular esto). Para que esa asunción siga siendo válida, ningún
+// lugar que sea el objetivo diurno de una night experience (`conflicts_with`) puede colarse como
+// relleno improvisado — si no, un día podría visitar de día Y de noche el mismo sitio (pasó de verdad:
+// Regla B eligió "Escalinata de Piazza di Spagna" como parada pre-Free Tour justo el día al que
+// assignNightExperiences le tocó "Escalinata de Piazza di Spagna (noche)").
+function nightExperienceConflictNames(destData) {
+  const names = new Set()
+  for (const ne of destData.night_experiences ?? []) {
+    for (const name of ne.conflicts_with ?? []) names.add(name)
+  }
+  return names
+}
+
 // Solo `exterior` — el relleno improvisado (Reglas A/D) nunca debe sugerir un interior que típicamente
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
 // esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
 function findLeftoverZonePlaces(destData, zone, usedNames) {
+  const nightConflicts = nightExperienceConflictNames(destData)
   return (destData.places ?? [])
     .filter(
       (place) =>
@@ -370,7 +431,8 @@ function findLeftoverZonePlaces(destData, zone, usedNames) {
         place.type === 'exterior' &&
         !place.group &&
         place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
-        !usedNames.has(place.name),
+        !usedNames.has(place.name) &&
+        !nightConflicts.has(place.name),
     )
     .sort((a, b) => (LEVEL_ORDER[a.level] ?? 9) - (LEVEL_ORDER[b.level] ?? 9))
 }
@@ -766,30 +828,24 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
   }
 
-  // Regla 6: la night experience de un lugar SIEMPRE cae en un día distinto al de su visita
-  // diurna — eso ya lo decidió a mano quien escribió zone_distribution (ver el propio JSON: la
-  // night_experience de cada franja nunca coincide con los lugares de esa misma franja). No se
-  // re-valida aquí — se confía en el dato, igual que se confía en el resto de zone_distribution.
-  if (franja.night_experience?.place) {
-    const nightExperience = destData.night_experiences?.find((n) => n.place === franja.night_experience.place)
-    const rawPlace = findRawPlace(destData, franja.night_experience.place)
-    if (nightExperience && rawPlace) {
-      // Fix 2 (ronda 2): redondeo al alza a cuarto de hora, defensivo — best_time del JSON ya viene
-      // alineado hoy, pero cualquier hora se muestra siempre en múltiplos de 15, sin excepción.
-      const startMinutes = roundUpToQuarterHour(timeToMinutes(nightExperience.best_time?.split('-')[0]?.trim() ?? '21:30'))
-      stops.push({
-        name: `${rawPlace.name} (noche)`,
-        suggested_time: minutesToTime(startMinutes),
-        duration_minutes: nightExperience.duration_minutes,
-        latitude: rawPlace.coordinates[0],
-        longitude: rawPlace.coordinates[1],
-        tip: nightExperience.description || '',
-        description: nightExperience.description || '',
-        hours: null,
-        is_night_experience: true,
-        ...categoryFor(rawPlace.name),
-      })
-    }
+  // Fix 10: asignación automática (ver assignNightExperiences) — sustituye la asignación manual por
+  // día que traía antes zone_distribution. "Regla complementaria" del fix: siempre después de la cena,
+  // hora fija 21:30, duración estándar 45min (el catálogo ya no trae un best_time por experiencia).
+  const nightExperience = assignNightExperiences(destData, variant).get(dayNumber)
+  if (nightExperience) {
+    const startMinutes = roundUpToQuarterHour(timeToMinutes('21:30'))
+    stops.push({
+      name: nightExperience.name,
+      suggested_time: minutesToTime(startMinutes),
+      duration_minutes: nightExperience.duration,
+      latitude: nightExperience.coordinates[0],
+      longitude: nightExperience.coordinates[1],
+      tip: nightExperience.description || '',
+      description: nightExperience.description || '',
+      hours: null,
+      is_night_experience: true,
+      ...categoryFor(nightExperience.name),
+    })
   }
 
   return {
