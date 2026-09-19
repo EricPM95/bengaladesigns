@@ -157,6 +157,13 @@ export function DevQuickRouteScreen() {
           const dayDraft = dayDrafts.find((draft) => draft.dayNumber === dayNumber)
           const cleanedManualStops = (dayDraft?.manualStops ?? []).filter((stop) => stop.name.trim().length > 0)
 
+          // description no vacía + timesAreFinal en el día (más abajo) — mismo gate que usa
+          // DayDetailPanel.tsx para las rutas reales del pipeline v2 (ver externalContent/
+          // buildCuratedStopDescription): sin esto, abrir la ficha de CUALQUIER parada de esta
+          // pantalla dispara describeStop() → llamada real a Claude (~0,10€), algo que esta
+          // pantalla existe precisamente para evitar (encontrado de verdad probando Ronda 6).
+          const DEV_STOP_DESCRIPTION = 'Parada de prueba de la pantalla dev — sin contenido editorial real, solo para maquetar RUTA/DIAS/Modo Hoy sin llamar a Claude.'
+
           const dayStops: Stop[] =
             i === 0 && place
               ? [
@@ -164,7 +171,7 @@ export function DevQuickRouteScreen() {
                     id: `dev-stop-${dayNumber}`,
                     time: '09:00',
                     name: stopDraft.city,
-                    description: '',
+                    description: DEV_STOP_DESCRIPTION,
                     durationMinutes: 0,
                     coordinates: place.coordinates,
                     photoUrl: '',
@@ -178,7 +185,7 @@ export function DevQuickRouteScreen() {
               id,
               time: manualStop.startTime || '09:00',
               name: manualStop.name.trim(),
-              description: '',
+              description: DEV_STOP_DESCRIPTION,
               durationMinutes: minutesBetween(manualStop.startTime, manualStop.endTime),
               coordinates: place ? jitterCoordinates(place.coordinates, manualIndex) : { lat: 0, lng: 0 },
               photoUrl: manualStop.photoUrl.trim() || `https://picsum.photos/seed/${encodeURIComponent(id)}/400/300`,
@@ -194,6 +201,7 @@ export function DevQuickRouteScreen() {
             stops: dayStops,
             meals: [],
             countryCode,
+            timesAreFinal: true,
           })
           dayNumber += 1
         }
