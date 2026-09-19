@@ -1470,8 +1470,8 @@
         "Altar de la Patria (Vittoriano)"
       ],
       "order_evening": [
-        "Altar de la Patria (Vittoriano)",
-        "Piazza Venezia"
+        "Piazza Venezia",
+        "Altar de la Patria (Vittoriano)"
       ],
       "note": "A 0m de distancia — Piazza Venezia es la rotonda con el Vittoriano (Altar de la Patria) encima. Se visitan siempre juntas, nunca por separado.",
       "breakable_if_short": false,
@@ -1526,8 +1526,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Arco de Constantino",
                 "Coliseo"
               ],
@@ -1607,8 +1607,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Arco de Constantino",
                 "Coliseo",
                 "Foro Romano y Palatino"
@@ -1658,8 +1658,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1752,8 +1752,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1803,8 +1803,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1860,16 +1860,15 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
+                "Parque Villa Borghese",
                 "Galería Borghese (museo)"
               ],
-              "note": "Galería Borghese con reserva — 2 horas justas"
+              "note": "Paseo por el parque nada más llegar, Galería Borghese cuando abre (09:00) — misma zona, un solo bloque"
             },
             "afternoon": {
               "zone": "villa_borghese",
-              "places": [
-                "Parque Villa Borghese"
-              ],
-              "note": "Parque + terraza del Pincio con vistas a Piazza del Popolo (sin bajar — ya visitada día 3)"
+              "places": [],
+              "note": "Sin core fijo — relleno real de villa_borghese (Pincio, mirador, al final por el atardecer) + centro_historico adyacente"
             },
             "evening_block": null
           }
@@ -1915,8 +1914,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -1985,8 +1984,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
@@ -2040,16 +2039,15 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
+                "Parque Villa Borghese",
                 "Galería Borghese (museo)"
               ],
-              "note": "Galería Borghese con reserva"
+              "note": "Paseo por el parque nada más llegar, Galería Borghese cuando abre (09:00) — misma zona, un solo bloque"
             },
             "afternoon": {
               "zone": "villa_borghese",
-              "places": [
-                "Parque Villa Borghese"
-              ],
-              "note": "Parque + terraza Pincio + gelato"
+              "places": [],
+              "note": "Sin core fijo — relleno real de villa_borghese (Pincio, mirador, al final por el atardecer) + centro_historico adyacente"
             },
             "evening_block": null
           },
@@ -2112,8 +2110,8 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Altar de la Patria (Vittoriano)",
                 "Piazza Venezia",
+                "Altar de la Patria (Vittoriano)",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],

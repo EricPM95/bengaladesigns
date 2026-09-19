@@ -917,6 +917,11 @@ function findAdjacentZones(destData, zone, maxMinutes) {
 
 const MAX_FILL_STOPS_PER_DAY = 4
 
+// Ronda 8B (issue 3): umbral de "zona pequeña" para el salto de Regla D — ver el comentario donde se
+// usa, dentro de buildDayBlockV2. 5 deja fuera a villa_borghese (4 lugares en total) y deja dentro a
+// vaticano (8) y cualquier zona más grande.
+const SMALL_ZONE_MAX_PLACES = 5
+
 // Regla F (ronda 3): ningún relleno de la Regla A puede dejar la última parada terminando a esta hora
 // o después — la cena es un corte (ver DINNER_WINDOW en DayDetailPanel.tsx, 20:30-22:00); 20:00 deja
 // un margen real antes de esa franja en vez de rozarla justo.
@@ -1143,14 +1148,20 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         usedNames.add(name)
       }
     }
-    // Ronda 8 (issues C/D): si la tarde es la MISMA zona que la mañana (p.ej. Día de Villa Borghese:
-    // Galería por la mañana, Parque por la tarde), NO tirar de un suelto de esa zona para la mañana
-    // — Regla A ya va a rellenar esa misma zona en la tarde (con el mirador reservado para el final,
-    // issue G de la ronda 7), y meterlo aquí solo fragmenta un grupo de lugares pegados entre sí a
-    // ambos lados de la comida (zigzag: museo → mirador → COMIDA → parque, cuando los tres están a
-    // menos de 500m). Con zonas distintas, sigue rellenando la mañana como siempre — ahí si tiene
-    // sentido (es contenido que la tarde nunca vería).
-    if (morningEndMinutes < 12 * 60 && franja.morning?.zone && franja.morning.zone !== franja.afternoon?.zone) {
+    // Ronda 8 (issues C/D, refinado en 8B): si la tarde es la MISMA zona PEQUEÑA que la mañana
+    // (p.ej. Villa Borghese, 4 lugares en TODA la zona: Galería, Parque, Pincio, Piazza del Popolo),
+    // NO tirar de un suelto de esa zona para la mañana — Regla A ya va a rellenar esa misma zona en
+    // la tarde (mirador reservado para el final, issue G ronda 7), y meterlo aquí solo fragmenta un
+    // grupo de lugares pegados entre sí a ambos lados de la comida (zigzag: museo → mirador → COMIDA
+    // → parque, los tres a menos de 500m). Ronda 8B (issue 3): la primera versión de este fix
+    // comparaba solo el NOMBRE de zona, así que también se saltaba para zonas GRANDES como
+    // centro_historico (19 lugares en total) — ahí no hay riesgo real de fragmentar un cluster
+    // apretado (la mañana y la tarde ya cubren rincones bien distintos del centro por diseño), así
+    // que saltarse el relleno solo dejaba la mañana corta sin necesidad (encontrado de verdad: Día 3
+    // perdía Campo de' Fiori de la mañana y acababa a las 11:10 en vez de las 12:15 de antes). Ahora
+    // el salto solo aplica a zonas realmente pequeñas — mismo umbral que agrupa fillers "pegados".
+    const morningZoneIsSmall = (destData.zones?.[franja.morning?.zone]?.places?.length ?? Infinity) <= SMALL_ZONE_MAX_PLACES
+    if (morningEndMinutes < 12 * 60 && franja.morning?.zone && !(franja.morning.zone === franja.afternoon?.zone && morningZoneIsSmall)) {
       const lastStop = stops[stops.length - 1]
       const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
       const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes).slice(0, 1)
@@ -1241,11 +1252,20 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (isCompleto && afternoonZone) {
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
       fillZoneLoop: for (const zone of fillZones) {
-        for (const candidate of findLeftoverZonePlaces(destData, zone, usedNames, interestTags, 15 * 60)) {
-          if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
+        const remainingBudget = MAX_FILL_STOPS_PER_DAY - fillerCandidates.length
+        if (remainingBudget <= 0) break fillZoneLoop
+        const zoneCandidates = findLeftoverZonePlaces(destData, zone, usedNames, interestTags, 15 * 60).slice(0, remainingBudget)
+        // Ronda 8B (issue 6, Regla A): cruzar a una zona VECINA (nunca la propia, esa siempre vale
+        // la pena — ya estás ahí) por una sola parada corta no compensa el desvío — encontrado de
+        // verdad: Día 2 se iba hasta Trastevere (zona vecina) solo por "Santa Maria in Trastevere"
+        // (20min), acabando la tarde en el mismo barrio donde el Día 1 ya había cenado. Mínimo 2
+        // paradas de esa zona, o 1 sola si dura 60min+ (una visita real, no un desvío de paso).
+        if (zone !== afternoonZone && zoneCandidates.length === 1 && zoneCandidates[0].duration_minutes < 60) continue
+        for (const candidate of zoneCandidates) {
           fillerCandidates.push(candidate)
           usedNames.add(candidate.name)
         }
+        if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
       }
     }
     const built = await fitWithinCutoff(fillerCandidates, DINNER_CUTOFF_MINUTES)
