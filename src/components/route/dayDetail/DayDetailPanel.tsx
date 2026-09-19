@@ -727,7 +727,15 @@ export function DayDetailPanel({
         dayNumber={day.dayNumber}
         dateIso={dateIso}
         dayStops={dayStopRefs}
-        isAnchor={detailIndex !== null && anchorNamesLower.has(stops[detailIndex].name.toLowerCase())}
+        // Fix 7 bonus + verificación ronda 4: en días del pipeline v2 (day.timesAreFinal), ninguna
+        // parada cuenta como "ancla" — anchorNamesLower para estas rutas viene de TODOS los lugares
+        // reales del viaje (ver anchorNames en routeGenerationOrchestrator.ts), no de un puñado de
+        // intocables, así que casi cualquier parada normal (Coliseo, Fontana de día...) coincidía y
+        // disparaba fetchAnchorTips (Claude + búsqueda web) igualmente, aunque ya tuviera tip real del
+        // JSON — el Fix 7 original solo cubrió describe-stop, no este otro efecto. Al quedar
+        // `isAnchor` en false aquí, `tips` (más abajo) cae a `description?.tips`, que para estas
+        // paradas ya viene de `buildCuratedStopDescription` — mismo tip real, cero coste.
+        isAnchor={detailIndex !== null && !day.timesAreFinal && anchorNamesLower.has(stops[detailIndex].name.toLowerCase())}
         // Fix 7 bonus (ronda 2): en días del pipeline v2, la parada ya trae description/tip reales
         // del JSON curado (ver routeAlgorithm.js) — sustituye la llamada interna a describe-stop
         // (Claude) por ese contenido tal cual, sin gastar nada. Free Tour queda fuera a propósito
