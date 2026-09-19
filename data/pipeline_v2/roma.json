@@ -593,7 +593,7 @@
     },
     {
       "name": "Altar de la Patria",
-      "level": 2,
+      "level": 1,
       "zone": "roma_antigua",
       "coordinates": [
         41.8946,
@@ -602,7 +602,8 @@
       "duration_minutes": 60,
       "type": "exterior",
       "tip": "El ascensor a la terraza cuesta 7€ y merece cada céntimo. Las vistas son 360° sobre Roma.",
-      "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba."
+      "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba.",
+      "tier": "imprescindible"
     }
   ],
   "groups": {
@@ -725,10 +726,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Arco de Constantino",
                 "Coliseo"
               ],
-              "note": "Exterior Coliseo + Arco. Sin Foro en 1 día con FT"
+              "note": "Altar de la Patria de camino, después Coliseo + Arco. Sin Foro en 1 día con FT"
             },
             "evening_block": null
           }
@@ -804,11 +806,12 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Arco de Constantino",
                 "Coliseo",
                 "Foro Romano y Palatino"
               ],
-              "note": "Grupo Roma Antigua completo por la tarde"
+              "note": "Altar de la Patria + grupo Roma Antigua completo por la tarde"
             },
             "evening_block": null
           },
@@ -853,10 +856,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Completar la zona + nivel 2"
+              "note": "Altar de la Patria + nivel 2, completando la zona"
             },
             "evening_block": "trastevere_evening"
           },
@@ -945,10 +949,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Nivel 2 zona antigua"
+              "note": "Altar de la Patria + nivel 2 zona antigua"
             },
             "evening_block": "trastevere_evening"
           },
@@ -994,10 +999,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Completar zona antigua"
+              "note": "Altar de la Patria completando zona antigua"
             },
             "evening_block": "trastevere_evening"
           },
@@ -1104,10 +1110,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Nivel 2 antigua"
+              "note": "Altar de la Patria + nivel 2 antigua"
             },
             "evening_block": "trastevere_evening"
           },
@@ -1172,10 +1179,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Completar zona antigua + descanso"
+              "note": "Altar de la Patria completando zona antigua + descanso"
             },
             "evening_block": "trastevere_evening"
           },
@@ -1297,10 +1305,11 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
+                "Altar de la Patria",
                 "Bocca della Verità",
                 "Circo Máximo"
               ],
-              "note": "Nivel 2 antigua"
+              "note": "Altar de la Patria + nivel 2 antigua"
             },
             "evening_block": "trastevere_evening"
           },
