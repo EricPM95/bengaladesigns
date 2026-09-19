@@ -1037,7 +1037,16 @@ function findAdjacentZones(destData, zone, maxMinutes) {
   return results.sort((x, y) => x.minutes - y.minutes).map((r) => r.zone)
 }
 
-const MAX_FILL_STOPS_PER_DAY = 4
+// Ronda 8D (issue C): este tope viene de la ronda 3, cuando Roma tenía 27 places en el JSON — con
+// los 59 de ahora (rondas 5-8 añadieron 32 nuevos) es demasiado bajo: encontrado de verdad, Día 2 (3
+// días) tenía acceso real a 5 candidatos propios (3 de vaticano + 2 de trastevere, Santa Maria in
+// Trastevere + Piazza Trilussa, AMBOS de su propiedad según planFillerOwnership) pero el tope de 4
+// dejaba solo 1 hueco libre tras la zona propia — insuficiente para el mínimo de 2 paradas que exige
+// la Regla A del issue 6 al cruzar a una zona vecina, así que ese hueco se desperdiciaba sin usar
+// nada. Subir el tope no fuerza más contenido por sí solo — Regla F (fitWithinCutoff) sigue
+// recortando lo que no quepa en el horario real; esto solo permite recolectar más candidatos ANTES
+// de decidir qué cabe de verdad.
+const MAX_FILL_STOPS_PER_DAY = 5
 
 // Ronda 8B (issue 3): umbral de "zona pequeña" para el salto de Regla D — ver el comentario donde se
 // usa, dentro de buildDayBlockV2. 5 deja fuera a villa_borghese (4 lugares en total) y deja dentro a
@@ -1402,7 +1411,14 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         // verdad: Día 2 se iba hasta Trastevere (zona vecina) solo por "Santa Maria in Trastevere"
         // (20min), acabando la tarde en el mismo barrio donde el Día 1 ya había cenado. Mínimo 2
         // paradas de esa zona, o 1 sola si dura 60min+ (una visita real, no un desvío de paso).
-        if (zone !== afternoonZone && zoneCandidates.length === 1 && zoneCandidates[0].duration_minutes < 60) continue
+        // Ronda 8D (issue B): un mirador (tag `mirador`) es la excepción — un solo mirador SÍ
+        // justifica el desvío por su cuenta, es precisamente el punto (atardecer, vistas), no un
+        // relleno débil de paso. Encontrado de verdad: esta misma regla bloqueaba "Terraza del
+        // Pincio" (20min, único candidato restante de villa_borghese) justo cuando el usuario había
+        // marcado "Miradores y Atardeceres" — la regla pensada para evitar desvíos flojos terminaba
+        // bloqueando el propio contenido que esa experiencia pide.
+        const isSoloMirador = zoneCandidates.length === 1 && (zoneCandidates[0].tags ?? []).includes('mirador')
+        if (zone !== afternoonZone && zoneCandidates.length === 1 && zoneCandidates[0].duration_minutes < 60 && !isSoloMirador) continue
         for (const candidate of zoneCandidates) {
           fillerCandidates.push(candidate)
           usedNames.add(candidate.name)

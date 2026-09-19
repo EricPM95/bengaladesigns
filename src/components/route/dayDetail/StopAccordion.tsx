@@ -77,18 +77,21 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
           <p className="flex items-center gap-1.5 text-body font-semibold text-text">
             {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
             <span className="min-w-0 flex-1">{displayStopName(stop.name)}</span>
-            <span className="flex shrink-0 items-center gap-0.5 text-caption font-normal text-text-muted">
-              <HourglassIcon />
-              {formatDuration(stop.durationMinutes)}
-            </span>
           </p>
 
+          {/* Ronda 8D, Issue D: el ⏳ se movió del lado derecho de la cabecera (junto al nombre) a
+              esta línea, junto al horario/acceso libre — así queda a la izquierda, agrupado con la
+              info de tiempo (cuándo + cuánto) en vez de competir visualmente con el nombre. */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-soft">
             {/* Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez — con schedule, el
                 horario ocupa esta misma posición y sustituye por completo a "Acceso libre". */}
             <span className="flex items-center gap-1">
               <ClockIcon />
               {scheduleShort ?? stop.hours ?? 'Acceso libre'}
+            </span>
+            <span className="flex items-center gap-0.5">
+              <HourglassIcon />
+              {formatDuration(stop.durationMinutes)}
             </span>
             {/* Ronda 7, Issue A: la píldora de categoría genérica (Monumento/Ruinas/Basílica...,
                 inferida por palabras clave del nombre, ver categoryFor en routeAlgorithm.js) solo se
