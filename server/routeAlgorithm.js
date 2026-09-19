@@ -96,8 +96,39 @@ function minutesToTime(total) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
-function roundUpToQuarterHour(minutes) {
-  return Math.ceil(minutes / 15) * 15
+// Ronda 8 (issue I): redondear al cuarto de hora (15min) sumaba, en el peor caso, 14min de "cola" de
+// redondeo ENCIMA del colchón fijo de 10min ya sumado en buildStopsForPlaces — dos paradas próximas
+// de "Acceso libre" (sin horario real que justifique la espera) podían acabar con casi 25min muertos
+// entre ellas solo por esto (encontrado de verdad: Panteón 09:30 + 7min a pie + 10min colchón = 09:47
+// → redondeado a 10:00, 23min de hueco). 5 minutos sigue dando horas "limpias" (:00, :05, :10...) sin
+// acumular tanto en secuencias de varias paradas seguidas.
+function roundUpToNiceMinutes(minutes) {
+  return Math.ceil(minutes / 5) * 5
+}
+
+// Ronda 8 (issue B): un lugar con `schedule` (JSON) nunca debe programarse antes de que abra — antes
+// no existía ningún control de horario de apertura en absoluto (solo `closed_on`, día de la semana).
+// Se extrae el primer "HH:MM" del texto libre del horario (mismo criterio que simplifySchedule.ts en
+// el cliente, aquí en minutos para poder comparar) — null si el texto no trae ningún rango simple
+// (p.ej. Domus Aurea, "Solo Vie-Sáb-Dom, visita guiada con reserva"), caso en el que simplemente no
+// se aplica ningún clamp (mejor no bloquear nada que adivinar mal).
+function parseOpeningMinutes(schedule) {
+  const match = typeof schedule === 'string' ? schedule.match(/(\d{1,2}):(\d{2})/) : null
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
+
+// Ronda 8 (issue H): dos paradas realmente pegadas (p.ej. Plaza de San Pedro → Basílica de San
+// Pedro, 232m con las coordenadas reales del JSON; Piazza Venezia → Altar de la Patria, 130m) no
+// deben sumar caminata+colchón de 10min — ese colchón existe para trayectos reales entre sitios
+// distintos, no para cruzar la misma plaza. Por distancia real (haversineKm, definida más abajo en
+// el archivo) y no por pertenencia a un `group` — un grupo de 3 miembros puede tener un salto
+// genuino entre dos de ellos (Museos Vaticanos → Basílica de San Pedro son 479m, un paseo real
+// bordeando la muralla) y otro salto de 0m entre los otros dos; la distancia real distingue esto
+// correctamente sin tener que curar a mano qué pares concretos de cada grupo están pegados.
+const ADJACENT_ZERO_WALK_KM = 0.3
+function isAdjacentByDistance(coordA, coordB) {
+  return haversineKm(coordA, coordB) <= ADJACENT_ZERO_WALK_KM
 }
 
 const WEEKDAY_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -150,6 +181,30 @@ function categoryFor(name) {
 
 function findRawPlace(destData, name) {
   return destData.places?.find((place) => place.name === name) ?? null
+}
+
+// Ronda 8 (issue F): resolveMustIncludePlace usaba findRawPlace (match EXACTO) — un nombre del pool
+// que no coincida carácter a carácter con `places[].name` (acentos/mayúsculas distintas, o una forma
+// corta como "Villa Borghese" en vez del nombre real "Parque Villa Borghese") se descartaba en
+// silencio, indistinguible de "el usuario nunca seleccionó nada" — encontrado de verdad con el log
+// de la ronda 8 (ver planMustIncludePlacement): "Villa Borghese" nunca resolvía, aunque el usuario sí
+// lo hubiera marcado en el pool. Solo para ESTA resolución (nunca para las listas propias del JSON en
+// zone_distribution, que ya vienen exactas a propósito): 1) match exacto normalizado (sin acentos, en
+// minúsculas — cubre mayúsculas/acentos distintos), 2) si no, el nombre pedido como SUBCADENA del
+// nombre real normalizado (cubre formas cortas como "Villa Borghese" ⊂ "Parque Villa Borghese"; no
+// al revés, para no des-especificar un nombre ya preciso). Con varios candidatos por subcadena, el
+// nombre real más corto gana (más específico/literal).
+function findPlaceFuzzy(destData, name) {
+  const exact = findRawPlace(destData, name)
+  if (exact) return exact
+  const normalizedQuery = stripAccentsLower(name)
+  if (!normalizedQuery) return null
+  const places = destData.places ?? []
+  const normalizedMatch = places.find((place) => stripAccentsLower(place.name) === normalizedQuery)
+  if (normalizedMatch) return normalizedMatch
+  const substringMatches = places.filter((place) => stripAccentsLower(place.name).includes(normalizedQuery))
+  if (substringMatches.length === 0) return null
+  return substringMatches.sort((a, b) => a.name.length - b.name.length)[0]
 }
 
 /** Convierte una lista de nombres (tal como vienen en `zone_distribution[...].franjas[].morning/afternoon.places`) en objetos resueltos con coordenadas/duración reales — la entrada "Free Tour ..." se convierte en un marcador especial (`isFreeTour`) que arrastra los datos de `default_free_tour` en vez de buscar en `places[]` (el Free Tour no es un lugar real del array). Nombres que no se encuentran en el JSON se descartan silenciosamente (no debería pasar con datos bien formados, pero nunca debe romper la generación entera). */
@@ -219,14 +274,18 @@ async function buildStopsForPlaces(places, startCursor, mapboxToken, clampFreeTo
   let previousCoords = null
   for (const place of places) {
     let startMinutes = cursor
-    if (previousCoords) {
+    if (previousCoords && !isAdjacentByDistance(previousCoords, place.coordinates)) {
       const walkMinutes = await fetchWalkingMinutes(previousCoords, place.coordinates, mapboxToken)
       startMinutes = cursor + walkMinutes + 10
     }
     if (place.isFreeTour && clampFreeTourTo != null) {
       startMinutes = Math.max(startMinutes, clampFreeTourTo)
     }
-    startMinutes = roundUpToQuarterHour(startMinutes)
+    // Ronda 8 (issue B): nunca antes de que abra — antes no había ningún control de horario real de
+    // apertura, solo el día de la semana (`closed_on`).
+    const opening = parseOpeningMinutes(place.schedule)
+    if (opening != null) startMinutes = Math.max(startMinutes, opening)
+    startMinutes = roundUpToNiceMinutes(startMinutes)
     stops.push(place.isFreeTour ? buildFreeTourStop({ default_free_tour: place }, startMinutes) : buildRegularStop(place, startMinutes))
     cursor = startMinutes + place.duration_minutes
     previousCoords = place.coordinates
@@ -471,14 +530,18 @@ function assignNightExperiences(destData, variant, relaxConflicts = false) {
 // "Piazza del Campidoglio" con "Arte y Museos" activo nunca podía convertirse en "Museos
 // Capitolinos" — literal (fuerza el nombre pedido tal cual) y forzado (nunca ambos, related_to) sí
 // funcionaban, la sustitución en sí no existía.
+// Devuelve `{ place, viaRelatedTo }` en vez de solo el lugar — `viaRelatedTo` distingue en el log
+// (issue F) si el nombre cambió por sustitución related_to o solo por coincidencia difusa de nombre
+// (findPlaceFuzzy), dos motivos distintos que antes quedaban indistinguibles desde fuera.
 function resolveMustIncludePlace(destData, rawName, interestTags) {
-  const place = findRawPlace(destData, rawName)
-  if (!place) return null
-  if (!place.related_to || interestTags.size === 0) return place
+  const place = findPlaceFuzzy(destData, rawName)
+  if (!place) return { place: null, viaRelatedTo: false }
+  if (!place.related_to || interestTags.size === 0) return { place, viaRelatedTo: false }
   const partner = findRawPlace(destData, place.related_to)
-  if (!partner) return place
+  if (!partner) return { place, viaRelatedTo: false }
   const matches = (p) => (p.tags ?? []).some((tag) => interestTags.has(tag))
-  return !matches(place) && matches(partner) ? partner : place
+  const substitute = !matches(place) && matches(partner)
+  return { place: substitute ? partner : place, viaRelatedTo: substitute }
 }
 
 function planMustIncludePlacement(destData, variant, mustIncludeNames, interestTags = new Set()) {
@@ -493,11 +556,29 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     return placement.get(day)
   }
 
+  // Ronda 8 (issue F, "necesitamos un log detallado"): cada llamada aislada (BLOCK_SIZE=1) recalcula
+  // esto por su cuenta — sin un rastro claro, cada ronda de testing volvía a "adivinar" si el pool
+  // llegaba, si el related_to sustituía, y a qué día se asignaba. Un solo log por nombre pedido, con
+  // el motivo exacto si se descarta — nunca silencioso.
+  console.log(`[pool] must_include_places recibidos: ${JSON.stringify(mustIncludeNames)}`)
   for (const rawName of mustIncludeNames) {
     if (typeof rawName !== 'string') continue
-    const place = resolveMustIncludePlace(destData, rawName, interestTags)
-    if (!place) continue
-    if (usedNames.has(place.name) || relatedToAlreadyUsed(place, usedNames)) continue
+    const { place, viaRelatedTo } = resolveMustIncludePlace(destData, rawName, interestTags)
+    if (!place) {
+      console.log(`[pool] "${rawName}" → DESCARTADO: no existe ningún lugar con ese nombre (ni exacto, ni normalizado, ni como subcadena) en el JSON`)
+      continue
+    }
+    if (place.name !== rawName) {
+      console.log(`[pool] "${rawName}" → resuelto a "${place.name}" (${viaRelatedTo ? 'related_to + experiencia positiva afín' : 'coincidencia por nombre, no exacto'})`)
+    }
+    if (usedNames.has(place.name)) {
+      console.log(`[pool] "${place.name}" → DESCARTADO: ya está en la ruta (core de otro día o related_to ya usado)`)
+      continue
+    }
+    if (relatedToAlreadyUsed(place, usedNames)) {
+      console.log(`[pool] "${place.name}" → DESCARTADO: su pareja related_to ("${place.related_to}") ya está en la ruta`)
+      continue
+    }
 
     let targetFranja = franjas.find((f) => f.morning?.zone === place.zone)
     let slot = 'morning'
@@ -524,8 +605,12 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
         slot = best.slot
       }
     }
-    if (!targetFranja) continue
+    if (!targetFranja) {
+      console.log(`[pool] "${place.name}" → DESCARTADO: su zona ("${place.zone}") no tiene ningún día compatible en este viaje (ni propia ni adyacente ≤30min)`)
+      continue
+    }
 
+    console.log(`[pool] "${place.name}" → asignado al día ${targetFranja.day} (${slot}, zona "${place.zone}")`)
     ensureDay(targetFranja.day)[slot].push(place.name)
     usedNames.add(place.name)
   }
@@ -632,9 +717,17 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
     .sort((a, b) => a.supply - b.supply)
     .map(({ franja }) => franja)
 
+  // Ronda 8 (Día 4 vacío en 4 días): la zona de TARDE se reclamaba SIN LÍMITE en fase 1 — pero
+  // ningún día puede llegar a USAR más de MAX_FILL_STOPS_PER_DAY rellenos de todas formas (propia
+  // zona + vecinas combinadas), así que reclamar de más ahí es puro desperdicio, igual que ya se
+  // arregló para la zona de mañana en la ronda 5. Encontrado de verdad: Día 3 (centro_historico, 4
+  // días) reclamaba sus 13 lugares sueltos completos en fase 1, dejando CERO para que Día 4
+  // (villa_borghese, con solo 1 filler propio — Terraza del Pincio — y centro_historico como única
+  // zona vecina) pudiera reclamar en fase 2, aunque Día 3 nunca iba a poder usar más de 4 de esos 13
+  // de todas formas. Con el tope, sobran 9 reales para que fase 2 los reparta de verdad.
   for (const franja of days) {
     claimForZone(franja.morning?.zone, franja.day, 1)
-    claimForZone(franja.afternoon?.zone, franja.day)
+    claimForZone(franja.afternoon?.zone, franja.day, MAX_FILL_STOPS_PER_DAY)
   }
   for (const franja of phase2Order) {
     const zone = franja.afternoon?.zone ?? franja.morning?.zone
@@ -873,7 +966,7 @@ async function fillStopsUntil(stops, candidates, cursor, previousCoords, mapboxT
     if (previousCoords) {
       startMinutes = cursor + (await fetchWalkingMinutes(previousCoords, place.coordinates, mapboxToken)) + 10
     }
-    startMinutes = roundUpToQuarterHour(startMinutes)
+    startMinutes = roundUpToNiceMinutes(startMinutes)
     if (stopCondition(startMinutes)) break
     stops.push(buildRegularStop(place, startMinutes))
     cursor = startMinutes + place.duration_minutes
@@ -1036,15 +1129,28 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         if (!place) continue
         afternoonPlaces = afternoonPlaces.filter((p) => p.name !== name)
         const lastStop = stops[stops.length - 1]
+        const lastStopCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
         let startMinutes = morningEndMinutes
-        if (lastStop) startMinutes = morningEndMinutes + (await fetchWalkingMinutes([lastStop.latitude, lastStop.longitude], place.coordinates, mapboxToken)) + 10
-        startMinutes = roundUpToQuarterHour(startMinutes)
+        if (lastStop && !isAdjacentByDistance(lastStopCoords, place.coordinates)) {
+          startMinutes = morningEndMinutes + (await fetchWalkingMinutes(lastStopCoords, place.coordinates, mapboxToken)) + 10
+        }
+        // Ronda 8 (issue B): mismo clamp de apertura que buildStopsForPlaces.
+        const opening = parseOpeningMinutes(place.schedule)
+        if (opening != null) startMinutes = Math.max(startMinutes, opening)
+        startMinutes = roundUpToNiceMinutes(startMinutes)
         stops.push(buildRegularStop(place, startMinutes))
         morningEndMinutes = startMinutes + place.duration_minutes
         usedNames.add(name)
       }
     }
-    if (morningEndMinutes < 12 * 60 && franja.morning?.zone) {
+    // Ronda 8 (issues C/D): si la tarde es la MISMA zona que la mañana (p.ej. Día de Villa Borghese:
+    // Galería por la mañana, Parque por la tarde), NO tirar de un suelto de esa zona para la mañana
+    // — Regla A ya va a rellenar esa misma zona en la tarde (con el mirador reservado para el final,
+    // issue G de la ronda 7), y meterlo aquí solo fragmenta un grupo de lugares pegados entre sí a
+    // ambos lados de la comida (zigzag: museo → mirador → COMIDA → parque, cuando los tres están a
+    // menos de 500m). Con zonas distintas, sigue rellenando la mañana como siempre — ahí si tiene
+    // sentido (es contenido que la tarde nunca vería).
+    if (morningEndMinutes < 12 * 60 && franja.morning?.zone && franja.morning.zone !== franja.afternoon?.zone) {
       const lastStop = stops[stops.length - 1]
       const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
       const candidate = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes).slice(0, 1)
@@ -1170,7 +1276,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       if (previousCoords && coords) {
         cursor += await fetchWalkingMinutes(previousCoords, coords, mapboxToken)
       }
-      cursor = roundUpToQuarterHour(cursor)
+      cursor = roundUpToNiceMinutes(cursor)
       // Ronda 6 bis: un componente de evening_block es un objeto sintético propio del bloque
       // (name/coordinates/duration_minutes/tip), separado de `destData.places` — por eso nunca
       // llevaba `tags`/`schedule` aunque exista una entrada real con el mismo nombre que sí los
@@ -1212,7 +1318,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // pudiera usarla al ordenar la tarde). "Regla complementaria" del fix: siempre después de la cena,
   // hora fija 21:30, duración estándar 45min (el catálogo ya no trae un best_time por experiencia).
   if (nightExperience) {
-    const startMinutes = roundUpToQuarterHour(timeToMinutes('21:30'))
+    const startMinutes = roundUpToNiceMinutes(timeToMinutes('21:30'))
     stops.push({
       name: nightExperience.name,
       suggested_time: minutesToTime(startMinutes),
