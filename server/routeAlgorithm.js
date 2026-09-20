@@ -241,17 +241,28 @@ function weekdayNameForDay(dateRangeStartIso, dayNumber) {
 
 const DEFAULT_WALK_MINUTES = 15
 
+// El mismo par de coordenadas se pide muchas veces dentro de una sola generación: fitWithinCutoff
+// reconstruye la tarde entera en cada recorte, y el recorte por calidad (fillerScore) pregunta
+// además por el tramo "de la anterior a la siguiente" de cada relleno. La distancia a pie entre dos
+// puntos fijos no cambia, así que se memoiza — el proceso serverless vive lo que dura la petición.
+const walkingMinutesCache = new Map()
+
 /** `coord` en formato [lat, lng] (como vienen en el JSON v2) — Mapbox espera lng,lat en la URL. Nunca lanza: sin token, sin red, o respuesta rara → minuto por defecto, igual que hace el cliente (ver DEFAULT_WALK_MINUTES en stopScheduling.ts) para que un fallo de Mapbox nunca rompa la generación. */
 async function fetchWalkingMinutes(coordA, coordB, mapboxToken) {
   if (!mapboxToken || !Array.isArray(coordA) || !Array.isArray(coordB)) return DEFAULT_WALK_MINUTES
+  const cacheKey = `${coordA[0]},${coordA[1]}>${coordB[0]},${coordB[1]}`
+  if (walkingMinutesCache.has(cacheKey)) return walkingMinutesCache.get(cacheKey)
   try {
     const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${coordA[1]},${coordA[0]};${coordB[1]},${coordB[0]}?overview=false&access_token=${mapboxToken}`
     const response = await fetch(url)
     if (!response.ok) return DEFAULT_WALK_MINUTES
     const data = await response.json()
     const seconds = data?.routes?.[0]?.duration
-    return typeof seconds === 'number' ? Math.round(seconds / 60) : DEFAULT_WALK_MINUTES
+    const minutes = typeof seconds === 'number' ? Math.round(seconds / 60) : DEFAULT_WALK_MINUTES
+    walkingMinutesCache.set(cacheKey, minutes)
+    return minutes
   } catch {
+    // Un fallo puntual NO se cachea: la siguiente parada puede tener mejor suerte.
     return DEFAULT_WALK_MINUTES
   }
 }
@@ -1808,17 +1819,71 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // soft de SOFT_MARGIN_MINUTES — pasarse un poco no recorta nada. Issue G: si hay que recortar,
   // primero un relleno normal antes que un mirador (reservado para el final a propósito) — el
   // mirador solo se recorta si es el único relleno que queda.
+  /**
+   * Cuánto se desvía el recorrido por pasar por este relleno: lo que se tarda entrando y saliendo de
+   * él, menos lo que se habría tardado yendo directo de la parada anterior a la siguiente. Un lugar
+   * que pilla de camino sale ~0; uno al que hay que ir y volver sale caro. Primera y última parada
+   * no tienen "vuelta" que medir, así que su desvío es simplemente el tramo que sí existe.
+   */
+  async function detourMinutesFor(units, index) {
+    const unit = units[index]
+    const first = unit.places[0]
+    const last = unit.places[unit.places.length - 1]
+    const previous = index > 0 ? units[index - 1].places[units[index - 1].places.length - 1] : null
+    const next = index < units.length - 1 ? units[index + 1].places[0] : null
+    const walk = (a, b) => fetchWalkingMinutes(a.coordinates, b.coordinates, mapboxToken)
+    if (previous && next) {
+      const through = (await walk(previous, first)) + (await walk(last, next))
+      return Math.max(0, through - (await walk(previous, next)))
+    }
+    if (previous) return walk(previous, first)
+    if (next) return walk(last, next)
+    return 0
+  }
+
+  /**
+   * Cuánto vale un relleno cuando hay que sacrificar alguno. Tres términos:
+   *   - `duration_minutes` x2 — el proxy de importancia que pidió el usuario: una visita de 30' es un
+   *     lugar de verdad, una de 10' es una parada de paso.
+   *   - nivel curado x10 — añadido: `level` ES la valoración editorial del destino (1 = imprescindible)
+   *     y el resto del algoritmo ya la usa para ordenar. Sin esto, "Santa Maria in Trastevere"
+   *     (nivel 2, 20') empataba con "Fontana delle Tartarughe" (nivel 3, 15') más de la cuenta.
+   *   - desvío x3 — el término que de verdad arregla el caso que motivó esto (ir hasta Piazza
+   *     Barberini por una fuente de 10' para volver luego a cenar a Campo de' Fiori).
+   * `likes_count` está contemplado pero hoy siempre es 0: los likes viven en Supabase y los lee el
+   * CLIENTE (place_likes / placeLikesApi.ts); la generación no consulta esa tabla todavía.
+   */
+  async function fillerScore(units, index) {
+    const place = units[index].places[0]
+    const levelBonus = (4 - (place.level ?? 3)) * 10
+    const detour = await detourMinutesFor(units, index)
+    return place.duration_minutes * 2 + levelBonus + (place.likes_count ?? 0) * 5 - detour * 3
+  }
+
   async function fitWithinCutoff(candidates, cutoffMinutes) {
     let built = await buildOrderedAfternoon(candidates)
     while (candidates.length > 0) {
       const lastStop = built.scheduled[built.scheduled.length - 1]
-      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : 15 * 60
+      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : AFTERNOON_START_MINUTES
       if (lastEnd <= cutoffMinutes + SOFT_MARGIN_MINUTES) break
+
       const isMirador = (unit) => unit.places.some((place) => (place.tags ?? []).includes('mirador'))
-      const reversedUnits = [...built.units].reverse()
-      const toTrim = reversedUnits.find((u) => u.isFiller && !isMirador(u)) ?? reversedUnits.find((u) => u.isFiller)
-      if (!toTrim) break
-      candidates = candidates.filter((c) => c.name !== toTrim.places[0].name)
+      const fillers = built.units.map((unit, index) => ({ unit, index })).filter(({ unit }) => unit.isFiller)
+      // Issue G (ronda 7): un mirador solo se sacrifica si no queda ningún otro relleno — está
+      // reservado para el final del recorrido a propósito (atardecer), no es relleno de paso.
+      const pool = fillers.some(({ unit }) => !isMirador(unit)) ? fillers.filter(({ unit }) => !isMirador(unit)) : fillers
+      if (pool.length === 0) break
+
+      // Se va el de MENOR valor, no el último del recorrido. `<=` recorriendo en orden ascendente
+      // deja que, a igualdad de puntuación, gane el más avanzado en la ruta — que es el criterio
+      // anterior, ahora relegado a desempate.
+      let worst = null
+      for (const entry of pool) {
+        const score = await fillerScore(built.units, entry.index)
+        if (worst === null || score <= worst.score) worst = { ...entry, score }
+      }
+
+      candidates = candidates.filter((c) => c.name !== worst.unit.places[0].name)
       built = await buildOrderedAfternoon(candidates)
     }
     return built
