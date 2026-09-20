@@ -1,19 +1,24 @@
 /**
- * Paleta cualitativa por día — mismas 8 tonalidades base para el mapa combinado (pines, chips de
- * filtro) y los círculos numerados de cada parada en DIAS — deliberadamente sin el verde/teal de
- * `--accent` (reservado para acciones primarias) ni blanco/negro, para que no choque con el resto
- * del sistema de color de la app. Cicla si el viaje tiene más días que colores (poco frecuente —
- * MAX_DAYS es 21).
+ * Paleta cualitativa por día — mismas tonalidades base para el mapa combinado (pines, líneas de
+ * ruta, chips de filtro) y los círculos numerados de cada parada en DIAS — deliberadamente sin el
+ * verde/teal de `--accent` (reservado para acciones primarias) ni blanco/negro, para que no choque
+ * con el resto del sistema de color de la app. Cicla si el viaje tiene más días que colores (poco
+ * frecuente — MAX_DAYS es 21).
+ *
+ * Ronda 9 (Mejora 1B): los 5 primeros son los tonos que pidió el usuario explícitamente por su buen
+ * contraste sobre el mapa — azul/naranja/verde/morado/rojo, más vibrantes que la paleta anterior
+ * (que incluía un ámbar/coral demasiado apagados sobre el estilo de calles de Mapbox). Se completan
+ * hasta 8 con 3 tonos más para no reducir el rango de días distinguibles que ya había.
  */
 const DAY_COLORS = [
-  '#F97066', // coral
-  '#F59E0B', // ámbar
-  '#8B5CF6', // violeta
-  '#EC4899', // rosa
-  '#3B82F6', // azul
-  '#DC2626', // rojo
-  '#A855F7', // púrpura
-  '#F97316', // naranja
+  '#2196F3', // azul (día 1)
+  '#FF9800', // naranja (día 2)
+  '#4CAF50', // verde (día 3)
+  '#9C27B0', // morado (día 4)
+  '#F44336', // rojo (día 5)
+  '#00BCD4', // cian
+  '#795548', // marrón
+  '#607D8B', // gris azulado
 ]
 
 /** Tono de referencia del día — el usado por los chips de filtro del mapa combinado (fondo sólido + texto blanco, ver CombinedDaysMapView.tsx). */

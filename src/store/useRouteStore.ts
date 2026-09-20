@@ -6,6 +6,7 @@ import type {
   AppScreen,
   Budget,
   BudgetItem,
+  DateRange,
   DayPlan,
   DestinationArchetype,
   ExperienceId,
@@ -230,6 +231,12 @@ interface RouteStoreState {
   setRoute: (route: Route) => void
   /** Restaura un viaje ya guardado (TripSync.tsx, al abrir la app) — a diferencia de `setRoute`, no resetea reservas/wishlist ni recalcula el modo inicial: repone exactamente lo que había. */
   hydrateTrip: (payload: TripPayload) => void
+  /** Ronda 9 (Mejora 2): añade/cambia las fechas exactas del viaje YA generado desde la cabecera del
+      mapa — actualiza `route.answers.dateRange`, la misma fuente que ya lee toda la app (DayList.tsx
+      para la fecha real de cada día, destinationSegments.ts para el rango de cada tramo). `undefined`
+      quita las fechas (vuelve a "Añadir fechas"). No recalcula `days` — el número de días del viaje
+      ya generado no cambia por poner/quitar fechas después. */
+  setRouteDateRange: (dateRange: DateRange | undefined) => void
   setActiveDayId: (dayId: string | null) => void
   setMode: (mode: RouteMode) => void
   toggleDarkMode: () => void
@@ -547,6 +554,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       wishlist: payload.wishlist,
       mode: payload.uiState.mode,
       activeDayId: payload.uiState.activeDayId,
+    }),
+
+  setRouteDateRange: (dateRange) =>
+    set((state) => {
+      if (!state.route) return state
+      return { route: { ...state.route, answers: { ...state.route.answers, dateRange } } }
     }),
   setActiveDayId: (dayId) => set({ activeDayId: dayId }),
   setMode: (mode) => set({ mode }),

@@ -27,10 +27,26 @@ export interface StopsMapMarker {
   icon?: string
   /** Foto ya existente de la parada (mismo dato que su tarjeta) — si falta, el popup muestra solo el nombre, sin pedirla a ninguna API. */
   photoUrl?: string
+  /** Ronda 9 (Mejora 1C, "Ver todo"): opacidad del pin — 1 (por defecto) para el día activo, ~0.4
+      para el resto de días cuando se muestran todos a la vez. Nunca se ocultan del todo, solo se
+      atenúan (mismo criterio que ya usaban los colores mudos antes de esta ronda). */
+  opacity?: number
+}
+
+/** Ronda 9 (Mejora 1A): línea recta uniendo las paradas de un día en orden — un `StopsMapMarkerLine`
+    por día, para que "Ver todo" pueda dibujar cada una en su propio color con su propia opacidad. */
+export interface StopsMapMarkerLine {
+  id: string
+  coordinates: Coordinates[]
+  color: string
+  opacity?: number
+  width?: number
 }
 
 interface StopsMapViewProps {
   markers: StopsMapMarker[]
+  /** Líneas rectas conectando paradas en orden — una por día. Vacío/omitido = sin líneas (comportamiento previo). */
+  lines?: StopsMapMarkerLine[]
   activeStopId?: string | null
   onSelectStop?: (stopId: string) => void
   /** Cuando true, cambiar `activeStopId` mueve la cámara: `flyTo` el marcador activo (acercando el zoom), o vuelve al `fitBounds` de todos los marcadores cuando pasa a null — usado por MealDetailSheet.tsx para el highlight mapa↔lista de restaurantes. Por defecto false: el resto de usos de este mapa (RUTA, DIAS, StopDetailSheet) solo quieren el resaltado visual del pin, sin mover la cámara. */
@@ -44,12 +60,18 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, activeStopId, onSelectStop, flyToActiveStop = false }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersKey = markers
-    .map((marker) => `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}`)
+    .map(
+      (marker) =>
+        `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}`,
+    )
+    .join('|')
+  const linesKey = lines
+    .map((line) => `${line.id}:${line.color}:${line.opacity ?? 1}:${line.width ?? 3}:${line.coordinates.map((c) => `${c.lat.toFixed(5)},${c.lng.toFixed(5)}`).join(',')}`)
     .join('|')
 
   useEffect(() => {
@@ -74,6 +96,30 @@ export function StopsMapView({ markers, activeStopId, onSelectStop, flyToActiveS
     })
 
     map.on('load', () => {
+      // Ronda 9 (Mejora 1A): líneas rectas de ruta, una capa por día — SIEMPRE debajo de los pines
+      // (añadidas antes de los mapboxgl.Marker, que van en su propio overlay HTML por encima del
+      // canvas del mapa base sin importar el orden de inserción, pero mantener el orden lógico
+      // aquí evita sorpresas si algún día se dibuja algo más en el canvas).
+      lines.forEach((line) => {
+        if (line.coordinates.length < 2) return
+        const sourceId = `stops-line-${line.id}`
+        map.addSource(sourceId, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates: line.coordinates.map((c) => [c.lng, c.lat]) },
+          },
+        })
+        map.addLayer({
+          id: sourceId,
+          type: 'line',
+          source: sourceId,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': line.color, 'line-width': line.width ?? 3, 'line-opacity': line.opacity ?? 1 },
+        })
+      })
+
       markers.forEach((marker) => {
         // Mapbox aplica su propio transform de posicionamiento al elemento raíz del Marker — si se
         // le toca el transform desde fuera (p.ej. para el estado "activo") el pin salta de sitio.
@@ -82,6 +128,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop, flyToActiveS
         const inner = document.createElement('div')
         inner.style.backgroundColor = marker.bg
         inner.style.color = marker.text
+        inner.style.opacity = String(marker.opacity ?? 1)
         inner.className =
           'flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white transition-transform'
         inner.textContent = marker.icon ?? String(marker.number)
@@ -129,7 +176,7 @@ export function StopsMapView({ markers, activeStopId, onSelectStop, flyToActiveS
       map.remove()
       mapRef.current = null
     }
-  }, [markersKey])
+  }, [markersKey, linesKey])
 
   useEffect(() => {
     for (const [stopId, el] of innerElsRef.current) {

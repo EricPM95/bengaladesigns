@@ -10,6 +10,7 @@ import { StopsMapView, type StopsMapMarker } from '../map/StopsMapView'
 import { DayList } from './DayList'
 import { ExplorePanel } from './ExplorePanel'
 import { FloatingCombinedMapButton } from './FloatingCombinedMapButton'
+import { MapDestinationHeader } from './MapDestinationHeader'
 import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
@@ -48,6 +49,7 @@ export function RouteView() {
   const panelSplit = useRouteStore((state) => state.panelSplit)
   const setPanelSplit = useRouteStore((state) => state.setPanelSplit)
   const devSimulatedTodayIso = useRouteStore((state) => state.dev_simulated_today_iso)
+  const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
@@ -155,11 +157,14 @@ export function RouteView() {
         {!mapHidden && (
           <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
             {showRouteStyleMap ? (
-              segments.length <= 1 ? (
-                <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} />
-              ) : (
-                <RouteOverviewMap segments={segments} days={route.days} arrivalMarkers={arrivalMarkers} />
-              )
+              <>
+                {segments.length <= 1 ? (
+                  <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} />
+                ) : (
+                  <RouteOverviewMap segments={segments} days={route.days} arrivalMarkers={arrivalMarkers} />
+                )}
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+              </>
             ) : mode === 'explore' && exploreMarkers !== null ? (
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
             ) : (

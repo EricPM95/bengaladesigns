@@ -4,7 +4,7 @@ import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
-import { buildCombinedDaysMarkers } from '../../../lib/routeMapMarkers'
+import { buildCombinedDaysLines, buildCombinedDaysMarkers, buildSingleDayLine, buildSingleDayMarkers } from '../../../lib/routeMapMarkers'
 import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../../../lib/time'
 import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
@@ -248,6 +248,10 @@ export function DayDetailPanel({
   const [addStopInitialQuery, setAddStopInitialQuery] = useState<string | undefined>(undefined)
   const [dismissedRevisits, setDismissedRevisits] = useState<Set<string>>(new Set())
   const [mapCollapsed, setMapCollapsed] = useState(false)
+  // Ronda 9 (Mejora 1A/1C): por defecto el mapa muestra SOLO el día que se está viendo — antes
+  // siempre mostraba todos los días a la vez (con el activo resaltado y el resto atenuado a gris),
+  // sin ninguna forma de aislar uno. "Ver todo" alterna a esa vista combinada bajo demanda.
+  const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
   // cada conector parada→parada en cuanto resuelven — ver el useEffect más abajo y
@@ -339,9 +343,12 @@ export function DayDetailPanel({
 
   const totalWalkMeters = connectorEntries.reduce((sum, entry) => sum + (entry.connector.meters ?? 0), 0) + (finalConnector?.meters ?? 0)
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
-  // Todos los días del viaje a la vez (BLOQUE B: "el mapa solo marca un lugar"), con el de esta
-  // pantalla resaltado y el resto atenuado — nunca ocultos, ver buildCombinedDaysMarkers.
-  const dayMarkers = buildCombinedDaysMarkers(route?.days ?? [day], day.id)
+  // Ronda 9 (Mejora 1A/1C): "solo este día" es la vista por defecto (marcadores + línea de ruta de
+  // este día únicamente, mismo color que su círculo numerado) — "Ver todo" cambia a todos los días
+  // a la vez, con el activo a opacidad completa y el resto atenuado (BLOQUE B, feedback de calidad:
+  // "el mapa solo marca un lugar" — sigue disponible, ahora es opcional en vez de forzoso).
+  const dayMarkers = showAllDaysOnMap ? buildCombinedDaysMarkers(route?.days ?? [day], day.id) : buildSingleDayMarkers(day, dayIndex)
+  const dayMapLines = showAllDaysOnMap ? buildCombinedDaysLines(route?.days ?? [day], day.id) : buildSingleDayLine(day, dayIndex)
 
   // Hora real de inicio de cada parada: si el día ya tiene paradas REALES (editadas a mano o
   // generadas por IA, day.stops.length > 0), cada una trae su propia `time` fiable — real
@@ -477,7 +484,7 @@ export function DayDetailPanel({
         </div>
       ) : (
         <div className="relative shrink-0" style={{ height: `${mapVh}vh` }}>
-          <StopsMapView markers={dayMarkers} />
+          <StopsMapView markers={dayMarkers} lines={dayMapLines} />
           <button
             type="button"
             onClick={onBack}
@@ -486,6 +493,16 @@ export function DayDetailPanel({
             className="absolute left-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
             <BackIcon />
+          </button>
+          {/* Ronda 9 (Mejora 1C): alterna entre "solo este día" (por defecto) y "Ver todo" — texto
+              en vez de icono a propósito, es un cambio de MODO del mapa, no una acción puntual como
+              el resto de botones circulares de esta cabecera. */}
+          <button
+            type="button"
+            onClick={() => setShowAllDaysOnMap((prev) => !prev)}
+            className="absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-full border-2 border-accent bg-bg-card px-3 py-2 text-caption font-semibold text-text shadow-md transition-colors hover:bg-bg-hover"
+          >
+            {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
           </button>
           <button
             type="button"

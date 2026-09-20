@@ -3,7 +3,7 @@ import { DayPicker, type DateRange as PickerRange } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
 import type { DateRange, QuestionnaireAnswers, Season } from '../../lib/types'
-import { daysBetweenInclusive, todayIso } from '../../lib/dateRange'
+import { daysBetweenInclusive, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
 import { SEASON_META, getCurrentSeason } from '../../lib/season'
 
 interface DurationSelectorProps {
@@ -21,19 +21,6 @@ function formatRangeEs(range: DateRange): string {
   const start = formatter.format(new Date(`${range.start}T00:00:00`))
   const end = formatter.format(new Date(`${range.end}T00:00:00`))
   return `${start} → ${end}`
-}
-
-/** Fecha ISO (yyyy-mm-dd) → Date en huso horario local, sin el desfase de `new Date(iso)` (que la interpreta en UTC). */
-function isoToLocalDate(iso: string): Date {
-  return new Date(`${iso}T00:00:00`)
-}
-
-/** Date → fecha ISO (yyyy-mm-dd) usando los componentes LOCALES — nunca `.toISOString()`, que desplaza el día según el huso horario. */
-function localDateToIso(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
 }
 
 export function DurationSelector({ days, dateRange, season, onChange }: DurationSelectorProps) {
