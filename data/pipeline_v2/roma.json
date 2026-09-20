@@ -332,6 +332,7 @@
         "monumento",
         "ruinas"
       ],
+      "filter_category": "monumentos",
       "schedule": "08:30-19:15 (verano), 08:30-16:30 (invierno)"
     },
     {
@@ -353,6 +354,7 @@
       "tags": [
         "ruinas"
       ],
+      "filter_category": "monumentos",
       "schedule": "09:00-19:15 (verano), 09:00-16:30 (invierno). Entrada combinada con Coliseo"
     },
     {
@@ -374,7 +376,8 @@
       "tags": [
         "monumento",
         "ruinas"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Bocca della Verità",
@@ -391,7 +394,8 @@
       "tags": [
         "monumento",
         "curiosidad"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Circo Máximo",
@@ -407,7 +411,8 @@
       "photo_tip": "Panorámica del valle con el Palatino al fondo — se intuye la forma del antiguo circo.",
       "tags": [
         "ruinas"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Fontana di Trevi",
@@ -427,7 +432,8 @@
       "tags": [
         "fuente",
         "monumento"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Panteón",
@@ -449,6 +455,7 @@
         "monumento",
         "iglesia"
       ],
+      "filter_category": "monumentos",
       "schedule": "Lun-Sáb 09:00-19:00, Dom 09:00-18:00. Reserva online obligatoria"
     },
     {
@@ -470,7 +477,8 @@
       "photo_tip": "La Fontana dei Quattro Fiumi con Sant'Agnese in Agone detrás — la composición barroca perfecta.",
       "tags": [
         "plaza"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Plaza España y Escalinata",
@@ -489,7 +497,8 @@
       "tags": [
         "monumento",
         "plaza"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Piazza del Popolo",
@@ -506,7 +515,8 @@
       "tags": [
         "plaza",
         "monumento"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Largo di Torre Argentina",
@@ -523,7 +533,8 @@
       "tags": [
         "ruinas",
         "curiosidad"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Via del Corso",
@@ -539,6 +550,7 @@
       "tags": [
         "calle"
       ],
+      "filter_category": "monumentos",
       "not_before": "10:00"
     },
     {
@@ -565,6 +577,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "schedule": "Lun-Sáb 08:00-20:00 (última entrada 18:00). Cerrado domingos (excepto último domingo del mes: 09:00-14:00, gratis)"
     },
     {
@@ -586,6 +599,7 @@
       "tags": [
         "iglesia"
       ],
+      "filter_category": "museos_arte",
       "related_to": "Cúpula de San Pedro",
       "schedule": "07:00-20:00 (todo el año)"
     },
@@ -608,7 +622,8 @@
       "tags": [
         "plaza",
         "monumento"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Via della Conciliazione",
@@ -624,7 +639,8 @@
       "photo_tip": "Desde el extremo de Castel Sant'Angelo mirando hacia San Pedro — la cúpula centrada entre los edificios es la postal clásica.",
       "tags": [
         "calle"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Castel Sant'Angelo",
@@ -642,6 +658,7 @@
         "monumento",
         "museo"
       ],
+      "filter_category": "museos_arte",
       "schedule": "09:00-19:30. Cerrado lunes"
     },
     {
@@ -660,7 +677,8 @@
       "tags": [
         "barrio",
         "gastronomia"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Mirador del Janículo",
@@ -676,7 +694,8 @@
       "photo_tip": "Panorámica de 180° con todas las cúpulas de Roma — la foto que resume la ciudad. Al atardecer el cielo se tiñe de naranja.",
       "tags": [
         "mirador"
-      ]
+      ],
+      "filter_category": "miradores"
     },
     {
       "name": "Galería Borghese (museo)",
@@ -697,6 +716,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "related_to": "Parque Villa Borghese",
       "schedule": "Mar-Dom 09:00-19:00. Cerrado lunes. Solo con reserva (turnos de 2h)",
       "contained_in": "Parque Villa Borghese"
@@ -715,6 +735,7 @@
       "tags": [
         "parque"
       ],
+      "filter_category": "monumentos",
       "related_to": "Galería Borghese (museo)"
     },
     {
@@ -731,6 +752,7 @@
       "tags": [
         "zoo"
       ],
+      "filter_category": "monumentos",
       "schedule": "09:30-18:00 (L-V primavera-verano), 09:30-19:00 (S-D primavera-verano), 09:30-17:00 (invierno)",
       "contained_in": "Parque Villa Borghese"
     },
@@ -749,6 +771,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "schedule": "09:00-19:00. Cerrado lunes"
     },
     {
@@ -768,6 +791,7 @@
         "monumento",
         "mirador"
       ],
+      "filter_category": "monumentos",
       "group": "altar_patria_group",
       "group_order": 2,
       "group_order_evening": 1
@@ -786,7 +810,8 @@
       "photo_tip": "Desde el centro del puente, el castillo detrás y la cúpula de San Pedro asomando a lo lejos.",
       "tags": [
         "monumento"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Isla Tiberina",
@@ -802,7 +827,8 @@
       "photo_tip": "Desde Ponte Fabricio (el puente más antiguo de Roma, año 62 a.C.) mirando hacia la basílica de San Bartolomeo en la isla.",
       "tags": [
         "curiosidad"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Via dei Fori Imperiali",
@@ -819,7 +845,8 @@
       "tags": [
         "calle",
         "ruinas"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Campo de' Fiori",
@@ -836,7 +863,8 @@
       "tags": [
         "plaza",
         "gastronomia"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Borgo Pio",
@@ -853,7 +881,8 @@
       "tags": [
         "calle",
         "gastronomia"
-      ]
+      ],
+      "filter_category": "monumentos"
     },
     {
       "name": "Piazza Venezia",
@@ -868,6 +897,7 @@
       "tags": [
         "plaza"
       ],
+      "filter_category": "monumentos",
       "tip": "Parada rápida. Desde aquí se ve el Altar de la Patria en toda su magnitud. Es el cruce natural entre zonas",
       "photo_tip": null,
       "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo",
@@ -889,6 +919,7 @@
         "museo",
         "ruinas"
       ],
+      "filter_category": "museos_arte",
       "related_to": "Columna de Trajano",
       "closed_on": [
         "lunes"
@@ -910,6 +941,7 @@
       "tags": [
         "mirador"
       ],
+      "filter_category": "miradores",
       "related_to": "Basílica de San Pedro",
       "schedule": "07:00-18:00 (Abr-Sep), 07:30-17:00 (Oct-Mar)",
       "tip": "Entrada ~10€ (ascensor) o ~8€ (solo escaleras). Madruga para evitar colas. El pasillo interior entre las dos paredes de la cúpula es claustrofóbico pero merece",
@@ -930,6 +962,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "La iglesia madre de los jesuitas — un interior barroco que te deja sin palabras, especialmente el techo pintado por Baciccia",
       "tip": "Gratis. Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio"
     },
@@ -948,6 +981,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Tres obras maestras de Caravaggio en una capilla lateral — La vocación de San Mateo es hipnótica",
       "tip": "Gratis. Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas de 1€ para encender la luz"
     },
@@ -969,6 +1003,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "El Altar de la Paz de Augusto, protegido en un museo moderno diseñado por Richard Meier junto al Tíber",
       "tip": "Entrada ~10€. El museo es pequeño pero el altar es impresionante. Está junto al Mausoleo de Augusto"
     },
@@ -986,6 +1021,7 @@
         "barrio",
         "gastronomia"
       ],
+      "filter_category": "monumentos",
       "description": "El barrio judío más antiguo de Europa — calles con historia, la Gran Sinagoga y algunos de los mejores restaurantes de Roma",
       "tip": "Prueba los carciofi alla giudia (alcachofas fritas) en cualquier restaurante de la zona — es EL plato del Ghetto"
     },
@@ -1004,6 +1040,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "La única iglesia gótica de Roma, con un Cristo Redentor esculpido por Miguel Ángel",
       "tip": "Gratis. No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido"
     },
@@ -1022,6 +1059,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "El techo de Andrea Pozzo es un trampantojo que engaña al ojo — parece que la iglesia tiene una cúpula pero es pintura plana",
       "tip": "Gratis. Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta"
     },
@@ -1039,6 +1077,7 @@
         "monumento",
         "curiosidad"
       ],
+      "filter_category": "monumentos",
       "description": "Un elefante de mármol cargando un obelisco egipcio — una de las esculturas más simpáticas de Roma, en la Piazza della Minerva",
       "tip": "Parada rápida detrás del Panteón. Bernini diseñó el elefante con una sonrisa traviesa"
     },
@@ -1055,6 +1094,7 @@
       "tags": [
         "fuente"
       ],
+      "filter_category": "monumentos",
       "description": "Una fuente renacentista encantadora con jóvenes empujando tortugas hacia la pila — en la íntima Piazza Mattei, corazón del Ghetto judío",
       "tip": "Las tortugas fueron añadidas después, probablemente por Bernini. La plaza es uno de los rincones más bonitos de Roma"
     },
@@ -1071,6 +1111,7 @@
       "tags": [
         "fuente"
       ],
+      "filter_category": "monumentos",
       "description": "Bernini esculpió este tritón soplando agua hacia el cielo en el centro de Piazza Barberini — parada natural entre Trevi y Via Veneto",
       "tip": "Parada rápida. Justo al lado está la pequeña Fontana delle Api (fuente de las abejas), también de Bernini"
     },
@@ -1088,6 +1129,7 @@
         "monumento",
         "plaza"
       ],
+      "filter_category": "monumentos",
       "description": "La Columna de Marco Aurelio se alza 30 metros con relieves en espiral de las guerras contra los bárbaros — menos turistas que en Navona",
       "tip": "Parada rápida en Via del Corso. El edificio del fondo es el Palazzo Chigi, sede del gobierno italiano"
     },
@@ -1104,6 +1146,7 @@
       "tags": [
         "calle"
       ],
+      "filter_category": "monumentos",
       "description": "La calle de compras más famosa de Roma — de Gucci a Bulgari, conecta Via del Corso con la Escalinata de Plaza España",
       "tip": "Aunque no compres, el paseo entre escaparates es parte de la experiencia romana. El Caffè Greco (n.86) abrió en 1760"
     },
@@ -1120,6 +1163,7 @@
       "tags": [
         "plaza"
       ],
+      "filter_category": "monumentos",
       "description": "Plaza elegante con dos fuentes gemelas hechas de bañeras romanas — el Palazzo Farnese es la embajada de Francia y uno de los más bonitos de Roma",
       "tip": "A 1 minuto de Campo de' Fiori pero mucho más tranquila. Las fuentes usan bañeras de las Termas de Caracalla"
     },
@@ -1137,6 +1181,7 @@
         "plaza",
         "monumento"
       ],
+      "filter_category": "monumentos",
       "related_to": "Museos Capitolinos",
       "description": "La plaza diseñada por Miguel Ángel en la cima del Capitolio — geometría perfecta con la estatua ecuestre de Marco Aurelio en el centro",
       "tip": "Sube por la escalinata de la Cordonata. Desde la terraza trasera hay unas vistas espectaculares del Foro Romano"
@@ -1159,6 +1204,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "related_to": "Piazza del Campidoglio",
       "description": "El museo público más antiguo del mundo — la Loba Capitolina, el Marco Aurelio original y el Gálata moribundo te esperan",
       "tip": "Entrada ~15€. El pasaje subterráneo entre los dos edificios tiene vistas directas al Foro. Reserva 2 horas mínimo"
@@ -1178,6 +1224,7 @@
         "iglesia",
         "ruinas"
       ],
+      "filter_category": "museos_arte",
       "description": "Tres niveles de historia bajo tus pies — iglesia medieval arriba, iglesia del siglo IV en medio, templo romano de Mitra abajo",
       "tip": "Entrada a los niveles inferiores ~10€. Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma"
     },
@@ -1195,6 +1242,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Aquí está el Moisés de Miguel Ángel — una escultura tan poderosa que dicen que Miguel Ángel le golpeó la rodilla y le dijo \"¡Habla!\"",
       "tip": "Gratis. El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente"
     },
@@ -1219,6 +1267,7 @@
         "museo",
         "ruinas"
       ],
+      "filter_category": "museos_arte",
       "description": "El palacio subterráneo de Nerón — una visita guiada con realidad virtual que te muestra los salones dorados como eran hace 2.000 años",
       "tip": "Solo con visita guiada (reservar online, ~16€). Incluye gafas de realidad virtual. Abre solo viernes, sábado y domingo"
     },
@@ -1239,6 +1288,7 @@
       "tags": [
         "ruinas"
       ],
+      "filter_category": "monumentos",
       "description": "Los baños públicos más grandes de la antigua Roma — las ruinas son tan enormes que en verano montan ópera dentro",
       "tip": "Entrada ~8€. Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente para 1.600 romanos a la vez"
     },
@@ -1255,6 +1305,7 @@
       "tags": [
         "mirador"
       ],
+      "filter_category": "miradores",
       "description": "Un jardín de naranjos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde San Pedro hasta el Coliseo",
       "tip": "Gratis. Mejor al atardecer. Después baja a la Cerradura del Aventino, que está a 3 minutos"
     },
@@ -1272,6 +1323,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Una de las cuatro basílicas papales de Roma — los mosaicos del siglo V brillan con oro y el artesonado del techo se hizo con el primer oro traído de América",
       "tip": "Gratis (la basílica). El museo y la loggia con los mosaicos cuestan ~5€. El techo dorado es cortesía de Isabel la Católica"
     },
@@ -1289,6 +1341,7 @@
         "monumento",
         "ruinas"
       ],
+      "filter_category": "monumentos",
       "related_to": "Mercados de Trajano",
       "description": "Una columna de 30 metros con 2.500 figuras talladas en espiral que cuentan las guerras de Trajano en Dacia — un cómic romano en mármol",
       "tip": "Parada rápida junto a Via dei Fori Imperiali. Los relieves se leen de abajo arriba en espiral"
@@ -1307,6 +1360,7 @@
         "ruinas",
         "monumento"
       ],
+      "filter_category": "monumentos",
       "description": "Un teatro romano del siglo I a.C. que sirvió de modelo para el Coliseo — hoy tiene apartamentos de lujo en los pisos superiores",
       "tip": "Solo se ve por fuera. Fíjate en cómo los arcos romanos originales sostienen un palacio renacentista encima — 2.000 años de historia en un edificio"
     },
@@ -1323,6 +1377,7 @@
       "tags": [
         "curiosidad"
       ],
+      "filter_category": "miradores",
       "description": "Mira por la cerradura de la puerta de los Caballeros de Malta y verás la cúpula de San Pedro perfectamente enmarcada por un túnel de setos",
       "tip": "La cola suele ser corta. Es la foto más original que te llevarás de Roma — tres países en una imagen: Italia, la Orden de Malta y el Vaticano"
     },
@@ -1340,6 +1395,7 @@
         "monumento",
         "curiosidad"
       ],
+      "filter_category": "monumentos",
       "description": "Una pirámide de 36 metros en plena Roma — la construyó un magistrado romano que quería un entierro al estilo egipcio",
       "tip": "Se ve desde fuera. Está junto a Porta San Paolo y la estación de metro Piramide. El Cementerio Acatólico al lado es precioso"
     },
@@ -1357,6 +1413,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo",
       "tip": "Gratis. El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales"
     },
@@ -1375,6 +1432,7 @@
         "iglesia",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Una de las iglesias más antiguas de Roma — los mosaicos dorados del ábside brillan como el primer día, y la plaza es el corazón de Trastevere",
       "tip": "Gratis. Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio"
     },
@@ -1396,6 +1454,7 @@
         "museo",
         "arte"
       ],
+      "filter_category": "museos_arte",
       "description": "Una villa renacentista con frescos de Rafael que quitan el aliento — el Triunfo de Galatea y la Loggia de Psique son de otro mundo",
       "tip": "Entrada ~10€. Mucho menos turistas que los Museos Vaticanos pero con frescos de Rafael igual de impresionantes. Abre por las mañanas"
     },
@@ -1412,6 +1471,7 @@
       "tags": [
         "plaza"
       ],
+      "filter_category": "monumentos",
       "description": "La plaza más animada de Trastevere — punto de encuentro al cruzar Ponte Sisto, con una fuente barroca y ambiente de aperitivo",
       "tip": "Por las tardes se llena de gente con spritz en mano. Es la puerta de entrada perfecta a Trastevere"
     },
@@ -1428,6 +1488,7 @@
       "tags": [
         "mirador"
       ],
+      "filter_category": "miradores",
       "description": "El mirador más clásico de Roma — desde aquí ves Piazza del Popolo a tus pies, las cúpulas de la ciudad y el Vaticano al fondo",
       "tip": "Mejor al atardecer. Se accede desde Villa Borghese o subiendo desde Piazza del Popolo. Hay un bar con terraza"
     }

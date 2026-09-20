@@ -43,7 +43,8 @@ interface StopDetailSheetProps {
   /** null = cerrado. */
   stop: MockStopDetail | null
   city: string
-  dayNumber: number
+  /** null = la ficha no se abre desde un día de la ruta (EXPLORAR) — se oculta la píldora "Día X". */
+  dayNumber: number | null
   /** Fecha ISO de este día si el viajero fijó fechas exactas — null = "Día X" sin fecha (ver formatShortDateEs). */
   dateIso: string | null
   /** Todas las paradas REALES del día (con coordenadas), en orden — la actual se resalta, el resto se muestra en gris de contexto. */
@@ -296,7 +297,10 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
   const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
-  const dayPillLabel = `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
+  // null = la ficha no se está viendo desde ningún día concreto (EXPLORAR abre lugares del destino
+  // que todavía no están en la ruta) — entonces no hay píldora que poner: "Día 1" ahí sería
+  // directamente falso.
+  const dayPillLabel = dayNumber === null ? null : `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
 
   return (
     <AnimatePresence>
@@ -315,9 +319,11 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
               ←
             </button>
 
-            <span className="absolute right-4 top-4 z-10 rounded-full bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-md">
-              {dayPillLabel}
-            </span>
+            {dayPillLabel && (
+              <span className="absolute right-4 top-4 z-10 rounded-full bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-md">
+                {dayPillLabel}
+              </span>
+            )}
           </div>
 
           <div onPointerDown={handleDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center bg-bg-card py-2">

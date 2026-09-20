@@ -3618,6 +3618,42 @@ function buildCuratedPoolV2(destData) {
  * "tipo de lugar" — cuando exista el campo temático (museo/mirador/mercado/joya_oculta/...) del punto
  * 4 se puede sustituir aquí sin tocar el resto del pipeline.
  */
+/**
+ * TODOS los lugares de un destino curado, con lo que necesita la pantalla de explorar/añadir parada:
+ * coordenadas para el pin del mapa y `filter_category` para los chips de filtro.
+ *
+ * Distinto del pool del cuestionario (/api/curated-places-pool, 20 lugares como mucho) a propósito y
+ * por la misma razón de siempre: ese pool influye en la GENERACIÓN y por eso es corto y curado;
+ * este es edición manual sobre una ruta ya hecha, así que enseña el catálogo entero sin tope.
+ */
+app.post('/api/destination-places', (req, res) => {
+  const { destination } = req.body ?? {}
+  if (!destination) {
+    res.status(400).json({ error: 'Falta el destino.' })
+    return
+  }
+  const data = findPipelineV2Data(destination)
+  if (!data) {
+    res.json({ found: false, places: [] })
+    return
+  }
+  const places = (data.places ?? [])
+    .filter((place) => Array.isArray(place.coordinates) && place.coordinates.length === 2)
+    .map((place) => ({
+      name: place.name,
+      coordinates: { lat: place.coordinates[0], lng: place.coordinates[1] },
+      filter_category: place.filter_category ?? null,
+      zone: place.zone ?? null,
+      zone_label: data.zones?.[place.zone]?.name ?? null,
+      duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,
+      type: place.type ?? null,
+      tags: Array.isArray(place.tags) ? place.tags : [],
+      level: place.level ?? null,
+      schedule: place.schedule ?? null,
+    }))
+  res.json({ found: true, places })
+})
+
 // ── Detalle ampliado de un lugar (las 3 pestañas de la ficha de parada) ──────────────────────
 //
 // Contenido largo y redactado a mano de cada lugar de un destino curado: descripción, qué ver,

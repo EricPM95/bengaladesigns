@@ -6,6 +6,9 @@ import type { NearbyPlaceResult } from '../../lib/nearbyPlacesSearch'
 import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayPositionPicker } from './dayDetail/DayPositionPicker'
 import { NearbyPlacesView, toMarker } from './explore/NearbyPlacesView'
+import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
+import { useDestinationPool } from '../../lib/useDestinationPool'
+import type { PlaceFilterCategory } from '../../lib/placeCategories'
 
 interface ExplorePanelProps {
   route: Route
@@ -24,6 +27,14 @@ const CATEGORIES: { id: ExploreCategory; icon: string; label: string }[] = [
   { id: 'viewpoints', icon: '📸', label: 'Miradores y fotos' },
   { id: 'attractions', icon: '🏛️', label: 'Atracciones' },
 ]
+
+/** En destinos con catálogo curado, cada botón de EXPLORAR abre la MISMA pantalla que el "+" de DIAS
+    con su filtro ya puesto — el viajero ve exactamente los mismos lugares busque desde donde busque. */
+const CURATED_FILTER: Record<ExploreCategory, PlaceFilterCategory> = {
+  food: 'restaurantes',
+  viewpoints: 'miradores',
+  attractions: 'monumentos',
+}
 
 /**
  * Pestaña EXPLORAR — 3 categorías, cada una con su propio formato (nunca un cuarto recuadro):
@@ -57,11 +68,35 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const { places: curatedPool, resolved: curatedPoolResolved } = useDestinationPool(city, activeCategory !== null)
+
   const backToCategories = () => {
     setActiveCategory(null)
     setResults(null)
     onSelectResultId(null)
   }
+
+  // Destino curado: las 3 categorías abren la pantalla compartida de lugares, sin acción de añadir
+  // (desde EXPLORAR solo se consulta; para meter algo en la ruta se usa el "+" del día, que es quien
+  // sabe en qué hueco va). Los destinos sin catálogo siguen con la búsqueda de Mapbox de siempre.
+  if (activeCategory && curatedPool.length > 0) {
+    return (
+      <PlaceExplorerScreen
+        open
+        destination={city}
+        places={curatedPool}
+        title={`Explorar ${city}`}
+        subtitle={CATEGORIES.find((category) => category.id === activeCategory)?.label ?? null}
+        route={route}
+        initialCategories={[CURATED_FILTER[activeCategory]]}
+        onClose={backToCategories}
+      />
+    )
+  }
+
+  // Aún no se sabe si esta ciudad tiene catálogo — un render sin nada antes que enseñar el buscador
+  // viejo medio segundo y cambiarlo por la pantalla nueva.
+  if (activeCategory !== null && !curatedPoolResolved) return null
 
   if (activeCategory === 'food' || activeCategory === 'viewpoints') {
     return (

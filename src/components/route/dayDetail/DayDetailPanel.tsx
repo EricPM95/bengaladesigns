@@ -21,6 +21,8 @@ import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AddStopScreen } from '../addStop/AddStopScreen'
+import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
+import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
@@ -358,6 +360,29 @@ export function DayDetailPanel({
   // a la vez, con el activo a opacidad completa y el resto atenuado (BLOQUE B, feedback de calidad:
   // "el mapa solo marca un lugar" — sigue disponible, ahora es opcional en vez de forzoso).
   const dayMarkers = showAllDaysOnMap ? buildCombinedDaysMarkers(route?.days ?? [day], day.id) : buildSingleDayMarkers(day, dayIndex)
+  // Catálogo curado de la ciudad (solo se pide cuando se abre el "+"): si lo hay, "Añadir parada" es
+  // la pantalla nueva de lugares del destino; si no, sigue siendo el buscador de POIs de Mapbox de
+  // siempre, que funciona en cualquier ciudad aunque no tengamos JSON escrito para ella.
+  const { places: curatedPool, resolved: curatedPoolResolved } = useDestinationPool(day.city, insertAt !== null)
+
+  // "+" entre dos paradas: el lugar elegido entra EXACTAMENTE en ese hueco (no al final del día), y
+  // a partir de ahí manda el store — recalcula solo el tramo con la parada anterior y redondea al
+  // cuarto más cercano, sin volver a replanificar nada del día (ver insertStopAt en useRouteStore.ts).
+  const addStopBefore = insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.name ?? null) : null
+  const addStopAfter = insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null
+  const addStopSubtitle = addStopBefore && addStopAfter ? `Entre ${addStopBefore} y ${addStopAfter}` : addStopBefore ? `Después de ${addStopBefore}` : addStopAfter ? `Antes de ${addStopAfter}` : day.city
+
+  const addPickedStop = (newStop: Stop) => {
+    if (day.stops.length === 0) seedDayStops(day.id, realStops)
+    if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
+    setInsertAt(null)
+    setAddStopInitialQuery(undefined)
+  }
+
+  const closeAddStop = () => {
+    setInsertAt(null)
+    setAddStopInitialQuery(undefined)
+  }
   const dayMapLines = showAllDaysOnMap ? buildCombinedDaysLines(route?.days ?? [day], day.id) : buildSingleDayLine(day, dayIndex)
 
   // Hora real de inicio de cada parada: si el día ya tiene paradas REALES (editadas a mano o
@@ -735,7 +760,24 @@ export function DayDetailPanel({
             </div>
           )}
 
-          {route && (
+          {route && insertAt !== null && curatedPool.length > 0 && (
+            <PlaceExplorerScreen
+              open
+              destination={day.city}
+              places={curatedPool}
+              title={`Añadir parada — Día ${day.dayNumber}`}
+              subtitle={addStopSubtitle}
+              route={route}
+              dayMarkers={dayMarkers}
+              dayNumber={day.dayNumber}
+              dateIso={dateIso}
+              initialQuery={addStopInitialQuery}
+              onPick={addPickedStop}
+              onClose={closeAddStop}
+            />
+          )}
+
+          {route && curatedPoolResolved && curatedPool.length === 0 && (
             <AddStopScreen
               route={route}
               city={day.city}
@@ -746,16 +788,8 @@ export function DayDetailPanel({
               anchorCoordinates={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.coordinates ?? null) : null}
               dayMarkers={dayMarkers}
               initialQuery={addStopInitialQuery}
-              onPick={(newStop) => {
-                if (day.stops.length === 0) seedDayStops(day.id, realStops)
-                if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
-                setInsertAt(null)
-                setAddStopInitialQuery(undefined)
-              }}
-              onClose={() => {
-                setInsertAt(null)
-                setAddStopInitialQuery(undefined)
-              }}
+              onPick={addPickedStop}
+              onClose={closeAddStop}
             />
           )}
         </div>
