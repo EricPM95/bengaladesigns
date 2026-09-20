@@ -29,8 +29,41 @@ try {
     PIPELINE_V2_DATA[key] = JSON.parse(readFileSync(join(dir, file), 'utf8'))
   }
   console.log(`[pipeline-v2] cargados ${Object.keys(PIPELINE_V2_DATA).length} destinos con algoritmo JS puro: ${Object.keys(PIPELINE_V2_DATA).join(', ')}`)
+  for (const [key, data] of Object.entries(PIPELINE_V2_DATA)) validateZoneCoverage(key, data)
 } catch (error) {
   console.warn('[pipeline-v2] no se pudo cargar data/pipeline_v2/ — este camino queda desactivado, todo sigue como antes:', error.message)
+}
+
+/**
+ * Ronda 10 (regla general del formato de datos): la `zone_distribution` de un destino DEBE incluir
+ * TODAS sus zonas en TODAS las duraciones (1-5 días), sea como zona propia de una franja o como
+ * `extra_zones` de la franja geográficamente más cercana. Si una zona solo existe a partir de X
+ * días, cualquier lugar suyo que el viajero marque en el pool de un viaje más corto se queda sin
+ * sitio donde colocarse y desaparece de la ruta en silencio — exactamente el bug de Galería Borghese
+ * (zona villa_borghese, que antes solo aparecía en viajes de 4+ días) en un viaje de 3 días. Esto no
+ * rompe nada si falla: solo avisa por consola al arrancar, para que se vea al añadir un destino
+ * nuevo (París, Londres, Praga...) en vez de descubrirlo probando rutas.
+ */
+function validateZoneCoverage(destinationKey, data) {
+  const allZones = Object.keys(data?.zones ?? {})
+  if (allZones.length === 0) return
+  for (const [durationKey, variants] of Object.entries(data.zone_distribution ?? {})) {
+    for (const [variantKey, variant] of Object.entries(variants ?? {})) {
+      const covered = new Set()
+      for (const franja of variant?.franjas ?? []) {
+        for (const slotKey of ['morning', 'afternoon']) {
+          if (franja[slotKey]?.zone) covered.add(franja[slotKey].zone)
+          for (const zone of franja[slotKey]?.extra_zones ?? []) covered.add(zone)
+        }
+      }
+      const missing = allZones.filter((zone) => !covered.has(zone))
+      if (missing.length > 0) {
+        console.warn(
+          `[pipeline-v2] "${destinationKey}" — ${durationKey}.${variantKey} no cubre las zonas ${missing.join(', ')}: un lugar de esas zonas marcado en el pool no tendrá dónde colocarse. Añádelas como "extra_zones" de la franja más cercana.`,
+        )
+      }
+    }
+  }
 }
 
 // Alias mínimos — se amplía según se añadan más archivos a data/pipeline_v2/. Mismo patrón que
@@ -409,7 +442,14 @@ export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mu
   // como `places_for_block` a generate-day-block (aunque ese endpoint, en el camino v2, la ignore y
   // recalcule el mismo resultado por su cuenta desde `mustIncludePlaces`, no desde esta lista).
   const extrasForDay = planMustIncludePlacement(destData, variant, mustIncludePlaces, interestedTagsFromAnswers({ experiencesPositive })).get(dayNumber)
-  const names = [...(franja.morning?.places ?? []), ...(extrasForDay?.morning ?? []), ...(franja.afternoon?.places ?? []), ...(extrasForDay?.afternoon ?? [])]
+  // Ronda 10: `coreNamesForSlot` (y no `franja[slot].places` a pelo) porque una selección del pool
+  // con prioridad absoluta puede haber desplazado/reubicado parte de la lista curada de este bloque.
+  const names = [
+    ...coreNamesForSlot(franja, 'morning', extrasForDay),
+    ...(extrasForDay?.morning ?? []),
+    ...coreNamesForSlot(franja, 'afternoon', extrasForDay),
+    ...(extrasForDay?.afternoon ?? []),
+  ]
   const seen = new Set()
   const places = []
   for (const name of names) {
@@ -599,12 +639,21 @@ function estimateListMinutes(destData, names) {
 // Cuánto añadiría ESTE lugar si se fuerza aquí — incluye su `contained_in` si ese contenedor no está
 // ya en la lista (ver expandContainedIn: se insertaría automáticamente delante, así que cuenta para
 // el hueco real que ocupa).
-function estimatePlaceLoadMinutes(destData, place, existingNames) {
+// Ronda 10: `usedElsewhere` con el MISMO criterio que expandContainedIn — si el contenedor ya es
+// parada de otro día del viaje, no se va a insertar aquí, así que tampoco puede contar como hueco
+// ocupado. Sin esto se cobraban 120min fantasma (el Parque Villa Borghese del día 5) a cualquier
+// lugar del pool de esa zona en OTRO día, y lugares que sí cabían se descartaban por un presupuesto
+// que nunca se habría gastado.
+function estimatePlaceLoadMinutes(destData, place, existingNames, usedElsewhere = null) {
   let total = place.duration_minutes ?? 0
-  if (place.contained_in && !existingNames.includes(place.contained_in)) {
+  if (containerWouldBeInserted(place, existingNames, usedElsewhere)) {
     total += findRawPlace(destData, place.contained_in)?.duration_minutes ?? 0
   }
   return total
+}
+
+function containerWouldBeInserted(place, existingNames, usedElsewhere = null) {
+  return Boolean(place.contained_in) && !existingNames.includes(place.contained_in) && !usedElsewhere?.has(place.contained_in)
 }
 
 // Ronda 8D (bug real encontrado en el propio testing): un bloque ya son ~5h reales (mañana
@@ -621,45 +670,214 @@ function estimatePlaceLoadMinutes(destData, place, existingNames) {
 // desbordar la comida/cena.
 const MUST_INCLUDE_SLOT_BUDGET_MINUTES = 270
 
+/**
+ * Ronda 10: qué franja del día acepta un lugar de una zona dada. Además de su `zone` propia, cada
+ * franja puede declarar `extra_zones` — las zonas del destino que NO tienen día propio en esa
+ * duración concreta y se emparejan con la geográficamente más cercana (regla general del JSON:
+ * TODAS las zonas del destino presentes en TODAS las duraciones, ver validateZoneCoverage). Sin
+ * esto, una zona "huérfana" en viajes cortos (villa_borghese solo aparecía a partir de 4 días) hacía
+ * que cualquier lugar suyo marcado en el pool no tuviera dónde colocarse — bug real: Galería
+ * Borghese nunca aparecía en un viaje de 3 días aunque el usuario la marcase a mano.
+ */
+function slotAcceptsZone(franja, slotKey, zone) {
+  const slot = franja?.[slotKey]
+  if (!slot) return false
+  return slot.zone === zone || (slot.extra_zones ?? []).includes(zone)
+}
+
+/**
+ * Lista CORE definitiva de un bloque (mañana/tarde) una vez aplicada la prioridad del pool — el
+ * JSON manda, salvo lo que un lugar del pool haya desplazado de aquí (`removed`) y lo que se haya
+ * reubicado aquí desde la otra franja del mismo día (`moved`, ver planMustIncludePlacement). Lo
+ * reubicado conserva el orden del día: lo que venía de la mañana entra al PRINCIPIO de la tarde, lo
+ * que venía de la tarde al FINAL de la mañana.
+ */
+function coreNamesForSlot(franja, slotKey, placementEntry) {
+  const removed = new Set(placementEntry?.removed?.[slotKey] ?? [])
+  const kept = (franja?.[slotKey]?.places ?? []).filter((name) => !removed.has(name))
+  const moved = placementEntry?.moved?.[slotKey] ?? []
+  if (moved.length === 0) return kept
+  return slotKey === 'afternoon' ? [...moved, ...kept] : [...kept, ...moved]
+}
+
+// Ronda 10 (orden de prioridad para colocar lugares: POOL > Imprescindibles/L1 > L2 > L3): cuánto
+// "duele" quitar un lugar de un bloque para hacerle sitio a una selección explícita del usuario. Se
+// desplaza primero lo de MENOR prioridad (L3), luego L2, y solo en último término un Imprescindible.
+function displacementCost(place) {
+  return 4 - (place?.level ?? 3)
+}
+
+// Ronda 10: minutos "perdidos" por parada previa al estimar a qué hora arrancaría de verdad una
+// visita del pool — desplazamiento a pie real + el colchón fijo de 10min de buildStopsForPlaces, más
+// un poco de margen para el relleno que las Reglas A/C puedan colar en un hueco. Solo se usa para la
+// comprobación de hora de CIERRE, nunca para el presupuesto de contenido del bloque.
+const TRANSIT_ESTIMATE_PER_STOP_MINUTES = 20
+
+// Cuánto más caro es perder un lugar del viaje que simplemente moverlo a la otra franja del mismo
+// día — lo bastante alto como para que un plan que no pierde nada gane SIEMPRE a uno que sí, aunque
+// mueva de sitio contenido de más nivel (ver planSlotFit).
+const LOST_PLACE_COST_MULTIPLIER = 10
+
 function planMustIncludePlacement(destData, variant, mustIncludeNames, interestTags = new Set()) {
   const placement = new Map()
   if (!Array.isArray(mustIncludeNames) || mustIncludeNames.length === 0) return placement
 
   const usedNames = collectUsedPlaceNames(variant, destData)
   const franjas = variant?.franjas ?? []
-  // Extras ya planificados para OTROS lugares del pool en esta misma llamada — para que el 2º lugar
-  // forzado también vea el hueco ya ocupado por el 1º, no solo lo que trae el JSON.
-  const extrasLoad = new Map()
-  const slotLoad = (franja, slotKey) => {
-    const baseNames = franja[slotKey]?.places ?? []
-    const extra = extrasLoad.get(`${franja.day}:${slotKey}`) ?? []
-    return estimateListMinutes(destData, baseNames) + estimateListMinutes(destData, extra)
+
+  // Ronda 10 (bug encontrado probando el fallback pool vs pool): TODO lo que el viajero marcó en el
+  // pool es intocable para el desplazamiento, no solo lo que este reparto haya movido de sitio. Un
+  // lugar del pool que YA era parada fija del JSON (p.ej. Piazza del Popolo en el día 3 de Roma) no
+  // aparece en los "extras" de ninguna franja, así que era un candidato a desplazar como cualquier
+  // otro — y acababa expulsado de la ruta por OTRA selección del mismo pool. Se llena más abajo, al
+  // resolver los nombres pedidos, y `planSlotFit` lo consulta cuando ya está completo.
+  const poolProtectedNames = new Set()
+
+  const ensureDay = (day) => {
+    if (!placement.has(day)) {
+      placement.set(day, { morning: [], afternoon: [], removed: { morning: [], afternoon: [] }, moved: { morning: [], afternoon: [] } })
+    }
+    return placement.get(day)
   }
+
+  // Contenido VIVO de un bloque en este momento del reparto: su lista CORE ya con los
+  // desplazamientos/reubicaciones decididos hasta ahora, más los lugares del pool que ya se le han
+  // asignado en esta misma llamada (para que el 2º lugar forzado vea el hueco que ocupó el 1º).
+  const slotNames = (franja, slotKey) => {
+    const entry = placement.get(franja.day)
+    return [...coreNamesForSlot(franja, slotKey, entry), ...(entry?.[slotKey] ?? [])]
+  }
+
   // Estimación gruesa de a qué hora arrancaría el bloque — sin pace aquí (planMustIncludePlacement no
   // lo recibe), 10:00 es la mañana más corta posible (Tranquilo) y la tarde siempre arranca a las
   // 15:00 en punto en TODA la construcción real (ver buildOrderedAfternoon/Regla C) — usar el peor
   // caso (mañana más corta) es lo conservador: si cabe con 10:00, cabe también con el 08:00 real de
   // Completo.
   const SLOT_START_ESTIMATE = { morning: 10 * 60, afternoon: 15 * 60 }
-  const fitsBudget = (franja, slotKey, place) => {
-    const baseNames = [...(franja[slotKey]?.places ?? []), ...(extrasLoad.get(`${franja.day}:${slotKey}`) ?? [])]
-    const existingLoad = slotLoad(franja, slotKey)
-    if (existingLoad + estimatePlaceLoadMinutes(destData, place, baseNames) > MUST_INCLUDE_SLOT_BUDGET_MINUTES) return false
+  const fitsWith = (names, slotKey, place) => {
+    const existingLoad = estimateListMinutes(destData, names)
+    if (existingLoad + estimatePlaceLoadMinutes(destData, place, names, usedNames) > MUST_INCLUDE_SLOT_BUDGET_MINUTES) return false
     // Ronda 8D (issue real encontrado en testing): sin esto, nada impedía forzar Galería Borghese
     // (cierra 19:00) a las 18:55 en un bloque ya casi lleno — el presupuesto de arriba solo mira
     // duración total, no A QUÉ HORA arrancaría de verdad. `contained_in` cuenta aparte: el contenedor
     // se visita ANTES, así que la atracción arranca después de él, no al principio del hueco.
-    const containerMinutes =
-      place.contained_in && !baseNames.includes(place.contained_in) ? (findRawPlace(destData, place.contained_in)?.duration_minutes ?? 0) : 0
-    const estimatedStart = SLOT_START_ESTIMATE[slotKey] + existingLoad + containerMinutes
+    const containerMinutes = containerWouldBeInserted(place, names, usedNames) ? (findRawPlace(destData, place.contained_in)?.duration_minutes ?? 0) : 0
+    // Ronda 10 (encontrado en el propio testing de esta ronda): la estimación anterior sumaba solo
+    // DURACIONES de visita, ignorando que entre parada y parada hay desplazamiento + colchón (~10min
+    // fijos en buildStopsForPlaces) y que las Reglas A/C pueden colar todavía algún relleno en los
+    // huecos. Con la tarde del Día 3 vaciada para Galería Borghese, la estimación decía 17:00 y la
+    // hora real acababa siendo 18:10 — la visita se pasaba de su cierre (19:00). El presupuesto de
+    // arriba mide VOLUMEN de contenido (y por eso no lleva este extra); esto mide RELOJ, y el reloj
+    // incluye los traslados.
+    const stopsBefore = names.filter((name) => typeof name === 'string' && !name.startsWith('Free Tour')).length + (containerMinutes > 0 ? 1 : 0)
+    const estimatedStart = SLOT_START_ESTIMATE[slotKey] + existingLoad + containerMinutes + TRANSIT_ESTIMATE_PER_STOP_MINUTES * stopsBefore
     const closing = parseClosingMinutes(place.schedule)
     if (closing != null && estimatedStart + (place.duration_minutes ?? 0) > closing) return false
     return true
   }
 
-  const ensureDay = (day) => {
-    if (!placement.has(day)) placement.set(day, { morning: [], afternoon: [] })
-    return placement.get(day)
+  /**
+   * ¿Cabe `place` en esta franja, y a costa de qué? Devuelve `null` si no hay forma, o un plan con
+   * los nombres que habría que desplazar. Ronda 10: antes esto era un simple sí/no (`fitsBudget`) y
+   * un "no" significaba descartar el lugar del pool en silencio — ahora el pool tiene prioridad
+   * ABSOLUTA, así que si no cabe se le hace sitio quitando lo de menor prioridad del bloque
+   * (L3 → L2 → L1, ver displacementCost), y solo se descarta si ni vaciando el bloque cabría (p.ej.
+   * un museo cuya hora de cierre no da margen).
+   */
+  const planSlotFit = (franja, slotKey, place) => {
+    let names = slotNames(franja, slotKey)
+    if (fitsWith(names, slotKey, place)) return { franja, slot: slotKey, displace: [], cost: 0 }
+
+    const entry = placement.get(franja.day)
+    const poolExtras = new Set(entry?.[slotKey] ?? [])
+    const movable = names
+      .map((name, index) => ({ name, index, place: findRawPlace(destData, name) }))
+      // Intocables: el Free Tour (hora fija, es el eje del día), otra selección del pool (misma
+      // prioridad, no se roban sitio entre ellas) y cualquier lugar que sea el `contained_in` de
+      // otro que se queda (quitarlo dejaría la atracción sin su paseo de llegada).
+      .filter(({ name, place: candidate }) => {
+        if (!candidate || poolExtras.has(name) || poolProtectedNames.has(name) || name.startsWith('Free Tour')) return false
+        return !names.some((other) => other !== name && findRawPlace(destData, other)?.contained_in === name)
+      })
+
+    // Un `group` (Coliseo + Foro + Arco, Panteón + Piazza Navona...) se desplaza ENTERO o no se
+    // desplaza: su orden y su hueco están decididos a mano en el JSON y partirlo entre mañana y
+    // tarde rompe justo lo que el grupo existe para proteger. Fuera de un grupo, cada lugar es su
+    // propia unidad.
+    const units = new Map()
+    for (const item of movable) {
+      const key = item.place.group ?? `solo:${item.name}`
+      if (!units.has(key)) units.set(key, [])
+      units.get(key).push(item)
+    }
+    const candidates = [...units.values()]
+      .map((items) => ({
+        names: items.map((item) => item.name),
+        // Se desplaza primero lo de MENOR prioridad: el nivel de la unidad es el de su miembro más
+        // prescindible (un grupo con un L1 dentro cuesta lo que cuesta ese L1, sumado).
+        level: Math.min(...items.map((item) => item.place.level ?? 3)),
+        lastIndex: Math.max(...items.map((item) => item.index)),
+        cost: items.reduce((sum, item) => sum + displacementCost(item.place), 0),
+        minutes: items.reduce((sum, item) => sum + (item.place.duration_minutes ?? 0), 0),
+      }))
+      // Primero el nivel (L3 antes que L2 antes que L1) y, a igualdad de nivel, lo que viene DESPUÉS
+      // en la lista del JSON: el orden dentro del bloque lo escribió a mano quien curó el destino y
+      // codifica su propia prioridad (en el Día 3 de Roma, "Trevi a primera hora" es la primera de
+      // la mañana a propósito — desplazarla antes que las otras tres L1 de la misma mañana sería
+      // justo lo contrario de lo que dice la nota del JSON).
+      .sort((a, b) => b.level - a.level || b.lastIndex - a.lastIndex)
+
+    // Coste real de cada plan: desplazar algo que se puede REUBICAR en la otra franja del mismo día
+    // cuesta su nivel; desplazar algo que se queda fuera del viaje cuesta mucho más. Así, entre dos
+    // huecos posibles para el mismo lugar del pool, se elige el que menos contenido pierde — que es
+    // lo que de verdad significa "Pool > L1 > L2 > L3" cuando hay que quitar algo.
+    const otherSlot = slotKey === 'morning' ? 'afternoon' : 'morning'
+    let otherLoad = estimateListMinutes(destData, slotNames(franja, otherSlot))
+    const displace = []
+    let cost = 0
+    for (const candidate of candidates) {
+      displace.push(candidate.names)
+      if (otherLoad + candidate.minutes <= MUST_INCLUDE_SLOT_BUDGET_MINUTES) {
+        otherLoad += candidate.minutes
+        cost += candidate.cost
+      } else {
+        cost += candidate.cost * LOST_PLACE_COST_MULTIPLIER
+      }
+      names = names.filter((name) => !candidate.names.includes(name))
+      if (fitsWith(names, slotKey, place)) return { franja, slot: slotKey, displace, cost }
+    }
+    return null
+  }
+
+  /**
+   * Aplica los desplazamientos de un plan. Un lugar desplazado NO se pierde sin más: primero se
+   * intenta reubicarlo en la OTRA franja del mismo día (misma zona, mismo día — solo cambia de
+   * mañana a tarde o al revés), que es lo que de verdad pasa cuando una visita larga del pool ocupa
+   * la mañana. Solo si tampoco cabe ahí se queda fuera, en silencio y sin alertas ("lo que no quepa,
+   * no entra").
+   */
+  const applyDisplacement = (franja, slotKey, units) => {
+    const otherSlot = slotKey === 'morning' ? 'afternoon' : 'morning'
+    const entry = ensureDay(franja.day)
+    for (const unit of units) {
+      // Una unidad es un `group` entero o un lugar suelto (ver planSlotFit): se reubica ENTERA o se
+      // queda fuera entera — mover medio grupo a la otra franja es justo lo que el grupo impide.
+      const originalOrder = coreNamesForSlot(franja, slotKey, entry)
+      const ordered = [...unit].sort((a, b) => originalOrder.indexOf(a) - originalOrder.indexOf(b))
+      for (const name of ordered) entry.removed[slotKey].push(name)
+
+      const unitMinutes = estimateListMinutes(destData, ordered)
+      const targetLoad = estimateListMinutes(destData, slotNames(franja, otherSlot))
+      const label = otherSlot === 'morning' ? 'mañana' : 'tarde'
+      if (targetLoad + unitMinutes <= MUST_INCLUDE_SLOT_BUDGET_MINUTES) {
+        entry.moved[otherSlot].push(...ordered)
+        console.log(`[pool] ${ordered.map((n) => `"${n}"`).join(' + ')} → movido a la ${label} del día ${franja.day} para hacer sitio a una selección del pool`)
+      } else {
+        console.log(
+          `[pool] ${ordered.map((n) => `"${n}"`).join(' + ')} → fuera del día ${franja.day}: desplazado por una selección del pool y sin hueco en la otra franja`,
+        )
+      }
+    }
   }
 
   // Ronda 9: si el propio contenedor de `contained_in` YA es core estático de un día concreto (p.ej.
@@ -687,6 +905,19 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
   // llegaba, si el related_to sustituía, y a qué día se asignaba. Un solo log por nombre pedido, con
   // el motivo exacto si se descarta — nunca silencioso.
   console.log(`[pool] must_include_places recibidos: ${JSON.stringify(mustIncludeNames)}`)
+
+  /**
+   * Ronda 10 (fallback pool vs pool): cuando VARIOS lugares del pool compiten por el mismo hueco, el
+   * primero en colocarse se lo queda — así que el ORDEN en que se procesan es quien decide cuál se
+   * queda fuera si no caben todos. Hasta ahora ese orden era el de los clicks del viajero en la
+   * pantalla, que no significa nada. Ahora se ordenan por prioridad real: primero los Imprescindibles
+   * (L1), luego L2, luego L3, y dentro del mismo nivel por el orden del JSON del destino (que va de
+   * más a menos importante). Se resuelven todos ANTES de ordenar porque el nivel que cuenta es el del
+   * lugar YA resuelto — "Piazza del Campidoglio" (L2) con "Arte y Museos" se convierte en "Museos
+   * Capitolinos" (L1) vía related_to, y debe competir como el L1 que acabará siendo.
+   */
+  const jsonOrder = new Map((destData.places ?? []).map((entry, index) => [entry.name, index]))
+  const requested = []
   for (const rawName of mustIncludeNames) {
     if (typeof rawName !== 'string') continue
     const { place, viaRelatedTo } = resolveMustIncludePlace(destData, rawName, interestTags)
@@ -697,8 +928,17 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     if (place.name !== rawName) {
       console.log(`[pool] "${rawName}" → resuelto a "${place.name}" (${viaRelatedTo ? 'related_to + experiencia positiva afín' : 'coincidencia por nombre, no exacto'})`)
     }
+    requested.push(place)
+    poolProtectedNames.add(place.name)
+  }
+  requested.sort((a, b) => (a.level ?? 3) - (b.level ?? 3) || (jsonOrder.get(a.name) ?? Infinity) - (jsonOrder.get(b.name) ?? Infinity))
+  if (requested.length > 1) {
+    console.log(`[pool] orden de colocación (L1 → L2 → L3, luego orden del JSON): ${requested.map((p) => `${p.name} (L${p.level ?? 3})`).join(' → ')}`)
+  }
+
+  for (const place of requested) {
     if (usedNames.has(place.name)) {
-      console.log(`[pool] "${place.name}" → DESCARTADO: ya está en la ruta (core de otro día o related_to ya usado)`)
+      console.log(`[pool] "${place.name}" → ya está en la ruta como parada fija de otro día — nada que forzar`)
       continue
     }
     if (relatedToAlreadyUsed(place, usedNames)) {
@@ -707,68 +947,74 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     }
 
     const containerOwnerDay = place.contained_in ? (staticContainerOwner.get(place.contained_in) ?? dynamicContainerOwner.get(place.contained_in)) : null
+    const adjacency = findAdjacentZones(destData, place.zone, 30)
 
-    let targetFranja
-    let slot
-    if (containerOwnerDay != null) {
-      // El contenedor ya tiene dueño (estático o decidido antes en esta misma llamada) — SOLO ese
-      // día es válido, nunca un fallback a otro día distinto (duplicaría el contenedor).
-      const ownerFranja = franjas.find((f) => f.day === containerOwnerDay)
-      if (ownerFranja) {
-        if (fitsBudget(ownerFranja, 'morning', place)) {
-          targetFranja = ownerFranja
-          slot = 'morning'
-        } else if (!ownerFranja.evening_block && fitsBudget(ownerFranja, 'afternoon', place)) {
-          targetFranja = ownerFranja
-          slot = 'afternoon'
+    // Franjas candidatas en orden de preferencia: zona propia del bloque → zona emparejada
+    // (`extra_zones`) → zona adyacente a pie (≤30min, la más cercana primero). Dentro del mismo
+    // rango de zona: mañana antes que tarde, y una tarde sin evening_block antes que una con él
+    // (donde la Regla A tiene menos margen para acomodar nada).
+    const candidateSlots = []
+    for (const franja of franjas) {
+      if (containerOwnerDay != null && franja.day !== containerOwnerDay) continue
+      for (const slotKey of ['morning', 'afternoon']) {
+        const zoneKey = franja[slotKey]?.zone
+        if (!zoneKey) continue
+        let zoneRank
+        if (zoneKey === place.zone) zoneRank = 0
+        else if (slotAcceptsZone(franja, slotKey, place.zone)) zoneRank = 1
+        else {
+          const adjacentRank = adjacency.indexOf(zoneKey)
+          // Sin contenedor con dueño, la adyacencia es el último recurso; con dueño, el día ya está
+          // fijado y cualquier franja suya vale (nunca otro día, duplicaría el contenedor).
+          if (adjacentRank === -1 && containerOwnerDay == null) continue
+          zoneRank = 2 + Math.max(adjacentRank, 0)
         }
-      }
-      if (!targetFranja) {
-        console.log(
-          `[pool] "${place.name}" → DESCARTADO: su contenedor "${place.contained_in}" ya pertenece al día ${containerOwnerDay} y no hay hueco real ahí — mejor no forzarlo a otro día y duplicar el contenedor`,
-        )
-        continue
-      }
-    } else {
-      targetFranja = franjas.find((f) => f.morning?.zone === place.zone && fitsBudget(f, 'morning', place))
-      slot = 'morning'
-      if (!targetFranja) {
-        targetFranja =
-          franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block && fitsBudget(f, 'afternoon', place)) ??
-          franjas.find((f) => f.afternoon?.zone === place.zone && fitsBudget(f, 'afternoon', place))
-        slot = 'afternoon'
-      }
-      if (!targetFranja) {
-        const adjacency = findAdjacentZones(destData, place.zone, 30)
-        let best = null
-        for (const franja of franjas) {
-          for (const [candidateSlot, zoneKey] of [
-            ['morning', franja.morning?.zone],
-            ['afternoon', franja.afternoon?.zone],
-          ]) {
-            if (!zoneKey || (candidateSlot === 'afternoon' && franja.evening_block)) continue
-            const rank = adjacency.indexOf(zoneKey)
-            if (rank === -1 || !fitsBudget(franja, candidateSlot, place)) continue
-            if (!best || rank < best.rank) best = { franja, slot: candidateSlot, rank }
-          }
-        }
-        if (best) {
-          targetFranja = best.franja
-          slot = best.slot
-        }
-      }
-      if (!targetFranja) {
-        console.log(
-          `[pool] "${place.name}" → DESCARTADO: ningún día tiene hueco real (zona propia o adyacente ≤30min, sin desbordar el bloque — mejor no forzarlo que amontonarlo encima de un bloque ya lleno)`,
-        )
-        continue
+        const slotRank = slotKey === 'morning' ? 0 : franja.evening_block ? 2 : 1
+        candidateSlots.push({ franja, slotKey, zoneRank, order: slotRank * 10 + franja.day })
       }
     }
+    candidateSlots.sort((a, b) => a.zoneRank - b.zoneRank || a.order - b.order)
 
+    // La ZONA manda: si el lugar tiene un día propio (o emparejado) donde cabe haciéndole sitio, ahí
+    // va — aunque otro día más lejano lo admitiera sin desplazar nada. Es lo que dice la propia
+    // regla de desplazamiento ("desplazar lo de menor prioridad DE ESE bloque"), y sin esto una
+    // selección del pool acababa en un día de otra punta de la ciudad solo por no mover nada (real:
+    // Museos Capitolinos, en Roma Antigua, colocado en la tarde del día del Vaticano). Dentro de un
+    // mismo rango de zona sí se prefiere el hueco más barato, y a igualdad de coste el mejor por
+    // franja (mañana antes que tarde, tarde sin evening_block antes que con él).
+    let best = null
+    for (const candidate of candidateSlots) {
+      if (best && candidate.zoneRank > best.zoneRank) break
+      const plan = planSlotFit(candidate.franja, candidate.slotKey, place)
+      if (!plan) continue
+      if (!best || plan.cost < best.cost) best = { ...plan, zoneRank: candidate.zoneRank }
+    }
+
+    if (!best) {
+      console.log(
+        `[pool] "${place.name}" → DESCARTADO: ningún día del viaje tiene un hueco donde quepa ni haciéndole sitio (normalmente, su hora de cierre no da margen)`,
+      )
+      continue
+    }
+
+    const { franja: targetFranja, slot } = best
+    if (best.displace.length > 0) applyDisplacement(targetFranja, slot, best.displace)
     console.log(`[pool] "${place.name}" → asignado al día ${targetFranja.day} (${slot}, zona "${place.zone}")`)
+    // Ronda 10 (bug encontrado en el test end-to-end de esta misma ronda): el contenedor de
+    // `contained_in` lo insertaba solo expandContainedIn, ya en la construcción del día — así que el
+    // reparto NO lo veía y el SIGUIENTE lugar del pool creía tener 120min más libres de los que
+    // había. Real: Galería Borghese (+ Parque Villa Borghese) llenaba la mañana del Día 3, y Museos
+    // Capitolinos se colaba también ahí, acabando a las 16:20 encima de la tarde. Se registra aquí,
+    // delante del lugar, para que cuente en el presupuesto de todos los que vengan detrás.
+    // `usedNames` en la condición por el mismo motivo que el `usedElsewhere` de expandContainedIn:
+    // si el contenedor ya es parada de OTRO día (5 días con Free Tour separa a propósito Galería
+    // Borghese —día 4— de Parque Villa Borghese —día 5—), registrarlo aquí lo duplicaría.
+    const dayNames = [...slotNames(targetFranja, 'morning'), ...slotNames(targetFranja, 'afternoon')]
+    if (place.contained_in && !usedNames.has(place.contained_in) && !dayNames.includes(place.contained_in) && findRawPlace(destData, place.contained_in)) {
+      ensureDay(targetFranja.day)[slot].push(place.contained_in)
+      usedNames.add(place.contained_in)
+    }
     ensureDay(targetFranja.day)[slot].push(place.name)
-    const extrasKey = `${targetFranja.day}:${slot}`
-    extrasLoad.set(extrasKey, [...(extrasLoad.get(extrasKey) ?? []), place.name])
     usedNames.add(place.name)
     if (place.contained_in && !staticContainerOwner.has(place.contained_in) && !dynamicContainerOwner.has(place.contained_in)) {
       dynamicContainerOwner.set(place.contained_in, targetFranja.day)
@@ -1237,6 +1483,11 @@ function buildShortTripDay(destData, pace) {
  * llamador cae al camino que ya existía.
  */
 export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumber, pace, mapboxToken, dateRangeStartIso, mustIncludePlaces, experiencesPositive) {
+  // Ronda 10 (decisión explícita, no un descuido): en viajes de 1 día el pool NO se aplica. Esa ruta
+  // sale entera de `short_trips`, un recorrido curado a mano con su propio orden y sus propias
+  // paradas de comida — no tiene `zone_distribution` que repartir, así que planMustIncludePlacement
+  // ni entra. La personalización de un viaje de 1 día vendrá por "Añadir parada", ya sobre la ruta
+  // generada.
   if (totalDays === 1) return buildShortTripDay(destData, pace)
   if (totalDays > 5) return null
 
@@ -1272,7 +1523,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // insertarlo también en el día 4 lo duplicaba).
   const usedNames = collectUsedPlaceNames(variant, destData, mustIncludePlacement)
 
-  const morningPlaces = filterClosed(resolvePlaceList(destData, [...(franja.morning?.places ?? []), ...extrasForDay.morning], usedNames))
+  const morningPlaces = filterClosed(resolvePlaceList(destData, [...coreNamesForSlot(franja, 'morning', extrasForDay), ...extrasForDay.morning], usedNames))
   const eveningBlockData = franja.evening_block ? destData.evening_blocks?.find((b) => b.id === franja.evening_block) : null
 
   const isCompleto = pace === 'nonstop'
@@ -1330,7 +1581,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // queda vetado para la tarde de hoy antes de resolverla.
   for (const p of morningPlaces) usedNames.add(p.name)
 
-  let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...(franja.afternoon?.places ?? []), ...extrasForDay.afternoon], usedNames))
+  let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...coreNamesForSlot(franja, 'afternoon', extrasForDay), ...extrasForDay.afternoon], usedNames))
 
   // Regla D: una mañana de una sola visita larga (p.ej. Museos Vaticanos, acaba ~11:00) deja hueco
   // hasta la comida (13:00). 1) si la mañana pertenece a un grupo partible con preferred_split,

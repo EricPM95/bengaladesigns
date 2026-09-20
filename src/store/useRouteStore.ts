@@ -225,6 +225,8 @@ interface RouteStoreState {
   /** "Selecciona todo" — si ya están todos marcados, los desmarca todos; si no, los marca todos. */
   toggleSelectAllPlaces: () => void
   toggleCuratedPlaceSelection: (name: string) => void
+  /** Ronda 10: recorta la selección del pool al tope de la duración actual del viaje (ver poolSelectionLimit) — hace falta porque el viajero puede volver atrás y acortar el viaje DESPUÉS de haber marcado más lugares de los que ahora caben. */
+  trimCuratedPlaceSelection: (max: number) => void
   updateAnswers: (partial: Partial<QuestionnaireAnswers>) => void
   resetQuestionnaire: () => void
 
@@ -485,6 +487,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         ? state.selected_curated_place_names.filter((existing) => existing !== name)
         : [...state.selected_curated_place_names, name],
     })),
+  trimCuratedPlaceSelection: (max) =>
+    set((state) =>
+      state.selected_curated_place_names.length <= max ? state : { selected_curated_place_names: state.selected_curated_place_names.slice(0, max) },
+    ),
   updateAnswers: (partial) => set((state) => ({ answers: { ...state.answers, ...partial } })),
   resetQuestionnaire: () =>
     set({

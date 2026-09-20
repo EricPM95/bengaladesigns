@@ -39,9 +39,16 @@ function sanitizePlace(raw: unknown): PoolPlace | null {
 // caché acumulada). CACHE_VERSION en la propia clave — cualquier cambio de fuente/forma de los datos
 // futuro solo necesita subir este número para invalidar toda caché vieja de un plumazo, sin tener
 // que enumerar ni borrar claves a mano.
-const CACHE_VERSION = 2
+// Ronda 10: v3 porque el pool cambió de FORMA — de 3 niveles cargados por separado ("Ver más
+// lugares") a un solo bloque de ~20 lugares ('pool'). La clave lleva el nivel, así que una caché v2
+// de Nivel 1 no se confundiría con la nueva, pero subirlo evita arrastrar niveles 2/3 huérfanos en
+// localStorage de todos los navegadores que ya los tenían.
+const CACHE_VERSION = 3
 
-function cacheKey(destination: string, level: 1 | 2 | 3): string {
+/** Ronda 10: 'pool' es el bloque único que usa la app; 1|2|3 siguen existiendo para depurar. */
+export type PoolLevel = 'pool' | 1 | 2 | 3
+
+function cacheKey(destination: string, level: PoolLevel): string {
   return `pool:v${CACHE_VERSION}:${destination.trim().toLowerCase()}:level${level}`
 }
 
@@ -53,7 +60,7 @@ function cacheKey(destination: string, level: 1 | 2 | 3): string {
  * mismo JSON curado del servidor, cambia solo cuando el propio JSON cambia, no con el tiempo — ver
  * CACHE_VERSION arriba para el caso real en que sí hace falta invalidar todo.
  */
-function readCache(destination: string, level: 1 | 2 | 3): PoolPlace[] | null {
+function readCache(destination: string, level: PoolLevel): PoolPlace[] | null {
   try {
     const raw = localStorage.getItem(cacheKey(destination, level))
     if (!raw) return null
@@ -64,7 +71,7 @@ function readCache(destination: string, level: 1 | 2 | 3): PoolPlace[] | null {
   }
 }
 
-function writeCache(destination: string, level: 1 | 2 | 3, places: PoolPlace[]): void {
+function writeCache(destination: string, level: PoolLevel, places: PoolPlace[]): void {
   try {
     localStorage.setItem(cacheKey(destination, level), JSON.stringify(places))
   } catch {
@@ -82,7 +89,7 @@ function writeCache(destination: string, level: 1 | 2 | 3, places: PoolPlace[]):
  * Questionnaire.tsx usa esto para decidir si el último paso ("Elige lugares") muestra el pool curado
  * o el flujo de siempre con sugerencias de Claude (PlaceSelector).
  */
-export async function fetchPoolLevel(destination: string, level: 1 | 2 | 3): Promise<{ found: boolean; places: PoolPlace[] }> {
+export async function fetchPoolLevel(destination: string, level: PoolLevel): Promise<{ found: boolean; places: PoolPlace[] }> {
   const cached = readCache(destination, level)
   if (cached) return { found: true, places: cached }
 

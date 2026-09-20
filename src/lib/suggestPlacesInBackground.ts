@@ -14,7 +14,7 @@ import { fetchPoolLevel } from './placePoolCache'
  * si el viajero llega a "Elige lugares" antes de que termine, ya ve los que hay hasta ese momento
  * en vez de esperar a los 18-30 completos.
  *
- * Fix 7 (ronda 2, pipeline v2): un destino con pool curado (fetchPoolLevel encuentra Nivel 1, ver
+ * Fix 7 (ronda 2, pipeline v2): un destino con pool curado (fetchPoolLevel encuentra su bloque, ver
  * placePoolCache.ts/CuratedPlacesPool.tsx) NUNCA lee `suggested_places` — su paso "Elige lugares"
  * usa directamente su propio pool. Antes esta función llamaba a Claude (/api/suggest-places, un
  * streaming de 18-30 lugares con descripción — el más caro de los "background prefetch") igual,
@@ -23,7 +23,9 @@ import { fetchPoolLevel } from './placePoolCache'
  */
 export async function suggestPlacesInBackground(destination: string, experienceIds: ExperienceId[]): Promise<void> {
   if (experienceIds.length === 0) return
-  const { found } = await fetchPoolLevel(destination, 1)
+  // Ronda 10: el mismo bloque 'pool' que pide el cuestionario, para compartir la entrada de caché
+  // en vez de guardar dos copias distintas del mismo JSON en localStorage.
+  const { found } = await fetchPoolLevel(destination, 'pool')
   if (found) return
   if (useRouteStore.getState().destination !== destination) return
 

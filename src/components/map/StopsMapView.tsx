@@ -31,6 +31,10 @@ export interface StopsMapMarker {
       para el resto de días cuando se muestran todos a la vez. Nunca se ocultan del todo, solo se
       atenúan (mismo criterio que ya usaban los colores mudos antes de esta ronda). */
   opacity?: number
+  /** Ronda 10: pin un punto más pequeño — lo usan los días NO activos de "Ver todo" (ver
+      routeMapMarkers.ts), donde el tamaño es lo que distingue el día que se está mirando del resto,
+      en vez de una opacidad tan baja que dejaba el número ilegible. */
+  small?: boolean
 }
 
 /** Ronda 9 (Mejora 1A): línea recta uniendo las paradas de un día en orden — un `StopsMapMarkerLine`
@@ -67,7 +71,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
   const markersKey = markers
     .map(
       (marker) =>
-        `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}`,
+        `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}:${marker.small ? 's' : 'n'}`,
     )
     .join('|')
   const linesKey = lines
@@ -129,8 +133,10 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         inner.style.backgroundColor = marker.bg
         inner.style.color = marker.text
         inner.style.opacity = String(marker.opacity ?? 1)
-        inner.className =
-          'flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white transition-transform'
+        // Ronda 10: h-6/h-5 en vez de h-7 fijo — los pines numerados tapaban demasiado mapa. El
+        // borde blanco se mantiene en ring-2 (y el número en font-bold) también en el tamaño
+        // pequeño: es justo lo que hacía ilegibles los días no activos de "Ver todo".
+        inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-caption font-bold shadow-md ring-2 ring-white transition-transform`
         inner.textContent = marker.icon ?? String(marker.number)
         root.appendChild(inner)
         root.addEventListener('click', (event) => {

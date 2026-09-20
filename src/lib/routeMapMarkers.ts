@@ -3,10 +3,16 @@ import type { StopsMapMarker, StopsMapMarkerLine } from '../components/map/Stops
 import { dayColor, dayColorPastel, dayColorStrong } from './dayColors'
 import { hasRealCoordinates } from './distanceMock'
 
-/** Opacidad de los pines/líneas de un día NO activo en "Ver todo" (Ronda 9, Mejora 1C) — atenuado,
-    nunca oculto, mismo criterio que ya usaba el gris mudo anterior pero conservando el color propio
-    del día en vez de neutralizarlo. */
-const DIMMED_OPACITY = 0.4
+/** Opacidad de los PINES de un día NO activo en "Ver todo" (Ronda 9, Mejora 1C) — atenuado, nunca
+    oculto, conservando el color propio del día en vez de neutralizarlo. Ronda 10: era 0.4, y a esa
+    opacidad el número y su borde blanco prácticamente no se leían sobre el mapa — un pin que no se
+    puede leer no aporta nada. Se compensa haciéndolos más PEQUEÑOS que los del día activo (ver
+    `small` en StopsMapView), que es lo que de verdad distingue una cosa de otra de un vistazo. */
+const DIMMED_MARKER_OPACITY = 0.85
+/** Igual para las LÍNEAS de ruta de un día no activo — solo "un pelín" más fuertes que el 0.4
+    anterior: la línea sí puede quedarse tenue (no hay nada que leer en ella) y el grosor ya la
+    separa del día activo. */
+const DIMMED_LINE_OPACITY = 0.55
 
 /** Metros por debajo de los cuales 2 paradas se consideran "el mismo punto" a efectos de separar
     visualmente sus pines (Ronda 9, Mejora 1D) — p.ej. Fontana di Trevi como visita normal un día y
@@ -101,7 +107,8 @@ export function buildCombinedDaysMarkers(days: DayPlan[], highlightDayId?: strin
           bg: dayColorPastel(dayIndex),
           text: dayColorStrong(dayIndex),
           photoUrl: stop.photoUrl,
-          opacity: isHighlighted ? 1 : DIMMED_OPACITY,
+          opacity: isHighlighted ? 1 : DIMMED_MARKER_OPACITY,
+          small: !isHighlighted,
         }),
       )
     })
@@ -118,6 +125,6 @@ export function buildCombinedDaysLines(days: DayPlan[], highlightDayId?: string 
       const coordinates = realStops(day).map((stop) => stop.coordinates)
       if (coordinates.length < 2) return []
       const isHighlighted = !highlightDayId || day.id === highlightDayId
-      return [{ id: day.id, coordinates, color: dayColor(dayIndex), opacity: isHighlighted ? 1 : DIMMED_OPACITY, width: isHighlighted ? 4 : 2 }]
+      return [{ id: day.id, coordinates, color: dayColor(dayIndex), opacity: isHighlighted ? 1 : DIMMED_LINE_OPACITY, width: isHighlighted ? 4 : 2.5 }]
     })
 }

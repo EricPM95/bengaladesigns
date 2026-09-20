@@ -17,6 +17,7 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
+import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -233,6 +234,7 @@ export function DayDetailPanel({
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const route = useRouteStore((state) => state.route)
+  const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
   const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
@@ -494,13 +496,21 @@ export function DayDetailPanel({
           >
             <BackIcon />
           </button>
+          {/* Ronda 10: la cabecera destino + fechas va también aquí, arriba centrada — el sitio que
+              ocupaba "Ver todo" hasta ahora. Misma cabecera y mismo calendario que en RUTA y DIAS,
+              para que el destino y las fechas del viaje se vean desde cualquier mapa de la app. */}
+          {route && (
+            <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+          )}
           {/* Ronda 9 (Mejora 1C): alterna entre "solo este día" (por defecto) y "Ver todo" — texto
               en vez de icono a propósito, es un cambio de MODO del mapa, no una acción puntual como
-              el resto de botones circulares de esta cabecera. */}
+              el resto de botones circulares de esta cabecera. Ronda 10: abajo a la izquierda y en
+              gris discreto — es un ajuste de la vista, no un protagonista de la pantalla, y arriba
+              estorbaba a la cabecera del viaje. */}
           <button
             type="button"
             onClick={() => setShowAllDaysOnMap((prev) => !prev)}
-            className="absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-full border-2 border-accent bg-bg-card px-3 py-2 text-caption font-semibold text-text shadow-md transition-colors hover:bg-bg-hover"
+            className="absolute bottom-3 left-3 z-10 rounded-full border border-border bg-bg-card/90 px-3 py-1.5 text-caption font-medium text-text-soft shadow-sm backdrop-blur-sm transition-colors hover:bg-bg-hover hover:text-text"
           >
             {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
           </button>

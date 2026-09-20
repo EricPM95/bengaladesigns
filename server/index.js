@@ -3552,20 +3552,60 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces, pace) {
 }
 
 /**
+ * Ronda 10: el pool ya no se pide por niveles sueltos con "Ver más lugares" — es UN SOLO bloque de
+ * hasta CURATED_POOL_MAX_PLACES lugares ("¿Cuáles te hacen ilusión?", ver CuratedPlacesPool.tsx):
+ * todos los Imprescindibles (Nivel 1) y, detrás, los mejores del Nivel 2 hasta completar. Lo marcado
+ * ahí entra en la generación con prioridad ABSOLUTA (must_include_places → planMustIncludePlacement),
+ * de ahí que la lista sea corta y curada en vez de los 60 lugares del destino: el catálogo completo
+ * pertenece a "Añadir parada", que es edición manual DESPUÉS de generar la ruta.
+ */
+const CURATED_POOL_MAX_PLACES = 20
+
+/**
+ * Los hasta CURATED_POOL_MAX_PLACES lugares del bloque único del pool, para un destino con datos
+ * pipeline v2: TODOS los Imprescindibles (Nivel 1) y luego Nivel 2 hasta completar. Nivel 3 nunca —
+ * es "para quien quiere ver todavía más" y no pinta en una lista de 20 donde cada hueco cuenta.
+ *
+ * El relleno con Nivel 2 va por RONDAS DE ZONA (una de cada zona del destino, luego la segunda de
+ * cada una...) y, dentro de cada zona, de más larga a más corta. Las dos cosas por el mismo motivo:
+ * marcar algo en el pool solo sirve de verdad para lo que el algoritmo NO habría metido por su
+ * cuenta. Una plaza o un puente de 20min entra solo como relleno de cualquier hueco (Reglas A/B/D);
+ * una visita de interior de 1-2h (Galería Borghese, Domus Aurea, Castel Sant'Angelo) es justo lo que
+ * se queda fuera si nadie la pide — y encima es lo que le hace ilusión a alguien. Y sin la ronda por
+ * zonas, una zona entera del destino (villa_borghese en Roma, que no tiene ningún Nivel 1) podía
+ * quedarse sin un solo representante en el pool.
+ */
+function buildCuratedPoolV2(destData) {
+  const places = destData.places ?? []
+  const pool = places.filter((place) => place.level === 1)
+  const pending = Object.keys(destData.zones ?? {}).map((zone) =>
+    places.filter((place) => place.level === 2 && place.zone === zone).sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)),
+  )
+  while (pool.length < CURATED_POOL_MAX_PLACES && pending.some((list) => list.length > 0)) {
+    for (const list of pending) {
+      if (pool.length >= CURATED_POOL_MAX_PLACES) break
+      const next = list.shift()
+      if (next) pool.push(next)
+    }
+  }
+  return pool.slice(0, CURATED_POOL_MAX_PLACES)
+}
+
+/**
  * Punto 6 del prompt DEFINITIVO — "Pool de lugares" que se muestra al confirmar destino, ANTES de
- * generar la ruta, puramente informativo (el usuario NO selecciona nada aquí). Devuelve un nivel
- * completo del JSON curado tal cual, sin pasar por Claude — coste cero, respuesta instantánea. El
- * cliente decide cuándo pedir Nivel 2/3 (carga bajo demanda, ver "Ver más lugares" en PlacesPoolScreen)
- * y cachea el resultado en localStorage para que la siguiente vez sea instantáneo también sin llamar
- * aquí (ver placePoolCache.ts). `category` usa la zona del JSON como aproximación legible de "tipo de
- * lugar" — cuando exista el campo temático (museo/mirador/mercado/joya_oculta/...) del punto 4 se
- * puede sustituir aquí sin tocar el resto del pipeline.
+ * generar la ruta. Devuelve el bloque único del pool (`level: 'pool'`, lo que usa la app) o un nivel
+ * suelto del JSON curado tal cual (`level: 1|2|3`, que sigue existiendo para los destinos curados
+ * "antiguos" y para depurar), siempre sin pasar por Claude — coste cero, respuesta instantánea. El
+ * cliente cachea el resultado en localStorage para que la siguiente vez sea instantáneo también sin
+ * llamar aquí (ver placePoolCache.ts). `category` usa la zona del JSON como aproximación legible de
+ * "tipo de lugar" — cuando exista el campo temático (museo/mirador/mercado/joya_oculta/...) del punto
+ * 4 se puede sustituir aquí sin tocar el resto del pipeline.
  */
 app.post('/api/curated-places-pool', (req, res) => {
   const { destination, level } = req.body ?? {}
   const levelKey = String(level)
-  if (!destination || !['1', '2', '3'].includes(levelKey)) {
-    res.status(400).json({ error: 'Faltan datos necesarios (destination, level 1-3).' })
+  if (!destination || !['pool', '1', '2', '3'].includes(levelKey)) {
+    res.status(400).json({ error: "Faltan datos necesarios (destination, level 'pool' o 1-3)." })
     return
   }
 
@@ -3577,17 +3617,20 @@ app.post('/api/curated-places-pool', (req, res) => {
   // (ver planMustIncludePlacement). Para un destino con datos v2, el pool sale de ahí directamente.
   const pipelineV2Data = findPipelineV2Data(destination)
   if (pipelineV2Data) {
+    const toPoolPlace = (place) => ({
+      name: place.name,
+      category: pipelineV2Data.zones?.[place.zone]?.name ?? place.zone ?? null,
+      type: place.type ?? null,
+      duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,
+      is_free_access: place.type === 'exterior',
+    })
+    const all = pipelineV2Data.places ?? []
+    if (levelKey === 'pool') {
+      res.json({ found: true, level: 'pool', places: buildCuratedPoolV2(pipelineV2Data).map(toPoolPlace) })
+      return
+    }
     const levelNumber = Number(levelKey)
-    const places = (pipelineV2Data.places ?? [])
-      .filter((place) => place.level === levelNumber)
-      .map((place) => ({
-        name: place.name,
-        category: pipelineV2Data.zones?.[place.zone]?.name ?? place.zone ?? null,
-        type: place.type ?? null,
-        duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,
-        is_free_access: place.type === 'exterior',
-      }))
-    res.json({ found: true, level: levelNumber, places })
+    res.json({ found: true, level: levelNumber, places: all.filter((place) => place.level === levelNumber).map(toPoolPlace) })
     return
   }
 
@@ -3597,14 +3640,21 @@ app.post('/api/curated-places-pool', (req, res) => {
     return
   }
 
-  const places = (destData.levels?.[levelKey]?.places ?? []).map((place) => ({
+  const toLegacyPoolPlace = (place) => ({
     name: place.name,
     category: place.zone ?? null,
     type: place.type ?? null,
     duration_min: Number.isFinite(place.duration_min) ? place.duration_min : null,
     is_free_access: typeof place.is_free_access === 'boolean' ? place.is_free_access : null,
-  }))
-  res.json({ found: true, level: Number(levelKey), places })
+  })
+  if (levelKey === 'pool') {
+    const places = [...(destData.levels?.['1']?.places ?? []), ...(destData.levels?.['2']?.places ?? [])]
+      .slice(0, CURATED_POOL_MAX_PLACES)
+      .map(toLegacyPoolPlace)
+    res.json({ found: true, level: 'pool', places })
+    return
+  }
+  res.json({ found: true, level: Number(levelKey), places: (destData.levels?.[levelKey]?.places ?? []).map(toLegacyPoolPlace) })
 })
 
 app.post('/api/generate-day-places', async (req, res) => {

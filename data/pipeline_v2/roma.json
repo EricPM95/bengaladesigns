@@ -1521,6 +1521,9 @@
             "day": 1,
             "morning": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Arco de Constantino",
                 "Coliseo",
@@ -1530,6 +1533,10 @@
             },
             "afternoon": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese",
+                "vaticano"
+              ],
               "places": [
                 "Fontana di Trevi",
                 "Panteón",
@@ -1552,6 +1559,10 @@
             "day": 1,
             "morning": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese",
+                "vaticano"
+              ],
               "places": [
                 "Fontana di Trevi",
                 "Free Tour Centro Histórico"
@@ -1560,6 +1571,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -1594,6 +1608,9 @@
             },
             "afternoon": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese"
+              ],
               "places": [
                 "Fontana di Trevi",
                 "Panteón",
@@ -1615,6 +1632,9 @@
             },
             "afternoon": {
               "zone": "vaticano",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro"
@@ -1633,6 +1653,9 @@
             "day": 1,
             "morning": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese"
+              ],
               "places": [
                 "Fontana di Trevi",
                 "Free Tour Centro Histórico"
@@ -1663,6 +1686,9 @@
             },
             "afternoon": {
               "zone": "vaticano",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro"
@@ -1692,6 +1718,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -1736,6 +1765,9 @@
             },
             "afternoon": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese"
+              ],
               "places": [
                 "Plaza España y Escalinata",
                 "Piazza del Popolo",
@@ -1763,6 +1795,9 @@
             },
             "afternoon": {
               "zone": "centro_historico",
+              "extra_zones": [
+                "villa_borghese"
+              ],
               "places": [
                 "Panteón",
                 "Piazza Navona",
@@ -1786,6 +1821,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -1837,6 +1875,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -1947,6 +1988,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -2017,6 +2061,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",
@@ -2142,6 +2189,9 @@
             },
             "afternoon": {
               "zone": "roma_antigua",
+              "extra_zones": [
+                "trastevere"
+              ],
               "places": [
                 "Piazza Venezia",
                 "Altar de la Patria (Vittoriano)",

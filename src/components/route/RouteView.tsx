@@ -168,11 +168,17 @@ export function RouteView() {
             ) : mode === 'explore' && exploreMarkers !== null ? (
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
             ) : (
-              <StopsMapView
-                markers={buildCombinedDaysMarkers(route.days, activeDayId)}
-                activeStopId={activeStopId}
-                onSelectStop={setActiveStopId}
-              />
+              <>
+                <StopsMapView
+                  markers={buildCombinedDaysMarkers(route.days, activeDayId)}
+                  activeStopId={activeStopId}
+                  onSelectStop={setActiveStopId}
+                />
+                {/* Ronda 10: la cabecera destino + fechas no es solo de RUTA — se ve también aquí
+                    (pestaña DIAS) y en el mapa de cada día (DayDetailPanel.tsx), para que el destino
+                    y las fechas estén a la vista desde cualquier mapa de la app. */}
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+              </>
             )}
             {canCollapseMap && (
               <button
