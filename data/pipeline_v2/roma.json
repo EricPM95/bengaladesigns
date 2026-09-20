@@ -702,13 +702,13 @@
     },
     {
       "name": "Parque Villa Borghese",
-      "level": 3,
+      "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
         41.9142,
         12.4856
       ],
-      "duration_minutes": 120,
+      "duration_minutes": 90,
       "type": "exterior",
       "tip": "El pulmón verde de Roma — para recorrerlo con calma, no solo cruzarlo. Piazza di Siena (el hipódromo ovalado de arena) suele tener partidos de polo o carreras improvisadas. El lago con el Tempio di Esculapio (templete neoclásico en una islita) es la estampa más fotografiada del parque, con botes de remo. Piérdete por los senderos y jardines — hay rincones tranquilos lejos de las rutas turísticas. El Bioparco (zoo) está dentro del propio parque, ideal si viajas con niños. Desde la terraza del Pincio (también dentro del parque) tienes la vista clásica de Roma con San Pedro.",
       "tags": [
@@ -718,13 +718,13 @@
     },
     {
       "name": "Bioparco di Roma",
-      "level": 2,
+      "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
         41.9188,
         12.4801
       ],
-      "duration_minutes": 90,
+      "duration_minutes": 120,
       "type": "exterior",
       "tip": "El zoo de Roma, dentro de Villa Borghese — más de 200 especies en un recorrido arbolado y tranquilo. Ideal con niños, pero también un buen respiro verde para cualquiera. Calcula bien el tiempo si lo combinas con el resto del parque, es su propia visita.",
       "tags": [
@@ -735,7 +735,7 @@
     },
     {
       "name": "Galleria Nazionale d'Arte Moderna",
-      "level": 2,
+      "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
         41.9147,
