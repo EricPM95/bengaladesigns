@@ -58,6 +58,10 @@ export function RouteView() {
   // a las paradas del día activo en este mismo mapa compartido (null = mapa normal de DIAS/Hoy).
   const [exploreMarkers, setExploreMarkers] = useState<StopsMapMarker[] | null>(null)
   const [exploreActiveId, setExploreActiveId] = useState<string | null>(null)
+  // EXPLORAR abre su pantalla de lugares (PlaceExplorerScreen) con su PROPIO mapa por encima de
+  // todo esto — mismo motivo que dayDetailOpen más abajo: mientras esté abierta, el mapa compartido
+  // de aquí no se monta, o se cuela por encima del overlay que se supone que lo tapa.
+  const [exploreFullScreen, setExploreFullScreen] = useState(false)
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
@@ -103,7 +107,7 @@ export function RouteView() {
   // mapa de encima SÍ debe seguir viéndose; aquí, como no debe verse nada del mapa de abajo en
   // absoluto, la solución robusta es no renderizarlo mientras el día esté abierto).
   const dayDetailOpen = mode === 'days' && activeDayId !== null
-  const mapHidden = (canCollapseMap && mapCollapsed) || dayDetailOpen
+  const mapHidden = (canCollapseMap && mapCollapsed) || dayDetailOpen || (mode === 'explore' && exploreFullScreen)
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
@@ -229,6 +233,7 @@ export function RouteView() {
               onMarkersChange={setExploreMarkers}
               activeResultId={exploreActiveId}
               onSelectResultId={setExploreActiveId}
+              onFullScreenChange={setExploreFullScreen}
             />
           )}
 

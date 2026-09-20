@@ -501,7 +501,9 @@ export function DayDetailPanel({
   // del overlay que se supone que lo tapa (compositing GPU del canvas, no un problema de z-index —
   // ver el comentario junto a dayDetailOpen en RouteView.tsx, mismo motivo). Se trata igual que el
   // colapsado manual: mientras cualquiera de esos esté abierto, este mapa ni se monta.
-  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null
+  // `insertAt !== null` = está abierta la pantalla de añadir parada, que también trae su propio
+  // mapa: sin esto el mapa del día se veía POR ENCIMA de ella, con su cabecera y su "Ver todo".
+  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null || insertAt !== null
 
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">

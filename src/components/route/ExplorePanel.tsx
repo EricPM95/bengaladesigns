@@ -18,6 +18,8 @@ interface ExplorePanelProps {
   onMarkersChange: (markers: StopsMapMarker[] | null) => void
   activeResultId: string | null
   onSelectResultId: (id: string | null) => void
+  /** true mientras la pantalla de lugares (con su propio mapa) está abierta a pantalla completa — RouteView desmonta el mapa compartido mientras tanto (ver exploreFullScreen ahí). */
+  onFullScreenChange: (open: boolean) => void
 }
 
 type ExploreCategory = 'food' | 'viewpoints' | 'attractions'
@@ -44,7 +46,7 @@ const CURATED_FILTER: Record<ExploreCategory, PlaceFilterCategory> = {
  * pantalla completa — acordeón "ya en tu ruta" + buscador libre, el mismo componente reutilizado
  * también en el "+" de DIAS y en RESERVAS.
  */
-export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResultId, onSelectResultId }: ExplorePanelProps) {
+export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResultId, onSelectResultId, onFullScreenChange }: ExplorePanelProps) {
   const cities = [...new Set(buildDestinationSegments(route.days).map((segment) => segment.city))]
   const [city, setCity] = useState(cities.includes(defaultCity) ? defaultCity : (cities[0] ?? defaultCity))
   const [activeCategory, setActiveCategory] = useState<ExploreCategory | null>(null)
@@ -69,6 +71,19 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   }, [])
 
   const { places: curatedPool, resolved: curatedPoolResolved } = useDestinationPool(city, activeCategory !== null)
+  const placeExplorerOpen = activeCategory !== null && curatedPoolResolved && curatedPool.length > 0
+
+  // Avisa a RouteView de que hay una pantalla con mapa propio encima, para que desmonte el mapa
+  // compartido mientras tanto (ver exploreFullScreen ahí).
+  useEffect(() => {
+    onFullScreenChange(placeExplorerOpen)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeExplorerOpen])
+
+  useEffect(() => {
+    return () => onFullScreenChange(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const backToCategories = () => {
     setActiveCategory(null)
@@ -79,7 +94,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   // Destino curado: las 3 categorías abren la pantalla compartida de lugares, sin acción de añadir
   // (desde EXPLORAR solo se consulta; para meter algo en la ruta se usa el "+" del día, que es quien
   // sabe en qué hueco va). Los destinos sin catálogo siguen con la búsqueda de Mapbox de siempre.
-  if (activeCategory && curatedPool.length > 0) {
+  if (placeExplorerOpen && activeCategory) {
     return (
       <PlaceExplorerScreen
         open
