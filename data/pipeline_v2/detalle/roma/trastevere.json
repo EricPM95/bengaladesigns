@@ -1,0 +1,210 @@
+{
+  "zone": "trastevere",
+  "places": [
+    {
+      "name": "Paseo por Trastevere",
+      "description": "El barrio más auténtico de Roma: calles empedradas con hiedra en las fachadas, ropa tendida entre balcones, trattorias con mesas en la calle y una vida de barrio que el centro ha perdido. Trastevere ('al otro lado del Tíber') fue durante siglos el barrio popular, obrero y rebelde de Roma — hoy conserva esa personalidad con un barniz bohemio. No es un monumento: es una experiencia. Ven por la tarde, quédate a cenar.",
+      "what_to_see": [
+        "Piazza di Santa Maria in Trastevere — el corazón del barrio con la basílica y sus mosaicos dorados",
+        "Las callejuelas entre Via della Scala y Via della Lungaretta — hiedra, farolas, fachadas ocre",
+        "Via della Scala — artesanos, cafeterías y la famosa Farmacia de Santa Maria della Scala (aún en funcionamiento desde el siglo XVII)",
+        "Las plazas escondidas: Piazza de' Renzi, Piazza di Sant'Egidio, Piazza di San Calisto"
+      ],
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 8",
+          "stop": "Belli / Sonnino",
+          "note": "Entrada directa a Trastevere"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "23",
+            "280"
+          ],
+          "stop": "Lungotevere Ripa"
+        }
+      ],
+      "extras": {
+        "address": "Trastevere, 00153 Roma"
+      },
+      "tips": [
+        "Ven a partir de las 17:00 — Trastevere cobra vida por la tarde. Por la mañana es un barrio dormido; por la noche (después de las 21:00) puede ser demasiado ruidoso y turístico en las calles principales.",
+        "Evita los restaurantes de Piazza di Santa Maria in Trastevere (caros y mediocres). Camina 2 calles hacia Via della Scala o Via della Lungaretta y encontrarás trattorias auténticas.",
+        "Piérdete: las mejores fotos y rincones de Trastevere están en las callejuelas sin nombre. Deja el móvil y camina.",
+        "San Calisto es el bar del barrio de toda la vida — cerveza barata, terraza en la plaza de Sant'Egidio y cero pretensiones. Es donde van los romanos de Trastevere."
+      ],
+      "secrets": [
+        "La Farmacia di Santa Maria della Scala (Via della Scala 23) funciona desde el siglo XVII y sigue vendiendo productos hechos por los monjes carmelitas. Se puede visitar la antigua botica (preguntar en la farmacia).",
+        "Trastevere fue históricamente el barrio de los inmigrantes, los judíos y los marginados de Roma — la otra orilla del Tíber era literalmente 'la otra Roma'. Esa identidad rebelde sigue viva en los grafitis, los centros sociales y el carácter del barrio.",
+        "El mejor helado de Roma (según muchos romanos) está en Trastevere: busca una heladería artesanal sin montañas de colores artificiales. Si el pistacho es verde chillón, huye."
+      ]
+    },
+    {
+      "name": "Mirador del Janículo",
+      "description": "La mejor panorámica de Roma: desde la colina del Gianicolo (Janículo) ves todas las cúpulas de la ciudad, desde San Pedro hasta Santa Maria Maggiore, con los tejados de terracota y los pinos mediterráneos en primer plano. Cada día a las 12:00 en punto disparan un cañón (tradición desde 1847) que retumba por todo el centro. Es el mirador que los romanos consideran suyo — menos turístico que el Pincio, más auténtico.",
+      "what_to_see": [
+        "La panorámica 360° de Roma — todas las cúpulas, el Coliseo al fondo, los Montes Albanos en el horizonte",
+        "El cañonazo del mediodía (12:00 en punto, todos los días) — tradición desde 1847 para sincronizar los relojes de la ciudad",
+        "El busto de Garibaldi a caballo — monumento al héroe de la unificación italiana",
+        "El Faro de Roma (regalo de los italianos de Argentina en 1911)",
+        "Los puestos de marionetas del fin de semana — teatro Pulcinella para niños, tradición centenaria"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "115",
+            "870"
+          ],
+          "stop": "Passeggiata del Gianicolo"
+        }
+      ],
+      "extras": {
+        "address": "Piazzale Giuseppe Garibaldi, 00165 Roma"
+      },
+      "tips": [
+        "Sube desde Trastevere caminando (15-20 min por Via Garibaldi o las escaleras de Via Luciano Manara) — el paseo es parte de la experiencia. Si llegas en bus, te pierdes la subida por el barrio.",
+        "El mejor momento es al atardecer (18:00-20:00 en verano, 16:30-18:00 en invierno) — la luz dorada sobre las cúpulas es imbatible. NUNCA después de cenar — es un mirador, no una experiencia nocturna.",
+        "Si estás a las 12:00, no te pierdas el cañonazo. Se oye desde todo el centro pero verlo desde aquí es la experiencia completa.",
+        "Los fines de semana hay teatro de marionetas (Pulcinella) gratis para niños — si viajas con niños, es un plus."
+      ],
+      "secrets": [
+        "El Janículo NO es una de las siete colinas de Roma (las siete son Palatino, Aventino, Capitolio, Quirinal, Viminal, Esquilino y Celio). Está al otro lado del Tíber y técnicamente fuera de la Roma antigua. Pero tiene la mejor vista de todas.",
+        "El Faro donado por los argentinos en 1911 funciona con los colores de la bandera italiana y fue un gesto de la enorme comunidad italiana en Buenos Aires. Es el punto más alto de la colina.",
+        "La Fontana dell'Acqua Paola (a 5 minutos bajando, antes de llegar a Trastevere) es la 'fontanona' — una fuente monumental del siglo XVII que aparece en La Grande Bellezza de Sorrentino. Pocos turistas la conocen."
+      ]
+    },
+    {
+      "name": "Santa Maria in Trastevere",
+      "description": "Una de las iglesias más antiguas de Roma (fundada en el siglo III, reconstruida en el XII) y probablemente la primera dedicada a la Virgen María. Los mosaicos dorados del ábside brillan como hace 900 años — escenas de la vida de la Virgen con un fondo de oro que parece emitir luz propia. La plaza delante es el corazón social de Trastevere.",
+      "what_to_see": [
+        "Los mosaicos del ábside (siglo XII) — fondo de oro con escenas de la Virgen de una belleza bizantina",
+        "El mosaico de la fachada (siglo XII-XIII) — la Virgen con el Niño flanqueada por mujeres con lámparas",
+        "El suelo cosmatesco — mármoles de colores en patrones geométricos, hecho con material reciclado de templos romanos",
+        "Las columnas de la nave — cada una diferente, robadas de edificios romanos del siglo I",
+        "La Piazza di Santa Maria in Trastevere con la fuente octogonal (una de las más antiguas de Roma)"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–vie",
+            "hours": "07:30–20:30"
+          },
+          {
+            "dates": "Sáb–dom",
+            "hours": "07:30–20:00"
+          }
+        ],
+        "notes": "Entrada gratuita. Puede cerrar durante misas y celebraciones."
+      },
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 8",
+          "stop": "Belli",
+          "note": "A 5 min caminando por Viale di Trastevere"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Santa Maria in Trastevere, 00153 Roma"
+      },
+      "tips": [
+        "Gratis. Entra, mira al ábside y quédate 5 minutos: los mosaicos dorados iluminados son uno de los momentos más bonitos de Roma.",
+        "La plaza delante es el salón de Trastevere: familias, músicos callejeros, gente tomando algo. Siéntate en los escalones de la fuente (aquí sí se puede) y absorbe el ambiente.",
+        "De noche, los mosaicos de la fachada iluminados se ven desde la plaza — una imagen que no vas a ver en ninguna guía."
+      ],
+      "secrets": [
+        "En el año 38 a.C., según la tradición, brotó aceite del suelo en este lugar exacto — los primeros cristianos lo interpretaron como una señal divina y fundaron aquí la primera iglesia mariana de Roma.",
+        "Las columnas de la nave son todas diferentes (altura, grosor, capiteles) porque cada una fue 'robada' de un edificio romano diferente — templos, termas, palacios. Los cristianos reciclaban material pagano sin pudor.",
+        "La comunidad de Sant'Egidio (que trabaja con personas sin hogar y mediación de conflictos en todo el mundo) tiene su sede al lado de la iglesia y organiza oraciones vespertinas abiertas al público — una experiencia espiritual auténtica, no turística."
+      ]
+    },
+    {
+      "name": "Villa Farnesina",
+      "description": "Una villa renacentista del siglo XVI con frescos de Rafael, Giulio Romano y Sodoma que quitan el aliento. El Triunfo de Galatea de Rafael es uno de sus frescos más famosos, y la Loggia de Psique (con escenas mitológicas pintadas como si fuera una pérgola abierta al cielo) es una obra maestra de la ilusión. Mucho menos visitada que los Museos Vaticanos, con frescos de Rafael igual de impresionantes y sin las multitudes.",
+      "what_to_see": [
+        "El Triunfo de Galatea de Rafael — la ninfa marina en su carro tirado por delfines",
+        "La Loggia de Psique — el techo pintado como una pérgola abierta al cielo con guirnaldas y escenas mitológicas",
+        "La Sala delle Prospettive — trampantojos que simulan ventanas abiertas con vistas de la Roma del siglo XVI",
+        "El dormitorio de Agostino Chigi con Las bodas de Alejandro y Roxana de Sodoma"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–sáb",
+            "hours": "09:00–14:00",
+            "last_entry": "13:15"
+          }
+        ],
+        "closed": [
+          "domingos (excepto segundo domingo de cada mes: 09:00–17:00)"
+        ],
+        "notes": "El segundo domingo de cada mes abre hasta las 17:00, con concierto a las 11:30 incluido en la entrada."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "23",
+            "280"
+          ],
+          "stop": "Lungotevere Farnesina"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.villafarnesina.it",
+        "address": "Via della Lungara 230, 00165 Roma"
+      },
+      "tips": [
+        "Abre solo por la mañana (09:00-14:00) — planifícala a primera hora, antes del paseo por Trastevere de la tarde.",
+        "El segundo domingo de cada mes hay concierto a las 11:30 incluido en la entrada — música clásica en un palazzo renacentista con frescos de Rafael. Una experiencia única.",
+        "Mucho menos masificada que los Museos Vaticanos. Si te gusta Rafael, esta villa es imprescindible — los frescos están igual de bien conservados y los ves a 2 metros, no a 20."
+      ],
+      "secrets": [
+        "Agostino Chigi, el banquero que encargó la villa, daba banquetes donde los invitados tiraban los platos de plata al Tíber para demostrar su riqueza. Lo que no sabían es que Chigi tenía redes bajo el agua para recuperar la plata después.",
+        "En la Sala delle Prospettive, un visitante del siglo XVI escribió un grafiti en la pared durante el Saqueo de Roma (1527): '1528... por qué no me voy a reír, los lansquenetes me hicieron papa'. Sigue ahí.",
+        "Rafael no pintó solo: la Loggia de Psique fue diseñada por él pero ejecutada mayoritariamente por Giulio Romano y su taller, porque Rafael estaba ocupado con las Estancias del Vaticano (y con su amante, la Fornarina, que vivía en Trastevere)."
+      ]
+    },
+    {
+      "name": "Piazza Trilussa",
+      "description": "La puerta de entrada a Trastevere: cruzas Ponte Sisto desde el centro y desembocas en esta plaza animada con una fuente barroca monumental, escalones donde se sienta media Roma al atardecer y un ambiente de aperitivo que arranca a las 18:00. La estatua del poeta romano Trilussa (maestro del dialecto romanesco) preside la escena.",
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "23",
+            "280"
+          ],
+          "stop": "Lungotevere Farnesina"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 8",
+          "stop": "Belli",
+          "note": "A 3 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Trilussa, 00153 Roma"
+      },
+      "tips": [
+        "Cruzar Ponte Sisto desde el centro (vienes de Campo de' Fiori o Via Giulia) y desembocar en Piazza Trilussa es la entrada más dramática a Trastevere. Hazlo al atardecer.",
+        "Las tardes de viernes y sábado la plaza se llena de gente con spritz y cerveza — es el aperitivo más popular de esta orilla del Tíber."
+      ],
+      "secrets": [
+        "Trilussa (Carlo Alberto Salustri) fue el poeta más popular de Roma a principios del siglo XX — escribía en dialecto romanesco y sus poemas satíricos sobre la clase política siguen siendo citados hoy. 'Er politico' de Trilussa es el equivalente romano de un tweet viral.",
+        "Ponte Sisto (el puente que conecta la plaza con el centro) fue el primer puente peatonal de Roma moderna, construido por el Papa Sixto IV en 1473. El agujero circular en el centro no es decorativo: es un ojo de buey para dejar pasar el agua en caso de crecida del Tíber."
+      ]
+    }
+  ]
+}

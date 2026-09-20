@@ -1,0 +1,741 @@
+{
+  "zone": "centro_historico",
+  "places": [
+    {
+      "name": "Fontana di Trevi",
+      "description": "La fuente más famosa del mundo. 26 metros de altura, 50 de ancho — un escenario barroco tallado en la fachada de un palacio donde Neptuno domina las aguas desde su carro tirado por tritones y caballos marinos. Cada día se recogen unos 3.000€ en monedas del fondo, que se donan a Cáritas para proyectos sociales en Roma. La tradición: tira una moneda con la mano derecha por encima del hombro izquierdo y volverás a Roma.",
+      "what_to_see": [
+        "La figura central de Neptuno (Océano) dominando las aguas desde su carro",
+        "Los dos tritones con los caballos marinos — uno calmado, otro agitado, simbolizando los estados del mar",
+        "Las alegorías de la Abundancia y la Salubridad en los nichos laterales",
+        "El efecto del agua brotando entre las rocas como si la fachada del palazzo fuera un acantilado natural",
+        "Los bajorrelieves superiores que cuentan la historia del acueducto Aqua Virgo"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año (lunes)",
+            "hours": "11:30–22:00",
+            "last_entry": "21:00"
+          },
+          {
+            "dates": "Todo el año (mar–dom)",
+            "hours": "09:00–22:00",
+            "last_entry": "21:00"
+          }
+        ],
+        "notes": "Desde febrero 2026, acceder a la balaustrada (zona baja junto al agua) cuesta una tasa de 2€. La piazza superior es libre y gratuita — puedes ver y fotografiar la fuente sin pagar. De 22:00 a 08:00 el acceso a la balaustrada es libre y sin tasa."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Barberini",
+          "note": "A 5 min caminando por Via del Tritone"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "52",
+            "53",
+            "62",
+            "63",
+            "71",
+            "85",
+            "492"
+          ],
+          "stop": "Via del Tritone / Via della Stamperia"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Trevi, 00187 Roma"
+      },
+      "tips": [
+        "Entre las 07:30 y las 08:30 la tienes prácticamente para ti — de día, a mediodía, es un caos con cientos de personas. La otra opción mágica es después de las 22:00, cuando se ilumina y la plaza se vacía.",
+        "Desde febrero 2026 hay una tasa de 2€ para bajar a la balaustrada (la zona junto al agua donde se tiran las monedas). Es solo pago electrónico, no llevan efectivo. Puedes verla perfectamente gratis desde arriba.",
+        "El mejor punto para la foto clásica es desde la esquina superior derecha de la plaza (viniendo de Via delle Muratte) — tienes toda la fuente en encuadre sin gente delante.",
+        "No comas en los restaurantes de la plaza — están orientados 100% al turista. Camina 3 minutos hacia Via del Lavatore y encontrarás sitios auténticos a mitad de precio."
+      ],
+      "secrets": [
+        "De noche (después de las 22:00) la fuente está iluminada, el acceso a la balaustrada es gratuito y apenas hay 10-15 personas — es la Trevi que los romanos conocen y los turistas se pierden.",
+        "Si llueve, ven igualmente: el agua de lluvia mezclándose con los chorros de la fuente crea un efecto visual que no verás en ninguna postal.",
+        "La tradición original no era una moneda, sino beber agua de la fuente. La costumbre de la moneda viene de la película 'Tres monedas en la fuente' (1954) — y ahora genera más de 1 millón de euros al año para Cáritas."
+      ]
+    },
+    {
+      "name": "Panteón",
+      "description": "El edificio mejor conservado de la antigua Roma — casi 2.000 años y sigue en pie tal cual. La cúpula de hormigón (43,3 metros de diámetro) fue la más grande del mundo durante 1.300 años, y el óculo abierto de 9 metros en la cima deja entrar un rayo de luz que gira por el interior como un reloj solar. Cuando llueve, el agua entra y se drena por el suelo inclinado — un espectáculo que lleva dos milenios funcionando.",
+      "what_to_see": [
+        "El óculo — el agujero circular de 9m en la cúpula que es la única fuente de luz del edificio",
+        "El rayo de luz que se mueve por el interior según la hora del día — efecto especialmente dramático al mediodía",
+        "La tumba de Rafael, con la Madonna del Sasso de Lorenzetto encima",
+        "Las tumbas de los reyes de Italia (Víctor Manuel II y Humberto I)",
+        "Las 16 columnas corintias monolíticas de granito del pórtico de entrada — cada una de 40 toneladas, traídas de Egipto"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año (lun–sáb)",
+            "hours": "09:00–19:00",
+            "last_entry": "18:45"
+          },
+          {
+            "dates": "Todo el año (dom)",
+            "hours": "09:00–18:00",
+            "last_entry": "17:45"
+          }
+        ],
+        "closed": [
+          "1 ene",
+          "15 ago",
+          "25 dic"
+        ],
+        "notes": "Reserva online obligatoria (se agotan con días de antelación). Reserva lo antes posible, sobre todo en temporada alta."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Barberini",
+          "note": "A 700m (10 min caminando)"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "30",
+            "40",
+            "62",
+            "64",
+            "81",
+            "87",
+            "492"
+          ],
+          "stop": "Largo di Torre Argentina",
+          "note": "A 400m del Panteón"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.pantheonroma.com",
+        "address": "Piazza della Rotonda, 00186 Roma"
+      },
+      "tips": [
+        "Reserva online obligatoria — sin reserva no entras. Puedes reservar en la web oficial. Hazlo con días de antelación, sobre todo entre abril y octubre.",
+        "Si llueve, VEN: el agua entrando por el óculo y drenándose por el suelo inclinado es uno de los espectáculos más únicos de Roma. No mucha gente sabe que esto pasa.",
+        "A primera hora (09:00) hay menos gente. Al mediodía (12:00-13:00) el rayo de luz cae más vertical y el efecto dentro es espectacular, pero hay más visitantes.",
+        "La Piazza della Rotonda delante del Panteón tiene terrazas agradables pero caras. Para un café decente a buen precio, camina 2 minutos hasta la Piazza di Sant'Eustachio — la Tazza d'Oro y Sant'Eustachio Il Caffè son instituciones romanas."
+      ],
+      "secrets": [
+        "El 21 de junio (solsticio de verano), al mediodía, el rayo de luz del óculo cae exactamente en la puerta de entrada — los romanos lo diseñaron así intencionadamente.",
+        "Busca la firma 'M·AGRIPPA·L·F·COS·TERTIVM·FECIT' en el frontón: significa 'Marco Agrippa, hijo de Lucio, cónsul por tercera vez, lo hizo'. Pero es mentira — el edificio actual lo reconstruyó Adriano 150 años después, que conservó la inscripción original por modestia.",
+        "La cúpula es técnicamente imposible para la ingeniería moderna: el hormigón romano usado es más ligero arriba (con piedra pómez) y más pesado abajo (con basalto) — un truco que tardamos 1.500 años en redescubrir."
+      ]
+    },
+    {
+      "name": "Piazza Navona",
+      "description": "La plaza barroca más espectacular de Roma, construida sobre el antiguo estadio de Domiciano — puedes ver la forma ovalada de la pista de carreras en el trazado de la plaza. Tres fuentes monumentales la presiden, pero la estrella es la Fontana dei Quattro Fiumi de Bernini en el centro, con figuras que representan los cuatro grandes ríos del mundo conocido: Nilo, Ganges, Danubio y Río de la Plata.",
+      "what_to_see": [
+        "La Fontana dei Quattro Fiumi (Bernini) — las 4 figuras colosales que representan los continentes conocidos",
+        "La iglesia de Sant'Agnese in Agone (Borromini) — la fachada cóncava enfrentada a la fuente de Bernini, su rival",
+        "La Fontana del Moro (extremo sur) con el tritón de Bernini",
+        "La Fontana de Neptuno (extremo norte) con la escena del pulpo",
+        "Los restos del Estadio de Domiciano bajo la plaza (accesibles por una entrada subterránea en el extremo norte)"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "30",
+            "70",
+            "81",
+            "87",
+            "492",
+            "628"
+          ],
+          "stop": "Corso del Rinascimento / Senato"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "64"
+          ],
+          "stop": "Corso Vittorio Emanuele / Argentina",
+          "note": "A 5 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Navona, 00186 Roma"
+      },
+      "tips": [
+        "NO comas en los restaurantes de la plaza — son carísimos y mediocres (es la trampa turística clásica de Roma). Camina 2 calles en cualquier dirección y comerás mejor por la mitad.",
+        "La rivalidad Bernini-Borromini está en esta plaza: cuenta la leyenda que la figura del Río de la Plata se tapa los ojos para no ver la fachada de Borromini. Es falso (la fuente es anterior a la iglesia), pero la anécdota es divertida.",
+        "Por la mañana temprano (antes de las 09:00) la plaza está casi vacía y puedes disfrutar las fuentes sin las multitudes y los artistas callejeros.",
+        "De noche, con las fuentes iluminadas, es otro lugar. Ven después de cenar (21:00+) y siéntate a disfrutar el espectáculo — es uno de los mejores momentos de Roma."
+      ],
+      "secrets": [
+        "Bajo la plaza, a nivel de calle en el extremo norte, hay un acceso a los restos del Estadio de Domiciano (siglo I). Es un museo pequeño, poco visitado, y ves los arcos y gradas donde 30.000 romanos veían competiciones atléticas.",
+        "El agua de la Fontana dei Quattro Fiumi viene del acueducto Aqua Virgo — el mismo que alimenta la Fontana di Trevi. Bernini la trazó subterráneamente hasta aquí.",
+        "En diciembre y enero, la plaza se llena con un mercado navideño tradicional. Es turístico pero tiene encanto, especialmente con los niños."
+      ]
+    },
+    {
+      "name": "Plaza España y Escalinata",
+      "description": "La escalinata más famosa de Italia: 135 peldaños que conectan la Piazza di Spagna con la iglesia de Trinità dei Monti en lo alto. Construida en 1725, fue el corazón del Grand Tour europeo y hoy sigue siendo uno de los puntos más icónicos de Roma. En abril-mayo se cubre de azaleas en flor, creando una cascada de colores. En la base, la Fontana della Barcaccia de Pietro Bernini (padre de Gian Lorenzo) tiene forma de barco semihundido.",
+      "what_to_see": [
+        "La escalinata completa — 135 peldaños divididos en tres tramos con terrazas intermedias",
+        "La iglesia de Trinità dei Monti en la cima (fachada con los dos campanarios simétricos)",
+        "La Fontana della Barcaccia en la base — diseñada con forma de barco por la baja presión del agua en esta zona",
+        "La vista desde arriba hacia Via dei Condotti y los tejados de Roma",
+        "La casa donde murió el poeta John Keats (esquina derecha de la escalinata, hoy museo Keats-Shelley)"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Spagna",
+          "note": "Salida directa a la plaza"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "117",
+            "119"
+          ],
+          "stop": "Piazza di Spagna"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Spagna, 00187 Roma"
+      },
+      "tips": [
+        "Prohibido sentarse en los escalones — multa de hasta 400€. Es una norma municipal desde 2019 y la policía la aplica. Puedes subir, bajar, pararte a hacer fotos, pero no sentarte.",
+        "Sube hasta Trinità dei Monti para la mejor vista: Via dei Condotti en línea recta hasta Via del Corso, con los tejados de Roma al fondo.",
+        "Si vienes en abril o mayo, los escalones se cubren de azaleas en flor — es una de las postales más bonitas de Roma y dura solo unas semanas.",
+        "De noche (21:00+), la escalinata iluminada y casi vacía es otra experiencia. Ven después de cenar — es uno de los paseos nocturnos clásicos de Roma."
+      ],
+      "secrets": [
+        "La escalinata se llama 'escalinata española' porque la embajada de España ante la Santa Sede estaba en la plaza, pero la construyeron los franceses (la iglesia de arriba es francesa). Los italianos la pagaron, los franceses la diseñaron y los españoles le pusieron el nombre — historia europea en estado puro.",
+        "La Fontana della Barcaccia tiene forma de barco semihundido porque la presión del agua era tan baja que Pietro Bernini no podía hacer chorros altos. Convirtió la limitación en genialidad.",
+        "Desde el lado derecho de Trinità dei Monti hay un paseo (Viale della Trinità dei Monti) que lleva hasta la Terraza del Pincio y Villa Borghese — uno de los mejores paseos de Roma al atardecer."
+      ]
+    },
+    {
+      "name": "Largo di Torre Argentina",
+      "description": "Una plaza con cuatro templos republicanos del siglo III a.C. excavados a nivel de calle — aquí es exactamente donde asesinaron a Julio César en los Idus de Marzo del 44 a.C. Hoy, entre las columnas milenarias, vive una colonia de gatos callejeros cuidada por voluntarios que se ha convertido en una de las curiosidades más queridas de Roma.",
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "46",
+            "62",
+            "64",
+            "70",
+            "81",
+            "87",
+            "492",
+            "628"
+          ],
+          "stop": "Largo Argentina"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 8",
+          "stop": "Largo di Torre Argentina"
+        }
+      ],
+      "extras": {
+        "address": "Largo di Torre Argentina, 00186 Roma"
+      },
+      "tips": [
+        "Parada rápida de 10-15 minutos — se ve todo desde el nivel de calle, sin bajar. Es gratuito y está en el cruce de caminos entre el Panteón, Campo de' Fiori y el Ghetto.",
+        "Los gatos son la estrella: la asociación Torre Argentina Cat Sanctuary cuida a unos 100 gatos entre las ruinas. El refugio está en el lado sur de la plaza y aceptan donaciones.",
+        "El templo B (el redondo) es probablemente donde cayó César. No hay señalización clara, pero es el circular con columnas que ves desde la esquina sudoeste."
+      ],
+      "secrets": [
+        "La zona arqueológica se descubrió por accidente en 1929, cuando demolían edificios medievales para construir nuevas avenidas. Debajo apareció un trozo de la Roma republicana intacto.",
+        "Mussolini quería demoler los templos para ensanchar la avenida, pero los arqueólogos ganaron la batalla — una de las pocas veces que la historia venció al dictador en su remodelación de Roma."
+      ]
+    },
+    {
+      "name": "Via del Corso",
+      "description": "La calle recta más larga del centro de Roma: 1,5 km desde Piazza del Popolo hasta Piazza Venezia, cortando la ciudad de norte a sur. Es la arteria comercial principal, con tiendas de todo tipo (desde Zara hasta boutiques italianas) y palacios renacentistas en las fachadas superiores que nadie mira.",
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Spagna o Flaminio (extremo norte) / Barberini (centro)",
+          "note": "Cualquiera de las tres te deja a 2-3 min"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "117",
+            "119"
+          ],
+          "stop": "Via del Corso"
+        }
+      ],
+      "extras": {
+        "address": "Via del Corso, 00186 Roma"
+      },
+      "tips": [
+        "No vengas antes de las 10:00 — las tiendas están cerradas y la calle vacía pierde su gracia. El mejor momento es por la tarde, cuando se llena del paseo romano.",
+        "Úsala como eje de conexión: desde cualquier punto de Via del Corso estás a 5 minutos de algo interesante (Panteón, Trevi, Piazza Colonna, Plaza España).",
+        "Las fachadas de los palacios sobre las tiendas son espectaculares (Palazzo Doria Pamphilj, Palazzo Chigi) — mira hacia arriba de vez en cuando."
+      ]
+    },
+    {
+      "name": "Campo de' Fiori",
+      "description": "La plaza más viva de Roma: mercado de flores, frutas y especias cada mañana (de lunes a sábado), terrazas animadas por la tarde, y ambiente de aperitivo y vida nocturna al caer el sol. En el centro, la oscura estatua de Giordano Bruno — quemado vivo aquí por la Inquisición en 1600 — mira hacia el Vaticano con gesto desafiante.",
+      "what_to_see": [
+        "La estatua de Giordano Bruno en el centro — el filósofo quemado en esta plaza por la Inquisición en 1600",
+        "El mercado matutino (lun–sáb, ~07:00–14:00): frutas, flores, especias, pasta fresca y productos locales",
+        "Las fachadas coloridas de los edificios que rodean la plaza",
+        "Las callejuelas que salen de la plaza hacia Via dei Giubbonari — las mejores tiendas artesanales del barrio"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "46",
+            "62",
+            "64"
+          ],
+          "stop": "Corso Vittorio Emanuele / Argentina",
+          "note": "A 3 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Campo de' Fiori, 00186 Roma"
+      },
+      "tips": [
+        "Ven por la mañana (08:00-12:00) para el mercado: especias, frutas, flores y pasta fresca. Es turístico pero real — los romanos del barrio siguen comprando aquí.",
+        "Para cenar o tomar algo, las terrazas de la plaza están bien para el ambiente, pero los precios son altos. La calle lateral Via dei Giubbonari tiene opciones más auténticas.",
+        "No confundas Campo de' Fiori con un sitio 'alternativo' — es muy turístico, especialmente de noche. Pero el mercado matutino y las callejuelas de alrededor conservan autenticidad."
+      ],
+      "secrets": [
+        "Giordano Bruno fue quemado exactamente donde está su estatua el 17 de febrero de 1600. La estatua (de 1889) mira deliberadamente hacia el Vaticano — fue un acto de desafío anticlerical cuando se instaló.",
+        "El nombre 'Campo de' Fiori' (campo de flores) viene de la Edad Media, cuando la plaza era un prado sin edificar. Nunca tuvo una iglesia, algo rarísimo en el centro de Roma.",
+        "Los sábados por la mañana, los mejores puestos de especias venden mezclas para cacio e pepe y amatriciana que no encontrarás en ningún supermercado."
+      ]
+    },
+    {
+      "name": "Iglesia del Gesù",
+      "description": "La iglesia madre de los jesuitas y el modelo que definió la arquitectura religiosa barroca en todo el mundo. El interior es una explosión de oro, mármol y pintura: el techo de Giovanni Battista Gaulli (Baciccia) es una de las obras maestras del barroco, con figuras que parecen salir del marco y flotar en el aire. La tumba de San Ignacio de Loyola, en el crucero izquierdo, es un altar de lapislázuli, bronce y plata.",
+      "what_to_see": [
+        "El techo de Baciccia (Triunfo del Nombre de Jesús) — las figuras salen del marco pintado y flotan en 3D sobre tu cabeza",
+        "La Capilla de San Ignacio — altar de lapislázuli, bronce dorado y la mayor columna de lapislázuli del mundo",
+        "La escultura de la Religión derrotando a la Herejía, con el ángel arrancando páginas de un libro protestante",
+        "El efecto de la bóveda al moverte por la nave — las figuras parecen cambiar de perspectiva"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–sáb",
+            "hours": "07:30–12:30, 16:00–19:30"
+          },
+          {
+            "dates": "Dom",
+            "hours": "07:45–13:00, 16:00–20:00"
+          }
+        ],
+        "notes": "Entrada gratuita. Cierra al mediodía como la mayoría de iglesias romanas."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "46",
+            "62",
+            "64",
+            "70",
+            "81",
+            "87"
+          ],
+          "stop": "Largo Argentina",
+          "note": "A 2 min caminando"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.chiesadelgesu.org",
+        "address": "Piazza del Gesù, 00186 Roma"
+      },
+      "tips": [
+        "Gratis. Entra, mira hacia arriba y quédate 5 minutos absorbiendo el techo de Baciccia — es uno de los momentos 'wow' menos conocidos de Roma.",
+        "Ven por la tarde (16:00-17:00), cuando el sol de poniente entra por las ventanas y enciende los dorados del interior.",
+        "No te pierdas la Capilla de San Ignacio (transepto izquierdo): el altar de lapislázuli es más impresionante que muchos museos enteros."
+      ],
+      "secrets": [
+        "Cada día a las 17:30 (18:00 en julio-septiembre) hay una 'ceremonia de la máquina': un mecanismo del siglo XVIII baja un lienzo que cubre la estatua de plata de San Ignacio y la revela con un efecto teatral de luces. Es gratis y dura 10 minutos — puro barroco en acción.",
+        "Esta iglesia cambió la historia de la arquitectura: la planta de nave única con capillas laterales que ves aquí se copió en miles de iglesias jesuitas de América Latina, Asia y Europa."
+      ]
+    },
+    {
+      "name": "San Luigi dei Francesi",
+      "description": "Tres obras maestras de Caravaggio en una capilla lateral, gratis. La iglesia nacional de Francia en Roma alberga en la Capilla Contarelli el ciclo de San Mateo: La vocación, El martirio y La inspiración de San Mateo. El contraste brutal de luz y sombra, la violencia de las escenas y los modelos sacados de la calle romana son Caravaggio en estado puro.",
+      "what_to_see": [
+        "La vocación de San Mateo — el rayo de luz que señala a Mateo entre los recaudadores es una de las imágenes más icónicas de la historia del arte",
+        "El martirio de San Mateo — la violencia cruda del asesinato con figuras que huyen en pánico",
+        "La inspiración de San Mateo — el ángel que guía la mano del evangelista",
+        "Fíjate en cómo Caravaggio pintó a los personajes con ropa contemporánea del siglo XVII, no bíblica"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "10:00–12:30, 15:00–19:00"
+          }
+        ],
+        "notes": "Entrada gratuita. Cierra al mediodía. Puede cerrar durante misas o ceremonias sin aviso previo."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "30",
+            "70",
+            "81",
+            "87",
+            "492",
+            "628"
+          ],
+          "stop": "Corso Rinascimento / Senato",
+          "note": "A 200m de Piazza Navona"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di San Luigi de' Francesi, 00186 Roma"
+      },
+      "tips": [
+        "Gratis. Los Caravaggios están en la Capilla Contarelli (primera capilla a la izquierda del altar). Lleva monedas de 1€ para la máquina de luz — sin ella, los cuadros están oscuros y no se ven los detalles.",
+        "Está a 200 metros de Piazza Navona — combínalas en un paseo. San Luigi es una parada de 15-20 minutos que vale más que muchos museos de pago.",
+        "Entre semana por la mañana (10:00-11:00) casi no hay gente. Los fines de semana puede haber cola para entrar a la capilla."
+      ],
+      "secrets": [
+        "La primera versión de La inspiración de San Mateo fue rechazada por los sacerdotes porque Caravaggio pintó a un Mateo con pies sucios y aspecto de campesino — demasiado vulgar para una iglesia. La segunda versión (la que ves) es más 'digna'.",
+        "Si te gustan los Caravaggios, a 10 minutos caminando está Santa Maria del Popolo (zona Villa Borghese) con otros dos Caravaggios igual de impactantes, y Sant'Agostino (a 3 minutos de aquí) tiene la Madonna de Loreto."
+      ]
+    },
+    {
+      "name": "Ara Pacis",
+      "description": "El Altar de la Paz, consagrado en el año 9 a.C. para celebrar las victorias de Augusto y el inicio de la Pax Romana. Un altar de mármol tallado con relieves de una procesión imperial — cada rostro es un retrato real de la familia de Augusto. Protegido dentro de un museo moderno de cristal y travertino diseñado por Richard Meier junto al Tíber, el contraste entre la pieza antigua y el edificio contemporáneo es parte de la experiencia.",
+      "what_to_see": [
+        "Los relieves de la procesión imperial — retratos reales de Augusto, Agripa, Livia y la familia imperial",
+        "El panel de la Tierra (Tellus) con las alegorías de la prosperidad",
+        "El panel de Eneas sacrificando — el héroe mítico fundador de Roma",
+        "El edificio de Richard Meier — polémico pero espectacular, sobre todo con luz natural"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "09:30–19:30",
+            "last_entry": "18:30"
+          }
+        ],
+        "closed": [
+          "lunes",
+          "1 may",
+          "25 dic"
+        ]
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Flaminio",
+          "note": "A 10 min caminando por Via di Ripetta"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "70",
+            "81",
+            "628"
+          ],
+          "stop": "Lungotevere in Augusta / Ara Pacis"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.arapacis.it",
+        "address": "Lungotevere in Augusta, 00186 Roma"
+      },
+      "tips": [
+        "Es un museo pequeño — 45 minutos son más que suficientes. Pero la calidad de los relieves es extraordinaria. Merece la pena especialmente si te interesa la historia romana.",
+        "El edificio de Meier es polémico entre los romanos (muchos lo odian), pero la luz natural que baña el altar por la tarde es espectacular.",
+        "Cerrado los lunes. Junto al Mausoleo de Augusto, que se puede ver desde fuera — no necesita entrada."
+      ]
+    },
+    {
+      "name": "Ghetto Ebraico",
+      "description": "El barrio judío más antiguo de Europa occidental — aquí fue confinada la comunidad judía de Roma desde 1555 hasta 1870. Tres siglos de historia encerrada en unas pocas calles que hoy son uno de los barrios con más personalidad de Roma: la Gran Sinagoga con su cúpula cuadrada domina el perfil, las calles huelen a alcachofas fritas y las 'stolpersteine' (piedras de la memoria) en el suelo recuerdan a los deportados durante la ocupación nazi.",
+      "what_to_see": [
+        "La Gran Sinagoga y su cúpula cuadrada (única en Roma) — visible desde medio centro de la ciudad",
+        "Las stolpersteine en el suelo — placas de latón con nombres de familias deportadas por los nazis",
+        "El Pórtico de Octavia — ruinas del siglo I a.C. en la entrada del barrio, la puerta de entrada histórica al Ghetto",
+        "Las calles de Via del Portico d'Ottavia con las trattorias típicas"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "23",
+            "63",
+            "280"
+          ],
+          "stop": "Lungotevere de' Cenci"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 8",
+          "stop": "Largo di Torre Argentina",
+          "note": "A 5 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Via del Portico d'Ottavia, 00186 Roma"
+      },
+      "tips": [
+        "Los carciofi alla giudia (alcachofas fritas enteras) son EL plato del Ghetto — pruébalos en cualquier restaurante de Via del Portico d'Ottavia. Es el plato más romano que existe.",
+        "Combina el Ghetto con la Isla Tiberina (a 2 minutos cruzando el puente) y Largo di Torre Argentina (a 5 minutos). Es un triángulo perfecto de 1-2 horas.",
+        "La Gran Sinagoga se puede visitar por dentro con el Museo Ebraico (cerrado sábados y festivos judíos). Merece la pena si tienes tiempo."
+      ],
+      "secrets": [
+        "El Ghetto de Roma es el más antiguo de Europa después del de Venecia. Los judíos romanos llevan aquí desde antes de Cristo — son la comunidad judía más antigua de Europa occidental.",
+        "El 16 de octubre de 1943, los nazis deportaron 1.024 judíos del Ghetto. Solo 16 volvieron. Las stolpersteine en el suelo son la memoria viva de cada familia — si las ves, párate un momento.",
+        "La cocina judío-romana es la base de muchos platos 'romanos' clásicos: los carciofi alla giudia, los filetti di baccalà y el carciofo alla romana nacieron aquí."
+      ]
+    },
+    {
+      "name": "Santa Maria sopra Minerva",
+      "description": "La única iglesia gótica de Roma — mientras todo el centro es barroco y renacentista, esta iglesia dominica conserva bóvedas de crucería pintadas de azul con estrellas doradas que parecen un cielo medieval. Dentro, un Cristo Redentor esculpido por Miguel Ángel y las tumbas de Santa Catalina de Siena y del pintor Fra Angélico.",
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "07:10–19:00"
+          }
+        ],
+        "notes": "Entrada gratuita. Puede cerrar durante misas."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "30",
+            "40",
+            "62",
+            "64",
+            "81",
+            "87"
+          ],
+          "stop": "Largo Argentina",
+          "note": "A 3 min caminando, detrás del Panteón"
+        }
+      ],
+      "extras": {
+        "address": "Piazza della Minerva 42, 00186 Roma"
+      },
+      "tips": [
+        "Gratis. Está justo detrás del Panteón — combínalas en la misma visita. El Cristo de Miguel Ángel está a la izquierda del altar mayor.",
+        "Las bóvedas azules con estrellas doradas son únicas en Roma — en ninguna otra iglesia del centro verás este estilo gótico."
+      ],
+      "secrets": [
+        "Aquí fue donde la Inquisición obligó a Galileo a retractarse en 1633. No hay placa ni señalización — uno de los momentos más importantes de la historia de la ciencia ocurrió en esta nave sin dejar rastro visible.",
+        "El Cristo Redentor de Miguel Ángel tiene un paño de bronce añadido después por 'decoro' — el original estaba completamente desnudo. Miguel Ángel se habría horrorizado."
+      ]
+    },
+    {
+      "name": "Sant'Ignazio di Loyola",
+      "description": "El techo de Andrea Pozzo es el trampantojo más famoso del mundo: una cúpula pintada en una superficie plana que engaña al ojo y parece tener 3 pisos de altura. Desde el punto exacto del suelo, la ilusión es perfecta; da un paso y se deforma. Es el 'efecto especial' del siglo XVII, y sigue funcionando 350 años después.",
+      "what_to_see": [
+        "El techo de Andrea Pozzo — la perspectiva imposible que crea una arquitectura ficticia de columnas, arcos y cielo",
+        "El disco dorado en el suelo de la nave — el punto exacto donde la ilusión óptica es perfecta",
+        "La falsa cúpula en el crucero — también pintada en plano por Pozzo (no tenían presupuesto para una cúpula real)",
+        "La piazzetta ovalada delante de la iglesia — una de las más bonitas y menos conocidas de Roma"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "07:30–19:00"
+          }
+        ],
+        "notes": "Entrada gratuita."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "62",
+            "85",
+            "117",
+            "119",
+            "492"
+          ],
+          "stop": "Via del Corso / Piazza Colonna",
+          "note": "A 2 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Sant'Ignazio, 00186 Roma"
+      },
+      "tips": [
+        "Gratis. Busca el disco dorado en el suelo de la nave central: es el punto exacto donde la ilusión del techo es perfecta. Da un paso fuera del disco y verás cómo la perspectiva se deforma — es hipnótico.",
+        "No te pierdas la falsa cúpula del crucero — también es una pintura plana. Los jesuitas no tenían dinero para una cúpula real, así que Pozzo pintó una. Desde abajo, cuesta creer que no es de verdad."
+      ],
+      "secrets": [
+        "Andrea Pozzo era jesuita, matemático y pintor — escribió un tratado de perspectiva que se usó como manual en toda Europa durante un siglo. Este techo es su demostración práctica.",
+        "La piazzetta delante de la iglesia (Piazza di Sant'Ignazio) tiene forma de teatro barroco con edificios curvados como un escenario — es una de las plazas más fotogénicas y menos visitadas de Roma."
+      ]
+    },
+    {
+      "name": "Elefantino de Bernini",
+      "description": "Un elefante de mármol cargando un obelisco egipcio del siglo VI a.C. en la Piazza della Minerva, justo detrás del Panteón. Bernini lo diseñó con una sonrisa traviesa y el trasero apuntando al convento de los dominicos — según la leyenda, un insulto deliberado a los frailes que habían criticado su trabajo.",
+      "extras": {
+        "address": "Piazza della Minerva, 00186 Roma"
+      },
+      "tips": [
+        "Parada de 2 minutos detrás del Panteón, justo delante de Santa Maria sopra Minerva. Combina los tres en una sola parada.",
+        "Fíjate en la sonrisa del elefante — Bernini le dio una expresión casi humana, algo rarísimo en escultura monumental."
+      ],
+      "secrets": [
+        "El trasero del elefante apunta directamente al convento dominico de Santa Maria sopra Minerva. Los dominicos habían rechazado el primer diseño de Bernini, y esta fue su venganza — sutil, pero permanente.",
+        "El obelisco encima del elefante es del siglo VI a.C. y fue encontrado enterrado en el jardín del convento. Es uno de los obeliscos más pequeños de Roma pero uno de los más antiguos."
+      ]
+    },
+    {
+      "name": "Fontana delle Tartarughe",
+      "description": "Cuatro jóvenes de bronce empujan delicadamente tortugas hacia la pila superior en la íntima Piazza Mattei, corazón del antiguo Ghetto judío. Una de las fuentes más elegantes y menos visitadas de Roma, con una historia de construcción relámpago: según la leyenda, se levantó en una sola noche.",
+      "extras": {
+        "address": "Piazza Mattei, 00186 Roma"
+      },
+      "tips": [
+        "Está escondida en la Piazza Mattei, entre el Ghetto y Largo di Torre Argentina. La plaza es minúscula y encantadora — si no la buscas, no la encuentras.",
+        "Combínala con el Ghetto Ebraico (a 1 minuto) y Largo di Torre Argentina (a 3 minutos)."
+      ],
+      "secrets": [
+        "Las tortugas fueron añadidas un siglo después de la fuente original (probablemente por Bernini). La fuente sin tortugas funcionaba igual, pero con ellas se convirtió en una obra maestra.",
+        "La leyenda dice que el Duque Mattei mandó construir la fuente en una sola noche para impresionar a su futuro suegro, que dudaba de su riqueza. A la mañana siguiente le dijo: 'Mira lo que un Mattei puede hacer en una noche'."
+      ]
+    },
+    {
+      "name": "Fontana del Tritone",
+      "description": "Un tritón musculoso soplando agua hacia el cielo desde una concha gigante sostenida por cuatro delfines — Bernini creó esta fuente para el Papa Urbano VIII en 1643, en el centro de Piazza Barberini. Es una parada natural entre la Fontana di Trevi y Via Veneto.",
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Barberini",
+          "note": "Salida directa a la plaza"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Barberini, 00187 Roma"
+      },
+      "tips": [
+        "Parada rápida de 5 minutos en el camino entre Trevi y Via Veneto / Piazza di Spagna. No desvía la ruta.",
+        "Justo al lado (esquina de Via Veneto) está la Fontana delle Api (fuente de las abejas) — también de Bernini, mucho más pequeña y fácil de no ver."
+      ],
+      "secrets": [
+        "Las abejas que ves en la fuente son el símbolo de la familia Barberini (el Papa Urbano VIII). Bernini puso abejas en casi todas las obras que hizo para los Barberini — busca su escudo en la base con las tres abejas.",
+        "Piazza Barberini era el inicio de Via Veneto, la calle de La Dolce Vita de Fellini. Hoy Via Veneto es una calle de hoteles caros sin mucha vida, pero en los años 50-60 era el epicentro del glamour romano."
+      ]
+    },
+    {
+      "name": "Piazza Colonna",
+      "description": "La Columna de Marco Aurelio se alza 30 metros sobre Via del Corso, con un espiral de relieves que narra las guerras contra los bárbaros del Danubio (siglo II d.C.) — el mismo concepto que la Columna de Trajano pero menos famosa y con menos turistas. Detrás, el Palazzo Chigi es la sede del gobierno italiano.",
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "62",
+            "85",
+            "117",
+            "119",
+            "492"
+          ],
+          "stop": "Via del Corso / Piazza Colonna"
+        },
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Barberini",
+          "note": "A 8 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Colonna, 00186 Roma"
+      },
+      "tips": [
+        "Parada rápida en Via del Corso — no necesita más de 10 minutos. Mira los relieves de la columna con prismáticos o zoom del móvil para apreciar las escenas de batalla.",
+        "El Palazzo Chigi (sede del primer ministro) no se puede visitar, pero verás carabinieri apostados — es el equivalente italiano de Moncloa/La Moneda."
+      ]
+    },
+    {
+      "name": "Via dei Condotti",
+      "description": "La calle de la moda de Roma: 300 metros de boutiques de lujo — Gucci, Prada, Bulgari, Valentino, Cartier — que conectan Via del Corso con la Escalinata de Plaza España. Aunque no compres, el escaparatismo y la arquitectura de los palacios que albergan las tiendas son parte de la experiencia romana.",
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Spagna",
+          "note": "Salida directa al inicio de la calle"
+        }
+      ],
+      "extras": {
+        "address": "Via dei Condotti, 00187 Roma"
+      },
+      "tips": [
+        "Aunque no compres nada, el paseo entre Via del Corso y Plaza España por Via dei Condotti es la conexión natural entre ambos puntos.",
+        "El Antico Caffè Greco (nº 86) abrió en 1760 — es el segundo café más antiguo de Italia. Goethe, Byron, Keats y Liszt se sentaron aquí. Caro, pero una institución."
+      ],
+      "secrets": [
+        "El nombre 'Condotti' viene de los conductos de agua del acueducto Aqua Virgo que pasaban por debajo de esta calle — los mismos que alimentan Trevi y Piazza Navona.",
+        "El Caffè Greco ha sido sede de conspiraciones políticas, encuentros artísticos y el Grand Tour europeo durante 260 años. Las salas interiores, decoradas con cuadros del siglo XIX, son un museo gratis si pides un café en la barra (en las mesas de salón el café cuesta 5 veces más)."
+      ]
+    },
+    {
+      "name": "Piazza Farnese",
+      "description": "Una de las plazas más elegantes y tranquilas del centro, con dos fuentes gemelas hechas de bañeras de granito traídas de las Termas de Caracalla. El Palazzo Farnese (hoy embajada de Francia) domina la plaza — Miguel Ángel diseñó el tercer piso y la cornisa, y dentro tiene frescos de los Carracci que rivalizan con la Capilla Sixtina.",
+      "extras": {
+        "address": "Piazza Farnese, 00186 Roma"
+      },
+      "tips": [
+        "A 1 minuto de Campo de' Fiori pero un mundo aparte: Campo de' Fiori es ruidosa y turística, Piazza Farnese es señorial y tranquila. El contraste en 50 metros es parte de la magia de Roma.",
+        "Las dos fuentes usan bañeras de granito de las Termas de Caracalla — cada una pesa varias toneladas y lleva aquí desde el siglo XVI."
+      ],
+      "secrets": [
+        "El Palazzo Farnese se puede visitar por dentro (solo con reserva, visitas limitadas a través de la embajada de Francia). Los frescos de Annibale Carracci en la Galleria son considerados una de las cumbres del arte barroco, al nivel de la Capilla Sixtina.",
+        "Miguel Ángel diseñó el tercer piso y la espectacular cornisa del palazzo — el resto es de Antonio da Sangallo el Joven. Fíjate en cómo el piso superior es sutilmente diferente: más grandioso, más muscular. Eso es Miguel Ángel."
+      ]
+    }
+  ]
+}

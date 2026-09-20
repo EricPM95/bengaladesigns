@@ -1,0 +1,347 @@
+{
+  "zone": "vaticano",
+  "places": [
+    {
+      "name": "Museos Vaticanos y Capilla Sixtina",
+      "description": "La colección de arte más impresionante del mundo, acumulada por los papas durante 500 años. El recorrido atraviesa 54 galerías — desde esculturas egipcias hasta arte contemporáneo — pero la estrella absoluta es la Capilla Sixtina al final: el techo de Miguel Ángel (1508-1512) con la Creación de Adán, y el Juicio Final en la pared del altar (1536-1541). Calcula mínimo 3 horas, y eso yendo con plan.",
+      "what_to_see": [
+        "La Capilla Sixtina — el techo de Miguel Ángel con la Creación de Adán y el Juicio Final en la pared del altar",
+        "Las Estancias de Rafael — especialmente La Escuela de Atenas, con Platón, Aristóteles y el autorretrato de Rafael",
+        "La Galería de los Mapas — 120 metros de mapas pintados de Italia en las paredes y un techo dorado espectacular",
+        "El Laocoonte — la escultura helenística que cambió el arte del Renacimiento (Patio Octogonal)",
+        "La Escalera de Bramante (la helicoidal de doble hélice) — la foto más icónica del museo"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–sáb",
+            "hours": "08:00–20:00",
+            "last_entry": "18:00"
+          }
+        ],
+        "closed": [
+          "domingos (excepto último domingo del mes)"
+        ],
+        "free_days": [
+          "Último domingo de cada mes: 09:00–14:00, entrada gratuita (última entrada 12:30)"
+        ],
+        "notes": "Viernes noche (19:00-23:00, última entrada 21:30) disponible en temporada alta (abril-octubre y fechas especiales) — el museo casi vacío, con música y cócteles en los patios."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Ottaviano",
+          "note": "A 10 min caminando hasta la entrada"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "49",
+            "492",
+            "990"
+          ],
+          "stop": "Viale Vaticano / Musei Vaticani"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 19",
+          "stop": "Piazza del Risorgimento",
+          "note": "A 8 min caminando"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.museivaticani.va",
+        "booking_url": "https://tickets.museivaticani.va",
+        "address": "Viale Vaticano, 00165 Roma"
+      },
+      "tips": [
+        "Reserva SIEMPRE online con semanas de antelación — sin reserva la cola puede ser de 3-4 horas en temporada alta, y se agotan.",
+        "Entra a las 08:00 en punto y ve DIRECTO a la Capilla Sixtina (salta las galerías e indicaciones normales — pide a un guardia el camino corto). A las 08:15 la tienes casi vacía. Luego recorre el resto hacia atrás.",
+        "El viernes noche (en temporada) es la experiencia premium: el museo semivacío, con música en vivo en los patios y un ambiente completamente diferente al caos diurno.",
+        "El último domingo del mes es gratis pero NO compensa: colas de 2-3 horas, museo atestado, experiencia pésima. Paga la entrada y ven entre semana a primera hora.",
+        "Código de vestimenta obligatorio: hombros y rodillas cubiertas. Llevan un pañuelo por si acaso — te rechazan en la puerta."
+      ],
+      "secrets": [
+        "Hay una puerta directa de la Capilla Sixtina a la Basílica de San Pedro (la usan los grupos organizados). Si la ves abierta, sal por ahí — te ahorras volver por todo el museo y entras a la basílica sin la cola exterior. No siempre funciona, pero merece intentarlo.",
+        "En la Galería de los Mapas, mira los techos: están más decorados que muchos palacios enteros. Todo el mundo mira los mapas de las paredes y se pierde los frescos dorados de arriba.",
+        "La Escalera de Bramante (la doble hélice) NO es la escalera original de Bramante — es de 1932, diseñada por Giuseppe Momo. La original de Bramante (1505) está cerrada al público. Pero la de Momo es igual de fotogénica."
+      ]
+    },
+    {
+      "name": "Basílica de San Pedro",
+      "description": "La iglesia más grande del mundo y el centro del catolicismo. 190 metros de largo, 45 de alto, con capacidad para 20.000 personas. Dentro está la Pietà de Miguel Ángel (la única obra que firmó), el Baldaquino de Bernini de 29 metros de bronce sobre el altar papal, y las Grutas Vaticanas con la tumba de San Pedro. Todo es descomunal — cada detalle que parece de tamaño normal desde abajo es en realidad gigantesco.",
+      "what_to_see": [
+        "La Pietà de Miguel Ángel — nada más entrar, primera capilla a la derecha (detrás de cristal blindado desde 1972)",
+        "El Baldaquino de Bernini — 29m de bronce dorado con columnas salomónicas sobre el altar mayor",
+        "La Cátedra de San Pedro (ábside) — el trono dorado de Bernini con rayos de luz entrando por la vidriera",
+        "Las marcas en el suelo que comparan la longitud de San Pedro con otras catedrales del mundo",
+        "Las Grutas Vaticanas (bajo la basílica) — tumbas papales desde San Pedro hasta Juan Pablo II"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "07:00–20:00"
+          }
+        ],
+        "notes": "Entrada gratuita. Código de vestimenta estricto: hombros y rodillas cubiertas (te rechazan sin excepciones). La cola del control de seguridad puede ser de 30-60 min en temporada alta — madruga."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Ottaviano",
+          "note": "A 10 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "64"
+          ],
+          "stop": "Largo di Porta Cavalleggeri",
+          "note": "Cuidado con carteristas en el bus 64"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.basilicasanpietro.va",
+        "address": "Piazza San Pietro, 00120 Città del Vaticano"
+      },
+      "tips": [
+        "Gratis. La cola es para el control de seguridad, no para comprar entrada. Madruga (07:00-08:00) o ven a última hora (17:00+) para evitar esperas.",
+        "La Pietà está nada más entrar a la derecha — mucha gente se la salta yendo directa al fondo. Es la primera parada obligatoria.",
+        "Fíjate en las marcas doradas en el suelo de la nave central: muestran la longitud de otras catedrales famosas comparadas con San Pedro. Ninguna llega ni a la mitad.",
+        "Si quieres subir a la cúpula, la entrada es separada (fuera de la basílica, a la derecha). Ve ANTES de entrar a la basílica — la cola de la cúpula crece a lo largo del día."
+      ],
+      "secrets": [
+        "El pie derecho de la estatua de bronce de San Pedro (nave central, pilar derecho) está desgastado por los millones de fieles que lo tocan desde hace siglos. Fíjate: el pie original tenía dedos individuales, hoy es una superficie lisa.",
+        "El Baldaquino de Bernini está hecho con bronce arrancado del pórtico del Panteón por orden del Papa Barberini. Los romanos dijeron: 'Lo que no hicieron los bárbaros, lo hicieron los Barberini' — el dicho sigue vivo 400 años después.",
+        "Las Grutas Vaticanas (accesibles desde dentro de la basílica, gratis) son el cementerio papal más impresionante del mundo. La tumba de Juan Pablo II suele tener flores frescas dejadas por peregrinos polacos."
+      ]
+    },
+    {
+      "name": "Plaza de San Pedro",
+      "description": "La plaza más monumental del mundo: 240 metros de ancho, rodeada por la columnata de Bernini con 284 columnas y 140 estatuas de santos en lo alto. El obelisco egipcio de 25 metros en el centro fue el único que nunca cayó desde la antigua Roma. Bernini diseñó la columnata como dos brazos que 'abrazan' a los fieles — una metáfora arquitectónica que funciona: al entrar en la plaza sientes que el espacio te envuelve.",
+      "what_to_see": [
+        "La columnata de Bernini — 284 columnas dóricas en 4 filas que forman dos semicírculos",
+        "Los dos puntos en el suelo (discos de pórfido) donde las 4 filas de columnas se alinean en una sola — efecto óptico espectacular",
+        "El obelisco central — traído de Egipto por Calígula en el año 37 d.C.",
+        "Las 140 estatuas de santos sobre la columnata",
+        "Las dos fuentes gemelas de Maderno y Bernini a ambos lados del obelisco"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Ottaviano",
+          "note": "A 10 min caminando por Via della Conciliazione"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "64"
+          ],
+          "stop": "Largo di Porta Cavalleggeri"
+        }
+      ],
+      "extras": {
+        "address": "Piazza San Pietro, 00120 Città del Vaticano"
+      },
+      "tips": [
+        "Busca los dos discos de pórfido rojo en el suelo (entre el obelisco y cada fuente): si te pones encima, las 4 filas de columnas se alinean en una sola columna perfecta. Es el truco de Bernini más famoso.",
+        "Los miércoles por la mañana el Papa celebra audiencia general en la plaza (gratis, con entrada que se pide online). Los domingos a las 12:00, el Ángelus desde la ventana del apartamento papal.",
+        "La mejor hora para la foto es al atardecer, con la luz dorada bañando la fachada de la basílica."
+      ],
+      "secrets": [
+        "El obelisco central no tiene ninguna inscripción jeroglífica — es un obelisco romano mandado tallar en Egipto, no uno egipcio original. Calígula lo trajo en un barco especialmente construido para ello.",
+        "En la cima del obelisco, dentro de la esfera de bronce, se supone que estaban las cenizas de Julio César. Cuando la abrieron en 1586 para mover el obelisco... estaba vacía."
+      ]
+    },
+    {
+      "name": "Cúpula de San Pedro",
+      "description": "551 escalones (o ascensor + 320 escalones) hasta la cima de la cúpula de Miguel Ángel — 136 metros sobre Roma. La subida incluye un pasillo entre las dos paredes de la cúpula donde ves los mosaicos del interior desde arriba, y al final, la terraza exterior con la panorámica más icónica de la ciudad: la Plaza de San Pedro en primer plano y toda Roma hasta los montes Albanos al fondo.",
+      "what_to_see": [
+        "El pasillo interior entre las dos capas de la cúpula — ves el interior de la basílica desde 53m de altura",
+        "Los mosaicos del tambor vistos de cerca — a nivel del suelo no se aprecian los detalles",
+        "La terraza exterior con la vista sobre la Plaza de San Pedro, Via della Conciliazione y Roma entera",
+        "La inscripción en latín de 2m de alto que rodea la base interior de la cúpula"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Oct–mar",
+            "hours": "07:30–17:00"
+          },
+          {
+            "dates": "Abr–sep",
+            "hours": "07:00–18:00"
+          }
+        ],
+        "notes": "La subida con ascensor ahorra los primeros 231 escalones, pero los últimos 320 son obligatorios a pie (cada vez más estrechos y empinados). No apto para claustrofóbicos."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Ottaviano",
+          "note": "Entrada a la cúpula a la derecha de la fachada de la basílica"
+        }
+      ],
+      "extras": {
+        "address": "Piazza San Pietro, 00120 Città del Vaticano"
+      },
+      "tips": [
+        "Sube a la cúpula ANTES de entrar a la basílica — la cola crece durante el día. A las 07:30 (invierno) o 07:00 (verano) prácticamente no hay espera.",
+        "El ascensor ahorra 231 escalones, pero los 320 finales son a pie sí o sí, y el pasillo se estrecha hasta que solo cabe una persona. Si eres claustrofóbico, piénsalo.",
+        "Merece MUCHO la pena — es la mejor vista de Roma, punto. El Coliseo, el Panteón, el Tíber, los montes Albanos... todo desde 136 metros."
+      ],
+      "secrets": [
+        "El pasillo inclinado entre las dos paredes de la cúpula es una experiencia en sí misma: caminas ladeado porque las paredes se curvan, y ves el interior de la basílica desde una perspectiva que solo tienen los restauradores. Las barandillas están pulidas por millones de manos.",
+        "Miguel Ángel nunca vio la cúpula terminada — murió en 1564, 26 años antes de que se completara en 1590. Giacomo della Porta la terminó siguiendo sus planos, pero hizo la curva más pronunciada de lo que Miguel Ángel había diseñado."
+      ]
+    },
+    {
+      "name": "Via della Conciliazione",
+      "description": "La avenida monumental que conecta Castel Sant'Angelo con la Plaza de San Pedro — 500 metros de perspectiva grandiosa con la cúpula de San Pedro creciendo ante tus ojos a cada paso. Mussolini la mandó construir en los años 30, demoliendo un barrio medieval entero (el Borgo) para crear este eje triunfal que reconciliaba el Estado italiano con el Vaticano tras los Pactos de Letrán.",
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "64"
+          ],
+          "stop": "Via della Conciliazione"
+        },
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Ottaviano",
+          "note": "A 10 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Via della Conciliazione, 00193 Roma"
+      },
+      "tips": [
+        "Recórrela desde Castel Sant'Angelo hacia San Pedro — la cúpula creciendo frente a ti es la mejor aproximación al Vaticano. En sentido contrario pierdes el efecto.",
+        "Los obeliscos de farola a ambos lados imitan los de la plaza — son modernos, de los años 50.",
+        "Antes de Mussolini, llegaras a la Plaza de San Pedro por callejuelas estrechas del Borgo y la plaza se revelaba de golpe — un efecto sorpresa que Bernini diseñó intencionadamente y que la avenida destruyó."
+      ]
+    },
+    {
+      "name": "Castel Sant'Angelo",
+      "description": "Empezó como mausoleo del emperador Adriano (año 139), fue fortaleza papal, prisión y refugio de emergencia conectado al Vaticano por un pasadizo secreto (el Passetto). Cinco plantas de historia apilada: desde la rampa helicoidal romana original hasta los lujosos apartamentos papales con frescos renacentistas. La terraza superior, con el ángel de bronce que da nombre al castillo, ofrece una de las mejores panorámicas de Roma.",
+      "what_to_see": [
+        "La rampa helicoidal original de época romana — el mismo camino por el que subieron el sarcófago de Adriano",
+        "Los apartamentos papales con frescos de la escuela de Rafael",
+        "La terraza del Ángel — panorámica 360° con San Pedro, el Tíber y el centro de Roma",
+        "Las celdas de la prisión donde estuvo preso (según la leyenda) Beatrice Cenci y Benvenuto Cellini",
+        "El Passetto di Borgo — el pasadizo elevado que conecta el castillo con el Vaticano (visible desde fuera)"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Mar–dom",
+            "hours": "09:00–19:30",
+            "last_entry": "18:30"
+          }
+        ],
+        "closed": [
+          "lunes",
+          "1 ene",
+          "1 may",
+          "25 dic"
+        ],
+        "free_days": [
+          "Primer domingo de cada mes"
+        ],
+        "notes": "En verano, noches especiales 'El Ángel y la Luna' con horario ampliado hasta las 23:30."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "62",
+            "64",
+            "280"
+          ],
+          "stop": "Piazza Pia / Castel Sant'Angelo"
+        },
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Lepanto",
+          "note": "A 10 min caminando"
+        }
+      ],
+      "extras": {
+        "official_url": "https://castelsantangelo.beniculturali.it",
+        "booking_url": "https://www.coopculture.it/en/poi/castel-santangelo/",
+        "address": "Lungotevere Castello 50, 00193 Roma"
+      },
+      "tips": [
+        "Compra entrada online — en temporada alta la cola puede ser de 1-2 horas. El primer domingo de cada mes es gratis (pero masificado).",
+        "Sube directamente a la terraza superior — la vista desde arriba con San Pedro al fondo y el Tíber abajo es la recompensa. Luego baja explorando cada nivel.",
+        "Combínalo con Ponte Sant'Angelo (justo al lado) y Via della Conciliazione — es la ruta natural hacia el Vaticano.",
+        "A primera hora (09:00) o última hora (17:00+) hay mucha menos gente."
+      ],
+      "secrets": [
+        "El Passetto di Borgo es el pasadizo secreto de 800 metros que conecta el castillo con el Vaticano, construido sobre la antigua muralla. Lo usó el Papa Clemente VII para huir durante el Saqueo de Roma en 1527 — corrió por encima mientras los soldados masacraban abajo. Se puede ver desde fuera (el muro elevado con ventanitas que va desde Castel Sant'Angelo hacia el Vaticano).",
+        "El ángel de bronce en la cima (el actual es de 1753, de Peter Anton von Verschaffelt) reemplazó cinco ángeles anteriores que se destruyeron por rayos, viento o deterioro. Uno de los anteriores, de mármol, está en el patio interior.",
+        "En verano, las noches 'El Ángel y la Luna' abren la terraza hasta las 23:30 — Roma iluminada desde aquí arriba es una experiencia que pocos turistas conocen."
+      ]
+    },
+    {
+      "name": "Ponte Sant'Angelo",
+      "description": "El puente más bonito de Roma: 10 ángeles de mármol de Bernini y su taller bordean el camino sobre el Tíber hacia Castel Sant'Angelo. Cada ángel sostiene un instrumento de la Pasión de Cristo (la corona de espinas, los clavos, la lanza, el sudario...). El puente original es del año 134 d.C. — construido por Adriano para acceder a su mausoleo — y los tres arcos centrales son romanos.",
+      "what_to_see": [
+        "Los 10 ángeles de mármol — cada uno con un instrumento de la Pasión (busca la corona de espinas y el sudario)",
+        "Los tres arcos centrales — son originales romanos del año 134 d.C.",
+        "La vista desde el centro del puente: Castel Sant'Angelo a un lado, la cúpula de San Pedro asomando al otro"
+      ],
+      "extras": {
+        "address": "Ponte Sant'Angelo, 00186 Roma"
+      },
+      "tips": [
+        "Crúzalo despacio — cada ángel merece una mirada. El mejor momento es al atardecer, cuando la luz dorada baña las esculturas y el castillo.",
+        "Solo dos de los diez ángeles son de la mano de Bernini directamente (el del sudario y el de la corona de espinas). Los originales de Bernini están en Sant'Andrea delle Fratte — los del puente son copias de su taller.",
+        "Es peatonal — nada de coches, puedes pararte sin prisa."
+      ],
+      "secrets": [
+        "Bernini consideró estos ángeles entre sus mejores obras, pero el Papa Clemente IX los encontró demasiado buenos para estar a la intemperie y mandó hacer copias para el puente, guardando los originales en la iglesia de Sant'Andrea delle Fratte. Una ironía: los 'falsos' son los famosos y los auténticos los que nadie visita.",
+        "En la Edad Media, las cabezas de los ejecutados se exhibían clavadas en picas sobre el puente — era la entrada al Vaticano y servía como advertencia. Los ángeles barrocos sustituyeron ese macabro decorado."
+      ]
+    },
+    {
+      "name": "Borgo Pio",
+      "description": "La calle con más carácter del barrio del Vaticano: adoquines desgastados, macetas en los balcones, trattorias familiares y un ambiente de pueblo romano a dos pasos de la Plaza de San Pedro. Es la calle que sobrevivió a las demoliciones de Mussolini para construir Via della Conciliazione — el último trozo del antiguo Borgo medieval.",
+      "extras": {
+        "address": "Borgo Pio, 00193 Roma"
+      },
+      "tips": [
+        "La mejor calle para comer cerca del Vaticano sin caer en trampas turísticas. Busca trattorias con menú escrito a mano y sin fotos de la comida.",
+        "Es la alternativa perfecta a Via della Conciliazione: en paralelo pero con la Roma de verdad en lugar de los puestos de souvenirs.",
+        "Combínala con la visita al Vaticano — es la calle natural para ir del metro Ottaviano a la basílica, o para comer después de los Museos."
+      ],
+      "secrets": [
+        "Borgo Pio es el último superviviente del antiguo Borgo — el barrio medieval que Mussolini demolió casi entero para construir Via della Conciliazione. Las calles laterales aún conservan palacios renacentistas que nadie mira.",
+        "Los nombres de las calles del Borgo (Borgo Pio, Borgo Santo Spirito, Borgo Vecchio) cuentan la historia del barrio: cada uno era un burgo diferente con su carácter. 'Pio' por el Papa Pío IV."
+      ]
+    }
+  ]
+}

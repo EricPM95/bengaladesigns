@@ -1,0 +1,311 @@
+{
+  "zone": "villa_borghese",
+  "places": [
+    {
+      "name": "Galería Borghese (museo)",
+      "description": "La colección de arte más concentrada de Roma: en solo 20 salas tienes esculturas de Bernini que parecen respirar, pinturas de Caravaggio que te clavan al suelo, Tiziano, Rafael y Canova. El edificio en sí es una obra maestra — una villa del siglo XVII rodeada de jardines con frescos en los techos y mármoles de colores en los suelos. La visita dura exactamente 2 horas (te piden salir cuando se cumple el tiempo), lo que la hace intensísima: cada minuto cuenta. Reserva obligatoria SIEMPRE — no se puede entrar sin reserva, ni siquiera con entrada gratuita.",
+      "what_to_see": [
+        "Apolo y Dafne de Bernini — ella se convierte en árbol mientras él la toca. El mármol parece corteza, hojas, piel. Es imposible que sea piedra",
+        "El Rapto de Proserpina de Bernini — los dedos de Plutón se hunden en el muslo de Proserpina. El mármol parece carne",
+        "David de Bernini — nada que ver con el de Miguel Ángel: este David está en movimiento, tensando la honda, con la cara torcida por el esfuerzo",
+        "Paulina Borghese como Venus Victrix de Canova — la hermana de Napoleón esculpida en mármol como una diosa recostada",
+        "Muchacho con cesto de frutas y San Jerónimo de Caravaggio — la luz y la oscuridad que revolucionaron la pintura",
+        "La Deposición de Rafael y Amor sacro y amor profano de Tiziano en la pinacoteca del piso superior"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Mar–dom",
+            "hours": "09:00–19:00",
+            "last_entry": "17:45"
+          }
+        ],
+        "closed": [
+          "Lunes",
+          "25 de diciembre",
+          "1 de enero"
+        ],
+        "notes": "Visita de 2 horas exactas (te piden salir al cumplirse). Turnos cada hora desde las 09:00 hasta las 17:45. Máximo 180 personas por turno. RESERVA OBLIGATORIA siempre, incluso con entrada gratuita."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "910",
+            "89"
+          ],
+          "stop": "Via Pinciana / Museo Borghese"
+        },
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "A",
+          "stop": "Barberini o Spagna",
+          "note": "15 min caminando desde cualquiera de las dos"
+        }
+      ],
+      "extras": {
+        "official_url": "https://galleriaborghese.cultura.gov.it",
+        "booking_url": "https://www.gebart.it/musei/galleria-borghese/",
+        "address": "Piazzale Scipione Borghese 5, 00197 Roma"
+      },
+      "tips": [
+        "RESERVA CON ANTELACIÓN — se agota semanas antes, especialmente en temporada alta. Reserva en gebart.it (canal oficial) en cuanto tengas fechas de viaje. No compres en revendedores.",
+        "El primer turno (09:00) es el mejor: menos gente y luz natural entrando por las ventanas. El último turno (17:45) es más corto (solo hasta las 19:00) pero también tranquilo.",
+        "Empieza por la planta baja (esculturas de Bernini) y sube a la pinacoteca después. La mayoría de la gente hace al revés y las salas de Bernini se vacían los primeros 30 minutos.",
+        "No hay guardarropa grande: mochilas y bolsos voluminosos deben dejarse en las taquillas de la entrada. Lleva lo mínimo.",
+        "Compra el turno de las 09:00 y después sal al parque Villa Borghese para un paseo — es la combinación perfecta de mañana."
+      ],
+      "secrets": [
+        "Bernini tenía 23 años cuando esculpió Apolo y Dafne. Veintitrés. La obra que redefinió la escultura occidental fue hecha por un veinteañero que ya era el artista más famoso de Roma.",
+        "Paulina Borghese posó semidesnuda para Canova, lo que escandalizó a toda Roma. Cuando le preguntaron si no le daba vergüenza, respondió: '¿Por qué iba a darme vergüenza? Había una estufa en el estudio'. La estatua está sobre un mecanismo giratorio que permitía verla desde todos los ángulos.",
+        "El cardenal Scipione Borghese, fundador de la colección, consiguió varias obras por métodos cuestionables: confiscó 100 cuadros de Cavaliere d'Arpino por impago de impuestos (incluyendo los Caravaggios) y robó la Deposición de Rafael de una iglesia de Perugia durante la noche.",
+        "La villa original tenía la fachada cubierta de esculturas antiguas romanas. Napoleón (cuñado de Paulina) obligó a los Borghese a vender 300 piezas al Louvre en 1807. Las que ves hoy en el edificio son las que quedaron."
+      ]
+    },
+    {
+      "name": "Parque Villa Borghese",
+      "description": "El pulmón verde de Roma: 80 hectáreas de jardines, lagos, senderos bajo pinos centenarios y rincones escondidos que los romanos usan como su salón de estar al aire libre. No es un parque cualquiera — tiene un lago con un templo griego en medio (se puede ir en barca), un reloj que funciona con agua, un anfiteatro de caballos, un teatro shakespeariano y vistas a media Roma desde sus terrazas. Abierto 24 horas, gratis. Es el contrapunto perfecto después de un museo o una mañana de monumentos.",
+      "what_to_see": [
+        "El Laghetto con el Tempio di Esculapio — un lago artificial con un templo griego neoclásico en una islita. Se alquilan barcas de remos",
+        "El Reloj de Agua del Pincio (1867) — un reloj que funciona enteramente con agua, escondido entre los árboles. Una rareza de ingeniería del siglo XIX",
+        "Piazza di Siena — un anfiteatro de arena rodeado de pinos donde se celebra el Concurso Internacional de Hípica cada mayo",
+        "El Globe Theatre — réplica del teatro de Shakespeare con representaciones al aire libre en verano",
+        "Los jardines del Lago (estilo inglés), los jardines secretos (estilo italiano) y la avenida de las Magnolias"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "A",
+          "stop": "Flaminio o Spagna",
+          "note": "Entradas principales del parque a 5 min de ambas estaciones"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 3 y 19",
+          "stop": "Bioparco / Belle Arti"
+        }
+      ],
+      "extras": {
+        "address": "Parque Villa Borghese, 00197 Roma"
+      },
+      "tips": [
+        "Abierto 24 horas, entrada libre. Es el sitio perfecto para descansar entre visitas — lleva algo de comer y siéntate en el césped como hacen los romanos.",
+        "La entrada más bonita es por la Scalinata de Piazza del Popolo (subes al Pincio y ya estás dentro). La entrada desde Via Veneto (Porta Pinciana) te deja cerca de la Galería Borghese.",
+        "Se pueden alquilar bicicletas (y cuadriciclos familiares) en varios puntos del parque. Para el lago, las barcas de remos se alquilan por 20 minutos y la experiencia es preciosísima.",
+        "Combínalo con la Galería Borghese (mañana) y la Terraza del Pincio al atardecer — el parque conecta ambos."
+      ],
+      "secrets": [
+        "El Reloj de Agua (Orologio ad Acqua) fue inventado por el dominico Giovanni Battista Embriaco en 1867 para la Exposición Universal de París y luego trasladado aquí. Funciona con un sistema hidráulico que mueve las manecillas — no usa electricidad ni baterías. Está escondido entre los árboles cerca de la Terraza del Pincio y muy poca gente lo conoce.",
+        "Villa Borghese no fue siempre pública: perteneció a la familia Borghese hasta 1903, cuando el Estado italiano la compró y la abrió a los ciudadanos. Los Borghese tenían su propia reserva de caza, viñedos y un zoo privado en lo que hoy es el Bioparco.",
+        "Piazza di Siena se llama así porque los Borghese eran originarios de Siena. El anfiteatro de arena imita el color ocre de la tierra de la Toscana — un homenaje a sus raíces."
+      ]
+    },
+    {
+      "name": "Bioparco di Roma",
+      "description": "El zoo de Roma, dentro de Villa Borghese: más de 1.000 animales de 200 especies en un entorno de jardín histórico. No es un zoo de última generación, pero tiene encanto (está aquí desde 1911) y para familias con niños es una parada perfecta para romper la dinámica de iglesias y ruinas. Los recintos se han modernizado y hay programas de conservación serios. Los animales estrella son los elefantes asiáticos, los hipopótamos y la zona de reptiles.",
+      "what_to_see": [
+        "Los elefantes asiáticos — el recinto más grande y popular del Bioparco",
+        "La zona de los grandes felinos (leones, tigres) y el recinto de los hipopótamos",
+        "La casa de los reptiles y anfibios — una de las más completas de Europa",
+        "Las jirafas y cebras en la zona africana",
+        "Las fuentes y esculturas Art Nouveau originales de 1911"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "1 ene – 29 mar",
+            "hours": "09:30–17:00"
+          },
+          {
+            "dates": "30 mar – 25 oct (L–V)",
+            "hours": "09:30–18:00"
+          },
+          {
+            "dates": "30 mar – 5 oct (S–D–festivos)",
+            "hours": "09:30–19:00"
+          },
+          {
+            "dates": "26 oct – 31 dic",
+            "hours": "09:30–17:00"
+          }
+        ],
+        "closed": [
+          "25 de diciembre"
+        ],
+        "notes": "Taquilla cierra 1 hora antes del cierre. Los animales empiezan a retirarse 30-60 min antes del cierre."
+      },
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 3 y 19",
+          "stop": "Bioparco"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "910",
+            "89"
+          ],
+          "stop": "Bioparco"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.bioparco.it",
+        "address": "Piazzale del Giardino Zoologico 1, 00197 Roma"
+      },
+      "tips": [
+        "Solo merece la pena si viajas con niños o eres fan de los zoos. Si no, dedica el tiempo a la Galería Borghese o al paseo por el parque.",
+        "Llega temprano (09:30-10:00): los animales están más activos por la mañana y hay menos gente.",
+        "En verano (junio-septiembre) hay apertura nocturna especial ('Bioparco al Tramonto') hasta las 21:30 — los animales al atardecer y las fuentes iluminadas son otra experiencia.",
+        "Hay un área de picnic dentro del zoo: lleva tu comida en vez de comprar en la cafetería (cara y mediocre)."
+      ],
+      "secrets": [
+        "El Bioparco se inauguró en 1911 como Giardino Zoologico, diseñado por el naturalista Carl Hagenbeck con el concepto revolucionario (para la época) de recintos sin rejas. Las estructuras originales Art Nouveau aún se conservan y tienen más interés arquitectónico que muchos animales.",
+        "Durante la Segunda Guerra Mundial, parte de los animales murieron de hambre por la escasez de alimentos en Roma. Los cuidadores del zoo arriesgaron sus vidas para alimentar a los animales con lo que podían encontrar en el mercado negro.",
+        "La leyenda urbana romana dice que las focas del Bioparco podían oírse desde Piazza del Popolo en las noches de verano. Con la renovación de los recintos ya no es así, pero los romanos mayores aún lo recuerdan."
+      ]
+    },
+    {
+      "name": "Galleria Nazionale d'Arte Moderna",
+      "description": "El museo de arte moderno y contemporáneo de Roma: obras desde el siglo XIX hasta hoy, con la mejor colección de arte italiano moderno que existe — Modigliani, De Chirico, Balla, Boccioni, Morandi y más. También hay Klimt, Cézanne, Van Gogh, Pollock y Duchamp. Es el antídoto perfecto a tanta Roma antigua y renacentista: un salto de 2.000 años en una mañana. El edificio neoclásico (1911) es impresionante, y suele estar medio vacío porque todo el mundo va a la Galería Borghese.",
+      "what_to_see": [
+        "Las tres edades de la mujer de Klimt — una de las pocas obras de Klimt fuera de Viena",
+        "Formas únicas de continuidad en el espacio de Boccioni (bronce futurista icónico, aunque la versión más famosa está en el MoMA)",
+        "Los metafísicos: De Chirico, Morandi — plazas vacías y botellas que cambiaron el arte del siglo XX",
+        "Modigliani: retratos con cuellos alargados y ojos almendrados",
+        "Hércules y Lica de Canova — la escultura neoclásica más dramática del museo"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Mar–dom",
+            "hours": "09:00–19:00",
+            "last_entry": "18:15"
+          }
+        ],
+        "closed": [
+          "Lunes"
+        ]
+      },
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 3 y 19",
+          "stop": "Galleria Arte Moderna"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "910",
+            "89"
+          ],
+          "stop": "Via delle Belle Arti"
+        }
+      ],
+      "extras": {
+        "official_url": "https://lagallerianazionale.com",
+        "address": "Viale delle Belle Arti 131, 00197 Roma"
+      },
+      "tips": [
+        "Si ya has visto mucho Renacimiento y antigüedad romana, este museo es un descanso visual fantástico. Arte del XIX al XXI en un edificio espectacular y sin aglomeraciones.",
+        "Combínalo con el paseo por Villa Borghese: el museo está dentro del parque, junto a la entrada de Valle Giulia.",
+        "El edificio en sí merece la visita — columnatas neoclásicas, escalinatas de mármol y una luz natural espectacular en las salas.",
+        "Si solo tienes 30 minutos, ve directo a la sala de Klimt, De Chirico y Boccioni."
+      ],
+      "secrets": [
+        "El edificio fue construido en 1911 para la Exposición Internacional que celebraba los 50 años de la unificación de Italia. Casi todo lo que rodea Villa Borghese (el museo, el Bioparco, el Globe Theatre) nació en esa exposición.",
+        "La colección futurista es una de las mejores del mundo — y tiene sentido: el Futurismo nació en Italia. Boccioni, Balla, Severini... los originales de los manifiestos que revolucionaron el arte están aquí.",
+        "El nombre completo es Galleria Nazionale d'Arte Moderna e Contemporanea (GNAMC), pero los romanos la llaman simplemente 'La Nazionale' o 'Belle Arti' (por la calle donde está). Nadie usa las siglas."
+      ]
+    },
+    {
+      "name": "Piazza del Popolo",
+      "description": "La gran puerta norte de Roma: una plaza monumental con un obelisco egipcio de 3.200 años en el centro, dos iglesias gemelas que enmarcan la entrada a las tres calles principales de Roma (el 'Tridente'), una fuente con leones y la iglesia de Santa Maria del Popolo — que por dentro es un museo gratuito con dos Caravaggios, frescos de Pinturicchio y una capilla de Rafael. Todo gratis y al aire libre (excepto la iglesia, que también es gratis).",
+      "what_to_see": [
+        "El Obelisco Flaminio — obelisco egipcio de Ramsés II (1200 a.C.) traído por Augusto y colocado aquí por Sixto V en 1589",
+        "Las iglesias gemelas: Santa Maria in Montesanto (1675) y Santa Maria dei Miracoli (1678) — parecen idénticas pero tienen cúpulas de forma diferente",
+        "Santa Maria del Popolo: los Caravaggios de la Capilla Cerasi (Conversión de San Pablo y Crucifixión de San Pedro), la Capilla Chigi diseñada por Rafael, y los frescos de Pinturicchio",
+        "La Fontana dei Leoni en la base del obelisco",
+        "La Porta del Popolo — la antigua puerta norte de Roma por donde entraban los viajeros del norte de Europa"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Santa Maria del Popolo (L–S)",
+            "hours": "07:00–12:00 y 16:00–19:00"
+          },
+          {
+            "dates": "Domingos y festivos",
+            "hours": "08:00–13:30 y 16:30–19:15"
+          }
+        ],
+        "notes": "La plaza es accesible 24h. Santa Maria del Popolo cierra a mediodía — planifica la visita por la mañana o a partir de las 16:00."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "A",
+          "stop": "Flaminio",
+          "note": "Sales del metro directamente a la plaza"
+        }
+      ],
+      "extras": {
+        "address": "Piazza del Popolo, 00187 Roma"
+      },
+      "tips": [
+        "No te pierdas Santa Maria del Popolo: es GRATIS y tiene dos Caravaggios que en cualquier otro contexto tendrían cola de 2 horas. Muchos turistas cruzan la plaza sin entrar. Error.",
+        "Los Caravaggios están en la Capilla Cerasi, al fondo a la izquierda de la nave. Lleva monedas de 1€ para encender la luz (como en San Luigi dei Francesi). Sin luz, ves poco.",
+        "La iglesia cierra a mediodía (12:00-16:00), así que planifica la visita a primera hora (09:00-11:30) o a partir de las 16:00.",
+        "Desde la plaza, sube las escaleras a la Terraza del Pincio al atardecer — es la transición más espectacular de Roma.",
+        "Las tres calles que salen de las iglesias gemelas forman el 'Tridente': Via del Corso (compras populares), Via di Ripetta (restaurantes) y Via del Babuino (tiendas de lujo hacia Plaza de España)."
+      ],
+      "secrets": [
+        "La iglesia se llama 'del Popolo' (del pueblo) porque fue construida sobre la tumba de Nerón — o eso creían los romanos medievales. En realidad, el nombre viene de los álamos (populus en latín) que había en la zona. Pero la leyenda de la tumba de Nerón asustó tanto a los vecinos que el Papa Pascual II ordenó construir una capilla para 'exorcizar' el lugar en 1099.",
+        "Las iglesias gemelas parecen idénticas desde la plaza, pero son un trampantojo: Santa Maria in Montesanto tiene cúpula ovalada y Santa Maria dei Miracoli cúpula circular. Bernini y Rainaldi las diseñaron con proporciones diferentes para que parecieran simétricas desde el centro de la plaza, compensando el espacio desigual que tenían.",
+        "Caravaggio pintó La Conversión de San Pablo dos veces. La primera versión (más convencional) fue rechazada y acabó en una colección privada. La segunda — la que ves aquí — es la revolucionaria: Pablo en el suelo, el caballo ocupando medio cuadro, sin ángeles ni nubes. El comitente la odiaba. La historia la consagró."
+      ]
+    },
+    {
+      "name": "Terraza del Pincio",
+      "description": "El mirador más elegante de Roma: desde la colina del Pincio, sobre Piazza del Popolo, ves la cúpula de San Pedro recortada contra el cielo, los tejados del centro y la plaza entera a tus pies con su obelisco. No tiene la amplitud del Janículo pero tiene algo que ningún otro mirador ofrece: la simetría perfecta de Piazza del Popolo vista desde arriba, enmarcada por las iglesias gemelas y las tres calles del Tridente. Al atardecer, con la luz dorada, es el momento más fotogénico de Roma.",
+      "what_to_see": [
+        "La panorámica de Piazza del Popolo desde arriba — obelisco, iglesias gemelas, Tridente y cúpula de San Pedro al fondo",
+        "Los bustos de los 228 héroes italianos que bordean la Passeggiata del Pincio — de Dante a Garibaldi",
+        "El Reloj de Agua (Orologio ad Acqua) de 1867 — escondido entre los árboles, a 3 minutos caminando",
+        "Los jardines del Pincio con sus fuentes y bancos bajo pinos mediterráneos"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "A",
+          "stop": "Flaminio",
+          "note": "Sube las escaleras desde Piazza del Popolo (5-7 min)"
+        }
+      ],
+      "extras": {
+        "address": "Passeggiata del Pincio, 00187 Roma"
+      },
+      "tips": [
+        "VEN AL ATARDECER — es el mejor momento sin discusión (18:00-20:00 en verano, 16:30-18:00 en invierno). La luz dorada sobre San Pedro y los tejados es imbatible. A mediodía es un mirador más.",
+        "Sube las escaleras desde Piazza del Popolo (lado izquierdo mirando a las iglesias gemelas) — son 5-7 minutos y el paseo es precioso. También puedes llegar andando desde Villa Borghese.",
+        "Combina: Piazza del Popolo + Santa Maria del Popolo por la mañana → Villa Borghese/Galería Borghese → Terraza del Pincio al atardecer. Es la ruta perfecta de día completo en esta zona.",
+        "Hay músicos callejeros muchas tardes — se forma un ambiente muy romano y poco turístico."
+      ],
+      "secrets": [
+        "El Pincio no es una de las siete colinas de Roma (como el Janículo): está justo fuera del perímetro clásico. Pero a diferencia del Janículo, siempre fue zona de lujo — los jardines de Lúculo y después los de los Pincii (de ahí el nombre) eran las residencias más exclusivas de la Roma imperial.",
+        "Los 228 bustos de la Passeggiata son una enciclopedia del nacionalismo italiano del siglo XIX: cada busto representa a un héroe de la historia italiana, desde Dante hasta contemporáneos de la unificación. Muchos están tan erosionados que son irreconocibles, pero el paseo entre ellos al atardecer tiene un romanticismo decadente irresistible.",
+        "Napoleón III ordenó remodelar los jardines del Pincio en estilo francés durante la ocupación de Roma (1849-1870). Los romanos aceptaron los jardines pero no al emperador — cuando se fue, mantuvieron el diseño pero quitaron su nombre de todo."
+      ]
+    }
+  ]
+}

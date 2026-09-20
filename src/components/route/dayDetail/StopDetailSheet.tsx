@@ -8,6 +8,7 @@ import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
+import { fetchPlaceDetail, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { buildMockStopTickets } from '../../../lib/mockStopTickets'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
@@ -120,13 +121,52 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   const [anchorTips, setAnchorTips] = useState<StopTip[]>([])
   const [nearbyTransit, setNearbyTransit] = useState<NearbyTransit>({ metro: [], bus: [] })
   const [directionsOpen, setDirectionsOpen] = useState(false)
+  const [curated, setCurated] = useState<PlaceDetail | null>(null)
+  const [curatedResolved, setCuratedResolved] = useState(false)
 
-  const description = externalContent ? externalContent.description : internalDescription
-  const descLoading = externalContent ? externalContent.loading : internalDescLoading
+  // Orden de preferencia del contenido de la ficha: la ficha ampliada escrita a mano → lo que trae
+  // quien nos abre (el `description`/`tip` corto del JSON del destino, o el contenido de POI de
+  // AddStopScreen) → lo que devuelva Claude bajo demanda. La ficha ampliada va PRIMERA a propósito:
+  // es el mismo lugar contado en profundidad (qué ver, horarios por temporada, transporte, secretos)
+  // frente a las dos líneas que trae la parada.
+  const description = curated ? toStopDescription(curated) : externalContent ? externalContent.description : internalDescription
+  const descLoading = !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
+  /** Lista de puntos concretos de la ficha curada — la versión de Claude es un párrafo suelto (`whatYoullSee`). */
+  const whatToSee = curated?.what_to_see ?? []
+  // Extraídos por claridad: lo que las dependencias de los efectos de abajo necesitan saber es
+  // "¿hay ficha curada?" y "¿hay contenido externo?", no el objeto entero.
+  const hasCurated = curated !== null
+  const hasExternalContent = Boolean(externalContent)
 
   // El Free Tour trae su propio contenido nativo del pipeline (freeTourMeetingPoint/Highlights/Tips,
   // ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT) — nunca pide descripción bajo demanda, ni tiene
   // sentido (no es un lugar con web/dirección propia) ni cuesta una llamada extra a Claude.
+  // Ficha ampliada escrita a mano (destinos curados, ver placeDetailApi.ts). Se pregunta SIEMPRE
+  // primero porque, cuando existe, sustituye a las tres llamadas a Claude que llenan esta pantalla
+  // (describeStop + anchorTips + nearbyTransit): mejor contenido, instantáneo y sin coste. Mientras
+  // no resuelve (`curatedResolved`), las otras tres esperan — es una petición local de milisegundos
+  // y lanzarlas a la vez sería pagar por algo que probablemente se va a descartar.
+  useEffect(() => {
+    if (!stop) return
+    setCurated(null)
+    setCuratedResolved(false)
+    // El Free Tour es lo único que se salta esto: no es un lugar del destino, es una experiencia con
+    // su propio contenido nativo (punto de encuentro, highlights, tips) y nunca va a tener ficha.
+    if (stop.isFreeTour) {
+      setCuratedResolved(true)
+      return
+    }
+    let cancelled = false
+    fetchPlaceDetail(city, stop.name).then((detail) => {
+      if (cancelled) return
+      setCurated(detail)
+      setCuratedResolved(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [stop?.id, stop?.name, stop?.isFreeTour, city])
+
   useEffect(() => {
     if (!stop) return
     setTab('resumen')
@@ -135,6 +175,12 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
     if (externalContent || stop.isFreeTour) {
       setInternalDescription(null)
+      return
+    }
+    if (!curatedResolved) return
+    if (curated) {
+      setInternalDescription(null)
+      setInternalDescLoading(false)
       return
     }
     setInternalDescLoading(true)
@@ -148,13 +194,14 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city, Boolean(externalContent)])
+  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city, hasExternalContent, curatedResolved, hasCurated])
 
   // Tips de ancla — llamada aparte (caché en Supabase + búsqueda web, ver anchorTipsApi.ts), solo
   // para lugares obligatorios del destino. Las paradas normales no llaman aquí: su tip (si lo hay)
   // ya viene incluido en `description.localTip`, sin coste ni caché aparte.
   useEffect(() => {
-    if (!stop || !isAnchor) {
+    // Con ficha curada, sus `tips`/`secrets` ya son mejores que lo que devolvería la búsqueda web.
+    if (!stop || !isAnchor || !curatedResolved || curated) {
       setAnchorTips([])
       return
     }
@@ -165,15 +212,20 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, isAnchor, city])
+  }, [stop?.id, stop?.name, isAnchor, city, curatedResolved, hasCurated])
 
   // Transporte público cercano — a diferencia de los tips de ancla, esto se pide para CUALQUIER
   // parada (ver nearbyTransitApi.ts): es un hecho geográfico fijo, cacheado siempre por lugar, nunca
   // por viaje. Metro/bus vacíos = Claude no encontró nada verificable con búsqueda web — la sección
   // simplemente no se muestra, nunca se inventa una parada.
   useEffect(() => {
-    if (!stop) {
+    if (!stop || !curatedResolved) {
       setNearbyTransit({ metro: [], bus: [] })
+      return
+    }
+    // La ficha curada trae las líneas y paradas reales escritas a mano — no hace falta preguntar.
+    if (curated) {
+      setNearbyTransit(toNearbyTransit(curated))
       return
     }
     let cancelled = false
@@ -183,7 +235,7 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, city])
+  }, [stop?.id, stop?.name, city, curatedResolved, curated])
 
   const handleDragStart = (event: ReactPointerEvent) => {
     event.preventDefault()
@@ -225,11 +277,15 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada
   // normal: 0-3 tips de describeStopApi.ts (entradas combinadas, acceso gratuito parcial, horarios
   // estratégicos, datos prácticos — ver DESCRIBE_STOP_SYSTEM_PROMPT en server/index.js).
+  // Ficha curada (destinos con detalle escrito a mano): sus `tips` + `secrets` mandan sobre todo lo
+  // anterior — es el mismo contenido pero verificado, y sin coste ni espera.
   const tips: StopTip[] = stop?.isFreeTour
     ? (stop.freeTourTips ?? []).map((texto, index) => ({ tipo: index === 0 ? 'secreto' : 'practico', texto }))
-    : isAnchor
-      ? anchorTips
-      : (description?.tips ?? [])
+    : curated
+      ? toStopTips(curated)
+      : isAnchor
+        ? anchorTips
+        : (description?.tips ?? [])
   const hasTips = tips.length > 0
 
   const visibleTabs: Tab[] = ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])]
@@ -399,12 +455,25 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                   ) : description ? (
                     <div className="space-y-3">
                       <p className="text-small text-text-soft">{description.description}</p>
-                      {description.whatYoullSee && (
+                      {/* La ficha curada trae puntos concretos (lista); la de Claude, un párrafo. */}
+                      {whatToSee.length > 0 ? (
+                        <div className="space-y-1">
+                          <h3 className="text-body font-semibold text-text">Qué vas a ver</h3>
+                          <ul className="space-y-1.5">
+                            {whatToSee.map((item, index) => (
+                              <li key={index} className="flex gap-2 text-small text-text-soft">
+                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-text-muted" aria-hidden="true" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : description.whatYoullSee ? (
                         <div className="space-y-1">
                           <h3 className="text-body font-semibold text-text">Qué vas a ver</h3>
                           <p className="text-small text-text-soft">{description.whatYoullSee}</p>
                         </div>
-                      )}
+                      ) : null}
                       {description.whyRecommended && (
                         <div className="space-y-1">
                           <h3 className="text-body font-semibold text-text">Por qué te lo recomendamos</h3>
@@ -425,7 +494,9 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                         <ClockIcon />
                         Horario
                       </h3>
-                      {description?.hoursDetail && <p className="text-small text-text-soft">{description.hoursDetail}</p>}
+                      {/* `whitespace-pre-line`: la ficha curada monta el horario en varias líneas
+                          (temporadas, días de cierre, días gratis, notas) — ver formatScheduleDetail. */}
+                      {description?.hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{description.hoursDetail}</p>}
                       <p className="text-caption text-text-muted">
                         Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
                         {description?.officialWebsite ? ' (enlace más abajo).' : '.'}

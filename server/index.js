@@ -2,7 +2,7 @@ import express from 'express'
 import { config } from 'dotenv'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
@@ -3618,6 +3618,73 @@ function buildCuratedPoolV2(destData) {
  * "tipo de lugar" — cuando exista el campo temático (museo/mirador/mercado/joya_oculta/...) del punto
  * 4 se puede sustituir aquí sin tocar el resto del pipeline.
  */
+// ── Detalle ampliado de un lugar (las 3 pestañas de la ficha de parada) ──────────────────────
+//
+// Contenido largo y redactado a mano de cada lugar de un destino curado: descripción, qué ver,
+// horarios detallados, transporte, tips y secretos. Vive APARTE del JSON del destino y se carga solo
+// cuando hace falta, por dos motivos:
+//
+//  1. Son ~136 KB solo para Roma, y el algoritmo de rutas (routeAlgorithm.js) no necesita ni una
+//     línea: le sirven zona, duración, horario y poco más. Meterlo en roma.json obligaría a leer y
+//     parsear todo eso en cada generación de ruta.
+//  2. El cliente pide UN lugar, el que el viajero acaba de abrir — nunca los 61.
+//
+// Solo contenido de PANTALLA: level/tier/zone/coordinates/duration_minutes/tags/group/closed_on...
+// siguen viviendo únicamente en el JSON del destino. Dos copias de un dato de planificación acaban
+// desincronizadas (los archivos de origen ya traían 3 discrepancias de level/duración con roma.json).
+const placeDetailCache = new Map()
+
+function loadPlaceDetail(destinationKey) {
+  if (placeDetailCache.has(destinationKey)) return placeDetailCache.get(destinationKey)
+  const byName = new Map()
+  try {
+    const dir = join(__dirname, '../data/pipeline_v2/detalle', destinationKey)
+    for (const file of readdirSync(dir)) {
+      if (!file.endsWith('.json')) continue
+      const parsed = JSON.parse(readFileSync(join(dir, file), 'utf8'))
+      for (const place of parsed.places ?? []) {
+        if (typeof place?.name === 'string') byName.set(stripAccentsLowerServer(place.name), place)
+      }
+    }
+    console.log(`[detalle] "${destinationKey}" — ${byName.size} lugares con ficha ampliada`)
+  } catch (error) {
+    // Un destino curado sin carpeta de detalle es normal (todavía no se ha escrito) — la ficha cae
+    // al camino de siempre con Claude bajo demanda, sin romper nada.
+    console.warn(`[detalle] "${destinationKey}" sin ficha ampliada: ${error.message}`)
+  }
+  placeDetailCache.set(destinationKey, byName)
+  return byName
+}
+
+function stripAccentsLowerServer(value) {
+  return typeof value === 'string'
+    ? value
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .trim()
+    : ''
+}
+
+/**
+ * Ficha ampliada de un lugar concreto. `found: false` significa "este destino/lugar no tiene ficha
+ * escrita" — nunca es un error: el cliente sigue con describeStop/anchorTips como hasta ahora.
+ */
+app.post('/api/place-detail', (req, res) => {
+  const { destination, name } = req.body ?? {}
+  if (!destination || typeof name !== 'string' || !name.trim()) {
+    res.status(400).json({ error: 'Faltan datos necesarios (destination, name).' })
+    return
+  }
+  const destinationKey = findPipelineV2Key(destination)
+  if (!destinationKey) {
+    res.json({ found: false })
+    return
+  }
+  const detail = loadPlaceDetail(destinationKey).get(stripAccentsLowerServer(name))
+  res.json(detail ? { found: true, detail } : { found: false })
+})
+
 app.post('/api/curated-places-pool', (req, res) => {
   const { destination, level } = req.body ?? {}
   const levelKey = String(level)

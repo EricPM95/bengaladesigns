@@ -1,0 +1,606 @@
+{
+  "zone": "roma_antigua",
+  "places": [
+    {
+      "name": "Coliseo",
+      "description": "El anfiteatro más grande jamás construido. Aquí luchaban gladiadores ante 50.000 espectadores hace casi 2.000 años. Tiene tres niveles visitables: la arena (donde pisaban los gladiadores), los subterráneos (donde esperaban fieras y prisioneros) y el ático superior con vistas panorámicas. Incluso si no entras, rodear el Coliseo por fuera ya impresiona — sobre todo de noche, iluminado.",
+      "what_to_see": [
+        "La arena reconstruida — puedes caminar por donde pisaban los gladiadores",
+        "Los subterráneos (hypogeum) — los túneles y montacargas que subían fieras a la arena",
+        "El ático superior con vista panorámica de Roma (acceso con Full Experience)",
+        "El Arco de Constantino justo al lado — no necesita entrada",
+        "La cruz en la arena que marca donde se conmemoraba a los mártires cristianos"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "29 mar – 30 sep",
+            "hours": "08:30–19:15",
+            "last_entry": "18:15"
+          },
+          {
+            "dates": "1 oct – 24 oct",
+            "hours": "08:30–18:30",
+            "last_entry": "17:30"
+          },
+          {
+            "dates": "25 oct – 28 feb",
+            "hours": "08:30–16:30",
+            "last_entry": "15:30"
+          }
+        ],
+        "closed": [
+          "25 dic",
+          "1 ene"
+        ],
+        "free_days": [
+          "Primer domingo de cada mes",
+          "25 abr",
+          "2 jun",
+          "4 nov"
+        ],
+        "notes": "El Foro Romano y Palatino abren a las 09:00 (30 min después que el Coliseo). Reserva obligatoria con franja horaria."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Colosseo",
+          "note": "A 100m de la entrada principal"
+        },
+        {
+          "type": "tram",
+          "icon": "🚊",
+          "line": "Línea 3",
+          "stop": "Colosseo"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "51",
+            "75",
+            "81",
+            "85",
+            "87"
+          ],
+          "stop": "Via Labicana"
+        }
+      ],
+      "extras": {
+        "official_url": "https://colosseo.it",
+        "booking_url": "https://ticketing.colosseo.it",
+        "address": "Piazza del Colosseo 1, 00184 Roma"
+      },
+      "tips": [
+        "Tu entrada incluye SIEMPRE Foro Romano + Palatino — y puedes usarla 24h antes o después del Coliseo. Estrategia: visita el Foro por la tarde (menos gente, mejor luz) y el Coliseo a primera hora del día siguiente.",
+        "La opción Full Experience (arena + subterráneos) merece MUCHO la pena — es lo más espectacular y lo que menos gente ve.",
+        "Compra la entrada ONLINE con semanas de antelación — se agotan. Si llegas sin entrada, la cola puede ser de 2-3 horas.",
+        "El primer domingo de cada mes la entrada es gratuita — pero las colas son brutales y no hay acceso a arena ni subterráneos. No compensa."
+      ],
+      "secrets": [
+        "Hay visitas nocturnas los martes y jueves (20:00-00:00, de mayo a octubre) — el Coliseo iluminado por dentro con casi nadie es una experiencia irrepetible. Se reservan en la web oficial y se agotan rápido.",
+        "Desde el nivel superior (ático, solo con Full Experience) tienes la única vista donde se ve el Foro Romano, el Palatino y el Coliseo desde arriba a la vez.",
+        "El mejor punto para la foto exterior NO es desde la entrada principal — es desde Via Celio Vibenna (lado sur), donde entra el Arco de Constantino en el encuadre.",
+        "Si entras a primera hora (08:30), los primeros 20 minutos tienes la arena casi vacía — los grupos organizados llegan a partir de las 09:00."
+      ]
+    },
+    {
+      "name": "Foro Romano y Palatino",
+      "description": "El corazón político y religioso de la antigua Roma durante más de 1.000 años. Aquí se administraba justicia, se celebraban triunfos militares y se decidía el destino del imperio. El Palatino, la colina justo encima, era donde vivían los emperadores — sus palacios en ruinas aún se recorren. Desde arriba, el Foro se extiende a tus pies como un mapa de la historia.",
+      "what_to_see": [
+        "El Arco de Septimio Severo — el arco triunfal mejor conservado del Foro",
+        "El Templo de Saturno — las ocho columnas que quedan son la imagen más icónica",
+        "La Casa de las Vestales — donde vivían las sacerdotisas que mantenían el fuego sagrado",
+        "Los Palacios del Palatino — restos de las residencias imperiales con frescos originales",
+        "La vista panorámica del Foro desde la terraza del Palatino — la mejor perspectiva"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "29 mar – 30 sep",
+            "hours": "09:00–19:15",
+            "last_entry": "18:15"
+          },
+          {
+            "dates": "1 oct – 24 oct",
+            "hours": "09:00–18:30",
+            "last_entry": "17:30"
+          },
+          {
+            "dates": "25 oct – 28 feb",
+            "hours": "09:00–16:30",
+            "last_entry": "15:30"
+          }
+        ],
+        "closed": [
+          "25 dic",
+          "1 ene"
+        ],
+        "notes": "Abre 30 min más tarde que el Coliseo. Entrada combinada con Coliseo (válida 24h)."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Colosseo",
+          "note": "Entrada por Via di San Gregorio (Palatino) o por Via della Salara Vecchia (Foro)"
+        }
+      ],
+      "extras": {
+        "official_url": "https://colosseo.it",
+        "address": "Via della Salara Vecchia 5/6, 00186 Roma"
+      },
+      "tips": [
+        "Entra por la entrada del Palatino (Via di San Gregorio) — tiene MUCHA menos cola que la entrada del Foro en Via della Salara Vecchia.",
+        "Empieza por el Palatino arriba y baja al Foro — así ves el Foro desde la perspectiva aérea primero y luego caminas entre las ruinas. Mucho más impactante que al revés.",
+        "La entrada está incluida con tu entrada del Coliseo y se puede usar 24h antes o después — aprovecha para visitarlo en otro momento del día.",
+        "Lleva agua y gorra en verano — no hay prácticamente sombra y la piedra refleja el calor. Calcula 1h30 mínimo para verlo bien."
+      ],
+      "secrets": [
+        "En el Palatino hay un museo (Museo Palatino) que la mayoría se salta — tiene frescos originales y una maqueta de cómo era Roma en su apogeo.",
+        "El Stadio Palatino (un jardín alargado en la parte alta) es uno de los rincones más tranquilos de toda Roma — casi nadie sube hasta allí.",
+        "Si miras desde la terraza del Palatino hacia el Circo Máximo, estás exactamente donde los emperadores veían las carreras de cuadrigas desde su palco privado."
+      ]
+    },
+    {
+      "name": "Arco de Constantino",
+      "description": "El arco triunfal más grande y mejor conservado de Roma, levantado en el año 315 para celebrar la victoria de Constantino. Tiene 21 metros de alto y está decorado con relieves robados de monumentos anteriores — una práctica habitual en la Roma imperial. Está justo al lado del Coliseo, así que se visitan juntos.",
+      "tips": [
+        "No tiene entrada — es una parada rápida para la foto. Dedícale 10-15 minutos.",
+        "La mejor foto es con el Coliseo detrás del arco — desde Via Celio Vibenna (lado sur) se consigue la composición perfecta.",
+        "Fíjate en los relieves: los de arriba son del siglo II (robados de monumentos de Trajano y Marco Aurelio), los de abajo son del siglo IV — nota la diferencia de calidad entre ambas épocas."
+      ]
+    },
+    {
+      "name": "Bocca della Verità",
+      "description": "Un antiguo disco de mármol con cara de tritón que según la leyenda muerde la mano a quien dice mentiras. Está en el pórtico de la iglesia de Santa Maria in Cosmedin, una de las más bonitas y menos visitadas de Roma. Se hizo famosa por la película 'Vacaciones en Roma' con Audrey Hepburn y Gregory Peck.",
+      "tips": [
+        "Cola de 10-15 minutos habitual para meter la mano. Ponle cara de susto — la foto clásica.",
+        "No te vayas sin entrar a Santa Maria in Cosmedin — es gratis y tiene un interior medieval precioso con suelo cosmati original del siglo XII.",
+        "La Bocca probablemente era una tapa de alcantarilla romana del siglo I — nada romántico, pero funciona como detector de mentiras desde hace 2.000 años."
+      ]
+    },
+    {
+      "name": "Circo Máximo",
+      "description": "El estadio más grande de la antigua Roma — aquí cabían 250.000 espectadores viendo carreras de cuadrigas. Hoy es un enorme espacio verde donde se intuye la forma del circuito original. Es el lugar perfecto para un descanso si vienes del calor del Foro y el Palatino.",
+      "tips": [
+        "Gratis, siempre abierto. Es un parque público — la gente viene a correr, pasear perros y hacer pícnic.",
+        "Hay una visita subterránea (Circo Maximo Experience) con realidad virtual que muestra cómo era en época romana — merece la pena si te gustan las ruinas.",
+        "Desde el lado del Palatino se ve mejor la forma ovalada del circo — y se entiende la escala brutal del lugar."
+      ]
+    },
+    {
+      "name": "Altar de la Patria (Vittoriano)",
+      "description": "El monumento más imponente de Roma moderna — un coloso de mármol blanco que los romanos llaman 'la máquina de escribir' o 'la tarta de boda'. Dedicado a la unificación de Italia, alberga la Tumba del Soldado Desconocido con llama eterna. Lo mejor: la terraza panorámica en lo alto, accesible por ascensor, con vistas 360° sobre toda Roma.",
+      "what_to_see": [
+        "La Tumba del Soldado Desconocido con su llama eterna y guardia permanente",
+        "La terraza panorámica (ascensor acristalado) — las mejores vistas 360° de Roma",
+        "Las cuadrigas de bronce en la parte superior — cada una pesa 50 toneladas",
+        "El interior del monumento — salas gratuitas con exposiciones temporales"
+      ],
+      "tips": [
+        "La terraza del ascensor panorámico tiene las mejores vistas 360° de Roma — ves el Coliseo, el Foro, San Pedro, todo. La subida merece mucho la pena.",
+        "La entrada al monumento es gratuita — solo el ascensor a la terraza superior tiene un coste (una tasa, no una entrada como tal).",
+        "Es un par inseparable con Piazza Venezia — están literalmente pegados. Siempre se visitan juntos."
+      ],
+      "secrets": [
+        "Dentro del monumento hay un museo gratuito (Museo del Risorgimento) sobre la unificación de Italia — casi nadie entra y es fascinante.",
+        "La terraza es mejor al atardecer que al mediodía — la luz dorada sobre los tejados de Roma es espectacular y hay menos gente que en el Pincio.",
+        "El mármol blanco del Vittoriano viene de Brescia (norte de Italia) y no de Roma — por eso desentona con el travertino dorado del resto de la ciudad. Los romanos lo aman y lo odian a partes iguales."
+      ]
+    },
+    {
+      "name": "Piazza Venezia",
+      "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo. Desde el balcón del Palazzo Venezia, Mussolini daba sus discursos a las masas.",
+      "tips": [
+        "Parada rápida — el valor está en la vista del Vittoriano de frente y en ser el cruce natural entre zonas.",
+        "El Palazzo Venezia (el edificio a la izquierda del Vittoriano) fue la sede de Mussolini — el balcón desde donde daba los discursos está señalizado."
+      ]
+    },
+    {
+      "name": "Isla Tiberina",
+      "description": "La única isla del Tíber en Roma, con forma de barco y apenas 270 metros de largo. Conectada por dos de los puentes más antiguos de la ciudad, ha sido lugar de curación desde la época romana — hoy sigue habiendo un hospital. Un rincón tranquilo y fotogénico lejos de las multitudes.",
+      "tips": [
+        "Cruza por el Ponte Fabricio — es el puente más antiguo de Roma que aún se usa (62 a.C., más de 2.000 años).",
+        "En verano (junio-septiembre) montan un cine al aire libre y puestos de comida en la orilla — 'L'Isola del Cinema' es un plan nocturno perfecto.",
+        "Está a 5 minutos de Trastevere cruzando el Ponte Cestio — combínalos naturalmente."
+      ]
+    },
+    {
+      "name": "Via dei Fori Imperiali",
+      "description": "La avenida monumental que conecta Piazza Venezia con el Coliseo, con los Foros Imperiales a ambos lados. Mussolini la mandó construir en 1932 demoliendo todo un barrio medieval sobre las ruinas. Hoy es peatonal los domingos y la perspectiva con el Coliseo al fondo es la postal más repetida de Roma.",
+      "tips": [
+        "Los domingos cierran al tráfico — puedes caminar por el centro de la avenida sin coches. El mejor momento para la foto.",
+        "Desde los miradores elevados a ambos lados se ven los restos de los Foros de Augusto, Nerva y Trajano — todo gratis, sin entrar a ningún sitio.",
+        "No te limites a ir recto — baja a los miradores laterales que se asoman sobre las ruinas excavadas."
+      ]
+    },
+    {
+      "name": "Mercados de Trajano",
+      "description": "El primer centro comercial de la historia — un complejo de 150 tiendas romanas excavadas en la colina, hoy museo con exposiciones sobre la Roma imperial. El edificio semicircular de ladrillo rojo es impresionante por dentro y por fuera, y desde la terraza superior se ve la Columna de Trajano desde arriba.",
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "09:30–19:30",
+            "last_entry": "18:30"
+          }
+        ],
+        "closed": [
+          "Lunes",
+          "25 dic",
+          "1 ene",
+          "1 may"
+        ]
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "60",
+            "64",
+            "170"
+          ],
+          "stop": "Piazza Venezia"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.mercatiditraiano.it",
+        "address": "Via IV Novembre 94, 00187 Roma"
+      },
+      "tips": [
+        "La terraza superior tiene una vista directa sobre la Columna de Trajano que no se consigue desde ningún otro punto — puedes leer los relieves en espiral casi a la altura.",
+        "Las exposiciones temporales suelen ser excelentes y están incluidas en la entrada.",
+        "Mucho menos masificado que el Coliseo o los Museos Vaticanos — puedes recorrerlo con tranquilidad."
+      ],
+      "secrets": [
+        "En la parte baja del complejo hay una sala abovedada que era la 'taberna' original — imagina que estás comprando aceite de oliva y especias en el siglo II.",
+        "La estructura semicircular se conserva tan bien porque nunca dejó de usarse — fue convento, fortaleza y cuartel antes de ser museo."
+      ]
+    },
+    {
+      "name": "Piazza del Campidoglio",
+      "description": "La plaza diseñada por Miguel Ángel en la cima del Capitolio — geometría perfecta renacentista con la estatua ecuestre de Marco Aurelio en el centro (la original está dentro de los Museos Capitolinos). Desde la terraza trasera hay unas vistas espectaculares del Foro Romano.",
+      "tips": [
+        "Sube por la escalinata de la Cordonata — es la entrada más dramática. Al llegar arriba, la plaza se abre como un escenario.",
+        "Ve a la terraza trasera (detrás del Palazzo Senatorio) — la vista del Foro Romano desde ahí es GRATIS y espectacular.",
+        "La estatua de Marco Aurelio del centro es una copia — la original (del año 176 d.C.) está protegida dentro de los Museos Capitolinos."
+      ]
+    },
+    {
+      "name": "Museos Capitolinos",
+      "description": "El museo público más antiguo del mundo, fundado en 1471. Aquí están la Loba Capitolina (el símbolo de Roma amamantando a Rómulo y Remo), el Marco Aurelio ecuestre original, el Gálata moribundo y una pinacoteca con Caravaggio, Tiziano y Rubens. Dos palacios conectados por un pasaje subterráneo con vistas directas al Foro.",
+      "what_to_see": [
+        "La Loba Capitolina — el símbolo de Roma, con Rómulo y Remo debajo",
+        "La estatua ecuestre original de Marco Aurelio — bronce dorado del siglo II",
+        "El Gálata moribundo — una de las esculturas más emotivas de la antigüedad",
+        "El pasaje subterráneo (Galleria Lapidaria) con vistas al Foro Romano",
+        "La Pinacoteca con la Buenaventura de Caravaggio y San Juan Bautista"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "09:30–19:30",
+            "last_entry": "18:30"
+          }
+        ],
+        "closed": [
+          "Lunes",
+          "25 dic",
+          "1 ene",
+          "1 may"
+        ]
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "40",
+            "60",
+            "64",
+            "170"
+          ],
+          "stop": "Piazza Venezia",
+          "note": "5 min subiendo la Cordonata"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.museicapitolini.org",
+        "address": "Piazza del Campidoglio 1, 00186 Roma"
+      },
+      "tips": [
+        "El pasaje subterráneo entre los dos palacios tiene ventanales con vistas directas al Foro Romano — no te lo saltes.",
+        "Reserva mínimo 2 horas. Si te gusta la escultura clásica, 3 horas.",
+        "Es mucho menos masificado que los Museos Vaticanos — aquí puedes estar delante de un Caravaggio sin que nadie te empuje."
+      ],
+      "secrets": [
+        "Desde la terraza de la cafetería del museo (segundo piso del Palazzo dei Conservatori) tienes una vista panorámica de Roma que casi nadie conoce — puedes tomar un café mirando los tejados.",
+        "En la Sala del Gladiador hay un agujero en el suelo con cristal — miras directamente a los cimientos del Templo de Júpiter, el más importante de la Roma antigua."
+      ]
+    },
+    {
+      "name": "Basílica de San Clemente",
+      "description": "Tres niveles de historia bajo tus pies — la iglesia medieval del siglo XII arriba, con mosaicos dorados impresionantes; una iglesia paleocristiana del siglo IV en medio, con frescos originales; y en lo más profundo, un templo romano de Mitra del siglo I. Bajas literalmente a través de 2.000 años de historia.",
+      "what_to_see": [
+        "El mosaico del ábside (nivel superior) — un Árbol de la Vida dorado del siglo XII, uno de los más bonitos de Roma",
+        "Los frescos del siglo IV (nivel medio) — escenas de la vida de San Clemente con colores sorprendentemente vivos",
+        "El Mitreo (nivel inferior) — un altar de sacrificios del culto a Mitra, con el toro tallado en piedra",
+        "El sonido del agua subterránea — en el nivel más profundo se oye un río que fluye bajo Roma"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–Sáb",
+            "hours": "09:00–12:30 y 14:00–18:00"
+          },
+          {
+            "dates": "Domingos",
+            "hours": "12:00–18:00"
+          }
+        ],
+        "notes": "Los niveles subterráneos cierran 20 min antes que la basílica."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Colosseo",
+          "note": "5 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "85",
+            "87",
+            "186"
+          ],
+          "stop": "Via Labicana"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.basilicasanclemente.com",
+        "address": "Via Labicana 95, 00184 Roma"
+      },
+      "tips": [
+        "La basílica superior es gratis. Los niveles subterráneos tienen entrada aparte — pero es una de las experiencias más impactantes de Roma.",
+        "Baja hasta el tercer nivel: oirás el agua de un arroyo subterráneo que fluye bajo Roma desde la época romana.",
+        "Es húmedo y algo claustrofóbico abajo — no recomendable si te agobias en espacios cerrados."
+      ],
+      "secrets": [
+        "En los frescos del nivel medio hay una de las primeras inscripciones en italiano vulgar (no latín) de la historia — una frase que básicamente es un insulto: 'Fili de le pute, traite' (hijos de p***, tirad). Los guías la adoran.",
+        "El templo de Mitra del nivel inferior era un culto secreto rival del cristianismo primitivo — se celebraban rituales con sangre de toro exactamente debajo de donde hoy se dice misa."
+      ]
+    },
+    {
+      "name": "San Pietro in Vincoli",
+      "description": "Una iglesia que esconde el Moisés de Miguel Ángel — una escultura tan poderosa y realista que dicen que Miguel Ángel le golpeó la rodilla y le gritó '¡Habla!'. También guarda las cadenas (vincoli) con las que supuestamente encadenaron a San Pedro en Jerusalén.",
+      "tips": [
+        "Gratis. El Moisés está al fondo a la derecha del altar — lo verás nada más entrar.",
+        "Fíjate en los cuernos de Moisés — es una traducción errónea del hebreo ('rayos de luz' se tradujo como 'cuernos') que Miguel Ángel tomó literalmente.",
+        "Está cuesta arriba desde el Coliseo (5 min) — merece el desvío. Poca gente la visita comparada con lo que tiene dentro."
+      ],
+      "secrets": [
+        "Las cadenas de San Pedro están en una urna de cristal bajo el altar mayor — según la tradición, las cadenas de Roma y las de Jerusalén se fusionaron milagrosamente al juntarlas.",
+        "El Moisés iba a ser parte de un monumento funerario gigante para el Papa Julio II con 40 esculturas — Miguel Ángel nunca lo terminó. Lo llamaba 'la tragedia de la tumba'."
+      ]
+    },
+    {
+      "name": "Domus Aurea",
+      "description": "El palacio subterráneo de Nerón — la residencia más extravagante jamás construida, con salones dorados, un lago artificial y un comedor giratorio. Enterrada durante siglos, hoy se visita con una guía que incluye gafas de realidad virtual que te muestran los salones como eran hace 2.000 años.",
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Todo el año",
+            "hours": "Solo viernes, sábado y domingo"
+          }
+        ],
+        "notes": "Solo con visita guiada (reserva obligatoria online). Incluye gafas de realidad virtual. Grupos limitados."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Colosseo",
+          "note": "3 min caminando, entrada en el Parque del Colle Oppio"
+        }
+      ],
+      "extras": {
+        "official_url": "https://colosseo.it/entradas/domus-aurea/",
+        "address": "Via della Domus Aurea 1, 00184 Roma"
+      },
+      "tips": [
+        "Solo con visita guiada reservada online — no hay forma de entrar sin reserva. Abre solo viernes, sábado y domingo.",
+        "La realidad virtual es impresionante — te pones las gafas dentro de la sala octogonal y ves los frescos dorados y el agua como eran hace 2.000 años.",
+        "Está bajo tierra y hace fresco — lleva algo de abrigo incluso en verano (17-18°C dentro)."
+      ],
+      "secrets": [
+        "El comedor giratorio (coenatio rotunda) que describe Suetonio se ha encontrado realmente — un mecanismo hacía girar el suelo mientras los invitados cenaban. Los arqueólogos lo descubrieron en 2009.",
+        "Cuando artistas del Renacimiento bajaron por agujeros en el techo (pensando que eran grutas), descubrieron los frescos y se inspiraron en ellos — de ahí viene la palabra 'grotesco' (de grotta, gruta)."
+      ]
+    },
+    {
+      "name": "Termas de Caracalla",
+      "description": "Los baños públicos más grandes de la antigua Roma — un complejo de ocio con piscinas de agua caliente y fría, gimnasios, bibliotecas y jardines para 1.600 personas a la vez. Las ruinas son tan enormes que en verano montan óperas al aire libre dentro de ellas.",
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Abr–Sep",
+            "hours": "09:00–19:15",
+            "last_entry": "18:15"
+          },
+          {
+            "dates": "Oct–Mar",
+            "hours": "09:00–16:30",
+            "last_entry": "15:30"
+          }
+        ],
+        "closed": [
+          "Lunes (reducido a 09:00-14:00)",
+          "25 dic",
+          "1 ene"
+        ],
+        "free_days": [
+          "Primer domingo de cada mes"
+        ]
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Circo Massimo",
+          "note": "10 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "118",
+            "160",
+            "628"
+          ],
+          "stop": "Terme di Caracalla"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.coopculture.it/en/heritage.cfm?id=6",
+        "address": "Viale delle Terme di Caracalla 52, 00153 Roma"
+      },
+      "tips": [
+        "Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente — la escala te deja sin palabras cuando entiendes lo que era esto.",
+        "En verano (junio-agosto) el Teatro dell'Opera monta óperas al aire libre DENTRO de las termas — una experiencia única si coincides con las fechas.",
+        "Mejor a primera hora o última hora — a mediodía no hay sombra y el calor es brutal en verano."
+      ],
+      "secrets": [
+        "Bajo las termas hay un Mitreo (templo de Mitra) que normalmente no se visita pero a veces abren en jornadas especiales — pregunta en taquilla.",
+        "Los mosaicos originales del suelo (atletas en blanco y negro) se ven aún en algunas salas — busca los que están protegidos con cristal."
+      ]
+    },
+    {
+      "name": "Giardino degli Aranci",
+      "description": "Un jardín de naranjos amargos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde la cúpula de San Pedro hasta el Tíber. Pequeño, tranquilo y romántico, es el mirador favorito de los romanos para ver el atardecer.",
+      "tips": [
+        "Gratis, abierto hasta el anochecer (octubre-marzo cierra a las 18:00, abril-septiembre a las 21:00).",
+        "Mejor al atardecer. La vista con el sol bajando sobre el Vaticano es una de las mejores de Roma.",
+        "Después baja a la Cerradura del Aventino, que está a 3 minutos cuesta abajo por la misma calle."
+      ],
+      "secrets": [
+        "Las naranjas son amargas (naranjo amargo, Citrus aurantium) — no intentes comértelas. Pero el aroma cuando están en flor (abril-mayo) es increíble.",
+        "El jardín está sobre la Basílica de Santa Sabina (siglo V), que merece una visita rápida — tiene una puerta de madera del año 430 con una de las primeras representaciones de la crucifixión del arte cristiano."
+      ]
+    },
+    {
+      "name": "Santa Maria Maggiore",
+      "description": "Una de las cuatro basílicas papales de Roma y la mayor iglesia dedicada a la Virgen María. Los mosaicos del siglo V brillan con oro original, y el artesonado del techo se hizo con el primer oro que llegó de América, regalo de Isabel la Católica. Un interior que quita el aliento.",
+      "what_to_see": [
+        "Los mosaicos del siglo V en la nave — 1.600 años y siguen brillando",
+        "El artesonado dorado del techo — hecho con el primer oro de América",
+        "La Capilla Sixtina (no confundir con la del Vaticano) — la del Papa Sixto V",
+        "La Capilla Borghese con el icono de la Salus Populi Romani"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A/B",
+          "stop": "Termini",
+          "note": "5 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "16",
+            "70",
+            "71",
+            "75",
+            "360"
+          ],
+          "stop": "Santa Maria Maggiore"
+        }
+      ],
+      "extras": {
+        "official_url": "https://www.basilicasantamariamaggiore.va",
+        "address": "Piazza di Santa Maria Maggiore, 00185 Roma"
+      },
+      "tips": [
+        "La basílica es gratis. El museo y la loggia superior (con los mosaicos originales más de cerca) tienen entrada aparte.",
+        "Código de vestimenta: hombros y rodillas cubiertos, como en todas las iglesias papales de Roma.",
+        "Está algo alejada del centro turístico — combinada bien con una visita a San Pietro in Vincoli (10 min andando)."
+      ],
+      "secrets": [
+        "El techo dorado lo mandó hacer el Papa Alejandro VI (Borgia) con oro regalado por los Reyes Católicos — literalmente el primer oro del Nuevo Mundo.",
+        "Cada 5 de agosto se celebra el 'milagro de la nieve' — caen pétalos blancos desde el techo para recordar la nevada milagrosa que marcó dónde construir la basílica en el siglo IV."
+      ]
+    },
+    {
+      "name": "Columna de Trajano",
+      "description": "Una columna de 30 metros con 2.500 figuras talladas en espiral que cuentan las guerras de Trajano en Dacia — un cómic romano en mármol. Se lee de abajo arriba siguiendo la espiral, como un pergamino enrollado alrededor de la columna.",
+      "tips": [
+        "Parada rápida junto a Via dei Fori Imperiali. Los relieves se leen de abajo arriba en espiral — toda la historia de las campañas de Trajano.",
+        "Los detalles de arriba no se ven bien a simple vista — si tienes prismáticos o un buen zoom en el móvil, se aprecian escenas increíbles de batallas y construcción de puentes."
+      ],
+      "secrets": [
+        "Dentro de la columna hay una escalera de caracol de 185 peldaños que sube hasta la cima — hoy no se puede subir, pero en época romana la gente subía para ver Roma desde lo alto.",
+        "Las cenizas de Trajano estaban enterradas en la base — fue el único emperador enterrado dentro de las murallas de Roma. La estatua de San Pedro que hay arriba la puso el Papa Sixto V en el siglo XVI."
+      ]
+    },
+    {
+      "name": "Teatro Marcelo",
+      "description": "Un teatro romano del siglo I a.C. que sirvió de modelo para el Coliseo — hoy tiene apartamentos de lujo en los pisos superiores. Es uno de los edificios más surrealistas de Roma: arcos romanos de 2.000 años sosteniendo un palacio renacentista donde vive gente.",
+      "tips": [
+        "Solo se ve por fuera — no se puede entrar.",
+        "Fíjate en cómo los arcos romanos originales sostienen un palacio renacentista encima — 2.000 años de historia en un solo edificio.",
+        "Las tres columnas corintias de al lado son del Templo de Apolo Sosiano (siglo V a.C.) — una de las ruinas más antiguas visibles en Roma."
+      ]
+    },
+    {
+      "name": "Cerradura del Aventino",
+      "description": "Mira por la cerradura de la puerta de los Caballeros de Malta y verás la cúpula de San Pedro perfectamente enmarcada por un túnel de setos. Una imagen que cruza tres estados soberanos: Italia, la Orden de Malta y el Vaticano.",
+      "tips": [
+        "La cola suele ser corta (5-10 min). Es la foto más original que te llevarás de Roma.",
+        "Está a 3 minutos del Giardino degli Aranci — haz las dos seguidas.",
+        "La puerta es la sede del Priorato de los Caballeros de Malta — técnicamente es territorio soberano de la Orden de Malta, un estado independiente."
+      ],
+      "secrets": [
+        "La perspectiva fue diseñada por Giovanni Battista Piranesi en 1765 — el mismo grabador famoso por sus 'Cárceles imaginarias'. Alineó la cerradura, los setos y la cúpula a propósito.",
+        "La Orden de Malta es el estado soberano más pequeño del mundo con territorio: solo esta plaza y un palacio en Via Condotti. Emite sus propios sellos y pasaportes."
+      ]
+    },
+    {
+      "name": "Pirámide Cestia",
+      "description": "Una pirámide de 36 metros en plena Roma — la construyó un magistrado romano en el año 12 a.C. que quería un entierro al estilo egipcio, cuando Roma estaba fascinada con Egipto tras la conquista de Cleopatra.",
+      "tips": [
+        "Se ve desde fuera — está incrustada en la Muralla Aureliana, junto a Porta San Paolo.",
+        "El Cementerio Acatólico al lado es precioso y tranquilo — aquí están enterrados Keats y Shelley. Entrada por donativo."
+      ],
+      "secrets": [
+        "Dentro de la pirámide hay una cámara funeraria con frescos originales que representan a las Victorias y a las Diosas del Destino — solo se puede visitar los sábados (reserva previa con la Soprintendenza).",
+        "Es más empinada que las pirámides de Egipto porque Cayo Cestio no había visto las pirámides reales — se basó en descripciones de viajeros que exageraban la pendiente."
+      ]
+    },
+    {
+      "name": "Santa Maria della Vittoria",
+      "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo, donde una santa parece flotar mientras un ángel le atraviesa el corazón con una flecha dorada.",
+      "tips": [
+        "Gratis. El Éxtasis está en la Capilla Cornaro (a la izquierda del altar).",
+        "Fíjate en los 'espectadores' esculpidos en los palcos laterales — son miembros de la familia Cornaro que observan la escena como si estuvieran en un teatro.",
+        "Está a 5 minutos de Piazza della Repubblica y a 10 de Termini — fácil de combinar si llegas o sales en tren."
+      ],
+      "secrets": [
+        "La escultura ha generado debate durante siglos — la expresión de Santa Teresa es tan ambigua que muchos la interpretan como éxtasis religioso y otros como algo mucho más terrenal. Bernini lo hizo a propósito.",
+        "La luz dorada que ilumina la escultura viene de una ventana oculta diseñada por Bernini — los rayos de bronce dorado amplifican el efecto. Es puro teatro barroco."
+      ]
+    }
+  ]
+}
