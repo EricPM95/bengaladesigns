@@ -1077,17 +1077,16 @@ const SOFT_MARGIN_MINUTES = 20
 // pide que arranque el paseo por Trastevere) sin dejar que la cena del bloque se vaya de madrugada.
 const TRANSITION_MAX_DELAY_MINUTES = 120
 
-// Ronda 8D (issue F): en un evening_block, un mirador autor tal cual en `components` (p.ej.
-// "Mirador del Janículo" en trastevere_evening, autoría Paseo→Mirador→Cena, pensado para el
-// atardecer justo tras el paseo) puede acabar cayendo DESPUÉS de esta hora si el resto del día se
-// alarga (encontrado de verdad: Día 1 con Museos Capitolinos + Bocca della Verità del pool empujaba
-// el Paseo por Trastevere a las 19:55, dejando el mirador a las 21:10 — ya no es "de camino a
-// cenar", es de noche cerrada). A partir de esta hora ya no tiene sentido visitarlo antes de cenar
-// con la cena esperando: se aplaza a justo DESPUÉS de la cena del propio bloque en vez de quedarse
-// pegado, sin horario, entre el paseo y una cena que ya tocaba. Coincide con el tope inferior del
-// rango que pidió el usuario (Regla 4, ronda 8D: 18:00-23:00 aceptable, preferido 19:00-20:00, si no
-// cabe ahí mejor después de cenar que forzarlo antes).
-const MIRADOR_DEFER_AFTER_DINNER_MINUTES = 20 * 60
+// Ronda 8D (issue F, revertido y redefinido): en un evening_block, un mirador autor tal cual en
+// `components` (p.ej. "Mirador del Janículo" en trastevere_evening, autoría Paseo→Mirador→Cena)
+// solo tiene sentido ANTES de cenar — 18:00-20:00, atardecer real. El primer intento (commit
+// c83de3c) lo aplazaba a DESPUÉS de cenar cuando no cabía en esa franja; el usuario lo rechazó
+// explícitamente ("subir cuestas después de cenar mata al viajero") y pidió lo contrario: si no
+// cabe antes de cenar, se descarta para ese día sin más (nunca se fuerza tarde, nunca se aplaza).
+// La night experience (Fix 10, p.ej. "Fontana di Trevi (noche)") sigue siendo el mecanismo real
+// para contenido de después de cenar — es independiente de esto, no un sustituto.
+const MIRADOR_MIN_MINUTES = 18 * 60
+const MIRADOR_MAX_MINUTES = 20 * 60
 
 // Ronda 7 (Issue G): un mirador (tag "mirador") elegido como RELLENO se reserva para el final del
 // bloque de tarde — se va a un mirador para el atardecer, no a las 15:00 recién empezada la tarde.
@@ -1454,33 +1453,6 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // Fallback al centro de la zona solo por si un destino futuro no trae coordenadas por
     // componente (la propia Roma corregida sí las trae ya, ver roma_pipeline_v2_fixed.json).
     const fallbackCoords = destData.zones?.[eveningBlockData.zone]?.center
-    // Ronda 8D (issue F): construye el objeto de parada de un componente de evening_block —
-    // extraído a helper porque ahora se llama desde dos sitios (orden normal y el aplazado tras
-    // cenar, ver MIRADOR_DEFER_AFTER_DINNER_MINUTES más abajo).
-    function buildEveningComponentStop(component, coords, startMinutes) {
-      // Ronda 6 bis: un componente de evening_block es un objeto sintético propio del bloque
-      // (name/coordinates/duration_minutes/tip), separado de `destData.places` — por eso nunca
-      // llevaba `tags`/`schedule` aunque exista una entrada real con el mismo nombre que sí los
-      // tiene (encontrado de verdad: "Paseo por Trastevere"/"Mirador del Janículo" sin píldoras de
-      // tag ni horario en pantalla, a diferencia de cualquier otra parada). Si el nombre coincide
-      // con un lugar real, se toman sus tags/schedule tal cual — el resto (tip/coordenadas/duración)
-      // sigue mandando el propio componente, que es la versión curada a mano para este recorrido.
-      const matchingPlace = findRawPlace(destData, component.name)
-      return {
-        name: component.name,
-        suggested_time: minutesToTime(startMinutes),
-        duration_minutes: component.duration_minutes,
-        latitude: coords?.[0],
-        longitude: coords?.[1],
-        tip: component.tip || '',
-        description: component.tip || '',
-        hours: null,
-        tags: matchingPlace?.tags ?? [],
-        schedule: matchingPlace?.schedule ?? null,
-        ...categoryFor(component.name),
-      }
-    }
-    let deferredMirador = null
     for (const component of eveningBlockData.components ?? []) {
       const coords = component.coordinates ?? fallbackCoords
       if (/cena/i.test(component.name)) {
@@ -1488,19 +1460,6 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
         cursor += component.duration_minutes
         previousCoords = coords
-        // Issue F: el mirador aplazado (si lo hay) sube justo después de cenar, con la caminata
-        // real desde el restaurante — nunca se descarta, solo cambia de sitio en la secuencia.
-        if (deferredMirador) {
-          let miradorStart = cursor
-          if (previousCoords && deferredMirador.coords) {
-            miradorStart += await fetchWalkingMinutes(previousCoords, deferredMirador.coords, mapboxToken)
-          }
-          miradorStart = roundUpToNiceMinutes(miradorStart)
-          stops.push(buildEveningComponentStop(deferredMirador.component, deferredMirador.coords, miradorStart))
-          cursor = miradorStart + deferredMirador.component.duration_minutes
-          previousCoords = deferredMirador.coords
-          deferredMirador = null
-        }
         continue
       }
       let candidateStart = cursor
@@ -1510,26 +1469,40 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       candidateStart = roundUpToNiceMinutes(candidateStart)
       const matchingPlace = findRawPlace(destData, component.name)
       const isMirador = (matchingPlace?.tags ?? []).includes('mirador')
-      if (isMirador && candidateStart >= MIRADOR_DEFER_AFTER_DINNER_MINUTES && !deferredMirador) {
-        deferredMirador = { component, coords }
-        continue
+      if (isMirador) {
+        // Ronda 8D (issue F, definitivo): un mirador SOLO tiene sentido antes de cenar
+        // (18:00-20:00, atardecer real) — "subir cuestas después de cenar mata al viajero"
+        // (decisión explícita del usuario, revirtiendo el aplazamiento a post-cena del commit
+        // c83de3c). Si cae antes de las 18:00 se retrasa hasta esa hora (aún de día, pero dentro
+        // del rango permitido); si no cabe antes de las 20:00, se DESCARTA sin más para este día —
+        // nunca se fuerza tarde ni se aplaza a después de cenar. La night experience (Fix 10) sigue
+        // siendo el mecanismo real para contenido de después de cenar, sin relación con esto.
+        if (candidateStart > MIRADOR_MAX_MINUTES) continue
+        candidateStart = Math.max(candidateStart, MIRADOR_MIN_MINUTES)
       }
       cursor = candidateStart
-      stops.push(buildEveningComponentStop(component, coords, cursor))
+      // Ronda 6 bis: un componente de evening_block es un objeto sintético propio del bloque
+      // (name/coordinates/duration_minutes/tip), separado de `destData.places` — por eso nunca
+      // llevaba `tags`/`schedule` aunque exista una entrada real con el mismo nombre que sí los
+      // tiene (encontrado de verdad: "Paseo por Trastevere"/"Mirador del Janículo" sin píldoras de
+      // tag ni horario en pantalla, a diferencia de cualquier otra parada). Si el nombre coincide
+      // con un lugar real, se toman sus tags/schedule tal cual — el resto (tip/coordenadas/duración)
+      // sigue mandando el propio componente, que es la versión curada a mano para este recorrido.
+      stops.push({
+        name: component.name,
+        suggested_time: minutesToTime(cursor),
+        duration_minutes: component.duration_minutes,
+        latitude: coords?.[0],
+        longitude: coords?.[1],
+        tip: component.tip || '',
+        description: component.tip || '',
+        hours: null,
+        tags: matchingPlace?.tags ?? [],
+        schedule: matchingPlace?.schedule ?? null,
+        ...categoryFor(component.name),
+      })
       cursor += component.duration_minutes
       previousCoords = coords
-    }
-    // Si el bloque no tenía componente de cena (no debería pasar con los datos actuales, pero un
-    // mirador aplazado nunca puede perderse en silencio — issue F, "nunca descartar el mirador").
-    if (deferredMirador) {
-      let miradorStart = cursor
-      if (previousCoords && deferredMirador.coords) {
-        miradorStart += await fetchWalkingMinutes(previousCoords, deferredMirador.coords, mapboxToken)
-      }
-      miradorStart = roundUpToNiceMinutes(miradorStart)
-      stops.push(buildEveningComponentStop(deferredMirador.component, deferredMirador.coords, miradorStart))
-      cursor = miradorStart + deferredMirador.component.duration_minutes
-      previousCoords = deferredMirador.coords
     }
   } else {
     // Fix 8 (ronda 3): se cena donde ACABA la tarde, no en la zona "principal" del día — con la
