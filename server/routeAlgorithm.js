@@ -662,6 +662,26 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     return placement.get(day)
   }
 
+  // Ronda 9: si el propio contenedor de `contained_in` YA es core estático de un día concreto (p.ej.
+  // "Galería Borghese (museo)" en franja.morning.places del día 4 trae consigo "Parque Villa
+  // Borghese" vía expandContainedIn), ese día es el ÚNICO dueño legítimo del contenedor — day-search
+  // más abajo debe respetarlo, no tratarlo como una zona más entre varias candidatas.
+  const staticContainerOwner = new Map()
+  for (const franja of franjas) {
+    for (const name of [...(franja.morning?.places ?? []), ...(franja.afternoon?.places ?? [])]) {
+      const container = findRawPlace(destData, name)?.contained_in
+      if (container && !staticContainerOwner.has(container)) staticContainerOwner.set(container, franja.day)
+    }
+  }
+  // Igual que arriba pero para lo que esta MISMA llamada va decidiendo sobre la marcha — si un
+  // lugar forzado anterior (p.ej. "Galleria Nazionale d'Arte Moderna" del pool) ya cayó en el día 4,
+  // y el SIGUIENTE lugar forzado también apunta a "Parque Villa Borghese" (p.ej. "Bioparco di Roma"),
+  // debe ir al MISMO día o descartarse — nunca a un día distinto vía el fallback de zona adyacente,
+  // que duplicaría el contenedor (encontrado de verdad, ronda 9: Bioparco caía en el día 1 por
+  // adyacencia mientras Galería Borghese ya lo ponía en el día 4, cada uno insertando su propia copia
+  // de "Parque Villa Borghese" sin verse entre sí).
+  const dynamicContainerOwner = new Map()
+
   // Ronda 8 (issue F, "necesitamos un log detallado"): cada llamada aislada (BLOCK_SIZE=1) recalcula
   // esto por su cuenta — sin un rastro claro, cada ronda de testing volvía a "adivinar" si el pool
   // llegaba, si el related_to sustituía, y a qué día se asignaba. Un solo log por nombre pedido, con
@@ -686,38 +706,63 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
       continue
     }
 
-    let targetFranja = franjas.find((f) => f.morning?.zone === place.zone && fitsBudget(f, 'morning', place))
-    let slot = 'morning'
-    if (!targetFranja) {
-      targetFranja =
-        franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block && fitsBudget(f, 'afternoon', place)) ??
-        franjas.find((f) => f.afternoon?.zone === place.zone && fitsBudget(f, 'afternoon', place))
-      slot = 'afternoon'
-    }
-    if (!targetFranja) {
-      const adjacency = findAdjacentZones(destData, place.zone, 30)
-      let best = null
-      for (const franja of franjas) {
-        for (const [candidateSlot, zoneKey] of [
-          ['morning', franja.morning?.zone],
-          ['afternoon', franja.afternoon?.zone],
-        ]) {
-          if (!zoneKey || (candidateSlot === 'afternoon' && franja.evening_block)) continue
-          const rank = adjacency.indexOf(zoneKey)
-          if (rank === -1 || !fitsBudget(franja, candidateSlot, place)) continue
-          if (!best || rank < best.rank) best = { franja, slot: candidateSlot, rank }
+    const containerOwnerDay = place.contained_in ? (staticContainerOwner.get(place.contained_in) ?? dynamicContainerOwner.get(place.contained_in)) : null
+
+    let targetFranja
+    let slot
+    if (containerOwnerDay != null) {
+      // El contenedor ya tiene dueño (estático o decidido antes en esta misma llamada) — SOLO ese
+      // día es válido, nunca un fallback a otro día distinto (duplicaría el contenedor).
+      const ownerFranja = franjas.find((f) => f.day === containerOwnerDay)
+      if (ownerFranja) {
+        if (fitsBudget(ownerFranja, 'morning', place)) {
+          targetFranja = ownerFranja
+          slot = 'morning'
+        } else if (!ownerFranja.evening_block && fitsBudget(ownerFranja, 'afternoon', place)) {
+          targetFranja = ownerFranja
+          slot = 'afternoon'
         }
       }
-      if (best) {
-        targetFranja = best.franja
-        slot = best.slot
+      if (!targetFranja) {
+        console.log(
+          `[pool] "${place.name}" → DESCARTADO: su contenedor "${place.contained_in}" ya pertenece al día ${containerOwnerDay} y no hay hueco real ahí — mejor no forzarlo a otro día y duplicar el contenedor`,
+        )
+        continue
       }
-    }
-    if (!targetFranja) {
-      console.log(
-        `[pool] "${place.name}" → DESCARTADO: ningún día tiene hueco real (zona propia o adyacente ≤30min, sin desbordar el bloque — mejor no forzarlo que amontonarlo encima de un bloque ya lleno)`,
-      )
-      continue
+    } else {
+      targetFranja = franjas.find((f) => f.morning?.zone === place.zone && fitsBudget(f, 'morning', place))
+      slot = 'morning'
+      if (!targetFranja) {
+        targetFranja =
+          franjas.find((f) => f.afternoon?.zone === place.zone && !f.evening_block && fitsBudget(f, 'afternoon', place)) ??
+          franjas.find((f) => f.afternoon?.zone === place.zone && fitsBudget(f, 'afternoon', place))
+        slot = 'afternoon'
+      }
+      if (!targetFranja) {
+        const adjacency = findAdjacentZones(destData, place.zone, 30)
+        let best = null
+        for (const franja of franjas) {
+          for (const [candidateSlot, zoneKey] of [
+            ['morning', franja.morning?.zone],
+            ['afternoon', franja.afternoon?.zone],
+          ]) {
+            if (!zoneKey || (candidateSlot === 'afternoon' && franja.evening_block)) continue
+            const rank = adjacency.indexOf(zoneKey)
+            if (rank === -1 || !fitsBudget(franja, candidateSlot, place)) continue
+            if (!best || rank < best.rank) best = { franja, slot: candidateSlot, rank }
+          }
+        }
+        if (best) {
+          targetFranja = best.franja
+          slot = best.slot
+        }
+      }
+      if (!targetFranja) {
+        console.log(
+          `[pool] "${place.name}" → DESCARTADO: ningún día tiene hueco real (zona propia o adyacente ≤30min, sin desbordar el bloque — mejor no forzarlo que amontonarlo encima de un bloque ya lleno)`,
+        )
+        continue
+      }
     }
 
     console.log(`[pool] "${place.name}" → asignado al día ${targetFranja.day} (${slot}, zona "${place.zone}")`)
@@ -725,6 +770,9 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     const extrasKey = `${targetFranja.day}:${slot}`
     extrasLoad.set(extrasKey, [...(extrasLoad.get(extrasKey) ?? []), place.name])
     usedNames.add(place.name)
+    if (place.contained_in && !staticContainerOwner.has(place.contained_in) && !dynamicContainerOwner.has(place.contained_in)) {
+      dynamicContainerOwner.set(place.contained_in, targetFranja.day)
+    }
   }
   return placement
 }
@@ -1272,6 +1320,15 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   }
 
   let morningEndMinutes = stops.length ? timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes : morningStart
+
+  // Ronda 9: `usedNames` hasta aquí es el set ESTÁTICO precalculado (otros días + ownership) — no
+  // sabe qué insertó dinámicamente el propio expandContainedIn de la mañana. Encontrado de verdad:
+  // con 2 lugares del pool forzados a la vez, uno en mañana (con `contained_in: "Parque Villa
+  // Borghese"`, ya insertado ahí) y otro en tarde (también con ese contenedor), la tarde no tenía
+  // forma de saber que la mañana YA había puesto "Parque Villa Borghese" — lo insertaba otra vez.
+  // Cualquier lugar que la mañana haya usado de verdad (core, forzado o contenedor auto-insertado)
+  // queda vetado para la tarde de hoy antes de resolverla.
+  for (const p of morningPlaces) usedNames.add(p.name)
 
   let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...(franja.afternoon?.places ?? []), ...extrasForDay.afternoon], usedNames))
 

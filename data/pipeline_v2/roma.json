@@ -175,7 +175,7 @@
             41.8893,
             12.47
           ],
-          "duration_minutes": 60,
+          "duration_minutes": 120,
           "tip": "Piérdete por Via della Scala y Via del Moro — las calles más fotogénicas. Santa Maria in Trastevere tiene mosaicos del siglo XII."
         },
         {
@@ -652,7 +652,7 @@
         41.8893,
         12.47
       ],
-      "duration_minutes": 60,
+      "duration_minutes": 120,
       "type": "exterior",
       "tip": "El barrio más auténtico de Roma. Ven por la tarde — las calles cobran vida a partir de las 17:00. Santa Maria in Trastevere tiene mosaicos dorados del siglo XII. Cena aquí.",
       "photo_tip": "Las calles con hiedra y ropa tendida son la foto más 'romana'. Via della Scala y las callejuelas alrededor de Piazza de Santa Maria.",
@@ -708,13 +708,47 @@
         41.9142,
         12.4856
       ],
-      "duration_minutes": 45,
+      "duration_minutes": 120,
       "type": "exterior",
-      "tip": "El pulmón verde de Roma. Desde la terraza del Pincio (dentro del parque) tienes la vista clásica de Roma con San Pedro. Perfecto para un descanso con gelato.",
+      "tip": "El pulmón verde de Roma — para recorrerlo con calma, no solo cruzarlo. Piazza di Siena (el hipódromo ovalado de arena) suele tener partidos de polo o carreras improvisadas. El lago con el Tempio di Esculapio (templete neoclásico en una islita) es la estampa más fotografiada del parque, con botes de remo. Piérdete por los senderos y jardines — hay rincones tranquilos lejos de las rutas turísticas. El Bioparco (zoo) está dentro del propio parque, ideal si viajas con niños. Desde la terraza del Pincio (también dentro del parque) tienes la vista clásica de Roma con San Pedro.",
       "tags": [
         "parque"
       ],
       "related_to": "Galería Borghese (museo)"
+    },
+    {
+      "name": "Bioparco di Roma",
+      "level": 2,
+      "zone": "villa_borghese",
+      "coordinates": [
+        41.9188,
+        12.4801
+      ],
+      "duration_minutes": 90,
+      "type": "exterior",
+      "tip": "El zoo de Roma, dentro de Villa Borghese — más de 200 especies en un recorrido arbolado y tranquilo. Ideal con niños, pero también un buen respiro verde para cualquiera. Calcula bien el tiempo si lo combinas con el resto del parque, es su propia visita.",
+      "tags": [
+        "zoo"
+      ],
+      "schedule": "09:30-18:00 (horario de invierno más corto, ~09:30-17:00 — confirmar según temporada)",
+      "contained_in": "Parque Villa Borghese"
+    },
+    {
+      "name": "Galleria Nazionale d'Arte Moderna",
+      "level": 2,
+      "zone": "villa_borghese",
+      "coordinates": [
+        41.9147,
+        12.4823
+      ],
+      "duration_minutes": 90,
+      "type": "interior",
+      "tip": "Arte italiano moderno y contemporáneo (Canova, De Chirico, Modigliani, algún Van Gogh y Monet) en un palacio tranquilo al borde de Villa Borghese — mucho menos masificado que los Museos Vaticanos o la Galería Borghese, y sin reserva obligatoria.",
+      "tags": [
+        "museo",
+        "arte"
+      ],
+      "schedule": "09:00-19:00. Cerrado lunes"
     },
     {
       "name": "Altar de la Patria (Vittoriano)",

@@ -27,6 +27,9 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   curiosidad: { bg: '#FFFDE7', text: '#F9A825' },
   playa: { bg: '#FFF9C4', text: '#F57F17' },
   isla: { bg: '#FFF9C4', text: '#F57F17' },
+  // Ronda 9 (Villa Borghese, Bioparco di Roma) — verde-azulado propio, no comparte con "parque"
+  // (verde puro) para poder distinguir de un vistazo "es una zona verde" de "es concretamente un zoo".
+  zoo: { bg: '#E0F2F1', text: '#00695C' },
 }
 
 const DEFAULT_TAG_COLOR = { bg: '#ECEFF1', text: '#546E7A' }
