@@ -138,14 +138,22 @@ function minutesToTime(total) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
-// Ronda 8 (issue I): redondear al cuarto de hora (15min) sumaba, en el peor caso, 14min de "cola" de
-// redondeo ENCIMA del colchón fijo de 10min ya sumado en buildStopsForPlaces — dos paradas próximas
-// de "Acceso libre" (sin horario real que justifique la espera) podían acabar con casi 25min muertos
-// entre ellas solo por esto (encontrado de verdad: Panteón 09:30 + 7min a pie + 10min colchón = 09:47
-// → redondeado a 10:00, 23min de hueco). 5 minutos sigue dando horas "limpias" (:00, :05, :10...) sin
-// acumular tanto en secuencias de varias paradas seguidas.
-function roundUpToNiceMinutes(minutes) {
-  return Math.ceil(minutes / 5) * 5
+// Todas las horas calculadas caen en :00, :15, :30 o :45 — al cuarto MÁS CERCANO, no hacia arriba.
+//
+// La Ronda 8 (issue I) había bajado esto a 5 minutos justamente porque redondear hacia arriba al
+// cuarto sumaba hasta 14min de "cola" encima del colchón de 10min, y dos paradas pegadas acababan
+// con 25min muertos entre ellas (real: Panteón 09:30 + 7min a pie + 10min colchón = 09:47 → 10:00).
+// Redondear al MÁS CERCANO resuelve eso sin renunciar a las horas limpias: el desvío máximo es de
+// 7 minutos, y la mitad de las veces es hacia abajo. La contrapartida, aceptada explícitamente, es
+// que una parada puede quedar hasta 7 minutos antes de la hora a la que se llegaría de verdad.
+function roundToNearestQuarter(minutes) {
+  return Math.round(minutes / 15) * 15
+}
+
+/** Al cuarto de hora SIGUIENTE (nunca antes). Solo para el clamp de apertura: si el redondeo al más
+    cercano deja la parada antes de que el sitio abra, hay que subir, no bajar. */
+function roundUpToQuarter(minutes) {
+  return Math.ceil(minutes / 15) * 15
 }
 
 // Ronda 8 (issue B): un lugar con `schedule` (JSON) nunca debe programarse antes de que abra — antes
@@ -403,8 +411,12 @@ async function buildStopsForPlaces(places, startCursor, mapboxToken, clampFreeTo
     // Ronda 8 (issue B): nunca antes de que abra — antes no había ningún control de horario real de
     // apertura, solo el día de la semana (`closed_on`). Ronda 11: y tampoco DURANTE un cierre del
     // mediodía, que el clamp anterior no veía (ver nextOpenMinutes).
-    startMinutes = nextOpenMinutes(place.schedule, startMinutes) ?? startMinutes
-    startMinutes = roundUpToNiceMinutes(startMinutes)
+    // Ronda 12: se redondea ANTES de mirar el horario. Con el redondeo al cuarto más cercano el
+    // resultado puede BAJAR, así que comprobar la apertura antes de redondear dejaría de garantizar
+    // nada; el clamp va después y, si hace falta subir, sube al cuarto siguiente.
+    startMinutes = roundToNearestQuarter(startMinutes)
+    const openAt = nextOpenMinutes(place.schedule, startMinutes)
+    if (openAt != null && openAt > startMinutes) startMinutes = roundUpToQuarter(openAt)
     stops.push(place.isFreeTour ? buildFreeTourStop({ default_free_tour: place }, startMinutes) : buildRegularStop(place, startMinutes))
     cursor = startMinutes + place.duration_minutes
     previousCoords = place.coordinates
@@ -1477,7 +1489,7 @@ async function fillStopsUntil(stops, candidates, cursor, previousCoords, mapboxT
     if (previousCoords) {
       startMinutes = cursor + (await fetchWalkingMinutes(previousCoords, place.coordinates, mapboxToken)) + 10
     }
-    startMinutes = roundUpToNiceMinutes(startMinutes)
+    startMinutes = roundToNearestQuarter(startMinutes)
     if (stopCondition(startMinutes)) break
     stops.push(buildRegularStop(place, startMinutes))
     cursor = startMinutes + place.duration_minutes
@@ -1664,9 +1676,11 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         if (lastStop && !isAdjacentByDistance(lastStopCoords, place.coordinates)) {
           startMinutes = morningEndMinutes + (await fetchWalkingMinutes(lastStopCoords, place.coordinates, mapboxToken)) + 10
         }
-        // Ronda 8 (issue B) + Ronda 11: mismo clamp de apertura/cierre que buildStopsForPlaces.
-        startMinutes = nextOpenMinutes(place.schedule, startMinutes) ?? startMinutes
-        startMinutes = roundUpToNiceMinutes(startMinutes)
+        // Ronda 8 (issue B) + Ronda 11/12: mismo orden que buildStopsForPlaces — redondeo al cuarto
+        // más cercano primero, clamp de apertura/cierre después.
+        startMinutes = roundToNearestQuarter(startMinutes)
+        const openAt = nextOpenMinutes(place.schedule, startMinutes)
+        if (openAt != null && openAt > startMinutes) startMinutes = roundUpToQuarter(openAt)
         stops.push(buildRegularStop(place, startMinutes))
         morningEndMinutes = startMinutes + place.duration_minutes
         usedNames.add(name)
@@ -1835,7 +1849,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       if (previousCoords && coords) {
         candidateStart += await fetchWalkingMinutes(previousCoords, coords, mapboxToken)
       }
-      candidateStart = roundUpToNiceMinutes(candidateStart)
+      candidateStart = roundToNearestQuarter(candidateStart)
       const matchingPlace = findRawPlace(destData, component.name)
       const isMirador = (matchingPlace?.tags ?? []).includes('mirador')
       if (isMirador) {
@@ -1890,7 +1904,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // pudiera usarla al ordenar la tarde). "Regla complementaria" del fix: siempre después de la cena,
   // hora fija 21:30, duración estándar 45min (el catálogo ya no trae un best_time por experiencia).
   if (nightExperience) {
-    const startMinutes = roundUpToNiceMinutes(timeToMinutes('21:30'))
+    const startMinutes = roundToNearestQuarter(timeToMinutes('21:30'))
     stops.push({
       name: nightExperience.name,
       suggested_time: minutesToTime(startMinutes),

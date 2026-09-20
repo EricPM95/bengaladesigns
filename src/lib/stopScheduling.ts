@@ -2,7 +2,7 @@ import type { Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './typ
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 import { nextOpenMinutes } from './stopHoursTag'
-import { minutesToTime, roundUpToQuarterHour } from './time'
+import { minutesToTime, roundToNearestQuarterHour, roundUpToQuarterHour } from './time'
 
 /**
  * Cálculo real del horario de un día — sustituye a confiar en `suggested_time`/`travel_to_next` de
@@ -123,11 +123,11 @@ export async function computeRealStopSchedule(
       if (mealGap.meal === 'dinner') dinnerReserved = true
       startMinutes = cursor + Math.max(bufferMinutes + walkMinutes, mealGap.minutes)
     }
-    // Redondeo hacia ARRIBA al cuarto de hora — nunca hacia el más cercano, para no mostrar una hora
-    // más temprana de la que corresponde y así no perder el margen de los colchones por el redondeo
-    // (ver roundUpToQuarterHour en time.ts). Sobre el resultado YA acumulado, no sobre cada sumando
-    // por separado.
-    startMinutes = roundUpToQuarterHour(startMinutes)
+    // Al cuarto de hora MÁS CERCANO (ver roundToNearestQuarterHour en time.ts) y sobre el resultado
+    // YA acumulado, no sobre cada sumando por separado. El clamp de apertura va justo después, a
+    // propósito: este redondeo puede bajar la hora, así que es ahí donde se garantiza que ninguna
+    // parada cae antes de que el sitio abra.
+    startMinutes = roundToNearestQuarterHour(startMinutes)
 
     // Nunca antes de que el lugar abra de verdad — sin esto, la PRIMERA parada del día siempre
     // heredaba la hora fija del cronotipo (ej. 07:30 para "madrugador") sin importar si ese lugar en

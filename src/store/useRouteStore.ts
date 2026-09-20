@@ -25,7 +25,7 @@ import type {
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
 import { triggerBudgetFly } from '../lib/budgetFlyBus'
-import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from '../lib/time'
+import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour } from '../lib/time'
 import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
@@ -65,7 +65,7 @@ function timeForStopAfter(previous: Stop | undefined, fallback: string): string 
   if (!previous) return fallback
   const previousStart = parseTimeToMinutes(previous.time)
   if (Number.isNaN(previousStart)) return fallback
-  return minutesToTime(roundUpToQuarterHour(previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 15)))
+  return minutesToTime(roundToNearestQuarterHour(previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 15)))
 }
 
 /**
@@ -81,8 +81,8 @@ function reassignTimesByPosition(previousOrder: Stop[], nextOrder: Stop[]): Stop
 /**
  * Planificación completa desde cero — SOLO para "Regenerar este día", que no es una edición del
  * viajero sino una ruta nueva nuestra, así que ahí sí volvemos a decidir las horas. La primera
- * parada conserva la suya; de la segunda en adelante, acumulado + colchón, redondeado hacia arriba
- * al cuarto de hora como el resto del horario de la app (ver roundUpToQuarterHour en time.ts /
+ * parada conserva la suya; de la segunda en adelante, acumulado + colchón, redondeado al cuarto de
+ * hora MÁS CERCANO como el resto del horario de la app (ver roundToNearestQuarterHour en time.ts /
  * stopScheduling.ts) — nunca "10:27". El redondeo se propaga desde la hora YA redondeada, así que no
  * acumula error de arrastre.
  */
@@ -90,7 +90,7 @@ function retimeStops(stops: Stop[]): Stop[] {
   if (stops.length === 0) return stops
   let cursor = parseTimeToMinutes(stops[0].time)
   return stops.map((stop, index) => {
-    const startMinutes = index === 0 ? cursor : roundUpToQuarterHour(cursor)
+    const startMinutes = index === 0 ? cursor : roundToNearestQuarterHour(cursor)
     cursor = startMinutes + stop.durationMinutes + (stop.walkingTimeToNextMinutes ?? 15)
     return { ...stop, time: minutesToTime(startMinutes) }
   })
