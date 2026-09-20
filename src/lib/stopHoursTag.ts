@@ -7,7 +7,7 @@
  * Modo Hoy — aquí se muestra el rango completo tal cual, como en la ficha de referencia.
  */
 
-const HOURS_RANGE_RE = /(\d{2}):(\d{2})\s*[–-]\s*(\d{2}):(\d{2})/
+const HOURS_RANGE_RE = /(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/g
 
 export type StopHoursVariant = 'open' | 'closed' | 'always'
 
@@ -16,28 +16,82 @@ export interface StopHoursTag {
   variant: StopHoursVariant
 }
 
-/** Minuto de apertura de un `Stop.hours` tipo "HH:MM–HH:MM" — null si no hay horario real (acceso libre) o el formato no se reconoce. Compartido con stopScheduling.ts para que ninguna parada se programe antes de que el lugar abra de verdad. */
+export interface HoursSession {
+  open: number
+  close: number
+}
+
+function formatMinutes(total: number): string {
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
+
+/**
+ * TODOS los tramos "HH:MM–HH:MM" que aparecen en el texto de horario, en orden. Un mismo horario
+ * puede traer varios por dos motivos distintos, y el texto no siempre los distingue:
+ *
+ *  - Sesiones del mismo día: "10:00-12:30, 15:00-19:00" (media Roma cierra al mediodía).
+ *  - Temporadas o días distintos: "08:30-19:15 (verano), 08:30-16:30 (invierno)".
+ *
+ * Leerlos todos es lo que permite no equivocarse en los dos sentidos: quedarse con el primero hacía
+ * que una iglesia con cierre al mediodía "cerrara" a las 12:30 para siempre (y quedara descartada de
+ * cualquier tarde), y mirar solo la apertura del primero daba la hora del lunes en un horario que
+ * empieza por el lunes.
+ */
+export function parseHoursSessions(hours: string | null | undefined): HoursSession[] {
+  if (!hours) return []
+  const sessions: HoursSession[] = []
+  for (const match of hours.matchAll(HOURS_RANGE_RE)) {
+    const open = Number(match[1]) * 60 + Number(match[2])
+    const close = Number(match[3]) * 60 + Number(match[4])
+    if (close > open) sessions.push({ open, close })
+  }
+  return sessions
+}
+
+/** Minuto de apertura más temprano de todos los tramos — null si no hay horario real (acceso libre)
+    o el formato no se reconoce. Compartido con stopScheduling.ts para que ninguna parada se programe
+    antes de que el lugar abra de verdad. Es el MÁS TEMPRANO y no el del primer tramo del texto: con
+    horarios por temporada o por día de la semana, el primero que aparezca escrito no tiene por qué
+    ser el que aplica al viaje. */
 export function parseOpeningMinutes(hours: string | null | undefined): number | null {
-  if (!hours) return null
-  const match = HOURS_RANGE_RE.exec(hours)
-  if (!match) return null
-  return Number(match[1]) * 60 + Number(match[2])
+  const sessions = parseHoursSessions(hours)
+  return sessions.length > 0 ? Math.min(...sessions.map((session) => session.open)) : null
+}
+
+/** Cierre más tardío de todos los tramos — ver `parseOpeningMinutes`. */
+export function parseClosingMinutes(hours: string | null | undefined): number | null {
+  const sessions = parseHoursSessions(hours)
+  return sessions.length > 0 ? Math.max(...sessions.map((session) => session.close)) : null
+}
+
+/**
+ * La hora a la que se puede entrar de verdad partiendo de `minutes`: la misma si ya está abierto, la
+ * apertura del siguiente tramo si cae en un cierre (el del mediodía, sobre todo), o `null` si ya no
+ * queda ningún tramo por delante. Sin horario reconocible devuelve `minutes` — no bloquear nada es
+ * mejor que adivinar.
+ *
+ * Es lo que hace que el cierre del mediodía cuente de verdad: San Luigi dei Francesi
+ * ("10:00-12:30, 15:00-19:00") está cerrado a las 13:00 aunque su horario "vaya" de 10:00 a 19:00, y
+ * el clamp anterior (solo apertura) daba esa hora por buena porque 13:00 > 10:00.
+ */
+export function nextOpenMinutes(hours: string | null | undefined, minutes: number): number | null {
+  const sessions = parseHoursSessions(hours)
+  if (sessions.length === 0) return minutes
+  if (sessions.some((session) => minutes >= session.open && minutes <= session.close)) return minutes
+  const upcoming = sessions.filter((session) => session.open > minutes).map((session) => session.open)
+  return upcoming.length > 0 ? Math.min(...upcoming) : null
 }
 
 export function computeStopHoursTag(hours: string | null, nowMinutes: number): StopHoursTag {
-  if (!hours) return { label: 'Acceso libre', variant: 'always' }
+  const sessions = parseHoursSessions(hours)
+  if (sessions.length === 0) return { label: 'Acceso libre', variant: 'always' }
 
-  const match = HOURS_RANGE_RE.exec(hours)
-  if (!match) return { label: 'Acceso libre', variant: 'always' }
+  const current = sessions.find((session) => nowMinutes >= session.open && nowMinutes <= session.close)
+  if (current) return { label: `Abierto · ${formatMinutes(current.open)}–${formatMinutes(current.close)}`, variant: 'open' }
 
-  const [, openH, openM, closeH, closeM] = match
-  const openMin = Number(openH) * 60 + Number(openM)
-  const closeMin = Number(closeH) * 60 + Number(closeM)
-  const openLabel = `${openH}:${openM}`
-  const closeLabel = `${closeH}:${closeM}`
-
-  if (nowMinutes >= openMin && nowMinutes <= closeMin) {
-    return { label: `Abierto · ${openLabel}–${closeLabel}`, variant: 'open' }
-  }
-  return { label: `Cerrado · abre a las ${openLabel}`, variant: 'closed' }
+  // Cerrado: interesa cuándo vuelve a abrir HOY (el siguiente tramo por delante), y si ya no queda
+  // ninguno, la hora de apertura general.
+  const next = sessions.filter((session) => session.open > nowMinutes).sort((a, b) => a.open - b.open)[0]
+  const reopen = next ? next.open : Math.min(...sessions.map((session) => session.open))
+  return { label: `Cerrado · abre a las ${formatMinutes(reopen)}`, variant: 'closed' }
 }

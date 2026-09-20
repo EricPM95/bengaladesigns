@@ -267,6 +267,10 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
   })
 
   const hoursTag = stop ? computeStopHoursTag(stop.hours, new Date().getHours() * 60 + new Date().getMinutes()) : null
+  // Dos fuentes, las dos ya disponibles aquí sin pedir nada extra: el enlace de reserva de la ficha
+  // ampliada (Coliseo, Galería Borghese, Museos Vaticanos, Castel Sant'Angelo…) y el propio texto de
+  // horario del JSON del destino, que lo dice cuando es obligatoria (Panteón, Domus Aurea).
+  const requiresBooking = Boolean(curated?.extras?.booking_url) || /reserva\s+(online\s+)?obligatoria/i.test(stop?.hours ?? '')
   // Solo los lugares con afiliación de tours (ver mockDayDetail.ts) tienen sentido con
   // Civitatis/GetYourGuide — un mercado local con solo entrada libre (afiliacion_disponible:false)
   // no debe mostrar tarjetas de tours inventadas. En real, esto será "la API de afiliación devolvió
@@ -349,6 +353,15 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                       >
                         <ClockIcon />
                         {hoursTag.label}
+                      </span>
+                    )}
+                    {/* "Acceso libre" (la variante `always` del hoursTag) solo es cierto si el lugar
+                        no tiene horario NI hace falta sacar entrada. Aquí sí se sabe: la ficha
+                        ampliada ya está cargada y trae `booking_url` para lo que se reserva, y el
+                        propio horario del JSON avisa cuando la reserva es obligatoria. */}
+                    {requiresBooking && (
+                      <span className="flex items-center gap-1 rounded-full bg-accent-red/15 px-2 py-0.5 text-caption font-medium text-accent-red">
+                        Requiere reserva
                       </span>
                     )}
                     {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags

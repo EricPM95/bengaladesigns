@@ -154,10 +154,40 @@ function roundUpToNiceMinutes(minutes) {
 // el cliente, aquí en minutos para poder comparar) — null si el texto no trae ningún rango simple
 // (p.ej. Domus Aurea, "Solo Vie-Sáb-Dom, visita guiada con reserva"), caso en el que simplemente no
 // se aplica ningún clamp (mejor no bloquear nada que adivinar mal).
-function parseOpeningMinutes(schedule) {
-  const match = typeof schedule === 'string' ? schedule.match(/(\d{1,2}):(\d{2})/) : null
-  if (!match) return null
-  return Number(match[1]) * 60 + Number(match[2])
+// Ronda 11: se leen TODOS los tramos del texto, no el primero. Un horario puede traer varios por
+// dos motivos que el texto no distingue — sesiones del mismo día ("10:00-12:30, 15:00-19:00": media
+// Roma cierra al mediodía) o temporadas/días distintos ("08:30-19:15 (verano), 08:30-16:30
+// (invierno)"). Quedarse con el primero fallaba en los dos sentidos: una iglesia con cierre al
+// mediodía "cerraba" a las 12:30 para siempre y quedaba descartada de cualquier tarde, y un horario
+// escrito empezando por el lunes daba la hora del lunes como apertura general. Ver la copia
+// compartida de esta misma lógica en src/lib/stopHoursTag.ts (el backend Node no comparte bundle
+// con el cliente Vite, así que se reimplementa a propósito, igual que los helpers de tiempo).
+function parseHoursSessions(schedule) {
+  if (typeof schedule !== 'string') return []
+  const sessions = []
+  for (const match of schedule.matchAll(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/g)) {
+    const open = Number(match[1]) * 60 + Number(match[2])
+    const close = Number(match[3]) * 60 + Number(match[4])
+    if (close > open) sessions.push({ open, close })
+  }
+  return sessions
+}
+
+/**
+ * La hora a la que se puede entrar de verdad, partiendo de `minutes`: la misma si ya está abierto, o
+ * la apertura del siguiente tramo si cae en un cierre (el del mediodía, sobre todo). `null` si ya no
+ * queda ningún tramo por delante — el lugar ya no abre hoy a esa hora.
+ *
+ * Sustituye al clamp anterior, que solo sabía "no antes de que abra" y usaba la apertura general:
+ * con eso, una parada que cayera a las 13:00 en una iglesia cerrada de 12:30 a 16:00 se programaba
+ * igual a las 13:00, porque 13:00 ya es posterior a las 10:00 de apertura.
+ */
+function nextOpenMinutes(schedule, minutes) {
+  const sessions = parseHoursSessions(schedule)
+  if (sessions.length === 0) return minutes
+  if (sessions.some((session) => minutes >= session.open && minutes <= session.close)) return minutes
+  const upcoming = sessions.filter((session) => session.open > minutes).map((session) => session.open)
+  return upcoming.length > 0 ? Math.min(...upcoming) : null
 }
 
 // Ronda 8D: la pareja de parseOpeningMinutes — el SEGUNDO "HH:MM" del texto libre (p.ej. "09:00-19:00"
@@ -167,6 +197,8 @@ function parseOpeningMinutes(schedule) {
 // ni le da tiempo a cerrar. null si el texto no trae un segundo rango (mismo criterio que
 // parseOpeningMinutes: mejor no bloquear nada que adivinar mal).
 function parseClosingMinutes(schedule) {
+  const sessions = parseHoursSessions(schedule)
+  if (sessions.length > 0) return Math.max(...sessions.map((session) => session.close))
   const matches = typeof schedule === 'string' ? [...schedule.matchAll(/(\d{1,2}):(\d{2})/g)] : []
   if (matches.length < 2) return null
   const [, h, m] = matches[1]
@@ -339,10 +371,13 @@ function buildRegularStop(place, startMinutes) {
     longitude: place.coordinates[1],
     tip: place.tip || '',
     description: place.tip || place.photo_tip || '',
-    // Sin horario real de apertura en el JSON v2 (solo `closed_on`, día de la semana, ya
-    // filtrado antes de llegar aquí) — null = acceso libre / horario no verificado, mismo
-    // criterio que "sin taquilla" en el resto del pipeline.
-    hours: null,
+    // Ronda 11: el horario del JSON viaja también como `hours`, que es lo que lee la etiqueta de la
+    // ficha (computeStopHoursTag). Antes iba SIEMPRE a null "porque el JSON v2 no trae horario real",
+    // cosa que dejó de ser cierta hace rondas: el Coliseo tiene su horario en `schedule` y aun así la
+    // ficha anunciaba "Acceso libre" — una entrada de 18€ presentada como gratis. Sigue siendo null
+    // para los lugares que de verdad no tienen horario (plazas, fuentes, calles), que es cuando
+    // "Acceso libre" es cierto.
+    hours: place.schedule ?? null,
     // Ronda 5 (Parte 2B/8): tags temáticos y horario informativo tal cual del JSON — ambos opcionales,
     // solo un puñado de lugares trae `schedule` (ver mapStop/shellFromStop en el cliente).
     tags: Array.isArray(place.tags) ? place.tags : [],
@@ -366,9 +401,9 @@ async function buildStopsForPlaces(places, startCursor, mapboxToken, clampFreeTo
       startMinutes = Math.max(startMinutes, clampFreeTourTo)
     }
     // Ronda 8 (issue B): nunca antes de que abra — antes no había ningún control de horario real de
-    // apertura, solo el día de la semana (`closed_on`).
-    const opening = parseOpeningMinutes(place.schedule)
-    if (opening != null) startMinutes = Math.max(startMinutes, opening)
+    // apertura, solo el día de la semana (`closed_on`). Ronda 11: y tampoco DURANTE un cierre del
+    // mediodía, que el clamp anterior no veía (ver nextOpenMinutes).
+    startMinutes = nextOpenMinutes(place.schedule, startMinutes) ?? startMinutes
     startMinutes = roundUpToNiceMinutes(startMinutes)
     stops.push(place.isFreeTour ? buildFreeTourStop({ default_free_tour: place }, startMinutes) : buildRegularStop(place, startMinutes))
     cursor = startMinutes + place.duration_minutes
@@ -1629,9 +1664,8 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         if (lastStop && !isAdjacentByDistance(lastStopCoords, place.coordinates)) {
           startMinutes = morningEndMinutes + (await fetchWalkingMinutes(lastStopCoords, place.coordinates, mapboxToken)) + 10
         }
-        // Ronda 8 (issue B): mismo clamp de apertura que buildStopsForPlaces.
-        const opening = parseOpeningMinutes(place.schedule)
-        if (opening != null) startMinutes = Math.max(startMinutes, opening)
+        // Ronda 8 (issue B) + Ronda 11: mismo clamp de apertura/cierre que buildStopsForPlaces.
+        startMinutes = nextOpenMinutes(place.schedule, startMinutes) ?? startMinutes
         startMinutes = roundUpToNiceMinutes(startMinutes)
         stops.push(buildRegularStop(place, startMinutes))
         morningEndMinutes = startMinutes + place.duration_minutes

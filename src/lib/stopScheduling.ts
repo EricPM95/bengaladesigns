@@ -1,7 +1,7 @@
 import type { Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
-import { parseOpeningMinutes } from './stopHoursTag'
+import { nextOpenMinutes } from './stopHoursTag'
 import { minutesToTime, roundUpToQuarterHour } from './time'
 
 /**
@@ -134,9 +134,12 @@ export async function computeRealStopSchedule(
     // concreto abre más tarde (ej. el Coliseo a las 08:30); el mismo caso, aunque menos frecuente,
     // puede darse en cualquier parada si el acumulado cae antes de su apertura. `stop.hours` viene de
     // Claude (ver BLOQUE B, DAY_BLOCK_SYSTEM_PROMPT) — null significa acceso libre, sin horario que respetar.
-    const openingMinutes = parseOpeningMinutes(stop.hours)
-    if (openingMinutes != null && startMinutes < openingMinutes) {
-      startMinutes = roundUpToQuarterHour(openingMinutes)
+    // Ronda 11: `nextOpenMinutes` en vez de solo la apertura — también respeta el cierre del
+    // mediodía de media Roma (San Luigi dei Francesi cierra de 12:30 a 15:00), que el clamp anterior
+    // no veía: las 13:00 ya son posteriores a su apertura de las 10:00, así que las daba por buenas.
+    const openAt = nextOpenMinutes(stop.hours, startMinutes)
+    if (openAt != null && openAt > startMinutes) {
+      startMinutes = roundUpToQuarterHour(openAt)
     }
 
     // La primera parada del día nunca se recorta (aunque el cronotipo ya la deje tarde) — a partir

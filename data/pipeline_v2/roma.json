@@ -332,7 +332,7 @@
         "monumento",
         "ruinas"
       ],
-      "schedule": "09:00-19:15 (verano), 09:00-16:30 (invierno)"
+      "schedule": "08:30-19:15 (verano), 08:30-16:30 (invierno)"
     },
     {
       "name": "Foro Romano y Palatino",
@@ -449,7 +449,7 @@
         "monumento",
         "iglesia"
       ],
-      "schedule": "Lun-Sáb 09:00-19:00, Dom 09:00-18:00"
+      "schedule": "Lun-Sáb 09:00-19:00, Dom 09:00-18:00. Reserva online obligatoria"
     },
     {
       "name": "Piazza Navona",
@@ -587,7 +587,7 @@
         "iglesia"
       ],
       "related_to": "Cúpula de San Pedro",
-      "schedule": "07:00-18:30 (Oct-Mar), 07:00-19:00 (Abr-Sep)"
+      "schedule": "07:00-20:00 (todo el año)"
     },
     {
       "name": "Plaza de San Pedro",
@@ -731,7 +731,7 @@
       "tags": [
         "zoo"
       ],
-      "schedule": "09:30-18:00 (horario de invierno más corto, ~09:30-17:00 — confirmar según temporada)",
+      "schedule": "09:30-18:00 (L-V primavera-verano), 09:30-19:00 (S-D primavera-verano), 09:30-17:00 (invierno)",
       "contained_in": "Parque Villa Borghese"
     },
     {
@@ -911,7 +911,7 @@
         "mirador"
       ],
       "related_to": "Basílica de San Pedro",
-      "schedule": "08:00-18:00 (verano), 08:00-17:00 (invierno)",
+      "schedule": "07:00-18:00 (Abr-Sep), 07:30-17:00 (Oct-Mar)",
       "tip": "Entrada ~10€ (ascensor) o ~8€ (solo escaleras). Madruga para evitar colas. El pasillo interior entre las dos paredes de la cúpula es claustrofóbico pero merece",
       "description": "551 escalones (o ascensor + 320 escalones) hasta la cima de la cúpula de Miguel Ángel — las vistas sobre Roma desde 136 metros de altura son inolvidables"
     },
@@ -925,6 +925,7 @@
       ],
       "level": 2,
       "type": "exterior",
+      "schedule": "Lun-Sáb 07:30-12:30, 16:00-19:30. Dom 07:45-13:00, 16:00-20:00",
       "tags": [
         "iglesia",
         "arte"
@@ -942,6 +943,7 @@
       ],
       "level": 2,
       "type": "exterior",
+      "schedule": "10:00-12:30, 15:00-19:00",
       "tags": [
         "iglesia",
         "arte"
@@ -997,6 +999,7 @@
       ],
       "level": 3,
       "type": "exterior",
+      "schedule": "07:10-19:00",
       "tags": [
         "iglesia",
         "arte"
@@ -1014,6 +1017,7 @@
       ],
       "level": 3,
       "type": "exterior",
+      "schedule": "07:30-19:00",
       "tags": [
         "iglesia",
         "arte"
@@ -1169,6 +1173,7 @@
       ],
       "level": 2,
       "type": "interior",
+      "schedule": "Lun-Sáb 09:00-12:30, 14:00-18:00. Dom 12:00-18:00",
       "tags": [
         "iglesia",
         "ruinas"
@@ -1230,6 +1235,7 @@
       "closed_on": [
         "lunes"
       ],
+      "schedule": "09:00-19:15 (verano), 09:00-16:30 (invierno). Lunes reducido 09:00-14:00",
       "tags": [
         "ruinas"
       ],
@@ -1364,6 +1370,7 @@
       ],
       "level": 2,
       "type": "exterior",
+      "schedule": "Lun-Vie 07:30-20:30, Sáb-Dom 07:30-20:00",
       "tags": [
         "iglesia",
         "arte"
