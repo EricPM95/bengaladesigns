@@ -1,5 +1,5 @@
 import type { Coordinates } from './types'
-import type { PlaceFilterCategory } from './placeCategories'
+import type { PlaceFilterCategory, RestaurantSubCategory } from './placeCategories'
 
 /**
  * Catálogo COMPLETO de lugares de un destino curado — el pool de la pantalla de explorar / añadir
@@ -10,6 +10,13 @@ import type { PlaceFilterCategory } from './placeCategories'
  * pantalla se abre y se cierra muchas veces seguidas y no tiene sentido volver a pedir los 61.
  */
 export interface DestinationPlace {
+  /**
+   * `restaurant` = viene del array `restaurants` del destino, NO de `places`: no es una parada de
+   * la ruta (sin duración de visita, sin horario de planificación, sin "Añadir a mi ruta"), solo un
+   * sitio donde comer que el viajero consulta. Todo lo que cambia entre los dos tipos cuelga de
+   * aquí, en vez de adivinarse por `filter_category`.
+   */
+  kind: 'place' | 'restaurant'
   name: string
   coordinates: Coordinates
   filter_category: PlaceFilterCategory | null
@@ -20,6 +27,17 @@ export interface DestinationPlace {
   tags: string[]
   level: number | null
   schedule: string | null
+  /** Solo restaurantes: su posición en el JSON del destino (orden editorial) — desempata "Recomendados" mientras no haya likes. */
+  order?: number
+  /** Solo restaurantes — ver RESTAURANT_SUB_CATEGORIES. */
+  sub_category?: RestaurantSubCategory | null
+  address?: string | null
+  /** "€", "€€" o "€€€". */
+  price_range?: string | null
+  avg_price_person?: string | null
+  what_to_order?: string | null
+  tip?: string | null
+  best_for?: string | null
 }
 
 const cache = new Map<string, DestinationPlace[]>()

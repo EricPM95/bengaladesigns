@@ -3,9 +3,9 @@
  * JSON del destino (ver data/pipeline_v2/roma.json), no se infiere: clasificar "Paseo por
  * Trastevere" o "Bioparco" por palabras clave del nombre sale mal, y es una decisión editorial.
  *
- * `restaurantes` todavía no tiene ningún lugar en el JSON — existe porque "Dónde comer y beber" de
- * EXPLORAR apunta aquí, y porque la lista vacía con su mensaje es mejor que un chip que aparece de
- * la nada el día que se añadan.
+ * `restaurantes` no sale del array `places` del destino sino de su array `restaurants` (ver
+ * RESTAURANT_SUB_CATEGORIES abajo y /api/destination-places): un restaurante NO es una parada de la
+ * ruta — no tiene duración de visita ni entra en el itinerario, solo se consulta.
  */
 export type PlaceFilterCategory = 'monumentos' | 'museos_arte' | 'miradores' | 'restaurantes'
 
@@ -31,4 +31,30 @@ export const PLACE_CATEGORY_CHIPS: PlaceCategoryChip[] = [
 
 export function findPlaceCategoryChip(id: string | null | undefined): PlaceCategoryChip | null {
   return PLACE_CATEGORY_CHIPS.find((chip) => chip.id === id) ?? null
+}
+
+/**
+ * Sub-categorías de "Restaurantes" — la segunda fila de chips que aparece SOLO cuando el filtro
+ * Restaurantes está activo. A diferencia de los filtros principales son excluyentes (una a la vez,
+ * o "Todos"): "trattoria + gelato" no es una pregunta que nadie se haga; "¿dónde tomo un helado?" sí.
+ */
+export type RestaurantSubCategory = 'trattoria' | 'pizza' | 'gelato' | 'cafe' | 'aperitivo' | 'street_food'
+
+export interface RestaurantSubCategoryChip {
+  id: RestaurantSubCategory
+  label: string
+  icon: string
+}
+
+export const RESTAURANT_SUB_CATEGORIES: RestaurantSubCategoryChip[] = [
+  { id: 'trattoria', label: 'Trattoria', icon: '🍝' },
+  { id: 'pizza', label: 'Pizza', icon: '🍕' },
+  { id: 'gelato', label: 'Gelato', icon: '🍦' },
+  { id: 'cafe', label: 'Café', icon: '☕' },
+  { id: 'aperitivo', label: 'Aperitivo', icon: '🍷' },
+  { id: 'street_food', label: 'Street Food', icon: '🥖' },
+]
+
+export function findRestaurantSubCategory(id: string | null | undefined): RestaurantSubCategoryChip | null {
+  return RESTAURANT_SUB_CATEGORIES.find((chip) => chip.id === id) ?? null
 }

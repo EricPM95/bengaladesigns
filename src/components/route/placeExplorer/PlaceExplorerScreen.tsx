@@ -1,8 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Route, Stop } from '../../../lib/types'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
-import { PLACE_CATEGORY_CHIPS, findPlaceCategoryChip, type PlaceFilterCategory } from '../../../lib/placeCategories'
+import {
+  PLACE_CATEGORY_CHIPS,
+  RESTAURANT_SUB_CATEGORIES,
+  findPlaceCategoryChip,
+  findRestaurantSubCategory,
+  type PlaceFilterCategory,
+  type RestaurantSubCategory,
+} from '../../../lib/placeCategories'
 import { fetchPlaceLikes, togglePlaceLike, EMPTY_PLACE_LIKES, type PlaceLikes } from '../../../lib/placeLikesApi'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
@@ -10,6 +17,7 @@ import { haversineMeters, hasRealCoordinates } from '../../../lib/distanceMock'
 import { formatDuration } from '../../../lib/format'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
+import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
@@ -146,6 +154,8 @@ export function PlaceExplorerScreen({
   onClose,
 }: PlaceExplorerScreenProps) {
   const [activeCategories, setActiveCategories] = useState<PlaceFilterCategory[]>(initialCategories)
+  /** null = "Todos" (la sub-categoría es excluyente: una o ninguna). Solo aplica a restaurantes. */
+  const [activeSubCategory, setActiveSubCategory] = useState<RestaurantSubCategory | null>(null)
   const [query, setQuery] = useState(initialQuery ?? '')
   const [tab, setTab] = useState<BottomTab>('recommended')
   const [likes, setLikes] = useState<PlaceLikes>(EMPTY_PLACE_LIKES)
@@ -153,12 +163,23 @@ export function PlaceExplorerScreen({
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   const [position, setPosition] = useState<Coordinates | null>(null)
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
+  const chipsRowRef = useRef<HTMLDivElement>(null)
 
   const initialCategoriesKey = initialCategories.join(',')
+
+  // EXPLORAR entra con un filtro ya puesto, y en móvil los chips no caben: "Restaurantes" es el
+  // cuarto y se queda fuera de la pantalla, así que se veían tres chips apagados y una lista
+  // filtrada sin explicación visible. Al abrir, el chip activo se trae a la vista.
+  useEffect(() => {
+    if (!open) return
+    const active = chipsRowRef.current?.querySelector('[data-active="true"]')
+    active?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [open, initialCategoriesKey])
 
   useEffect(() => {
     if (!open) return
     setActiveCategories(initialCategoriesKey ? (initialCategoriesKey.split(',') as PlaceFilterCategory[]) : [])
+    setActiveSubCategory(null)
     setQuery(initialQuery ?? '')
     setTab('recommended')
     setSelected(null)
@@ -199,7 +220,9 @@ export function PlaceExplorerScreen({
   // Foto real (Wikipedia) solo del lugar abierto, no de los 61 de la lista: la lista usa el icono de
   // su categoría, que se pinta al instante y no gasta 61 peticiones cada vez que se abre la pantalla.
   useEffect(() => {
-    if (!selected) return
+    // Los restaurantes no pasan por aquí: su ficha no lleva foto, y Wikipedia no tiene página de una
+    // trattoria — lo que devolvería sería una foto de otra cosa.
+    if (!selected || selected.kind === 'restaurant') return
     let cancelled = false
     setSelectedPhoto(null)
     fetchPlacePhoto(selected.name, destination).then((url) => {
@@ -213,24 +236,42 @@ export function PlaceExplorerScreen({
   const stopEntries = useMemo(() => (route ? buildRouteStopEntries(route) : []), [route])
 
   const toggleCategory = (id: PlaceFilterCategory) => {
-    setActiveCategories((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+    setActiveCategories((prev) => {
+      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      // Al apagar Restaurantes su sub-filtro deja de tener sentido (y de verse): si se volviera a
+      // encender, seguir arrastrando "Gelato" de hace dos pantallas sería una lista vacía sin motivo
+      // aparente.
+      if (id === 'restaurantes' && !next.includes('restaurantes')) setActiveSubCategory(null)
+      return next
+    })
   }
 
+  const restaurantsActive = activeCategories.includes('restaurantes')
   const trimmedQuery = query.trim()
 
-  // El buscador busca en TODO el pool, ignorando los filtros activos a propósito: buscar un lugar por
-  // su nombre y no encontrarlo porque su categoría estaba apagada es lo que convierte un buscador en
-  // un juguete.
   const results = useMemo(() => {
+    // La sub-categoría solo filtra restaurantes: con "Monumentos + Restaurantes + Pizza" activos, los
+    // monumentos siguen enteros y son las pizzerías las que se acotan.
+    const matchesSubCategory = (place: DestinationPlace) =>
+      place.kind !== 'restaurant' || activeSubCategory === null || place.sub_category === activeSubCategory
+
+    // El buscador mira todo el pool por nombre, pero respeta los filtros visibles: lo que se ve en la
+    // lista es siempre lo que dicen los chips de arriba.
     if (trimmedQuery) {
       const needle = normalize(trimmedQuery)
-      return places.filter((place) => normalize(place.name).includes(needle))
+      return places.filter(
+        (place) =>
+          normalize(place.name).includes(needle) &&
+          matchesSubCategory(place) &&
+          (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
+      )
     }
 
-    const filtered =
-      activeCategories.length === 0
-        ? places
-        : places.filter((place) => place.filter_category !== null && activeCategories.includes(place.filter_category))
+    const filtered = places.filter(
+      (place) =>
+        matchesSubCategory(place) &&
+        (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
+    )
 
     if (tab === 'nearby') {
       if (!position) return filtered
@@ -244,9 +285,12 @@ export function PlaceExplorerScreen({
       if (likeDiff !== 0) return likeDiff
       const levelDiff = (a.level ?? 9) - (b.level ?? 9)
       if (levelDiff !== 0) return levelDiff
+      // Sin nivel curado (los restaurantes) manda el orden del JSON, que es editorial; el alfabético
+      // solo entra donde no hay ni una cosa ni la otra.
+      if (a.order !== undefined && b.order !== undefined) return a.order - b.order
       return a.name.localeCompare(b.name, 'es')
     })
-  }, [places, trimmedQuery, activeCategories, tab, position, likes])
+  }, [places, trimmedQuery, activeCategories, activeSubCategory, tab, position, likes])
 
   // Pines del mapa: los lugares de los filtros activos (o los del buscador mientras se busca), más
   // pequeños que los números de las paradas del día para que la ruta siga destacando sobre ellos.
@@ -324,7 +368,7 @@ export function PlaceExplorerScreen({
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card px-3 py-2">
-          <div className="flex flex-1 gap-2 overflow-x-auto">
+          <div ref={chipsRowRef} className="flex flex-1 gap-2 overflow-x-auto">
             {PLACE_CATEGORY_CHIPS.map((chip) => {
               const active = activeCategories.includes(chip.id)
               return (
@@ -333,6 +377,7 @@ export function PlaceExplorerScreen({
                   type="button"
                   onClick={() => toggleCategory(chip.id)}
                   aria-pressed={active}
+                  data-active={active}
                   className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-caption font-semibold transition-colors ${
                     active ? 'text-white' : 'border-border bg-bg text-text-soft hover:bg-bg-hover'
                   }`}
@@ -356,6 +401,29 @@ export function PlaceExplorerScreen({
             </button>
           )}
         </div>
+
+        {/* Segunda fila, solo con Restaurantes activo: sub-categorías excluyentes. */}
+        {restaurantsActive && (
+          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-bg-card px-3 pb-2">
+            {[{ id: null, label: 'Todos', icon: null }, ...RESTAURANT_SUB_CATEGORIES].map((chip) => {
+              const active = activeSubCategory === chip.id
+              return (
+                <button
+                  key={chip.id ?? 'all'}
+                  type="button"
+                  onClick={() => setActiveSubCategory(chip.id as RestaurantSubCategory | null)}
+                  aria-pressed={active}
+                  className={`flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-caption font-medium transition-colors ${
+                    active ? 'border-text-soft bg-bg-hover text-text' : 'border-border bg-bg text-text-muted hover:text-text-soft'
+                  }`}
+                >
+                  {chip.icon && <span aria-hidden="true">{chip.icon}</span>}
+                  {chip.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         <div className="relative shrink-0" style={{ height: '38vh' }}>
           {markers.length > 0 ? (
@@ -450,9 +518,11 @@ export function PlaceExplorerScreen({
 
             {!trimmedQuery && results.length === 0 && (
               <p className="py-8 text-center text-small text-text-soft">
-                {activeCategories.length === 1 && activeCategories[0] === 'restaurantes'
-                  ? `Todavía no tenemos restaurantes seleccionados en ${destination}.`
-                  : 'No hay lugares en las categorías seleccionadas.'}
+                {activeSubCategory !== null
+                  ? `Todavía no tenemos ${findRestaurantSubCategory(activeSubCategory)?.label.toLowerCase()} seleccionados en ${destination}.`
+                  : restaurantsActive && activeCategories.length === 1
+                    ? `Todavía no tenemos restaurantes seleccionados en ${destination}.`
+                    : 'No hay lugares en las categorías seleccionadas.'}
               </p>
             )}
 
@@ -486,11 +556,36 @@ export function PlaceExplorerScreen({
                           )}
                         </span>
                         <span className="flex flex-wrap items-center gap-x-1.5 text-caption text-text-soft">
-                          {place.zone_label && <span className="truncate">{place.zone_label}</span>}
-                          {place.duration_min !== null && (
+                          {/* Un restaurante se elige por tipo y precio, no por cuánto se tarda en
+                              verlo: donde una atracción pone su duración, este pone su sub-categoría
+                              y su rango de precio. */}
+                          {place.kind === 'restaurant' ? (
                             <>
-                              {place.zone_label && <span>·</span>}
-                              <span className="shrink-0">{formatDuration(place.duration_min)}</span>
+                              {findRestaurantSubCategory(place.sub_category)?.label && (
+                                <span className="shrink-0">{findRestaurantSubCategory(place.sub_category)?.label}</span>
+                              )}
+                              {place.price_range && (
+                                <>
+                                  <span>·</span>
+                                  <span className="shrink-0">{place.price_range}</span>
+                                </>
+                              )}
+                              {place.zone_label && (
+                                <>
+                                  <span>·</span>
+                                  <span className="truncate">{place.zone_label}</span>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {place.zone_label && <span className="truncate">{place.zone_label}</span>}
+                              {place.duration_min !== null && (
+                                <>
+                                  {place.zone_label && <span>·</span>}
+                                  <span className="shrink-0">{formatDuration(place.duration_min)}</span>
+                                </>
+                              )}
                             </>
                           )}
                           {distance !== null && (
@@ -524,7 +619,17 @@ export function PlaceExplorerScreen({
 
         {/* Ficha del lugar — el mismo componente de 3 pestañas de la ruta, que ya carga por su cuenta
             la ficha ampliada curada por (destino, nombre); desde aquí solo se le añade el CTA. */}
-        {selected && (
+        {/* Un restaurante abre SU ficha (corta, con "Cómo llegar"), nunca la de 3 pestañas de una
+            parada: no tiene qué ver, ni entradas, ni sitio en el itinerario. */}
+        <RestaurantDetailSheet
+          restaurant={selected?.kind === 'restaurant' ? selected : null}
+          likeCount={selected ? (likes.counts.get(selected.name) ?? 0) : 0}
+          liked={selected ? likes.mine.has(selected.name) : false}
+          onToggleLike={() => selected && onToggleLike(selected)}
+          onClose={() => setSelected(null)}
+        />
+
+        {selected && selected.kind !== 'restaurant' && (
           <StopDetailSheet
             stop={{
               id: `pool-${selected.name}`,

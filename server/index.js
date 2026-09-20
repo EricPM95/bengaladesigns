@@ -3640,6 +3640,7 @@ app.post('/api/destination-places', (req, res) => {
   const places = (data.places ?? [])
     .filter((place) => Array.isArray(place.coordinates) && place.coordinates.length === 2)
     .map((place) => ({
+      kind: 'place',
       name: place.name,
       coordinates: { lat: place.coordinates[0], lng: place.coordinates[1] },
       filter_category: place.filter_category ?? null,
@@ -3651,7 +3652,41 @@ app.post('/api/destination-places', (req, res) => {
       level: place.level ?? null,
       schedule: place.schedule ?? null,
     }))
-  res.json({ found: true, places })
+
+  // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son
+  // paradas de ruta: routeAlgorithm.js nunca debe verlos como candidatos a llenar una franja. Aquí
+  // se mezclan en una sola lista porque para la pantalla de lugares son puntos del mapa igual que
+  // los demás — lo que cambia (ficha propia, "Cómo llegar" en vez de "Añadir") lo decide `kind`.
+  // Su `coordinates` ya viene como objeto {lat,lng}, no como el par [lat,lng] de `places`.
+  const restaurants = (data.restaurants ?? [])
+    .filter((place) => Number.isFinite(place.coordinates?.lat) && Number.isFinite(place.coordinates?.lng))
+    .map((place, index) => ({
+      kind: 'restaurant',
+      // Posición en el JSON = orden editorial (las trattorias primero, dentro de cada tipo los
+      // mejores antes). Es el desempate de "Recomendados" mientras un sitio no tenga likes: los
+      // restaurantes no tienen `level` con el que ordenarlos, y por orden alfabético la lista
+      // abriría por "Ai Marmi" sin que eso signifique nada.
+      order: index,
+      name: place.name,
+      coordinates: { lat: place.coordinates.lat, lng: place.coordinates.lng },
+      filter_category: 'restaurantes',
+      zone: null,
+      zone_label: place.zone ?? null,
+      duration_min: null,
+      type: null,
+      tags: [],
+      level: null,
+      schedule: place.hours ?? null,
+      sub_category: place.sub_category ?? null,
+      address: place.address ?? null,
+      price_range: place.price_range ?? null,
+      avg_price_person: place.avg_price_person ?? null,
+      what_to_order: place.what_to_order ?? null,
+      tip: place.tip ?? null,
+      best_for: place.best_for ?? null,
+    }))
+
+  res.json({ found: true, places: [...places, ...restaurants] })
 })
 
 // ── Detalle ampliado de un lugar (las 3 pestañas de la ficha de parada) ──────────────────────

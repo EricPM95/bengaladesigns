@@ -2499,5 +2499,647 @@
       "Largo di Torre Argentina",
       "Plaza España y Escalinata"
     ]
-  }
+  },
+  "restaurants": [
+    {
+      "name": "Armando al Pantheon",
+      "sub_category": "trattoria",
+      "address": "Salita dei Crescenzi, 31, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8986,
+        "lng": 12.4762
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Carbonara, cacio e pepe, carciofi alla giudia",
+      "tip": "Reserva imprescindible, sobre todo a la hora de la comida. Abierto desde 1961, cocina romana impecable a dos pasos del Panteón.",
+      "hours": "Lun-Sáb 12:30-15:00, 19:00-23:00. Domingo cerrado.",
+      "best_for": "Comida romana clásica cerca del Panteón"
+    },
+    {
+      "name": "Trattoria Da Enzo al 29",
+      "sub_category": "trattoria",
+      "address": "Via dei Vascellari, 29, 00153 Roma",
+      "coordinates": {
+        "lat": 41.888,
+        "lng": 12.4742
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "avg_price_person": "20-30€",
+      "what_to_order": "Cacio e pepe, carbonara, carciofi alla romana, tiramisú casero",
+      "tip": "Siempre hay cola, pero merece cada minuto. Ve 15 min antes de la apertura. No aceptan reservas.",
+      "hours": "Lun-Sáb 12:30-15:00, 19:30-23:00. Domingo cerrado.",
+      "best_for": "La trattoria más auténtica de Trastevere"
+    },
+    {
+      "name": "Felice a Testaccio",
+      "sub_category": "trattoria",
+      "address": "Via Mastro Giorgio, 29, 00153 Roma",
+      "coordinates": {
+        "lat": 41.879,
+        "lng": 12.4762
+      },
+      "zone": "Testaccio",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Tonnarelli cacio e pepe (lo preparan en la mesa), amatriciana, abbacchio",
+      "tip": "Famosos por servir el cacio e pepe directamente en la rueda de queso. Reserva con antelación.",
+      "hours": "Todos los días 12:30-14:45, 19:30-23:15.",
+      "best_for": "El mejor cacio e pepe de Roma (servido en rueda de queso)"
+    },
+    {
+      "name": "Trattoria Monti",
+      "sub_category": "trattoria",
+      "address": "Via di San Vito, 13A, 00185 Roma",
+      "coordinates": {
+        "lat": 41.896,
+        "lng": 12.5005
+      },
+      "zone": "Esquilino / Monti",
+      "price_range": "€€",
+      "avg_price_person": "35-45€",
+      "what_to_order": "Tortello del giorno, frascarelli, coniglio in porchetta",
+      "tip": "Gestionada por la familia Camerucci. Cocina de Le Marche con toques romanos. Reserva obligatoria, sitio pequeño.",
+      "hours": "Mar-Sáb 12:45-14:45, 19:45-22:45. Dom solo comida. Lunes cerrado.",
+      "best_for": "Cocina familiar refinada fuera de los circuitos turísticos"
+    },
+    {
+      "name": "Trattoria Dal Cavalier Gino",
+      "sub_category": "trattoria",
+      "address": "Vicolo Rosini, 4, 00186 Roma",
+      "coordinates": {
+        "lat": 41.9012,
+        "lng": 12.4777
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€€",
+      "avg_price_person": "25-35€",
+      "what_to_order": "Fettuccine al ragu, saltimbocca alla romana, amatriciana",
+      "tip": "Escondida en un callejón cerca del Parlamento. Frecuentada por políticos y periodistas. No aceptan tarjeta, solo efectivo.",
+      "hours": "Lun-Sáb 13:00-14:45, 20:00-22:30. Domingo cerrado.",
+      "best_for": "Trattoria secreta donde comen los romanos de verdad"
+    },
+    {
+      "name": "Tonnarello",
+      "sub_category": "trattoria",
+      "address": "Via della Paglia, 77, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8893,
+        "lng": 12.4694
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "avg_price_person": "20-30€",
+      "what_to_order": "Tonnarelli cacio e pepe, carbonara, gricia, amatriciana",
+      "tip": "Terraza enorme en pleno Trastevere. Ideal para cenar al aire libre. Puede haber cola, pero se mueve rápido.",
+      "hours": "Todos los días 12:00-00:00.",
+      "best_for": "Cenar pasta al aire libre en el corazón de Trastevere"
+    },
+    {
+      "name": "Taverna Trilussa",
+      "sub_category": "trattoria",
+      "address": "Via del Politeama, 23/25, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8893,
+        "lng": 12.4678
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "avg_price_person": "25-35€",
+      "what_to_order": "Bucatini all'amatriciana (servida en sartén), cacio e pepe, tiramisú",
+      "tip": "Llevan casi un siglo. El camarero sirve la pasta desde la sartén a tu plato. Ambiente familiar y auténtico.",
+      "hours": "Todos los días 18:30-00:00. Solo cenas.",
+      "best_for": "Cena teatral con pasta servida desde la sartén"
+    },
+    {
+      "name": "SantoPalato",
+      "sub_category": "trattoria",
+      "address": "Piazza Tarquinia, 4A/B, 00183 Roma",
+      "coordinates": {
+        "lat": 41.8845,
+        "lng": 12.5118
+      },
+      "zone": "San Giovanni",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Rigatoni alla gricia, trippa, animelle, coda alla vaccinara",
+      "tip": "La chef Sarah Cicolini revitalizó el quinto quarto romano. Cocina de vísceras elevada a arte. Reserva online.",
+      "hours": "Mar-Sáb 12:30-15:00, 19:30-23:00. Dom-Lun cerrado.",
+      "best_for": "Cocina romana de autor con quinto quarto"
+    },
+    {
+      "name": "Pizzarium (Bonci)",
+      "sub_category": "pizza",
+      "address": "Via della Meloria, 43, 00136 Roma",
+      "coordinates": {
+        "lat": 41.9071,
+        "lng": 12.4403
+      },
+      "zone": "Prati / Vaticano",
+      "price_range": "€",
+      "avg_price_person": "8-15€",
+      "what_to_order": "Pizza al taglio: prueba la que tenga burrata, mortadella con pistachos, o verduras de temporada",
+      "tip": "Gabriele Bonci es el rey de la pizza al taglio en Roma. Se pide al peso, señalando lo que quieras. Cola habitual pero rápida.",
+      "hours": "Lun-Sáb 11:00-21:00. Dom 12:00-21:00.",
+      "best_for": "La mejor pizza al taglio del mundo (cerca del Vaticano)"
+    },
+    {
+      "name": "Antico Forno Roscioli",
+      "sub_category": "pizza",
+      "address": "Via dei Chiavari, 34, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8949,
+        "lng": 12.4735
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Pizza bianca (sola o con mortadella), pizza rossa, suppli al telefono",
+      "tip": "El forno más famoso de Roma desde 1824. La pizza bianca caliente recién salida del horno es una experiencia religiosa.",
+      "hours": "Lun-Sáb 7:00-20:00. Dom cerrado.",
+      "best_for": "La pizza bianca con mortadella más mítica de Roma"
+    },
+    {
+      "name": "Forno Campo de' Fiori",
+      "sub_category": "pizza",
+      "address": "Vicolo del Gallo, 14, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8955,
+        "lng": 12.4716
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Pizza bianca, pizza rossa, filetti di baccala fritos",
+      "tip": "Desde 1880. Busca la entrada por Vicolo del Gallo, no por la plaza. Pide la pizza bianca recién hecha.",
+      "hours": "Lun-Sáb 7:30-14:30, 16:45-20:00. Horario variable.",
+      "best_for": "Pizza callejera histórica al lado de Campo de' Fiori"
+    },
+    {
+      "name": "Ai Marmi (Panattoni)",
+      "sub_category": "pizza",
+      "address": "Viale di Trastevere, 53, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8861,
+        "lng": 12.471
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "10-18€",
+      "what_to_order": "Pizza margherita, suppli, fiori di zucca fritti, filetto di baccala",
+      "tip": "Conocida como 'L'Obitorio' (la morgue) por sus mesas de mármol. Pizza romana finísima y crujiente. Sin reservas, hay cola.",
+      "hours": "Jue-Mar 18:30-00:30. Miércoles cerrado.",
+      "best_for": "Pizza romana fina y crujiente en ambiente popular"
+    },
+    {
+      "name": "Da Remo",
+      "sub_category": "pizza",
+      "address": "Piazza di Santa Maria Liberatrice, 44, 00153 Roma",
+      "coordinates": {
+        "lat": 41.878,
+        "lng": 12.4752
+      },
+      "zone": "Testaccio",
+      "price_range": "€",
+      "avg_price_person": "10-18€",
+      "what_to_order": "Pizza margherita, bruschetta, suppli, fiori di zucca",
+      "tip": "Donde van los romanos de Testaccio a cenar pizza. Terraza enorme en la plaza. Solo efectivo. Abre solo por la noche.",
+      "hours": "Lun-Sáb 19:00-01:00. Domingo cerrado.",
+      "best_for": "La pizzería de barrio favorita de los romanos"
+    },
+    {
+      "name": "Fatamorgana",
+      "sub_category": "gelato",
+      "address": "Via dei Chiavari, 37, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8951,
+        "lng": 12.4731
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Sabores creativos: Kentuki (tabaco y chocolate), Bacio del Principe, o lo que sea de temporada",
+      "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Piazza del Popolo).",
+      "hours": "Todos los días 12:00-23:00 (aprox).",
+      "best_for": "Gelato artesanal con sabores creativos e innovadores"
+    },
+    {
+      "name": "Fior di Luna",
+      "sub_category": "gelato",
+      "address": "Via della Lungaretta, 96, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8889,
+        "lng": 12.472
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "3-5€",
+      "what_to_order": "Chocolate negro (cacao puro), crema con vainilla de Madagascar, sabores de fruta de temporada",
+      "tip": "Ingredientes de origen controlado, chocolate de Valrhona, leche fresca del Lacio. Sin aditivos. Pequeño y discreto, como debe ser.",
+      "hours": "Variable según temporada, aprox 12:00-00:00.",
+      "best_for": "Gelato puro y artesanal en Trastevere"
+    },
+    {
+      "name": "Gelateria dei Gracchi",
+      "sub_category": "gelato",
+      "address": "Via dei Gracchi, 272, 00192 Roma",
+      "coordinates": {
+        "lat": 41.9092,
+        "lng": 12.4669
+      },
+      "zone": "Prati / Vaticano",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Crema dei Gracchi, pistacho, nocciola, frutas de temporada",
+      "tip": "Muy cerca del Vaticano, perfecto para después de la visita. Ingredientes naturales, sabores clásicos ejecutados a la perfección.",
+      "hours": "Todos los días 11:00-00:00 (aprox).",
+      "best_for": "El mejor gelato cerca del Vaticano"
+    },
+    {
+      "name": "Neve di Latte",
+      "sub_category": "gelato",
+      "address": "Via Federico Cesi, 1, 00193 Roma",
+      "coordinates": {
+        "lat": 41.9085,
+        "lng": 12.4623
+      },
+      "zone": "Prati",
+      "price_range": "€",
+      "avg_price_person": "3-5€",
+      "what_to_order": "Fior di latte, pistachio di Bronte, nocciola delle Langhe, mango",
+      "tip": "Gelato 100% natural, sin aditivos. Su crema de leche fresca (fior di latte) es la prueba de fuego de un buen gelato. Aprobado por Katie Parla.",
+      "hours": "Todos los días 12:00-22:30 (aprox).",
+      "best_for": "Gelato minimalista y puro con ingredientes premium"
+    },
+    {
+      "name": "Otaleg",
+      "sub_category": "gelato",
+      "address": "Via di San Cosimato, 14A, 00153 Roma",
+      "coordinates": {
+        "lat": 41.887,
+        "lng": 12.4694
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Sabores que cambian a diario: mozzarella di bufala, ricotta y pera, cardamomo",
+      "tip": "Marco Radicioni crea sabores que desafían lo convencional. 'Otaleg' es 'Gelato' al revés. Pequeño local, grandes sabores.",
+      "hours": "Todos los días 12:30-23:30 (aprox).",
+      "best_for": "Gelato experimental y vanguardista"
+    },
+    {
+      "name": "Roscioli Caffè Pasticceria",
+      "sub_category": "cafe",
+      "address": "Piazza Benedetto Cairoli, 16, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8942,
+        "lng": 12.4756
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "5-12€",
+      "what_to_order": "Cornetto relleno (crema, pistacho o chocolate), caffe espresso, maritozzo con panna",
+      "tip": "De la familia Roscioli (imperio gastronómico romano). Los mejores cornetti de Roma. Ideal para desayunar antes de explorar el centro.",
+      "hours": "Lun-Sáb 7:00-20:00. Dom 8:00-18:00.",
+      "best_for": "El mejor desayuno italiano del centro"
+    },
+    {
+      "name": "Caffè Sant'Eustachio",
+      "sub_category": "cafe",
+      "address": "Piazza di Sant'Eustachio, 82, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8981,
+        "lng": 12.4746
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Gran Caffe Sant'Eustachio (su especialidad con crema batida), caffe espresso",
+      "tip": "Tostaduría histórica desde 1938. Pide en barra como un local: 'Un caffe, per favore'. El azúcar ya viene incluido en su caffe estrella (pide 'amaro' si lo quieres sin azúcar).",
+      "hours": "Todos los días 7:30-01:00.",
+      "best_for": "El caffe más legendario de Roma"
+    },
+    {
+      "name": "La Casa del Caffè Tazza d'Oro",
+      "sub_category": "cafe",
+      "address": "Via degli Orfani, 84, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8988,
+        "lng": 12.4771
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Granita di caffe con panna (en verano es imprescindible), espresso, caffe del Brasile",
+      "tip": "Justo al lado del Panteón. En verano, la granita de café con nata es el mejor refresco de Roma. Compra un paquete de café para llevar como souvenir.",
+      "hours": "Lun-Sáb 7:00-20:00. Dom 10:30-19:30.",
+      "best_for": "Granita di caffe con panna junto al Panteón"
+    },
+    {
+      "name": "Faro - Caffè Specialty",
+      "sub_category": "cafe",
+      "address": "Via Piave, 55, 00187 Roma",
+      "coordinates": {
+        "lat": 41.9073,
+        "lng": 12.4933
+      },
+      "zone": "Via Veneto / Salario",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Pour-over de orígenes seleccionados, flat white, brunch los fines de semana",
+      "tip": "El primer café de especialidad de Roma. Para los que buscan un café de tercera ola lejos del espresso clásico. Tuestan su propio grano.",
+      "hours": "Lun-Vie 8:00-20:00. Sáb-Dom 9:00-20:00.",
+      "best_for": "Café de especialidad (third wave) para coffee lovers"
+    },
+    {
+      "name": "Pasticceria Regoli",
+      "sub_category": "cafe",
+      "address": "Via dello Statuto, 60, 00185 Roma",
+      "coordinates": {
+        "lat": 41.8965,
+        "lng": 12.5041
+      },
+      "zone": "Esquilino",
+      "price_range": "€",
+      "avg_price_person": "4-8€",
+      "what_to_order": "Maritozzo con la panna (el mejor de Roma), cornetti, pasticcini",
+      "tip": "El maritozzo con panna de Regoli es una institución. Desde 1916, la pastelería que los romanos nunca te recomendarían para no compartir su secreto.",
+      "hours": "Todos los días 7:00-20:00.",
+      "best_for": "El mejor maritozzo con panna de Roma"
+    },
+    {
+      "name": "Freni e Frizioni",
+      "sub_category": "aperitivo",
+      "address": "Via del Politeama, 4-6, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8891,
+        "lng": 12.4672
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "avg_price_person": "10-15€",
+      "what_to_order": "Spritz, negroni, o cualquiera de sus cócteles de autor. El buffet de aperitivo está incluido con la bebida.",
+      "tip": "Antiguo taller mecánico convertido en el bar más cool de Trastevere. A las 19:00 sacan el buffet de aperitivo gratuito con la consumición. Terraza animadísima.",
+      "hours": "Todos los días 18:00-02:00.",
+      "best_for": "El aperitivo más animado de Trastevere"
+    },
+    {
+      "name": "Il Goccetto",
+      "sub_category": "aperitivo",
+      "address": "Via dei Banchi Vecchi, 14, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8968,
+        "lng": 12.4684
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€€",
+      "avg_price_person": "10-18€",
+      "what_to_order": "Vino natural o biodinámico por copa, tabla de quesos italianos",
+      "tip": "Enoteca histórica en un palazzo del siglo XVI. Más de 40 vinos por copa. Ambiente íntimo y local, nada turístico. Perfecto para una copa tranquila.",
+      "hours": "Mar-Sáb 12:00-14:30, 18:00-00:00. Lun solo tarde. Dom cerrado.",
+      "best_for": "Vino natural en un palazzo del siglo XVI"
+    },
+    {
+      "name": "Il Sorpasso",
+      "sub_category": "aperitivo",
+      "address": "Via Properzio, 31/33, 00193 Roma",
+      "coordinates": {
+        "lat": 41.9065,
+        "lng": 12.4608
+      },
+      "zone": "Prati / Vaticano",
+      "price_range": "€€",
+      "avg_price_person": "12-20€",
+      "what_to_order": "Tabla de salumi y formaggi, spritz, vinos naturales italianos",
+      "tip": "Espacio amplio con estética industrial-chic. Tablas de embutidos y quesos artesanales espectaculares. Zona Prati, ideal tras visitar el Vaticano.",
+      "hours": "Lun-Sáb 7:30-01:00. Dom cerrado.",
+      "best_for": "Aperitivo gourmet con tablas de embutidos cerca del Vaticano"
+    },
+    {
+      "name": "Enoteca Ferrara",
+      "sub_category": "aperitivo",
+      "address": "Piazza Trilussa, 41, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8893,
+        "lng": 12.4681
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "avg_price_person": "12-20€",
+      "what_to_order": "Selección de vinos italianos por copa, tabla de quesos, bruschette",
+      "tip": "En plena Piazza Trilussa, epicentro de la noche en Trastevere. Más de 50 referencias de vino. Buffet de aperitivo cambiante.",
+      "hours": "Todos los días 18:00-02:00.",
+      "best_for": "Vino y aperitivo en la plaza más viva de Trastevere"
+    },
+    {
+      "name": "Barnum Cafe",
+      "sub_category": "aperitivo",
+      "address": "Via del Pellegrino, 87, 00186 Roma",
+      "coordinates": {
+        "lat": 41.896,
+        "lng": 12.4699
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "8-14€",
+      "what_to_order": "Spritz, negroni sbagliato, brunch los domingos",
+      "tip": "Café-cocktail bar con aire bohemio cerca de Campo de' Fiori. Perfecto para el aperitivo de atardecer. Wifi y enchufes si necesitas un descanso digital.",
+      "hours": "Lun-Jue 9:00-01:00. Vie-Sáb 9:00-02:00. Dom 10:00-01:00.",
+      "best_for": "Aperitivo con encanto bohemio cerca de Campo de' Fiori"
+    },
+    {
+      "name": "Ma Che Siete Venuti a Fà",
+      "sub_category": "aperitivo",
+      "address": "Via di Benedetta, 25, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8898,
+        "lng": 12.4679
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Cerveza artesanal italiana de barril (rotan constantemente), pide consejo al barman",
+      "tip": "El mejor pub de cerveza artesanal de Roma. Minúsculo (como un armario), pero con una selección de cervezas que ya quisieran muchas ciudades. Nombre traducido: '¿Pero a qué habéis venido?'",
+      "hours": "Todos los días 11:00-02:00.",
+      "best_for": "Cerveza artesanal italiana en el pub más pequeño de Roma"
+    },
+    {
+      "name": "Trapizzino (Trastevere)",
+      "sub_category": "street_food",
+      "address": "Piazza Trilussa, 46, 00153 Roma",
+      "coordinates": {
+        "lat": 41.889,
+        "lng": 12.4679
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "5-12€",
+      "what_to_order": "Trapizzino de coda alla vaccinara, de pollo alla cacciatora, de melanzane alla parmigiana, suppli",
+      "tip": "Stefano Callegari inventó el trapizzino: un triángulo de pizza bianca relleno de guisos romanos clásicos. Genialidad pura. Sede Testaccio: Via Giovanni Branca, 88.",
+      "hours": "Todos los días 12:00-23:00 (aprox).",
+      "best_for": "El street food más original de Roma (pizza + guiso)"
+    },
+    {
+      "name": "Supplizio",
+      "sub_category": "street_food",
+      "address": "Via dei Banchi Vecchi, 143, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8966,
+        "lng": 12.4676
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Suppli classico al telefono (ragu), suppli cacio e pepe, suppli alla carbonara",
+      "tip": "El suppli elevado a gourmet. Las versiones de cacio e pepe y carbonara son adictivas. Perfecto para un bocado rápido entre visitas.",
+      "hours": "Lun-Sáb 11:00-21:00. Dom cerrado.",
+      "best_for": "El mejor suppli gourmet de Roma"
+    },
+    {
+      "name": "Dar Filettaro a Santa Barbara",
+      "sub_category": "street_food",
+      "address": "Largo dei Librari, 88, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8951,
+        "lng": 12.4726
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "8-15€",
+      "what_to_order": "Filetti di baccala fritti (bacalao frito), puntarelle, ensalada",
+      "tip": "Desde 1938, solo hacen una cosa: bacalao frito en masa crujiente. Y lo hacen perfecto. Local minimalista, mesas compartidas, sin tonterías.",
+      "hours": "Lun-Sáb 17:30-23:00. Dom cerrado.",
+      "best_for": "Filetes de bacalao fritos desde 1938 (una sola cosa, perfecta)"
+    },
+    {
+      "name": "Er Buchetto",
+      "sub_category": "street_food",
+      "address": "Via del Viminale, 2F, 00185 Roma",
+      "coordinates": {
+        "lat": 41.9008,
+        "lng": 12.4969
+      },
+      "zone": "Termini / Esquilino",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Panino di porchetta (con corteza crujiente), vino de la casa",
+      "tip": "Desde los años 50, porchetta directa del cerdo entero cortada al momento. El panino más contundente de Roma. Cerca de Termini, ideal para llegar con hambre.",
+      "hours": "Lun-Sáb 10:00-22:00 (aprox).",
+      "best_for": "El bocadillo de porchetta definitivo"
+    },
+    {
+      "name": "Mordi e Vai",
+      "sub_category": "street_food",
+      "address": "Mercato di Testaccio, Box 15, Via Beniamino Franklin, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8773,
+        "lng": 12.4752
+      },
+      "zone": "Testaccio",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Panino con bollito e salsa verde, panino con trippa, panino con picchiapò",
+      "tip": "Dentro del Mercato di Testaccio. Sergio Esposito prepara los mejores panini de carne estofada de Roma. Clásicos del quinto quarto entre dos rebanadas de pan.",
+      "hours": "Lun-Sáb 8:00-15:00. Dom cerrado.",
+      "best_for": "Panini de quinto quarto en el mercado más auténtico de Roma"
+    },
+    {
+      "name": "La Prosciutteria (Trastevere)",
+      "sub_category": "street_food",
+      "address": "Via della Scala, 71, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8897,
+        "lng": 12.4681
+      },
+      "zone": "Trastevere",
+      "price_range": "€",
+      "avg_price_person": "10-18€",
+      "what_to_order": "Tabla mixta de prosciutto, salami, quesos y bruschette. Vino tinto de la casa.",
+      "tip": "Tablas abundantes de embutidos y quesos italianos a buen precio. Perfecto para compartir entre dos. Ambiente desenfadado y juvenil.",
+      "hours": "Todos los días 11:00-00:00.",
+      "best_for": "Tablas de embutidos y quesos para compartir"
+    },
+    {
+      "name": "Pizzeria Da Baffetto",
+      "sub_category": "pizza",
+      "address": "Via del Governo Vecchio, 114, 00186 Roma",
+      "coordinates": {
+        "lat": 41.898,
+        "lng": 12.4692
+      },
+      "zone": "Centro Histórico",
+      "price_range": "€",
+      "avg_price_person": "10-18€",
+      "what_to_order": "Pizza margherita, capricciosa, con prosciutto crudo y rucola",
+      "tip": "Pizzería clásica romana desde 1960. Cola en la puerta garantizada. Pizza fina, crujiente y enorme. Sitio minúsculo, mesas compartidas.",
+      "hours": "Todos los días 18:30-01:00. Solo cenas.",
+      "best_for": "Pizza clásica romana nocturna con ambiente vintage"
+    },
+    {
+      "name": "Ai Tre Scalini",
+      "sub_category": "aperitivo",
+      "address": "Via Panisperna, 251, 00184 Roma",
+      "coordinates": {
+        "lat": 41.8949,
+        "lng": 12.4929
+      },
+      "zone": "Monti",
+      "price_range": "€",
+      "avg_price_person": "8-14€",
+      "what_to_order": "Vino de la casa, bruschette, polpette al sugo, tabla de quesos",
+      "tip": "El bar de referencia del barrio de Monti. Terraza estrecha pero con magia. Perfecto para el aperitivo antes de perderse por las callejuelas de Monti. Más de 100 vinos italianos.",
+      "hours": "Todos los días 12:00-01:00.",
+      "best_for": "Aperitivo de barrio en el corazón de Monti"
+    },
+    {
+      "name": "Panella - L'Arte del Pane",
+      "sub_category": "cafe",
+      "address": "Via Merulana, 54, 00185 Roma",
+      "coordinates": {
+        "lat": 41.896,
+        "lng": 12.5015
+      },
+      "zone": "Esquilino / Monti",
+      "price_range": "€",
+      "avg_price_person": "5-12€",
+      "what_to_order": "Cornetti salados, focaccia recién hecha, caffe al banco, pasteles de pistacho",
+      "tip": "Panadería-pastelería con fachada espectacular. El mostrador de focaccias y pizzas al taglio es tentador. Terraza para sentarse cerca de Santa Maria Maggiore.",
+      "hours": "Lun-Jue 8:00-23:00. Vie-Dom 8:00-00:00.",
+      "best_for": "Panadería gourmet con terraza y focaccias irresistibles"
+    },
+    {
+      "name": "Osteria Fernanda",
+      "sub_category": "trattoria",
+      "address": "Via Crescenzo del Monte, 18, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8835,
+        "lng": 12.4715
+      },
+      "zone": "Trastevere / Testaccio",
+      "price_range": "€€€",
+      "avg_price_person": "50-70€",
+      "what_to_order": "Menú degustación, tortelli, pigeon, maridaje de vinos naturales",
+      "tip": "Una estrella Michelin escondida en Trastevere. Cocina creativa italiana con productos de temporada. El maridaje de vinos naturales es excepcional. Reserva imprescindible.",
+      "hours": "Mar-Sáb 19:30-23:00. Dom-Lun cerrado.",
+      "best_for": "Cena especial con estrella Michelin en Trastevere"
+    },
+    {
+      "name": "Trecca - Cucina di Mercato",
+      "sub_category": "trattoria",
+      "address": "Via di Porta Cavalleggeri, 126, 00165 Roma",
+      "coordinates": {
+        "lat": 41.8972,
+        "lng": 12.4508
+      },
+      "zone": "Vaticano / Borgo",
+      "price_range": "€€",
+      "avg_price_person": "25-35€",
+      "what_to_order": "Pasta del día, verduras de temporada del mercado, secondi de carne o pescado",
+      "tip": "Cocina de mercado fresca. Cada día el menú cambia según lo que llega. Cerca del Vaticano pero sin turistas. Recomendada por Katie Parla.",
+      "hours": "Mar-Dom 12:30-15:00, 19:00-23:00. Lunes cerrado.",
+      "best_for": "Cocina de mercado fresca cerca del Vaticano"
+    }
+  ]
 }
