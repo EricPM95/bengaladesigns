@@ -171,15 +171,6 @@
       "description": "Paseo por las calles empedradas de Trastevere → subida al Gianicolo para el atardecer sobre Roma → cena en trattoria auténtica",
       "components": [
         {
-          "name": "Paseo por Trastevere",
-          "coordinates": [
-            41.8893,
-            12.47
-          ],
-          "duration_minutes": 120,
-          "tip": "Piérdete por Via della Scala y Via del Moro — las calles más fotogénicas. Santa Maria in Trastevere tiene mosaicos del siglo XII."
-        },
-        {
           "name": "Mirador del Janículo",
           "coordinates": [
             41.8912,
@@ -288,7 +279,6 @@
         12.47
       ],
       "places": [
-        "Paseo por Trastevere",
         "Mirador del Janículo",
         "Santa Maria in Trastevere",
         "Villa Farnesina",
@@ -660,25 +650,6 @@
       ],
       "filter_category": "museos_arte",
       "schedule": "09:00-19:30. Cerrado lunes"
-    },
-    {
-      "name": "Paseo por Trastevere",
-      "level": 1,
-      "tier": "imprescindible",
-      "zone": "trastevere",
-      "coordinates": [
-        41.8893,
-        12.47
-      ],
-      "duration_minutes": 120,
-      "type": "exterior",
-      "tip": "El barrio más auténtico de Roma. Ven por la tarde — las calles cobran vida a partir de las 17:00. Santa Maria in Trastevere tiene mosaicos dorados del siglo XII. Cena aquí.",
-      "photo_tip": "Las calles con hiedra y ropa tendida son la foto más 'romana'. Via della Scala y las callejuelas alrededor de Piazza de Santa Maria.",
-      "tags": [
-        "barrio",
-        "gastronomia"
-      ],
-      "filter_category": "monumentos"
     },
     {
       "name": "Mirador del Janículo",

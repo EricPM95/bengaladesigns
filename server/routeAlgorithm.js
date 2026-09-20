@@ -415,6 +415,13 @@ async function buildStopsForPlaces(places, startCursor, mapboxToken, clampFreeTo
     // resultado puede BAJAR, así que comprobar la apertura antes de redondear dejaría de garantizar
     // nada; el clamp va después y, si hace falta subir, sube al cuarto siguiente.
     startMinutes = roundToNearestQuarter(startMinutes)
+    // Ronda 12: redondear al cuarto MÁS CERCANO puede bajar hasta 7 minutos, y eso es aceptable
+    // contra la hora estimada de llegada — pero NO contra la parada anterior. Dos lugares pegados
+    // (isAdjacentByDistance, que se salta el colchón de 10min) dejaban `startMinutes = cursor` tal
+    // cual, así que el redondeo hacia abajo metía la parada ANTES de que terminara la anterior:
+    // real, Roma 3 días, Día 3 — "Santa Maria sopra Minerva 15:45-16:05" seguida de "Sant'Ignazio
+    // de Loyola 16:00-16:20", solapadas 5 minutos en la propia ficha del día.
+    if (stops.length > 0 && startMinutes < cursor) startMinutes = roundUpToQuarter(cursor)
     const openAt = nextOpenMinutes(place.schedule, startMinutes)
     if (openAt != null && openAt > startMinutes) startMinutes = roundUpToQuarter(openAt)
     stops.push(place.isFreeTour ? buildFreeTourStop({ default_free_tour: place }, startMinutes) : buildRegularStop(place, startMinutes))
@@ -1228,9 +1235,26 @@ function relatedToAlreadyUsed(place, usedNames) {
 // Ronda 5 (Parte 2B): con una zona empatada por nivel, los lugares cuyo `tags` coincide con una
 // experiencia que el usuario marcó como positiva (interestTags) se eligen antes — comparación
 // primero por coincidencia de tag, luego por nivel, igual criterio de siempre.
+/** Todo lo que el cuestionario llega a preguntar (unión de TAG_INTEREST_MAP) — sirve para distinguir
+    "este lugar no es de ningún tipo que preguntemos" de "es justo de uno que preguntamos y no lo
+    marcó". */
+const ASKED_ABOUT_TAGS = new Set(Object.values(TAG_INTEREST_MAP).flat())
+
 function fillerSortKey(interestTags) {
   return (place) => {
-    const tagRank = interestTags.size > 0 && (place.tags ?? []).some((tag) => interestTags.has(tag)) ? 0 : 1
+    const tags = place.tags ?? []
+    // Ronda 12: tres niveles en vez de dos.
+    //   0 — coincide con una experiencia que el viajero marcó.
+    //   1 — neutro: su tipo no es ninguno de los que el cuestionario pregunta (una plaza, un puente).
+    //   2 — es justo de un tipo que el cuestionario SÍ pregunta y el viajero NO marcó (p.ej. una
+    //       iglesia con tag `arte` sin haber pedido "Arte y Museos"). Va al final de la cola, pero
+    //       NUNCA se excluye (decisión explícita del usuario): si no hay nada mejor con lo que
+    //       llenar la tarde, entra igual — mejor eso que un hueco muerto.
+    let tagRank = 1
+    if (interestTags.size > 0) {
+      if (tags.some((tag) => interestTags.has(tag))) tagRank = 0
+      else if (tags.some((tag) => ASKED_ABOUT_TAGS.has(tag))) tagRank = 2
+    }
     return [tagRank, LEVEL_ORDER[place.level] ?? 9]
   }
 }
@@ -1415,6 +1439,29 @@ function findAdjacentZones(destData, zone, maxMinutes) {
 // recortando lo que no quepa en el horario real; esto solo permite recolectar más candidatos ANTES
 // de decidir qué cabe de verdad.
 const MAX_FILL_STOPS_PER_DAY = 5
+
+// Ronda 12 (pregunta directa del usuario: "la tarde acaba a las 19:05 con 75 minutos libres, ¿por
+// qué?"): la RECOLECCIÓN de relleno de la tarde ya no se corta por número de paradas sino por
+// TIEMPO. El tope contaba lo que no debía: 5 rellenos son 100 minutos si son plazas de 15' y 5
+// horas si son museos. Encontrado de verdad, Roma 3 días, Día 2: recolectaba 5/5 (Via della
+// Conciliazione, Ponte Sant'Angelo, Borgo Pio, Santa Maria in Trastevere, Piazza Trilussa), cerraba
+// la tarde a las 19:05 y dejaba 11 candidatos libres de zonas vecinas sin tocar, con 75 minutos de
+// margen hasta la cena. Ahora se recolecta mientras quepa en el horario y Regla F (fitWithinCutoff)
+// decide con tiempos REALES de Mapbox qué entra de verdad.
+//
+// MAX_FILL_STOPS_PER_DAY sigue mandando en dos sitios donde sí es lo correcto: el reparto de
+// propiedad entre días (planFillerOwnership — reservar 10 para un día que solo puede usar 5 mataba
+// de hambre a los demás, ver el comentario de la ronda 8 ahí) y fillStopsUntil.
+const FILLER_SAFETY_MAX_STOPS = 10
+
+// Coste estimado de desplazamiento entre dos paradas de relleno, solo para decidir a cuántos
+// candidatos da tiempo. Deliberadamente OPTIMISTA (12' es un paseo corto dentro de una zona, no los
+// 20' que usa planMustIncludePlacement para saltos entre franjas): quedarse corto aquí deja huecos
+// que ya nadie puede rellenar después, mientras que pasarse lo corrige Regla F con tiempos reales.
+const FILLER_TRANSIT_ESTIMATE_MINUTES = 12
+
+// La tarde siempre arranca a las 15:00 (ver buildOrderedAfternoon).
+const AFTERNOON_START_MINUTES = 15 * 60
 
 // Ronda 8B (issue 3): umbral de "zona pequeña" para el salto de Regla D — ver el comentario donde se
 // usa, dentro de buildDayBlockV2. 5 deja fuera a villa_borghese (4 lugares en total) y deja dentro a
@@ -1732,6 +1779,18 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // intercala el conjunto CORE + relleno por proximidad geográfica (Fix 11, afternoon_flow sigue
   // mandando cuando existe para la zona), reserva los miradores de relleno para el final (Ronda 7,
   // issue G) y programa el horario real.
+  /**
+   * Minutos de relleno que todavía caben en la tarde antes de `cutoffMinutes` — el hueco entre las
+   * 15:00 y el corte, menos lo que ya ocupa el contenido CORE (visitas + desplazamientos). Es una
+   * estimación para decidir A CUÁNTOS candidatos recolectar; el horario real, con caminatas de
+   * Mapbox, lo calcula después buildOrderedAfternoon, y Regla F recorta lo que no quepa.
+   */
+  function afternoonFillerBudget(cutoffMinutes) {
+    const coreMinutes = afternoonPlaces.reduce((sum, place) => sum + place.duration_minutes, 0)
+    const coreTransit = afternoonPlaces.length * FILLER_TRANSIT_ESTIMATE_MINUTES
+    return cutoffMinutes + SOFT_MARGIN_MINUTES - AFTERNOON_START_MINUTES - coreMinutes - coreTransit
+  }
+
   async function buildOrderedAfternoon(candidates) {
     const allUnits = [...buildUnits(afternoonPlaces), ...candidates.map((c) => ({ places: [c], isFiller: true }))]
     const units = pushMiradorFillersToEnd(buildGeographicOrder(destData, afternoonZone, allUnits))
@@ -1776,15 +1835,21 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // corte no es la cena (va dentro del propio evening_block) sino cuánto se puede retrasar el
     // bloque sin que se le eche la noche encima — TRANSITION_MAX_DELAY_MINUTES de margen sobre su
     // ideal_start, con el mismo margen soft (issue M) por encima de eso.
+    const transitionCutoff = timeToMinutes(eveningBlockData.ideal_start) + TRANSITION_MAX_DELAY_MINUTES
     let fillerCandidates = []
     if (isCompleto && afternoonZone) {
-      for (const candidate of findLeftoverZonePlaces(destData, afternoonZone, usedNames, interestTags, 15 * 60)) {
-        if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break
+      let budgetMinutes = afternoonFillerBudget(transitionCutoff)
+      for (const candidate of findLeftoverZonePlaces(destData, afternoonZone, usedNames, interestTags, AFTERNOON_START_MINUTES)) {
+        if (fillerCandidates.length >= FILLER_SAFETY_MAX_STOPS) break
+        const cost = candidate.duration_minutes + FILLER_TRANSIT_ESTIMATE_MINUTES
+        // `continue`, no `break`: que no quepa una visita de 60' no significa que no quepa la plaza
+        // de 10' que viene detrás.
+        if (cost > budgetMinutes) continue
         fillerCandidates.push(candidate)
         usedNames.add(candidate.name)
+        budgetMinutes -= cost
       }
     }
-    const transitionCutoff = timeToMinutes(eveningBlockData.ideal_start) + TRANSITION_MAX_DELAY_MINUTES
     const built = await fitWithinCutoff(fillerCandidates, transitionCutoff)
     afternoonOrder = built.order
     afternoonStops = built.scheduled
@@ -1795,11 +1860,11 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // garantiza que ningún relleno elegido aquí pueda repetirse en otro día del viaje.
     let fillerCandidates = []
     if (isCompleto && afternoonZone) {
+      let budgetMinutes = afternoonFillerBudget(DINNER_CUTOFF_MINUTES)
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
       fillZoneLoop: for (const zone of fillZones) {
-        const remainingBudget = MAX_FILL_STOPS_PER_DAY - fillerCandidates.length
-        if (remainingBudget <= 0) break fillZoneLoop
-        const zoneCandidates = findLeftoverZonePlaces(destData, zone, usedNames, interestTags, 15 * 60).slice(0, remainingBudget)
+        if (budgetMinutes <= 0 || fillerCandidates.length >= FILLER_SAFETY_MAX_STOPS) break fillZoneLoop
+        const zoneCandidates = findLeftoverZonePlaces(destData, zone, usedNames, interestTags, AFTERNOON_START_MINUTES)
         // Ronda 8B (issue 6, Regla A): cruzar a una zona VECINA (nunca la propia, esa siempre vale
         // la pena — ya estás ahí) por una sola parada corta no compensa el desvío — encontrado de
         // verdad: Día 2 se iba hasta Trastevere (zona vecina) solo por "Santa Maria in Trastevere"
@@ -1814,10 +1879,13 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         const isSoloMirador = zoneCandidates.length === 1 && (zoneCandidates[0].tags ?? []).includes('mirador')
         if (zone !== afternoonZone && zoneCandidates.length === 1 && zoneCandidates[0].duration_minutes < 60 && !isSoloMirador) continue
         for (const candidate of zoneCandidates) {
+          const cost = candidate.duration_minutes + FILLER_TRANSIT_ESTIMATE_MINUTES
+          if (cost > budgetMinutes) continue
           fillerCandidates.push(candidate)
           usedNames.add(candidate.name)
+          budgetMinutes -= cost
+          if (fillerCandidates.length >= FILLER_SAFETY_MAX_STOPS) break fillZoneLoop
         }
-        if (fillerCandidates.length >= MAX_FILL_STOPS_PER_DAY) break fillZoneLoop
       }
     }
     const built = await fitWithinCutoff(fillerCandidates, DINNER_CUTOFF_MINUTES)
