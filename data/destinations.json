@@ -17,6 +17,7 @@
     "timezone": "Europe/Rome",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -847,6 +848,7 @@
     "timezone": "Europe/Paris",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -1598,6 +1600,7 @@
     "timezone": "Europe/London",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -2153,6 +2156,7 @@
     "timezone": "Europe/Madrid",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -2697,6 +2701,7 @@
     "timezone": "Europe/Lisbon",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -3170,6 +3175,7 @@
     "timezone": "Europe/Madrid",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -3646,6 +3652,7 @@
     "timezone": "Europe/Amsterdam",
     "walking_friendly": true,
     "metro_useful": false,
+    "default_transport": "public",
     "bike_friendly": true,
     "levels": {
       "1": {
@@ -4145,6 +4152,7 @@
     "timezone": "Europe/Prague",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -4586,6 +4594,7 @@
     "timezone": "Europe/Berlin",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -5043,6 +5052,7 @@
     "timezone": "Europe/Vienna",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -5526,6 +5536,7 @@
     "timezone": "Europe/Rome",
     "walking_friendly": true,
     "metro_useful": false,
+    "default_transport": "public",
     "levels": {
       "1": {
         "description": "Imprescindibles — viajes de 2-3 días",
@@ -5985,6 +5996,7 @@
     "timezone": "Europe/Rome",
     "walking_friendly": true,
     "metro_useful": false,
+    "default_transport": "public",
     "special_transport": "vaporetto",
     "levels": {
       "1": {
@@ -6379,6 +6391,7 @@
     "timezone": "Europe/Athens",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "places": [
@@ -6791,6 +6804,7 @@
     "timezone": "Europe/Istanbul",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "places": [
@@ -7208,6 +7222,7 @@
     "timezone": "Europe/Budapest",
     "walking_friendly": true,
     "metro_useful": true,
+    "default_transport": "public",
     "levels": {
       "1": {
         "places": [
@@ -7938,7 +7953,8 @@
           "Belenes artesanales sevillanos y dulces conventuales. Más pequeño que los del norte pero con encanto andaluz"
         ]
       }
-    ]
+    ],
+    "default_transport": "public"
   },
   "dublin": {
     "destination_type": "city",
@@ -8257,7 +8273,8 @@
           "Mercadillo en el patio del castillo — más pequeño que los centroeuropeos pero con encanto. Mulled wine y mince pies"
         ]
       }
-    ]
+    ],
+    "default_transport": "public"
   },
   "edimburgo": {
     "destination_type": "city",
@@ -8580,7 +8597,8 @@
           "La Nochevieja más famosa del mundo — fiesta callejera masiva el 31 de diciembre con fuegos artificiales sobre el Castillo. Entradas se agotan meses antes"
         ]
       }
-    ]
+    ],
+    "default_transport": "public"
   },
   "napoles": {
     "destination_type": "city",
@@ -8852,7 +8870,8 @@
         }
       }
     },
-    "winter_markets": []
+    "winter_markets": [],
+    "default_transport": "public"
   },
   "dubrovnik": {
     "destination_type": "city",
@@ -9126,6 +9145,7 @@
           "Pequeño pero mágico — la Stradun iluminada con decoración navideña y puestos de comida croata"
         ]
       }
-    ]
+    ],
+    "default_transport": "public"
   }
 }

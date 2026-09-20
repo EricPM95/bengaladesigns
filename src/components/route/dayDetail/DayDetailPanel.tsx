@@ -24,7 +24,7 @@ import { AddStopScreen } from '../addStop/AddStopScreen'
 import { MealDetailSheet } from './MealDetailSheet'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
-import { AddStopButton, StopConnector } from './StopConnector'
+import { StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
@@ -55,6 +55,14 @@ interface DayDetailPanelProps {
 }
 
 const DEFAULT_MODE: TransportMode = 'walking'
+/**
+ * A partir de cuántos minutos a pie deja de tener sentido enseñar el tramo como un paseo. Por
+ * debajo, andar es lo natural en una ciudad y lo que el viajero va a hacer igualmente; por encima,
+ * enseñarle "35 min a pie" como única opción es esconderle que hay metro. Sobre este umbral el hueco
+ * pasa a mostrar el transporte propio del destino (ver Route.defaultTransport) con el tiempo a pie
+ * debajo como alternativa — nunca desaparece, solo deja de ser lo primero.
+ */
+const LONG_WALK_MINUTES = 20
 /** Hora asumida de inicio de la jornada cuando la primera parada no trae una `time` real (rutas dev/plantilla) — ver `computeStopSchedule`. */
 const DAY_START_MINUTES = 9 * 60
 /** Minutos a pie entre dos paradas cuando el conector no trae un `walkMinutes` real todavía (ni mock ni refinado por Mapbox) — mismo valor de reserva que `retimeStops` en useRouteStore.ts, para que el horario calculado aquí no se desvíe del que ya usa Modo Hoy. */
@@ -399,18 +407,32 @@ export function DayDetailPanel({
   const dinnerInsertionIndex = findMealInsertionIndex(schedule, DINNER_WINDOW)
   const destino = route?.destination ?? day.city
 
-  const renderConnector = (
+  /**
+   * Un hueco del timeline. Se pinta SIEMPRE (ver StopConnector): la cadena "+ Añadir parada" no
+   * puede tener agujeros, porque el hueco es el único sitio desde el que se inserta una parada ahí.
+   * `connector` a null = hueco sin información de desplazamiento que mostrar (antes de la primera
+   * parada, cambio de franja, junto a un bloque de comida, o un conector que el viajero ocultó);
+   * el botón sigue estando.
+   */
+  /** Modo que se enseña en un hueco mientras el viajero no elija otro — ver LONG_WALK_MINUTES. */
+  const defaultModeFor = (connector: ConnectorInfo | null): TransportMode => {
+    const walkMinutes = connector?.walkMinutes
+    if (walkMinutes === undefined || walkMinutes <= LONG_WALK_MINUTES) return DEFAULT_MODE
+    return (route?.defaultTransport ?? 'public') === 'car' ? 'driving' : 'transit'
+  }
+
+  const renderGap = (
     connectorKey: string,
-    connector: ConnectorInfo,
+    connector: ConnectorInfo | null,
     fromName: string,
     toName: string,
     addStopIndex: number,
   ) => {
-    const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? DEFAULT_MODE
-    if (hiddenConnectors.has(connectorKey)) return null
+    const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? defaultModeFor(connector)
     return (
       <StopConnector
-        connector={connector}
+        key={connectorKey}
+        connector={hiddenConnectors.has(connectorKey) ? null : connector}
         fromName={fromName}
         toName={toName}
         mode={resolvedMode}
@@ -425,17 +447,12 @@ export function DayDetailPanel({
     )
   }
 
-  // "+" sin ConnectorInfo real (BLOQUE B) — el hueco antes/después de un bloque de comida/cena no
-  // tiene un desplazamiento calculado (MealTimeAccordion no es una parada real), pero necesita el
-  // mismo botón que cualquier otro hueco del timeline. Ambos lados de una misma comida insertan en
-  // el mismo índice del array de paradas (la comida no ocupa una posición propia ahí) — solo cambia
-  // dónde se ve el botón, antes o después de la tarjeta dorada.
-  const renderMealGapAddStop = (insertIndex: number) => (
-    <div className="flex items-center gap-2 py-1 pl-4">
-      <span className="h-6 w-px shrink-0 border-l border-dashed border-text-muted" />
-      <AddStopButton onAddStop={() => setInsertAt(insertIndex)} />
-    </div>
-  )
+  // Hueco junto a un bloque de comida/cena (BLOQUE B): no hay desplazamiento calculado hacia una
+  // comida (MealTimeAccordion no es una parada real), así que es un hueco sin conector. Solo se
+  // pinta el de ANTES de la tarjeta dorada — el de después ya lo cubre el hueco que abre la
+  // siguiente parada (o el de fin de día si la comida cierra el día), y pintar los dos dejaría dos
+  // botones pegados.
+  const renderMealGap = (insertIndex: number) => renderGap(`${day.id}-meal-gap-${insertIndex}`, null, '', '', insertIndex)
 
   // Mismo patrón de tirador arrastrable que StopDetailSheet.tsx/ArrivalDetailSheet.tsx — agranda/encoge el mini-mapa, clamped entre MAP_MIN_VH y MAP_MAX_VH.
   const handleMapDragStart = (event: ReactPointerEvent) => {
@@ -593,12 +610,6 @@ export function DayDetailPanel({
             const showConnector = index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
             const showLunchAccordion = lunchInsertionIndex === index
             const showDinnerAccordion = dinnerInsertionIndex === index
-            // Si esta es la ÚLTIMA parada del día, lo que sigue a la comida/cena no es otra parada
-            // sino "Fin del día" — que ya trae su propio "+ Añadir parada" (el conector final, ver
-            // más abajo). Mostrar TAMBIÉN el de después del acordeón dorado sería un botón duplicado
-            // pegado al mismo hueco — se omite solo ese lado, el de ANTES del acordeón se mantiene
-            // (ese hueco, parada→comida, no lo cubre nadie más).
-            const suppressTrailingMealGap = index === stops.length - 1 && Boolean(finalConnector)
 
             // Rango horario de la franja completa (ej. "09:00 — 13:30") — busca hasta dónde llega
             // esta misma franja (mismo criterio que `showConnector`: mientras el slot no cambie) para
@@ -621,7 +632,9 @@ export function DayDetailPanel({
                       {SLOT_LABELS[slot]} · {slotRangeLabel}
                     </p>
                   )}
-                  {showConnector && renderConnector(connectorKey, connector, fromName, stop.name, index)}
+                  {/* El hueco SIEMPRE se pinta; `showConnector` decide solo si además lleva la
+                      información de desplazamiento (ver renderGap). */}
+                  {renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index)}
                   <StopAccordion
                     index={index}
                     stop={stop}
@@ -634,7 +647,7 @@ export function DayDetailPanel({
                 </div>
                 {showLunchAccordion && (
                   <>
-                    {renderMealGapAddStop(index + 1)}
+                    {renderMealGap(index + 1)}
                     <div className="pt-2">
                       <MealTimeAccordion
                         destino={destino}
@@ -646,12 +659,11 @@ export function DayDetailPanel({
                         onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
                       />
                     </div>
-                    {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
                 )}
                 {showDinnerAccordion && (
                   <>
-                    {renderMealGapAddStop(index + 1)}
+                    {renderMealGap(index + 1)}
                     <div className="pt-2">
                       <MealTimeAccordion
                         destino={destino}
@@ -663,16 +675,17 @@ export function DayDetailPanel({
                         onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
                       />
                     </div>
-                    {!suppressTrailingMealGap && renderMealGapAddStop(index + 1)}
                   </>
                 )}
               </Fragment>
             )
           })}
 
+          {/* Hueco de fin de día: también se pinta siempre, aunque todavía no se sepa dónde se
+              duerme (sin alojamiento elegido no hay `finalConnector` que mostrar, pero sí tiene que
+              poder añadirse una parada al final del día). */}
           {stops.length > 0 &&
-            finalConnector &&
-            renderConnector(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
+            renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
 
           {day.recommendedRevisits && day.recommendedRevisits.length > 0 && (
             <div className="space-y-2 pt-3">

@@ -468,6 +468,9 @@ export interface Budget {
 
 // ── Route (top level) ─────────────────────────────────────
 
+/** Cómo se mueve el viajero en este destino cuando ir a pie deja de tener sentido (ver default_transport en los JSON de destino y resolveDefaultTransport en server/index.js). */
+export type TripDefaultTransport = 'public' | 'car'
+
 export interface Route {
   id: string
   destination: string
@@ -486,6 +489,8 @@ export interface Route {
   arrivalFlightTime?: string | null
   /** Hora del vuelo de salida en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del último día. */
   departureFlightTime?: string | null
+  /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */
+  defaultTransport?: TripDefaultTransport
   /** Nombres de las anclas (Paso 1 del pipeline, /api/generate-anchors) usadas para generar esta ruta — permite a StopDetailSheet saber si una parada es una "ancla" (lugar obligatorio del destino, con tip cacheado + búsqueda web en tips_anclas) o una parada normal del pool (tip simple, sin caché). Vacío en rutas dev/manuales, que no pasan por ese paso. */
   anchorNames?: string[]
 }

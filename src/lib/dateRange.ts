@@ -67,12 +67,17 @@ export function formatCompactDateRangeEs(startIso: string, endIso: string): stri
   return `${startDay} ${startMonth} - ${endDay} ${endMonth}`
 }
 
-/** "3 sept — 5 sept 2024" — cabecera del mapa (Ronda 9, Mejora 2). Mes en minúsculas (no abreviatura
-    en mayúsculas como el resto de formatos de esta pestaña) y el año solo al final, una vez. */
+/** "3 sept — 5 sept" — cabecera del mapa (Ronda 9, Mejora 2). Mes en minúsculas (no abreviatura en
+    mayúsculas como el resto de formatos de esta pestaña). Sin año: quien planifica su viaje ya sabe
+    en qué año viaja, y la cabecera es estrecha. La única excepción es un viaje que cruza de un año a
+    otro ("30 dic 2026 — 2 ene 2027"), donde sin el año no se entiende en qué orden van las fechas. */
 export function formatHeaderDateRangeEs(startIso: string, endIso: string): string {
   const start = new Date(`${startIso}T00:00:00`)
   const end = new Date(`${endIso}T00:00:00`)
   const startMonth = MONTH_ABBR_FORMAT.format(start).replace('.', '')
   const endMonth = MONTH_ABBR_FORMAT.format(end).replace('.', '')
-  return `${start.getDate()} ${startMonth} — ${end.getDate()} ${endMonth} ${end.getFullYear()}`
+  const crossesYears = start.getFullYear() !== end.getFullYear()
+  const startLabel = `${start.getDate()} ${startMonth}${crossesYears ? ` ${start.getFullYear()}` : ''}`
+  const endLabel = `${end.getDate()} ${endMonth}${crossesYears ? ` ${end.getFullYear()}` : ''}`
+  return `${startLabel} — ${endLabel}`
 }

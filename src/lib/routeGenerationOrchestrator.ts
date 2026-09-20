@@ -1,4 +1,4 @@
-import type { QuestionnaireAnswers, Route, TransportContext } from './types'
+import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTransport } from './types'
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
 
@@ -70,6 +70,8 @@ export interface SkeletonResponse {
    * definitivos (franjas/night experiences/evening blocks/Mapbox), así que App.tsx se salta
    * applyRealStopSchedule para ellas en vez de recalcular la hora de cada parada desde cero. */
   times_are_final?: boolean
+  /** Ver resolveDefaultTransport en server/index.js — viaja hasta Route.defaultTransport vía initialGeneratedFromSkeleton. */
+  default_transport?: TripDefaultTransport
 }
 
 export type GenerationPhase = 'skeleton' | 'places' | 'blocks' | 'done'
@@ -332,6 +334,7 @@ function initialGeneratedFromSkeleton(skeleton: SkeletonResponse): GeneratedRout
     excursions_available: [],
     city_transitions: skeleton.city_transitions,
     phase_transitions: skeleton.phase_transitions,
+    default_transport: skeleton.default_transport,
   }
 }
 

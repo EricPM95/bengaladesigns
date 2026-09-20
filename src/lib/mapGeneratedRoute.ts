@@ -15,6 +15,7 @@ import type {
   TicketOption,
   TransportContext,
   TransportSegment,
+  TripDefaultTransport,
 } from './types'
 import { buildTransportSegment, type CityTransitionFact } from './cityTransitionTransport'
 import { buildPhaseTransportSegment, type PhaseTransitionFact } from './phaseTransitionTransport'
@@ -172,6 +173,8 @@ export interface GeneratedRouteResponse {
    * routeGenerationOrchestrator.ts) — no lo usa nada de mapGeneratedRouteToRoute directamente, que
    * sigue recibiendo recommendedRevisits como su propio parámetro aparte. */
   recommended_revisits?: { name: string; day_number: number; reason: string }[]
+  /** Cómo se mueve el viajero en este destino cuando ir a pie deja de tener sentido — llega desde generate-skeleton (ver resolveDefaultTransport en server/index.js) y acaba en Route.defaultTransport. */
+  default_transport?: TripDefaultTransport
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -518,6 +521,7 @@ export function mapGeneratedRouteToRoute(
     budget: mapBudget(generated.estimated_budget),
     intensity: answers.pace === 'zen' ? 1 : answers.pace === 'nonstop' ? 5 : 3,
     createdAt: new Date().toISOString(),
+    defaultTransport: generated.default_transport,
     anchorNames,
   }
 }

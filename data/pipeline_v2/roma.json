@@ -2,6 +2,7 @@
   "destination": "Roma",
   "country": "Italia",
   "timezone": "Europe/Rome",
+  "default_transport": "public",
   "default_free_tour": {
     "name": "Free Tour Centro Histórico",
     "meeting_point": "Piazza di Spagna",

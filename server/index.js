@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
-import { findPipelineV2Data, hasFreeTourFromAnswers, buildSkeletonV2, buildDayPlacesV2, buildDayBlockV2 } from './routeAlgorithm.js'
+import { findPipelineV2Data, findPipelineV2Key, hasFreeTourFromAnswers, buildSkeletonV2, buildDayPlacesV2, buildDayBlockV2 } from './routeAlgorithm.js'
 
 config({ path: '.env.local' })
 
@@ -2674,6 +2674,21 @@ function ensureExcursionDays(days, totalDays) {
   return days
 }
 
+/**
+ * Cómo se mueve de verdad el viajero entre dos paradas de ESTE destino cuando ir a pie deja de tener
+ * sentido: `"public"` (metro/bus) o `"car"`. Sale del JSON del destino (`default_transport`, tanto en
+ * data/pipeline_v2/*.json como en los 20 curados de data/destinations.json); cualquier destino sin
+ * dato cae a `"public"`, que es lo razonable para una ciudad. Viaja con la ruta (ver `Route.defaultTransport`)
+ * para que DIAS pueda elegir qué enseñar en cada hueco sin volver a preguntar al servidor.
+ */
+function resolveDefaultTransport(destination) {
+  const fromPipelineV2 = findPipelineV2Data(destination)?.default_transport
+  if (fromPipelineV2 === 'car' || fromPipelineV2 === 'public') return fromPipelineV2
+  const fromCurated = findDestinationData(destination)?.default_transport
+  if (fromCurated === 'car' || fromCurated === 'public') return fromCurated
+  return 'public'
+}
+
 app.post('/api/generate-skeleton', async (req, res) => {
   const { destination, answers } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers)) {
@@ -2683,6 +2698,7 @@ app.post('/api/generate-skeleton', async (req, res) => {
 
   const transportContext = readTransportContext(req.body)
   const totalDays = Number(answers.days) > 0 ? Number(answers.days) : 1
+  const defaultTransport = resolveDefaultTransport(destination)
 
   // Pipeline v2 (algoritmo JS puro, ver routeAlgorithm.js) — solo Roma por ahora, y solo hasta 5
   // días (zone_distribution no cubre más). Fuera de ese rango, o para cualquier otro destino,
@@ -2692,7 +2708,7 @@ app.post('/api/generate-skeleton', async (req, res) => {
     const skeletonV2 = buildSkeletonV2(pipelineV2Data, totalDays, hasFreeTourFromAnswers(answers))
     if (skeletonV2) {
       console.log(`[pipeline-v2] "${destination}" — esqueleto resuelto con el algoritmo JS, sin llamada a Claude`)
-      res.json(skeletonV2)
+      res.json({ ...skeletonV2, default_transport: defaultTransport })
       return
     }
   }
@@ -2723,6 +2739,7 @@ app.post('/api/generate-skeleton', async (req, res) => {
       days,
       city_transitions: Array.isArray(parsed?.city_transitions) ? sanitizeCityTransitions(parsed.city_transitions) : undefined,
       phase_transitions: Array.isArray(parsed?.phase_transitions) ? sanitizePhaseTransitions(parsed.phase_transitions) : undefined,
+      default_transport: defaultTransport,
     })
   } catch (error) {
     console.log(`[timing] generate-skeleton FAILED — ${Date.now() - t0}ms`)
