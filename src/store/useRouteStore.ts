@@ -46,12 +46,46 @@ function linkBudgetItem(budget: Budget, id: string, item: Omit<BudgetItem, 'id'>
   return recalculateBudgetTotal({ ...budget, items: item ? [...withoutPrevious, { ...item, id }] : withoutPrevious })
 }
 
-// La primera parada conserva su propia `time` tal cual (puede venir de una edición manual, ej.
-// "Cambiar hora" — nunca se toca lo que el viajero fijó a mano); desde la segunda en adelante, cada
-// hora SÍ es un cálculo (acumulado + colchón), así que se redondea hacia arriba al cuarto de hora
-// como el resto del horario de la app (ver roundUpToQuarterHour en time.ts / stopScheduling.ts) —
-// nunca "10:27". El redondeo se propaga (el cursor sigue desde la hora YA redondeada), no se acumula
-// error de arrastre.
+/**
+ * LA REGLA (decisión de producto, no un detalle de implementación): la ruta que entregamos está
+ * planificada al detalle — horarios de apertura, orden geográfico para no perder tiempo, trayecto
+ * real entre cada dos paradas. En cuanto el viajero la modifica a mano, dejamos de planificar: es su
+ * ruta. NO reordenamos, NO recolocamos y NO recalculamos la hora de ninguna parada que él no haya
+ * tocado. Lo único que seguimos poniendo es **el tiempo que se tarda de un lugar al siguiente**,
+ * recalculado para el par que acaba de quedar contiguo (ver `refinedConnectors` en
+ * DayDetailPanel.tsx, que lo pide a Mapbox en cuanto cambia la lista de paradas).
+ *
+ * Por eso aquí ya no hay ningún "retimeStops" global. Quitar una parada no adelanta el resto del
+ * día (bug real: al borrar "Paseo por Trastevere" —2h— la tarde entera se iba hacia atrás, Bocca
+ * della Verità de 16:35 a 14:00, y la experiencia nocturna se colaba delante de la cena). Añadir una
+ * tampoco empuja a las de después: lo único que calculamos es la hora de la parada NUEVA, que no
+ * tenía ninguna.
+ */
+function timeForStopAfter(previous: Stop | undefined, fallback: string): string {
+  if (!previous) return fallback
+  const previousStart = parseTimeToMinutes(previous.time)
+  if (Number.isNaN(previousStart)) return fallback
+  return minutesToTime(roundUpToQuarterHour(previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 15)))
+}
+
+/**
+ * Reordenar ("Mover antes"/"Mover después") es el único caso en que las horas cambian de dueño: las
+ * horas del día son sus huecos, y lo que el viajero mueve es QUÉ visita en cada hueco. Así el día
+ * sigue leyéndose en orden en vez de quedar con las horas desordenadas. Tampoco aquí se planifica
+ * nada nuevo: son exactamente las mismas horas que ya tenía el día, solo que reasignadas.
+ */
+function reassignTimesByPosition(previousOrder: Stop[], nextOrder: Stop[]): Stop[] {
+  return nextOrder.map((stop, index) => (previousOrder[index] ? { ...stop, time: previousOrder[index].time } : stop))
+}
+
+/**
+ * Planificación completa desde cero — SOLO para "Regenerar este día", que no es una edición del
+ * viajero sino una ruta nueva nuestra, así que ahí sí volvemos a decidir las horas. La primera
+ * parada conserva la suya; de la segunda en adelante, acumulado + colchón, redondeado hacia arriba
+ * al cuarto de hora como el resto del horario de la app (ver roundUpToQuarterHour en time.ts /
+ * stopScheduling.ts) — nunca "10:27". El redondeo se propaga desde la hora YA redondeada, así que no
+ * acumula error de arrastre.
+ */
 function retimeStops(stops: Stop[]): Stop[] {
   if (stops.length === 0) return stops
   let cursor = parseTimeToMinutes(stops[0].time)
@@ -586,9 +620,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return {
+        // Quitar una parada no toca la hora de ninguna otra — ver LA REGLA arriba.
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: retimeStops(day.stops.filter((stop) => stop.id !== stopId)),
+          stops: day.stops.filter((stop) => stop.id !== stopId),
         })),
       }
     }),
@@ -602,7 +637,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           const reordered = orderedStopIds
             .map((id) => stopsById.get(id))
             .filter((stop): stop is Stop => Boolean(stop))
-          return { ...day, stops: retimeStops(reordered) }
+          return { ...day, stops: reassignTimesByPosition(day.stops, reordered) }
         }),
       }
     }),
@@ -617,8 +652,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         route: {
           ...state.route,
           days: state.route.days.map((day) => {
-            if (day.id === fromDayId) return { ...day, stops: retimeStops(day.stops.filter((s) => s.id !== stopId)) }
-            if (day.id === toDayId) return { ...day, stops: retimeStops([...day.stops, stop]) }
+            // El día de ORIGEN solo pierde una parada (como removeStop: nadie más cambia de hora).
+            // En el de DESTINO la parada llega al final, y ahí sí hay que ponerle una hora porque la
+            // que traía era la de otro día — pero sin tocar las que ya estaban.
+            if (day.id === fromDayId) return { ...day, stops: day.stops.filter((s) => s.id !== stopId) }
+            if (day.id === toDayId) {
+              return { ...day, stops: [...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }] }
+            }
             return day
           }),
         },
@@ -640,7 +680,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return {
-        route: updateDay(state.route, dayId, (day) => ({ ...day, stops: retimeStops([...day.stops, stop]) })),
+        // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
+        route: updateDay(state.route, dayId, (day) => ({
+          ...day,
+          stops: [...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }],
+        })),
       }
     }),
 
@@ -660,9 +704,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return state
       return {
         route: updateDay(state.route, dayId, (day) => {
+          // Igual que addStop pero en una posición concreta: hora solo para la que entra, calculada
+          // desde la parada que le queda justo delante. Las de detrás se quedan como estaban.
           const stops = [...day.stops]
-          stops.splice(index, 0, stop)
-          return { ...day, stops: retimeStops(stops) }
+          stops.splice(index, 0, { ...stop, time: timeForStopAfter(day.stops[index - 1], stop.time) })
+          return { ...day, stops }
         }),
       }
     }),
