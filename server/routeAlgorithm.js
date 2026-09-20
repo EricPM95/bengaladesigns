@@ -77,17 +77,26 @@ function stripAccentsLower(value) {
   return typeof value === 'string' ? value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() : ''
 }
 
-export function findPipelineV2Data(destination) {
+/** Clave del destino en data/pipeline_v2/ ("roma"), o null si no hay datos v2 para él. Separado de
+    `findPipelineV2Data` porque hay cosas que se guardan POR destino fuera del JSON principal y
+    necesitan la clave, no el contenido — hoy, el detalle ampliado de cada lugar
+    (data/pipeline_v2/detalle/<clave>/<zona>.json, ver loadPlaceDetail en index.js). */
+export function findPipelineV2Key(destination) {
   const norm = stripAccentsLower(destination)
   if (!norm) return null
   const words = new Set(norm.split(/[^a-z]+/).filter(Boolean))
   for (const [key, aliases] of Object.entries(PIPELINE_V2_ALIASES)) {
     if (!PIPELINE_V2_DATA[key]) continue
     for (const alias of aliases) {
-      if (words.has(alias)) return PIPELINE_V2_DATA[key]
+      if (words.has(alias)) return key
     }
   }
   return null
+}
+
+export function findPipelineV2Data(destination) {
+  const key = findPipelineV2Key(destination)
+  return key ? PIPELINE_V2_DATA[key] : null
 }
 
 export function hasFreeTourFromAnswers(answers) {
@@ -713,6 +722,14 @@ function displacementCost(place) {
 // comprobación de hora de CIERRE, nunca para el presupuesto de contenido del bloque.
 const TRANSIT_ESTIMATE_PER_STOP_MINUTES = 20
 
+// Cuánto hueco libre del bloque se da por perdido al calcular a qué hora arrancaría de verdad una
+// visita con hora de cierre — ~2 paradas de relleno con su desplazamiento, que es lo que cabe en la
+// práctica antes de que la Regla F recorte. Ver el cálculo de `estimatedStart` en fitsWith.
+const RESERVED_FILLER_MINUTES = 80
+// Por debajo de este contenido ya colocado, la visita del pool queda de hecho al principio del
+// bloque (menos de una hora en un bloque de ~5h) y hay hueco abierto delante para que entre relleno.
+const EARLY_SLOT_LOAD_MINUTES = 60
+
 // Cuánto más caro es perder un lugar del viaje que simplemente moverlo a la otra franja del mismo
 // día — lo bastante alto como para que un plan que no pierde nada gane SIEMPRE a uno que sí, aunque
 // mueva de sitio contenido de más nivel (ver planSlotFit).
@@ -770,10 +787,20 @@ function planMustIncludePlacement(destData, variant, mustIncludeNames, interestT
     // arriba mide VOLUMEN de contenido (y por eso no lleva este extra); esto mide RELOJ, y el reloj
     // incluye los traslados.
     const stopsBefore = names.filter((name) => typeof name === 'string' && !name.startsWith('Free Tour')).length + (containerMinutes > 0 ? 1 : 0)
-    const estimatedStart = SLOT_START_ESTIMATE[slotKey] + existingLoad + containerMinutes + TRANSIT_ESTIMATE_PER_STOP_MINUTES * stopsBefore
     const closing = parseClosingMinutes(place.schedule)
-    if (closing != null && estimatedStart + (place.duration_minutes ?? 0) > closing) return false
-    return true
+    if (closing == null) return true
+    // Y ADEMÁS: si la visita queda al PRINCIPIO del bloque, las Reglas A/C tienen ahí delante un
+    // hueco abierto y meten relleno, que la retrasa. Encontrado de verdad: con la tarde del Día 3
+    // vaciada para hacerle sitio, San Luigi dei Francesi se coló a las 15:00 y empujó Galería
+    // Borghese a las 18:05 — cierra a las 19:00. Con el bloque ya ocupado por delante eso no pasa
+    // (Museos Capitolinos, con hora y media de contenido antes, entra a las 16:10 sin problema), y
+    // reservar hueco ahí solo conseguiría desplazar contenido que sí cabía. De ahí que la reserva
+    // dependa de cuánto queda DELANTE, no del hueco libre total.
+    const leftoverRoom = Math.max(0, MUST_INCLUDE_SLOT_BUDGET_MINUTES - (existingLoad + estimatePlaceLoadMinutes(destData, place, names, usedNames)))
+    const fillerReserve = existingLoad < EARLY_SLOT_LOAD_MINUTES ? Math.min(leftoverRoom, RESERVED_FILLER_MINUTES) : 0
+    const estimatedStart =
+      SLOT_START_ESTIMATE[slotKey] + existingLoad + containerMinutes + TRANSIT_ESTIMATE_PER_STOP_MINUTES * stopsBefore + fillerReserve
+    return estimatedStart + (place.duration_minutes ?? 0) <= closing
   }
 
   /**
