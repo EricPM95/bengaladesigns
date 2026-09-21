@@ -1573,7 +1573,31 @@ const SMALL_ZONE_MAX_PLACES = 5
 // Regla F (ronda 3): ningún relleno de la Regla A puede dejar la última parada terminando a esta hora
 // o después — la cena es un corte (ver DINNER_WINDOW en DayDetailPanel.tsx, 20:30-22:00); 20:00 deja
 // un margen real antes de esa franja en vez de rozarla justo.
-const DINNER_CUTOFF_MINUTES = 20 * 60
+// Ronda 14 — cena flexible. La cena tenía hora fija (20:30) y el corte de la tarde estaba en las
+// 20:00, así que una parada que terminara a las 20:10 "no cabía" y el día se quedaba corto para
+// nada. Ahora hay DOS posiciones, ninguna dinámica:
+//
+//   por defecto   cena 20:00, ventana 20:00-21:30
+//   flexionada    cena 20:30, ventana 20:30-22:00  — cuando entra una parada más que acaba
+//                 entre las 20:00 y las 20:29
+//
+// El corte sube en consecuencia: con SOFT_MARGIN_MINUTES por encima, el tope real de la última
+// parada queda en las 20:30, que es el invariante que importa — ninguna parada puede acabar después
+// de la cena. Antes ese tope eran las 20:20 y la franja de flexión no llegaba a existir.
+const DINNER_EARLY_MINUTES = 20 * 60
+const DINNER_LATE_MINUTES = 20 * 60 + 30
+const DINNER_CUTOFF_MINUTES = 20 * 60 + 10
+
+/**
+ * A qué hora cena este día. Tardía en cuanto la última parada real pase de las 20:00 — no solo
+ * dentro de la franja 20:00-20:29: una parada que acaba A las 20:30 también necesita la cena
+ * tardía, o la cena empezaría antes de que el viajero termine de visitar (salía de verdad: Roma 3
+ * días, Día 3 acababa a las 20:30 con la cena puesta a las 20:00).
+ */
+function dinnerTimeFor(lastStopEndMinutes) {
+  if (lastStopEndMinutes == null) return DINNER_EARLY_MINUTES
+  return lastStopEndMinutes > DINNER_EARLY_MINUTES ? DINNER_LATE_MINUTES : DINNER_EARLY_MINUTES
+}
 
 // Ronda 8D (pregunta directa del usuario): igual que DINNER_CUTOFF_MINUTES para la Regla A, pero
 // para el relleno de mañana corta de la Regla D. Primer intento con 12:30 — demasiado ajustado: con
@@ -1960,7 +1984,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // evening_block si sustituye la tarde) para la cena. Sin entrada en meal_zones, ambos campos
   // quedan null y el frontend cae a su geocodificación en vivo de siempre.
   const lunchZoneInfo = mealZoneInfo(destData, franja.morning?.zone, 'comida')
-  const meals = [{ time: 'lunch', options: [], zone: lunchZoneInfo.name, zone_display: lunchZoneInfo.display }]
+  const meals = [{ time: 'lunch', suggested_time: '13:30', options: [], zone: lunchZoneInfo.name, zone_display: lunchZoneInfo.display }]
 
   let afternoonStops = []
   // Lugares reales (crudos, con `.zone`) detrás de `afternoonStops`, en el mismo orden — declarado
@@ -2201,7 +2225,16 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       const coords = component.coordinates ?? fallbackCoords
       if (/cena/i.test(component.name)) {
         const dinnerZoneInfo = mealZoneInfo(destData, eveningBlockData.zone, 'cena')
-        meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
+        // Aquí la cena es un componente del propio bloque: ya sabe a qué hora toca (el cursor viene
+        // de bajar del mirador), así que se respeta esa hora en vez de imponerle la del día normal.
+        // Nunca antes de la hora temprana — bajar del mirador a las 19:10 no es hora de cenar.
+        meals.push({
+          time: 'dinner',
+          suggested_time: minutesToTime(Math.max(cursor, DINNER_EARLY_MINUTES)),
+          options: [],
+          zone: dinnerZoneInfo.name,
+          zone_display: dinnerZoneInfo.display,
+        })
         cursor += component.duration_minutes
         previousCoords = coords
         continue
@@ -2258,7 +2291,15 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     if (!dinnerZoneInfo.name && lastAfternoonZone !== franja.afternoon?.zone) {
       dinnerZoneInfo = mealZoneInfo(destData, franja.afternoon?.zone, 'cena')
     }
-    meals.push({ time: 'dinner', options: [], zone: dinnerZoneInfo.name, zone_display: dinnerZoneInfo.display })
+    const lastStop = afternoonStops[afternoonStops.length - 1]
+    const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : null
+    meals.push({
+      time: 'dinner',
+      suggested_time: minutesToTime(dinnerTimeFor(lastEnd)),
+      options: [],
+      zone: dinnerZoneInfo.name,
+      zone_display: dinnerZoneInfo.display,
+    })
   }
 
   // Fix 10: asignación automática (ver assignNightExperiences, calculada más arriba para que Fix 13

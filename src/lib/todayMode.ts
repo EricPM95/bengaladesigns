@@ -9,7 +9,26 @@ import { seedStopsFromTemplate } from './mockDayDetail'
  * como comida/cena (recomendación de restaurante), nunca como "añadir algo cerca" genérico.
  */
 export const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
-export const DINNER_WINDOW: [number, number] = [20 * 60 + 30, 22 * 60]
+
+/**
+ * Ronda 14 — la cena ya no tiene hora fija. Hay DOS posiciones posibles, decididas por el algoritmo
+ * según a qué hora termine la última parada del día (ver dinnerTimeFor en routeAlgorithm.js):
+ *
+ *   20:00 -> ventana 20:00-21:30   por defecto
+ *   20:30 -> ventana 20:30-22:00   cuando el día se alarga y la última parada pasa de las 20:00
+ *
+ * Por eso la ventana ya no puede ser una constante: se deriva de la hora que trae el propio día.
+ * Antes estaba además DUPLICADA aquí y en DayDetailPanel.tsx — dos constantes iguales que ahora
+ * pueden divergir es una trampa, así que las dos usan esta función.
+ */
+export const DINNER_EARLY_WINDOW: [number, number] = [20 * 60, 21 * 60 + 30]
+export const DINNER_LATE_WINDOW: [number, number] = [20 * 60 + 30, 22 * 60]
+
+export function dinnerWindowFor(day: DayPlan): [number, number] {
+  const dinner = day.meals.find((meal) => meal.mealTime === 'dinner')
+  const at = dinner ? parseTimeToMinutes(dinner.time) : NaN
+  return Number.isNaN(at) || at < DINNER_LATE_WINDOW[0] ? DINNER_EARLY_WINDOW : DINNER_LATE_WINDOW
+}
 
 export type MealWindowKind = 'lunch' | 'dinner'
 
@@ -19,7 +38,10 @@ export function minutesSinceMidnight(date: Date = new Date()): number {
 
 export function getMealWindowAt(nowMin: number): MealWindowKind | null {
   if (nowMin >= LUNCH_WINDOW[0] && nowMin <= LUNCH_WINDOW[1]) return 'lunch'
-  if (nowMin >= DINNER_WINDOW[0] && nowMin <= DINNER_WINDOW[1]) return 'dinner'
+  // La franja más amplia posible: con dos ventanas de cena, "¿es hora de cenar?" solo puede
+  // responderse con certeza mirando el día concreto (getMealWindowAtForDay), pero quien pregunta
+  // sin día necesita una respuesta razonable — y 20:00 es el arranque más temprano posible.
+  if (nowMin >= DINNER_EARLY_WINDOW[0] && nowMin <= DINNER_LATE_WINDOW[1]) return 'dinner'
   return null
 }
 
@@ -176,9 +198,15 @@ export function computeOpenStatusLabel(hours: string | null, nowMin: number): st
 
 /** Busca en `day.meals` (Paso 8, ruta real) la comida cuya hora cae dentro de la franja dada — null si no hay ninguna generada todavía (rutas dev/preview). */
 export function findGeneratedMealForWindow(day: DayPlan, window: MealWindowKind): MealSlot | null {
-  const [start, end] = window === 'lunch' ? LUNCH_WINDOW : DINNER_WINDOW
-  return day.meals.find((meal) => {
-    const time = parseTimeToMinutes(meal.time)
-    return time >= start && time <= end
-  }) ?? null
+  // Se casa por TIPO de comida, no por reloj. El filtro por hora funcionaba solo mientras la cena
+  // era siempre las 20:30: con la cena flexible, una cena a las 20:00 se quedaba fuera de la
+  // ventana [20:30, 22:00] y el día PERDÍA su cena entera en Modo Hoy.
+  return day.meals.find((meal) => meal.mealTime === window) ?? null
+}
+
+/** "¿Toca cenar ahora?" para un día concreto — usa su ventana real, no la genérica. */
+export function getMealWindowAtForDay(nowMin: number, day: DayPlan): MealWindowKind | null {
+  if (nowMin >= LUNCH_WINDOW[0] && nowMin <= LUNCH_WINDOW[1]) return 'lunch'
+  const [start, end] = dinnerWindowFor(day)
+  return nowMin >= start && nowMin <= end ? 'dinner' : null
 }

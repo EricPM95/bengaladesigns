@@ -7,7 +7,7 @@ import {
   computeFreeGapMinutes,
   findCurrentStopIndex,
   findGeneratedMealForWindow,
-  getMealWindowAt,
+  getMealWindowAtForDay,
   getStopPlannedWindow,
   getStopRuntimeState,
   getTodayTripStatus,
@@ -127,7 +127,7 @@ export function TodayView({ route }: TodayViewProps) {
   }
 
   const handleWandAddSomething = () => {
-    const mealWindow = getMealWindowAt(nowMin)
+    const mealWindow = getMealWindowAtForDay(nowMin, day)
     if (mealWindow) setWandMealWindow(mealWindow)
     else setPoolOpen(true)
     setWandPace(null)
@@ -166,7 +166,7 @@ export function TodayView({ route }: TodayViewProps) {
   const runtimeState = currentRealStop ? getStopRuntimeState(currentRealStop, nowMin) : null
 
   const gapMinutes = runtimeState === 'upcoming' ? computeFreeGapMinutes(realStops, currentIndex, nowMin) : null
-  const mealWindow = getMealWindowAt(nowMin)
+  const mealWindow = getMealWindowAtForDay(nowMin, day)
   const showFreeGapBlock = gapMinutes !== null && gapMinutes >= FREE_GAP_THRESHOLD_MINUTES
   const passiveMeal = showFreeGapBlock && mealWindow ? (findGeneratedMealForWindow(day, mealWindow) ?? buildMockMealForWindow(day, mealWindow)) : null
 

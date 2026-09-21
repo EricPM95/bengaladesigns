@@ -81,6 +81,8 @@ interface GeneratedMealOption {
 }
 
 interface GeneratedMeal {
+  /** Hora real de esta comida ("20:00" | "20:30" para la cena) — solo pipeline v2. */
+  suggested_time?: string
   time: 'breakfast' | 'lunch' | 'dinner'
   options: GeneratedMealOption[]
   /** Solo presente en rutas del pipeline v2 (ver routeAlgorithm.js, meal_zones) — barrio curado a mano, usado para BUSCAR restaurantes (ver MealSlot.curatedZone) — no confundir con `zone_display`. */
@@ -319,7 +321,10 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
   const meta = MEAL_TIME_META[generated.time] ?? { time: '13:00', label: generated.time }
   return {
     id: `meal-${dayNumber}-${generated.time}`,
-    time: meta.time,
+    // La hora la decide el algoritmo por día (cena flexible, ver dinnerTimeFor en
+    // routeAlgorithm.js). MEAL_TIME_META queda solo de reserva para las rutas generadas por IA,
+    // que no traen hora de comida.
+    time: generated.suggested_time ?? meta.time,
     label: meta.label,
     nearbyNote: '',
     restaurants: generated.options.map((option, index) => mapRestaurant(dayNumber, generated.time, index, option)),

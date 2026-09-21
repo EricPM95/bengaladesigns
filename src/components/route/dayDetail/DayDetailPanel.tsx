@@ -25,6 +25,7 @@ import {
 import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
+import { dinnerWindowFor } from '../../../lib/todayMode'
 import { CuratedAlternativeBanner, ExcursionBanner, ExcursionLink, ExcursionOptions, ManualDayLink, ManualDayOptions } from './ExcursionBlocks'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
@@ -121,7 +122,6 @@ function computeStopSchedule(
 }
 
 const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
-const DINNER_WINDOW: [number, number] = [20 * 60 + 30, 22 * 60]
 
 /** Índice de la parada TRAS la que insertar el acordeón dorado "Hora de comer"/"Hora de cenar" — el primer hueco (entre esa parada y la siguiente, o tras la última si el día termina dentro de la ventana) cuyo rango se solapa con la franja horaria dada. null si el día nunca llega a cruzarla (ej. un día corto que termina a las 12:00). */
 function findMealInsertionIndex(schedule: StopSchedule[], window: [number, number]): number | null {
@@ -440,7 +440,8 @@ export function DayDetailPanel({
   const lunchCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZoneDisplay ?? null
   const dinnerCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZoneDisplay ?? null
   const lunchInsertionIndex = findMealInsertionIndex(schedule, LUNCH_WINDOW)
-  const dinnerInsertionIndex = findMealInsertionIndex(schedule, DINNER_WINDOW)
+  // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
+  const dinnerInsertionIndex = findMealInsertionIndex(schedule, dinnerWindowFor(day))
   const destino = route?.destination ?? day.city
 
   /**
