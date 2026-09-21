@@ -384,6 +384,17 @@ export type ExcursionLength = 'half-day' | 'full-day'
  */
 export type DayType = 'normal' | 'excursion' | 'smart_route' | 'manual'
 
+/** Cuánto se ve la opción de excursión en un día: un link al final, un banner sobre la ruta, el
+    contenido entero del día, o nada (destinos sin excursiones). */
+export type ExcursionProminence = 'none' | 'subtle' | 'prominent' | 'primary'
+
+/** La ruta escrita a mano que un día de excursión tenía antes de serlo — se ofrece como alternativa
+    con un adelanto de sus primeras paradas, para que volver a ella sea un toque. */
+export interface CuratedAlternative {
+  title: string
+  places: string[]
+}
+
 export interface Excursion {
   id: string
   title: string
@@ -465,6 +476,18 @@ export interface DayPlan {
   selectedExcursionId?: string | null
   /** Solo destinos donde las excursiones son parte del viaje, no un extra (excursions.essential). */
   excursionEssential?: boolean
+  /** Ver ExcursionProminence. Ausente = 'none' (destinos sin excursiones y días anteriores a esto). */
+  excursionProminence?: ExcursionProminence
+  /** Solo días prominentes: las 2-3 destacadas del banner. */
+  excursionHighlights?: Excursion[]
+  /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
+  curatedAlternative?: CuratedAlternative | null
+  /**
+   * Foto de las paradas de este día ANTES de convertirlo en excursión o día libre. Existe para que
+   * "el algoritmo propone, el viajero dispone" no cueste contenido: volver a la ruta es restaurar
+   * esto, sin regenerar nada ni volver a llamar a la IA.
+   */
+  stopsBeforeConversion?: Stop[]
   isRelaxedDay?: boolean
   /** Código ISO de país en minúsculas (ej. "it") de la ciudad de este día — para la bandera en la pestaña RUTA. */
   countryCode?: string | null

@@ -449,6 +449,9 @@ function mapStopTicketsToPurchase(stop: Stop): PlacePurchaseInfo | null {
  * sigan presentes (mismo id) y usando un "shell" más simple para las nuevas.
  */
 export function resolveDisplayStops(day: DayPlan): MockStopDetail[] {
+  // Prompt 4: un día LIBRE está vacío a propósito — el viajero lo monta él. El pool de plantilla es
+  // para días que aún no se han editado, no para días que se han vaciado queriendo.
+  if (day.dayType === 'manual') return day.stops.map((stop) => shellFromStop(stop))
   const templatePool = buildMockStopsForDay(day)
   if (day.stops.length === 0) return templatePool
   const richById = new Map(templatePool.map((stop) => [stop.id, stop]))

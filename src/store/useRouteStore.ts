@@ -4,6 +4,7 @@ import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readin
 import type {
   AccommodationMode,
   AppScreen,
+  DayType,
   Budget,
   BudgetItem,
   DateRange,
@@ -279,6 +280,15 @@ interface RouteStoreState {
   setIntensity: (intensity: number) => void
   setPanelSplit: (split: number) => void
 
+  /**
+   * Prompt 4 — "el algoritmo propone, el viajero dispone": cualquier día puede convertirse en
+   * cualquier tipo. Nunca regenera ni llama a la IA: al salir de una ruta se guarda una foto de sus
+   * paradas (stopsBeforeConversion) y al volver se restaura, así que ir y venir es gratis y no
+   * cuesta contenido curado.
+   */
+  convertDayType: (dayId: string, dayType: DayType) => void
+  /** Elegir (o deseleccionar, con null) la excursión de un día de excursión. */
+  selectDayExcursion: (dayId: string, excursionId: string | null) => void
   removeStop: (dayId: string, stopId: string) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   moveStopToDay: (stopId: string, fromDayId: string, toDayId: string) => void
@@ -615,6 +625,41 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     }),
   setIntensity: (intensity) => set({ intensity }),
   setPanelSplit: (split) => set({ panelSplit: split }),
+
+  convertDayType: (dayId, dayType) =>
+    set((state) => {
+      if (!state.route) return state
+      return {
+        route: updateDay(state.route, dayId, (day) => {
+          if (day.dayType === dayType) return day
+          const keepsStops = dayType === 'normal' || dayType === 'smart_route'
+          // La foto se toma UNA vez, la primera que el día deja de ser una ruta: si se tomara en
+          // cada conversión, pasar por "día libre" (que vacía las paradas) borraría la ruta buena.
+          const snapshot = day.stopsBeforeConversion ?? (day.stops.length > 0 ? day.stops : undefined)
+          return {
+            ...day,
+            dayType,
+            stops: keepsStops ? (day.stops.length > 0 ? day.stops : (snapshot ?? [])) : [],
+            stopsBeforeConversion: snapshot,
+            // Al dejar de ser excursión, la elección deja de tener sentido.
+            selectedExcursionId: dayType === 'excursion' ? (day.selectedExcursionId ?? null) : null,
+            // La oferta de volver a la ruta NO se borra al cambiar de tipo: si este día tenía una
+            // ruta, la sigue teniendo guardada, y pasar por "día libre" no puede hacer que la
+            // pierda. Cuando no venía del servidor se compone desde la propia foto de las paradas,
+            // que es exactamente la ruta a la que se volvería.
+            curatedAlternative:
+              day.curatedAlternative ??
+              (snapshot && snapshot.length > 0 ? { title: day.title, places: snapshot.slice(0, 3).map((stop) => stop.name) } : null),
+          }
+        }),
+      }
+    }),
+
+  selectDayExcursion: (dayId, excursionId) =>
+    set((state) => {
+      if (!state.route) return state
+      return { route: updateDay(state.route, dayId, (day) => ({ ...day, selectedExcursionId: excursionId })) }
+    }),
 
   removeStop: (dayId, stopId) =>
     set((state) => {

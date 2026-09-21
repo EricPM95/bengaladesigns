@@ -17,6 +17,7 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
+import { CuratedAlternativeBanner, ExcursionBanner, ExcursionLink, ExcursionOptions, ManualDayLink, ManualDayOptions } from './ExcursionBlocks'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
@@ -243,6 +244,8 @@ export function DayDetailPanel({
   )
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
+  const convertDayType = useRouteStore((state) => state.convertDayType)
+  const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const route = useRouteStore((state) => state.route)
   const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
@@ -505,6 +508,15 @@ export function DayDetailPanel({
   // mapa: sin esto el mapa del día se veía POR ENCIMA de ella, con su cabecera y su "Ver todo".
   const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null || insertAt !== null
 
+  // ── Prompt 4: tipo de día y prominencia de excursión ────────────────────────────────────────
+  const dayType = day.dayType ?? 'normal'
+  const prominence = day.excursionProminence ?? 'none'
+  // Un día de excursión o libre no enseña paradas: las suyas (si las tenía) siguen guardadas para
+  // poder volver a la ruta, pero el contenido del día es otro.
+  const showsRoute = dayType === 'normal' || dayType === 'smart_route'
+  const excursionOptions = day.excursions ?? []
+  const convertDay = (next: typeof dayType) => convertDayType(day.id, next)
+
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
       {mapCollapsed || mapHiddenBySheet ? (
@@ -583,7 +595,7 @@ export function DayDetailPanel({
             {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
           </p>
           <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
-          <div className="mt-2.5 mb-4 flex items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft">
+          <div className={`mt-2.5 mb-4 items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft ${showsRoute && stops.length > 0 ? 'flex' : 'hidden'}`}>
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
               <SummaryPinIcon className="text-accent-hover" />
               {stops.length} parada{stops.length === 1 ? '' : 's'}
@@ -602,6 +614,34 @@ export function DayDetailPanel({
         </div>
 
         <div className="space-y-2 px-3 pb-3">
+          {/* Prominente: el banner va ENCIMA de la ruta y no la quita — el viajero ve las dos cosas
+              y elige. Se puede cerrar sin perder nada (regla 9). */}
+          {showsRoute && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && (
+            <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} onSeeAll={() => convertDay('excursion')} />
+          )}
+
+          {dayType === 'excursion' && (
+            <div className="space-y-3 pt-1">
+              {/* Regla 10: si este día tenía ruta curada, SIEMPRE se ofrece volver a ella. */}
+              {day.curatedAlternative && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
+              {excursionOptions.length > 0 ? (
+                <ExcursionOptions
+                  options={excursionOptions}
+                  selectedId={day.selectedExcursionId ?? null}
+                  onSelect={(id) => selectDayExcursion(day.id, id)}
+                />
+              ) : (
+                <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>
+              )}
+            </div>
+          )}
+
+          {dayType === 'manual' && stops.length === 0 && (
+            <div className="pt-1">
+              <ManualDayOptions onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
+            </div>
+          )}
+
           {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
 
           {stay && !accommodationResolved && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
@@ -624,7 +664,10 @@ export function DayDetailPanel({
             </button>
           )}
 
-          {stops.map((stop, index) => {
+          {/* Un día de EXCURSIÓN guarda su ruta para poder volver a ella, pero no la enseña. Un día
+              LIBRE sí enseña lo que el viajero ya haya montado. */}
+          {(showsRoute || (dayType === 'manual' && stops.length > 0)) &&
+            stops.map((stop, index) => {
             const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
             const { slot, startMinutes } = schedule[index]
             const showSlotHeader = index === 0 || slot !== schedule[index - 1].slot
@@ -713,6 +756,14 @@ export function DayDetailPanel({
               poder añadirse una parada al final del día). */}
           {stops.length > 0 &&
             renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
+
+          {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
+              tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
+          {showsRoute && prominence === 'subtle' && <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />}
+          {dayType === 'excursion' && (
+            <ExcursionLink label="Generar una ruta para este día" onClick={() => convertDay('smart_route')} />
+          )}
+          {dayType !== 'manual' && prominence !== 'none' && <ManualDayLink onClick={() => convertDay('manual')} />}
 
           {day.recommendedRevisits && day.recommendedRevisits.length > 0 && (
             <div className="space-y-2 pt-3">

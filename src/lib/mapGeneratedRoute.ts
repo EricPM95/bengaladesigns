@@ -1,5 +1,6 @@
 import type {
   DayType,
+  ExcursionProminence,
   Budget,
   DayPlan,
   DidntMakeCutItem,
@@ -105,6 +106,12 @@ export interface GeneratedDay {
   times_are_final?: boolean
   /** Solo días de excursión del pipeline v2 — ver DayPlan.excursionEssential. */
   excursion_essential?: boolean
+  /** Ver DayPlan.excursionProminence. */
+  excursion_prominence?: string
+  /** Solo días prominentes — ver DayPlan.excursionHighlights. */
+  excursion_highlights?: GeneratedExcursion[]
+  /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
+  curated_alternative?: { title: string; places: string[] } | null
 }
 
 interface GeneratedFeasibilityLeg {
@@ -345,6 +352,16 @@ function asDayType(value?: string): DayType {
   return value === 'excursion' || value === 'smart_route' || value === 'manual' ? value : 'normal'
 }
 
+function asProminence(value?: string): ExcursionProminence {
+  return value === 'subtle' || value === 'prominent' || value === 'primary' ? value : 'none'
+}
+
+/** Mismo mapeo que mapExcursionsByDay pero sin agrupar — las destacadas del banner ya vienen para
+    un día concreto y no necesitan índice. */
+function mapExcursionList(excursions: GeneratedExcursion[]): Excursion[] {
+  return [...mapExcursionsByDay(excursions).values()].flat()
+}
+
 function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excursion[]> {
   const byDay = new Map<number, Excursion[]>()
   for (const [index, excursion] of (excursions ?? []).entries()) {
@@ -461,6 +478,9 @@ function mapDay(
     dayType: asDayType(generated.type),
     selectedExcursionId: null,
     excursionEssential: generated.excursion_essential,
+    excursionProminence: asProminence(generated.excursion_prominence),
+    excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,
+    curatedAlternative: generated.curated_alternative ?? null,
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,
   }
