@@ -1588,6 +1588,72 @@ const DINNER_EARLY_MINUTES = 20 * 60
 const DINNER_LATE_MINUTES = 20 * 60 + 30
 const DINNER_CUTOFF_MINUTES = 20 * 60 + 10
 
+// Hueco mínimo para que un paseo tenga sentido. Por debajo de media hora no da tiempo ni a salir
+// del sitio donde estás.
+const ZONE_WALK_MIN_GAP_MINUTES = 30
+// Margen que se deja sin llenar al final del paseo: hay que llegar al restaurante.
+const ZONE_WALK_TRANSIT_MARGIN_MINUTES = 10
+
+/**
+ * Prompt 6 — paseo por barrio, el ÚLTIMO recurso de la cascada. Se mete solo cuando ya no queda
+ * nada más: ni paradas reales de la zona, ni de las vecinas (eso lo resuelve el reparto de
+ * planFillerOwnership y la Regla A), ni adelantar la cena. Es honesto —pasear por un barrio es algo
+ * que la gente hace de verdad— y mantiene al viajero donde está en vez de sacarlo a otro sitio solo
+ * por rellenar.
+ *
+ * Vive en `zone_walks`, su propio array del JSON: NO es un lugar. No tiene duración fija (la decide
+ * el hueco), no se cuenta como visitado, no sale en el buscador ni en "Añadir parada", y no lleva
+ * pin en el mapa — se pasea por una zona, no se está en un punto.
+ */
+/**
+ * Qué paseo le toca a este día, si alguno. Un paseo no puede repetirse en el mismo viaje: dos días
+ * proponiendo "Pasear por el Centro Histórico" no es una ruta, es la misma sugerencia dos veces.
+ *
+ * El reparto es DETERMINISTA porque tiene que serlo: cada día se construye en su propia llamada,
+ * sin estado compartido (BLOQUE_SIZE=1), igual que assignNightExperiences y planFillerOwnership.
+ * Cada zona pertenece al PRIMER día que la tiene de zona de tarde; un día que llegue tarde a su
+ * zona cae a la de su mañana, y si esa también está pillada se queda sin paseo — mejor sin paseo
+ * que repetido.
+ */
+function zoneWalkZoneFor(variant, dayNumber) {
+  const franjas = variant?.franjas ?? []
+  const tomadas = new Set()
+  for (const franja of franjas) {
+    const candidatas = [franja.afternoon?.zone, franja.morning?.zone].filter(Boolean)
+    const libre = candidatas.find((zone) => !tomadas.has(zone))
+    if (libre) tomadas.add(libre)
+    if (franja.day === dayNumber) return libre ?? null
+  }
+  return null
+}
+
+function buildZoneWalkStop(destData, zone, startMinutes, minutesUntilDinner) {
+  if (!zone) return null
+  const walk = (destData?.zone_walks ?? []).find((candidate) => candidate.zone === zone)
+  if (!walk) return null
+  // `minutesUntilDinner` ya viene sin el traslado de IDA (lo descuenta el llamador al fijar la hora
+  // de inicio); aquí se descuenta el de VUELTA, para llegar al restaurante sin correr.
+  const duration = Math.min(minutesUntilDinner - ZONE_WALK_TRANSIT_MARGIN_MINUTES, walk.max_duration ?? 90)
+  if (duration < (walk.min_duration ?? 20)) return null
+  return {
+    name: walk.name,
+    suggested_time: minutesToTime(startMinutes),
+    duration_minutes: duration,
+    latitude: walk.coordinates?.[0],
+    longitude: walk.coordinates?.[1],
+    tip: walk.tips ?? '',
+    description: walk.description ?? '',
+    hours: null,
+    tags: [],
+    schedule: null,
+    // El cliente lo pinta distinto (icono de paseo, sin ficha ampliada, con botón de quitar) y lo
+    // deja fuera del mapa y de la línea del día.
+    is_zone_walk: true,
+    category: 'walk',
+    category_label: 'Paseo por el barrio',
+  }
+}
+
 /**
  * A qué hora cena este día. Tardía en cuanto la última parada real pase de las 20:00 — no solo
  * dentro de la franja 20:00-20:29: una parada que acaba A las 20:30 también necesita la cena
@@ -2293,9 +2359,24 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     }
     const lastStop = afternoonStops[afternoonStops.length - 1]
     const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : null
+    const dinnerMinutes = dinnerTimeFor(lastEnd)
+
+    // Último recurso: si tras todo lo anterior sigue quedando medio día muerto hasta la cena, un
+    // paseo por la zona donde el viajero ESTÁ (la de su última parada, que puede ser una zona de
+    // transición, no la principal del día). Uno por día como mucho: dos paseos seguidos no son una
+    // ruta, son un hueco mal tapado.
+    if (lastEnd != null && lastStop) {
+      const gap = dinnerMinutes - lastEnd
+      if (gap >= ZONE_WALK_MIN_GAP_MINUTES) {
+        const walkZone = zoneWalkZoneFor(variant, dayNumber)
+        const walk = buildZoneWalkStop(destData, walkZone, roundToNearestQuarter(lastEnd + 10), gap - 10)
+        if (walk) stops.push(walk)
+      }
+    }
+
     meals.push({
       time: 'dinner',
-      suggested_time: minutesToTime(dinnerTimeFor(lastEnd)),
+      suggested_time: minutesToTime(dinnerMinutes),
       options: [],
       zone: dinnerZoneInfo.name,
       zone_display: dinnerZoneInfo.display,

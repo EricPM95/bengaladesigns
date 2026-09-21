@@ -4374,5 +4374,150 @@
         "placeholder_reviews": 1100
       }
     ]
-  }
+  },
+  "zone_walks": [
+    {
+      "name": "Pasear por Trastevere",
+      "zone": "trastevere",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8893,
+        12.47
+      ],
+      "description": "Piérdete por las callejuelas empedradas de Trastevere. Fachadas con hiedra, ropa tendida entre balcones, grafitis y pequeñas plazas escondidas.",
+      "tips": "Camina por Via della Lungaretta hasta Piazza di Santa Maria. Baja por Via del Moro y mira los grafitis. Si te apetece, cruza a Via della Scala — tiene las mejores tiendas vintage del barrio."
+    },
+    {
+      "name": "Pasear por el Centro Histórico",
+      "zone": "centro_historico",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8986,
+        12.4769
+      ],
+      "description": "El corazón de Roma a paso lento. Calles peatonales, escaparates, heladerías y rincones que los autobuses turísticos no ven.",
+      "tips": "Via dei Coronari es la calle de los anticuarios — preciosa y tranquila. Desde ahí baja a Via del Governo Vecchio para tiendas con carácter. Si quieres un helado, busca la Gelateria del Teatro."
+    },
+    {
+      "name": "Pasear por la Roma Antigua",
+      "zone": "roma_antigua",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8902,
+        12.4922
+      ],
+      "description": "Camina entre ruinas. Desde el Foro hasta el Circo Máximo, cada calle tiene 2.000 años de historia bajo los pies.",
+      "tips": "Via dei Fori Imperiali tiene las mejores vistas del Foro desde arriba. Si bajas por Via di San Gregorio llegas al Circo Máximo sin turistas."
+    },
+    {
+      "name": "Pasear por Villa Borghese",
+      "zone": "villa_borghese",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.9142,
+        12.4856
+      ],
+      "description": "El pulmón verde de Roma. Caminos sombreados, fuentes, artistas callejeros y vistas a la ciudad desde la Terraza del Pincio.",
+      "tips": "Entra por Porta Pinciana y sigue el paseo hasta el Lago. Si llevas niños, hay barcas de alquiler. El camino hacia la Terraza del Pincio tiene las mejores vistas sin subir escaleras."
+    },
+    {
+      "name": "Pasear por Prati y el Borgo",
+      "zone": "vaticano",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.9022,
+        12.4539
+      ],
+      "description": "Los alrededores del Vaticano tienen más de lo que parece. Calles tranquilas del barrio de Prati, tiendas locales y buenas trattorias lejos de las trampas turísticas.",
+      "tips": "Via Cola di Rienzo es la calle comercial de los romanos, no de los turistas. Si caminas por Borgo Pio verás artesanos y cafeterías con terraza. El Lungotevere al atardecer es precioso."
+    },
+    {
+      "name": "Pasear por el Aventino",
+      "zone": "aventino",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8841,
+        12.4787
+      ],
+      "description": "El barrio más tranquilo de Roma. Calles arboladas, monasterios, jardines escondidos y cero turismo de masas.",
+      "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera y es gratis."
+    },
+    {
+      "name": "Pasear por Testaccio",
+      "zone": "testaccio",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8759,
+        12.4757
+      ],
+      "description": "El barrio obrero convertido en el más auténtico de Roma. Street art, mercado, bares de vino natural y cero postureo.",
+      "tips": "Monte Testaccio está hecho literalmente de trozos de ánforas romanas — 35 metros de cerámica acumulada. La calle de los bares (Via di Monte Testaccio) cobra vida por la noche."
+    },
+    {
+      "name": "Pasear por la Via Appia Antica",
+      "zone": "appia",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8563,
+        12.513
+      ],
+      "description": "La calzada romana mejor conservada, con su adoquinado original entre pinos, muros de piedra seca y tumbas familiares. Campo abierto a media hora del centro.",
+      "tips": "El tramo bueno empieza en la Tumba de Cecilia Metella y sigue hacia el sur — allí los adoquines son los originales y casi no pasan coches. Los domingos cierran al tráfico y se llena de romanos en bici; hay alquiler junto a la entrada del parque."
+    },
+    {
+      "name": "Pasear por San Giovanni",
+      "zone": "san_giovanni",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8859,
+        12.5057
+      ],
+      "description": "El barrio de la catedral de Roma, con vida de ciudad real: mercados de siempre, tiendas de barrio y romanos haciendo su día lejos del centro.",
+      "tips": "Via Sannio tiene un mercado de ropa de segunda mano por las mañanas, debajo de la muralla. Camina por Viale Carlo Felice hasta Santa Croce in Gerusalemme y fíjate en los tramos de muralla Aureliana que todavía flanquean la calle."
+    },
+    {
+      "name": "Pasear por el Esquilino",
+      "zone": "esquilino",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.8977,
+        12.4983
+      ],
+      "description": "El barrio más mezclado de Roma, entre Santa María la Mayor y Termini. Mercados, cocina de medio mundo y arquitectura umbertina de finales del XIX.",
+      "tips": "El Mercato Esquilino, en Via Principe Amedeo, es el más internacional de la ciudad — especias, pescado y fruta que no verás en otro sitio. Piazza Vittorio tiene un jardín con ruinas romanas dentro y soportales alrededor, de los pocos que quedan en Roma."
+    },
+    {
+      "name": "Pasear por el Nomentano",
+      "zone": "nomentano",
+      "is_filler": true,
+      "min_duration": 20,
+      "max_duration": 90,
+      "coordinates": [
+        41.912,
+        12.508
+      ],
+      "description": "Un barrio residencial de principios del siglo XX, con villas, jardines y una de las mayores rarezas arquitectónicas de la ciudad.",
+      "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público y gratuito con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
+    }
+  ]
 }
