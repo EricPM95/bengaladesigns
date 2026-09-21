@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { Coordinates, Route, Stop } from '../../../lib/types'
+import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import {
-  PLACE_CATEGORY_CHIPS,
+  PLACE_FILTER_CHIPS,
   RESTAURANT_SUB_CATEGORIES,
+  categoriesForFilters,
   findPlaceCategoryChip,
   findRestaurantSubCategory,
   type PlaceCategoryChip,
-  type PlaceFilterCategory,
+  type PlaceFilterId,
   type RestaurantSubCategory,
 } from '../../../lib/placeCategories'
 import { fetchPlaceLikes, togglePlaceLike, EMPTY_PLACE_LIKES, type PlaceLikes } from '../../../lib/placeLikesApi'
@@ -20,6 +21,9 @@ import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
+import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
+
+const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
     en la ciudad) y se muestra la distancia en kilómetros. */
@@ -45,7 +49,10 @@ interface PlaceExplorerScreenProps {
   /** Ruta actual — solo para marcar "En tu ruta" en la lista. */
   route?: Route | null
   /** Filtros ya activos al abrir — EXPLORAR entra con el suyo puesto; el "+" de DIAS entra sin ninguno. */
-  initialCategories?: PlaceFilterCategory[]
+  initialFilters?: PlaceFilterId[]
+  /** Las excursiones del destino, para el filtro "Excursiones" (ver useDestinationPool). Vacío en un
+      destino sin catálogo curado — el chip entonces ni se pinta. */
+  excursions?: Excursion[]
   /** Precarga el buscador con este texto al abrir — lo usa el botón "Añadir como parada" de una tarjeta de segunda visita recomendada, para que el lugar ya salga sin tener que escribirlo. */
   initialQuery?: string
   /** Presente = modo "añadir": la ficha del lugar muestra el CTA "Añadir a mi ruta". Ausente = solo explorar. */
@@ -212,6 +219,79 @@ function LocationIcon() {
   )
 }
 
+/** Trazo fino y gris, sin relleno — regla de iconos funcionales del proyecto. */
+function TicketIcon({ className = 'h-3 w-3' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M3 9.5V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5a2.5 2.5 0 0 0 0-5Z" />
+      <path d="M14 6v2M14 11v2M14 16v2" />
+    </svg>
+  )
+}
+
+/**
+ * Una excursión en la lista de resultados. NO es una parada: no se puede añadir a un día (un día
+ * entero fuera de la ciudad no cabe en un hueco de la tarde), no tiene ficha ampliada y no se le
+ * puede dar like. Lo único que hace es contar de qué va y mandar a reservarla fuera.
+ *
+ * Precio y valoración son PLACEHOLDER del JSON del destino hasta integrar Civitatis/GYG — por eso
+ * el precio va como "desde" y nunca como tarifa cerrada.
+ */
+function ExcursionResultCard({ excursion, open, onToggle }: { excursion: Excursion; open: boolean; onToggle: () => void }) {
+  return (
+    <div className={`rounded-xl border transition-colors ${open ? 'border-accent bg-accent-soft' : 'border-border'}`}>
+      <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-center gap-3 p-2.5 text-left">
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl"
+          style={{ backgroundColor: EXCURSION_CHIP?.activeBg ?? '#E0F2F1' }}
+          aria-hidden="true"
+        >
+          {excursion.emoji ?? EXCURSION_CHIP?.icon ?? '🚌'}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-small font-semibold text-text">{excursion.title}</span>
+          <span className="flex flex-wrap items-center gap-x-1.5 text-caption text-text-soft">
+            <span className="shrink-0">{excursion.durationLabel}</span>
+            {excursion.priceLabel && (
+              <>
+                <span>·</span>
+                <span className="shrink-0">desde {excursion.priceLabel}</span>
+              </>
+            )}
+            {excursion.rating !== undefined && (
+              <>
+                <span>·</span>
+                <span className="shrink-0">
+                  ★ {excursion.rating.toFixed(1)}
+                  {excursion.reviewCount ? ` (${excursion.reviewCount.toLocaleString('es-ES')})` : ''}
+                </span>
+              </>
+            )}
+          </span>
+        </span>
+      </button>
+
+      {open && (
+        <div className="space-y-2 px-2.5 pb-2.5">
+          {excursion.description && <p className="text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
+          {excursion.bookUrl && (
+            <a
+              href={excursion.bookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full rounded-xl py-2 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+              style={{ backgroundColor: CIVITATIS_RED }}
+            >
+              Ver en Civitatis
+            </a>
+          )}
+          <p className="text-caption text-text-muted">Precio orientativo: se reserva fuera de la app.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /**
  * Pantalla compartida de lugares del destino — mapa del día arriba con filtros por categoría, y
  * tirador abajo con buscador, "Recomendados"/"Cerca de ti" y la lista de resultados.
@@ -235,12 +315,16 @@ export function PlaceExplorerScreen({
   dayNumber = null,
   dateIso = null,
   route = null,
-  initialCategories = [],
+  initialFilters = [],
+  excursions = [],
   initialQuery,
   onPick,
   onClose,
 }: PlaceExplorerScreenProps) {
-  const [activeCategories, setActiveCategories] = useState<PlaceFilterCategory[]>(initialCategories)
+  const [activeFilters, setActiveFilters] = useState<PlaceFilterId[]>(initialFilters)
+  /** La excursión abierta en su tarjeta. No usa `selected` (que es un lugar del catálogo) porque no
+      comparte nada con él: no tiene ficha ampliada, ni likes, ni "Añadir a mi ruta". */
+  const [selectedExcursion, setSelectedExcursion] = useState<Excursion | null>(null)
   /** null = "Todos" (la sub-categoría es excluyente: una o ninguna). Solo aplica a restaurantes. */
   const [activeSubCategory, setActiveSubCategory] = useState<RestaurantSubCategory | null>(null)
   const [query, setQuery] = useState(initialQuery ?? '')
@@ -252,7 +336,7 @@ export function PlaceExplorerScreen({
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const chipsRowRef = useRef<HTMLDivElement>(null)
 
-  const initialCategoriesKey = initialCategories.join(',')
+  const initialFiltersKey = initialFilters.join(',')
 
   // EXPLORAR entra con un filtro ya puesto, y en móvil los chips no caben: "Restaurantes" es el
   // cuarto y se queda fuera de la pantalla, así que se veían tres chips apagados y una lista
@@ -261,17 +345,18 @@ export function PlaceExplorerScreen({
     if (!open) return
     const active = chipsRowRef.current?.querySelector('[data-active="true"]')
     active?.scrollIntoView({ block: 'nearest', inline: 'center' })
-  }, [open, initialCategoriesKey])
+  }, [open, initialFiltersKey])
 
   useEffect(() => {
     if (!open) return
-    setActiveCategories(initialCategoriesKey ? (initialCategoriesKey.split(',') as PlaceFilterCategory[]) : [])
+    setActiveFilters(initialFiltersKey ? (initialFiltersKey.split(',') as PlaceFilterId[]) : [])
     setActiveSubCategory(null)
     setQuery(initialQuery ?? '')
     setTab('recommended')
     setSelected(null)
+    setSelectedExcursion(null)
     setSelectedPhoto(null)
-  }, [open, initialCategoriesKey, initialQuery])
+  }, [open, initialFiltersKey, initialQuery])
 
   useEffect(() => {
     if (!open) return
@@ -322,18 +407,29 @@ export function PlaceExplorerScreen({
 
   const stopEntries = useMemo(() => (route ? buildRouteStopEntries(route) : []), [route])
 
-  const toggleCategory = (id: PlaceFilterCategory) => {
-    setActiveCategories((prev) => {
+  const toggleFilter = (id: PlaceFilterId) => {
+    setActiveFilters((prev) => {
       const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
       // Al apagar Restaurantes su sub-filtro deja de tener sentido (y de verse): si se volviera a
       // encender, seguir arrastrando "Gelato" de hace dos pantallas sería una lista vacía sin motivo
       // aparente.
       if (id === 'restaurantes' && !next.includes('restaurantes')) setActiveSubCategory(null)
+      // Al apagar Excursiones se cierra la tarjeta que hubiera abierta: si no, se queda una
+      // excursión encima de una lista que ya no la contiene.
+      if (id === 'excursiones' && !next.includes('excursiones')) setSelectedExcursion(null)
       return next
     })
   }
 
-  const restaurantsActive = activeCategories.includes('restaurantes')
+  const restaurantsActive = activeFilters.includes('restaurantes')
+  // "Entradas" no es una categoría sino una propiedad: no sustituye a las demás, las acota. Con
+  // "Atracciones + Entradas" salen las atracciones de pago; ella sola, todo lo que cobra entrada.
+  const ticketsActive = activeFilters.includes('entradas')
+  const excursionsActive = activeFilters.includes('excursiones')
+  const activeCategories = categoriesForFilters(activeFilters)
+  // Solo-Excursiones no es "ningún filtro": el catálogo de lugares tiene que quedarse vacío, o
+  // saldrían los 67 pines de Roma debajo de las 6 excursiones.
+  const placeFiltersActive = activeCategories.length > 0 || ticketsActive
   const trimmedQuery = query.trim()
 
   // Se busca sobre el texto ya reposado, no sobre cada tecla: reordenar y volver a pintar la lista
@@ -366,11 +462,17 @@ export function PlaceExplorerScreen({
         .map((entry) => entry.place)
     }
     if (queryTooShort) return []
+    // Solo "Excursiones" activo: la lista es únicamente de excursiones. Sin esto caería en el caso
+    // de "ningún filtro de lugares", que enseña el catálogo entero — los 67 lugares de Roma colgando
+    // debajo de las 6 excursiones, como si fueran resultados de lo que se ha pedido.
+    if (excursionsActive && !placeFiltersActive) return []
 
     const filtered = places.filter(
       (place) =>
         matchesSubCategory(place) &&
-        (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
+        (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))) &&
+        // "Entradas" acota, no sustituye: se cruza con lo que ya hubiera activo (ver ticketsActive).
+        (!ticketsActive || place.requires_ticket),
     )
 
     if (tab === 'nearby') {
@@ -390,7 +492,8 @@ export function PlaceExplorerScreen({
       if (a.order !== undefined && b.order !== undefined) return a.order - b.order
       return a.name.localeCompare(b.name, 'es')
     })
-  }, [places, needle, queryTooShort, activeCategories, activeSubCategory, tab, position, likes])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes])
 
   // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
   // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
@@ -399,6 +502,25 @@ export function PlaceExplorerScreen({
   // dedo. Ahora la vista del viajero no se toca y los pines entran y salen con un fundido.
   // Más pequeños que los números de las paradas del día, para que la ruta siga destacando.
   const poiPlaces = useMemo(() => places.filter((place) => hasRealCoordinates(place.coordinates)), [places])
+
+  /** A dónde se va en cada excursión — Pompeya, Tívoli… Fuera de la ciudad, así que el mapa se abre
+      mucho cuando se encienden: es justo la información ("esto es un día entero de viaje"). */
+  const excursionMarkers: StopsMapMarker[] = useMemo(
+    () =>
+      excursions
+        .filter((excursion) => excursion.destinationCoords)
+        .map((excursion) => ({
+          id: `excursion-${excursion.id}`,
+          name: excursion.title,
+          coordinates: excursion.destinationCoords as Coordinates,
+          number: 0,
+          icon: EXCURSION_CHIP?.icon ?? '🚌',
+          bg: EXCURSION_CHIP?.color ?? '#00897B',
+          text: '#FFFFFF',
+          small: true,
+        })),
+    [excursions],
+  )
 
   const markers: StopsMapMarker[] = useMemo(() => {
     const poiMarkers: StopsMapMarker[] = poiPlaces.map((place) => {
@@ -414,22 +536,27 @@ export function PlaceExplorerScreen({
         small: true,
       }
     })
-    return [...dayMarkers, ...poiMarkers]
-  }, [dayMarkers, poiPlaces])
+    return [...dayMarkers, ...poiMarkers, ...excursionMarkers]
+  }, [dayMarkers, poiPlaces, excursionMarkers])
 
   /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio que la lista: sin ningún filtro
       ni búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día; durante una
       búsqueda enseña lo encontrado, aunque los chips activos no lo incluyan. */
   const visiblePoiNames = useMemo(() => {
-    const shown = needle || activeCategories.length > 0 ? results : []
+    const shown = needle || placeFiltersActive ? results : []
     return new Set(shown.map((place) => place.name))
-  }, [results, needle, activeCategories])
+  }, [results, needle, placeFiltersActive])
 
   const hiddenMarkerIds = useMemo(
-    () => poiPlaces.filter((place) => !visiblePoiNames.has(place.name)).map((place) => `poi-${place.name}`),
-    [poiPlaces, visiblePoiNames],
+    () => [
+      ...poiPlaces.filter((place) => !visiblePoiNames.has(place.name)).map((place) => `poi-${place.name}`),
+      // Mismo truco que con los lugares (Prompt 3): los pines de excursión están SIEMPRE en el mapa
+      // y lo que cambia al marcar el chip es solo cuáles se ven — así la cámara no se resetea.
+      ...(excursionsActive ? [] : excursionMarkers.map((marker) => marker.id)),
+    ],
+    [poiPlaces, visiblePoiNames, excursionsActive, excursionMarkers],
   )
-  const visibleMarkerCount = dayMarkers.length + visiblePoiNames.size
+  const visibleMarkerCount = dayMarkers.length + visiblePoiNames.size + (excursionsActive ? excursionMarkers.length : 0)
 
   const onToggleLike = async (place: DestinationPlace) => {
     const next = !likes.mine.has(place.name)
@@ -486,13 +613,13 @@ export function PlaceExplorerScreen({
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card px-3 py-2">
           <div ref={chipsRowRef} className="flex flex-1 gap-2 overflow-x-auto">
-            {PLACE_CATEGORY_CHIPS.map((chip) => {
-              const active = activeCategories.includes(chip.id)
+            {PLACE_FILTER_CHIPS.filter((chip) => chip.id !== 'excursiones' || excursions.length > 0).map((chip) => {
+              const active = activeFilters.includes(chip.id)
               return (
                 <button
                   key={chip.id}
                   type="button"
-                  onClick={() => toggleCategory(chip.id)}
+                  onClick={() => toggleFilter(chip.id)}
                   aria-pressed={active}
                   data-active={active}
                   className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-caption font-semibold transition-colors ${
@@ -506,10 +633,10 @@ export function PlaceExplorerScreen({
               )
             })}
           </div>
-          {activeCategories.length > 0 && (
+          {activeFilters.length > 0 && (
             <button
               type="button"
-              onClick={() => setActiveCategories([])}
+              onClick={() => setActiveFilters([])}
               aria-label="Quitar todos los filtros"
               title="Quitar todos los filtros"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-bg text-text-muted transition-colors hover:bg-bg-hover hover:text-text"
@@ -547,10 +674,19 @@ export function PlaceExplorerScreen({
             <StopsMapView
               markers={markers}
               hiddenMarkerIds={hiddenMarkerIds}
+              // Solo al mirar excursiones y nada más: los destinos están fuera de la ciudad y hay
+              // que abrir el mapa para verlos. Con cualquier filtro de lugares activo la cámara se
+              // queda donde el viajero la dejó, como siempre.
+              fitToMarkerIds={excursionsActive && !placeFiltersActive ? excursionMarkers.map((marker) => marker.id) : null}
               activeStopId={selected ? `poi-${selected.name}` : null}
               onSelectStop={(id) => {
                 const place = places.find((candidate) => `poi-${candidate.name}` === id)
-                if (place) setSelected(place)
+                if (place) {
+                  setSelected(place)
+                  return
+                }
+                const excursion = excursions.find((candidate) => `excursion-${candidate.id}` === id)
+                if (excursion) setSelectedExcursion(excursion)
               }}
             />
           ) : (
@@ -636,14 +772,32 @@ export function PlaceExplorerScreen({
               <p className="py-8 text-center text-small text-text-soft">No encontramos este lugar en nuestra selección de {destination}.</p>
             )}
 
-            {!trimmedQuery && results.length === 0 && (
+            {!trimmedQuery && results.length === 0 && !(excursionsActive && !placeFiltersActive) && (
               <p className="py-8 text-center text-small text-text-soft">
                 {activeSubCategory !== null
                   ? `Todavía no tenemos ${findRestaurantSubCategory(activeSubCategory)?.label.toLowerCase()} seleccionados en ${destination}.`
-                  : restaurantsActive && activeCategories.length === 1
+                  : restaurantsActive && activeFilters.length === 1
                     ? `Todavía no tenemos restaurantes seleccionados en ${destination}.`
-                    : 'No hay lugares en las categorías seleccionadas.'}
+                    : ticketsActive && activeCategories.length > 0
+                      ? 'Ninguno de estos lugares cobra entrada.'
+                      : 'No hay lugares en las categorías seleccionadas.'}
               </p>
+            )}
+
+            {/* Las excursiones van ARRIBA del todo y en su propio bloque: no son lugares de la
+                ciudad, son días enteros fuera de ella, y mezclarlas en la misma lista que el
+                Panteón las haría parecer una parada más. */}
+            {excursionsActive && !trimmedQuery && excursions.length > 0 && (
+              <div className="mb-3 space-y-2">
+                {excursions.map((excursion) => (
+                  <ExcursionResultCard
+                    key={excursion.id}
+                    excursion={excursion}
+                    open={selectedExcursion?.id === excursion.id}
+                    onToggle={() => setSelectedExcursion((prev) => (prev?.id === excursion.id ? null : excursion))}
+                  />
+                ))}
+              </div>
             )}
 
             <div className="space-y-2">
@@ -698,6 +852,17 @@ export function PlaceExplorerScreen({
                                 <>
                                   {place.zone_label && <span>·</span>}
                                   <span className="shrink-0">{formatDuration(place.duration_min)}</span>
+                                </>
+                              )}
+                              {/* Si cobra entrada se dice aquí y no solo al filtrar: es lo que el
+                                  viajero necesita saber para ir reservando con tiempo. */}
+                              {place.requires_ticket && (
+                                <>
+                                  <span>·</span>
+                                  <span className="flex shrink-0 items-center gap-1 text-text-muted">
+                                    <TicketIcon />
+                                    Entrada
+                                  </span>
                                 </>
                               )}
                             </>

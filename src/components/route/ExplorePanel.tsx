@@ -8,7 +8,8 @@ import { DayPositionPicker } from './dayDetail/DayPositionPicker'
 import { NearbyPlacesView, toMarker } from './explore/NearbyPlacesView'
 import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
-import type { PlaceFilterCategory } from '../../lib/placeCategories'
+import { categoriesForFilters, type PlaceFilterId } from '../../lib/placeCategories'
+import { BOOKING_BLUE, buildHotelSearchUrl } from '../../lib/affiliateLinks'
 
 interface ExplorePanelProps {
   route: Route
@@ -22,47 +23,64 @@ interface ExplorePanelProps {
   onFullScreenChange: (open: boolean) => void
 }
 
-type ExploreCategory = 'food' | 'viewpoints' | 'attractions'
+/**
+ * Las seis tarjetas de EXPLORAR. Cinco abren la pantalla de lugares con su filtro ya puesto — el
+ * mismo componente y el mismo catálogo que el "+" de DIAS, para que el viajero vea exactamente los
+ * mismos sitios busque desde donde busque. La sexta (hoteles) es la única que sale de la app.
+ *
+ * 'hotels' no es un filtro de la pantalla de lugares y por eso no está en PLACE_FILTER_CHIPS: un
+ * hotel no es un sitio que visitar, y en "Añadir parada" no pintaría nada.
+ */
+type ExploreCardId = PlaceFilterId | 'hotels'
 
-const CATEGORIES: { id: ExploreCategory; icon: string; label: string }[] = [
-  { id: 'food', icon: '🍽️', label: 'Comer y beber' },
-  { id: 'viewpoints', icon: '📸', label: 'Miradores y fotos' },
-  { id: 'attractions', icon: '🏛️', label: 'Atracciones' },
+const EXPLORE_CARDS: { id: ExploreCardId; icon: string; label: string }[] = [
+  { id: 'atracciones', icon: '🏛️', label: 'Atracciones' },
+  { id: 'miradores', icon: '📸', label: 'Miradores' },
+  { id: 'restaurantes', icon: '🍽️', label: 'Restaurantes' },
+  { id: 'entradas', icon: '🎟️', label: 'Entradas' },
+  { id: 'excursiones', icon: '🚌', label: 'Excursiones' },
+  { id: 'hotels', icon: '🏨', label: 'Hoteles' },
 ]
 
-/** En destinos con catálogo curado, cada botón de EXPLORAR abre la MISMA pantalla que el "+" de DIAS
-    con su filtro ya puesto — el viajero ve exactamente los mismos lugares busque desde donde busque. */
-const CURATED_FILTER: Record<ExploreCategory, PlaceFilterCategory> = {
-  food: 'restaurantes',
-  viewpoints: 'miradores',
-  attractions: 'monumentos',
+/**
+ * Destinos SIN catálogo curado: ahí no hay lugares que filtrar, así que las tarjetas siguen cayendo
+ * en los buscadores de siempre (Mapbox para comer y miradores, AttractionsFinder para atracciones).
+ * Las tarjetas que no tienen equivalente sin catálogo (entradas, excursiones) no se pintan.
+ */
+const LEGACY_FALLBACK: Partial<Record<ExploreCardId, 'food' | 'viewpoints' | 'attractions'>> = {
+  restaurantes: 'food',
+  miradores: 'viewpoints',
+  atracciones: 'attractions',
 }
 
 /**
- * Pestaña EXPLORAR — 3 categorías, cada una con su propio formato (nunca un cuarto recuadro):
- * "Comer y beber"/"Miradores y fotos" reutilizan el mapa+tirador+botón de colapsar que ya comparte
- * DIAS (ver RouteView.tsx) — este panel solo publica sus resultados hacia ese mapa vía
- * `onMarkersChange`, sin mapa ni botón "volver" propios. "Atracciones" abre AttractionsFinder a
- * pantalla completa — acordeón "ya en tu ruta" + buscador libre, el mismo componente reutilizado
- * también en el "+" de DIAS y en RESERVAS.
+ * Pestaña EXPLORAR — seis tarjetas en rejilla de dos columnas, cada una con su contador real (no
+ * hay número inventado: sale del catálogo del destino que ya está cargado). Sin catálogo curado se
+ * cae a los buscadores de siempre y la rejilla se queda en las tres tarjetas que sí saben qué hacer.
  */
 export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResultId, onSelectResultId, onFullScreenChange }: ExplorePanelProps) {
   const cities = [...new Set(buildDestinationSegments(route.days).map((segment) => segment.city))]
   const [city, setCity] = useState(cities.includes(defaultCity) ? defaultCity : (cities[0] ?? defaultCity))
-  const [activeCategory, setActiveCategory] = useState<ExploreCategory | null>(null)
+  const [activeCard, setActiveCard] = useState<ExploreCardId | null>(null)
   const [pendingStop, setPendingStop] = useState<Stop | null>(null)
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
 
-  // Solo food/viewpoints publican marcadores hacia el mapa compartido — al salir de esa categoría
-  // (o entrar en el selector/Atracciones) el mapa vuelve a mostrar el día activo, como siempre.
+  // El catálogo se pide al entrar en la pestaña, no al pulsar una tarjeta: los contadores salen de
+  // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
+  const { places: curatedPool, excursions, resolved: curatedPoolResolved } = useDestinationPool(city, true)
+  const hasCuratedCatalog = curatedPoolResolved && curatedPool.length > 0
+  const legacyCategory = activeCard ? LEGACY_FALLBACK[activeCard] : undefined
+
+  // Solo los buscadores viejos publican marcadores hacia el mapa compartido — al salir de esa
+  // categoría el mapa vuelve a mostrar el día activo, como siempre.
   useEffect(() => {
-    if (activeCategory !== 'food' && activeCategory !== 'viewpoints') {
+    if (hasCuratedCatalog || (legacyCategory !== 'food' && legacyCategory !== 'viewpoints')) {
       onMarkersChange(null)
       return
     }
     onMarkersChange(results ? results.map(toMarker) : [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, results])
+  }, [legacyCategory, hasCuratedCatalog, results])
 
   useEffect(() => {
     // Al desmontar EXPLORAR entero (cambio de pestaña), devuelve el mapa compartido a su estado normal.
@@ -70,8 +88,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const { places: curatedPool, resolved: curatedPoolResolved } = useDestinationPool(city, activeCategory !== null)
-  const placeExplorerOpen = activeCategory !== null && curatedPoolResolved && curatedPool.length > 0
+  const placeExplorerOpen = activeCard !== null && activeCard !== 'hotels' && hasCuratedCatalog
 
   // Avisa a RouteView de que hay una pantalla con mapa propio encima, para que desmonte el mapa
   // compartido mientras tanto (ver exploreFullScreen ahí).
@@ -85,41 +102,61 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const backToCategories = () => {
-    setActiveCategory(null)
+  const backToCards = () => {
+    setActiveCard(null)
     setResults(null)
     onSelectResultId(null)
   }
 
-  // Destino curado: las 3 categorías abren la pantalla compartida de lugares, sin acción de añadir
+  /** Cuántos elementos hay detrás de cada tarjeta. Null = no se cuenta (hoteles no es un catálogo nuestro). */
+  const countFor = (id: ExploreCardId): number | null => {
+    if (id === 'hotels') return null
+    if (id === 'excursiones') return excursions.length
+    if (id === 'entradas') return curatedPool.filter((place) => place.requires_ticket).length
+    const categories = categoriesForFilters([id])
+    return curatedPool.filter((place) => place.filter_category !== null && categories.includes(place.filter_category)).length
+  }
+
+  const countLabel = (id: ExploreCardId): string => {
+    if (id === 'hotels') return 'Buscar hotel'
+    const count = countFor(id)
+    if (count === null) return ''
+    if (id === 'excursiones') return `${count} ${count === 1 ? 'opción' : 'opciones'}`
+    if (id === 'entradas') return `${count} con entrada`
+    if (id === 'restaurantes') return `${count} ${count === 1 ? 'sitio' : 'sitios'}`
+    return `${count} ${count === 1 ? 'lugar' : 'lugares'}`
+  }
+
+  // Destino curado: las tarjetas abren la pantalla compartida de lugares, sin acción de añadir
   // (desde EXPLORAR solo se consulta; para meter algo en la ruta se usa el "+" del día, que es quien
   // sabe en qué hueco va). Los destinos sin catálogo siguen con la búsqueda de Mapbox de siempre.
-  if (placeExplorerOpen && activeCategory) {
+  if (placeExplorerOpen && activeCard) {
     return (
       <PlaceExplorerScreen
         open
         destination={city}
         places={curatedPool}
+        excursions={excursions}
         title={`Explorar ${city}`}
-        subtitle={CATEGORIES.find((category) => category.id === activeCategory)?.label ?? null}
+        subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
         route={route}
-        initialCategories={[CURATED_FILTER[activeCategory]]}
-        onClose={backToCategories}
+        initialFilters={[activeCard]}
+        onClose={backToCards}
       />
     )
   }
 
   // Aún no se sabe si esta ciudad tiene catálogo — un render sin nada antes que enseñar el buscador
   // viejo medio segundo y cambiarlo por la pantalla nueva.
-  if (activeCategory !== null && !curatedPoolResolved) return null
+  if (activeCard !== null && activeCard !== 'hotels' && !curatedPoolResolved) return null
 
-  if (activeCategory === 'food' || activeCategory === 'viewpoints') {
+  if (!hasCuratedCatalog && (legacyCategory === 'food' || legacyCategory === 'viewpoints')) {
     return (
       <NearbyPlacesView
         city={city}
-        categoryLabel={activeCategory === 'food' ? 'Comer y beber' : 'Miradores y fotos'}
-        categoryIds={activeCategory === 'food' ? ['restaurant', 'cafe'] : ['viewpoint']}
-        onBack={backToCategories}
+        categoryLabel={legacyCategory === 'food' ? 'Comer y beber' : 'Miradores y fotos'}
+        categoryIds={legacyCategory === 'food' ? ['restaurant', 'cafe'] : ['viewpoint']}
+        onBack={backToCards}
         results={results}
         onResultsChange={setResults}
         activeId={activeResultId}
@@ -127,6 +164,10 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
       />
     )
   }
+
+  const visibleCards = hasCuratedCatalog
+    ? EXPLORE_CARDS.filter((card) => card.id !== 'excursiones' || excursions.length > 0)
+    : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined || card.id === 'hotels')
 
   return (
     <div className="flex-1 space-y-5 overflow-y-auto p-4">
@@ -152,30 +193,56 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-3">
-        {CATEGORIES.map((category) => (
-          <button
-            key={category.id}
-            type="button"
-            onClick={() => setActiveCategory(category.id)}
-            className="flex flex-col items-center gap-2 rounded-2xl border border-border p-4 text-center transition-colors hover:border-border-accent hover:bg-bg-hover"
-          >
-            <span className="text-3xl" aria-hidden="true">
-              {category.icon}
-            </span>
-            <span className="text-caption font-semibold text-text">{category.label}</span>
-          </button>
-        ))}
+      <div className="grid grid-cols-2 gap-3">
+        {visibleCards.map((card) => {
+          const label = countLabel(card.id)
+          // Hoteles sale de la app: es un enlace de verdad, no un botón que finge serlo (así el
+          // viajero puede abrirlo en otra pestaña si quiere). Ver affiliateLinks.ts.
+          if (card.id === 'hotels') {
+            return (
+              <a
+                key={card.id}
+                href={buildHotelSearchUrl(city, route.answers.dateRange?.start, route.answers.dateRange?.end)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-start gap-1.5 rounded-2xl border border-border p-4 text-left transition-colors hover:border-border-accent hover:bg-bg-hover"
+              >
+                <span className="text-2xl" aria-hidden="true">
+                  {card.icon}
+                </span>
+                <span className="text-small font-semibold text-text">{card.label}</span>
+                <span className="text-caption font-medium" style={{ color: BOOKING_BLUE }}>
+                  {label} ↗
+                </span>
+              </a>
+            )
+          }
+          return (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => setActiveCard(card.id)}
+              className="flex flex-col items-start gap-1.5 rounded-2xl border border-border p-4 text-left transition-colors hover:border-border-accent hover:bg-bg-hover"
+            >
+              <span className="text-2xl" aria-hidden="true">
+                {card.icon}
+              </span>
+              <span className="text-small font-semibold text-text">{card.label}</span>
+              {/* El contador solo aparece cuando hay catálogo del que sacarlo — nunca un número inventado. */}
+              <span className="text-caption text-text-muted">{hasCuratedCatalog ? label : 'Buscar'}</span>
+            </button>
+          )
+        })}
       </div>
 
-      {activeCategory === 'attractions' && (
+      {!hasCuratedCatalog && legacyCategory === 'attractions' && (
         <AttractionsFinder
           route={route}
           city={city}
           open
           title={`🏛️ Atracciones en ${city}`}
           onPick={setPendingStop}
-          onClose={() => setActiveCategory(null)}
+          onClose={backToCards}
         />
       )}
 

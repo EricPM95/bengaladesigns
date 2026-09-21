@@ -386,7 +386,7 @@ export function DayDetailPanel({
   // Catálogo curado de la ciudad (solo se pide cuando se abre el "+"): si lo hay, "Añadir parada" es
   // la pantalla nueva de lugares del destino; si no, sigue siendo el buscador de POIs de Mapbox de
   // siempre, que funciona en cualquier ciudad aunque no tengamos JSON escrito para ella.
-  const { places: curatedPool, resolved: curatedPoolResolved } = useDestinationPool(day.city, insertAt !== null)
+  const { places: curatedPool, excursions: curatedExcursions, resolved: curatedPoolResolved } = useDestinationPool(day.city, insertAt !== null)
 
   // "+" entre dos paradas: el lugar elegido entra EXACTAMENTE en ese hueco (no al final del día), y
   // a partir de ahí manda el store — recalcula solo el tramo con la parada anterior y redondea al
@@ -877,6 +877,10 @@ export function DayDetailPanel({
               open
               destination={day.city}
               places={curatedPool}
+              // Las excursiones se ENSEÑAN aquí (son una respuesta legítima a "¿qué hago este
+              // día?") pero no se pueden añadir: un día entero fuera de la ciudad no es una parada
+              // que quepa en un hueco de la tarde. Para eso está convertir el día a excursión.
+              excursions={curatedExcursions}
               title={`Añadir parada — Día ${day.dayNumber}`}
               subtitle={addStopSubtitle}
               route={route}

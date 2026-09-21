@@ -1991,7 +1991,16 @@ function formatRequiredPlaceItem(place) {
   const base = `${place.name} [${place.type}, ~${place.duration_min}min]`
   const extras = []
   if (place.best_time) extras.push(`horario ideal ya decidido: ${place.best_time}`)
-  if (place.is_free_access === true) extras.push('acceso libre confirmado, sin horario de taquilla (hours: null)')
+  // Gratis y sin horario NO son lo mismo, y confundirlos le costaba el horario a lugares que sí lo
+  // tienen: la Basílica de San Pedro se entra gratis pero cierra a las 20:00. Si el JSON del destino
+  // le ha escrito un horario a mano, ese horario manda por encima del "acceso libre".
+  if (place.is_free_access === true) {
+    extras.push(
+      place.has_schedule
+        ? 'entrada gratuita (sin taquilla), PERO tiene horario de visita — "hours" no puede ser null'
+        : 'acceso libre confirmado, sin horario de taquilla (hours: null)',
+    )
+  }
   // El texto del tip NO se le pide a Claude que lo reescriba en su respuesta — se lo damos aquí solo
   // como contexto de qué tipo de lugar es, y aplyCuratedTips lo inyecta después directamente en el
   // JSON final. Antes se le pedía "cópialo tal cual" en el campo "tip" de su respuesta, lo que
@@ -3447,6 +3456,9 @@ function mapCuratedPlace(place) {
     duration_min: Number.isFinite(place.duration_min) ? place.duration_min : 30,
     tips: Array.isArray(place.tips) ? place.tips.slice(0, 4) : [],
     is_free_access: typeof place.is_free_access === 'boolean' ? place.is_free_access : undefined,
+    // Solo si lo tiene o no: el horario en sí no viaja al prompt (ya se le inyecta por otra vía),
+    // aquí únicamente evita que "gratis" se lea como "abierto siempre" — ver formatRequiredPlaceItem.
+    has_schedule: Boolean(place.schedule),
     best_time: typeof place.best_time === 'string' ? place.best_time : null,
   }
 }
@@ -3687,6 +3699,12 @@ app.post('/api/destination-places', (req, res) => {
       // valiendo. Ya vienen normalizados (minúsculas sin acentos) desde el JSON del destino.
       search_aliases: Array.isArray(place.search_aliases) ? place.search_aliases : [],
       wikipedia_title: place.wikipedia_title ?? null,
+      // Prompt 7, filtro "Entradas". MISMA regla que usa el generador de rutas (ver
+      // buildCuratedDayPlaces en routeAlgorithm.js): lo que se visita por dentro cobra, salvo que el
+      // JSON diga explícitamente lo contrario (una iglesia, un mercado). Es deducido y no un campo
+      // del JSON porque solo 4 de los 67 lugares de Roma lo traen escrito: filtrar por el campo a
+      // secas no devolvería nada.
+      requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son
@@ -3720,9 +3738,17 @@ app.post('/api/destination-places', (req, res) => {
       what_to_order: place.what_to_order ?? null,
       tip: place.tip ?? null,
       best_for: place.best_for ?? null,
+      // En un restaurante se paga la cuenta, no la entrada: nunca sale bajo el filtro "Entradas".
+      requires_ticket: false,
     }))
 
-  res.json({ found: true, places: [...places, ...restaurants] })
+  // Las excursiones viajan con el catálogo porque son uno de los cinco filtros de la pantalla de
+  // lugares, y ahí no hay ninguna ruta de la que sacarlas (EXPLORAR no mira ningún día concreto).
+  // No son `places`: no se pueden añadir a un día, solo consultar y reservar fuera.
+  // Aquí van TODAS (no las `max_display` de un día): el tope existe para no abrumar a quien está
+  // decidiendo qué hacer un día concreto, pero esto es un catálogo que el viajero abre para ver qué
+  // hay — recortarlo sería esconderle opciones que existen.
+  res.json({ found: true, places: [...places, ...restaurants], excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
 })
 
 // ── Detalle ampliado de un lugar (las 3 pestañas de la ficha de parada) ──────────────────────
@@ -4308,6 +4334,10 @@ function excursionsAvailablePayload(destData, dayNumber, options) {
     rating: option.placeholder_rating ?? null,
     review_count: option.placeholder_reviews ?? null,
     destination_coords: Array.isArray(option.destination_coords) ? { lat: option.destination_coords[0], lng: option.destination_coords[1] } : null,
+    // Cómo buscar esta excursión en Civitatis, escrito a mano en el JSON del destino: "pompeya
+    // desde roma" encuentra lo que el viajero quiere; el nombre de la tarjeta ("Pompeya y
+    // Herculano") encuentra bastante menos.
+    civitatis_search: option.civitatis_search ?? null,
     suggested_day: dayNumber,
   }))
 }

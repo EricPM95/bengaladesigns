@@ -3,6 +3,7 @@ import type { DayPlan } from '../../lib/types'
 import { mockActivities, mockHotels } from '../../lib/mockAffiliateData'
 import { FlagIcon } from '../ui/FlagIcon'
 import { AffiliateCardCarousel } from '../ui/AffiliateCardCarousel'
+import { BOOKING_BLUE, CIVITATIS_RED, buildActivitySearchUrl, buildHotelSearchUrl } from '../../lib/affiliateLinks'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -14,10 +15,6 @@ interface DestinationDetailModalProps {
   onClose: () => void
 }
 
-/** Azul de marca de Booking.com (vía agregador Stay22). */
-const BOOKING_BLUE = '#003580'
-/** Rojo de marca de Civitatis — deliberadamente distinto del azul de Booking, para que quede claro que llevan a sitios distintos. */
-const CIVITATIS_RED = '#E2231A'
 
 /**
  * Vista de detalle al pulsar una fila de destino — pantalla completa (no un modal recortado), con
@@ -67,7 +64,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                   cards={hotels.map((hotel) => ({ id: hotel.id, name: hotel.name, price: hotel.pricePerNight, photoUrl: hotel.photoUrl }))}
                   priceSuffix="/noche"
                 />
-                <a href="https://www.booking.com" target="_blank" rel="noopener noreferrer">
+                <a href={buildHotelSearchUrl(city)} target="_blank" rel="noopener noreferrer">
                   <button
                     type="button"
                     style={{ backgroundColor: BOOKING_BLUE }}
@@ -82,7 +79,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             <div>
               <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🎟 Actividades en {city}</p>
               <AffiliateCardCarousel cards={activities.map((activity) => ({ id: activity.id, name: activity.name, price: activity.price, photoUrl: activity.photoUrl }))} />
-              <a href="https://www.civitatis.com" target="_blank" rel="noopener noreferrer">
+              <a href={buildActivitySearchUrl(city)} target="_blank" rel="noopener noreferrer">
                 <button
                   type="button"
                   style={{ backgroundColor: CIVITATIS_RED }}

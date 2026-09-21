@@ -1,5 +1,6 @@
-import type { Coordinates } from './types'
+import type { Coordinates, Excursion } from './types'
 import type { PlaceFilterCategory, RestaurantSubCategory } from './placeCategories'
+import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
 
 /**
  * Catálogo COMPLETO de lugares de un destino curado — el pool de la pantalla de explorar / añadir
@@ -27,6 +28,13 @@ export interface DestinationPlace {
   tags: string[]
   level: number | null
   schedule: string | null
+  /**
+   * Si hay que pagar entrada para visitarlo — el filtro "Entradas". Lo decide el servidor con la
+   * MISMA regla que el generador de rutas (lo que se visita por dentro cobra, salvo que el JSON del
+   * destino diga lo contrario): en los datos casi ningún lugar lo trae escrito, así que no se puede
+   * leer un campo a secas. Siempre false en un restaurante — ahí se paga la cuenta, no la entrada.
+   */
+  requires_ticket: boolean
   /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en
       italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
       `search_aliases` en el JSON del destino. Vacío para los restaurantes. */
@@ -47,10 +55,22 @@ export interface DestinationPlace {
   best_for?: string | null
 }
 
-const cache = new Map<string, DestinationPlace[]>()
-const inFlight = new Map<string, Promise<DestinationPlace[]>>()
+/**
+ * Todo lo que la pantalla de lugares puede enseñar de un destino curado. Las excursiones viajan
+ * aquí y no dentro de `places` porque no son paradas: no se añaden a un día, solo se consultan y se
+ * reservan fuera (ver el filtro "Excursiones" en PLACE_FILTER_CHIPS).
+ */
+export interface DestinationCatalog {
+  places: DestinationPlace[]
+  excursions: Excursion[]
+}
 
-export async function fetchDestinationPlaces(destination: string): Promise<DestinationPlace[]> {
+const EMPTY_CATALOG: DestinationCatalog = { places: [], excursions: [] }
+
+const cache = new Map<string, DestinationCatalog>()
+const inFlight = new Map<string, Promise<DestinationCatalog>>()
+
+export async function fetchDestinationPlaces(destination: string): Promise<DestinationCatalog> {
   const key = destination.trim().toLowerCase()
   const cached = cache.get(key)
   if (cached) return cached
@@ -58,22 +78,26 @@ export async function fetchDestinationPlaces(destination: string): Promise<Desti
   const pending = inFlight.get(key)
   if (pending) return pending
 
-  const request = (async (): Promise<DestinationPlace[]> => {
+  const request = (async (): Promise<DestinationCatalog> => {
     try {
       const response = await fetch('/api/destination-places', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ destination }),
       })
-      if (!response.ok) return []
+      if (!response.ok) return EMPTY_CATALOG
       const data = await response.json()
-      const places: DestinationPlace[] = data?.found === true && Array.isArray(data.places) ? data.places : []
-      // Un destino sin catálogo curado devuelve [] y no se cachea: si mañana lo tiene, se verá sin
-      // tener que recargar la app.
-      if (places.length > 0) cache.set(key, places)
-      return places
+      const found = data?.found === true
+      const catalog: DestinationCatalog = {
+        places: found && Array.isArray(data.places) ? data.places : [],
+        excursions: found && Array.isArray(data.excursions) ? mapExcursionList(data.excursions as GeneratedExcursion[]) : [],
+      }
+      // Un destino sin catálogo curado devuelve vacío y no se cachea: si mañana lo tiene, se verá
+      // sin tener que recargar la app.
+      if (catalog.places.length > 0) cache.set(key, catalog)
+      return catalog
     } catch {
-      return []
+      return EMPTY_CATALOG
     } finally {
       inFlight.delete(key)
     }

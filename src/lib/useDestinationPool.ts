@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchDestinationPlaces, type DestinationPlace } from './destinationPlacesApi'
+import type { Excursion } from './types'
 
 /**
  * Catálogo curado del destino (los 61 lugares de Roma hoy), o lista vacía si ese destino no tiene
@@ -18,8 +19,11 @@ import { fetchDestinationPlaces, type DestinationPlace } from './destinationPlac
 export function useDestinationPool(
   destination: string,
   enabled: boolean,
-): { places: DestinationPlace[]; loading: boolean; resolved: boolean } {
+): { places: DestinationPlace[]; excursions: Excursion[]; loading: boolean; resolved: boolean } {
   const [places, setPlaces] = useState<DestinationPlace[]>([])
+  // Las excursiones del destino (6 en Roma) — el filtro "Excursiones" de la pantalla de lugares las
+  // saca de aquí, no de la ruta: EXPLORAR no está mirando ningún día concreto.
+  const [excursions, setExcursions] = useState<Excursion[]>([])
   const [loading, setLoading] = useState(false)
   const [resolvedFor, setResolvedFor] = useState<string | null>(null)
 
@@ -29,7 +33,8 @@ export function useDestinationPool(
     setLoading(true)
     fetchDestinationPlaces(destination).then((found) => {
       if (cancelled) return
-      setPlaces(found)
+      setPlaces(found.places)
+      setExcursions(found.excursions)
       setResolvedFor(destination)
       setLoading(false)
     })
@@ -38,5 +43,5 @@ export function useDestinationPool(
     }
   }, [destination, enabled])
 
-  return { places, loading, resolved: resolvedFor === destination }
+  return { places, excursions, loading, resolved: resolvedFor === destination }
 }

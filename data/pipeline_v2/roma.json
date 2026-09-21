@@ -872,6 +872,7 @@
       ],
       "duration_minutes": 75,
       "type": "interior",
+      "is_free_access": true,
       "group": "vaticano_core",
       "group_order": 2,
       "group_order_evening": 2,
@@ -2320,7 +2321,7 @@
         "mercado",
         "local"
       ],
-      "filter_category": "gastronomia",
+      "filter_category": "monumentos",
       "schedule": "07:00-15:30. Cerrado domingos",
       "search_aliases": [
         "mercato di testaccio",

@@ -160,7 +160,7 @@ interface GeneratedNotIncluded {
   longitude?: number
 }
 
-interface GeneratedExcursion {
+export interface GeneratedExcursion {
   /** Solo las excursiones curadas del JSON del destino (ver excursionsAvailablePayload en
       server/index.js); las que propone la IA no lo traen y se les genera uno. */
   id?: string
@@ -175,6 +175,8 @@ interface GeneratedExcursion {
   /** Cómo llegar/volver sugerido por la IA (tren/bus/tour organizado) — ver EXCURSION DAYS en DAY_BLOCK_SYSTEM_PROMPT (server/index.js). */
   transport_suggestion?: string
   estimated_price: string
+  /** Búsqueda curada para el enlace de reserva — ver excursionsAvailablePayload en server/index.js. */
+  civitatis_search?: string | null
   suggested_day?: number
 }
 
@@ -350,8 +352,16 @@ function mapDidntMakeCut(items?: GeneratedNotIncluded[]): DidntMakeCutItem[] | u
 }
 
 /** Enlace de búsqueda genérico (no es una integración de afiliación real, mismo espíritu que buildSearchUrl en cityTransitionTransport.ts) — ni Civitatis ni GetYourGuide están conectados de verdad todavía. */
-function buildExcursionSearchUrl(name: string): string {
-  return `https://www.google.com/search?q=${encodeURIComponent(`${name} excursión reserva Civitatis GetYourGuide`)}`
+/**
+ * Enlace de reserva de una excursión. Va al buscador de Civitatis con la consulta curada del JSON
+ * del destino ("pompeya desde roma"), comprobado contra la web real: devuelve las excursiones de
+ * verdad, con su precio. Sin consulta curada se cae al nombre de la excursión, que encuentra menos.
+ *
+ * TODO afiliación: cuando haya ID de Civitatis, va como parámetro de esta misma URL. Hasta entonces
+ * es un enlace normal — mejor que mandar al viajero a una búsqueda de Google, que es lo que había.
+ */
+function buildExcursionSearchUrl(name: string, civitatisSearch?: string | null): string {
+  return `https://www.civitatis.com/es/buscar?q=${encodeURIComponent(civitatisSearch || name)}`
 }
 
 /** `type` del día generado -> DayType. Todo lo que no sea uno de los tipos nuevos es un día de
@@ -366,7 +376,7 @@ function asProminence(value?: string): ExcursionProminence {
 
 /** Mismo mapeo que mapExcursionsByDay pero sin agrupar — las destacadas del banner ya vienen para
     un día concreto y no necesitan índice. */
-function mapExcursionList(excursions: GeneratedExcursion[]): Excursion[] {
+export function mapExcursionList(excursions: GeneratedExcursion[]): Excursion[] {
   return [...mapExcursionsByDay(excursions).values()].flat()
 }
 
@@ -390,7 +400,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       rating: excursion.rating ?? undefined,
       reviewCount: excursion.review_count ?? undefined,
       destinationCoords: excursion.destination_coords ?? null,
-      bookUrl: buildExcursionSearchUrl(excursion.name),
+      bookUrl: buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])
   }

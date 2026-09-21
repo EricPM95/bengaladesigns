@@ -70,6 +70,14 @@ interface StopsMapViewProps {
   hiddenMarkerIds?: string[]
   /** Cuando true, cambiar `activeStopId` mueve la cámara: `flyTo` el marcador activo (acercando el zoom), o vuelve al `fitBounds` de todos los marcadores cuando pasa a null — usado por MealDetailSheet.tsx para el highlight mapa↔lista de restaurantes. Por defecto false: el resto de usos de este mapa (RUTA, DIAS, StopDetailSheet) solo quieren el resaltado visual del pin, sin mover la cámara. */
   flyToActiveStop?: boolean
+  /**
+   * Encuadra estos marcadores cuando la lista CAMBIA. Es la excepción a la regla de "los filtros no
+   * mueven la cámara" (ver hiddenMarkerIds): vale para un filtro que cambia la escala del mapa
+   * entera, como las excursiones de Roma — sus destinos están entre 30 y 250 km de la ciudad, así
+   * que sin encuadrar se quedaría el mapa de Roma con los seis pines fuera de pantalla. Para
+   * filtrar dentro de la misma ciudad NO se usa: ahí mover la cámara es justo lo que molesta.
+   */
+  fitToMarkerIds?: string[] | null
 }
 
 /**
@@ -79,7 +87,7 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -251,6 +259,23 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStopId, hidden, markersKey])
+
+  const fitKey = (fitToMarkerIds ?? []).join('|')
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !fitKey) return
+    const ids = new Set(fitKey.split('|'))
+    const toFit = markers.filter((marker) => ids.has(marker.id))
+    if (toFit.length === 0) return
+    // Con un solo destino no hay caja que encuadrar: se vuela a él y se deja un zoom que enseñe
+    // dónde cae respecto a la ciudad, no la calle.
+    if (toFit.length === 1) {
+      map.flyTo({ center: [toFit[0].coordinates.lng, toFit[0].coordinates.lat], zoom: 9, duration: 800 })
+      return
+    }
+    map.fitBounds(computeBounds(toFit), { padding: 56, maxZoom: 15, duration: 800 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitKey, markersKey])
 
   // Solo cuando `flyToActiveStop` (MealDetailSheet.tsx: highlight mapa↔lista de restaurantes) — el
   // resto de usos de activeStopId (RUTA, DIAS, StopDetailSheet) solo quieren el pin resaltado, sin
