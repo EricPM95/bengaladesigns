@@ -19,6 +19,17 @@ function cacheKey(name: string, city: string): string {
   return `${name.toLowerCase()}|${city.toLowerCase()}`
 }
 
+/**
+ * Un `wikipedia_title` del JSON del destino puede llevar prefijo de idioma ("en:Colosseum",
+ * "it:Giardino degli Aranci"). Existe porque la foto de cabecera del artículo en español no siempre
+ * sirve: la del Coliseo es una foto del "Europe Day 2024", la de la Galería Borghese es su
+ * logotipo, y la de la Galería Nacional de Arte Moderno también. Sin prefijo, español.
+ */
+function parseWikipediaTitle(value: string): { lang: string; title: string } {
+  const match = value.match(/^([a-z]{2}):(.+)$/)
+  return match ? { lang: match[1], title: match[2] } : { lang: 'es', title: value }
+}
+
 async function fetchWithTimeout(url: string): Promise<Response | null> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
@@ -32,9 +43,26 @@ async function fetchWithTimeout(url: string): Promise<Response | null> {
   }
 }
 
-export async function fetchPlacePhoto(name: string, city: string): Promise<string | null> {
-  const key = cacheKey(name, city)
+/**
+ * `wikipediaTitle` (opcional) salta la búsqueda por nombre y va directo a ese artículo. La búsqueda
+ * acierta en la gran mayoría de los lugares, pero cuando falla lo hace de formas que no se arreglan
+ * afinando el texto: buscar "Barrio Judío Roma" devolvía una judería de Segovia y "Jardín de los
+ * Naranjos Roma" los jardines de Versalles. Solo se declara en el dato donde hace falta — ver
+ * `wikipedia_title` en data/pipeline_v2/<destino>.json.
+ */
+export async function fetchPlacePhoto(name: string, city: string, wikipediaTitle?: string | null): Promise<string | null> {
+  const key = cacheKey(wikipediaTitle ? `title:${wikipediaTitle}` : name, city)
   if (cache.has(key)) return cache.get(key) ?? null
+
+  if (wikipediaTitle) {
+    const { lang, title } = parseWikipediaTitle(wikipediaTitle)
+    const response = await fetchWithTimeout(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
+    const data = response?.ok ? await response.json() : null
+    const source = data?.thumbnail?.source
+    const photo = typeof source === 'string' && (data?.thumbnail?.width ?? 0) >= MIN_THUMBNAIL_WIDTH ? source : null
+    cache.set(key, photo)
+    return photo
+  }
 
   try {
     const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(
@@ -81,7 +109,7 @@ export async function fetchPlacePhoto(name: string, city: string): Promise<strin
 export async function enrichRoutePhotos(route: Route): Promise<Route> {
   const jobs = route.days.flatMap((day) =>
     day.stops.map((stop) =>
-      fetchPlacePhoto(stop.name, day.city).then((photo) => {
+      fetchPlacePhoto(stop.name, day.city, stop.wikipediaTitle).then((photo) => {
         if (photo) stop.photoUrl = photo
       }),
     ),

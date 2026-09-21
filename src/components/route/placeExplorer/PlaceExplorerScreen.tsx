@@ -122,7 +122,7 @@ const MAX_SEARCH_RESULTS = 8
  * y resolverlos todos al abrir serían 100 llamadas a Wikipedia para ver ocho. Si no hay foto (o
  * Wikipedia falla, o tarda), se queda el icono de categoría de siempre — nunca un hueco vacío.
  */
-function PlaceThumb({ name, city, chip }: { name: string; city: string; chip: PlaceCategoryChip | null }) {
+function PlaceThumb({ name, city, chip, wikipediaTitle }: { name: string; city: string; chip: PlaceCategoryChip | null; wikipediaTitle?: string | null }) {
   const ref = useRef<HTMLSpanElement>(null)
   const [inView, setInView] = useState(false)
   const [photo, setPhoto] = useState<string | null>(null)
@@ -144,13 +144,13 @@ function PlaceThumb({ name, city, chip }: { name: string; city: string; chip: Pl
   useEffect(() => {
     if (!inView) return
     let cancelled = false
-    fetchPlacePhoto(name, city).then((url) => {
+    fetchPlacePhoto(name, city, wikipediaTitle).then((url) => {
       if (!cancelled) setPhoto(url)
     })
     return () => {
       cancelled = true
     }
-  }, [inView, name, city])
+  }, [inView, name, city, wikipediaTitle])
 
   return (
     <span
@@ -352,16 +352,13 @@ export function PlaceExplorerScreen({
     const matchesSubCategory = (place: DestinationPlace) =>
       place.kind !== 'restaurant' || activeSubCategory === null || place.sub_category === activeSubCategory
 
-    // El buscador mira todo el pool, pero respeta los filtros visibles: lo que se ve en la lista es
-    // siempre lo que dicen los chips de arriba. Ordenado por lo bien que encaja el texto (ver
-    // searchScore) y recortado — ocho resultados es lo que se puede elegir de un vistazo.
+    // Buscar por nombre IGNORA los chips de categoría a propósito: quien escribe "coli" quiere el
+    // Coliseo, y que no apareciera por tener activo solo "Restaurantes" se lee como que la app no lo
+    // tiene. Los chips acotan lo que se explora, no lo que se busca por su nombre.
+    // Ordenado por lo bien que encaja el texto (ver searchScore) y recortado — ocho resultados es lo
+    // que se puede elegir de un vistazo.
     if (needle) {
       return places
-        .filter(
-          (place) =>
-            matchesSubCategory(place) &&
-            (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
-        )
         .map((place) => ({ place, score: searchScore(place, needle) }))
         .filter((entry) => entry.score > 0)
         .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name, 'es'))
@@ -420,8 +417,9 @@ export function PlaceExplorerScreen({
     return [...dayMarkers, ...poiMarkers]
   }, [dayMarkers, poiPlaces])
 
-  /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio de siempre: sin ningún filtro ni
-      búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día. */
+  /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio que la lista: sin ningún filtro
+      ni búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día; durante una
+      búsqueda enseña lo encontrado, aunque los chips activos no lo incluyan. */
   const visiblePoiNames = useMemo(() => {
     const shown = needle || activeCategories.length > 0 ? results : []
     return new Set(shown.map((place) => place.name))
@@ -663,7 +661,7 @@ export function PlaceExplorerScreen({
                     }`}
                   >
                     <button type="button" onClick={() => setSelected(place)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                      <PlaceThumb name={place.name} city={destination} chip={chip} />
+                      <PlaceThumb name={place.name} city={destination} chip={chip} wikipediaTitle={place.wikipedia_title} />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5">
                           <span className="truncate text-small font-semibold text-text">{place.name}</span>

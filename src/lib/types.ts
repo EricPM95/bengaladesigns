@@ -218,6 +218,10 @@ export interface Stop {
   durationMinutes: number
   coordinates: Coordinates
   photoUrl: string
+  /** Artículo de Wikipedia del que sacar la foto real, con prefijo de idioma opcional
+      ("en:Colosseum") — solo lo traen los lugares donde la búsqueda por nombre falla, ver
+      placePhoto.ts y `wikipedia_title` en data/pipeline_v2/<destino>.json. */
+  wikipediaTitle?: string | null
   category?: StopCategory
   /** Etiqueta específica del tipo de lugar (ej. "Anfiteatro histórico", "Museo de arte", "Gastronomía") para la píldora de categoría del acordeón en DIAS — nunca el bucket genérico de `category` (StopCategory, que sirve para otra cosa: pines del mapa en RUTA). Viene de Claude (`category_label`, ver mapStop en mapGeneratedRoute.ts) para paradas generadas por IA, o del banco de 18 experiencias para paradas añadidas desde EXPLORAR/el "+" entre paradas. shellFromStop (mockDayDetail.ts) cae a "Punto de interés" solo si esto falta. */
   categoryLabel?: string

@@ -3655,6 +3655,7 @@ app.post('/api/destination-places', (req, res) => {
       // alias son lo que hace que "coli" encuentre el Coliseo o que el nombre en italiano siga
       // valiendo. Ya vienen normalizados (minúsculas sin acentos) desde el JSON del destino.
       search_aliases: Array.isArray(place.search_aliases) ? place.search_aliases : [],
+      wikipedia_title: place.wikipedia_title ?? null,
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son

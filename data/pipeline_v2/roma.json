@@ -482,7 +482,8 @@
         "coliseo romano",
         "colosseo",
         "colosseum"
-      ]
+      ],
+      "wikipedia_title": "en:Colosseum"
     },
     {
       "name": "Foro Romano y Palatino",
@@ -920,7 +921,8 @@
         "janiculo",
         "mirador gianicolo",
         "passeggiata del gianicolo"
-      ]
+      ],
+      "wikipedia_title": "en:Janiculum"
     },
     {
       "name": "Galería Borghese",
@@ -950,7 +952,8 @@
         "galeria borghese (museo)",
         "galleria borghese",
         "museo borghese"
-      ]
+      ],
+      "wikipedia_title": "Villa Borghese Pinciana"
     },
     {
       "name": "Parque de Villa Borghese",
@@ -997,7 +1000,8 @@
         "bioparco di roma",
         "zoo de roma",
         "zoologico de roma"
-      ]
+      ],
+      "wikipedia_title": "Bioparco"
     },
     {
       "name": "Galería Nacional de Arte Moderno",
@@ -1050,7 +1054,8 @@
         "monumento a victor manuel ii",
         "victor manuel",
         "vittoriano"
-      ]
+      ],
+      "wikipedia_title": "Monumento a Víctor Manuel II"
     },
     {
       "name": "Puente Sant'Angelo",
@@ -1140,7 +1145,8 @@
         "campo de fiori",
         "campo dei fiori",
         "mercado de campo de fiori"
-      ]
+      ],
+      "wikipedia_title": "en:Campo de' Fiori"
     },
     {
       "name": "Borgo Pio",
@@ -1337,7 +1343,8 @@
         "ghetto",
         "ghetto ebraico",
         "gueto judio"
-      ]
+      ],
+      "wikipedia_title": "Gueto de Roma"
     },
     {
       "name": "Iglesia de Santa Maria sopra Minerva",
@@ -1386,7 +1393,8 @@
         "san ignacio de loyola",
         "sant ignazio",
         "sant'ignazio di loyola"
-      ]
+      ],
+      "wikipedia_title": "en:Sant'Ignazio, Rome"
     },
     {
       "name": "Elefantino de Bernini",
@@ -1409,7 +1417,8 @@
         "elefante de bernini",
         "elefantino",
         "pulcino della minerva"
-      ]
+      ],
+      "wikipedia_title": "en:Elephant and Obelisk"
     },
     {
       "name": "Fuente de las Tortugas",
@@ -1700,7 +1709,8 @@
         "giardino degli aranci",
         "orange garden",
         "parco savello"
-      ]
+      ],
+      "wikipedia_title": "it:Giardino degli Aranci"
     },
     {
       "name": "Basílica de Santa María la Mayor",
@@ -1934,7 +1944,8 @@
         "mirador del pincio",
         "pincio",
         "terrazza del pincio"
-      ]
+      ],
+      "wikipedia_title": "Pincio"
     },
     {
       "name": "Basílica de San Juan de Letrán",
@@ -2066,7 +2077,8 @@
         "appian way",
         "via apia",
         "via appia"
-      ]
+      ],
+      "wikipedia_title": "en:Appian Way"
     },
     {
       "name": "Catacumbas de San Calixto",

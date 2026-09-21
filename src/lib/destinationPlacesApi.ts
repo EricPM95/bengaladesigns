@@ -31,6 +31,9 @@ export interface DestinationPlace {
       italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
       `search_aliases` en el JSON del destino. Vacío para los restaurantes. */
   search_aliases: string[]
+  /** Artículo de Wikipedia del que sacar la foto, con prefijo de idioma opcional ("en:Colosseum").
+      Solo está en los lugares donde la búsqueda por nombre falla — ver placePhoto.ts. */
+  wikipedia_title?: string | null
   /** Solo restaurantes: su posición en el JSON del destino (orden editorial) — desempata "Recomendados" mientras no haya likes. */
   order?: number
   /** Solo restaurantes — ver RESTAURANT_SUB_CATEGORIES. */

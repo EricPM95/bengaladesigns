@@ -48,6 +48,8 @@ interface GeneratedStop {
   category?: string
   /** Tipo de lugar específico (ej. "Anfiteatro histórico") — ver BLOQUE B, categoryLabel en Stop (types.ts). */
   category_label?: string
+  /** Artículo de Wikipedia para la foto — ver Stop.wikipediaTitle. */
+  wikipedia_title?: string | null
   /** "HH:MM–HH:MM" si tiene horario real, null si es de acceso libre — ver BLOQUE B, Stop.hours. */
   hours?: string | null
   entry_fee?: string
@@ -262,6 +264,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     durationMinutes: generated.duration_minutes,
     coordinates: { lat: generated.latitude, lng: generated.longitude },
     photoUrl: buildPlaceholderPhotoUrl(generated.id, generated.name),
+    wikipediaTitle: generated.wikipedia_title ?? null,
     category: (generated.category && CATEGORY_MAP[generated.category]) || 'sight',
     categoryLabel: generated.category_label,
     hours: generated.hours ?? null,

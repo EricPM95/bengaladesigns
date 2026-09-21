@@ -409,6 +409,9 @@ function buildRegularStop(place, startMinutes) {
     // para los lugares que de verdad no tienen horario (plazas, fuentes, calles), que es cuando
     // "Acceso libre" es cierto.
     hours: place.schedule ?? null,
+    // Artículo de Wikipedia del que sacar la foto cuando la búsqueda por nombre falla — viaja hasta
+    // enrichRoutePhotos en el cliente (ver placePhoto.ts). Solo lo traen unos pocos lugares.
+    wikipedia_title: place.wikipedia_title ?? null,
     // Ronda 5 (Parte 2B/8): tags temáticos y horario informativo tal cual del JSON — ambos opcionales,
     // solo un puñado de lugares trae `schedule` (ver mapStop/shellFromStop en el cliente).
     tags: Array.isArray(place.tags) ? place.tags : [],
