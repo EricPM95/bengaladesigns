@@ -1,4 +1,5 @@
 import type {
+  DayType,
   Budget,
   DayPlan,
   DidntMakeCutItem,
@@ -102,6 +103,8 @@ export interface GeneratedDay {
   rainy_alternative?: string
   /** Solo pipeline v2 (ver routeAlgorithm.js) — DayPlan.timesAreFinal en types.ts. */
   times_are_final?: boolean
+  /** Solo días de excursión del pipeline v2 — ver DayPlan.excursionEssential. */
+  excursion_essential?: boolean
 }
 
 interface GeneratedFeasibilityLeg {
@@ -147,8 +150,16 @@ interface GeneratedNotIncluded {
 }
 
 interface GeneratedExcursion {
+  /** Solo las excursiones curadas del JSON del destino (ver excursionsAvailablePayload en
+      server/index.js); las que propone la IA no lo traen y se les genera uno. */
+  id?: string
   name: string
   duration: 'half_day' | 'full_day'
+  duration_hours?: number | null
+  emoji?: string | null
+  rating?: number | null
+  review_count?: number | null
+  destination_coords?: { lat: number; lng: number } | null
   description: string
   /** Cómo llegar/volver sugerido por la IA (tren/bus/tour organizado) — ver EXCURSION DAYS en DAY_BLOCK_SYSTEM_PROMPT (server/index.js). */
   transport_suggestion?: string
@@ -328,18 +339,32 @@ function buildExcursionSearchUrl(name: string): string {
   return `https://www.google.com/search?q=${encodeURIComponent(`${name} excursión reserva Civitatis GetYourGuide`)}`
 }
 
+/** `type` del día generado -> DayType. Todo lo que no sea uno de los tipos nuevos es un día de
+    ruta normal ('city', 'relax', ausente…), que es como se ha comportado siempre. */
+function asDayType(value?: string): DayType {
+  return value === 'excursion' || value === 'smart_route' || value === 'manual' ? value : 'normal'
+}
+
 function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excursion[]> {
   const byDay = new Map<number, Excursion[]>()
   for (const [index, excursion] of (excursions ?? []).entries()) {
     const dayNumber = excursion.suggested_day ?? 1
     const mapped: Excursion = {
-      id: `excursion-${slugify(excursion.name)}-${index}`,
+      id: excursion.id ?? `excursion-${slugify(excursion.name)}-${index}`,
       title: excursion.name,
       length: excursion.duration === 'half_day' ? 'half-day' : 'full-day',
-      durationLabel: excursion.duration === 'half_day' ? 'Medio día' : 'Día completo',
+      // Con horas curadas se enseña el dato concreto ("12h"), que es lo que decide si el día cabe;
+      // sin ellas se cae a la etiqueta genérica de siempre.
+      durationLabel: excursion.duration_hours ? `${excursion.duration_hours}h` : excursion.duration === 'half_day' ? 'Medio día' : 'Día completo',
       price: parseEuroMidpoint(excursion.estimated_price),
+      priceLabel: excursion.estimated_price || null,
       description: excursion.description,
       transportSuggestion: excursion.transport_suggestion,
+      emoji: excursion.emoji ?? null,
+      durationHours: excursion.duration_hours ?? null,
+      rating: excursion.rating ?? undefined,
+      reviewCount: excursion.review_count ?? undefined,
+      destinationCoords: excursion.destination_coords ?? null,
       bookUrl: buildExcursionSearchUrl(excursion.name),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])
@@ -433,6 +458,9 @@ function mapDay(
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
+    dayType: asDayType(generated.type),
+    selectedExcursionId: null,
+    excursionEssential: generated.excursion_essential,
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,
   }

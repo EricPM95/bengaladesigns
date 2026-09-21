@@ -6,7 +6,18 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
-import { findPipelineV2Data, findPipelineV2Key, hasFreeTourFromAnswers, buildSkeletonV2, buildDayPlacesV2, buildDayBlockV2 } from './routeAlgorithm.js'
+import {
+  findPipelineV2Data,
+  findPipelineV2Key,
+  hasFreeTourFromAnswers,
+  buildSkeletonV2,
+  buildDayPlacesV2,
+  buildDayBlockV2,
+  getDayType,
+  excursionOptionsFor,
+  buildExcursionDayV2,
+  buildManualDayV2,
+} from './routeAlgorithm.js'
 
 config({ path: '.env.local' })
 
@@ -4259,6 +4270,28 @@ function logGeographicCoherence(day) {
   }
 }
 
+/**
+ * Las excursiones del JSON del destino en el formato `excursions_available` que el cliente ya sabe
+ * leer (ver mapExcursionsByDay en mapGeneratedRoute.ts), etiquetadas con el día al que pertenecen.
+ * Los precios y valoraciones son PLACEHOLDER hasta que se integren las APIs de afiliados — por eso
+ * viajan con ese nombre desde el JSON, para que nadie los confunda con datos reales.
+ */
+function excursionsAvailablePayload(destData, dayNumber) {
+  return excursionOptionsFor(destData).map((option) => ({
+    id: option.id,
+    name: option.name,
+    duration: option.type === 'half_day' ? 'half_day' : 'full_day',
+    duration_hours: option.duration_hours ?? null,
+    emoji: option.emoji ?? null,
+    description: option.description ?? '',
+    estimated_price: option.placeholder_price ?? '',
+    rating: option.placeholder_rating ?? null,
+    review_count: option.placeholder_reviews ?? null,
+    destination_coords: Array.isArray(option.destination_coords) ? { lat: option.destination_coords[0], lng: option.destination_coords[1] } : null,
+    suggested_day: dayNumber,
+  }))
+}
+
 app.post('/api/generate-day-block', async (req, res) => {
   const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip, must_include_places } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
@@ -4279,6 +4312,32 @@ app.post('/api/generate-day-block', async (req, res) => {
   // algoritmo v2 no cubre este día (destino distinto, o 6+ días), buildDayBlockV2 devuelve null y
   // se sigue exactamente con la llamada a Claude de siempre, más abajo.
   const pipelineV2Data = findPipelineV2Data(destination)
+
+  // Prompt 4 — tipo de día. Antes de construir nada: un día de excursión o un día libre no tienen
+  // ruta que calcular, así que se resuelven aquí y se ahorran tanto el algoritmo como la llamada a
+  // Claude. Y a diferencia de buildDayBlockV2 (que solo cubre 2-5 días, ver zone_distribution),
+  // esto funciona en cualquier día del viaje: un Roma de 8 días saca días libres del 6 al 8 sin
+  // pedirle nada a la IA, que es justo donde antes se le pedía más y peor.
+  if (pipelineV2Data && blockDayNumbers.length === 1) {
+    const dayNumber = blockDayNumbers[0]
+    const dayType = getDayType(dayNumber, pipelineV2Data)
+
+    if (dayType === 'excursion') {
+      const day = buildExcursionDayV2(pipelineV2Data, dayNumber)
+      console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día de EXCURSIÓN (${day.excursion_options.length} opciones), sin llamada a Claude`)
+      res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber) })
+      return
+    }
+
+    if (dayType === 'manual') {
+      console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día LIBRE (lo monta el viajero), sin llamada a Claude`)
+      // Las excursiones viajan igual: un día libre ofrece "buscar excursiones" como una de sus dos
+      // salidas, y necesita el catálogo para enseñarlo sin pedir nada más.
+      res.json({ days: [buildManualDayV2(dayNumber)], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber) })
+      return
+    }
+  }
+
   if (pipelineV2Data && blockDayNumbers.length === 1) {
     const totalDaysV2 = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : blockDayNumbers[0]
     try {
@@ -4294,8 +4353,17 @@ app.post('/api/generate-day-block', async (req, res) => {
         answers.experiencesPositive,
       )
       if (dayBlockV2) {
+        // 'smart_route' es una ruta normal marcada: mismas paradas reales, pero el cliente sabe que
+        // es el día "de propina" tras la excursión y ofrece convertirlo igual que los demás.
+        if (getDayType(blockDayNumbers[0], pipelineV2Data) === 'smart_route') dayBlockV2.type = 'smart_route'
         console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)
-        res.json({ days: [dayBlockV2], not_included: dayBlockV2.not_included ?? [], excursions_available: [] })
+        res.json({
+          days: [dayBlockV2],
+          not_included: dayBlockV2.not_included ?? [],
+          // El catálogo viaja SIEMPRE con cualquier día del destino: desde la ficha se puede
+          // convertir un día normal en excursión, y hacerlo no debe costar otra petición.
+          excursions_available: excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0]),
+        })
         return
       }
     } catch (error) {

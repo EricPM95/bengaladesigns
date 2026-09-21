@@ -3931,5 +3931,118 @@
       "hours": "Mar-Dom 12:30-15:00, 19:00-23:00. Lunes cerrado.",
       "best_for": "Cocina de mercado fresca cerca del Vaticano"
     }
-  ]
+  ],
+  "excursions": {
+    "essential": false,
+    "max_display": 4,
+    "day_pattern": {
+      "first_excursion": 4,
+      "smart_route_after": true,
+      "manual_from": 6
+    },
+    "options": [
+      {
+        "id": "pompeya_herculano",
+        "name": "Pompeya y Herculano",
+        "type": "full_day",
+        "duration_hours": 12,
+        "emoji": "🏛",
+        "description": "Recorre las ruinas de dos ciudades romanas sepultadas por el Vesubio. Transporte, guía en español y entradas incluidas.",
+        "destination_coords": [
+          40.7509,
+          14.4869
+        ],
+        "civitatis_search": "pompeya desde roma",
+        "gyg_search": "pompeii from rome",
+        "placeholder_price": "65€",
+        "placeholder_rating": 4.8,
+        "placeholder_reviews": 2340
+      },
+      {
+        "id": "costa_amalfitana",
+        "name": "Costa Amalfitana",
+        "type": "full_day",
+        "duration_hours": 10,
+        "emoji": "🏖",
+        "description": "Positano, Amalfi y Ravello en un día. Paradas para fotos en los miradores más icónicos de la costa. Transporte y guía incluidos.",
+        "destination_coords": [
+          40.6333,
+          14.6029
+        ],
+        "civitatis_search": "costa amalfitana desde roma",
+        "gyg_search": "amalfi coast from rome",
+        "placeholder_price": "75€",
+        "placeholder_rating": 4.7,
+        "placeholder_reviews": 1850
+      },
+      {
+        "id": "tivoli",
+        "name": "Tívoli: Villa Adriana y Villa d'Este",
+        "type": "full_day",
+        "duration_hours": 8,
+        "emoji": "⛲",
+        "description": "Dos villas Patrimonio de la UNESCO: las ruinas de la residencia del emperador Adriano y los jardines renacentistas con sus célebres fuentes.",
+        "destination_coords": [
+          41.9634,
+          12.7956
+        ],
+        "civitatis_search": "tivoli desde roma",
+        "gyg_search": "tivoli from rome",
+        "placeholder_price": "60€",
+        "placeholder_rating": 4.7,
+        "placeholder_reviews": 1520
+      },
+      {
+        "id": "napoles",
+        "name": "Nápoles en un día",
+        "type": "full_day",
+        "duration_hours": 8,
+        "emoji": "🍕",
+        "description": "Centro histórico, pizza napolitana auténtica y barrio Español. Opción de visitar el Museo Arqueológico Nacional.",
+        "destination_coords": [
+          40.8518,
+          14.2681
+        ],
+        "civitatis_search": "napoles desde roma",
+        "gyg_search": "naples from rome",
+        "placeholder_price": "55€",
+        "placeholder_rating": 4.6,
+        "placeholder_reviews": 3100
+      },
+      {
+        "id": "orvieto",
+        "name": "Orvieto y pueblos de Umbría",
+        "type": "full_day",
+        "duration_hours": 10,
+        "emoji": "🏰",
+        "description": "Catedral gótica, ciudad subterránea y pueblos medievales en lo alto de colinas. La Umbría más auténtica a una hora de Roma.",
+        "destination_coords": [
+          42.7185,
+          12.1107
+        ],
+        "civitatis_search": "orvieto desde roma",
+        "gyg_search": "orvieto from rome",
+        "placeholder_price": "70€",
+        "placeholder_rating": 4.8,
+        "placeholder_reviews": 1100
+      },
+      {
+        "id": "frascati_vinos",
+        "name": "Cata de vinos en Frascati",
+        "type": "half_day",
+        "duration_hours": 5,
+        "emoji": "🍷",
+        "description": "Escapada a los viñedos de los Castelli Romani. Degustación de vinos locales, quesos y embutidos con vistas al campo.",
+        "destination_coords": [
+          41.8063,
+          12.681
+        ],
+        "civitatis_search": "frascati vinos desde roma",
+        "gyg_search": "frascati wine from rome",
+        "placeholder_price": "45€",
+        "placeholder_rating": 4.9,
+        "placeholder_reviews": 890
+      }
+    ]
+  }
 }

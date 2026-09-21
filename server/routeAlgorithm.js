@@ -2245,3 +2245,73 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     times_are_final: true,
   }
 }
+
+// ── Tipos de día: excursión, día libre y ruta ampliada ───────────────────────────────────────
+//
+// Prompt 4. Hasta aquí todos los días eran del mismo tipo: una ruta de paradas por zonas. Un viaje
+// largo necesita más: a partir de cierto día ya no hay ciudad que recorrer, y lo que toca es salir
+// de ella (Pompeya, Tívoli) o dejar el día en manos del viajero. `excursions.day_pattern` en el JSON
+// del destino decide qué propone el algoritmo; el viajero puede convertir CUALQUIER día en
+// cualquier otro tipo desde la propia ficha (ver convertDayType en useRouteStore.ts) — esto es solo
+// la propuesta de partida.
+//
+// Un destino sin sección `excursions` genera días normales siempre, exactamente como antes.
+
+/**
+ * Qué propone el algoritmo para este día: 'normal' (ruta de zonas de siempre), 'excursion' (salir
+ * de la ciudad), 'smart_route' (ruta ampliada que puede repetir imprescindibles ya vistos) o
+ * 'manual' (día en blanco que monta el viajero).
+ */
+export function getDayType(dayNumber, destData) {
+  const excursions = destData?.excursions
+  if (!excursions?.options?.length) return 'normal'
+  const pattern = excursions.day_pattern ?? {}
+
+  // El día de vuelta a casa nunca se propone como excursión ni como día libre: ya tiene dueño.
+  if (typeof pattern.manual_from === 'number' && dayNumber >= pattern.manual_from) return 'manual'
+  if (dayNumber === pattern.first_excursion) return 'excursion'
+  if (pattern.smart_route_after && dayNumber === pattern.first_excursion + 1) return 'smart_route'
+  return 'normal'
+}
+
+/** Las excursiones que se le enseñan al viajero — `max_display` primeras, en el orden del JSON, que
+    es editorial (lo más imprescindible primero). */
+export function excursionOptionsFor(destData) {
+  const excursions = destData?.excursions
+  if (!excursions?.options?.length) return []
+  return excursions.options.slice(0, excursions.max_display ?? 4)
+}
+
+/**
+ * Día de excursión: no tiene paradas propias, tiene OPCIONES. Sale con `stops` y `meals` vacíos a
+ * propósito — el día no se llena hasta que el viajero elige una, y si no elige ninguna sigue
+ * pudiendo convertirlo en ruta o montarlo a mano. Devuelve además `excursion_options` para que el
+ * servidor las publique en `excursions_available` (el canal que ya existe hacia el cliente).
+ */
+export function buildExcursionDayV2(destData, dayNumber) {
+  return {
+    day_number: dayNumber,
+    title: 'Excursión',
+    type: 'excursion',
+    stops: [],
+    meals: [],
+    not_included: [],
+    times_are_final: true,
+    excursion_essential: Boolean(destData?.excursions?.essential),
+    excursion_options: excursionOptionsFor(destData),
+  }
+}
+
+/** Día libre: en blanco a propósito. El viajero lo monta desde la ficha del día (buscar lugares o
+    buscar excursiones) — ver el tipo 'manual' en DayDetailPanel.tsx. */
+export function buildManualDayV2(dayNumber) {
+  return {
+    day_number: dayNumber,
+    title: 'Tu día libre',
+    type: 'manual',
+    stops: [],
+    meals: [],
+    not_included: [],
+    times_are_final: true,
+  }
+}

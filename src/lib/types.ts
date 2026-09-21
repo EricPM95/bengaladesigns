@@ -376,6 +376,14 @@ export interface MealSlot {
 
 export type ExcursionLength = 'half-day' | 'full-day'
 
+/**
+ * Prompt 4 — qué es este día. 'normal' es la ruta de zonas de siempre; 'excursion' propone salir de
+ * la ciudad; 'smart_route' es la ruta ampliada del día siguiente a una excursión; 'manual' es un día
+ * en blanco que monta el viajero. Lo propone el algoritmo (ver getDayType en routeAlgorithm.js) y lo
+ * puede cambiar el viajero desde la ficha del día — el algoritmo propone, el viajero dispone.
+ */
+export type DayType = 'normal' | 'excursion' | 'smart_route' | 'manual'
+
 export interface Excursion {
   id: string
   title: string
@@ -389,6 +397,15 @@ export interface Excursion {
   rating?: number
   reviewCount?: number
   bookUrl?: string
+  /** Emoji curado de la excursión, del JSON del destino — la tarjeta lo usa en vez de un icono genérico. */
+  emoji?: string | null
+  /** Horas de puerta a puerta, para el "Xh" de la tarjeta. */
+  durationHours?: number | null
+  /** A dónde se va: el marcador del mapa del día cuando esta excursión está seleccionada. */
+  destinationCoords?: Coordinates | null
+  /** Precio tal cual viene del JSON ("65€"). Es un PLACEHOLDER hasta integrar las APIs de afiliados
+      (Civitatis/GYG) — nunca se presenta como precio real cerrado. */
+  priceLabel?: string | null
 }
 
 // ── Didn't make the cut ───────────────────────────────────
@@ -442,6 +459,12 @@ export interface DayPlan {
   recommendedRevisits?: RecommendedRevisit[]
   rainPlanB?: RainPlanB
   isExcursionDay?: boolean
+  /** Prompt 4 — ver DayType. Ausente = 'normal' (todos los días anteriores a esta función). */
+  dayType?: DayType
+  /** Solo días de excursión: la que eligió el viajero, o null si todavía no ha elegido. */
+  selectedExcursionId?: string | null
+  /** Solo destinos donde las excursiones son parte del viaje, no un extra (excursions.essential). */
+  excursionEssential?: boolean
   isRelaxedDay?: boolean
   /** Código ISO de país en minúsculas (ej. "it") de la ciudad de este día — para la bandera en la pestaña RUTA. */
   countryCode?: string | null
