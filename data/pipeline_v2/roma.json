@@ -17,7 +17,7 @@
   },
   "joyas": [
     "Coliseo",
-    "Fontana di Trevi",
+    "Fontana de Trevi",
     "Museos Vaticanos y Capilla Sixtina",
     "Panteón"
   ],
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "name": "Fontana di Trevi (noche)",
+      "name": "Fontana de Trevi (noche)",
       "duration": 45,
       "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
       "coordinates": [
@@ -45,11 +45,11 @@
       ],
       "zone": "centro_historico",
       "conflicts_with": [
-        "Fontana di Trevi"
+        "Fontana de Trevi"
       ]
     },
     {
-      "name": "Plaza España y Escalinata (noche)",
+      "name": "Plaza de España (noche)",
       "duration": 45,
       "description": "La escalinata iluminada con Roma a tus pies — sin las multitudes del día",
       "coordinates": [
@@ -58,7 +58,7 @@
       ],
       "zone": "centro_historico",
       "conflicts_with": [
-        "Plaza España y Escalinata"
+        "Plaza de España"
       ]
     },
     {
@@ -160,6 +160,96 @@
           "Via Veneto zona"
         ]
       }
+    },
+    "aventino": {
+      "comida": {
+        "display": "en Testaccio",
+        "options": [
+          "Testaccio",
+          "Via Marmorata"
+        ]
+      },
+      "cena": {
+        "display": "en Testaccio",
+        "options": [
+          "Testaccio"
+        ]
+      }
+    },
+    "testaccio": {
+      "comida": {
+        "display": "en Testaccio",
+        "options": [
+          "Mercado de Testaccio",
+          "Testaccio"
+        ]
+      },
+      "cena": {
+        "display": "en Testaccio",
+        "options": [
+          "Testaccio",
+          "Via Galvani"
+        ]
+      }
+    },
+    "appia": {
+      "comida": {
+        "display": "junto a la Via Appia",
+        "options": [
+          "Via Appia Antica"
+        ]
+      },
+      "cena": {
+        "display": "en Testaccio",
+        "options": [
+          "Testaccio"
+        ]
+      }
+    },
+    "san_giovanni": {
+      "comida": {
+        "display": "en San Giovanni",
+        "options": [
+          "San Giovanni",
+          "Via Appia Nuova"
+        ]
+      },
+      "cena": {
+        "display": "en San Giovanni",
+        "options": [
+          "San Giovanni"
+        ]
+      }
+    },
+    "esquilino": {
+      "comida": {
+        "display": "en el barrio de Monti",
+        "options": [
+          "Monti",
+          "Esquilino"
+        ]
+      },
+      "cena": {
+        "display": "en el barrio de Monti",
+        "options": [
+          "Monti"
+        ]
+      }
+    },
+    "nomentano": {
+      "comida": {
+        "display": "en el Nomentano",
+        "options": [
+          "Via Nomentana",
+          "Quartiere Trieste"
+        ]
+      },
+      "cena": {
+        "display": "en el Nomentano",
+        "options": [
+          "Quartiere Trieste"
+        ]
+      }
     }
   },
   "evening_blocks": [
@@ -205,26 +295,19 @@
         "Coliseo",
         "Foro Romano y Palatino",
         "Arco de Constantino",
-        "Bocca della Verità",
         "Circo Máximo",
-        "Altar de la Patria (Vittoriano)",
-        "Isla Tiberina",
+        "Altar de la Patria",
         "Via dei Fori Imperiali",
-        "Piazza Venezia",
+        "Plaza Venecia",
         "Mercados de Trajano",
-        "Piazza del Campidoglio",
+        "Plaza del Campidoglio",
         "Museos Capitolinos",
         "Basílica de San Clemente",
-        "San Pietro in Vincoli",
+        "Iglesia de San Pietro in Vincoli",
         "Domus Aurea",
-        "Termas de Caracalla",
-        "Giardino degli Aranci",
-        "Santa Maria Maggiore",
         "Columna de Trajano",
-        "Teatro Marcelo",
-        "Cerradura del Aventino",
-        "Pirámide Cestia",
-        "Santa Maria della Vittoria"
+        "Teatro de Marcelo",
+        "Iglesia de Santa Maria della Vittoria"
       ]
     },
     "centro_historico": {
@@ -234,25 +317,26 @@
         12.4769
       ],
       "places": [
-        "Fontana di Trevi",
+        "Fontana de Trevi",
         "Panteón",
         "Piazza Navona",
-        "Plaza España y Escalinata",
-        "Via del Corso",
+        "Plaza de España",
         "Largo di Torre Argentina",
+        "Via del Corso",
         "Campo de' Fiori",
         "Iglesia del Gesù",
-        "San Luigi dei Francesi",
+        "Iglesia de San Luigi dei Francesi",
         "Ara Pacis",
-        "Ghetto Ebraico",
-        "Santa Maria sopra Minerva",
-        "Sant'Ignazio di Loyola",
+        "Barrio Judío",
+        "Iglesia de Santa Maria sopra Minerva",
+        "Iglesia de San Ignacio de Loyola",
         "Elefantino de Bernini",
-        "Fontana delle Tartarughe",
-        "Fontana del Tritone",
-        "Piazza Colonna",
-        "Via dei Condotti",
-        "Piazza Farnese"
+        "Fuente de las Tortugas",
+        "Fuente del Tritón",
+        "Plaza Colonna",
+        "Via Condotti",
+        "Plaza Farnese",
+        "Palazzo Doria Pamphilj"
       ]
     },
     "vaticano": {
@@ -266,8 +350,8 @@
         "Basílica de San Pedro",
         "Plaza de San Pedro",
         "Via della Conciliazione",
-        "Castel Sant'Angelo",
-        "Ponte Sant'Angelo",
+        "Castillo de Sant'Angelo",
+        "Puente Sant'Angelo",
         "Borgo Pio",
         "Cúpula de San Pedro"
       ]
@@ -280,9 +364,10 @@
       ],
       "places": [
         "Mirador del Janículo",
-        "Santa Maria in Trastevere",
+        "Isla Tiberina",
+        "Iglesia de Santa Maria in Trastevere",
         "Villa Farnesina",
-        "Piazza Trilussa"
+        "Plaza Trilussa"
       ]
     },
     "villa_borghese": {
@@ -292,10 +377,78 @@
         12.4856
       ],
       "places": [
-        "Galería Borghese (museo)",
-        "Parque Villa Borghese",
-        "Piazza del Popolo",
+        "Plaza del Pueblo",
+        "Galería Borghese",
+        "Parque de Villa Borghese",
+        "Bioparque de Roma",
+        "Galería Nacional de Arte Moderno",
         "Terraza del Pincio"
+      ]
+    },
+    "aventino": {
+      "name": "Aventino",
+      "center": [
+        41.8841,
+        12.4787
+      ],
+      "places": [
+        "Boca de la Verdad",
+        "Termas de Caracalla",
+        "Jardín de los Naranjos",
+        "Ojo de la Cerradura del Aventino"
+      ]
+    },
+    "testaccio": {
+      "name": "Testaccio",
+      "center": [
+        41.8759,
+        12.4757
+      ],
+      "places": [
+        "Pirámide Cestia",
+        "Mercado de Testaccio",
+        "Cementerio Protestante"
+      ]
+    },
+    "appia": {
+      "name": "Via Appia",
+      "center": [
+        41.8563,
+        12.513
+      ],
+      "places": [
+        "Via Appia Antica",
+        "Catacumbas de San Calixto"
+      ]
+    },
+    "san_giovanni": {
+      "name": "San Giovanni",
+      "center": [
+        41.8859,
+        12.5057
+      ],
+      "places": [
+        "Basílica de San Juan de Letrán"
+      ]
+    },
+    "esquilino": {
+      "name": "Esquilino",
+      "center": [
+        41.8977,
+        12.4983
+      ],
+      "places": [
+        "Basílica de Santa María la Mayor"
+      ]
+    },
+    "nomentano": {
+      "name": "Nomentano",
+      "center": [
+        41.912,
+        12.508
+      ],
+      "places": [
+        "Quartiere Coppedè"
       ]
     }
   },
@@ -323,7 +476,13 @@
         "ruinas"
       ],
       "filter_category": "monumentos",
-      "schedule": "08:30-19:15 (verano), 08:30-16:30 (invierno)"
+      "schedule": "08:30-19:15 (verano), 08:30-16:30 (invierno)",
+      "search_aliases": [
+        "anfiteatro flavio",
+        "coliseo romano",
+        "colosseo",
+        "colosseum"
+      ]
     },
     {
       "name": "Foro Romano y Palatino",
@@ -345,7 +504,14 @@
         "ruinas"
       ],
       "filter_category": "monumentos",
-      "schedule": "09:00-19:15 (verano), 09:00-16:30 (invierno). Entrada combinada con Coliseo"
+      "schedule": "09:00-19:15 (verano), 09:00-16:30 (invierno). Entrada combinada con Coliseo",
+      "search_aliases": [
+        "foro",
+        "foro romano",
+        "foro romano e palatino",
+        "palatino",
+        "roman forum"
+      ]
     },
     {
       "name": "Arco de Constantino",
@@ -367,12 +533,16 @@
         "monumento",
         "ruinas"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "arch of constantine",
+        "arco di costantino"
+      ]
     },
     {
-      "name": "Bocca della Verità",
+      "name": "Boca de la Verdad",
       "level": 2,
-      "zone": "roma_antigua",
+      "zone": "aventino",
       "coordinates": [
         41.8881,
         12.4815
@@ -385,7 +555,15 @@
         "monumento",
         "curiosidad"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "group": "aventino_clasico",
+      "group_order": 1,
+      "group_order_evening": 1,
+      "search_aliases": [
+        "bocca della verita",
+        "mouth of truth",
+        "santa maria in cosmedin"
+      ]
     },
     {
       "name": "Circo Máximo",
@@ -402,10 +580,14 @@
       "tags": [
         "ruinas"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "circo massimo",
+        "circus maximus"
+      ]
     },
     {
-      "name": "Fontana di Trevi",
+      "name": "Fontana de Trevi",
       "level": 1,
       "tier": "joya",
       "zone": "centro_historico",
@@ -423,7 +605,14 @@
         "fuente",
         "monumento"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "fontana di trevi",
+        "fontana trevi",
+        "fuente de trevi",
+        "trevi",
+        "trevi fountain"
+      ]
     },
     {
       "name": "Panteón",
@@ -446,7 +635,12 @@
         "iglesia"
       ],
       "filter_category": "monumentos",
-      "schedule": "Lun-Sáb 09:00-19:00, Dom 09:00-18:00. Reserva online obligatoria"
+      "schedule": "Lun-Sáb 09:00-19:00, Dom 09:00-18:00. Reserva online obligatoria",
+      "search_aliases": [
+        "panteon de agripa",
+        "pantheon",
+        "pantheon di roma"
+      ]
     },
     {
       "name": "Piazza Navona",
@@ -468,10 +662,15 @@
       "tags": [
         "plaza"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "fuente de los cuatro rios",
+        "navona",
+        "plaza navona"
+      ]
     },
     {
-      "name": "Plaza España y Escalinata",
+      "name": "Plaza de España",
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
@@ -488,10 +687,17 @@
         "monumento",
         "plaza"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "escalinata",
+        "escalinata de la plaza de espana",
+        "piazza di spagna",
+        "plaza espana y escalinata",
+        "spanish steps"
+      ]
     },
     {
-      "name": "Piazza del Popolo",
+      "name": "Plaza del Pueblo",
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
@@ -506,7 +712,12 @@
         "plaza",
         "monumento"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "piazza del popolo",
+        "plaza del popolo",
+        "popolo"
+      ]
     },
     {
       "name": "Largo di Torre Argentina",
@@ -524,7 +735,12 @@
         "ruinas",
         "curiosidad"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "gatos de torre argentina",
+        "largo argentina",
+        "torre argentina"
+      ]
     },
     {
       "name": "Via del Corso",
@@ -536,12 +752,16 @@
       ],
       "duration_minutes": 30,
       "type": "exterior",
-      "tip": "La calle comercial principal de Roma. Conéctala caminando entre Piazza del Popolo y el centro — paseo + shopping.",
+      "tip": "La calle comercial principal de Roma. Conéctala caminando entre Plaza del Pueblo y el centro — paseo + shopping.",
       "tags": [
         "calle"
       ],
       "filter_category": "monumentos",
-      "not_before": "10:00"
+      "not_before": "10:00",
+      "search_aliases": [
+        "calle del corso",
+        "el corso"
+      ]
     },
     {
       "name": "Museos Vaticanos y Capilla Sixtina",
@@ -568,7 +788,14 @@
         "arte"
       ],
       "filter_category": "museos_arte",
-      "schedule": "Lun-Sáb 08:00-20:00 (última entrada 18:00). Cerrado domingos (excepto último domingo del mes: 09:00-14:00, gratis)"
+      "schedule": "Lun-Sáb 08:00-20:00 (última entrada 18:00). Cerrado domingos (excepto último domingo del mes: 09:00-14:00, gratis)",
+      "search_aliases": [
+        "capilla sixtina",
+        "cappella sistina",
+        "musei vaticani",
+        "museos vaticanos",
+        "vatican museums"
+      ]
     },
     {
       "name": "Basílica de San Pedro",
@@ -591,7 +818,13 @@
       ],
       "filter_category": "museos_arte",
       "related_to": "Cúpula de San Pedro",
-      "schedule": "07:00-20:00 (todo el año)"
+      "schedule": "07:00-20:00 (todo el año)",
+      "search_aliases": [
+        "basilica di san pietro",
+        "san pedro",
+        "san pietro",
+        "st peter's basilica"
+      ]
     },
     {
       "name": "Plaza de San Pedro",
@@ -613,7 +846,12 @@
         "plaza",
         "monumento"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "piazza san pietro",
+        "plaza san pedro",
+        "st peter's square"
+      ]
     },
     {
       "name": "Via della Conciliazione",
@@ -625,15 +863,19 @@
       ],
       "duration_minutes": 30,
       "type": "exterior",
-      "tip": "La avenida monumental que conecta Plaza de San Pedro con Castel Sant'Angelo. Paseo icónico con la cúpula de San Pedro enmarcada al fondo. Mussolini la mandó construir demoliendo el barrio medieval — hoy es la perspectiva más famosa del Vaticano.",
-      "photo_tip": "Desde el extremo de Castel Sant'Angelo mirando hacia San Pedro — la cúpula centrada entre los edificios es la postal clásica.",
+      "tip": "La avenida monumental que conecta Plaza de San Pedro con Castillo de Sant'Angelo. Paseo icónico con la cúpula de San Pedro enmarcada al fondo. Mussolini la mandó construir demoliendo el barrio medieval — hoy es la perspectiva más famosa del Vaticano.",
+      "photo_tip": "Desde el extremo de Castillo de Sant'Angelo mirando hacia San Pedro — la cúpula centrada entre los edificios es la postal clásica.",
       "tags": [
         "calle"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "conciliazione",
+        "via de la conciliacion"
+      ]
     },
     {
-      "name": "Castel Sant'Angelo",
+      "name": "Castillo de Sant'Angelo",
       "level": 2,
       "zone": "vaticano",
       "coordinates": [
@@ -642,14 +884,20 @@
       ],
       "duration_minutes": 75,
       "type": "interior",
-      "tip": "La terraza superior tiene una de las mejores vistas de Roma. El puente de los ángeles (Ponte Sant'Angelo) de Bernini es precioso — crúzalo sí o sí. Calcula 1h dentro + 15 min en el puente.",
-      "photo_tip": "Desde Ponte Sant'Angelo mirando al castillo al atardecer. Desde la terraza del castillo, panorámica del Tíber con San Pedro al fondo.",
+      "tip": "La terraza superior tiene una de las mejores vistas de Roma. El puente de los ángeles (Puente Sant'Angelo) de Bernini es precioso — crúzalo sí o sí. Calcula 1h dentro + 15 min en el puente.",
+      "photo_tip": "Desde Puente Sant'Angelo mirando al castillo al atardecer. Desde la terraza del castillo, panorámica del Tíber con San Pedro al fondo.",
       "tags": [
         "monumento",
         "museo"
       ],
       "filter_category": "museos_arte",
-      "schedule": "09:00-19:30. Cerrado lunes"
+      "schedule": "09:00-19:30. Cerrado lunes",
+      "search_aliases": [
+        "castel sant angelo",
+        "castel sant'angelo",
+        "castillo sant angelo",
+        "mausoleo de adriano"
+      ]
     },
     {
       "name": "Mirador del Janículo",
@@ -666,10 +914,16 @@
       "tags": [
         "mirador"
       ],
-      "filter_category": "miradores"
+      "filter_category": "miradores",
+      "search_aliases": [
+        "gianicolo",
+        "janiculo",
+        "mirador gianicolo",
+        "passeggiata del gianicolo"
+      ]
     },
     {
-      "name": "Galería Borghese (museo)",
+      "name": "Galería Borghese",
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
@@ -688,12 +942,18 @@
         "arte"
       ],
       "filter_category": "museos_arte",
-      "related_to": "Parque Villa Borghese",
+      "related_to": "Parque de Villa Borghese",
       "schedule": "Mar-Dom 09:00-19:00. Cerrado lunes. Solo con reserva (turnos de 2h)",
-      "contained_in": "Parque Villa Borghese"
+      "contained_in": "Parque de Villa Borghese",
+      "search_aliases": [
+        "borghese gallery",
+        "galeria borghese (museo)",
+        "galleria borghese",
+        "museo borghese"
+      ]
     },
     {
-      "name": "Parque Villa Borghese",
+      "name": "Parque de Villa Borghese",
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
@@ -707,10 +967,16 @@
         "parque"
       ],
       "filter_category": "monumentos",
-      "related_to": "Galería Borghese (museo)"
+      "related_to": "Galería Borghese",
+      "search_aliases": [
+        "borghese gardens",
+        "jardines de villa borghese",
+        "parque villa borghese",
+        "villa borghese"
+      ]
     },
     {
-      "name": "Bioparco di Roma",
+      "name": "Bioparque de Roma",
       "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
@@ -725,10 +991,16 @@
       ],
       "filter_category": "monumentos",
       "schedule": "09:30-18:00 (L-V primavera-verano), 09:30-19:00 (S-D primavera-verano), 09:30-17:00 (invierno)",
-      "contained_in": "Parque Villa Borghese"
+      "contained_in": "Parque de Villa Borghese",
+      "search_aliases": [
+        "bioparco",
+        "bioparco di roma",
+        "zoo de roma",
+        "zoologico de roma"
+      ]
     },
     {
-      "name": "Galleria Nazionale d'Arte Moderna",
+      "name": "Galería Nacional de Arte Moderno",
       "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
@@ -743,10 +1015,15 @@
         "arte"
       ],
       "filter_category": "museos_arte",
-      "schedule": "09:00-19:00. Cerrado lunes"
+      "schedule": "09:00-19:00. Cerrado lunes",
+      "search_aliases": [
+        "arte moderno roma",
+        "galleria nazionale d'arte moderna",
+        "gnam"
+      ]
     },
     {
-      "name": "Altar de la Patria (Vittoriano)",
+      "name": "Altar de la Patria",
       "level": 1,
       "zone": "roma_antigua",
       "coordinates": [
@@ -765,10 +1042,18 @@
       "filter_category": "monumentos",
       "group": "altar_patria_group",
       "group_order": 2,
-      "group_order_evening": 1
+      "group_order_evening": 1,
+      "search_aliases": [
+        "altar de la patria (vittoriano)",
+        "altare della patria",
+        "il vittoriano",
+        "monumento a victor manuel ii",
+        "victor manuel",
+        "vittoriano"
+      ]
     },
     {
-      "name": "Ponte Sant'Angelo",
+      "name": "Puente Sant'Angelo",
       "level": 3,
       "zone": "vaticano",
       "coordinates": [
@@ -777,17 +1062,22 @@
       ],
       "duration_minutes": 15,
       "type": "exterior",
-      "tip": "El puente de los ángeles de Bernini, justo saliendo de Castel Sant'Angelo — crúzalo despacio, cada ángel lleva un símbolo de la Pasión.",
+      "tip": "El puente de los ángeles de Bernini, justo saliendo de Castillo de Sant'Angelo — crúzalo despacio, cada ángel lleva un símbolo de la Pasión.",
       "photo_tip": "Desde el centro del puente, el castillo detrás y la cúpula de San Pedro asomando a lo lejos.",
       "tags": [
         "monumento"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "ponte sant'angelo",
+        "puente de los angeles",
+        "puente sant angelo"
+      ]
     },
     {
       "name": "Isla Tiberina",
       "level": 2,
-      "zone": "roma_antigua",
+      "zone": "trastevere",
       "coordinates": [
         41.8897,
         12.4776
@@ -799,7 +1089,12 @@
       "tags": [
         "curiosidad"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "isla del tiber",
+        "isola tiberina",
+        "tiber island"
+      ]
     },
     {
       "name": "Via dei Fori Imperiali",
@@ -811,13 +1106,18 @@
       ],
       "duration_minutes": 20,
       "type": "exterior",
-      "tip": "La avenida que conecta Piazza Venezia con el Coliseo, con los Foros Imperiales a ambos lados — el paseo que Mussolini abrió sobre las ruinas.",
+      "tip": "La avenida que conecta Plaza Venecia con el Coliseo, con los Foros Imperiales a ambos lados — el paseo que Mussolini abrió sobre las ruinas.",
       "photo_tip": "Mirando hacia el Coliseo al fondo de la avenida — la postal más repetida de Roma, y con razón.",
       "tags": [
         "calle",
         "ruinas"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "avenida de los foros imperiales",
+        "fori imperiali",
+        "foros imperiales"
+      ]
     },
     {
       "name": "Campo de' Fiori",
@@ -835,7 +1135,12 @@
         "plaza",
         "gastronomia"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "campo de fiori",
+        "campo dei fiori",
+        "mercado de campo de fiori"
+      ]
     },
     {
       "name": "Borgo Pio",
@@ -853,10 +1158,14 @@
         "calle",
         "gastronomia"
       ],
-      "filter_category": "monumentos"
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "barrio borgo",
+        "borgo"
+      ]
     },
     {
-      "name": "Piazza Venezia",
+      "name": "Plaza Venecia",
       "duration_minutes": 10,
       "zone": "roma_antigua",
       "coordinates": [
@@ -874,7 +1183,12 @@
       "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo",
       "group": "altar_patria_group",
       "group_order": 1,
-      "group_order_evening": 2
+      "group_order_evening": 2,
+      "search_aliases": [
+        "piazza venezia",
+        "plaza de venecia",
+        "venezia"
+      ]
     },
     {
       "name": "Mercados de Trajano",
@@ -897,7 +1211,12 @@
       ],
       "schedule": "09:30-19:30. Cerrado lunes",
       "tip": "Entrada ~15€. El edificio semicircular de ladrillo es impresionante. Desde la terraza superior se ve la Columna de Trajano desde arriba",
-      "description": "El primer centro comercial de la historia — un complejo de 150 tiendas romanas excavadas en la colina, hoy museo con exposiciones sobre la Roma imperial"
+      "description": "El primer centro comercial de la historia — un complejo de 150 tiendas romanas excavadas en la colina, hoy museo con exposiciones sobre la Roma imperial",
+      "search_aliases": [
+        "mercado de trajano",
+        "mercati di traiano",
+        "trajan market"
+      ]
     },
     {
       "name": "Cúpula de San Pedro",
@@ -916,7 +1235,12 @@
       "related_to": "Basílica de San Pedro",
       "schedule": "07:00-18:00 (Abr-Sep), 07:30-17:00 (Oct-Mar)",
       "tip": "Entrada ~10€ (ascensor) o ~8€ (solo escaleras). Madruga para evitar colas. El pasillo interior entre las dos paredes de la cúpula es claustrofóbico pero merece",
-      "description": "551 escalones (o ascensor + 320 escalones) hasta la cima de la cúpula de Miguel Ángel — las vistas sobre Roma desde 136 metros de altura son inolvidables"
+      "description": "551 escalones (o ascensor + 320 escalones) hasta la cima de la cúpula de Miguel Ángel — las vistas sobre Roma desde 136 metros de altura son inolvidables",
+      "search_aliases": [
+        "cupola di san pietro",
+        "cupula del vaticano",
+        "subida a la cupula"
+      ]
     },
     {
       "name": "Iglesia del Gesù",
@@ -935,10 +1259,14 @@
       ],
       "filter_category": "museos_arte",
       "description": "La iglesia madre de los jesuitas — un interior barroco que te deja sin palabras, especialmente el techo pintado por Baciccia",
-      "tip": "Gratis. Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio"
+      "tip": "Gratis. Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio",
+      "search_aliases": [
+        "chiesa del gesu",
+        "il gesu"
+      ]
     },
     {
-      "name": "San Luigi dei Francesi",
+      "name": "Iglesia de San Luigi dei Francesi",
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -954,7 +1282,12 @@
       ],
       "filter_category": "museos_arte",
       "description": "Tres obras maestras de Caravaggio en una capilla lateral — La vocación de San Mateo es hipnótica",
-      "tip": "Gratis. Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas de 1€ para encender la luz"
+      "tip": "Gratis. Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas de 1€ para encender la luz",
+      "search_aliases": [
+        "caravaggio san mateo",
+        "san luigi dei francesi",
+        "san luis de los franceses"
+      ]
     },
     {
       "name": "Ara Pacis",
@@ -976,10 +1309,14 @@
       ],
       "filter_category": "museos_arte",
       "description": "El Altar de la Paz de Augusto, protegido en un museo moderno diseñado por Richard Meier junto al Tíber",
-      "tip": "Entrada ~10€. El museo es pequeño pero el altar es impresionante. Está junto al Mausoleo de Augusto"
+      "tip": "Entrada ~10€. El museo es pequeño pero el altar es impresionante. Está junto al Mausoleo de Augusto",
+      "search_aliases": [
+        "altar de la paz",
+        "museo dell ara pacis"
+      ]
     },
     {
-      "name": "Ghetto Ebraico",
+      "name": "Barrio Judío",
       "duration_minutes": 30,
       "zone": "centro_historico",
       "coordinates": [
@@ -994,10 +1331,16 @@
       ],
       "filter_category": "monumentos",
       "description": "El barrio judío más antiguo de Europa — calles con historia, la Gran Sinagoga y algunos de los mejores restaurantes de Roma",
-      "tip": "Prueba los carciofi alla giudia (alcachofas fritas) en cualquier restaurante de la zona — es EL plato del Ghetto"
+      "tip": "Prueba los carciofi alla giudia (alcachofas fritas) en cualquier restaurante de la zona — es EL plato del Ghetto",
+      "search_aliases": [
+        "barrio judio de roma",
+        "ghetto",
+        "ghetto ebraico",
+        "gueto judio"
+      ]
     },
     {
-      "name": "Santa Maria sopra Minerva",
+      "name": "Iglesia de Santa Maria sopra Minerva",
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -1013,10 +1356,15 @@
       ],
       "filter_category": "museos_arte",
       "description": "La única iglesia gótica de Roma, con un Cristo Redentor esculpido por Miguel Ángel",
-      "tip": "Gratis. No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido"
+      "tip": "Gratis. No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido",
+      "search_aliases": [
+        "elefante de bernini iglesia",
+        "minerva",
+        "santa maria sopra minerva"
+      ]
     },
     {
-      "name": "Sant'Ignazio di Loyola",
+      "name": "Iglesia de San Ignacio de Loyola",
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -1032,7 +1380,13 @@
       ],
       "filter_category": "museos_arte",
       "description": "El techo de Andrea Pozzo es un trampantojo que engaña al ojo — parece que la iglesia tiene una cúpula pero es pintura plana",
-      "tip": "Gratis. Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta"
+      "tip": "Gratis. Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta",
+      "search_aliases": [
+        "falsa cupula",
+        "san ignacio de loyola",
+        "sant ignazio",
+        "sant'ignazio di loyola"
+      ]
     },
     {
       "name": "Elefantino de Bernini",
@@ -1050,10 +1404,15 @@
       ],
       "filter_category": "monumentos",
       "description": "Un elefante de mármol cargando un obelisco egipcio — una de las esculturas más simpáticas de Roma, en la Piazza della Minerva",
-      "tip": "Parada rápida detrás del Panteón. Bernini diseñó el elefante con una sonrisa traviesa"
+      "tip": "Parada rápida detrás del Panteón. Bernini diseñó el elefante con una sonrisa traviesa",
+      "search_aliases": [
+        "elefante de bernini",
+        "elefantino",
+        "pulcino della minerva"
+      ]
     },
     {
-      "name": "Fontana delle Tartarughe",
+      "name": "Fuente de las Tortugas",
       "duration_minutes": 15,
       "zone": "centro_historico",
       "coordinates": [
@@ -1067,10 +1426,15 @@
       ],
       "filter_category": "monumentos",
       "description": "Una fuente renacentista encantadora con jóvenes empujando tortugas hacia la pila — en la íntima Piazza Mattei, corazón del Ghetto judío",
-      "tip": "Las tortugas fueron añadidas después, probablemente por Bernini. La plaza es uno de los rincones más bonitos de Roma"
+      "tip": "Las tortugas fueron añadidas después, probablemente por Bernini. La plaza es uno de los rincones más bonitos de Roma",
+      "search_aliases": [
+        "fontana delle tartarughe",
+        "tartarughe",
+        "turtle fountain"
+      ]
     },
     {
-      "name": "Fontana del Tritone",
+      "name": "Fuente del Tritón",
       "duration_minutes": 10,
       "zone": "centro_historico",
       "coordinates": [
@@ -1084,10 +1448,16 @@
       ],
       "filter_category": "monumentos",
       "description": "Bernini esculpió este tritón soplando agua hacia el cielo en el centro de Piazza Barberini — parada natural entre Trevi y Via Veneto",
-      "tip": "Parada rápida. Justo al lado está la pequeña Fontana delle Api (fuente de las abejas), también de Bernini"
+      "tip": "Parada rápida. Justo al lado está la pequeña Fontana delle Api (fuente de las abejas), también de Bernini",
+      "search_aliases": [
+        "fontana del tritone",
+        "piazza barberini fuente",
+        "triton",
+        "tritone"
+      ]
     },
     {
-      "name": "Piazza Colonna",
+      "name": "Plaza Colonna",
       "duration_minutes": 15,
       "zone": "centro_historico",
       "coordinates": [
@@ -1102,10 +1472,14 @@
       ],
       "filter_category": "monumentos",
       "description": "La Columna de Marco Aurelio se alza 30 metros con relieves en espiral de las guerras contra los bárbaros — menos turistas que en Navona",
-      "tip": "Parada rápida en Via del Corso. El edificio del fondo es el Palazzo Chigi, sede del gobierno italiano"
+      "tip": "Parada rápida en Via del Corso. El edificio del fondo es el Palazzo Chigi, sede del gobierno italiano",
+      "search_aliases": [
+        "columna de marco aurelio",
+        "piazza colonna"
+      ]
     },
     {
-      "name": "Via dei Condotti",
+      "name": "Via Condotti",
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -1119,10 +1493,15 @@
       ],
       "filter_category": "monumentos",
       "description": "La calle de compras más famosa de Roma — de Gucci a Bulgari, conecta Via del Corso con la Escalinata de Plaza España",
-      "tip": "Aunque no compres, el paseo entre escaparates es parte de la experiencia romana. El Caffè Greco (n.86) abrió en 1760"
+      "tip": "Aunque no compres, el paseo entre escaparates es parte de la experiencia romana. El Caffè Greco (n.86) abrió en 1760",
+      "search_aliases": [
+        "calle condotti",
+        "condotti",
+        "via dei condotti"
+      ]
     },
     {
-      "name": "Piazza Farnese",
+      "name": "Plaza Farnese",
       "duration_minutes": 10,
       "zone": "centro_historico",
       "coordinates": [
@@ -1136,10 +1515,15 @@
       ],
       "filter_category": "monumentos",
       "description": "Plaza elegante con dos fuentes gemelas hechas de bañeras romanas — el Palazzo Farnese es la embajada de Francia y uno de los más bonitos de Roma",
-      "tip": "A 1 minuto de Campo de' Fiori pero mucho más tranquila. Las fuentes usan bañeras de las Termas de Caracalla"
+      "tip": "A 1 minuto de Campo de' Fiori pero mucho más tranquila. Las fuentes usan bañeras de las Termas de Caracalla",
+      "search_aliases": [
+        "palacio farnesio",
+        "palazzo farnese",
+        "piazza farnese"
+      ]
     },
     {
-      "name": "Piazza del Campidoglio",
+      "name": "Plaza del Campidoglio",
       "duration_minutes": 20,
       "zone": "roma_antigua",
       "coordinates": [
@@ -1155,7 +1539,13 @@
       "filter_category": "monumentos",
       "related_to": "Museos Capitolinos",
       "description": "La plaza diseñada por Miguel Ángel en la cima del Capitolio — geometría perfecta con la estatua ecuestre de Marco Aurelio en el centro",
-      "tip": "Sube por la escalinata de la Cordonata. Desde la terraza trasera hay unas vistas espectaculares del Foro Romano"
+      "tip": "Sube por la escalinata de la Cordonata. Desde la terraza trasera hay unas vistas espectaculares del Foro Romano",
+      "search_aliases": [
+        "campidoglio",
+        "capitolio",
+        "piazza del campidoglio",
+        "plaza del capitolio"
+      ]
     },
     {
       "name": "Museos Capitolinos",
@@ -1176,9 +1566,14 @@
         "arte"
       ],
       "filter_category": "museos_arte",
-      "related_to": "Piazza del Campidoglio",
+      "related_to": "Plaza del Campidoglio",
       "description": "El museo público más antiguo del mundo — la Loba Capitolina, el Marco Aurelio original y el Gálata moribundo te esperan",
-      "tip": "Entrada ~15€. El pasaje subterráneo entre los dos edificios tiene vistas directas al Foro. Reserva 2 horas mínimo"
+      "tip": "Entrada ~15€. El pasaje subterráneo entre los dos edificios tiene vistas directas al Foro. Reserva 2 horas mínimo",
+      "search_aliases": [
+        "capitoline museums",
+        "musei capitolini",
+        "museo capitolino"
+      ]
     },
     {
       "name": "Basílica de San Clemente",
@@ -1197,10 +1592,14 @@
       ],
       "filter_category": "museos_arte",
       "description": "Tres niveles de historia bajo tus pies — iglesia medieval arriba, iglesia del siglo IV en medio, templo romano de Mitra abajo",
-      "tip": "Entrada a los niveles inferiores ~10€. Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma"
+      "tip": "Entrada a los niveles inferiores ~10€. Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma",
+      "search_aliases": [
+        "basilica di san clemente",
+        "san clemente"
+      ]
     },
     {
-      "name": "San Pietro in Vincoli",
+      "name": "Iglesia de San Pietro in Vincoli",
       "duration_minutes": 20,
       "zone": "roma_antigua",
       "coordinates": [
@@ -1215,7 +1614,13 @@
       ],
       "filter_category": "museos_arte",
       "description": "Aquí está el Moisés de Miguel Ángel — una escultura tan poderosa que dicen que Miguel Ángel le golpeó la rodilla y le dijo \"¡Habla!\"",
-      "tip": "Gratis. El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente"
+      "tip": "Gratis. El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente",
+      "search_aliases": [
+        "moises",
+        "moises de miguel angel",
+        "san pedro encadenado",
+        "san pietro in vincoli"
+      ]
     },
     {
       "name": "Domus Aurea",
@@ -1240,12 +1645,17 @@
       ],
       "filter_category": "museos_arte",
       "description": "El palacio subterráneo de Nerón — una visita guiada con realidad virtual que te muestra los salones dorados como eran hace 2.000 años",
-      "tip": "Solo con visita guiada (reservar online, ~16€). Incluye gafas de realidad virtual. Abre solo viernes, sábado y domingo"
+      "tip": "Solo con visita guiada (reservar online, ~16€). Incluye gafas de realidad virtual. Abre solo viernes, sábado y domingo",
+      "search_aliases": [
+        "casa dorada de neron",
+        "domus aurea de neron",
+        "golden house"
+      ]
     },
     {
       "name": "Termas de Caracalla",
       "duration_minutes": 60,
-      "zone": "roma_antigua",
+      "zone": "aventino",
       "coordinates": [
         41.8794,
         12.4931
@@ -1261,12 +1671,16 @@
       ],
       "filter_category": "monumentos",
       "description": "Los baños públicos más grandes de la antigua Roma — las ruinas son tan enormes que en verano montan ópera dentro",
-      "tip": "Entrada ~8€. Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente para 1.600 romanos a la vez"
+      "tip": "Entrada ~8€. Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente para 1.600 romanos a la vez",
+      "search_aliases": [
+        "baths of caracalla",
+        "terme di caracalla"
+      ]
     },
     {
-      "name": "Giardino degli Aranci",
+      "name": "Jardín de los Naranjos",
       "duration_minutes": 20,
-      "zone": "roma_antigua",
+      "zone": "aventino",
       "coordinates": [
         41.8851,
         12.4804
@@ -1278,12 +1692,20 @@
       ],
       "filter_category": "miradores",
       "description": "Un jardín de naranjos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde San Pedro hasta el Coliseo",
-      "tip": "Gratis. Mejor al atardecer. Después baja a la Cerradura del Aventino, que está a 3 minutos"
+      "tip": "Gratis. Mejor al atardecer. Después baja a la Cerradura del Aventino, que está a 3 minutos",
+      "group": "aventino_clasico",
+      "group_order": 2,
+      "group_order_evening": 2,
+      "search_aliases": [
+        "giardino degli aranci",
+        "orange garden",
+        "parco savello"
+      ]
     },
     {
-      "name": "Santa Maria Maggiore",
+      "name": "Basílica de Santa María la Mayor",
       "duration_minutes": 30,
-      "zone": "roma_antigua",
+      "zone": "esquilino",
       "coordinates": [
         41.8976,
         12.4984
@@ -1296,7 +1718,12 @@
       ],
       "filter_category": "museos_arte",
       "description": "Una de las cuatro basílicas papales de Roma — los mosaicos del siglo V brillan con oro y el artesonado del techo se hizo con el primer oro traído de América",
-      "tip": "Gratis (la basílica). El museo y la loggia con los mosaicos cuestan ~5€. El techo dorado es cortesía de Isabel la Católica"
+      "tip": "Gratis (la basílica). El museo y la loggia con los mosaicos cuestan ~5€. El techo dorado es cortesía de Isabel la Católica",
+      "search_aliases": [
+        "basilica di santa maria maggiore",
+        "santa maria la mayor",
+        "santa maria maggiore"
+      ]
     },
     {
       "name": "Columna de Trajano",
@@ -1315,10 +1742,14 @@
       "filter_category": "monumentos",
       "related_to": "Mercados de Trajano",
       "description": "Una columna de 30 metros con 2.500 figuras talladas en espiral que cuentan las guerras de Trajano en Dacia — un cómic romano en mármol",
-      "tip": "Parada rápida junto a Via dei Fori Imperiali. Los relieves se leen de abajo arriba en espiral"
+      "tip": "Parada rápida junto a Via dei Fori Imperiali. Los relieves se leen de abajo arriba en espiral",
+      "search_aliases": [
+        "colonna traiana",
+        "trajan column"
+      ]
     },
     {
-      "name": "Teatro Marcelo",
+      "name": "Teatro de Marcelo",
       "duration_minutes": 15,
       "zone": "roma_antigua",
       "coordinates": [
@@ -1333,12 +1764,17 @@
       ],
       "filter_category": "monumentos",
       "description": "Un teatro romano del siglo I a.C. que sirvió de modelo para el Coliseo — hoy tiene apartamentos de lujo en los pisos superiores",
-      "tip": "Solo se ve por fuera. Fíjate en cómo los arcos romanos originales sostienen un palacio renacentista encima — 2.000 años de historia en un edificio"
+      "tip": "Solo se ve por fuera. Fíjate en cómo los arcos romanos originales sostienen un palacio renacentista encima — 2.000 años de historia en un edificio",
+      "search_aliases": [
+        "teatro di marcello",
+        "teatro marcelo",
+        "theatre of marcellus"
+      ]
     },
     {
-      "name": "Cerradura del Aventino",
+      "name": "Ojo de la Cerradura del Aventino",
       "duration_minutes": 10,
-      "zone": "roma_antigua",
+      "zone": "aventino",
       "coordinates": [
         41.8829,
         12.4784
@@ -1350,12 +1786,22 @@
       ],
       "filter_category": "miradores",
       "description": "Mira por la cerradura de la puerta de los Caballeros de Malta y verás la cúpula de San Pedro perfectamente enmarcada por un túnel de setos",
-      "tip": "La cola suele ser corta. Es la foto más original que te llevarás de Roma — tres países en una imagen: Italia, la Orden de Malta y el Vaticano"
+      "tip": "La cola suele ser corta. Es la foto más original que te llevarás de Roma — tres países en una imagen: Italia, la Orden de Malta y el Vaticano",
+      "group": "aventino_clasico",
+      "group_order": 3,
+      "group_order_evening": 3,
+      "search_aliases": [
+        "buco della serratura",
+        "cerradura del aventino",
+        "keyhole",
+        "ojo de la cerradura",
+        "priorato de malta"
+      ]
     },
     {
       "name": "Pirámide Cestia",
       "duration_minutes": 10,
-      "zone": "roma_antigua",
+      "zone": "testaccio",
       "coordinates": [
         41.8725,
         12.4752
@@ -1368,10 +1814,14 @@
       ],
       "filter_category": "monumentos",
       "description": "Una pirámide de 36 metros en plena Roma — la construyó un magistrado romano que quería un entierro al estilo egipcio",
-      "tip": "Se ve desde fuera. Está junto a Porta San Paolo y la estación de metro Piramide. El Cementerio Acatólico al lado es precioso"
+      "tip": "Se ve desde fuera. Está junto a Porta San Paolo y la estación de metro Piramide. El Cementerio Acatólico al lado es precioso",
+      "search_aliases": [
+        "piramide di caio cestio",
+        "pyramid of cestius"
+      ]
     },
     {
-      "name": "Santa Maria della Vittoria",
+      "name": "Iglesia de Santa Maria della Vittoria",
       "duration_minutes": 20,
       "zone": "roma_antigua",
       "coordinates": [
@@ -1386,10 +1836,15 @@
       ],
       "filter_category": "museos_arte",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo",
-      "tip": "Gratis. El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales"
+      "tip": "Gratis. El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales",
+      "search_aliases": [
+        "bernini santa teresa",
+        "extasis de santa teresa",
+        "santa maria della vittoria"
+      ]
     },
     {
-      "name": "Santa Maria in Trastevere",
+      "name": "Iglesia de Santa Maria in Trastevere",
       "duration_minutes": 20,
       "zone": "trastevere",
       "coordinates": [
@@ -1405,7 +1860,11 @@
       ],
       "filter_category": "museos_arte",
       "description": "Una de las iglesias más antiguas de Roma — los mosaicos dorados del ábside brillan como el primer día, y la plaza es el corazón de Trastevere",
-      "tip": "Gratis. Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio"
+      "tip": "Gratis. Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio",
+      "search_aliases": [
+        "basilica de santa maria in trastevere",
+        "santa maria in trastevere"
+      ]
     },
     {
       "name": "Villa Farnesina",
@@ -1427,10 +1886,14 @@
       ],
       "filter_category": "museos_arte",
       "description": "Una villa renacentista con frescos de Rafael que quitan el aliento — el Triunfo de Galatea y la Loggia de Psique son de otro mundo",
-      "tip": "Entrada ~10€. Mucho menos turistas que los Museos Vaticanos pero con frescos de Rafael igual de impresionantes. Abre por las mañanas"
+      "tip": "Entrada ~10€. Mucho menos turistas que los Museos Vaticanos pero con frescos de Rafael igual de impresionantes. Abre por las mañanas",
+      "search_aliases": [
+        "farnesina",
+        "rafael farnesina"
+      ]
     },
     {
-      "name": "Piazza Trilussa",
+      "name": "Plaza Trilussa",
       "duration_minutes": 15,
       "zone": "trastevere",
       "coordinates": [
@@ -1444,7 +1907,12 @@
       ],
       "filter_category": "monumentos",
       "description": "La plaza más animada de Trastevere — punto de encuentro al cruzar Ponte Sisto, con una fuente barroca y ambiente de aperitivo",
-      "tip": "Por las tardes se llena de gente con spritz en mano. Es la puerta de entrada perfecta a Trastevere"
+      "tip": "Por las tardes se llena de gente con spritz en mano. Es la puerta de entrada perfecta a Trastevere",
+      "search_aliases": [
+        "piazza trilussa",
+        "ponte sisto plaza",
+        "trilussa"
+      ]
     },
     {
       "name": "Terraza del Pincio",
@@ -1460,8 +1928,196 @@
         "mirador"
       ],
       "filter_category": "miradores",
-      "description": "El mirador más clásico de Roma — desde aquí ves Piazza del Popolo a tus pies, las cúpulas de la ciudad y el Vaticano al fondo",
-      "tip": "Mejor al atardecer. Se accede desde Villa Borghese o subiendo desde Piazza del Popolo. Hay un bar con terraza"
+      "description": "El mirador más clásico de Roma — desde aquí ves Plaza del Pueblo a tus pies, las cúpulas de la ciudad y el Vaticano al fondo",
+      "tip": "Mejor al atardecer. Se accede desde Villa Borghese o subiendo desde Plaza del Pueblo. Hay un bar con terraza",
+      "search_aliases": [
+        "mirador del pincio",
+        "pincio",
+        "terrazza del pincio"
+      ]
+    },
+    {
+      "name": "Basílica de San Juan de Letrán",
+      "level": 2,
+      "zone": "san_giovanni",
+      "coordinates": [
+        41.8859,
+        12.5057
+      ],
+      "duration_minutes": 30,
+      "type": "interior",
+      "is_free_access": true,
+      "tip": "Es la catedral de Roma, no San Pedro — aquí es donde el Papa oficia como obispo de la ciudad. Las doce estatuas colosales de los apóstoles flanquean la nave central. El claustro cosmatesco se visita aparte.",
+      "description": "La primera basílica cristiana de Roma y todavía su catedral: \"madre y cabeza de todas las iglesias del mundo\". La fachada de Galilei asoma quince estatuas sobre la plaza.",
+      "photo_tip": "Desde el centro de la plaza, de frente: las quince estatuas del ático recortadas contra el cielo.",
+      "tags": [
+        "iglesia",
+        "historia"
+      ],
+      "filter_category": "monumentos",
+      "schedule": "07:00-18:30",
+      "search_aliases": [
+        "archbasilica of st john lateran",
+        "laterano",
+        "san giovanni in laterano",
+        "san juan de letran"
+      ]
+    },
+    {
+      "name": "Quartiere Coppedè",
+      "level": 3,
+      "zone": "nomentano",
+      "coordinates": [
+        41.912,
+        12.508
+      ],
+      "duration_minutes": 20,
+      "type": "exterior",
+      "tip": "No es un barrio entero, son dos manzanas: entra por el arco de Via Dora y busca la Fuente de las Ranas. Se ve completo en veinte minutos y casi nunca hay nadie.",
+      "description": "Un delirio arquitectónico de los años veinte — medieval, art nouveau y barroco mezclados en un conjunto que no se parece a nada más en Roma.",
+      "photo_tip": "El arco de entrada con la lámpara de forja colgando en el centro, desde Via Tagliamento.",
+      "tags": [
+        "arquitectura",
+        "secreto",
+        "foto"
+      ],
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "barrio coppede",
+        "coppede",
+        "fontana delle rane"
+      ]
+    },
+    {
+      "name": "Mercado de Testaccio",
+      "level": 3,
+      "zone": "testaccio",
+      "coordinates": [
+        41.8768,
+        12.4751
+      ],
+      "duration_minutes": 40,
+      "type": "interior",
+      "is_free_access": true,
+      "tip": "Mercado de barrio de verdad, no de postal. Los puestos de comida preparada son el motivo real para venir — se come de pie y rápido. Cierra a media tarde.",
+      "description": "El mercado donde compra el barrio, en una nave moderna sobre restos romanos. Puestos de fruta y carnicerías junto a algunos de los bocadillos más famosos de la ciudad.",
+      "photo_tip": "Los mostradores desde el pasillo central, con la gente haciendo cola.",
+      "tags": [
+        "gastronomia",
+        "mercado",
+        "local"
+      ],
+      "filter_category": "gastronomia",
+      "schedule": "07:00-15:30. Cerrado domingos",
+      "search_aliases": [
+        "mercato di testaccio",
+        "nuovo mercato testaccio",
+        "testaccio market"
+      ]
+    },
+    {
+      "name": "Palazzo Doria Pamphilj",
+      "level": 3,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8976,
+        12.4808
+      ],
+      "duration_minutes": 60,
+      "type": "interior",
+      "tip": "Sigue siendo la casa de la familia y se nota: la audioguía la narra un descendiente. La Galería de los Espejos y el retrato de Inocencio X de Velázquez son la razón de venir.",
+      "description": "Una colección privada intacta en pleno Via del Corso, con las salas tal como estaban — cuadros apilados del suelo al techo en vez de colgados de uno en uno.",
+      "photo_tip": "La Galería de los Espejos en enfilada, con la luz entrando por la izquierda.",
+      "tags": [
+        "arte",
+        "museo",
+        "secreto"
+      ],
+      "filter_category": "museos_arte",
+      "schedule": "09:00-19:00 (última entrada 18:00)",
+      "search_aliases": [
+        "doria pamphilj",
+        "galeria doria pamphilj",
+        "palacio doria pamphili",
+        "velazquez inocencio x"
+      ]
+    },
+    {
+      "name": "Via Appia Antica",
+      "level": 3,
+      "zone": "appia",
+      "coordinates": [
+        41.8558,
+        12.5138
+      ],
+      "duration_minutes": 90,
+      "type": "exterior",
+      "tip": "Ve en domingo si puedes: cierran al tráfico y el adoquinado original se queda para peatones y bicis. Hay alquiler de bicicletas junto a la entrada del parque.",
+      "description": "La calzada romana mejor conservada, con su empedrado original entre pinos, tumbas y campo abierto. Empieza a las afueras y se aleja de la ciudad kilómetro a kilómetro.",
+      "photo_tip": "El adoquinado en primer plano con la hilera de pinos en fuga hacia el horizonte.",
+      "tags": [
+        "historia",
+        "paseo",
+        "naturaleza"
+      ],
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "appia antica",
+        "appian way",
+        "via apia",
+        "via appia"
+      ]
+    },
+    {
+      "name": "Catacumbas de San Calixto",
+      "level": 3,
+      "zone": "appia",
+      "coordinates": [
+        41.857,
+        12.512
+      ],
+      "duration_minutes": 45,
+      "type": "interior",
+      "tip": "Solo se entra con visita guiada y salen cada pocos minutos en varios idiomas. Hay veinte kilómetros de galerías en varios niveles; se recorre una parte pequeña. Lleva algo de abrigo, abajo hace fresco todo el año.",
+      "description": "El cementerio subterráneo más grande de Roma y el lugar donde se enterró a buena parte de los primeros papas, excavado en toba blanda a lo largo de cuatro niveles.",
+      "tags": [
+        "historia",
+        "subterraneo"
+      ],
+      "filter_category": "monumentos",
+      "schedule": "09:00-12:00 y 14:00-17:00. Cerrado miércoles",
+      "search_aliases": [
+        "catacombe di san callisto",
+        "catacumbas"
+      ]
+    },
+    {
+      "name": "Cementerio Protestante",
+      "level": 3,
+      "zone": "testaccio",
+      "coordinates": [
+        41.8762,
+        12.48
+      ],
+      "duration_minutes": 25,
+      "type": "exterior",
+      "is_free_access": true,
+      "tip": "Aquí están las tumbas de Keats y Shelley, y una colonia de gatos que vive entre los cipreses. La Pirámide Cestia queda justo al lado, se ven juntos.",
+      "description": "Un jardín de cipreses y lápidas inglesas a la sombra de la muralla Aureliana — el rincón más silencioso de Roma, a dos pasos del bullicio de Testaccio.",
+      "photo_tip": "La tumba del Ángel del Dolor entre los cipreses, a última hora de la tarde.",
+      "tags": [
+        "historia",
+        "secreto",
+        "tranquilo"
+      ],
+      "filter_category": "monumentos",
+      "schedule": "09:00-17:00",
+      "search_aliases": [
+        "cementerio acatolico",
+        "cimitero acattolico",
+        "non-catholic cemetery",
+        "tumba de keats"
+      ]
     }
   ],
   "groups": {
@@ -1537,20 +2193,41 @@
     "altar_patria_group": {
       "name": "Altar de la Patria y Piazza Venezia",
       "places": [
-        "Piazza Venezia",
-        "Altar de la Patria (Vittoriano)"
+        "Plaza Venecia",
+        "Altar de la Patria"
       ],
       "order": [
-        "Piazza Venezia",
-        "Altar de la Patria (Vittoriano)"
+        "Plaza Venecia",
+        "Altar de la Patria"
       ],
       "order_evening": [
-        "Piazza Venezia",
-        "Altar de la Patria (Vittoriano)"
+        "Plaza Venecia",
+        "Altar de la Patria"
       ],
-      "note": "A 0m de distancia — Piazza Venezia es la rotonda con el Vittoriano (Altar de la Patria) encima. Se visitan siempre juntas, nunca por separado.",
+      "note": "A 0m de distancia — Plaza Venecia es la rotonda con el Vittoriano (Altar de la Patria) encima. Se visitan siempre juntas, nunca por separado.",
       "breakable_if_short": false,
       "combined_duration_minutes": 70
+    },
+    "aventino_clasico": {
+      "name": "Aventino clásico",
+      "places": [
+        "Boca de la Verdad",
+        "Jardín de los Naranjos",
+        "Ojo de la Cerradura del Aventino"
+      ],
+      "order": [
+        "Boca de la Verdad",
+        "Jardín de los Naranjos",
+        "Ojo de la Cerradura del Aventino"
+      ],
+      "order_evening": [
+        "Boca de la Verdad",
+        "Jardín de los Naranjos",
+        "Ojo de la Cerradura del Aventino"
+      ],
+      "note": "Ruta natural cuesta arriba por el Aventino, de la Bocca de la Verdad al jardín y termina con la vista de San Pedro por el ojo de la cerradura.",
+      "breakable_if_short": false,
+      "combined_duration_minutes": 60
     }
   },
   "zone_distribution": {
@@ -1562,7 +2239,12 @@
             "morning": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
                 "Arco de Constantino",
@@ -1575,13 +2257,14 @@
               "zone": "centro_historico",
               "extra_zones": [
                 "villa_borghese",
-                "vaticano"
+                "vaticano",
+                "nomentano"
               ],
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Panteón",
                 "Piazza Navona",
-                "Plaza España y Escalinata"
+                "Plaza de España"
               ],
               "note": "Las joyas + imprescindibles del centro, todas cercanas"
             },
@@ -1601,10 +2284,11 @@
               "zone": "centro_historico",
               "extra_zones": [
                 "villa_borghese",
-                "vaticano"
+                "vaticano",
+                "nomentano"
               ],
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Free Tour Centro Histórico"
               ],
               "note": "Trevi a primera hora (08:00, sin gente) → Free Tour 10:00 desde Piazza di Spagna"
@@ -1612,11 +2296,16 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
+                "Plaza Venecia",
+                "Altar de la Patria",
                 "Arco de Constantino",
                 "Coliseo"
               ],
@@ -1644,18 +2333,26 @@
                 "Coliseo",
                 "Foro Romano y Palatino"
               ],
-              "note": "Grupo completo Roma Antigua por la mañana"
+              "note": "Grupo completo Roma Antigua por la mañana",
+              "extra_zones": [
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
+              ]
             },
             "afternoon": {
               "zone": "centro_historico",
               "extra_zones": [
-                "villa_borghese"
+                "villa_borghese",
+                "nomentano"
               ],
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Panteón",
                 "Piazza Navona",
-                "Plaza España y Escalinata"
+                "Plaza de España"
               ],
               "note": "Paseo por el centro histórico — todo exterior y cercano"
             },
@@ -1694,10 +2391,11 @@
             "morning": {
               "zone": "centro_historico",
               "extra_zones": [
-                "villa_borghese"
+                "villa_borghese",
+                "nomentano"
               ],
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Free Tour Centro Histórico"
               ],
               "note": "Trevi 08:00 (Completo) o Free Tour 10:00 directamente (Tranquilo)"
@@ -1705,13 +2403,20 @@
             "afternoon": {
               "zone": "roma_antigua",
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
+                "Plaza Venecia",
+                "Altar de la Patria",
                 "Arco de Constantino",
                 "Coliseo",
                 "Foro Romano y Palatino"
               ],
-              "note": "Altar de la Patria + grupo Roma Antigua completo por la tarde"
+              "note": "Altar de la Patria + grupo Roma Antigua completo por la tarde",
+              "extra_zones": [
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
+              ]
             },
             "evening_block": null
           },
@@ -1759,12 +2464,17 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Boca de la Verdad",
                 "Circo Máximo"
               ],
               "note": "Altar de la Patria + nivel 2, completando la zona"
@@ -1785,9 +2495,9 @@
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro",
-                "Castel Sant'Angelo"
+                "Castillo de Sant'Angelo"
               ],
-              "note": "Completar Vaticano + Castel Sant'Angelo"
+              "note": "Completar Vaticano + Castillo de Sant'Angelo"
             },
             "evening_block": null
           },
@@ -1796,7 +2506,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Panteón",
                 "Piazza Navona",
                 "Largo di Torre Argentina"
@@ -1806,11 +2516,12 @@
             "afternoon": {
               "zone": "centro_historico",
               "extra_zones": [
-                "villa_borghese"
+                "villa_borghese",
+                "nomentano"
               ],
               "places": [
-                "Plaza España y Escalinata",
-                "Piazza del Popolo",
+                "Plaza de España",
+                "Plaza del Pueblo",
                 "Via del Corso"
               ],
               "note": "Norte del centro — paseo de compras y miradores"
@@ -1828,7 +2539,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Free Tour Centro Histórico"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
@@ -1836,12 +2547,13 @@
             "afternoon": {
               "zone": "centro_historico",
               "extra_zones": [
-                "villa_borghese"
+                "villa_borghese",
+                "nomentano"
               ],
               "places": [
                 "Panteón",
                 "Piazza Navona",
-                "Plaza España y Escalinata",
+                "Plaza de España",
                 "Largo di Torre Argentina"
               ],
               "note": "Completar centro tras el Free Tour"
@@ -1862,12 +2574,17 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Boca de la Verdad",
                 "Circo Máximo"
               ],
               "note": "Altar de la Patria + nivel 2 zona antigua"
@@ -1888,7 +2605,7 @@
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro",
-                "Castel Sant'Angelo"
+                "Castillo de Sant'Angelo"
               ],
               "note": "Vaticano completo"
             },
@@ -1916,13 +2633,19 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
-                "Circo Máximo"
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Circo Máximo",
+                "Columna de Trajano",
+                "Teatro de Marcelo"
               ],
               "note": "Altar de la Patria completando zona antigua"
             },
@@ -1942,9 +2665,9 @@
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro",
-                "Castel Sant'Angelo"
+                "Castillo de Sant'Angelo"
               ],
-              "note": "Vaticano completo + Castel Sant'Angelo"
+              "note": "Vaticano completo + Castillo de Sant'Angelo"
             },
             "evening_block": null
           },
@@ -1953,7 +2676,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Panteón",
                 "Piazza Navona",
                 "Largo di Torre Argentina"
@@ -1963,8 +2686,8 @@
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza España y Escalinata",
-                "Piazza del Popolo",
+                "Plaza de España",
+                "Plaza del Pueblo",
                 "Via del Corso"
               ],
               "note": "Norte centro + compras"
@@ -1974,16 +2697,28 @@
           {
             "day": 4,
             "morning": {
-              "zone": "villa_borghese",
-              "places": [
-                "Galería Borghese (museo)"
+              "zone": "aventino",
+              "extra_zones": [
+                "testaccio"
               ],
-              "note": "Galería Borghese con reserva — Parque Villa Borghese se añade automáticamente antes (contained_in), como paseo de llegada"
+              "places": [
+                "Boca de la Verdad",
+                "Jardín de los Naranjos",
+                "Ojo de la Cerradura del Aventino",
+                "Termas de Caracalla"
+              ],
+              "note": "Aventino cuesta arriba hasta el ojo de la cerradura"
             },
             "afternoon": {
               "zone": "villa_borghese",
-              "places": [],
-              "note": "Sin core fijo — relleno real de villa_borghese (Pincio, mirador, al final por el atardecer) + centro_historico adyacente"
+              "extra_zones": [
+                "centro_historico",
+                "nomentano"
+              ],
+              "places": [
+                "Galería Borghese"
+              ],
+              "note": "Galería Borghese con reserva — el Parque se añade solo antes (contained_in) y el Pincio cierra al atardecer"
             },
             "evening_block": null
           }
@@ -1998,7 +2733,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Free Tour Centro Histórico"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
@@ -2008,7 +2743,7 @@
               "places": [
                 "Panteón",
                 "Piazza Navona",
-                "Plaza España y Escalinata",
+                "Plaza de España",
                 "Largo di Torre Argentina"
               ],
               "note": "Completar centro"
@@ -2029,13 +2764,19 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
-                "Circo Máximo"
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Circo Máximo",
+                "Columna de Trajano",
+                "Teatro de Marcelo"
               ],
               "note": "Altar de la Patria + nivel 2 antigua"
             },
@@ -2055,7 +2796,7 @@
               "places": [
                 "Basílica de San Pedro",
                 "Plaza de San Pedro",
-                "Castel Sant'Angelo"
+                "Castillo de Sant'Angelo"
               ],
               "note": "Vaticano completo"
             },
@@ -2064,19 +2805,28 @@
           {
             "day": 4,
             "morning": {
-              "zone": "villa_borghese",
-              "places": [
-                "Galería Borghese (museo)"
+              "zone": "aventino",
+              "extra_zones": [
+                "testaccio"
               ],
-              "note": "Borghese reserva 2h"
+              "places": [
+                "Boca de la Verdad",
+                "Jardín de los Naranjos",
+                "Ojo de la Cerradura del Aventino",
+                "Termas de Caracalla"
+              ],
+              "note": "Aventino cuesta arriba hasta el ojo de la cerradura"
             },
             "afternoon": {
-              "zone": "centro_historico",
-              "places": [
-                "Piazza del Popolo",
-                "Via del Corso"
+              "zone": "villa_borghese",
+              "extra_zones": [
+                "centro_historico",
+                "nomentano"
               ],
-              "note": "Norte centro + compras + Pincio"
+              "places": [
+                "Galería Borghese"
+              ],
+              "note": "Galería Borghese con reserva — el Parque se añade solo antes (contained_in) y el Pincio cierra al atardecer"
             },
             "evening_block": null
           }
@@ -2102,13 +2852,19 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
-                "Circo Máximo"
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Circo Máximo",
+                "Columna de Trajano",
+                "Teatro de Marcelo"
               ],
               "note": "Altar de la Patria completando zona antigua + descanso"
             },
@@ -2127,7 +2883,8 @@
               "zone": "vaticano",
               "places": [
                 "Basílica de San Pedro",
-                "Plaza de San Pedro"
+                "Plaza de San Pedro",
+                "Castillo de Sant'Angelo"
               ],
               "note": "Basílica + subir a la cúpula"
             },
@@ -2138,7 +2895,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Panteón",
                 "Piazza Navona",
                 "Largo di Torre Argentina"
@@ -2148,8 +2905,9 @@
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza España y Escalinata",
-                "Piazza del Popolo"
+                "Plaza de España",
+                "Plaza del Pueblo",
+                "Via del Corso"
               ],
               "note": "Norte del centro + Pincio atardecer"
             },
@@ -2160,32 +2918,46 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
-                "Galería Borghese (museo)"
+                "Galería Borghese"
               ],
-              "note": "Galería Borghese con reserva — Parque Villa Borghese se añade automáticamente antes (contained_in), como paseo de llegada"
+              "note": "Galería Borghese con reserva — Parque de Villa Borghese se añade automáticamente antes (contained_in), como paseo de llegada"
             },
             "afternoon": {
               "zone": "villa_borghese",
               "places": [],
-              "note": "Sin core fijo — relleno real de villa_borghese (Pincio, mirador, al final por el atardecer) + centro_historico adyacente"
+              "note": "Sin core fijo — relleno real de villa_borghese (Pincio, mirador, al final por el atardecer) + centro_historico adyacente",
+              "extra_zones": [
+                "nomentano"
+              ]
             },
             "evening_block": null
           },
           {
             "day": 5,
             "morning": {
-              "zone": "vaticano",
-              "places": [
-                "Castel Sant'Angelo"
+              "zone": "testaccio",
+              "extra_zones": [
+                "aventino"
               ],
-              "note": "Castel Sant'Angelo con calma + Ponte Sant'Angelo"
+              "places": [
+                "Mercado de Testaccio",
+                "Pirámide Cestia",
+                "Cementerio Protestante"
+              ],
+              "note": "Testaccio de mañana — el mercado cierra a media tarde"
             },
             "afternoon": {
-              "zone": "centro_historico",
-              "places": [
-                "Via del Corso"
+              "zone": "aventino",
+              "extra_zones": [
+                "testaccio"
               ],
-              "note": "Paseo libre, compras, últimos rincones"
+              "places": [
+                "Boca de la Verdad",
+                "Jardín de los Naranjos",
+                "Ojo de la Cerradura del Aventino",
+                "Termas de Caracalla"
+              ],
+              "note": "Subida al Aventino, acaba en la vista de San Pedro por el ojo de la cerradura al atardecer"
             },
             "evening_block": null
           }
@@ -2200,7 +2972,7 @@
             "morning": {
               "zone": "centro_historico",
               "places": [
-                "Fontana di Trevi",
+                "Fontana de Trevi",
                 "Free Tour Centro Histórico"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
@@ -2230,13 +3002,19 @@
             "afternoon": {
               "zone": "roma_antigua",
               "extra_zones": [
-                "trastevere"
+                "trastevere",
+                "aventino",
+                "testaccio",
+                "appia",
+                "san_giovanni",
+                "esquilino"
               ],
               "places": [
-                "Piazza Venezia",
-                "Altar de la Patria (Vittoriano)",
-                "Bocca della Verità",
-                "Circo Máximo"
+                "Plaza Venecia",
+                "Altar de la Patria",
+                "Circo Máximo",
+                "Columna de Trajano",
+                "Teatro de Marcelo"
               ],
               "note": "Altar de la Patria + nivel 2 antigua"
             },
@@ -2255,7 +3033,8 @@
               "zone": "vaticano",
               "places": [
                 "Basílica de San Pedro",
-                "Plaza de San Pedro"
+                "Plaza de San Pedro",
+                "Castillo de Sant'Angelo"
               ],
               "note": "Vaticano grupo completo"
             },
@@ -2266,15 +3045,18 @@
             "morning": {
               "zone": "villa_borghese",
               "places": [
-                "Galería Borghese (museo)"
+                "Galería Borghese"
               ],
-              "note": "Borghese con reserva"
+              "note": "Borghese con reserva",
+              "extra_zones": [
+                "nomentano"
+              ]
             },
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza España y Escalinata",
-                "Piazza del Popolo",
+                "Plaza de España",
+                "Plaza del Pueblo",
                 "Via del Corso"
               ],
               "note": "Norte centro + compras"
@@ -2284,18 +3066,29 @@
           {
             "day": 5,
             "morning": {
-              "zone": "vaticano",
-              "places": [
-                "Castel Sant'Angelo"
+              "zone": "testaccio",
+              "extra_zones": [
+                "aventino"
               ],
-              "note": "Castel + Ponte Sant'Angelo"
+              "places": [
+                "Mercado de Testaccio",
+                "Pirámide Cestia",
+                "Cementerio Protestante"
+              ],
+              "note": "Testaccio de mañana — el mercado cierra a media tarde"
             },
             "afternoon": {
-              "zone": "villa_borghese",
-              "places": [
-                "Parque Villa Borghese"
+              "zone": "aventino",
+              "extra_zones": [
+                "testaccio"
               ],
-              "note": "Parque + Pincio + despedida"
+              "places": [
+                "Boca de la Verdad",
+                "Jardín de los Naranjos",
+                "Ojo de la Cerradura del Aventino",
+                "Termas de Caracalla"
+              ],
+              "note": "Subida al Aventino, acaba en la vista de San Pedro por el ojo de la cerradura al atardecer"
             },
             "evening_block": null
           }
@@ -2312,7 +3105,7 @@
         "route": [
           {
             "time": "08:00",
-            "place": "Fontana di Trevi",
+            "place": "Fontana de Trevi",
             "duration": 30,
             "note": "Sin nadie — el momento mágico"
           },
@@ -2354,13 +3147,13 @@
           },
           {
             "time": "15:00",
-            "place": "Plaza España y Escalinata",
+            "place": "Plaza de España",
             "duration": 30,
             "note": "Subir a Trinità dei Monti"
           },
           {
             "time": "15:45",
-            "place": "Piazza del Popolo",
+            "place": "Plaza del Pueblo",
             "duration": 30,
             "note": "Vista desde el Pincio al atardecer"
           },
@@ -2372,7 +3165,7 @@
           },
           {
             "time": "22:00",
-            "place": "Fontana di Trevi (noche)",
+            "place": "Fontana de Trevi (noche)",
             "duration": 20,
             "note": "Vuelta nocturna — iluminada y vacía"
           }
@@ -2383,7 +3176,7 @@
         "route": [
           {
             "time": "10:00",
-            "place": "Fontana di Trevi",
+            "place": "Fontana de Trevi",
             "duration": 30,
             "note": "Todavía poca gente a las 10"
           },
@@ -2413,7 +3206,7 @@
           },
           {
             "time": "15:45",
-            "place": "Plaza España y Escalinata",
+            "place": "Plaza de España",
             "duration": 30,
             "note": "Subir arriba para la foto"
           },
@@ -2425,7 +3218,7 @@
           },
           {
             "time": "22:00",
-            "place": "Fontana di Trevi (noche)",
+            "place": "Fontana de Trevi (noche)",
             "duration": 20,
             "note": "Despedida nocturna"
           }
@@ -2457,18 +3250,32 @@
       "centro_historico_to_trastevere": 15,
       "centro_historico_to_villa_borghese": 15,
       "vaticano_to_trastevere": 20,
-      "villa_borghese_to_centro_historico": 15
+      "villa_borghese_to_centro_historico": 15,
+      "roma_antigua_to_aventino": 20,
+      "aventino_to_testaccio": 15,
+      "roma_antigua_to_testaccio": 30,
+      "aventino_to_trastevere": 20,
+      "testaccio_to_trastevere": 20,
+      "centro_historico_to_esquilino": 20,
+      "roma_antigua_to_esquilino": 20,
+      "esquilino_to_san_giovanni": 20,
+      "roma_antigua_to_san_giovanni": 25,
+      "aventino_to_san_giovanni": 30,
+      "san_giovanni_to_appia": 35,
+      "testaccio_to_appia": 35,
+      "villa_borghese_to_nomentano": 25,
+      "centro_historico_to_nomentano": 40
     }
   },
   "afternoon_flow": {
     "vaticano": [
       "Plaza de San Pedro",
       "Via della Conciliazione",
-      "Castel Sant'Angelo",
+      "Castillo de Sant'Angelo",
       "Via del Corso",
-      "Piazza del Popolo",
+      "Plaza del Pueblo",
       "Largo di Torre Argentina",
-      "Plaza España y Escalinata"
+      "Plaza de España"
     ]
   },
   "restaurants": [
@@ -2692,7 +3499,7 @@
       "price_range": "€",
       "avg_price_person": "3-6€",
       "what_to_order": "Sabores creativos: Kentuki (tabaco y chocolate), Bacio del Principe, o lo que sea de temporada",
-      "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Piazza del Popolo).",
+      "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Plaza del Pueblo).",
       "hours": "Todos los días 12:00-23:00 (aprox).",
       "best_for": "Gelato artesanal con sabores creativos e innovadores"
     },
@@ -2900,7 +3707,7 @@
       "price_range": "€€",
       "avg_price_person": "12-20€",
       "what_to_order": "Selección de vinos italianos por copa, tabla de quesos, bruschette",
-      "tip": "En plena Piazza Trilussa, epicentro de la noche en Trastevere. Más de 50 referencias de vino. Buffet de aperitivo cambiante.",
+      "tip": "En plena Plaza Trilussa, epicentro de la noche en Trastevere. Más de 50 referencias de vino. Buffet de aperitivo cambiante.",
       "hours": "Todos los días 18:00-02:00.",
       "best_for": "Vino y aperitivo en la plaza más viva de Trastevere"
     },
@@ -3076,7 +3883,7 @@
       "price_range": "€",
       "avg_price_person": "5-12€",
       "what_to_order": "Cornetti salados, focaccia recién hecha, caffe al banco, pasteles de pistacho",
-      "tip": "Panadería-pastelería con fachada espectacular. El mostrador de focaccias y pizzas al taglio es tentador. Terraza para sentarse cerca de Santa Maria Maggiore.",
+      "tip": "Panadería-pastelería con fachada espectacular. El mostrador de focaccias y pizzas al taglio es tentador. Terraza para sentarse cerca de Basílica de Santa María la Mayor.",
       "hours": "Lun-Jue 8:00-23:00. Vie-Dom 8:00-00:00.",
       "best_for": "Panadería gourmet con terraza y focaccias irresistibles"
     },

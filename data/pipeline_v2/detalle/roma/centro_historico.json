@@ -2,7 +2,7 @@
   "zone": "centro_historico",
   "places": [
     {
-      "name": "Fontana di Trevi",
+      "name": "Fontana de Trevi",
       "description": "La fuente más famosa del mundo. 26 metros de altura, 50 de ancho — un escenario barroco tallado en la fachada de un palacio donde Neptuno domina las aguas desde su carro tirado por tritones y caballos marinos. Cada día se recogen unos 3.000€ en monedas del fondo, que se donan a Cáritas para proyectos sociales en Roma. La tradición: tira una moneda con la mano derecha por encima del hombro izquierdo y volverás a Roma.",
       "what_to_see": [
         "La figura central de Neptuno (Océano) dominando las aguas desde su carro",
@@ -180,18 +180,18 @@
       ],
       "secrets": [
         "Bajo la plaza, a nivel de calle en el extremo norte, hay un acceso a los restos del Estadio de Domiciano (siglo I). Es un museo pequeño, poco visitado, y ves los arcos y gradas donde 30.000 romanos veían competiciones atléticas.",
-        "El agua de la Fontana dei Quattro Fiumi viene del acueducto Aqua Virgo — el mismo que alimenta la Fontana di Trevi. Bernini la trazó subterráneamente hasta aquí.",
+        "El agua de la Fontana dei Quattro Fiumi viene del acueducto Aqua Virgo — el mismo que alimenta la Fontana de Trevi. Bernini la trazó subterráneamente hasta aquí.",
         "En diciembre y enero, la plaza se llena con un mercado navideño tradicional. Es turístico pero tiene encanto, especialmente con los niños."
       ]
     },
     {
-      "name": "Plaza España y Escalinata",
+      "name": "Plaza de España",
       "description": "La escalinata más famosa de Italia: 135 peldaños que conectan la Piazza di Spagna con la iglesia de Trinità dei Monti en lo alto. Construida en 1725, fue el corazón del Grand Tour europeo y hoy sigue siendo uno de los puntos más icónicos de Roma. En abril-mayo se cubre de azaleas en flor, creando una cascada de colores. En la base, la Fontana della Barcaccia de Pietro Bernini (padre de Gian Lorenzo) tiene forma de barco semihundido.",
       "what_to_see": [
         "La escalinata completa — 135 peldaños divididos en tres tramos con terrazas intermedias",
         "La iglesia de Trinità dei Monti en la cima (fachada con los dos campanarios simétricos)",
         "La Fontana della Barcaccia en la base — diseñada con forma de barco por la baja presión del agua en esta zona",
-        "La vista desde arriba hacia Via dei Condotti y los tejados de Roma",
+        "La vista desde arriba hacia Via Condotti y los tejados de Roma",
         "La casa donde murió el poeta John Keats (esquina derecha de la escalinata, hoy museo Keats-Shelley)"
       ],
       "transport": [
@@ -217,7 +217,7 @@
       },
       "tips": [
         "Prohibido sentarse en los escalones — multa de hasta 400€. Es una norma municipal desde 2019 y la policía la aplica. Puedes subir, bajar, pararte a hacer fotos, pero no sentarte.",
-        "Sube hasta Trinità dei Monti para la mejor vista: Via dei Condotti en línea recta hasta Via del Corso, con los tejados de Roma al fondo.",
+        "Sube hasta Trinità dei Monti para la mejor vista: Via Condotti en línea recta hasta Via del Corso, con los tejados de Roma al fondo.",
         "Si vienes en abril o mayo, los escalones se cubren de azaleas en flor — es una de las postales más bonitas de Roma y dura solo unas semanas.",
         "De noche (21:00+), la escalinata iluminada y casi vacía es otra experiencia. Ven después de cenar — es uno de los paseos nocturnos clásicos de Roma."
       ],
@@ -269,7 +269,7 @@
     },
     {
       "name": "Via del Corso",
-      "description": "La calle recta más larga del centro de Roma: 1,5 km desde Piazza del Popolo hasta Piazza Venezia, cortando la ciudad de norte a sur. Es la arteria comercial principal, con tiendas de todo tipo (desde Zara hasta boutiques italianas) y palacios renacentistas en las fachadas superiores que nadie mira.",
+      "description": "La calle recta más larga del centro de Roma: 1,5 km desde Plaza del Pueblo hasta Plaza Venecia, cortando la ciudad de norte a sur. Es la arteria comercial principal, con tiendas de todo tipo (desde Zara hasta boutiques italianas) y palacios renacentistas en las fachadas superiores que nadie mira.",
       "transport": [
         {
           "type": "metro",
@@ -293,7 +293,7 @@
       },
       "tips": [
         "No vengas antes de las 10:00 — las tiendas están cerradas y la calle vacía pierde su gracia. El mejor momento es por la tarde, cuando se llena del paseo romano.",
-        "Úsala como eje de conexión: desde cualquier punto de Via del Corso estás a 5 minutos de algo interesante (Panteón, Trevi, Piazza Colonna, Plaza España).",
+        "Úsala como eje de conexión: desde cualquier punto de Via del Corso estás a 5 minutos de algo interesante (Panteón, Trevi, Plaza Colonna, Plaza España).",
         "Las fachadas de los palacios sobre las tiendas son espectaculares (Palazzo Doria Pamphilj, Palazzo Chigi) — mira hacia arriba de vez en cuando."
       ]
     },
@@ -387,7 +387,7 @@
       ]
     },
     {
-      "name": "San Luigi dei Francesi",
+      "name": "Iglesia de San Luigi dei Francesi",
       "description": "Tres obras maestras de Caravaggio en una capilla lateral, gratis. La iglesia nacional de Francia en Roma alberga en la Capilla Contarelli el ciclo de San Mateo: La vocación, El martirio y La inspiración de San Mateo. El contraste brutal de luz y sombra, la violencia de las escenas y los modelos sacados de la calle romana son Caravaggio en estado puro.",
       "what_to_see": [
         "La vocación de San Mateo — el rayo de luz que señala a Mateo entre los recaudadores es una de las imágenes más icónicas de la historia del arte",
@@ -486,7 +486,7 @@
       ]
     },
     {
-      "name": "Ghetto Ebraico",
+      "name": "Barrio Judío",
       "description": "El barrio judío más antiguo de Europa occidental — aquí fue confinada la comunidad judía de Roma desde 1555 hasta 1870. Tres siglos de historia encerrada en unas pocas calles que hoy son uno de los barrios con más personalidad de Roma: la Gran Sinagoga con su cúpula cuadrada domina el perfil, las calles huelen a alcachofas fritas y las 'stolpersteine' (piedras de la memoria) en el suelo recuerdan a los deportados durante la ocupación nazi.",
       "what_to_see": [
         "La Gran Sinagoga y su cúpula cuadrada (única en Roma) — visible desde medio centro de la ciudad",
@@ -528,7 +528,7 @@
       ]
     },
     {
-      "name": "Santa Maria sopra Minerva",
+      "name": "Iglesia de Santa Maria sopra Minerva",
       "description": "La única iglesia gótica de Roma — mientras todo el centro es barroco y renacentista, esta iglesia dominica conserva bóvedas de crucería pintadas de azul con estrellas doradas que parecen un cielo medieval. Dentro, un Cristo Redentor esculpido por Miguel Ángel y las tumbas de Santa Catalina de Siena y del pintor Fra Angélico.",
       "schedule": {
         "periods": [
@@ -568,7 +568,7 @@
       ]
     },
     {
-      "name": "Sant'Ignazio di Loyola",
+      "name": "Iglesia de San Ignacio de Loyola",
       "description": "El techo de Andrea Pozzo es el trampantojo más famoso del mundo: una cúpula pintada en una superficie plana que engaña al ojo y parece tener 3 pisos de altura. Desde el punto exacto del suelo, la ilusión es perfecta; da un paso y se deforma. Es el 'efecto especial' del siglo XVII, y sigue funcionando 350 años después.",
       "what_to_see": [
         "El techo de Andrea Pozzo — la perspectiva imposible que crea una arquitectura ficticia de columnas, arcos y cielo",
@@ -628,14 +628,14 @@
       ]
     },
     {
-      "name": "Fontana delle Tartarughe",
+      "name": "Fuente de las Tortugas",
       "description": "Cuatro jóvenes de bronce empujan delicadamente tortugas hacia la pila superior en la íntima Piazza Mattei, corazón del antiguo Ghetto judío. Una de las fuentes más elegantes y menos visitadas de Roma, con una historia de construcción relámpago: según la leyenda, se levantó en una sola noche.",
       "extras": {
         "address": "Piazza Mattei, 00186 Roma"
       },
       "tips": [
         "Está escondida en la Piazza Mattei, entre el Ghetto y Largo di Torre Argentina. La plaza es minúscula y encantadora — si no la buscas, no la encuentras.",
-        "Combínala con el Ghetto Ebraico (a 1 minuto) y Largo di Torre Argentina (a 3 minutos)."
+        "Combínala con el Barrio Judío (a 1 minuto) y Largo di Torre Argentina (a 3 minutos)."
       ],
       "secrets": [
         "Las tortugas fueron añadidas un siglo después de la fuente original (probablemente por Bernini). La fuente sin tortugas funcionaba igual, pero con ellas se convirtió en una obra maestra.",
@@ -643,8 +643,8 @@
       ]
     },
     {
-      "name": "Fontana del Tritone",
-      "description": "Un tritón musculoso soplando agua hacia el cielo desde una concha gigante sostenida por cuatro delfines — Bernini creó esta fuente para el Papa Urbano VIII en 1643, en el centro de Piazza Barberini. Es una parada natural entre la Fontana di Trevi y Via Veneto.",
+      "name": "Fuente del Tritón",
+      "description": "Un tritón musculoso soplando agua hacia el cielo desde una concha gigante sostenida por cuatro delfines — Bernini creó esta fuente para el Papa Urbano VIII en 1643, en el centro de Piazza Barberini. Es una parada natural entre la Fontana de Trevi y Via Veneto.",
       "transport": [
         {
           "type": "metro",
@@ -667,7 +667,7 @@
       ]
     },
     {
-      "name": "Piazza Colonna",
+      "name": "Plaza Colonna",
       "description": "La Columna de Marco Aurelio se alza 30 metros sobre Via del Corso, con un espiral de relieves que narra las guerras contra los bárbaros del Danubio (siglo II d.C.) — el mismo concepto que la Columna de Trajano pero menos famosa y con menos turistas. Detrás, el Palazzo Chigi es la sede del gobierno italiano.",
       "transport": [
         {
@@ -699,7 +699,7 @@
       ]
     },
     {
-      "name": "Via dei Condotti",
+      "name": "Via Condotti",
       "description": "La calle de la moda de Roma: 300 metros de boutiques de lujo — Gucci, Prada, Bulgari, Valentino, Cartier — que conectan Via del Corso con la Escalinata de Plaza España. Aunque no compres, el escaparatismo y la arquitectura de los palacios que albergan las tiendas son parte de la experiencia romana.",
       "transport": [
         {
@@ -714,7 +714,7 @@
         "address": "Via dei Condotti, 00187 Roma"
       },
       "tips": [
-        "Aunque no compres nada, el paseo entre Via del Corso y Plaza España por Via dei Condotti es la conexión natural entre ambos puntos.",
+        "Aunque no compres nada, el paseo entre Via del Corso y Plaza España por Via Condotti es la conexión natural entre ambos puntos.",
         "El Antico Caffè Greco (nº 86) abrió en 1760 — es el segundo café más antiguo de Italia. Goethe, Byron, Keats y Liszt se sentaron aquí. Caro, pero una institución."
       ],
       "secrets": [
@@ -723,13 +723,13 @@
       ]
     },
     {
-      "name": "Piazza Farnese",
+      "name": "Plaza Farnese",
       "description": "Una de las plazas más elegantes y tranquilas del centro, con dos fuentes gemelas hechas de bañeras de granito traídas de las Termas de Caracalla. El Palazzo Farnese (hoy embajada de Francia) domina la plaza — Miguel Ángel diseñó el tercer piso y la cornisa, y dentro tiene frescos de los Carracci que rivalizan con la Capilla Sixtina.",
       "extras": {
         "address": "Piazza Farnese, 00186 Roma"
       },
       "tips": [
-        "A 1 minuto de Campo de' Fiori pero un mundo aparte: Campo de' Fiori es ruidosa y turística, Piazza Farnese es señorial y tranquila. El contraste en 50 metros es parte de la magia de Roma.",
+        "A 1 minuto de Campo de' Fiori pero un mundo aparte: Campo de' Fiori es ruidosa y turística, Plaza Farnese es señorial y tranquila. El contraste en 50 metros es parte de la magia de Roma.",
         "Las dos fuentes usan bañeras de granito de las Termas de Caracalla — cada una pesa varias toneladas y lleva aquí desde el siglo XVI."
       ],
       "secrets": [

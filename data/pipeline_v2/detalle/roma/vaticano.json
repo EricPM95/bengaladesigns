@@ -212,7 +212,7 @@
     },
     {
       "name": "Via della Conciliazione",
-      "description": "La avenida monumental que conecta Castel Sant'Angelo con la Plaza de San Pedro — 500 metros de perspectiva grandiosa con la cúpula de San Pedro creciendo ante tus ojos a cada paso. Mussolini la mandó construir en los años 30, demoliendo un barrio medieval entero (el Borgo) para crear este eje triunfal que reconciliaba el Estado italiano con el Vaticano tras los Pactos de Letrán.",
+      "description": "La avenida monumental que conecta Castillo de Sant'Angelo con la Plaza de San Pedro — 500 metros de perspectiva grandiosa con la cúpula de San Pedro creciendo ante tus ojos a cada paso. Mussolini la mandó construir en los años 30, demoliendo un barrio medieval entero (el Borgo) para crear este eje triunfal que reconciliaba el Estado italiano con el Vaticano tras los Pactos de Letrán.",
       "transport": [
         {
           "type": "bus",
@@ -235,13 +235,13 @@
         "address": "Via della Conciliazione, 00193 Roma"
       },
       "tips": [
-        "Recórrela desde Castel Sant'Angelo hacia San Pedro — la cúpula creciendo frente a ti es la mejor aproximación al Vaticano. En sentido contrario pierdes el efecto.",
+        "Recórrela desde Castillo de Sant'Angelo hacia San Pedro — la cúpula creciendo frente a ti es la mejor aproximación al Vaticano. En sentido contrario pierdes el efecto.",
         "Los obeliscos de farola a ambos lados imitan los de la plaza — son modernos, de los años 50.",
         "Antes de Mussolini, llegaras a la Plaza de San Pedro por callejuelas estrechas del Borgo y la plaza se revelaba de golpe — un efecto sorpresa que Bernini diseñó intencionadamente y que la avenida destruyó."
       ]
     },
     {
-      "name": "Castel Sant'Angelo",
+      "name": "Castillo de Sant'Angelo",
       "description": "Empezó como mausoleo del emperador Adriano (año 139), fue fortaleza papal, prisión y refugio de emergencia conectado al Vaticano por un pasadizo secreto (el Passetto). Cinco plantas de historia apilada: desde la rampa helicoidal romana original hasta los lujosos apartamentos papales con frescos renacentistas. La terraza superior, con el ángel de bronce que da nombre al castillo, ofrece una de las mejores panorámicas de Roma.",
       "what_to_see": [
         "La rampa helicoidal original de época romana — el mismo camino por el que subieron el sarcófago de Adriano",
@@ -297,22 +297,22 @@
       "tips": [
         "Compra entrada online — en temporada alta la cola puede ser de 1-2 horas. El primer domingo de cada mes es gratis (pero masificado).",
         "Sube directamente a la terraza superior — la vista desde arriba con San Pedro al fondo y el Tíber abajo es la recompensa. Luego baja explorando cada nivel.",
-        "Combínalo con Ponte Sant'Angelo (justo al lado) y Via della Conciliazione — es la ruta natural hacia el Vaticano.",
+        "Combínalo con Puente Sant'Angelo (justo al lado) y Via della Conciliazione — es la ruta natural hacia el Vaticano.",
         "A primera hora (09:00) o última hora (17:00+) hay mucha menos gente."
       ],
       "secrets": [
-        "El Passetto di Borgo es el pasadizo secreto de 800 metros que conecta el castillo con el Vaticano, construido sobre la antigua muralla. Lo usó el Papa Clemente VII para huir durante el Saqueo de Roma en 1527 — corrió por encima mientras los soldados masacraban abajo. Se puede ver desde fuera (el muro elevado con ventanitas que va desde Castel Sant'Angelo hacia el Vaticano).",
+        "El Passetto di Borgo es el pasadizo secreto de 800 metros que conecta el castillo con el Vaticano, construido sobre la antigua muralla. Lo usó el Papa Clemente VII para huir durante el Saqueo de Roma en 1527 — corrió por encima mientras los soldados masacraban abajo. Se puede ver desde fuera (el muro elevado con ventanitas que va desde Castillo de Sant'Angelo hacia el Vaticano).",
         "El ángel de bronce en la cima (el actual es de 1753, de Peter Anton von Verschaffelt) reemplazó cinco ángeles anteriores que se destruyeron por rayos, viento o deterioro. Uno de los anteriores, de mármol, está en el patio interior.",
         "En verano, las noches 'El Ángel y la Luna' abren la terraza hasta las 23:30 — Roma iluminada desde aquí arriba es una experiencia que pocos turistas conocen."
       ]
     },
     {
-      "name": "Ponte Sant'Angelo",
-      "description": "El puente más bonito de Roma: 10 ángeles de mármol de Bernini y su taller bordean el camino sobre el Tíber hacia Castel Sant'Angelo. Cada ángel sostiene un instrumento de la Pasión de Cristo (la corona de espinas, los clavos, la lanza, el sudario...). El puente original es del año 134 d.C. — construido por Adriano para acceder a su mausoleo — y los tres arcos centrales son romanos.",
+      "name": "Puente Sant'Angelo",
+      "description": "El puente más bonito de Roma: 10 ángeles de mármol de Bernini y su taller bordean el camino sobre el Tíber hacia Castillo de Sant'Angelo. Cada ángel sostiene un instrumento de la Pasión de Cristo (la corona de espinas, los clavos, la lanza, el sudario...). El puente original es del año 134 d.C. — construido por Adriano para acceder a su mausoleo — y los tres arcos centrales son romanos.",
       "what_to_see": [
         "Los 10 ángeles de mármol — cada uno con un instrumento de la Pasión (busca la corona de espinas y el sudario)",
         "Los tres arcos centrales — son originales romanos del año 134 d.C.",
-        "La vista desde el centro del puente: Castel Sant'Angelo a un lado, la cúpula de San Pedro asomando al otro"
+        "La vista desde el centro del puente: Castillo de Sant'Angelo a un lado, la cúpula de San Pedro asomando al otro"
       ],
       "extras": {
         "address": "Ponte Sant'Angelo, 00186 Roma"

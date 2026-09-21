@@ -2,7 +2,7 @@
   "zone": "villa_borghese",
   "places": [
     {
-      "name": "Galería Borghese (museo)",
+      "name": "Galería Borghese",
       "description": "La colección de arte más concentrada de Roma: en solo 20 salas tienes esculturas de Bernini que parecen respirar, pinturas de Caravaggio que te clavan al suelo, Tiziano, Rafael y Canova. El edificio en sí es una obra maestra — una villa del siglo XVII rodeada de jardines con frescos en los techos y mármoles de colores en los suelos. La visita dura exactamente 2 horas (te piden salir cuando se cumple el tiempo), lo que la hace intensísima: cada minuto cuenta. Reserva obligatoria SIEMPRE — no se puede entrar sin reserva, ni siquiera con entrada gratuita.",
       "what_to_see": [
         "Apolo y Dafne de Bernini — ella se convierte en árbol mientras él la toca. El mármol parece corteza, hojas, piel. Es imposible que sea piedra",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "name": "Parque Villa Borghese",
+      "name": "Parque de Villa Borghese",
       "description": "El pulmón verde de Roma: 80 hectáreas de jardines, lagos, senderos bajo pinos centenarios y rincones escondidos que los romanos usan como su salón de estar al aire libre. No es un parque cualquiera — tiene un lago con un templo griego en medio (se puede ir en barca), un reloj que funciona con agua, un anfiteatro de caballos, un teatro shakespeariano y vistas a media Roma desde sus terrazas. Abierto 24 horas, gratis. Es el contrapunto perfecto después de un museo o una mañana de monumentos.",
       "what_to_see": [
         "El Laghetto con el Tempio di Esculapio — un lago artificial con un templo griego neoclásico en una islita. Se alquilan barcas de remos",
@@ -94,7 +94,7 @@
       },
       "tips": [
         "Abierto 24 horas, entrada libre. Es el sitio perfecto para descansar entre visitas — lleva algo de comer y siéntate en el césped como hacen los romanos.",
-        "La entrada más bonita es por la Scalinata de Piazza del Popolo (subes al Pincio y ya estás dentro). La entrada desde Via Veneto (Porta Pinciana) te deja cerca de la Galería Borghese.",
+        "La entrada más bonita es por la Scalinata de Plaza del Pueblo (subes al Pincio y ya estás dentro). La entrada desde Via Veneto (Porta Pinciana) te deja cerca de la Galería Borghese.",
         "Se pueden alquilar bicicletas (y cuadriciclos familiares) en varios puntos del parque. Para el lago, las barcas de remos se alquilan por 20 minutos y la experiencia es preciosísima.",
         "Combínalo con la Galería Borghese (mañana) y la Terraza del Pincio al atardecer — el parque conecta ambos."
       ],
@@ -105,7 +105,7 @@
       ]
     },
     {
-      "name": "Bioparco di Roma",
+      "name": "Bioparque de Roma",
       "description": "El zoo de Roma, dentro de Villa Borghese: más de 1.000 animales de 200 especies en un entorno de jardín histórico. No es un zoo de última generación, pero tiene encanto (está aquí desde 1911) y para familias con niños es una parada perfecta para romper la dinámica de iglesias y ruinas. Los recintos se han modernizado y hay programas de conservación serios. Los animales estrella son los elefantes asiáticos, los hipopótamos y la zona de reptiles.",
       "what_to_see": [
         "Los elefantes asiáticos — el recinto más grande y popular del Bioparco",
@@ -168,11 +168,11 @@
       "secrets": [
         "El Bioparco se inauguró en 1911 como Giardino Zoologico, diseñado por el naturalista Carl Hagenbeck con el concepto revolucionario (para la época) de recintos sin rejas. Las estructuras originales Art Nouveau aún se conservan y tienen más interés arquitectónico que muchos animales.",
         "Durante la Segunda Guerra Mundial, parte de los animales murieron de hambre por la escasez de alimentos en Roma. Los cuidadores del zoo arriesgaron sus vidas para alimentar a los animales con lo que podían encontrar en el mercado negro.",
-        "La leyenda urbana romana dice que las focas del Bioparco podían oírse desde Piazza del Popolo en las noches de verano. Con la renovación de los recintos ya no es así, pero los romanos mayores aún lo recuerdan."
+        "La leyenda urbana romana dice que las focas del Bioparco podían oírse desde Plaza del Pueblo en las noches de verano. Con la renovación de los recintos ya no es así, pero los romanos mayores aún lo recuerdan."
       ]
     },
     {
-      "name": "Galleria Nazionale d'Arte Moderna",
+      "name": "Galería Nacional de Arte Moderno",
       "description": "El museo de arte moderno y contemporáneo de Roma: obras desde el siglo XIX hasta hoy, con la mejor colección de arte italiano moderno que existe — Modigliani, De Chirico, Balla, Boccioni, Morandi y más. También hay Klimt, Cézanne, Van Gogh, Pollock y Duchamp. Es el antídoto perfecto a tanta Roma antigua y renacentista: un salto de 2.000 años en una mañana. El edificio neoclásico (1911) es impresionante, y suele estar medio vacío porque todo el mundo va a la Galería Borghese.",
       "what_to_see": [
         "Las tres edades de la mujer de Klimt — una de las pocas obras de Klimt fuera de Viena",
@@ -223,11 +223,11 @@
       "secrets": [
         "El edificio fue construido en 1911 para la Exposición Internacional que celebraba los 50 años de la unificación de Italia. Casi todo lo que rodea Villa Borghese (el museo, el Bioparco, el Globe Theatre) nació en esa exposición.",
         "La colección futurista es una de las mejores del mundo — y tiene sentido: el Futurismo nació en Italia. Boccioni, Balla, Severini... los originales de los manifiestos que revolucionaron el arte están aquí.",
-        "El nombre completo es Galleria Nazionale d'Arte Moderna e Contemporanea (GNAMC), pero los romanos la llaman simplemente 'La Nazionale' o 'Belle Arti' (por la calle donde está). Nadie usa las siglas."
+        "El nombre completo es Galería Nacional de Arte Moderno e Contemporanea (GNAMC), pero los romanos la llaman simplemente 'La Nazionale' o 'Belle Arti' (por la calle donde está). Nadie usa las siglas."
       ]
     },
     {
-      "name": "Piazza del Popolo",
+      "name": "Plaza del Pueblo",
       "description": "La gran puerta norte de Roma: una plaza monumental con un obelisco egipcio de 3.200 años en el centro, dos iglesias gemelas que enmarcan la entrada a las tres calles principales de Roma (el 'Tridente'), una fuente con leones y la iglesia de Santa Maria del Popolo — que por dentro es un museo gratuito con dos Caravaggios, frescos de Pinturicchio y una capilla de Rafael. Todo gratis y al aire libre (excepto la iglesia, que también es gratis).",
       "what_to_see": [
         "El Obelisco Flaminio — obelisco egipcio de Ramsés II (1200 a.C.) traído por Augusto y colocado aquí por Sixto V en 1589",
@@ -276,9 +276,9 @@
     },
     {
       "name": "Terraza del Pincio",
-      "description": "El mirador más elegante de Roma: desde la colina del Pincio, sobre Piazza del Popolo, ves la cúpula de San Pedro recortada contra el cielo, los tejados del centro y la plaza entera a tus pies con su obelisco. No tiene la amplitud del Janículo pero tiene algo que ningún otro mirador ofrece: la simetría perfecta de Piazza del Popolo vista desde arriba, enmarcada por las iglesias gemelas y las tres calles del Tridente. Al atardecer, con la luz dorada, es el momento más fotogénico de Roma.",
+      "description": "El mirador más elegante de Roma: desde la colina del Pincio, sobre Plaza del Pueblo, ves la cúpula de San Pedro recortada contra el cielo, los tejados del centro y la plaza entera a tus pies con su obelisco. No tiene la amplitud del Janículo pero tiene algo que ningún otro mirador ofrece: la simetría perfecta de Plaza del Pueblo vista desde arriba, enmarcada por las iglesias gemelas y las tres calles del Tridente. Al atardecer, con la luz dorada, es el momento más fotogénico de Roma.",
       "what_to_see": [
-        "La panorámica de Piazza del Popolo desde arriba — obelisco, iglesias gemelas, Tridente y cúpula de San Pedro al fondo",
+        "La panorámica de Plaza del Pueblo desde arriba — obelisco, iglesias gemelas, Tridente y cúpula de San Pedro al fondo",
         "Los bustos de los 228 héroes italianos que bordean la Passeggiata del Pincio — de Dante a Garibaldi",
         "El Reloj de Agua (Orologio ad Acqua) de 1867 — escondido entre los árboles, a 3 minutos caminando",
         "Los jardines del Pincio con sus fuentes y bancos bajo pinos mediterráneos"
@@ -289,7 +289,7 @@
           "icon": "🚇",
           "line": "A",
           "stop": "Flaminio",
-          "note": "Sube las escaleras desde Piazza del Popolo (5-7 min)"
+          "note": "Sube las escaleras desde Plaza del Pueblo (5-7 min)"
         }
       ],
       "extras": {
@@ -297,8 +297,8 @@
       },
       "tips": [
         "VEN AL ATARDECER — es el mejor momento sin discusión (18:00-20:00 en verano, 16:30-18:00 en invierno). La luz dorada sobre San Pedro y los tejados es imbatible. A mediodía es un mirador más.",
-        "Sube las escaleras desde Piazza del Popolo (lado izquierdo mirando a las iglesias gemelas) — son 5-7 minutos y el paseo es precioso. También puedes llegar andando desde Villa Borghese.",
-        "Combina: Piazza del Popolo + Santa Maria del Popolo por la mañana → Villa Borghese/Galería Borghese → Terraza del Pincio al atardecer. Es la ruta perfecta de día completo en esta zona.",
+        "Sube las escaleras desde Plaza del Pueblo (lado izquierdo mirando a las iglesias gemelas) — son 5-7 minutos y el paseo es precioso. También puedes llegar andando desde Villa Borghese.",
+        "Combina: Plaza del Pueblo + Santa Maria del Popolo por la mañana → Villa Borghese/Galería Borghese → Terraza del Pincio al atardecer. Es la ruta perfecta de día completo en esta zona.",
         "Hay músicos callejeros muchas tardes — se forma un ambiente muy romano y poco turístico."
       ],
       "secrets": [

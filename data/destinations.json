@@ -113,7 +113,7 @@
             "theme": "imprescindible"
           },
           {
-            "name": "Santa Maria sopra Minerva",
+            "name": "Iglesia de Santa Maria sopra Minerva",
             "zone": "Centro Histórico",
             "type": "interior_corto",
             "duration_min": 20,
@@ -157,7 +157,7 @@
             "theme": "exterior_rapido"
           },
           {
-            "name": "Fontana di Trevi",
+            "name": "Fontana de Trevi",
             "zone": "Centro Histórico",
             "type": "exterior",
             "duration_min": 30,
@@ -189,7 +189,7 @@
             "theme": "imprescindible"
           },
           {
-            "name": "Piazza del Popolo",
+            "name": "Plaza del Pueblo",
             "zone": "Norte",
             "type": "exterior",
             "duration_min": 20,
@@ -213,7 +213,7 @@
             "best_time": "atardecer",
             "tips": [
               "EL mejor mirador gratuito del centro de Roma. Al atardecer ves el sol ponerse detrás de la Cúpula de San Pedro",
-              "Se accede subiendo desde Piazza del Popolo o caminando por Villa Borghese"
+              "Se accede subiendo desde Plaza del Pueblo o caminando por Villa Borghese"
             ],
             "theme": "mirador"
           },
@@ -293,7 +293,7 @@
             "theme": "imprescindible"
           },
           {
-            "name": "Castel Sant'Angelo",
+            "name": "Castillo de Sant'Angelo",
             "zone": "Vaticano",
             "type": "interior_corto",
             "duration_min": 60,
@@ -342,7 +342,7 @@
         "description": "Muy recomendables — viajes de 4-5 días",
         "places": [
           {
-            "name": "Bocca della Verità",
+            "name": "Boca de la Verdad",
             "zone": "Aventino",
             "type": "interior_corto",
             "duration_min": 15,
@@ -578,7 +578,7 @@
             "group_order": 2,
             "is_free_access": true,
             "tips": [
-              "Las 10 estatuas de ángeles son de Bernini — cada una sostiene un instrumento de la Pasión. Se cruza naturalmente yendo a Castel Sant'Angelo"
+              "Las 10 estatuas de ángeles son de Bernini — cada una sostiene un instrumento de la Pasión. Se cruza naturalmente yendo a Castillo de Sant'Angelo"
             ],
             "theme": "exterior_rapido"
           },
@@ -617,7 +617,7 @@
         "description": "Panteón → Santa Maria sopra Minerva. A 1 minuto una de otra.",
         "order": [
           "Panteón",
-          "Santa Maria sopra Minerva"
+          "Iglesia de Santa Maria sopra Minerva"
         ]
       },
       "C": {
@@ -630,10 +630,10 @@
       },
       "D": {
         "name": "Norte monumental",
-        "description": "Plaza de España → Piazza del Popolo → Terraza del Pincio. Ruta natural subiendo.",
+        "description": "Plaza de España → Plaza del Pueblo → Terraza del Pincio. Ruta natural subiendo.",
         "order": [
           "Escalinata de Plaza de España",
-          "Piazza del Popolo",
+          "Plaza del Pueblo",
           "Terraza del Pincio"
         ]
       },
@@ -662,18 +662,18 @@
       },
       "H": {
         "name": "Ruta monumental al Vaticano",
-        "description": "Via della Conciliazione → Castel Sant'Angelo (→ Puente Sant'Angelo). Bajando desde Plaza de San Pedro hacia el Tíber.",
+        "description": "Via della Conciliazione → Castillo de Sant'Angelo (→ Puente Sant'Angelo). Bajando desde Plaza de San Pedro hacia el Tíber.",
         "order": [
           "Via della Conciliazione",
-          "Castel Sant'Angelo",
+          "Castillo de Sant'Angelo",
           "Puente Sant'Angelo"
         ]
       },
       "I": {
         "name": "Aventino sur",
-        "description": "Bocca della Verità → Circo Máximo → Termas de Caracalla. Ruta recta hacia el sur.",
+        "description": "Boca de la Verdad → Circo Máximo → Termas de Caracalla. Ruta recta hacia el sur.",
         "order": [
-          "Bocca della Verità",
+          "Boca de la Verdad",
           "Circo Máximo",
           "Termas de Caracalla"
         ]
@@ -707,7 +707,7 @@
       "Coliseo",
       "Foro Romano y Palatino",
       "Panteón",
-      "Fontana di Trevi",
+      "Fontana de Trevi",
       "Museos Vaticanos y Capilla Sixtina",
       "Basílica de San Pedro",
       "Plaza de San Pedro",
@@ -743,7 +743,7 @@
             "duration_override": 20
           },
           {
-            "ref": "Fontana di Trevi",
+            "ref": "Fontana de Trevi",
             "mode": "exterior"
           },
           {
@@ -784,13 +784,13 @@
               "ref": "Panteón"
             },
             {
-              "ref": "Santa Maria sopra Minerva"
+              "ref": "Iglesia de Santa Maria sopra Minerva"
             },
             {
               "ref": "Piazza Navona"
             },
             {
-              "ref": "Fontana di Trevi"
+              "ref": "Fontana de Trevi"
             }
           ]
         },
@@ -807,13 +807,13 @@
               "ref": "Basílica de San Pedro"
             },
             {
-              "ref": "Castel Sant'Angelo"
+              "ref": "Castillo de Sant'Angelo"
             },
             {
               "ref": "Escalinata de Plaza de España"
             },
             {
-              "ref": "Piazza del Popolo"
+              "ref": "Plaza del Pueblo"
             },
             {
               "ref": "Terraza del Pincio"

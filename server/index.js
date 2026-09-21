@@ -3703,6 +3703,13 @@ app.post('/api/destination-places', (req, res) => {
 // Solo contenido de PANTALLA: level/tier/zone/coordinates/duration_minutes/tags/group/closed_on...
 // siguen viviendo únicamente en el JSON del destino. Dos copias de un dato de planificación acaban
 // desincronizadas (los archivos de origen ya traían 3 discrepancias de level/duración con roma.json).
+/** Alias declarados en el JSON del destino para un lugar (ya normalizados) — ver search_aliases. */
+function aliasesFor(destinationKey, placeName) {
+  const data = findPipelineV2Data(destinationKey)
+  const place = (data?.places ?? []).find((p) => p.name === placeName)
+  return place?.search_aliases ?? []
+}
+
 const placeDetailCache = new Map()
 
 function loadPlaceDetail(destinationKey) {
@@ -3714,7 +3721,13 @@ function loadPlaceDetail(destinationKey) {
       if (!file.endsWith('.json')) continue
       const parsed = JSON.parse(readFileSync(join(dir, file), 'utf8'))
       for (const place of parsed.places ?? []) {
-        if (typeof place?.name === 'string') byName.set(stripAccentsLowerServer(place.name), place)
+        if (typeof place?.name !== 'string') continue
+        byName.set(stripAccentsLowerServer(place.name), place)
+        // Prompt 2 (Tarea D): un viaje generado ANTES del renombrado tiene las paradas guardadas con
+        // el nombre viejo. Los alias del lugar (que incluyen siempre su nombre anterior, ver
+        // `search_aliases` en el JSON del destino) se registran como claves alternativas para que su
+        // ficha ampliada se siga encontrando en vez de caer a una llamada de pago a Claude.
+        for (const alias of aliasesFor(destinationKey, place.name)) byName.set(alias, place)
       }
     }
     console.log(`[detalle] "${destinationKey}" — ${byName.size} lugares con ficha ampliada`)
@@ -3777,7 +3790,7 @@ app.post('/api/curated-places-pool', (req, res) => {
       category: pipelineV2Data.zones?.[place.zone]?.name ?? place.zone ?? null,
       type: place.type ?? null,
       duration_min: Number.isFinite(place.duration_minutes) ? place.duration_minutes : null,
-      is_free_access: place.type === 'exterior',
+      is_free_access: place.is_free_access ?? place.type === 'exterior',
     })
     const all = pipelineV2Data.places ?? []
     if (levelKey === 'pool') {

@@ -155,7 +155,7 @@
       ]
     },
     {
-      "name": "Bocca della Verità",
+      "name": "Boca de la Verdad",
       "description": "Un antiguo disco de mármol con cara de tritón que según la leyenda muerde la mano a quien dice mentiras. Está en el pórtico de la iglesia de Santa Maria in Cosmedin, una de las más bonitas y menos visitadas de Roma. Se hizo famosa por la película 'Vacaciones en Roma' con Audrey Hepburn y Gregory Peck.",
       "tips": [
         "Cola de 10-15 minutos habitual para meter la mano. Ponle cara de susto — la foto clásica.",
@@ -173,7 +173,7 @@
       ]
     },
     {
-      "name": "Altar de la Patria (Vittoriano)",
+      "name": "Altar de la Patria",
       "description": "El monumento más imponente de Roma moderna — un coloso de mármol blanco que los romanos llaman 'la máquina de escribir' o 'la tarta de boda'. Dedicado a la unificación de Italia, alberga la Tumba del Soldado Desconocido con llama eterna. Lo mejor: la terraza panorámica en lo alto, accesible por ascensor, con vistas 360° sobre toda Roma.",
       "what_to_see": [
         "La Tumba del Soldado Desconocido con su llama eterna y guardia permanente",
@@ -184,7 +184,7 @@
       "tips": [
         "La terraza del ascensor panorámico tiene las mejores vistas 360° de Roma — ves el Coliseo, el Foro, San Pedro, todo. La subida merece mucho la pena.",
         "La entrada al monumento es gratuita — solo el ascensor a la terraza superior tiene un coste (una tasa, no una entrada como tal).",
-        "Es un par inseparable con Piazza Venezia — están literalmente pegados. Siempre se visitan juntos."
+        "Es un par inseparable con Plaza Venecia — están literalmente pegados. Siempre se visitan juntos."
       ],
       "secrets": [
         "Dentro del monumento hay un museo gratuito (Museo del Risorgimento) sobre la unificación de Italia — casi nadie entra y es fascinante.",
@@ -193,7 +193,7 @@
       ]
     },
     {
-      "name": "Piazza Venezia",
+      "name": "Plaza Venecia",
       "description": "La rotonda más grande y caótica de Roma — punto de encuentro entre el Centro Histórico y la Roma Antigua, con el imponente Vittoriano de fondo. Desde el balcón del Palazzo Venezia, Mussolini daba sus discursos a las masas.",
       "tips": [
         "Parada rápida — el valor está en la vista del Vittoriano de frente y en ser el cruce natural entre zonas.",
@@ -211,7 +211,7 @@
     },
     {
       "name": "Via dei Fori Imperiali",
-      "description": "La avenida monumental que conecta Piazza Venezia con el Coliseo, con los Foros Imperiales a ambos lados. Mussolini la mandó construir en 1932 demoliendo todo un barrio medieval sobre las ruinas. Hoy es peatonal los domingos y la perspectiva con el Coliseo al fondo es la postal más repetida de Roma.",
+      "description": "La avenida monumental que conecta Plaza Venecia con el Coliseo, con los Foros Imperiales a ambos lados. Mussolini la mandó construir en 1932 demoliendo todo un barrio medieval sobre las ruinas. Hoy es peatonal los domingos y la perspectiva con el Coliseo al fondo es la postal más repetida de Roma.",
       "tips": [
         "Los domingos cierran al tráfico — puedes caminar por el centro de la avenida sin coches. El mejor momento para la foto.",
         "Desde los miradores elevados a ambos lados se ven los restos de los Foros de Augusto, Nerva y Trajano — todo gratis, sin entrar a ningún sitio.",
@@ -264,7 +264,7 @@
       ]
     },
     {
-      "name": "Piazza del Campidoglio",
+      "name": "Plaza del Campidoglio",
       "description": "La plaza diseñada por Miguel Ángel en la cima del Capitolio — geometría perfecta renacentista con la estatua ecuestre de Marco Aurelio en el centro (la original está dentro de los Museos Capitolinos). Desde la terraza trasera hay unas vistas espectaculares del Foro Romano.",
       "tips": [
         "Sube por la escalinata de la Cordonata — es la entrada más dramática. Al llegar arriba, la plaza se abre como un escenario.",
@@ -381,7 +381,7 @@
       ]
     },
     {
-      "name": "San Pietro in Vincoli",
+      "name": "Iglesia de San Pietro in Vincoli",
       "description": "Una iglesia que esconde el Moisés de Miguel Ángel — una escultura tan poderosa y realista que dicen que Miguel Ángel le golpeó la rodilla y le gritó '¡Habla!'. También guarda las cadenas (vincoli) con las que supuestamente encadenaron a San Pedro en Jerusalén.",
       "tips": [
         "Gratis. El Moisés está al fondo a la derecha del altar — lo verás nada más entrar.",
@@ -487,7 +487,7 @@
       ]
     },
     {
-      "name": "Giardino degli Aranci",
+      "name": "Jardín de los Naranjos",
       "description": "Un jardín de naranjos amargos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde la cúpula de San Pedro hasta el Tíber. Pequeño, tranquilo y romántico, es el mirador favorito de los romanos para ver el atardecer.",
       "tips": [
         "Gratis, abierto hasta el anochecer (octubre-marzo cierra a las 18:00, abril-septiembre a las 21:00).",
@@ -500,7 +500,7 @@
       ]
     },
     {
-      "name": "Santa Maria Maggiore",
+      "name": "Basílica de Santa María la Mayor",
       "description": "Una de las cuatro basílicas papales de Roma y la mayor iglesia dedicada a la Virgen María. Los mosaicos del siglo V brillan con oro original, y el artesonado del techo se hizo con el primer oro que llegó de América, regalo de Isabel la Católica. Un interior que quita el aliento.",
       "what_to_see": [
         "Los mosaicos del siglo V en la nave — 1.600 años y siguen brillando",
@@ -556,7 +556,7 @@
       ]
     },
     {
-      "name": "Teatro Marcelo",
+      "name": "Teatro de Marcelo",
       "description": "Un teatro romano del siglo I a.C. que sirvió de modelo para el Coliseo — hoy tiene apartamentos de lujo en los pisos superiores. Es uno de los edificios más surrealistas de Roma: arcos romanos de 2.000 años sosteniendo un palacio renacentista donde vive gente.",
       "tips": [
         "Solo se ve por fuera — no se puede entrar.",
@@ -565,11 +565,11 @@
       ]
     },
     {
-      "name": "Cerradura del Aventino",
+      "name": "Ojo de la Cerradura del Aventino",
       "description": "Mira por la cerradura de la puerta de los Caballeros de Malta y verás la cúpula de San Pedro perfectamente enmarcada por un túnel de setos. Una imagen que cruza tres estados soberanos: Italia, la Orden de Malta y el Vaticano.",
       "tips": [
         "La cola suele ser corta (5-10 min). Es la foto más original que te llevarás de Roma.",
-        "Está a 3 minutos del Giardino degli Aranci — haz las dos seguidas.",
+        "Está a 3 minutos del Jardín de los Naranjos — haz las dos seguidas.",
         "La puerta es la sede del Priorato de los Caballeros de Malta — técnicamente es territorio soberano de la Orden de Malta, un estado independiente."
       ],
       "secrets": [
@@ -590,7 +590,7 @@
       ]
     },
     {
-      "name": "Santa Maria della Vittoria",
+      "name": "Iglesia de Santa Maria della Vittoria",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo, donde una santa parece flotar mientras un ángel le atraviesa el corazón con una flecha dorada.",
       "tips": [
         "Gratis. El Éxtasis está en la Capilla Cornaro (a la izquierda del altar).",

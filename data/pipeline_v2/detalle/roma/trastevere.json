@@ -2,50 +2,8 @@
   "zone": "trastevere",
   "places": [
     {
-      "name": "Paseo por Trastevere",
-      "description": "El barrio más auténtico de Roma: calles empedradas con hiedra en las fachadas, ropa tendida entre balcones, trattorias con mesas en la calle y una vida de barrio que el centro ha perdido. Trastevere ('al otro lado del Tíber') fue durante siglos el barrio popular, obrero y rebelde de Roma — hoy conserva esa personalidad con un barniz bohemio. No es un monumento: es una experiencia. Ven por la tarde, quédate a cenar.",
-      "what_to_see": [
-        "Piazza di Santa Maria in Trastevere — el corazón del barrio con la basílica y sus mosaicos dorados",
-        "Las callejuelas entre Via della Scala y Via della Lungaretta — hiedra, farolas, fachadas ocre",
-        "Via della Scala — artesanos, cafeterías y la famosa Farmacia de Santa Maria della Scala (aún en funcionamiento desde el siglo XVII)",
-        "Las plazas escondidas: Piazza de' Renzi, Piazza di Sant'Egidio, Piazza di San Calisto"
-      ],
-      "transport": [
-        {
-          "type": "tram",
-          "icon": "🚊",
-          "line": "Línea 8",
-          "stop": "Belli / Sonnino",
-          "note": "Entrada directa a Trastevere"
-        },
-        {
-          "type": "bus",
-          "icon": "🚌",
-          "lines": [
-            "23",
-            "280"
-          ],
-          "stop": "Lungotevere Ripa"
-        }
-      ],
-      "extras": {
-        "address": "Trastevere, 00153 Roma"
-      },
-      "tips": [
-        "Ven a partir de las 17:00 — Trastevere cobra vida por la tarde. Por la mañana es un barrio dormido; por la noche (después de las 21:00) puede ser demasiado ruidoso y turístico en las calles principales.",
-        "Evita los restaurantes de Piazza di Santa Maria in Trastevere (caros y mediocres). Camina 2 calles hacia Via della Scala o Via della Lungaretta y encontrarás trattorias auténticas.",
-        "Piérdete: las mejores fotos y rincones de Trastevere están en las callejuelas sin nombre. Deja el móvil y camina.",
-        "San Calisto es el bar del barrio de toda la vida — cerveza barata, terraza en la plaza de Sant'Egidio y cero pretensiones. Es donde van los romanos de Trastevere."
-      ],
-      "secrets": [
-        "La Farmacia di Santa Maria della Scala (Via della Scala 23) funciona desde el siglo XVII y sigue vendiendo productos hechos por los monjes carmelitas. Se puede visitar la antigua botica (preguntar en la farmacia).",
-        "Trastevere fue históricamente el barrio de los inmigrantes, los judíos y los marginados de Roma — la otra orilla del Tíber era literalmente 'la otra Roma'. Esa identidad rebelde sigue viva en los grafitis, los centros sociales y el carácter del barrio.",
-        "El mejor helado de Roma (según muchos romanos) está en Trastevere: busca una heladería artesanal sin montañas de colores artificiales. Si el pistacho es verde chillón, huye."
-      ]
-    },
-    {
       "name": "Mirador del Janículo",
-      "description": "La mejor panorámica de Roma: desde la colina del Gianicolo (Janículo) ves todas las cúpulas de la ciudad, desde San Pedro hasta Santa Maria Maggiore, con los tejados de terracota y los pinos mediterráneos en primer plano. Cada día a las 12:00 en punto disparan un cañón (tradición desde 1847) que retumba por todo el centro. Es el mirador que los romanos consideran suyo — menos turístico que el Pincio, más auténtico.",
+      "description": "La mejor panorámica de Roma: desde la colina del Gianicolo (Janículo) ves todas las cúpulas de la ciudad, desde San Pedro hasta Basílica de Santa María la Mayor, con los tejados de terracota y los pinos mediterráneos en primer plano. Cada día a las 12:00 en punto disparan un cañón (tradición desde 1847) que retumba por todo el centro. Es el mirador que los romanos consideran suyo — menos turístico que el Pincio, más auténtico.",
       "what_to_see": [
         "La panorámica 360° de Roma — todas las cúpulas, el Coliseo al fondo, los Montes Albanos en el horizonte",
         "El cañonazo del mediodía (12:00 en punto, todos los días) — tradición desde 1847 para sincronizar los relojes de la ciudad",
@@ -80,7 +38,7 @@
       ]
     },
     {
-      "name": "Santa Maria in Trastevere",
+      "name": "Iglesia de Santa Maria in Trastevere",
       "description": "Una de las iglesias más antiguas de Roma (fundada en el siglo III, reconstruida en el XII) y probablemente la primera dedicada a la Virgen María. Los mosaicos dorados del ábside brillan como hace 900 años — escenas de la vida de la Virgen con un fondo de oro que parece emitir luz propia. La plaza delante es el corazón social de Trastevere.",
       "what_to_see": [
         "Los mosaicos del ábside (siglo XII) — fondo de oro con escenas de la Virgen de una belleza bizantina",
@@ -174,7 +132,7 @@
       ]
     },
     {
-      "name": "Piazza Trilussa",
+      "name": "Plaza Trilussa",
       "description": "La puerta de entrada a Trastevere: cruzas Ponte Sisto desde el centro y desembocas en esta plaza animada con una fuente barroca monumental, escalones donde se sienta media Roma al atardecer y un ambiente de aperitivo que arranca a las 18:00. La estatua del poeta romano Trilussa (maestro del dialecto romanesco) preside la escena.",
       "transport": [
         {
@@ -198,7 +156,7 @@
         "address": "Piazza Trilussa, 00153 Roma"
       },
       "tips": [
-        "Cruzar Ponte Sisto desde el centro (vienes de Campo de' Fiori o Via Giulia) y desembocar en Piazza Trilussa es la entrada más dramática a Trastevere. Hazlo al atardecer.",
+        "Cruzar Ponte Sisto desde el centro (vienes de Campo de' Fiori o Via Giulia) y desembocar en Plaza Trilussa es la entrada más dramática a Trastevere. Hazlo al atardecer.",
         "Las tardes de viernes y sábado la plaza se llena de gente con spritz y cerveza — es el aperitivo más popular de esta orilla del Tíber."
       ],
       "secrets": [

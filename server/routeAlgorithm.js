@@ -285,8 +285,20 @@ function categoryFor(name) {
 
 // ── Resolución de lugares (nombre → objeto real del JSON) ───────────────────────────────────
 
+// Prompt 2 (Tarea D): al renombrar los lugares a la convención en español, todo lo que ya estaba
+// guardado con el nombre ANTIGUO tenía que seguir resolviendo — los viajes en la tabla `trips` de
+// Supabase (jsonb con las paradas ya generadas), las filas de `place_content_cache` y `place_likes`
+// (que se guardan por nombre) y cualquier enlace compartido. Por eso `search_aliases` no es sólo
+// para buscar: es la tabla de equivalencias que mantiene vivo el nombre viejo. Cada lugar lleva su
+// nombre anterior entre los alias (ver el script de renombrado), y los alias vienen ya normalizados
+// en minúsculas y sin acentos, que es como se comparan.
 function findRawPlace(destData, name) {
-  return destData.places?.find((place) => place.name === name) ?? null
+  const places = destData.places ?? []
+  const exact = places.find((place) => place.name === name)
+  if (exact) return exact
+  const normalized = stripAccentsLower(name)
+  if (!normalized) return null
+  return places.find((place) => (place.search_aliases ?? []).includes(normalized)) ?? null
 }
 
 // Ronda 8 (issue F): resolveMustIncludePlace usaba findRawPlace (match EXACTO) — un nombre del pool
@@ -548,7 +560,7 @@ function placeToDayPlaceEntry(destData, name) {
     duration_min: place.duration_minutes,
     tips: place.tip ? [place.tip] : [],
     best_time: place.best_time ?? null,
-    is_free_access: place.type === 'exterior',
+    is_free_access: place.is_free_access ?? place.type === 'exterior',
   }
 }
 
