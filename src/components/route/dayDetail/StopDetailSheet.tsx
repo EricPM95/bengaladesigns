@@ -2,6 +2,7 @@ import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'rea
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
+import { fetchPlacePhotoDetail, type PlacePhoto } from '../../../lib/placePhoto'
 import { displayStopName, formatDuration } from '../../../lib/format'
 import { tagColor, tagLabel } from '../../../lib/tagColors'
 import { formatShortDateEs } from '../../../lib/dateRange'
@@ -115,6 +116,19 @@ function BusIcon() {
  */
 export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
+  // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
+  // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
+  const [photo, setPhoto] = useState<PlacePhoto | null>(null)
+  useEffect(() => {
+    if (!stop) { setPhoto(null); return }
+    let cancelled = false
+    fetchPlacePhotoDetail(stop.name, city).then((result) => {
+      if (!cancelled) setPhoto(result)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [stop?.name, city])
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [internalDescription, setInternalDescription] = useState<StopDescription | null>(null)
   const [internalDescLoading, setInternalDescLoading] = useState(false)
@@ -333,7 +347,7 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
           <div className="flex-1 overflow-y-auto bg-bg-card">
             <div className="mx-auto w-full max-w-lg space-y-4 px-4 pb-8 pt-2">
               <div className="flex items-start gap-3">
-                <img src={stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+                <img src={photo?.small ?? stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
                     {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
@@ -395,6 +409,21 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
                   )}
                 </div>
               </div>
+
+              {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
+                  que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC). */}
+              {photo?.source === 'unsplash' && photo.attribution && (
+                <p className="text-caption text-text-muted">
+                  Foto de{' '}
+                  <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
+                    {photo.attribution.photographer}
+                  </a>{' '}
+                  en{' '}
+                  <a href={photo.attribution.unsplashUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
+                    Unsplash
+                  </a>
+                </p>
+              )}
 
               {visibleTabs.length > 1 && (
                 <div className="flex gap-1 rounded-xl bg-bg-hover p-1">

@@ -4294,6 +4294,144 @@ function excursionsAvailablePayload(destData, dayNumber, options) {
   }))
 }
 
+
+// ── Foto de un lugar: Unsplash validado -> Wikipedia -> nada ─────────────────────────────────
+//
+// Prompt 5. Vive en el servidor por dos razones: la clave de Unsplash no puede salir al bundle del
+// cliente, y así la caché es COMPARTIDA (Supabase) en vez de por sesión — cada foto se busca una
+// sola vez para todos los viajeros, que es lo que hace viable un rate limit de 50 peticiones/hora.
+//
+// Unsplash NO es una base de datos de lugares: para una consulta genérica devuelve fotos preciosas
+// y de otro sitio. Comprobado contra la API antes de escribir esto: "Giardino degli Aranci Rome"
+// devuelve 2068 resultados y el primero es un pasillo con plantas; "Sant'Ignazio Church Rome" da
+// 1423 y el primero es gente paseando por un parque. Por eso se piden 5 y se acepta solo el que
+// MENCIONA el lugar en su descripción o sus tags. Una foto equivocada es peor que ninguna foto.
+
+const UNSPLASH_UTM = 'utm_source=viajes_bengala&utm_medium=referral'
+
+/** Palabras que tienen que aparecer en la metadata de la foto. Las declara el JSON del destino
+    (`search_en_keywords`); sin ellas se extraen del propio `search_en` quitando la ciudad y las
+    palabras vacías, que es lo que queda de distintivo. */
+function photoKeywords(searchEn, declared) {
+  if (Array.isArray(declared) && declared.length > 0) return declared.map((k) => stripAccentsLowerServer(k))
+  const vacias = new Set(['rome', 'roma', 'the', 'of', 'in', 'de', 'del', 'della', 'dei', 'di', 'and', 'y'])
+  return stripAccentsLowerServer(searchEn)
+    .split(/\s+/)
+    .filter((word) => word.length > 3 && !vacias.has(word))
+}
+
+async function searchUnsplashPhoto(searchEn, keywords) {
+  const key = process.env.UNSPLASH_ACCESS_KEY
+  if (!key || !searchEn) return null
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchEn)}&per_page=5&orientation=landscape&content_filter=high`
+  const response = await fetch(url, { headers: { Authorization: `Client-ID ${key}` } })
+  if (!response.ok) {
+    console.warn(`[foto] Unsplash devolvió ${response.status} para "${searchEn}"`)
+    return null
+  }
+  const data = await response.json()
+  const results = Array.isArray(data?.results) ? data.results : []
+  if (results.length === 0) return null
+
+  for (const photo of results) {
+    const texto = stripAccentsLowerServer(
+      [photo.description ?? '', photo.alt_description ?? '', ...(photo.tags ?? []).map((tag) => tag?.title ?? '')].join(' '),
+    )
+    if (!keywords.some((keyword) => texto.includes(keyword))) continue
+    return {
+      photo_source: 'unsplash',
+      photo_url: photo.urls?.small ?? null,
+      unsplash_thumb: photo.urls?.thumb ?? null,
+      unsplash_small: photo.urls?.small ?? null,
+      unsplash_regular: photo.urls?.regular ?? null,
+      unsplash_blur_hash: photo.blur_hash ?? null,
+      unsplash_photographer: photo.user?.name ?? null,
+      unsplash_photographer_url: photo.user?.links?.html ? `${photo.user.links.html}?${UNSPLASH_UTM}` : null,
+      unsplash_url: `https://unsplash.com?${UNSPLASH_UTM}`,
+    }
+  }
+  // Ninguna de las cinco habla del lugar — mejor dejar pasar a Wikipedia.
+  console.log(`[foto] Unsplash tenía ${results.length} resultados para "${searchEn}" pero ninguno menciona el lugar`)
+  return null
+}
+
+/** Wikipedia en español, igual que hacía el cliente hasta ahora: con `wikipedia_title` se va directo
+    al artículo (admite prefijo de idioma, "en:Colosseum"), y si no, se busca por nombre. */
+async function searchWikipediaPhoto(name, city, wikipediaTitle) {
+  const MIN_WIDTH = 300
+  const resumen = async (lang, title) => {
+    const r = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
+    if (!r.ok) return null
+    const data = await r.json()
+    const source = data?.thumbnail?.source
+    return typeof source === 'string' && (data?.thumbnail?.width ?? 0) >= MIN_WIDTH ? source : null
+  }
+  try {
+    if (wikipediaTitle) {
+      const match = wikipediaTitle.match(/^([a-z]{2}):(.+)$/)
+      const url = await resumen(match ? match[1] : 'es', match ? match[2] : wikipediaTitle)
+      return url ? { photo_source: 'wikipedia', photo_url: url } : null
+    }
+    const buscar = await fetch(
+      `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(`${name} ${city}`)}&format=json&srlimit=1`,
+      { headers: { 'User-Agent': 'ViajesBengala/1.0 (route planner)' } },
+    )
+    if (!buscar.ok) return null
+    const title = (await buscar.json())?.query?.search?.[0]?.title
+    if (!title) return null
+    const url = await resumen('es', title)
+    return url ? { photo_source: 'wikipedia', photo_url: url } : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Cascada completa de una foto. `force` salta la caché — solo lo usa el script de pre-población,
+ * para poder repetir una búsqueda tras corregir un `search_en`.
+ */
+async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOverride = null } = {}) {
+  const cityKey = stripAccentsLowerServer(city)
+  if (supabaseAdmin && !force) {
+    const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', name).maybeSingle()
+    if (error) console.warn('[foto] no se pudo leer la caché:', error.message)
+    if (data) return { ...data, cached: true }
+  }
+
+  const destData = findPipelineV2Data(city)
+  const place = (destData?.places ?? []).find((candidate) => candidate.name === name) ?? null
+
+  let resultado = await searchUnsplashPhoto(place?.search_en ?? `${name} ${city}`, photoKeywords(place?.search_en ?? name, place?.search_en_keywords))
+  // El destino curado manda; el override solo cubre destinos SIN JSON, donde el servidor no
+  // tiene de dónde sacar el título y es la parada la que lo trae.
+  if (!resultado) resultado = await searchWikipediaPhoto(name, city, place?.wikipedia_title ?? wikipediaTitleOverride)
+  if (!resultado) resultado = { photo_source: 'none' }
+
+  const fila = { place_name: name, city: cityKey, ...resultado }
+  if (supabaseAdmin) {
+    // upsert, no insert: el script de pre-población puede reescribir una fila ya existente.
+    const { error } = await supabaseAdmin.from('place_photo_cache').upsert(fila, { onConflict: 'place_name,city' })
+    if (error) console.warn('[foto] no se pudo guardar en caché:', error.message)
+  }
+  return { ...fila, cached: false }
+}
+
+app.post('/api/place-photo', async (req, res) => {
+  const { name, city, force, wikipedia_title: wikipediaTitleOverride } = req.body ?? {}
+  if (!name || !city) {
+    res.status(400).json({ error: 'Se requiere name y city.' })
+    return
+  }
+  try {
+    const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
+    res.json(foto)
+  } catch (error) {
+    // Nunca debe romper una pantalla: sin foto, el componente enseña su icono de categoría.
+    console.error('[foto] fallo resolviendo la foto de', name, error)
+    res.json({ photo_source: 'none' })
+  }
+})
+
 app.post('/api/generate-day-block', async (req, res) => {
   const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip, must_include_places } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {

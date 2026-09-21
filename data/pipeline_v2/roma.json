@@ -483,7 +483,12 @@
         "colosseo",
         "colosseum"
       ],
-      "wikipedia_title": "en:Colosseum"
+      "wikipedia_title": "en:Colosseum",
+      "search_en": "Colosseum Rome",
+      "search_en_keywords": [
+        "colosseum",
+        "colosseo"
+      ]
     },
     {
       "name": "Foro Romano y Palatino",
@@ -512,6 +517,12 @@
         "foro romano e palatino",
         "palatino",
         "roman forum"
+      ],
+      "search_en": "Roman Forum Rome",
+      "search_en_keywords": [
+        "forum",
+        "foro romano",
+        "palatine"
       ]
     },
     {
@@ -538,6 +549,11 @@
       "search_aliases": [
         "arch of constantine",
         "arco di costantino"
+      ],
+      "search_en": "Arch of Constantine Rome",
+      "search_en_keywords": [
+        "constantine",
+        "costantino"
       ]
     },
     {
@@ -564,6 +580,11 @@
         "bocca della verita",
         "mouth of truth",
         "santa maria in cosmedin"
+      ],
+      "search_en": "Bocca della Verita Rome",
+      "search_en_keywords": [
+        "bocca",
+        "mouth of truth"
       ]
     },
     {
@@ -585,6 +606,11 @@
       "search_aliases": [
         "circo massimo",
         "circus maximus"
+      ],
+      "search_en": "Circus Maximus Rome",
+      "search_en_keywords": [
+        "circus maximus",
+        "circo massimo"
       ]
     },
     {
@@ -613,6 +639,10 @@
         "fuente de trevi",
         "trevi",
         "trevi fountain"
+      ],
+      "search_en": "Trevi Fountain Rome",
+      "search_en_keywords": [
+        "trevi"
       ]
     },
     {
@@ -641,6 +671,11 @@
         "panteon de agripa",
         "pantheon",
         "pantheon di roma"
+      ],
+      "search_en": "Pantheon Rome",
+      "search_en_keywords": [
+        "pantheon",
+        "panteon"
       ]
     },
     {
@@ -668,6 +703,10 @@
         "fuente de los cuatro rios",
         "navona",
         "plaza navona"
+      ],
+      "search_en": "Piazza Navona Rome",
+      "search_en_keywords": [
+        "navona"
       ]
     },
     {
@@ -695,6 +734,12 @@
         "piazza di spagna",
         "plaza espana y escalinata",
         "spanish steps"
+      ],
+      "search_en": "Spanish Steps Rome",
+      "search_en_keywords": [
+        "spanish steps",
+        "piazza di spagna",
+        "trinita dei monti"
       ]
     },
     {
@@ -717,6 +762,10 @@
       "search_aliases": [
         "plaza del popolo",
         "plaza del pueblo",
+        "popolo"
+      ],
+      "search_en": "Piazza del Popolo Rome",
+      "search_en_keywords": [
         "popolo"
       ]
     },
@@ -741,6 +790,10 @@
         "gatos de torre argentina",
         "largo argentina",
         "torre argentina"
+      ],
+      "search_en": "Largo di Torre Argentina Rome",
+      "search_en_keywords": [
+        "torre argentina"
       ]
     },
     {
@@ -762,6 +815,10 @@
       "search_aliases": [
         "calle del corso",
         "el corso"
+      ],
+      "search_en": "Via del Corso Rome",
+      "search_en_keywords": [
+        "via del corso"
       ]
     },
     {
@@ -796,6 +853,12 @@
         "musei vaticani",
         "museos vaticanos",
         "vatican museums"
+      ],
+      "search_en": "Vatican Museums Rome",
+      "search_en_keywords": [
+        "vatican museum",
+        "sistine",
+        "musei vaticani"
       ]
     },
     {
@@ -825,6 +888,12 @@
         "san pedro",
         "san pietro",
         "st peter's basilica"
+      ],
+      "search_en": "St Peter's Basilica Rome",
+      "search_en_keywords": [
+        "basilica",
+        "san pietro",
+        "st peter"
       ]
     },
     {
@@ -852,6 +921,12 @@
         "piazza san pietro",
         "plaza san pedro",
         "st peter's square"
+      ],
+      "search_en": "St Peter's Square Vatican",
+      "search_en_keywords": [
+        "square",
+        "piazza san pietro",
+        "st peter"
       ]
     },
     {
@@ -873,6 +948,10 @@
       "search_aliases": [
         "conciliazione",
         "via de la conciliacion"
+      ],
+      "search_en": "Via della Conciliazione Rome",
+      "search_en_keywords": [
+        "conciliazione"
       ]
     },
     {
@@ -898,6 +977,11 @@
         "castel sant'angelo",
         "castillo sant angelo",
         "mausoleo de adriano"
+      ],
+      "search_en": "Castel Sant Angelo Rome",
+      "search_en_keywords": [
+        "castel",
+        "angelo"
       ]
     },
     {
@@ -922,7 +1006,12 @@
         "mirador gianicolo",
         "passeggiata del gianicolo"
       ],
-      "wikipedia_title": "en:Janiculum"
+      "wikipedia_title": "en:Janiculum",
+      "search_en": "Gianicolo viewpoint Rome",
+      "search_en_keywords": [
+        "gianicolo",
+        "janiculum"
+      ]
     },
     {
       "name": "Galería Borghese",
@@ -953,7 +1042,11 @@
         "galleria borghese",
         "museo borghese"
       ],
-      "wikipedia_title": "Villa Borghese Pinciana"
+      "wikipedia_title": "Villa Borghese Pinciana",
+      "search_en": "Galleria Borghese Rome",
+      "search_en_keywords": [
+        "borghese"
+      ]
     },
     {
       "name": "Parque de Villa Borghese",
@@ -976,6 +1069,10 @@
         "jardines de villa borghese",
         "parque villa borghese",
         "villa borghese"
+      ],
+      "search_en": "Villa Borghese gardens Rome",
+      "search_en_keywords": [
+        "borghese"
       ]
     },
     {
@@ -1001,7 +1098,12 @@
         "zoo de roma",
         "zoologico de roma"
       ],
-      "wikipedia_title": "Bioparco"
+      "wikipedia_title": "Bioparco",
+      "search_en": "Bioparco Rome zoo",
+      "search_en_keywords": [
+        "bioparco",
+        "zoo"
+      ]
     },
     {
       "name": "Galería Nacional de Arte Moderno",
@@ -1024,6 +1126,11 @@
         "arte moderno roma",
         "galleria nazionale d'arte moderna",
         "gnam"
+      ],
+      "search_en": "Galleria Nazionale Arte Moderna Rome",
+      "search_en_keywords": [
+        "galleria nazionale",
+        "arte moderna"
       ]
     },
     {
@@ -1055,7 +1162,13 @@
         "victor manuel",
         "vittoriano"
       ],
-      "wikipedia_title": "Monumento a Víctor Manuel II"
+      "wikipedia_title": "Monumento a Víctor Manuel II",
+      "search_en": "Altare della Patria Rome",
+      "search_en_keywords": [
+        "altare della patria",
+        "vittoriano",
+        "victor emmanuel"
+      ]
     },
     {
       "name": "Puente Sant'Angelo",
@@ -1077,6 +1190,12 @@
         "ponte sant'angelo",
         "puente de los angeles",
         "puente sant angelo"
+      ],
+      "search_en": "Ponte Sant Angelo Rome",
+      "search_en_keywords": [
+        "ponte",
+        "bridge",
+        "angelo"
       ]
     },
     {
@@ -1099,6 +1218,11 @@
         "isla del tiber",
         "isola tiberina",
         "tiber island"
+      ],
+      "search_en": "Tiber Island Rome",
+      "search_en_keywords": [
+        "tiber island",
+        "isola tiberina"
       ]
     },
     {
@@ -1122,6 +1246,11 @@
         "avenida de los foros imperiales",
         "fori imperiali",
         "foros imperiales"
+      ],
+      "search_en": "Via dei Fori Imperiali Rome",
+      "search_en_keywords": [
+        "fori imperiali",
+        "imperial forum"
       ]
     },
     {
@@ -1146,7 +1275,12 @@
         "campo dei fiori",
         "mercado de campo de fiori"
       ],
-      "wikipedia_title": "en:Campo de' Fiori"
+      "wikipedia_title": "en:Campo de' Fiori",
+      "search_en": "Campo de Fiori Rome",
+      "search_en_keywords": [
+        "campo de fiori",
+        "campo dei fiori"
+      ]
     },
     {
       "name": "Borgo Pio",
@@ -1167,6 +1301,10 @@
       "filter_category": "monumentos",
       "search_aliases": [
         "barrio borgo",
+        "borgo"
+      ],
+      "search_en": "Borgo Pio Rome",
+      "search_en_keywords": [
         "borgo"
       ]
     },
@@ -1193,6 +1331,11 @@
       "search_aliases": [
         "piazza venezia",
         "plaza de venecia",
+        "venezia"
+      ],
+      "search_en": "Piazza Venezia Rome",
+      "search_en_keywords": [
+        "piazza venezia",
         "venezia"
       ]
     },
@@ -1222,6 +1365,11 @@
         "mercado de trajano",
         "mercati di traiano",
         "trajan market"
+      ],
+      "search_en": "Trajan Market Rome",
+      "search_en_keywords": [
+        "trajan",
+        "traiano"
       ]
     },
     {
@@ -1246,6 +1394,12 @@
         "cupola di san pietro",
         "cupula del vaticano",
         "subida a la cupula"
+      ],
+      "search_en": "St Peter's Basilica dome Rome",
+      "search_en_keywords": [
+        "dome",
+        "cupola",
+        "st peter"
       ]
     },
     {
@@ -1269,6 +1423,10 @@
       "search_aliases": [
         "chiesa del gesu",
         "il gesu"
+      ],
+      "search_en": "Chiesa del Gesu Rome",
+      "search_en_keywords": [
+        "gesu"
       ]
     },
     {
@@ -1293,6 +1451,11 @@
         "caravaggio san mateo",
         "san luigi dei francesi",
         "san luis de los franceses"
+      ],
+      "search_en": "San Luigi dei Francesi Rome",
+      "search_en_keywords": [
+        "san luigi",
+        "francesi"
       ]
     },
     {
@@ -1319,6 +1482,10 @@
       "search_aliases": [
         "altar de la paz",
         "museo dell ara pacis"
+      ],
+      "search_en": "Ara Pacis Rome",
+      "search_en_keywords": [
+        "ara pacis"
       ]
     },
     {
@@ -1344,7 +1511,13 @@
         "ghetto ebraico",
         "gueto judio"
       ],
-      "wikipedia_title": "Gueto de Roma"
+      "wikipedia_title": "Gueto de Roma",
+      "search_en": "Jewish Ghetto Rome",
+      "search_en_keywords": [
+        "ghetto",
+        "jewish",
+        "synagogue"
+      ]
     },
     {
       "name": "Iglesia de Santa Maria sopra Minerva",
@@ -1368,6 +1541,10 @@
         "elefante de bernini iglesia",
         "minerva",
         "santa maria sopra minerva"
+      ],
+      "search_en": "Santa Maria sopra Minerva Rome",
+      "search_en_keywords": [
+        "minerva"
       ]
     },
     {
@@ -1394,7 +1571,12 @@
         "sant ignazio",
         "sant'ignazio di loyola"
       ],
-      "wikipedia_title": "en:Sant'Ignazio, Rome"
+      "wikipedia_title": "en:Sant'Ignazio, Rome",
+      "search_en": "Sant Ignazio Church Rome",
+      "search_en_keywords": [
+        "ignazio",
+        "ignatius"
+      ]
     },
     {
       "name": "Elefantino de Bernini",
@@ -1418,7 +1600,13 @@
         "elefantino",
         "pulcino della minerva"
       ],
-      "wikipedia_title": "en:Elephant and Obelisk"
+      "wikipedia_title": "en:Elephant and Obelisk",
+      "search_en": "Bernini elephant obelisk Rome",
+      "search_en_keywords": [
+        "elephant",
+        "elefante",
+        "obelisk"
+      ]
     },
     {
       "name": "Fuente de las Tortugas",
@@ -1440,6 +1628,11 @@
         "fontana delle tartarughe",
         "tartarughe",
         "turtle fountain"
+      ],
+      "search_en": "Fontana delle Tartarughe Rome",
+      "search_en_keywords": [
+        "tartarughe",
+        "turtle"
       ]
     },
     {
@@ -1461,6 +1654,11 @@
       "search_aliases": [
         "fontana del tritone",
         "piazza barberini fuente",
+        "triton",
+        "tritone"
+      ],
+      "search_en": "Triton Fountain Rome",
+      "search_en_keywords": [
         "triton",
         "tritone"
       ]
@@ -1485,6 +1683,10 @@
       "search_aliases": [
         "columna de marco aurelio",
         "piazza colonna"
+      ],
+      "search_en": "Piazza Colonna Rome",
+      "search_en_keywords": [
+        "colonna"
       ]
     },
     {
@@ -1507,6 +1709,10 @@
         "calle condotti",
         "condotti",
         "via dei condotti"
+      ],
+      "search_en": "Via Condotti Rome",
+      "search_en_keywords": [
+        "condotti"
       ]
     },
     {
@@ -1529,6 +1735,10 @@
         "palacio farnesio",
         "palazzo farnese",
         "piazza farnese"
+      ],
+      "search_en": "Piazza Farnese Rome",
+      "search_en_keywords": [
+        "farnese"
       ]
     },
     {
@@ -1554,6 +1764,11 @@
         "capitolio",
         "piazza del campidoglio",
         "plaza del capitolio"
+      ],
+      "search_en": "Piazza del Campidoglio Rome",
+      "search_en_keywords": [
+        "campidoglio",
+        "capitoline"
       ]
     },
     {
@@ -1582,6 +1797,11 @@
         "capitoline museums",
         "musei capitolini",
         "museo capitolino"
+      ],
+      "search_en": "Capitoline Museums Rome",
+      "search_en_keywords": [
+        "capitoline",
+        "capitolini"
       ]
     },
     {
@@ -1605,6 +1825,10 @@
       "search_aliases": [
         "basilica di san clemente",
         "san clemente"
+      ],
+      "search_en": "Basilica San Clemente Rome",
+      "search_en_keywords": [
+        "clemente"
       ]
     },
     {
@@ -1629,6 +1853,11 @@
         "moises de miguel angel",
         "san pedro encadenado",
         "san pietro in vincoli"
+      ],
+      "search_en": "San Pietro in Vincoli Rome",
+      "search_en_keywords": [
+        "vincoli",
+        "moses"
       ]
     },
     {
@@ -1659,6 +1888,10 @@
         "casa dorada de neron",
         "domus aurea de neron",
         "golden house"
+      ],
+      "search_en": "Domus Aurea Rome",
+      "search_en_keywords": [
+        "domus aurea"
       ]
     },
     {
@@ -1684,6 +1917,10 @@
       "search_aliases": [
         "baths of caracalla",
         "terme di caracalla"
+      ],
+      "search_en": "Baths of Caracalla Rome",
+      "search_en_keywords": [
+        "caracalla"
       ]
     },
     {
@@ -1710,7 +1947,13 @@
         "orange garden",
         "parco savello"
       ],
-      "wikipedia_title": "it:Giardino degli Aranci"
+      "wikipedia_title": "it:Giardino degli Aranci",
+      "search_en": "Giardino degli Aranci Rome",
+      "search_en_keywords": [
+        "aranci",
+        "orange garden",
+        "savello"
+      ]
     },
     {
       "name": "Basílica de Santa María la Mayor",
@@ -1733,6 +1976,10 @@
         "basilica di santa maria maggiore",
         "santa maria la mayor",
         "santa maria maggiore"
+      ],
+      "search_en": "Santa Maria Maggiore Rome",
+      "search_en_keywords": [
+        "maggiore"
       ]
     },
     {
@@ -1756,6 +2003,12 @@
       "search_aliases": [
         "colonna traiana",
         "trajan column"
+      ],
+      "search_en": "Trajan's Column Rome",
+      "search_en_keywords": [
+        "trajan",
+        "traiana",
+        "column"
       ]
     },
     {
@@ -1779,6 +2032,11 @@
         "teatro di marcello",
         "teatro marcelo",
         "theatre of marcellus"
+      ],
+      "search_en": "Theatre of Marcellus Rome",
+      "search_en_keywords": [
+        "marcellus",
+        "marcello"
       ]
     },
     {
@@ -1806,6 +2064,12 @@
         "keyhole",
         "ojo de la cerradura",
         "priorato de malta"
+      ],
+      "search_en": "Aventine Keyhole Rome",
+      "search_en_keywords": [
+        "keyhole",
+        "aventine",
+        "malta"
       ]
     },
     {
@@ -1828,6 +2092,12 @@
       "search_aliases": [
         "piramide di caio cestio",
         "pyramid of cestius"
+      ],
+      "search_en": "Pyramid of Cestius Rome",
+      "search_en_keywords": [
+        "pyramid",
+        "piramide",
+        "cestius"
       ]
     },
     {
@@ -1851,6 +2121,11 @@
         "bernini santa teresa",
         "extasis de santa teresa",
         "santa maria della vittoria"
+      ],
+      "search_en": "Santa Maria della Vittoria Rome",
+      "search_en_keywords": [
+        "vittoria",
+        "teresa"
       ]
     },
     {
@@ -1874,6 +2149,10 @@
       "search_aliases": [
         "basilica de santa maria in trastevere",
         "santa maria in trastevere"
+      ],
+      "search_en": "Santa Maria in Trastevere Rome",
+      "search_en_keywords": [
+        "trastevere"
       ]
     },
     {
@@ -1900,6 +2179,10 @@
       "search_aliases": [
         "farnesina",
         "rafael farnesina"
+      ],
+      "search_en": "Villa Farnesina Rome",
+      "search_en_keywords": [
+        "farnesina"
       ]
     },
     {
@@ -1922,6 +2205,11 @@
         "piazza trilussa",
         "ponte sisto plaza",
         "trilussa"
+      ],
+      "search_en": "Piazza Trilussa Trastevere Rome",
+      "search_en_keywords": [
+        "trilussa",
+        "ponte sisto"
       ]
     },
     {
@@ -1945,7 +2233,12 @@
         "pincio",
         "terrazza del pincio"
       ],
-      "wikipedia_title": "Pincio"
+      "wikipedia_title": "Pincio",
+      "search_en": "Pincio terrace Rome",
+      "search_en_keywords": [
+        "pincio",
+        "pincian"
+      ]
     },
     {
       "name": "Basílica de San Juan de Letrán",
@@ -1972,6 +2265,11 @@
         "laterano",
         "san giovanni in laterano",
         "san juan de letran"
+      ],
+      "search_en": "San Giovanni in Laterano Rome",
+      "search_en_keywords": [
+        "laterano",
+        "lateran"
       ]
     },
     {
@@ -1997,6 +2295,10 @@
         "barrio coppede",
         "coppede",
         "fontana delle rane"
+      ],
+      "search_en": "Quartiere Coppede Rome",
+      "search_en_keywords": [
+        "coppede"
       ]
     },
     {
@@ -2024,6 +2326,10 @@
         "mercato di testaccio",
         "nuovo mercato testaccio",
         "testaccio market"
+      ],
+      "search_en": "Testaccio Market Rome",
+      "search_en_keywords": [
+        "testaccio"
       ]
     },
     {
@@ -2051,6 +2357,12 @@
         "galeria doria pamphilj",
         "palacio doria pamphili",
         "velazquez inocencio x"
+      ],
+      "search_en": "Palazzo Doria Pamphilj Rome",
+      "search_en_keywords": [
+        "doria",
+        "pamphilj",
+        "pamphili"
       ]
     },
     {
@@ -2078,7 +2390,12 @@
         "via apia",
         "via appia"
       ],
-      "wikipedia_title": "en:Appian Way"
+      "wikipedia_title": "en:Appian Way",
+      "search_en": "Appian Way Rome",
+      "search_en_keywords": [
+        "appia",
+        "appian"
+      ]
     },
     {
       "name": "Catacumbas de San Calixto",
@@ -2101,6 +2418,12 @@
       "search_aliases": [
         "catacombe di san callisto",
         "catacumbas"
+      ],
+      "search_en": "Catacombs of San Callisto Rome",
+      "search_en_keywords": [
+        "catacomb",
+        "catacombe",
+        "callisto"
       ]
     },
     {
@@ -2129,6 +2452,12 @@
         "cimitero acattolico",
         "non-catholic cemetery",
         "tumba de keats"
+      ],
+      "search_en": "Non-Catholic Cemetery Rome",
+      "search_en_keywords": [
+        "cemetery",
+        "cimitero",
+        "acattolico"
       ]
     }
   ],
