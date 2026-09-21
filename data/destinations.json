@@ -189,7 +189,7 @@
             "theme": "imprescindible"
           },
           {
-            "name": "Plaza del Pueblo",
+            "name": "Piazza del Popolo",
             "zone": "Norte",
             "type": "exterior",
             "duration_min": 20,
@@ -213,7 +213,7 @@
             "best_time": "atardecer",
             "tips": [
               "EL mejor mirador gratuito del centro de Roma. Al atardecer ves el sol ponerse detrás de la Cúpula de San Pedro",
-              "Se accede subiendo desde Plaza del Pueblo o caminando por Villa Borghese"
+              "Se accede subiendo desde Piazza del Popolo o caminando por Villa Borghese"
             ],
             "theme": "mirador"
           },
@@ -630,10 +630,10 @@
       },
       "D": {
         "name": "Norte monumental",
-        "description": "Plaza de España → Plaza del Pueblo → Terraza del Pincio. Ruta natural subiendo.",
+        "description": "Plaza de España → Piazza del Popolo → Terraza del Pincio. Ruta natural subiendo.",
         "order": [
           "Escalinata de Plaza de España",
-          "Plaza del Pueblo",
+          "Piazza del Popolo",
           "Terraza del Pincio"
         ]
       },
@@ -813,7 +813,7 @@
               "ref": "Escalinata de Plaza de España"
             },
             {
-              "ref": "Plaza del Pueblo"
+              "ref": "Piazza del Popolo"
             },
             {
               "ref": "Terraza del Pincio"

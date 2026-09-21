@@ -269,7 +269,7 @@
     },
     {
       "name": "Via del Corso",
-      "description": "La calle recta más larga del centro de Roma: 1,5 km desde Plaza del Pueblo hasta Plaza Venecia, cortando la ciudad de norte a sur. Es la arteria comercial principal, con tiendas de todo tipo (desde Zara hasta boutiques italianas) y palacios renacentistas en las fachadas superiores que nadie mira.",
+      "description": "La calle recta más larga del centro de Roma: 1,5 km desde Piazza del Popolo hasta Plaza Venecia, cortando la ciudad de norte a sur. Es la arteria comercial principal, con tiendas de todo tipo (desde Zara hasta boutiques italianas) y palacios renacentistas en las fachadas superiores que nadie mira.",
       "transport": [
         {
           "type": "metro",

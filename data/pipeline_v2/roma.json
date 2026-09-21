@@ -377,7 +377,7 @@
         12.4856
       ],
       "places": [
-        "Plaza del Pueblo",
+        "Piazza del Popolo",
         "Galería Borghese",
         "Parque de Villa Borghese",
         "Bioparque de Roma",
@@ -697,7 +697,7 @@
       ]
     },
     {
-      "name": "Plaza del Pueblo",
+      "name": "Piazza del Popolo",
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
@@ -714,8 +714,8 @@
       ],
       "filter_category": "monumentos",
       "search_aliases": [
-        "piazza del popolo",
         "plaza del popolo",
+        "plaza del pueblo",
         "popolo"
       ]
     },
@@ -752,7 +752,7 @@
       ],
       "duration_minutes": 30,
       "type": "exterior",
-      "tip": "La calle comercial principal de Roma. Conéctala caminando entre Plaza del Pueblo y el centro — paseo + shopping.",
+      "tip": "La calle comercial principal de Roma. Conéctala caminando entre Piazza del Popolo y el centro — paseo + shopping.",
       "tags": [
         "calle"
       ],
@@ -1928,8 +1928,8 @@
         "mirador"
       ],
       "filter_category": "miradores",
-      "description": "El mirador más clásico de Roma — desde aquí ves Plaza del Pueblo a tus pies, las cúpulas de la ciudad y el Vaticano al fondo",
-      "tip": "Mejor al atardecer. Se accede desde Villa Borghese o subiendo desde Plaza del Pueblo. Hay un bar con terraza",
+      "description": "El mirador más clásico de Roma — desde aquí ves Piazza del Popolo a tus pies, las cúpulas de la ciudad y el Vaticano al fondo",
+      "tip": "Mejor al atardecer. Se accede desde Villa Borghese o subiendo desde Piazza del Popolo. Hay un bar con terraza",
       "search_aliases": [
         "mirador del pincio",
         "pincio",
@@ -2521,7 +2521,7 @@
               ],
               "places": [
                 "Plaza de España",
-                "Plaza del Pueblo",
+                "Piazza del Popolo",
                 "Via del Corso"
               ],
               "note": "Norte del centro — paseo de compras y miradores"
@@ -2687,7 +2687,7 @@
               "zone": "centro_historico",
               "places": [
                 "Plaza de España",
-                "Plaza del Pueblo",
+                "Piazza del Popolo",
                 "Via del Corso"
               ],
               "note": "Norte centro + compras"
@@ -2906,7 +2906,7 @@
               "zone": "centro_historico",
               "places": [
                 "Plaza de España",
-                "Plaza del Pueblo",
+                "Piazza del Popolo",
                 "Via del Corso"
               ],
               "note": "Norte del centro + Pincio atardecer"
@@ -3056,7 +3056,7 @@
               "zone": "centro_historico",
               "places": [
                 "Plaza de España",
-                "Plaza del Pueblo",
+                "Piazza del Popolo",
                 "Via del Corso"
               ],
               "note": "Norte centro + compras"
@@ -3153,7 +3153,7 @@
           },
           {
             "time": "15:45",
-            "place": "Plaza del Pueblo",
+            "place": "Piazza del Popolo",
             "duration": 30,
             "note": "Vista desde el Pincio al atardecer"
           },
@@ -3273,7 +3273,7 @@
       "Via della Conciliazione",
       "Castillo de Sant'Angelo",
       "Via del Corso",
-      "Plaza del Pueblo",
+      "Piazza del Popolo",
       "Largo di Torre Argentina",
       "Plaza de España"
     ]
@@ -3499,7 +3499,7 @@
       "price_range": "€",
       "avg_price_person": "3-6€",
       "what_to_order": "Sabores creativos: Kentuki (tabaco y chocolate), Bacio del Principe, o lo que sea de temporada",
-      "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Plaza del Pueblo).",
+      "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Piazza del Popolo).",
       "hours": "Todos los días 12:00-23:00 (aprox).",
       "best_for": "Gelato artesanal con sabores creativos e innovadores"
     },

@@ -179,16 +179,6 @@ delete from public.place_likes l where l.destination ilike 'roma' and l.place_na
   and exists (select 1 from public.place_likes l2 where l2.destination = l.destination and l2.place_name = 'Plaza Farnese' and l2.user_id = l.user_id);
 update public.place_likes set place_name = 'Plaza Farnese' where destination ilike 'roma' and place_name = 'Piazza Farnese';
 
--- Piazza del Popolo -> Plaza del Pueblo
-update public.place_content_cache set place_name = 'Plaza del Pueblo'
-  where destination ilike 'roma' and place_name = 'Piazza del Popolo'
-    and not exists (select 1 from public.place_content_cache c2 where c2.destination = place_content_cache.destination and c2.place_name = 'Plaza del Pueblo');
-delete from public.place_content_cache where destination ilike 'roma' and place_name = 'Piazza del Popolo';
-
-delete from public.place_likes l where l.destination ilike 'roma' and l.place_name = 'Piazza del Popolo'
-  and exists (select 1 from public.place_likes l2 where l2.destination = l.destination and l2.place_name = 'Plaza del Pueblo' and l2.user_id = l.user_id);
-update public.place_likes set place_name = 'Plaza del Pueblo' where destination ilike 'roma' and place_name = 'Piazza del Popolo';
-
 -- Galería Borghese (museo) -> Galería Borghese
 update public.place_content_cache set place_name = 'Galería Borghese'
   where destination ilike 'roma' and place_name = 'Galería Borghese (museo)'

@@ -94,7 +94,7 @@
       },
       "tips": [
         "Abierto 24 horas, entrada libre. Es el sitio perfecto para descansar entre visitas — lleva algo de comer y siéntate en el césped como hacen los romanos.",
-        "La entrada más bonita es por la Scalinata de Plaza del Pueblo (subes al Pincio y ya estás dentro). La entrada desde Via Veneto (Porta Pinciana) te deja cerca de la Galería Borghese.",
+        "La entrada más bonita es por la Scalinata de Piazza del Popolo (subes al Pincio y ya estás dentro). La entrada desde Via Veneto (Porta Pinciana) te deja cerca de la Galería Borghese.",
         "Se pueden alquilar bicicletas (y cuadriciclos familiares) en varios puntos del parque. Para el lago, las barcas de remos se alquilan por 20 minutos y la experiencia es preciosísima.",
         "Combínalo con la Galería Borghese (mañana) y la Terraza del Pincio al atardecer — el parque conecta ambos."
       ],
@@ -168,7 +168,7 @@
       "secrets": [
         "El Bioparco se inauguró en 1911 como Giardino Zoologico, diseñado por el naturalista Carl Hagenbeck con el concepto revolucionario (para la época) de recintos sin rejas. Las estructuras originales Art Nouveau aún se conservan y tienen más interés arquitectónico que muchos animales.",
         "Durante la Segunda Guerra Mundial, parte de los animales murieron de hambre por la escasez de alimentos en Roma. Los cuidadores del zoo arriesgaron sus vidas para alimentar a los animales con lo que podían encontrar en el mercado negro.",
-        "La leyenda urbana romana dice que las focas del Bioparco podían oírse desde Plaza del Pueblo en las noches de verano. Con la renovación de los recintos ya no es así, pero los romanos mayores aún lo recuerdan."
+        "La leyenda urbana romana dice que las focas del Bioparco podían oírse desde Piazza del Popolo en las noches de verano. Con la renovación de los recintos ya no es así, pero los romanos mayores aún lo recuerdan."
       ]
     },
     {
@@ -227,7 +227,7 @@
       ]
     },
     {
-      "name": "Plaza del Pueblo",
+      "name": "Piazza del Popolo",
       "description": "La gran puerta norte de Roma: una plaza monumental con un obelisco egipcio de 3.200 años en el centro, dos iglesias gemelas que enmarcan la entrada a las tres calles principales de Roma (el 'Tridente'), una fuente con leones y la iglesia de Santa Maria del Popolo — que por dentro es un museo gratuito con dos Caravaggios, frescos de Pinturicchio y una capilla de Rafael. Todo gratis y al aire libre (excepto la iglesia, que también es gratis).",
       "what_to_see": [
         "El Obelisco Flaminio — obelisco egipcio de Ramsés II (1200 a.C.) traído por Augusto y colocado aquí por Sixto V en 1589",
@@ -276,9 +276,9 @@
     },
     {
       "name": "Terraza del Pincio",
-      "description": "El mirador más elegante de Roma: desde la colina del Pincio, sobre Plaza del Pueblo, ves la cúpula de San Pedro recortada contra el cielo, los tejados del centro y la plaza entera a tus pies con su obelisco. No tiene la amplitud del Janículo pero tiene algo que ningún otro mirador ofrece: la simetría perfecta de Plaza del Pueblo vista desde arriba, enmarcada por las iglesias gemelas y las tres calles del Tridente. Al atardecer, con la luz dorada, es el momento más fotogénico de Roma.",
+      "description": "El mirador más elegante de Roma: desde la colina del Pincio, sobre Piazza del Popolo, ves la cúpula de San Pedro recortada contra el cielo, los tejados del centro y la plaza entera a tus pies con su obelisco. No tiene la amplitud del Janículo pero tiene algo que ningún otro mirador ofrece: la simetría perfecta de Piazza del Popolo vista desde arriba, enmarcada por las iglesias gemelas y las tres calles del Tridente. Al atardecer, con la luz dorada, es el momento más fotogénico de Roma.",
       "what_to_see": [
-        "La panorámica de Plaza del Pueblo desde arriba — obelisco, iglesias gemelas, Tridente y cúpula de San Pedro al fondo",
+        "La panorámica de Piazza del Popolo desde arriba — obelisco, iglesias gemelas, Tridente y cúpula de San Pedro al fondo",
         "Los bustos de los 228 héroes italianos que bordean la Passeggiata del Pincio — de Dante a Garibaldi",
         "El Reloj de Agua (Orologio ad Acqua) de 1867 — escondido entre los árboles, a 3 minutos caminando",
         "Los jardines del Pincio con sus fuentes y bancos bajo pinos mediterráneos"
@@ -289,7 +289,7 @@
           "icon": "🚇",
           "line": "A",
           "stop": "Flaminio",
-          "note": "Sube las escaleras desde Plaza del Pueblo (5-7 min)"
+          "note": "Sube las escaleras desde Piazza del Popolo (5-7 min)"
         }
       ],
       "extras": {
@@ -297,8 +297,8 @@
       },
       "tips": [
         "VEN AL ATARDECER — es el mejor momento sin discusión (18:00-20:00 en verano, 16:30-18:00 en invierno). La luz dorada sobre San Pedro y los tejados es imbatible. A mediodía es un mirador más.",
-        "Sube las escaleras desde Plaza del Pueblo (lado izquierdo mirando a las iglesias gemelas) — son 5-7 minutos y el paseo es precioso. También puedes llegar andando desde Villa Borghese.",
-        "Combina: Plaza del Pueblo + Santa Maria del Popolo por la mañana → Villa Borghese/Galería Borghese → Terraza del Pincio al atardecer. Es la ruta perfecta de día completo en esta zona.",
+        "Sube las escaleras desde Piazza del Popolo (lado izquierdo mirando a las iglesias gemelas) — son 5-7 minutos y el paseo es precioso. También puedes llegar andando desde Villa Borghese.",
+        "Combina: Piazza del Popolo + Santa Maria del Popolo por la mañana → Villa Borghese/Galería Borghese → Terraza del Pincio al atardecer. Es la ruta perfecta de día completo en esta zona.",
         "Hay músicos callejeros muchas tardes — se forma un ambiente muy romano y poco turístico."
       ],
       "secrets": [
