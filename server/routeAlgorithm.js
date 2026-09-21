@@ -1180,8 +1180,24 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
     !relatedToAlreadyUsed(place, usedByCore) &&
     !(place.related_to && claimed.has(place.related_to))
 
-  const claimForZone = (zone, day, limit = Infinity) => {
+  // Ronda 14: cuánto relleno de TARDE lleva reservado cada día. La fase 2 (zonas vecinas) no tenía
+  // tope ninguno, y el orden "menos sobrante propio primero" hacía que un día ya lleno vaciara la
+  // despensa del vecino antes de que a este le tocara el turno. Encontrado de verdad, Roma 4 días:
+  // el Día 4 (villa_borghese, 2 sobrantes propios) entraba primero en fase 2 y se llevaba SEIS
+  // lugares del centro histórico, dejando al Día 2 (Vaticano) con solo sus 3 y terminando la tarde a
+  // las 17:45 con 2h45 muertas hasta la cena — mientras el Día 4 acababa a las 19:35, lleno.
+  //
+  // El tope es el mismo que ya limitaba la zona propia: ningún día puede USAR más de
+  // MAX_FILL_STOPS_PER_DAY rellenos de tarde, así que reservar más es quitárselo a otro para nada.
+  // La mañana y la zona del evening_block llevan su propia cuenta aparte (son huecos distintos del
+  // día, con su propio presupuesto), por eso no consumen de este.
+  const afternoonBudget = new Map()
+  const remainingFor = (day) => MAX_FILL_STOPS_PER_DAY - (afternoonBudget.get(day) ?? 0)
+
+  const claimForZone = (zone, day, limit = Infinity, countsTowardAfternoon = false) => {
     if (!zone) return
+    if (countsTowardAfternoon) limit = Math.min(limit, remainingFor(day))
+    if (limit <= 0) return
     let claimedCount = 0
     for (const place of (destData.places ?? []).filter((p) => p.zone === zone && isEligible(p)).sort((a, b) => compareFillerPlaces(a, b, interestTags))) {
       if (claimedCount >= limit) break
@@ -1189,6 +1205,7 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
       claimed.add(place.name)
       claimedCount++
     }
+    if (countsTowardAfternoon) afternoonBudget.set(day, (afternoonBudget.get(day) ?? 0) + claimedCount)
   }
 
   // Dos fases — si un día reclamara zonas vecinas en la MISMA pasada que su propia zona, un día cuya
@@ -1264,11 +1281,39 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
   }
   for (const franja of days) {
     claimForZone(franja.morning?.zone, franja.day, 1)
-    claimForZone(franja.afternoon?.zone, franja.day, MAX_FILL_STOPS_PER_DAY)
+    claimForZone(franja.afternoon?.zone, franja.day, MAX_FILL_STOPS_PER_DAY, true)
   }
   for (const franja of phase2Order) {
     const zone = franja.afternoon?.zone ?? franja.morning?.zone
-    for (const adjacent of findAdjacentZones(destData, zone, 30)) claimForZone(adjacent, franja.day)
+    // Sin el tope, el primero en pasar por aquí se llevaba todo lo del vecino.
+    for (const adjacent of findAdjacentZones(destData, zone, 30)) claimForZone(adjacent, franja.day, Infinity, true)
+  }
+
+  // Fase 3: lo que quede SIN dueño se reparte igualmente, ya sin mirar presupuesto. El tope de
+  // arriba decide QUIÉN elige primero, no puede dejar lugares huérfanos: un sobrante sin dueño es
+  // un sobrante que DOS días pueden descubrir por su cuenta, y eso es justo lo que esta función
+  // existe para impedir (encontrado al añadir el tope: "Plaza Colonna" salía en el día 2 y en el 3
+  // del mismo viaje de 3 días). Nadie va a usar de más — cada día ya tiene su propio tope al
+  // recolectar — así que aquí solo importa que cada lugar tenga exactamente un dueño.
+  // Se recorre LUGAR a lugar (no día a día): con el orden por días, el primero volvía a barrer
+  // lo que el tope acababa de quitarle. Cada sobrante va al día que menos lleva reservado de entre
+  // los que lo tienen a mano, que es el que de verdad puede usarlo.
+  const alcanceDe = new Map(
+    phase2Order.map((franja) => {
+      const zone = franja.afternoon?.zone ?? franja.morning?.zone
+      return [franja.day, new Set([zone, ...findAdjacentZones(destData, zone, 30)])]
+    }),
+  )
+  for (const place of (destData.places ?? []).filter((p) => isEligible(p))) {
+    let elegido = null
+    for (const franja of phase2Order) {
+      if (!alcanceDe.get(franja.day)?.has(place.zone)) continue
+      if (elegido === null || (afternoonBudget.get(franja.day) ?? 0) < (afternoonBudget.get(elegido) ?? 0)) elegido = franja.day
+    }
+    if (elegido === null) continue
+    owner.set(place.name, elegido)
+    claimed.add(place.name)
+    afternoonBudget.set(elegido, (afternoonBudget.get(elegido) ?? 0) + 1)
   }
   return owner
 }
