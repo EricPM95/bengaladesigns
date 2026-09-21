@@ -7,6 +7,7 @@ import {
   RESTAURANT_SUB_CATEGORIES,
   findPlaceCategoryChip,
   findRestaurantSubCategory,
+  type PlaceCategoryChip,
   type PlaceFilterCategory,
   type RestaurantSubCategory,
 } from '../../../lib/placeCategories'
@@ -87,6 +88,92 @@ function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
     scheduleText: place.schedule,
     tags: place.tags,
   }
+}
+
+/**
+ * Prompt 3 (bug 3): el buscador mira SOLO el catálogo curado del destino, nunca la búsqueda de POIs
+ * de Mapbox — que devuelve los nombres en inglés ("Colosseum"), busca en todo el mundo y encuentra
+ * fatal los monumentos. Cuatro niveles, de más a menos literal: empieza por el nombre, empieza por
+ * un alias, lo contiene el nombre, lo contiene un alias. Los alias (ver `search_aliases` en el JSON
+ * del destino) son los que hacen que valgan el nombre en italiano, el inglés, la forma corta y el
+ * nombre que el lugar tenía antes del renombrado a español.
+ */
+function searchScore(place: DestinationPlace, needle: string): number {
+  const name = normalize(place.name)
+  if (name.startsWith(needle)) return 100
+  const aliases = (place.search_aliases ?? []).map(normalize)
+  if (aliases.some((alias) => alias.startsWith(needle))) return 90
+  if (name.includes(needle)) return 70
+  if (aliases.some((alias) => alias.includes(needle))) return 60
+  return 0
+}
+
+/** Mínimo de letras antes de buscar: con una sola, media ciudad coincide y la lista no dice nada. */
+const MIN_QUERY_LENGTH = 2
+const SEARCH_DEBOUNCE_MS = 150
+const MAX_SEARCH_RESULTS = 8
+
+/**
+ * Prompt 3 (bug 2): foto real del lugar en vez del icono genérico de categoría — se reconoce de un
+ * vistazo y anima a puntuar. Sale del mismo sitio que las fotos de las paradas (Wikipedia en
+ * español por nombre, ver placePhoto.ts, que ya cachea por nombre+ciudad para toda la sesión).
+ *
+ * La foto se pide solo cuando la fila ENTRA EN PANTALLA: el catálogo de un destino son 100+ lugares
+ * y resolverlos todos al abrir serían 100 llamadas a Wikipedia para ver ocho. Si no hay foto (o
+ * Wikipedia falla, o tarda), se queda el icono de categoría de siempre — nunca un hueco vacío.
+ */
+function PlaceThumb({ name, city, chip }: { name: string; city: string; chip: PlaceCategoryChip | null }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [inView, setInView] = useState(false)
+  const [photo, setPhoto] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (inView || !ref.current) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) setInView(true)
+      },
+      // Margen generoso: la foto empieza a cargarse justo antes de que la fila asome, para que no
+      // se vea el salto de icono a foto mientras se hace scroll.
+      { rootMargin: '200px' },
+    )
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [inView])
+
+  useEffect(() => {
+    if (!inView) return
+    let cancelled = false
+    fetchPlacePhoto(name, city).then((url) => {
+      if (!cancelled) setPhoto(url)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [inView, name, city])
+
+  return (
+    <span
+      ref={ref}
+      className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg text-xl"
+      style={{ backgroundColor: chip?.activeBg ?? 'rgb(var(--bg-hover))' }}
+      aria-hidden="true"
+    >
+      {photo ? (
+        <img
+          src={photo}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+          // Wikipedia puede devolver una URL que luego no carga (imagen retirada, hotlink
+          // bloqueado). Sin esto quedaría un cuadro vacío, que es peor que el icono de categoría.
+          onError={() => setPhoto(null)}
+        />
+      ) : (
+        (chip?.icon ?? '📍')
+      )}
+    </span>
+  )
 }
 
 function SearchIcon() {
@@ -249,23 +336,39 @@ export function PlaceExplorerScreen({
   const restaurantsActive = activeCategories.includes('restaurantes')
   const trimmedQuery = query.trim()
 
+  // Se busca sobre el texto ya reposado, no sobre cada tecla: reordenar y volver a pintar la lista
+  // (y con ella los pines del mapa) en cada pulsación se notaba al escribir.
+  const [debouncedQuery, setDebouncedQuery] = useState(trimmedQuery)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(trimmedQuery), SEARCH_DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [trimmedQuery])
+  const needle = debouncedQuery.length >= MIN_QUERY_LENGTH ? normalize(debouncedQuery) : null
+  const queryTooShort = trimmedQuery.length > 0 && trimmedQuery.length < MIN_QUERY_LENGTH
+
   const results = useMemo(() => {
     // La sub-categoría solo filtra restaurantes: con "Monumentos + Restaurantes + Pizza" activos, los
     // monumentos siguen enteros y son las pizzerías las que se acotan.
     const matchesSubCategory = (place: DestinationPlace) =>
       place.kind !== 'restaurant' || activeSubCategory === null || place.sub_category === activeSubCategory
 
-    // El buscador mira todo el pool por nombre, pero respeta los filtros visibles: lo que se ve en la
-    // lista es siempre lo que dicen los chips de arriba.
-    if (trimmedQuery) {
-      const needle = normalize(trimmedQuery)
-      return places.filter(
-        (place) =>
-          normalize(place.name).includes(needle) &&
-          matchesSubCategory(place) &&
-          (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
-      )
+    // El buscador mira todo el pool, pero respeta los filtros visibles: lo que se ve en la lista es
+    // siempre lo que dicen los chips de arriba. Ordenado por lo bien que encaja el texto (ver
+    // searchScore) y recortado — ocho resultados es lo que se puede elegir de un vistazo.
+    if (needle) {
+      return places
+        .filter(
+          (place) =>
+            matchesSubCategory(place) &&
+            (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))),
+        )
+        .map((place) => ({ place, score: searchScore(place, needle) }))
+        .filter((entry) => entry.score > 0)
+        .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name, 'es'))
+        .slice(0, MAX_SEARCH_RESULTS)
+        .map((entry) => entry.place)
     }
+    if (queryTooShort) return []
 
     const filtered = places.filter(
       (place) =>
@@ -290,29 +393,45 @@ export function PlaceExplorerScreen({
       if (a.order !== undefined && b.order !== undefined) return a.order - b.order
       return a.name.localeCompare(b.name, 'es')
     })
-  }, [places, trimmedQuery, activeCategories, activeSubCategory, tab, position, likes])
+  }, [places, needle, queryTooShort, activeCategories, activeSubCategory, tab, position, likes])
 
-  // Pines del mapa: los lugares de los filtros activos (o los del buscador mientras se busca), más
-  // pequeños que los números de las paradas del día para que la ruta siga destacando sobre ellos.
+  // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
+  // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
+  // el subconjunto visible, y como StopsMapView se reconstruye entero cuando cambia el conjunto de
+  // marcadores, cada chip reseteaba la cámara: nuevo fitBounds, nuevo zoom, el mapa saltando bajo el
+  // dedo. Ahora la vista del viajero no se toca y los pines entran y salen con un fundido.
+  // Más pequeños que los números de las paradas del día, para que la ruta siga destacando.
+  const poiPlaces = useMemo(() => places.filter((place) => hasRealCoordinates(place.coordinates)), [places])
+
   const markers: StopsMapMarker[] = useMemo(() => {
-    const shown = trimmedQuery || activeCategories.length > 0 ? results : []
-    const poiMarkers: StopsMapMarker[] = shown
-      .filter((place) => hasRealCoordinates(place.coordinates))
-      .map((place) => {
-        const chip = findPlaceCategoryChip(place.filter_category)
-        return {
-          id: `poi-${place.name}`,
-          name: place.name,
-          coordinates: place.coordinates,
-          number: 0,
-          icon: chip?.icon ?? '📍',
-          bg: chip?.color ?? '#6B7280',
-          text: '#FFFFFF',
-          small: true,
-        }
-      })
+    const poiMarkers: StopsMapMarker[] = poiPlaces.map((place) => {
+      const chip = findPlaceCategoryChip(place.filter_category)
+      return {
+        id: `poi-${place.name}`,
+        name: place.name,
+        coordinates: place.coordinates,
+        number: 0,
+        icon: chip?.icon ?? '📍',
+        bg: chip?.color ?? '#6B7280',
+        text: '#FFFFFF',
+        small: true,
+      }
+    })
     return [...dayMarkers, ...poiMarkers]
-  }, [dayMarkers, results, trimmedQuery, activeCategories])
+  }, [dayMarkers, poiPlaces])
+
+  /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio de siempre: sin ningún filtro ni
+      búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día. */
+  const visiblePoiNames = useMemo(() => {
+    const shown = needle || activeCategories.length > 0 ? results : []
+    return new Set(shown.map((place) => place.name))
+  }, [results, needle, activeCategories])
+
+  const hiddenMarkerIds = useMemo(
+    () => poiPlaces.filter((place) => !visiblePoiNames.has(place.name)).map((place) => `poi-${place.name}`),
+    [poiPlaces, visiblePoiNames],
+  )
+  const visibleMarkerCount = dayMarkers.length + visiblePoiNames.size
 
   const onToggleLike = async (place: DestinationPlace) => {
     const next = !likes.mine.has(place.name)
@@ -426,9 +545,10 @@ export function PlaceExplorerScreen({
         )}
 
         <div className="relative shrink-0" style={{ height: '38vh' }}>
-          {markers.length > 0 ? (
+          {visibleMarkerCount > 0 ? (
             <StopsMapView
               markers={markers}
+              hiddenMarkerIds={hiddenMarkerIds}
               activeStopId={selected ? `poi-${selected.name}` : null}
               onSelectStop={(id) => {
                 const place = places.find((candidate) => `poi-${candidate.name}` === id)
@@ -512,8 +632,10 @@ export function PlaceExplorerScreen({
               </div>
             )}
 
-            {trimmedQuery && results.length === 0 && (
-              <p className="py-8 text-center text-small text-text-soft">No hay ningún lugar con ese nombre en {destination}.</p>
+            {queryTooShort && <p className="py-8 text-center text-small text-text-soft">Escribe al menos {MIN_QUERY_LENGTH} letras para buscar.</p>}
+
+            {needle && results.length === 0 && (
+              <p className="py-8 text-center text-small text-text-soft">No encontramos este lugar en nuestra selección de {destination}.</p>
             )}
 
             {!trimmedQuery && results.length === 0 && (
@@ -541,13 +663,7 @@ export function PlaceExplorerScreen({
                     }`}
                   >
                     <button type="button" onClick={() => setSelected(place)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                      <span
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xl"
-                        style={{ backgroundColor: chip?.activeBg ?? 'rgb(var(--bg-hover))' }}
-                        aria-hidden="true"
-                      >
-                        {chip?.icon ?? '📍'}
-                      </span>
+                      <PlaceThumb name={place.name} city={destination} chip={chip} />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5">
                           <span className="truncate text-small font-semibold text-text">{place.name}</span>

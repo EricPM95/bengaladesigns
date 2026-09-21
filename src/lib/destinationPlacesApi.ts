@@ -27,6 +27,10 @@ export interface DestinationPlace {
   tags: string[]
   level: number | null
   schedule: string | null
+  /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en
+      italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
+      `search_aliases` en el JSON del destino. Vacío para los restaurantes. */
+  search_aliases: string[]
   /** Solo restaurantes: su posición en el JSON del destino (orden editorial) — desempata "Recomendados" mientras no haya likes. */
   order?: number
   /** Solo restaurantes — ver RESTAURANT_SUB_CATEGORIES. */

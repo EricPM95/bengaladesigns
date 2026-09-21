@@ -3651,6 +3651,10 @@ app.post('/api/destination-places', (req, res) => {
       tags: Array.isArray(place.tags) ? place.tags : [],
       level: place.level ?? null,
       schedule: place.schedule ?? null,
+      // Prompt 3: el buscador de la pantalla de lugares busca en español sobre el pool local, y los
+      // alias son lo que hace que "coli" encuentre el Coliseo o que el nombre en italiano siga
+      // valiendo. Ya vienen normalizados (minúsculas sin acentos) desde el JSON del destino.
+      search_aliases: Array.isArray(place.search_aliases) ? place.search_aliases : [],
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son

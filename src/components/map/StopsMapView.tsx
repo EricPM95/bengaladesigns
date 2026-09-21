@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Coordinates } from '../../lib/types'
@@ -53,6 +53,15 @@ interface StopsMapViewProps {
   lines?: StopsMapMarkerLine[]
   activeStopId?: string | null
   onSelectStop?: (stopId: string) => void
+  /**
+   * Prompt 3 (bug 1): ids de marcadores que se pintan pero NO se ven. Existe porque este mapa se
+   * reconstruye entero (map.remove() + new Map) cuando cambia el conjunto de marcadores, y eso
+   * hacía que marcar un filtro en la pantalla de lugares reseteara la vista: nuevo fitBounds, nuevo
+   * zoom, el mapa "saltando" bajo el dedo. Pasando SIEMPRE el mismo conjunto de marcadores y
+   * moviendo solo esta lista, el mapa no se toca: los pines aparecen y desaparecen con un fundido
+   * sobre la vista exacta que el viajero tenía.
+   */
+  hiddenMarkerIds?: string[]
   /** Cuando true, cambiar `activeStopId` mueve la cámara: `flyTo` el marcador activo (acercando el zoom), o vuelve al `fitBounds` de todos los marcadores cuando pasa a null — usado por MealDetailSheet.tsx para el highlight mapa↔lista de restaurantes. Por defecto false: el resto de usos de este mapa (RUTA, DIAS, StopDetailSheet) solo quieren el resaltado visual del pin, sin mover la cámara. */
   flyToActiveStop?: boolean
 }
@@ -64,10 +73,16 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
+  const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  // Prompt 3 (bug 1): deliberadamente FUERA de markersKey. Cambiar qué pines se ven no puede
+  // reconstruir el mapa — ver el comentario de hiddenMarkerIds en las props.
+  const hiddenKey = (hiddenMarkerIds ?? []).join('|')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const hidden = useMemo(() => new Set(hiddenMarkerIds ?? []), [hiddenKey])
   const markersKey = markers
     .map(
       (marker) =>
@@ -164,11 +179,32 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
           popup.setLngLat([marker.coordinates.lng, marker.coordinates.lat]).setDOMContent(card).addTo(map)
         })
         innerElsRef.current.set(marker.id, inner)
+        rootElsRef.current.set(marker.id, root)
+        // El estado inicial de "oculto" se aplica AQUÍ, no solo en el efecto de visibilidad: los
+        // marcadores se crean dentro de map.on('load'), que es asíncrono, así que cuando ese efecto
+        // corre por primera vez todavía no existe ninguno y no tiene a qué aplicárselo. Sin esto, el
+        // primer pintado enseñaba el catálogo entero y los pines no se ocultaban hasta tocar un filtro.
+        if (hidden.has(marker.id)) {
+          inner.style.opacity = '0'
+          inner.style.transform = 'scale(0.6)'
+          root.style.pointerEvents = 'none'
+        }
+        // El fundido va en el HIJO, no en el raíz. Mapbox no solo escribe `transform` en el raíz
+        // para posicionarlo: también le reescribe `opacity` en cada render (su propio
+        // _updateOpacity, para la oclusión con terreno), así que un opacity puesto ahí desde fuera
+        // se pierde solo. Encontrado de verdad: con la primera versión, los 67 pines filtrados se
+        // quedaban con pointer-events:none —que Mapbox sí respeta— pero perfectamente visibles.
+        inner.style.transition = 'opacity 180ms ease, transform 180ms ease'
         new mapboxgl.Marker({ element: root }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map)
       })
 
-      if (markers.length > 1) {
-        map.fitBounds(computeBounds(markers), { padding: 56, maxZoom: 15 })
+      // El encuadre inicial mira solo los pines VISIBLES: quien llama puede tener cargado todo el
+      // catálogo del destino con casi todo oculto (ver hiddenMarkerIds), y encuadrar sobre eso
+      // abriría el mapa a vista de ciudad entera en vez de sobre lo que el viajero está mirando.
+      const visible = markers.filter((marker) => !hidden.has(marker.id))
+      const toFit = visible.length > 1 ? visible : markers
+      if (toFit.length > 1) {
+        map.fitBounds(computeBounds(toFit), { padding: 56, maxZoom: 15 })
       }
     })
 
@@ -184,12 +220,23 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     }
   }, [markersKey, linesKey])
 
+  // Un único efecto manda sobre el aspecto del pin — si el "activo" y el "oculto" escribieran cada
+  // uno su propio transform sobre el mismo elemento, el último en correr borraría al otro.
   useEffect(() => {
     for (const [stopId, el] of innerElsRef.current) {
-      el.style.transform = stopId === activeStopId ? 'scale(1.2)' : ''
-      el.style.zIndex = stopId === activeStopId ? '10' : ''
+      const isHidden = hidden.has(stopId)
+      const marker = markers.find((candidate) => candidate.id === stopId)
+      el.style.opacity = isHidden ? '0' : String(marker?.opacity ?? 1)
+      el.style.transform = isHidden ? 'scale(0.6)' : stopId === activeStopId ? 'scale(1.2)' : ''
+      el.style.zIndex = !isHidden && stopId === activeStopId ? '10' : ''
     }
-  }, [activeStopId])
+    // El pointer-events sí va en el raíz (Mapbox no lo toca): un pin invisible no debe seguir
+    // capturando clicks ni abriendo su popup.
+    for (const [stopId, root] of rootElsRef.current) {
+      root.style.pointerEvents = hidden.has(stopId) ? 'none' : ''
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStopId, hidden, markersKey])
 
   // Solo cuando `flyToActiveStop` (MealDetailSheet.tsx: highlight mapa↔lista de restaurantes) — el
   // resto de usos de activeStopId (RUTA, DIAS, StopDetailSheet) solo quieren el pin resaltado, sin
