@@ -1611,18 +1611,20 @@ const ZONE_WALK_TRANSIT_MARGIN_MINUTES = 10
  *
  * El reparto es DETERMINISTA porque tiene que serlo: cada día se construye en su propia llamada,
  * sin estado compartido (BLOQUE_SIZE=1), igual que assignNightExperiences y planFillerOwnership.
- * Cada zona pertenece al PRIMER día que la tiene de zona de tarde; un día que llegue tarde a su
- * zona cae a la de su mañana, y si esa también está pillada se queda sin paseo — mejor sin paseo
- * que repetido.
+ * Cada zona pertenece al PRIMER día que la tiene de zona principal; el día que llegue después se
+ * queda sin paseo y con el hueco vacío, sin buscarse otra zona. Mejor un hueco que una sugerencia
+ * repetida (o que mandar al viajero a un barrio donde no está).
  */
 function zoneWalkZoneFor(variant, dayNumber) {
-  const franjas = variant?.franjas ?? []
   const tomadas = new Set()
-  for (const franja of franjas) {
-    const candidatas = [franja.afternoon?.zone, franja.morning?.zone].filter(Boolean)
-    const libre = candidatas.find((zone) => !tomadas.has(zone))
+  for (const franja of variant?.franjas ?? []) {
+    // La zona principal del día: la de la tarde, que es donde el viajero está cuando se abre el
+    // hueco. Sin plan B — si esa zona ya paseó otro día, este día se queda sin paseo y el hueco
+    // vacío. Nadie necesita dos "Pasear por Villa Borghese" en el mismo viaje.
+    const zona = franja.afternoon?.zone ?? franja.morning?.zone
+    const libre = zona && !tomadas.has(zona) ? zona : null
     if (libre) tomadas.add(libre)
-    if (franja.day === dayNumber) return libre ?? null
+    if (franja.day === dayNumber) return libre
   }
   return null
 }
