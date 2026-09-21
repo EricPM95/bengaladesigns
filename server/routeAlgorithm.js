@@ -1223,6 +1223,30 @@ function planFillerOwnership(destData, variant, mustIncludePlacement = null, int
   // (villa_borghese, con solo 1 filler propio — Terraza del Pincio — y centro_historico como única
   // zona vecina) pudiera reclamar en fase 2, aunque Día 3 nunca iba a poder usar más de 4 de esos 13
   // de todas formas. Con el tope, sobran 9 reales para que fase 2 los reparta de verdad.
+  // Ronda 13 (zone locking): fase 0, ANTES que ninguna otra — si un día tiene un evening_block de
+  // la zona Z (p.ej. trastevere_evening, `zone: "trastevere"`), los lugares sueltos de Z son SUYOS.
+  // Sin esto, la zona de un evening_block no es la zona de mañana ni de tarde de ningún día, así que
+  // nadie la reclamaba en fase 1 y acababa repartida en fase 2 a un día CUALQUIERA que la tuviera
+  // como vecina — encontrado de verdad en 3, 4 y 5 días: el Día 1 cenaba en Trastevere tras el
+  // Mirador del Janículo y el día del Vaticano volvía al mismo barrio a las 19:15 a ver Piazza
+  // Trilussa y Santa Maria in Trastevere. Dos visitas al mismo barrio en días distintos.
+  //
+  // Es PREFERENTE, no absoluto (regla 1 del fix): el día del evening_block se los queda, pero si no
+  // le caben en el horario real, simplemente se quedan sin usar — igual que cualquier otro sobrante
+  // reclamado y no gastado. Y es GENERAL, no específica de Roma: cualquier evening_block futuro
+  // (Alfama en Lisboa, Plaka en Atenas) hereda la regla con solo declarar su `zone`.
+  //
+  // Excepción: si la zona del evening_block es además la zona PRINCIPAL (mañana o tarde) de otro
+  // día, manda el zone_distribution curado — ese día vive ahí, bloquearle su propia zona sería
+  // peor que la repetición que esto evita.
+  const zoneIsPrimaryElsewhere = (zone, day) =>
+    days.some((f) => f.day !== day && (f.morning?.zone === zone || f.afternoon?.zone === zone))
+  for (const franja of days) {
+    if (!franja.evening_block) continue
+    const block = destData?.evening_blocks?.find((b) => b.id === franja.evening_block)
+    if (!block?.zone || zoneIsPrimaryElsewhere(block.zone, franja.day)) continue
+    claimForZone(block.zone, franja.day, MAX_FILL_STOPS_PER_DAY)
+  }
   for (const franja of days) {
     claimForZone(franja.morning?.zone, franja.day, 1)
     claimForZone(franja.afternoon?.zone, franja.day, MAX_FILL_STOPS_PER_DAY)
@@ -1292,7 +1316,13 @@ function respectsNotBefore(place, nowMinutes) {
 // exige reserva/entrada con hora (p.ej. Galería Borghese, aforo limitado con semanas de antelación).
 // Los interiores ya asignados en zone_distribution se reservaron a mano por quien escribió el JSON;
 // esta lista es solo para lugares que un viajero puede sumar sobre la marcha sin planificar nada.
-function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Set(), nowMinutes = null) {
+// Ronda 13: `excludeMiradores` — un mirador es contenido de ATARDECER (issue G, ronda 7: la tarde
+// se lo reserva para el final del bloque con pushMiradorFillersToEnd). Como relleno de MAÑANA no
+// tiene ningún sentido y además se lo roba a la tarde, que es quien sí sabe colocarlo: encontrado de
+// verdad, Día 4 de 4 días — la nota del propio zone_distribution pide "Pincio, mirador, al final por
+// el atardecer" para la tarde y la Regla D lo colocaba a las 08:00 de la mañana, delante incluso de
+// la Galería Borghese con reserva.
+function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Set(), nowMinutes = null, excludeMiradores = false) {
   const nightConflicts = nightExperienceConflictNames(destData)
   return (destData.places ?? [])
     .filter(
@@ -1300,6 +1330,7 @@ function findLeftoverZonePlaces(destData, zone, usedNames, interestTags = new Se
         place.zone === zone &&
         place.type === 'exterior' &&
         !place.group &&
+        !(excludeMiradores && (place.tags ?? []).includes('mirador')) &&
         place.duration_minutes < MAX_FILLER_DURATION_MINUTES &&
         !usedNames.has(place.name) &&
         !nightConflicts.has(place.name) &&
@@ -1514,6 +1545,19 @@ const TRANSITION_MAX_DELAY_MINUTES = 120
 const MIRADOR_MIN_MINUTES = 18 * 60
 const MIRADOR_MAX_MINUTES = 20 * 60
 
+// Ronda 13 (hueco muerto): hueco mínimo entre llegar a la zona del evening_block y la ventana del
+// mirador para que merezca la pena intentar meter alguna parada suelta del barrio — por debajo de
+// esto no cabe nada real (la parada más corta de Roma dura 10min y hay que sumarle la caminata).
+const EVENING_ZONE_FILL_MIN_GAP_MINUTES = 25
+
+// Y cuánto puede retrasarse el mirador sobre su hora ideal (MIRADOR_MIN_MINUTES) para que quepan
+// esas paradas. Primer intento con solo SOFT_MARGIN (tope 18:20) — demasiado corto: en Roma 3 días
+// entraba Piazza Trilussa (15', nivel 3) y se quedaba fuera Santa Maria in Trastevere (20', nivel
+// 2), la basílica que da nombre al barrio, mientras el mirador acababa a las 19:10 y la cena no
+// empieza hasta las 20:30. Una hora de margen deja entrar el contenido real del barrio y mantiene
+// el mirador holgadamente dentro de su ventana (nunca pasa de MIRADOR_MAX_MINUTES).
+const EVENING_ZONE_FILL_MAX_MIRADOR_DELAY_MINUTES = 60
+
 // Ronda 7 (Issue G): un mirador (tag "mirador") elegido como RELLENO se reserva para el final del
 // bloque de tarde — se va a un mirador para el atardecer, no a las 15:00 recién empezada la tarde.
 // Solo afecta a relleno (isFiller) nunca a contenido CORE ya ordenado a mano en zone_distribution/
@@ -1715,11 +1759,75 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 
   let afternoonPlaces = filterClosed(resolvePlaceList(destData, [...coreNamesForSlot(franja, 'afternoon', extrasForDay), ...extrasForDay.afternoon], usedNames))
 
+  // Ronda 13 (Bug 1: backtracking en mañanas). La TARDE tiene desde la ronda 4/12 dos mecanismos que
+  // la mañana no tenía: orden geográfico del conjunto COMPLETO (buildGeographicOrder, cheapest-
+  // insertion sobre core + relleno) y recorte por CALIDAD con penalización por desvío (fillerScore,
+  // dentro de fitWithinCutoff). La Regla D, en cambio, añadía relleno de uno en uno por tag/nivel
+  // detrás de la última parada, sin mirar si creaba un zigzag — encontrado de verdad, Roma 3 días,
+  // Día 3: el core se quedaba en el centro y el relleno se iba luego lejos para volver al centro a
+  // comer. Estas dos funciones son el espejo exacto de buildOrderedAfternoon/fitWithinCutoff con
+  // LUNCH_CUTOFF_MINUTES como límite; reutilizan buildUnits, buildGeographicOrder y fillerScore, no
+  // duplican ninguna (fillerScore y detourMinutesFor se declaran más abajo, junto a su gemela de la
+  // tarde — son declaraciones de función, así que están disponibles aquí por hoisting).
+  async function buildOrderedMorning(corePlaces, fillerCandidates) {
+    // El CORE de la mañana conserva su orden curado y el relleno se intercala por cercanía
+    // (insertUnitByProximity, cheapest-insertion) — a diferencia de la tarde, que sí reordena todo
+    // el conjunto con buildGeographicOrder. La diferencia no es un descuido: probado sobre las 8
+    // variantes de Roma, reordenar también el core matutino rompía intenciones escritas a mano en el
+    // propio zone_distribution — Día 4 de 4 días ("Galería Borghese con reserva", una entrada con
+    // hora) se retrasaba 45 minutos, y la mañana terminaba en el extremo opuesto de la zona respecto
+    // a donde arranca la tarde. Las notas del JSON ordenan la mañana por horarios de apertura y
+    // reservas, cosas que la geometría no ve; la tarde, en cambio, no tiene esas ataduras y por eso
+    // allí sí compensa. Y el bug real que motivó esto (Roma 3 días, Día 3) era del relleno, no del
+    // core: Trevi/Panteón/Navona/Torre Argentina son las 4 paradas curadas, el zigzag lo metían los
+    // cuatro rellenos que se añadían detrás en fila india.
+    let units = buildUnits(corePlaces)
+    for (const candidate of fillerCandidates) units = insertUnitByProximity(units, { places: [candidate], isFiller: true })
+    // pushMiradorFillersToEnd NO se aplica aquí: reservar el mirador para el final del bloque es una
+    // regla de ATARDECER (issue G, ronda 7). Antes de comer no significa nada — de hecho un mirador
+    // ni siquiera llega a ser candidato de mañana, ver findLeftoverZonePlaces.
+    const order = units.flatMap((u) => u.places)
+    const scheduled = order.length ? await buildStopsForPlaces(order, morningStart, mapboxToken, freeTourClampMinutes) : []
+    return { units, order, scheduled }
+  }
+
+  /** Espejo de fitWithinCutoff: si la mañana se pasa de LUNCH_CUTOFF_MINUTES (+ margen soft), se va
+  el relleno de MENOR puntuación (fillerScore: nivel curado + duración − desvío), no el último que se
+  añadió. El core nunca se toca — si solo quedan paradas core y aun así se pasa, se devuelve tal cual. */
+  async function fitMorningWithinCutoff(corePlaces, candidates) {
+    let built = await buildOrderedMorning(corePlaces, candidates)
+    while (candidates.length > 0) {
+      const lastStop = built.scheduled[built.scheduled.length - 1]
+      const lastEnd = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : morningStart
+      if (lastEnd <= LUNCH_CUTOFF_MINUTES + SOFT_MARGIN_MINUTES) break
+      const fillers = built.units.map((unit, index) => ({ unit, index })).filter(({ unit }) => unit.isFiller)
+      if (fillers.length === 0) break
+      let worst = null
+      for (const entry of fillers) {
+        const score = await fillerScore(built.units, entry.index)
+        if (worst === null || score <= worst.score) worst = { ...entry, score }
+      }
+      candidates = candidates.filter((c) => c.name !== worst.unit.places[0].name)
+      built = await buildOrderedMorning(corePlaces, candidates)
+    }
+    return built
+  }
+
   // Regla D: una mañana de una sola visita larga (p.ej. Museos Vaticanos, acaba ~11:00) deja hueco
   // hasta la comida (13:00). 1) si la mañana pertenece a un grupo partible con preferred_split,
   // adelanta su siguiente miembro (típicamente ya listado en la tarde de hoy — se retira de ahí para
-  // no duplicarlo). 2) si sigue sobrando hueco, 1 lugar suelto de la misma zona.
-  if (morningEndMinutes < 12 * 60) {
+  // no duplicarlo). 2) si sigue sobrando hueco, lugares sueltos de la misma zona.
+  //
+  // La mañana CON Free Tour nunca entra aquí, y el guard lo hace explícito: el tour arranca clavado
+  // a las 10:00 (regla 4) y dura 150min, así que esa mañana termina a las 12:30 como pronto. Gracias
+  // a eso la Regla D puede reconstruir la mañana entera desde cero sin pisar la coreografía de la
+  // Regla B, que vive solo en `stops` (sus paradas pre-Free-Tour no están en morningPlaces).
+  if (morningEndMinutes < 12 * 60 && !stops.some((stop) => stop.is_free_tour)) {
+    // Lugares CORE reales de la mañana, en orden — la base que se reordena y sobre la que se
+    // intercala el relleno. El reparto de grupo (preferred_split) ya no programa su parada a mano:
+    // se suma a esta lista y la reconstrucción le calcula la hora con el mismo buildStopsForPlaces
+    // que al resto (mismo redondeo, mismo clamp de apertura).
+    const morningCore = [...morningPlaces]
     const groupKey = morningPlaces.find((p) => !p.isFreeTour && p.group && destData.groups?.[p.group]?.breakable_if_short && destData.groups[p.group]?.preferred_split)?.group
     if (groupKey) {
       const group = destData.groups[groupKey]
@@ -1728,20 +1836,12 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         const place = findRawPlace(destData, name)
         if (!place) continue
         afternoonPlaces = afternoonPlaces.filter((p) => p.name !== name)
-        const lastStop = stops[stops.length - 1]
-        const lastStopCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
-        let startMinutes = morningEndMinutes
-        if (lastStop && !isAdjacentByDistance(lastStopCoords, place.coordinates)) {
-          startMinutes = morningEndMinutes + (await fetchWalkingMinutes(lastStopCoords, place.coordinates, mapboxToken)) + 10
-        }
-        // Ronda 8 (issue B) + Ronda 11/12: mismo orden que buildStopsForPlaces — redondeo al cuarto
-        // más cercano primero, clamp de apertura/cierre después.
-        startMinutes = roundToNearestQuarter(startMinutes)
-        const openAt = nextOpenMinutes(place.schedule, startMinutes)
-        if (openAt != null && openAt > startMinutes) startMinutes = roundUpToQuarter(openAt)
-        stops.push(buildRegularStop(place, startMinutes))
-        morningEndMinutes = startMinutes + place.duration_minutes
+        morningCore.push(place)
         usedNames.add(name)
+      }
+      if (morningCore.length > morningPlaces.length) {
+        stops = await buildStopsForPlaces(morningCore, morningStart, mapboxToken, freeTourClampMinutes)
+        morningEndMinutes = timeToMinutes(stops[stops.length - 1].suggested_time) + stops[stops.length - 1].duration_minutes
       }
     }
     // Ronda 8 (issues C/D, refinado en 8B): si la tarde es la MISMA zona PEQUEÑA que la mañana
@@ -1765,10 +1865,33 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // patrón: sigue añadiendo candidatos de la zona hasta LUNCH_CUTOFF_MINUTES (12:30, deja margen real
     // antes de comer) o hasta agotar candidatos — nunca se para en seco tras el primero.
     if (morningEndMinutes < 12 * 60 && franja.morning?.zone && !(franja.morning.zone === franja.afternoon?.zone && morningZoneIsSmall)) {
-      const lastStop = stops[stops.length - 1]
-      const previousCoords = lastStop ? [lastStop.latitude, lastStop.longitude] : null
-      const candidates = findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes)
-      morningEndMinutes = await fillStopsUntil(stops, candidates, morningEndMinutes, previousCoords, mapboxToken, usedNames, (c) => c >= LUNCH_CUTOFF_MINUTES)
+      // La recolección ya no se corta por número de paradas sino por TIEMPO disponible hasta la
+      // comida, igual que la tarde desde la ronda 12 (5 rellenos son 75 minutos si son plazas y 5
+      // horas si son museos). fitMorningWithinCutoff decide después, ya con el orden geográfico
+      // montado y caminatas reales de Mapbox, cuáles caben de verdad.
+      let budgetMinutes = LUNCH_CUTOFF_MINUTES + SOFT_MARGIN_MINUTES - morningEndMinutes
+      const fillerCandidates = []
+      for (const candidate of findLeftoverZonePlaces(destData, franja.morning.zone, usedNames, interestTags, morningEndMinutes, true)) {
+        if (fillerCandidates.length >= FILLER_SAFETY_MAX_STOPS) break
+        const cost = candidate.duration_minutes + FILLER_TRANSIT_ESTIMATE_MINUTES
+        // `continue`, no `break`: que no quepa una visita de 60' no significa que no quepa la plaza
+        // de 10' que viene detrás.
+        if (cost > budgetMinutes) continue
+        fillerCandidates.push(candidate)
+        usedNames.add(candidate.name)
+        budgetMinutes -= cost
+      }
+      if (fillerCandidates.length > 0) {
+        const built = await fitMorningWithinCutoff(morningCore, fillerCandidates)
+        // Los candidatos que fitMorningWithinCutoff acabó descartando vuelven a estar libres — sin
+        // esto quedarían marcados como usados sin aparecer en ninguna parte del viaje.
+        for (const candidate of fillerCandidates) {
+          if (!built.order.some((p) => p.name === candidate.name)) usedNames.delete(candidate.name)
+        }
+        stops = built.scheduled
+        const lastStop = stops[stops.length - 1]
+        morningEndMinutes = lastStop ? timeToMinutes(lastStop.suggested_time) + lastStop.duration_minutes : morningEndMinutes
+      }
     }
   }
 
@@ -1969,6 +2092,51 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // Fallback al centro de la zona solo por si un destino futuro no trae coordenadas por
     // componente (la propia Roma corregida sí las trae ya, ver roma_pipeline_v2_fixed.json).
     const fallbackCoords = destData.zones?.[eveningBlockData.zone]?.center
+
+    // Ronda 13 (hueco muerto, hermano del zone locking de planFillerOwnership): un evening_block era
+    // una secuencia CERRADA — no entraba nada entre sus componentes ni antes de ellos. Con un
+    // mirador de primer componente eso deja un agujero real: encontrado de verdad, Roma 3 días, Día
+    // 1 — Circo Máximo acaba a las 17:35, el Mirador del Janículo no arranca hasta las 18:15
+    // (ventana de atardecer), y en medio 40 minutos en los que el viajero ya está en Trastevere sin
+    // nada que ver. Ahora las paradas sueltas de la PROPIA zona del bloque (las que el zone locking
+    // acaba de reservar para este día) se insertan en ese hueco.
+    //
+    // Van ANTES del mirador, nunca después: el orden natural de un barrio con mirador al atardecer
+    // es recorrerlo, subir para el sunset y bajar a cenar — después del mirador solo se baja a cenar.
+    // El mirador conserva su ventana 18:00-20:00 intocable (ver MIRADOR_MIN/MAX_MINUTES); el relleno
+    // solo puede llegar hasta MIRADOR_MIN + margen soft, así que como mucho retrasa el atardecer unos
+    // minutos, nunca lo empuja fuera de hora. Solo la zona del propio bloque, nunca zonas vecinas.
+    // Si no queda ninguna parada disponible, el bloque se construye exactamente como antes.
+    const firstComponent = (eveningBlockData.components ?? [])[0]
+    const firstIsMirador = Boolean(firstComponent) && (findRawPlace(destData, firstComponent.name)?.tags ?? []).includes('mirador')
+    const zoneFillTarget = Math.min(MIRADOR_MIN_MINUTES + EVENING_ZONE_FILL_MAX_MIRADOR_DELAY_MINUTES, MIRADOR_MAX_MINUTES)
+    if (firstIsMirador && eveningBlockData.zone && zoneFillTarget - cursor >= EVENING_ZONE_FILL_MIN_GAP_MINUTES) {
+      // Orden geográfico como CAMINO entre dos extremos fijos — de dónde viene el viajero
+      // (previousCoords) hasta el mirador — con el mismo cheapest-insertion que usa la tarde, para
+      // que las paradas queden de camino cuesta arriba y no obliguen a bajar y volver a subir.
+      const originUnit = { places: [{ name: '__origen__', coordinates: previousCoords }] }
+      const miradorUnit = { places: [{ name: firstComponent.name, coordinates: firstComponent.coordinates ?? fallbackCoords }] }
+      let path = previousCoords ? [originUnit, miradorUnit] : [miradorUnit]
+      for (const unit of buildUnits(findLeftoverZonePlaces(destData, eveningBlockData.zone, usedNames, interestTags, cursor))) {
+        path = insertUnitByProximity(path, unit)
+      }
+      for (const place of path.filter((u) => u !== originUnit && u !== miradorUnit).flatMap((u) => u.places)) {
+        let startMinutes = cursor
+        if (previousCoords) startMinutes = cursor + (await fetchWalkingMinutes(previousCoords, place.coordinates, mapboxToken)) + 10
+        startMinutes = roundToNearestQuarter(startMinutes)
+        if (startMinutes < cursor) startMinutes = roundUpToQuarter(cursor)
+        const openAt = nextOpenMinutes(place.schedule, startMinutes)
+        if (openAt != null && openAt > startMinutes) startMinutes = roundUpToQuarter(openAt)
+        // `continue`, no `break`: que no quepa una visita de 45' no significa que no quepa la plaza
+        // de 15' que viene detrás — mismo criterio que el presupuesto de relleno de la tarde.
+        if (startMinutes + place.duration_minutes > zoneFillTarget) continue
+        stops.push(buildRegularStop(place, startMinutes))
+        cursor = startMinutes + place.duration_minutes
+        previousCoords = place.coordinates
+        usedNames.add(place.name)
+      }
+    }
+
     for (const component of eveningBlockData.components ?? []) {
       const coords = component.coordinates ?? fallbackCoords
       if (/cena/i.test(component.name)) {
