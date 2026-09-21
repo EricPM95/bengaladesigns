@@ -13,8 +13,10 @@ import {
   buildSkeletonV2,
   buildDayPlacesV2,
   buildDayBlockV2,
-  getDayType,
+  getDayConfig,
   excursionOptionsFor,
+  topExcursions,
+  curatedRoutePreview,
   buildExcursionDayV2,
   buildManualDayV2,
 } from './routeAlgorithm.js'
@@ -4276,8 +4278,8 @@ function logGeographicCoherence(day) {
  * Los precios y valoraciones son PLACEHOLDER hasta que se integren las APIs de afiliados — por eso
  * viajan con ese nombre desde el JSON, para que nadie los confunda con datos reales.
  */
-function excursionsAvailablePayload(destData, dayNumber) {
-  return excursionOptionsFor(destData).map((option) => ({
+function excursionsAvailablePayload(destData, dayNumber, options) {
+  return (options ?? excursionOptionsFor(destData)).map((option) => ({
     id: option.id,
     name: option.name,
     duration: option.type === 'half_day' ? 'half_day' : 'full_day',
@@ -4320,16 +4322,24 @@ app.post('/api/generate-day-block', async (req, res) => {
   // pedirle nada a la IA, que es justo donde antes se le pedía más y peor.
   if (pipelineV2Data && blockDayNumbers.length === 1) {
     const dayNumber = blockDayNumbers[0]
-    const dayType = getDayType(dayNumber, pipelineV2Data)
+    const totalDaysForConfig = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : dayNumber
+    const dayConfig = getDayConfig(dayNumber, pipelineV2Data)
 
-    if (dayType === 'excursion') {
+    if (dayConfig.type === 'excursion') {
       const day = buildExcursionDayV2(pipelineV2Data, dayNumber)
-      console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día de EXCURSIÓN (${day.excursion_options.length} opciones), sin llamada a Claude`)
+      day.excursion_prominence = dayConfig.excursionProminence
+      // Regla 3: la ruta curada NUNCA se pierde. Si este día tenía una escrita a mano, viaja como
+      // alternativa ("tenemos una ruta preparada") con un adelanto de lo que contiene, para que
+      // volver a ella sea un toque y no una pérdida silenciosa.
+      day.curated_alternative = curatedRoutePreview(pipelineV2Data, totalDaysForConfig, hasFreeTourFromAnswers(answers), dayNumber)
+      console.log(
+        `[pipeline-v2] "${destination}" día ${dayNumber} — día de EXCURSIÓN (${day.excursion_options.length} opciones${day.curated_alternative ? ', con ruta curada de alternativa' : ''}), sin llamada a Claude`,
+      )
       res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber) })
       return
     }
 
-    if (dayType === 'manual') {
+    if (dayConfig.type === 'manual') {
       console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día LIBRE (lo monta el viajero), sin llamada a Claude`)
       // Las excursiones viajan igual: un día libre ofrece "buscar excursiones" como una de sus dos
       // salidas, y necesita el catálogo para enseñarlo sin pedir nada más.
@@ -4355,7 +4365,14 @@ app.post('/api/generate-day-block', async (req, res) => {
       if (dayBlockV2) {
         // 'smart_route' es una ruta normal marcada: mismas paradas reales, pero el cliente sabe que
         // es el día "de propina" tras la excursión y ofrece convertirlo igual que los demás.
-        if (getDayType(blockDayNumbers[0], pipelineV2Data) === 'smart_route') dayBlockV2.type = 'smart_route'
+        const dayConfig = getDayConfig(blockDayNumbers[0], pipelineV2Data)
+        if (dayConfig.type === 'smart_route') dayBlockV2.type = 'smart_route'
+        dayBlockV2.excursion_prominence = dayConfig.excursionProminence
+        // Solo los días prominentes llevan las destacadas: en los sutiles el banner no existe y
+        // mandarlas sería peso muerto en la respuesta.
+        if (dayConfig.excursionProminence === 'prominent') {
+          dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3))
+        }
         console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)
         res.json({
           days: [dayBlockV2],

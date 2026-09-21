@@ -2258,20 +2258,60 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
 // Un destino sin sección `excursions` genera días normales siempre, exactamente como antes.
 
 /**
- * Qué propone el algoritmo para este día: 'normal' (ruta de zonas de siempre), 'excursion' (salir
- * de la ciudad), 'smart_route' (ruta ampliada que puede repetir imprescindibles ya vistos) o
- * 'manual' (día en blanco que monta el viajero).
+ * Qué propone el algoritmo para este día, en dos ejes:
+ *
+ * `type` — 'normal' (ruta de zonas de siempre), 'excursion' (el día ES la excursión),
+ * 'smart_route' (ruta ampliada que puede repetir imprescindibles) o 'manual' (día en blanco).
+ *
+ * `excursionProminence` — cuánto se ve la opción de salir de la ciudad: 'subtle' (un link al final,
+ * que no estorbe al 90% que no lo necesita), 'prominent' (banner con 2-3 excursiones ENCIMA de la
+ * ruta, sin quitarla) o 'primary' (las excursiones son el contenido). La gradación importa: saltar
+ * de no ofrecer nada a un día entero de excursión es justo lo que hacía perder contenido curado.
+ *
+ * Un destino sin sección `excursions` genera días normales sin ningún botón de excursión.
  */
-export function getDayType(dayNumber, destData) {
+export function getDayConfig(dayNumber, destData) {
   const excursions = destData?.excursions
-  if (!excursions?.options?.length) return 'normal'
+  if (!excursions?.options?.length) return { type: 'normal', excursionProminence: 'none' }
   const pattern = excursions.day_pattern ?? {}
 
-  // El día de vuelta a casa nunca se propone como excursión ni como día libre: ya tiene dueño.
-  if (typeof pattern.manual_from === 'number' && dayNumber >= pattern.manual_from) return 'manual'
-  if (dayNumber === pattern.first_excursion) return 'excursion'
-  if (pattern.smart_route_after && dayNumber === pattern.first_excursion + 1) return 'smart_route'
-  return 'normal'
+  if (typeof pattern.manual_from === 'number' && dayNumber >= pattern.manual_from) {
+    return { type: 'manual', excursionProminence: 'none' }
+  }
+  if (dayNumber === pattern.first_excursion) {
+    return { type: 'excursion', excursionProminence: 'primary' }
+  }
+  if (pattern.smart_route_after && dayNumber === pattern.first_excursion + 1) {
+    return { type: 'smart_route', excursionProminence: 'prominent' }
+  }
+  if (typeof pattern.prominent_from === 'number' && dayNumber >= pattern.prominent_from) {
+    return { type: 'normal', excursionProminence: 'prominent' }
+  }
+  return { type: 'normal', excursionProminence: 'subtle' }
+}
+
+/** Las mejor valoradas para el banner de un día prominente — ahí solo caben 2-3 y tienen que ser
+    las que más convenzan, no las primeras del JSON. Se eligen DENTRO de las que luego enseña "Ver
+    todas" (excursionOptionsFor): anunciar en el banner una excursión que no aparece al abrir la
+    lista es una promesa rota, aunque tenga mejor nota. */
+export function topExcursions(destData, count = 3) {
+  return [...excursionOptionsFor(destData)]
+    .sort((a, b) => (b.placeholder_rating ?? 0) - (a.placeholder_rating ?? 0))
+    .slice(0, count)
+}
+
+/**
+ * ¿Hay ruta curada escrita a mano para este día? Un día de excursión pura la ofrece como
+ * alternativa ("tenemos una ruta preparada") en vez de hacerla desaparecer — regla 3 del fix: la
+ * ruta curada nunca se pierde. Devuelve también los primeros lugares, para el preview del banner.
+ */
+export function curatedRoutePreview(destData, totalDays, hasFreeTour, dayNumber, count = 3) {
+  const variant = destData?.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
+  const franja = variant?.franjas?.find((f) => f.day === dayNumber)
+  if (!franja) return null
+  const places = [...(franja.morning?.places ?? []), ...(franja.afternoon?.places ?? [])].filter((name) => !name.startsWith('Free Tour'))
+  if (places.length === 0) return null
+  return { title: buildDayTitle(franja, destData), places: places.slice(0, count) }
 }
 
 /** Las excursiones que se le enseñan al viajero — `max_display` primeras, en el orden del JSON, que
