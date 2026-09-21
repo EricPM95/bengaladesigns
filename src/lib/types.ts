@@ -218,6 +218,13 @@ export interface Stop {
   durationMinutes: number
   coordinates: Coordinates
   photoUrl: string
+  /**
+   * Prompt 6 — esto no es una visita, es un paseo por la zona sugerido para tapar un hueco hasta la
+   * cena. Se pinta distinto (icono de paseo, sin ficha ampliada, con botón de quitar), no lleva pin
+   * en el mapa ni entra en la línea del día, y no cuenta como lugar visitado. Ver `zone_walks` en
+   * el JSON del destino y buildZoneWalkStop en routeAlgorithm.js.
+   */
+  isZoneWalk?: boolean
   /** Artículo de Wikipedia del que sacar la foto real, con prefijo de idioma opcional
       ("en:Colosseum") — solo lo traen los lugares donde la búsqueda por nombre falla, ver
       placePhoto.ts y `wikipedia_title` en data/pipeline_v2/<destino>.json. */

@@ -27,6 +27,7 @@ import { StopsMapView } from '../../map/StopsMapView'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { dinnerWindowFor } from '../../../lib/todayMode'
 import { CuratedAlternativeBanner, ExcursionBanner, ExcursionLink, ExcursionOptions, ManualDayLink, ManualDayOptions } from './ExcursionBlocks'
+import { ZoneWalkCard } from './ZoneWalkCard'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
@@ -253,6 +254,10 @@ export function DayDetailPanel({
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
+  // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
+  // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
+  // parada real: no está en day.stops del store, lo añade el servidor al generar.
+  const [dismissedWalks, setDismissedWalks] = useState<Set<string>>(new Set())
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const route = useRouteStore((state) => state.route)
   const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
@@ -364,7 +369,14 @@ export function DayDetailPanel({
         : { hasRealDisplacement: false, label: 'Fin del día.' }
       : null
 
-  const totalWalkMeters = connectorEntries.reduce((sum, entry) => sum + (entry.connector.meters ?? 0), 0) + (finalConnector?.meters ?? 0)
+  // Prompt 6: un paseo por barrio es una sugerencia para un hueco, no un lugar que el viaje
+  // incluya — no se cuenta ni en "N paradas" ni en el mapa (ver realStops en routeMapMarkers.ts).
+  const visitCount = stops.reduce((count, _stop, index) => (realStops[index]?.isZoneWalk ? count : count + 1), 0)
+  // Los metros hasta el paseo tampoco cuentan: su conector ni siquiera se pinta (no se va a un
+  // barrio, se pasea por él), así que sumarlos falsearía el "a pie" de la cabecera.
+  const totalWalkMeters =
+    connectorEntries.reduce((sum, entry, index) => (realStops[index]?.isZoneWalk ? sum : sum + (entry.connector.meters ?? 0)), 0) +
+    (finalConnector?.meters ?? 0)
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
   // Ronda 9 (Mejora 1A/1C): "solo este día" es la vista por defecto (marcadores + línea de ruta de
   // este día únicamente, mismo color que su círculo numerado) — "Ver todo" cambia a todos los días
@@ -630,7 +642,7 @@ export function DayDetailPanel({
           <div className={`mt-2.5 mb-4 items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft ${showsRoute && stops.length > 0 ? 'flex' : 'hidden'}`}>
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
               <SummaryPinIcon className="text-accent-hover" />
-              {stops.length} parada{stops.length === 1 ? '' : 's'}
+              {visitCount} parada{visitCount === 1 ? '' : 's'}
             </span>
             <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
@@ -709,7 +721,10 @@ export function DayDetailPanel({
             // la ruta empieza directamente en el lugar 1. SÍ se muestra cuando el conector es real
             // (viene del alojamiento de anoche, con distancia/tiempo real) — ese es información útil,
             // no relleno.
-            const showConnector = index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
+            // El paseo por barrio no lleva conector: "6 min · 540 m" hasta un barrio entero no
+            // significa nada — el paseo empieza donde acabó la parada anterior.
+            const showConnector = realStops[index]?.isZoneWalk ? false : index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
+            const walkDismissed = Boolean(realStops[index]?.isZoneWalk) && dismissedWalks.has(stop.name)
             const showLunchAccordion = lunchInsertionIndex === index
             const showDinnerAccordion = dinnerInsertionIndex === index
 
@@ -735,17 +750,29 @@ export function DayDetailPanel({
                     </p>
                   )}
                   {/* El hueco SIEMPRE se pinta; `showConnector` decide solo si además lleva la
-                      información de desplazamiento (ver renderGap). */}
-                  {renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index)}
-                  <StopAccordion
-                    index={index}
-                    stop={stop}
-                    circleBg={stopCircleBg}
-                    circleText={stopCircleText}
-                    startTime={minutesToTime(startMinutes)}
-                    onOpen={() => setDetailIndex(index)}
-                    menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
-                  />
+                      información de desplazamiento (ver renderGap). Única excepción: un paseo que el
+                      viajero ya ha quitado no deja ni rastro — ni tarjeta ni su "+ Añadir parada",
+                      que si no quedarían dos seguidos. */}
+                  {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index)}
+                  {realStops[index]?.isZoneWalk ? (
+                    walkDismissed ? null : (
+                      <ZoneWalkCard
+                        stop={stop}
+                        startTime={minutesToTime(startMinutes)}
+                        onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))}
+                      />
+                    )
+                  ) : (
+                    <StopAccordion
+                      index={index}
+                      stop={stop}
+                      circleBg={stopCircleBg}
+                      circleText={stopCircleText}
+                      startTime={minutesToTime(startMinutes)}
+                      onOpen={() => setDetailIndex(index)}
+                      menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
+                    />
+                  )}
                 </div>
                 {showLunchAccordion && (
                   <>
