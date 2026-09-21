@@ -74,6 +74,45 @@ export function buildSingleDayMarkers(day: DayPlan, dayIndex: number): StopsMapM
   }))
 }
 
+/**
+ * Prompt 4 — mapa de un día de EXCURSIÓN. Sin excursión elegida, un único pin genérico sobre la
+ * ciudad base: el día todavía no va a ninguna parte concreta. Con una elegida, el pin del destino
+ * real (Pompeya, Tívoli…) además del de la ciudad, para que se vea de un vistazo lo lejos que cae.
+ */
+export function buildExcursionDayMarkers(dayId: string, dayIndex: number, base: Coordinates | null, destination: { name: string; coordinates: Coordinates } | null): StopsMapMarker[] {
+  const markers: StopsMapMarker[] = []
+  if (base) {
+    markers.push({
+      id: `${dayId}-base`,
+      name: 'Punto de partida',
+      coordinates: base,
+      number: 0,
+      icon: destination ? '🏠' : '🚌',
+      bg: dayColorPastel(dayIndex),
+      text: dayColorStrong(dayIndex),
+      small: true,
+    })
+  }
+  if (destination) {
+    markers.push({
+      id: `${dayId}-excursion`,
+      name: destination.name,
+      coordinates: destination.coordinates,
+      number: 0,
+      icon: '📍',
+      bg: dayColor(dayIndex),
+      text: '#FFFFFF',
+    })
+  }
+  return markers
+}
+
+/** El trayecto de ida a la excursión, punteado: no es un recorrido a pie, es un desplazamiento. */
+export function buildExcursionDayLines(dayId: string, dayIndex: number, base: Coordinates | null, destinationCoords: Coordinates | null): StopsMapMarkerLine[] {
+  if (!base || !destinationCoords) return []
+  return [{ id: `${dayId}-excursion-line`, coordinates: [base, destinationCoords], color: dayColor(dayIndex), width: 2, dashed: true }]
+}
+
 /** Línea recta uniendo las paradas de un día en orden — ver `buildSingleDayMarkers`. */
 export function buildSingleDayLine(day: DayPlan, dayIndex: number): StopsMapMarkerLine[] {
   const coordinates = realStops(day).map((stop) => stop.coordinates)

@@ -4,7 +4,14 @@ import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
-import { buildCombinedDaysLines, buildCombinedDaysMarkers, buildSingleDayLine, buildSingleDayMarkers } from '../../../lib/routeMapMarkers'
+import {
+  buildCombinedDaysLines,
+  buildCombinedDaysMarkers,
+  buildExcursionDayLines,
+  buildExcursionDayMarkers,
+  buildSingleDayLine,
+  buildSingleDayMarkers,
+} from '../../../lib/routeMapMarkers'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour } from '../../../lib/time'
 import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
@@ -17,6 +24,7 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
+import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { CuratedAlternativeBanner, ExcursionBanner, ExcursionLink, ExcursionOptions, ManualDayLink, ManualDayOptions } from './ExcursionBlocks'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
@@ -362,7 +370,7 @@ export function DayDetailPanel({
   // este día únicamente, mismo color que su círculo numerado) — "Ver todo" cambia a todos los días
   // a la vez, con el activo a opacidad completa y el resto atenuado (BLOQUE B, feedback de calidad:
   // "el mapa solo marca un lugar" — sigue disponible, ahora es opcional en vez de forzoso).
-  const dayMarkers = showAllDaysOnMap ? buildCombinedDaysMarkers(route?.days ?? [day], day.id) : buildSingleDayMarkers(day, dayIndex)
+  const routeDayMarkers = showAllDaysOnMap ? buildCombinedDaysMarkers(route?.days ?? [day], day.id) : buildSingleDayMarkers(day, dayIndex)
   // Catálogo curado de la ciudad (solo se pide cuando se abre el "+"): si lo hay, "Añadir parada" es
   // la pantalla nueva de lugares del destino; si no, sigue siendo el buscador de POIs de Mapbox de
   // siempre, que funciona en cualquier ciudad aunque no tengamos JSON escrito para ella.
@@ -386,7 +394,7 @@ export function DayDetailPanel({
     setInsertAt(null)
     setAddStopInitialQuery(undefined)
   }
-  const dayMapLines = showAllDaysOnMap ? buildCombinedDaysLines(route?.days ?? [day], day.id) : buildSingleDayLine(day, dayIndex)
+  const routeDayLines = showAllDaysOnMap ? buildCombinedDaysLines(route?.days ?? [day], day.id) : buildSingleDayLine(day, dayIndex)
 
   // Hora real de inicio de cada parada: si el día ya tiene paradas REALES (editadas a mano o
   // generadas por IA, day.stops.length > 0), cada una trae su propia `time` fiable — real
@@ -517,6 +525,29 @@ export function DayDetailPanel({
   const excursionOptions = day.excursions ?? []
   const convertDay = (next: typeof dayType) => convertDayType(day.id, next)
 
+  // ── El mapa se adapta al tipo de día ────────────────────────────────────────────────────────
+  // La ciudad base es la primera parada real que tenga el viaje en esta ciudad: un día de excursión
+  // o un día libre no tienen paradas propias de las que sacar el centro, pero el mapa tiene que
+  // enseñar algo mejor que "Mapa no disponible".
+  const cityBaseCoords =
+    (route?.days ?? [day])
+      .filter((candidate) => candidate.city === day.city)
+      .flatMap((candidate) => candidate.stops)
+      .find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates ?? null
+
+  const selectedExcursion = dayType === 'excursion' ? (excursionOptions.find((option) => option.id === day.selectedExcursionId) ?? null) : null
+  const excursionTarget =
+    selectedExcursion?.destinationCoords && hasRealCoordinates(selectedExcursion.destinationCoords)
+      ? { name: selectedExcursion.title, coordinates: selectedExcursion.destinationCoords }
+      : null
+
+  const dayMarkers =
+    dayType === 'excursion' ? buildExcursionDayMarkers(day.id, dayIndex, cityBaseCoords, excursionTarget) : routeDayMarkers
+  const dayMapLines =
+    dayType === 'excursion' ? buildExcursionDayLines(day.id, dayIndex, cityBaseCoords, excursionTarget?.coordinates ?? null) : routeDayLines
+  // Un día libre sin montar no tiene pines: el mapa enseña la ciudad y ya.
+  const dayMapCenter = dayMarkers.length === 0 ? cityBaseCoords : null
+
   return (
     <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
       {mapCollapsed || mapHiddenBySheet ? (
@@ -542,7 +573,7 @@ export function DayDetailPanel({
         </div>
       ) : (
         <div className="relative shrink-0" style={{ height: `${mapVh}vh` }}>
-          <StopsMapView markers={dayMarkers} lines={dayMapLines} />
+          <StopsMapView markers={dayMarkers} lines={dayMapLines} center={dayMapCenter} />
           <button
             type="button"
             onClick={onBack}

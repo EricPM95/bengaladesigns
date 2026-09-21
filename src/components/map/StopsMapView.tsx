@@ -45,12 +45,18 @@ export interface StopsMapMarkerLine {
   color: string
   opacity?: number
   width?: number
+  /** Trazo discontinuo — para un trayecto que no se recorre a pie parada a parada, como la ida a una
+      excursión fuera de la ciudad (Prompt 4). La línea continua significa "este es tu recorrido". */
+  dashed?: boolean
 }
 
 interface StopsMapViewProps {
   markers: StopsMapMarker[]
   /** Líneas rectas conectando paradas en orden — una por día. Vacío/omitido = sin líneas (comportamiento previo). */
   lines?: StopsMapMarkerLine[]
+  /** Dónde centrar el mapa cuando NO hay marcadores. Sin esto, un mapa sin pines no se pinta (ver el
+      early return de abajo) — y un día libre vacío tiene que poder enseñar la ciudad igualmente. */
+  center?: Coordinates | null
   activeStopId?: string | null
   onSelectStop?: (stopId: string) => void
   /**
@@ -73,7 +79,7 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -89,18 +95,21 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}:${marker.small ? 's' : 'n'}`,
     )
     .join('|')
+  const centerKey = center ? `${center.lat.toFixed(4)},${center.lng.toFixed(4)}` : ''
   const linesKey = lines
     .map((line) => `${line.id}:${line.color}:${line.opacity ?? 1}:${line.width ?? 3}:${line.coordinates.map((c) => `${c.lat.toFixed(5)},${c.lng.toFixed(5)}`).join(',')}`)
     .join('|')
 
   useEffect(() => {
-    if (!containerRef.current || markers.length === 0) return
+    if (!containerRef.current) return
+    const origin = markers[0]?.coordinates ?? center
+    if (!origin) return
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [markers[0].coordinates.lng, markers[0].coordinates.lat],
-      zoom: 14,
+      center: [origin.lng, origin.lat],
+      zoom: markers.length === 0 ? 12 : 14,
     })
     mapRef.current = map
     innerElsRef.current = new Map()
@@ -135,7 +144,12 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
           type: 'line',
           source: sourceId,
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': line.color, 'line-width': line.width ?? 3, 'line-opacity': line.opacity ?? 1 },
+          paint: {
+            'line-color': line.color,
+            'line-width': line.width ?? 3,
+            'line-opacity': line.opacity ?? 1,
+            ...(line.dashed ? { 'line-dasharray': [2, 2] } : {}),
+          },
         })
       })
 
@@ -218,7 +232,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       map.remove()
       mapRef.current = null
     }
-  }, [markersKey, linesKey])
+  }, [markersKey, linesKey, centerKey])
 
   // Un único efecto manda sobre el aspecto del pin — si el "activo" y el "oculto" escribieran cada
   // uno su propio transform sobre el mismo elemento, el último en correr borraría al otro.
@@ -254,7 +268,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStopId, flyToActiveStop, markersKey])
 
-  if (markers.length === 0) {
+  if (markers.length === 0 && !center) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-bg-card">
         <p className="text-small text-text-muted">Mapa no disponible</p>
