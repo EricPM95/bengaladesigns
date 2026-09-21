@@ -61,10 +61,28 @@ const supabaseAdmin = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl,
 // nada y no hace nada, no borra lo que Vercel ya haya puesto en process.env). Este log confirma en
 // el arranque (frío o local) si la clave llegó, sin imprimir el valor real — compara los últimos 4
 // caracteres con los de la clave que pegaste en el dashboard de Vercel si algo falla ahí.
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.warn('Falta ANTHROPIC_API_KEY — revisa .env.local en desarrollo, o Project Settings → Environment Variables en Vercel (asegúrate de marcar "Production"). Los endpoints de IA devolverán error 500.')
-} else {
-  console.log(`ANTHROPIC_API_KEY detectada (termina en …${process.env.ANTHROPIC_API_KEY.slice(-4)}, longitud ${process.env.ANTHROPIC_API_KEY.length}).`)
+// Todas las variables que necesita el servidor, no solo la de Anthropic: una que falte en Vercel
+// degrada en SILENCIO (sin fotos de Unsplash, sin caché, sin tiempos a pie reales) y el síntoma
+// aparece lejos de la causa. Este bloque lo deja escrito en los Runtime Logs del arranque en frío.
+//
+// Ojo con las VITE_*: en este proyecto las lee TAMBIÉN el servidor (Supabase y Mapbox), así que
+// tienen que existir en Vercel aunque su prefijo sugiera que son solo del cliente.
+const VARIABLES_SERVIDOR = [
+  { nombre: 'ANTHROPIC_API_KEY', sinElla: 'los endpoints de IA devuelven error 500' },
+  { nombre: 'UNSPLASH_ACCESS_KEY', sinElla: 'las fotos caen directamente a Wikipedia, sin pasar por Unsplash' },
+  { nombre: 'VITE_SUPABASE_URL', sinElla: 'no hay caché compartida ni viajes guardados' },
+  { nombre: 'VITE_SUPABASE_ANON_KEY', sinElla: 'no hay caché compartida ni viajes guardados' },
+  { nombre: 'VITE_MAPBOX_TOKEN', sinElla: 'las rutas usan 15 min a pie por defecto en vez de tiempos reales' },
+]
+
+for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
+  const valor = process.env[nombre]
+  if (!valor) {
+    console.warn(`Falta ${nombre} — ${sinElla}. Revisa .env.local en local, o Project Settings → Environment Variables en Vercel (marca "Production").`)
+  } else {
+    // Nunca el valor entero: los últimos 4 caracteres bastan para compararlo con el del dashboard.
+    console.log(`${nombre} detectada (termina en …${valor.slice(-4)}, longitud ${valor.length}).`)
+  }
 }
 
 const anthropic = new Anthropic()
