@@ -73,8 +73,9 @@ node server/engine/__tests__/compararMotores.mjs 6 tranquilo
 node server/engine/__tests__/compararMotores.mjs 3 nonstop "Galería Borghese"
 ```
 
-Para que la app entera use el nuevo: `ROUTE_ENGINE=nuevo` en `.env.local` y reiniciar el servidor.
-Para una sola petición, `"engine": "nuevo"` en el cuerpo de `/api/generate-day-block`.
+**El motor nuevo es el que manda por defecto.** Para volver al viejo: `ROUTE_ENGINE=viejo` en
+`.env.local` y reiniciar, o `"engine": "viejo"` en el cuerpo de `/api/generate-day-block` para una
+sola petición. Volver atrás no necesita despliegue.
 
 Primeros números sobre Roma 4 días, ritmo completo: **34 paradas el viejo frente a 29 el nuevo**
 (menos relleno compulsivo, que es lo que se buscaba) y **13 horas sueltas frente a 0**. En 6 días el

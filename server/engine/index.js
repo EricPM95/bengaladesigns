@@ -3,11 +3,11 @@
  * la app no se entere de cuál de los dos la ha servido. Es lo que permite comparar los dos motores
  * sobre la misma ruta antes de tocar el interruptor.
  *
- *   ROUTE_ENGINE=nuevo   en .env.local  → todas las rutas usan el motor nuevo
- *   { "engine": "nuevo" } en el cuerpo  → solo esa petición, para comparar sin reiniciar
+ * El motor nuevo es el que manda por defecto. La bandera se queda para poder volver atrás y para
+ * seguir comparando los dos sobre la misma ruta:
  *
- * Por defecto sigue mandando el motor viejo: mientras el nuevo no esté validado en rutas reales,
- * cambiar el defecto sería decidir por el viajero.
+ *   ROUTE_ENGINE=viejo    en .env.local  → todas las rutas vuelven al motor viejo
+ *   { "engine": "viejo" } en el cuerpo   → solo esa petición, para comparar sin reiniciar
  *
  * Una diferencia que sí se nota: este motor NO tiene tope de 5 días. El viejo devuelve null por
  * encima de esa duración y el día cae en una llamada a Claude (~60-70s y dinero); este los reparte
@@ -18,10 +18,17 @@ import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 
-/** Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno. */
+/**
+ * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
+ * ambos manda el nuevo.
+ *
+ * El defecto se cambió después de comprobar que la salida del motor nuevo es un SUPERCONJUNTO de la
+ * del viejo: mismo formato, ningún campo menos, dos de más (`dinner_zone`, `is_revisit`). Volver
+ * atrás no necesita un despliegue, solo `ROUTE_ENGINE=viejo`.
+ */
 export function engineFor(requestEngine) {
   const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
-  return choice === 'nuevo' || choice === 'v3' || choice === 'new' ? 'nuevo' : 'viejo'
+  return choice === 'viejo' || choice === 'v2' || choice === 'old' ? 'viejo' : 'nuevo'
 }
 
 /**
