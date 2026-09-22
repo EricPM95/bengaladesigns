@@ -114,6 +114,8 @@ export interface GeneratedDay {
   excursion_essential?: boolean
   /** Ver DayPlan.excursionProminence. */
   excursion_prominence?: string
+  excursion_preselected?: string
+  excursion_social_proof?: string | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -498,7 +500,11 @@ function mapDay(
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
     dayType: asDayType(generated.type),
-    selectedExcursionId: null,
+    // La preseleccionada entra YA elegida: el día de excursión no es un formulario en blanco, es
+    // una propuesta concreta que el viajero acepta, cambia o rechaza.
+    selectedExcursionId: generated.excursion_preselected ?? null,
+    excursionPreselectedId: generated.excursion_preselected ?? null,
+    excursionSocialProof: generated.excursion_social_proof ?? null,
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,

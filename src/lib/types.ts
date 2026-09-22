@@ -491,6 +491,12 @@ export interface DayPlan {
   excursionHighlights?: Excursion[]
   /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
   curatedAlternative?: CuratedAlternative | null
+  /** Excursión que el motor deja ya marcada en un día de excursión — la más popular del destino. */
+  excursionPreselectedId?: string | null
+  /** Frase de prueba social del destino, del JSON. Ver destination_config. */
+  excursionSocialProof?: string | null
+  /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
+  excursionDeclined?: boolean
   /**
    * Foto de las paradas de este día ANTES de convertirlo en excursión o día libre. Existe para que
    * "el algoritmo propone, el viajero dispone" no cueste contenido: volver a la ruta es restaurar

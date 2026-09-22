@@ -643,6 +643,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             stopsBeforeConversion: snapshot,
             // Al dejar de ser excursión, la elección deja de tener sentido.
             selectedExcursionId: dayType === 'excursion' ? (day.selectedExcursionId ?? null) : null,
+            // Salir de un día de excursión hacia una ruta de ciudad es RECHAZARLA: se anota para no
+            // volver a proponérsela sola, pero dejando un acceso sutil por si cambia de opinión. Al
+            // volver a convertirlo en excursión la marca se levanta.
+            excursionDeclined: dayType === 'excursion' ? false : (day.dayType === 'excursion' ? true : day.excursionDeclined),
             // La oferta de volver a la ruta NO se borra al cambiar de tipo: si este día tenía una
             // ruta, la sigue teniendo guardada, y pasar por "día libre" no puede hacer que la
             // pierda. Cuando no venía del servidor se compone desde la propia foto de las paradas,

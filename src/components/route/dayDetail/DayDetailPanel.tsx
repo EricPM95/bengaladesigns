@@ -26,7 +26,14 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { dinnerWindowFor } from '../../../lib/todayMode'
-import { CuratedAlternativeBanner, ExcursionBanner, ExcursionLink, ExcursionOptions, ManualDayLink, ManualDayOptions } from './ExcursionBlocks'
+import {
+  CuratedAlternativeBanner,
+  ExcursionBanner,
+  ExcursionDayProposal,
+  ExcursionLink,
+  ManualDayLink,
+  ManualDayOptions,
+} from './ExcursionBlocks'
 import { ZoneWalkCard } from './ZoneWalkCard'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
@@ -669,10 +676,15 @@ export function DayDetailPanel({
               {/* Regla 10: si este día tenía ruta curada, SIEMPRE se ofrece volver a ella. */}
               {day.curatedAlternative && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
               {excursionOptions.length > 0 ? (
-                <ExcursionOptions
+                <ExcursionDayProposal
+                  destination={day.city}
                   options={excursionOptions}
                   selectedId={day.selectedExcursionId ?? null}
+                  socialProof={day.excursionSocialProof}
                   onSelect={(id) => selectDayExcursion(day.id, id)}
+                  // Rechazar devuelve el día a ruta de ciudad. El motor ya tiene el core day
+                  // desplazado esperando, así que el día no se queda vacío ni repetido.
+                  onDecline={() => convertDay('normal')}
                 />
               ) : (
                 <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>
@@ -818,7 +830,11 @@ export function DayDetailPanel({
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
-          {showsRoute && prominence === 'subtle' && <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />}
+          {showsRoute && prominence === 'subtle' && !day.excursionDeclined && (
+            <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />
+          )}
+          {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
+          {showsRoute && day.excursionDeclined && <ExcursionLink label="Añadir excursión" onClick={() => convertDay('excursion')} />}
           {dayType === 'excursion' && (
             <ExcursionLink label="Generar una ruta para este día" onClick={() => convertDay('smart_route')} />
           )}
