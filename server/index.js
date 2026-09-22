@@ -110,19 +110,31 @@ function currentEndpointLabel() {
 }
 
 const originalMessagesCreate = anthropic.messages.create.bind(anthropic.messages)
-anthropic.messages.create = async (...args) => {
+/**
+ * OJO: esta función NO puede ser `async`, y el `return` tiene que ser la promesa TAL CUAL.
+ *
+ * `messages.create()` no devuelve una promesa normal, devuelve un `APIPromise` con métodos extra
+ * (`.withResponse()`, `.asResponse()`). Envolverlo en una función `async` lo convierte en una
+ * promesa corriente y esos métodos desaparecen — y `messages.stream()` llama por dentro a
+ * `create(...).withResponse()`, así que TODAS las llamadas en streaming se caían con
+ * "messages.create(...).withResponse is not a function". En pantalla: "No se pudo generar este
+ * tramo del viaje con IA".
+ *
+ * El registro se engancha con un `.then` aparte, que observa sin ponerse en medio.
+ */
+anthropic.messages.create = (...args) => {
   const id = ++apiCallCounter
   const endpoint = currentEndpointLabel()
   const startedAt = new Date().toISOString()
   console.log(`[api-call #${id}] ${startedAt} INICIO create() — endpoint=${endpoint}`)
-  try {
-    const result = await originalMessagesCreate(...args)
-    console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() OK — endpoint=${endpoint}`)
-    return result
-  } catch (error) {
-    console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() ERROR — endpoint=${endpoint} — ${error?.message ?? error}`)
-    throw error
-  }
+  const promise = originalMessagesCreate(...args)
+  // Con los dos manejadores aquí, este ramal nunca queda como rechazo sin atender; el error sigue
+  // viajando por la promesa que se devuelve, que es la que le importa a quien llamó.
+  promise.then(
+    () => console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() OK — endpoint=${endpoint}`),
+    (error) => console.log(`[api-call #${id}] ${new Date().toISOString()} FIN create() ERROR — endpoint=${endpoint} — ${error?.message ?? error}`),
+  )
+  return promise
 }
 
 const originalMessagesStream = anthropic.messages.stream.bind(anthropic.messages)
