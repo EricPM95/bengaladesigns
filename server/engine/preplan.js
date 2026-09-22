@@ -15,6 +15,7 @@
 
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
 import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor, slotBudgets } from './modeConfig.js'
+import { CATEGORY_DAY_CAP, categoryOfTags, interestTagsFor } from './experienceTags.js'
 
 // ── Prioridades de la cascada ───────────────────────────────────────────────────────────────
 //
@@ -25,55 +26,32 @@ import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor, slotBudge
 
 export const TIER = {
   POOL: 0, // lo eligió a mano: va sí o sí
-  EXPERIENCE: 1, // encaja con una categoría que marcó
-  ESSENTIAL: 2, // nivel 1 del destino ("si no lo ves, la ruta ha fallado")
-  FILLER_2: 3,
-  FILLER_3: 4,
-}
-
-/** Experiencia del cuestionario -> tags del JSON que la representan. */
-const TAG_INTEREST_MAP = {
-  sabores_locales: ['gastronomia', 'mercado'],
-  arte_museos: ['museo', 'arte'],
-  miradores_atardeceres: ['mirador'],
-}
-
-/**
- * Cuántas cosas de la misma categoría aguanta UN día.
- *
- * La experiencia elegida SESGA la ruta, no la monopoliza. Elegir "Arte y museos" significa que los
- * huecos se llenan de museos en vez de iglesias, no que el día sean cinco museos seguidos: la fatiga
- * museística es real y al tercer mirador del día ya no impresiona ninguno — todos son vistas desde
- * arriba. Un buen día de arte es museo por la mañana, barrio, plaza, segundo museo por la tarde y
- * mirador al atardecer.
- *
- * El tope NO se le aplica a lo que el viajero eligió a mano: si marca tres museos en el pool, van
- * los tres. Manda él, no el motor.
- */
-const CATEGORY_DAY_CAP = {
-  arte_museos: 2,
-  miradores_atardeceres: 2,
-  sabores_locales: 2,
-}
-
-/** A qué categoría con tope pertenece una unidad, si pertenece a alguna. */
-function categoryOf(unit) {
-  for (const [category, tags] of Object.entries(TAG_INTEREST_MAP)) {
-    if (unit.tags.some((tag) => tags.includes(tag))) return category
-  }
-  return null
-}
-
-/** Cuántas unidades de esa categoría hay ya ese día, contando las dos franjas. */
-function categoryCountInDay(day, category) {
-  if (!category) return 0
-  return SLOTS.reduce(
-    (count, slotName) => count + day.slots[slotName].units.filter((unit) => categoryOf(unit) === category).length,
-    0,
-  )
+  ESSENTIAL: 1, // nivel 1 del destino ("si no lo ves, la ruta ha fallado"): entra SIEMPRE
+  FILLER_2: 2,
+  FILLER_3: 3,
 }
 
 const SLOTS = ['morning', 'afternoon']
+
+/**
+ * Cuántas unidades de RELLENO de esa categoría hay ya ese día, contando las dos franjas.
+ *
+ * Los imprescindibles no cuentan para el tope. Si el nivel 1 entra al margen de lo que el viajero
+ * elija (ver assignTiers), tampoco puede gastarle su cupo temático: con el tope en 2 y el Vaticano
+ * y los Capitolinos dentro, elegir "Arte y Museos" no podía añadir un solo museo — solo cambiaba
+ * cuáles, y la elección del viajero no se notaba en la ruta.
+ */
+function categoryCountInDay(day, category, tiers) {
+  if (!category) return 0
+  return SLOTS.reduce(
+    (count, slotName) =>
+      count +
+      day.slots[slotName].units.filter(
+        (unit) => categoryOfTags(unit.tags) === category && tiers.get(unit.id) > TIER.ESSENTIAL,
+      ).length,
+    0,
+  )
+}
 
 // ── Geografía ───────────────────────────────────────────────────────────────────────────────
 
@@ -172,9 +150,19 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
 
 // ── Paso 3: la cascada ──────────────────────────────────────────────────────────────────────
 
-/** A qué prioridad pertenece cada unidad, ya resuelto el pool y las experiencias. */
-function assignTiers(units, poolNames, experiencesPositive, essentialsOn) {
-  const interestTags = new Set((experiencesPositive ?? []).flatMap((id) => TAG_INTEREST_MAP[id] ?? []))
+/**
+ * A qué prioridad pertenece cada unidad.
+ *
+ * El nivel 1 entra SIEMPRE, elija el viajero las experiencias que elija. "Imprescindibles" como
+ * tarjeta es una promesa de la pantalla —"te hemos preparado lo esencial"—, no un interruptor: si
+ * alguien que repite destino no quiere el Coliseo, lo quita desde el menú de la parada, que ya
+ * funciona. Apagarlo desde el cuestionario dejaría sin Coliseo a un viajero primerizo que solo
+ * quiso marcar tres temas que le gustan.
+ *
+ * Lo que hacen las experiencias elegidas es SESGAR el relleno: entre dos lugares de nivel 2 o 3 que
+ * compiten por el mismo hueco, gana el que encaje con lo que el viajero marcó.
+ */
+function assignTiers(units, poolNames) {
   const pool = new Set(poolNames ?? [])
   const tiers = new Map()
 
@@ -189,14 +177,8 @@ function assignTiers(units, poolNames, experiencesPositive, essentialsOn) {
       tiers.set(unit.id, TIER.POOL)
       continue
     }
-    if (interestTags.size > 0 && unit.tags.some((tag) => interestTags.has(tag))) {
-      tiers.set(unit.id, TIER.EXPERIENCE)
-      continue
-    }
     if (unit.level === 1) {
-      // "Imprescindibles" apagado: los nivel 1 dejan de entrar solos y bajan a relleno. Para quien
-      // repite destino y ya vio el Coliseo (invariante 11).
-      tiers.set(unit.id, essentialsOn ? TIER.ESSENTIAL : TIER.FILLER_2)
+      tiers.set(unit.id, TIER.ESSENTIAL)
       continue
     }
     tiers.set(unit.id, unit.level === 2 ? TIER.FILLER_2 : TIER.FILLER_3)
@@ -225,7 +207,7 @@ function slotCost(unit, slot, mode) {
 }
 
 /** Puntuación de meter `unit` en una franja concreta. Más alto, mejor. */
-function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays) {
+function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays, matchesInterest = false) {
   const slot = day.slots[slotName]
   let score = 0
 
@@ -252,6 +234,12 @@ function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays) 
   const cost = slotCost(unit, slot, mode)
   if (cost > remaining) score -= 300 + (cost - remaining)
 
+  // El tema que el viajero eligió gana los huecos disputados. Va aquí y no solo en el orden de la
+  // cola porque el orden decide a quién se coloca ANTES, no a quién se prefiere para un hueco
+  // concreto: solo con el orden, elegir "Arte y Museos" metía el Circo Máximo y la Fuente de las
+  // Tortugas — efectos de rebote de una colocación voraz, no preferencia.
+  if (matchesInterest) score += 120
+
   // Reparto: a igualdad de todo, el día más vacío. Evita que el día 1 se quede con todo y el 4 con
   // tres paradas, que es lo que hacía el motor viejo antes de sus parches.
   score -= slot.units.length * 10
@@ -267,9 +255,9 @@ function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays) 
  * expulsado vuelve a la cola — y un nivel 1 desalojado se MUEVE de día, nunca se borra del viaje
  * (invariante 10).
  */
-function placeUnit(destData, unit, plan, tiers, mode, evicted) {
+function placeUnit(destData, unit, plan, tiers, mode, evicted, matchesInterest = false) {
   const tier = tiers.get(unit.id)
-  const category = categoryOf(unit)
+  const category = categoryOfTags(unit.tags)
   // TODOS los candidatos ordenados de mejor a peor, no solo el mejor. Quedarse con el primero y
   // rendirse si no cabe tenía una consecuencia concreta: el Vaticano (285 min) ganaba la mañana por
   // puntuación y la mañana de ritmo tranquilo solo tiene 180 minutos, así que se caía del viaje en
@@ -293,8 +281,8 @@ function placeUnit(destData, unit, plan, tiers, mode, evicted) {
       const slot = day.slots[slotName]
       if (tier !== TIER.POOL && slot.zone && slot.units.length > 0 && !zonesAreAdjacent(destData, slot.zone, unit.zone)) continue
       // Tope de categoría: una vez el día tiene sus dos museos, el relleno pasa a otra cosa.
-      if (tier !== TIER.POOL && category && categoryCountInDay(day, category) >= (CATEGORY_DAY_CAP[category] ?? Infinity)) continue
-      const score = scoreSlot(destData, unit, day, slotName, mode, tier, plan.days.length)
+      if (tier > TIER.ESSENTIAL && category && categoryCountInDay(day, category, tiers) >= (CATEGORY_DAY_CAP[category] ?? Infinity)) continue
+      const score = scoreSlot(destData, unit, day, slotName, mode, tier, plan.days.length, matchesInterest)
       candidates.push({ day, slotName, score })
     }
   }
@@ -419,11 +407,14 @@ export function preplanTrip({
   hasFreeTour = false,
   poolNames = [],
   experiencesPositive = [],
-  essentialsOn = true,
   dateRangeStartIso = null,
 }) {
   const units = buildUnits(destData, hasFreeTour)
-  const tiers = assignTiers(units, poolNames, experiencesPositive, essentialsOn)
+  const tiers = assignTiers(units, poolNames)
+  // Lo que le interesa a este viajero: no cambia QUÉ prioridad tiene un lugar, cambia a quién se
+  // elige entre iguales cuando compiten por el mismo hueco.
+  const interestTags = interestTagsFor(experiencesPositive)
+  const matchesInterest = (unit) => interestTags.size > 0 && unit.tags.some((tag) => interestTags.has(tag))
   const plan = buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso)
 
   // Orden determinista: primero por prioridad, luego lo más imprescindible, luego lo más largo (lo
@@ -431,6 +422,9 @@ export function preplanTrip({
   const queue = [...units].sort(
     (a, b) =>
       tiers.get(a.id) - tiers.get(b.id) ||
+      // Dentro de la misma prioridad manda el tema que el viajero eligió: es lo que hace que "Arte
+      // y Museos" llene los huecos de museos en vez de con lo primero que pase por la zona.
+      Number(matchesInterest(b)) - Number(matchesInterest(a)) ||
       a.level - b.level ||
       b.minutes - a.minutes ||
       a.id.localeCompare(b.id, 'es'),
@@ -444,7 +438,7 @@ export function preplanTrip({
     // En tranquilo el nivel 3 no entra: 5-7 paradas gastadas en relleno de tercer nivel es lo que
     // hace que un día tranquilo se sienta vacío en vez de tranquilo.
     if (tiers.get(unit.id) === TIER.FILLER_3 && !plan.mode.fillLevels.includes(3)) continue
-    const day = placeUnit(destData, unit, plan, tiers, plan.mode, evicted)
+    const day = placeUnit(destData, unit, plan, tiers, plan.mode, evicted, matchesInterest(unit))
     if (day) placed.set(unit.id, day.dayNumber)
     else unplaced.push(unit)
   }
@@ -477,7 +471,7 @@ export function preplanTrip({
   for (const unit of queue) {
     if (placed.has(unit.id)) continue
     if (!evicted.has(unit.id)) continue
-    const day = placeUnit(destData, unit, plan, tiers, plan.mode, new Set())
+    const day = placeUnit(destData, unit, plan, tiers, plan.mode, new Set(), matchesInterest(unit))
     if (day) {
       placed.set(unit.id, day.dayNumber)
       const index = unplaced.findIndex((u) => u.id === unit.id)

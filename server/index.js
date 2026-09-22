@@ -3012,9 +3012,9 @@ function findDestinationData(destination) {
 // subconjunto de esos themes.
 const EXPERIENCE_CATEGORY_BANK = [
   { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
-  { id: 'sabores_locales', icon: '🍝', title: 'Sabores locales', description: 'Gastronomía real, mercados y comida local' },
-  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos y arte' },
-  { id: 'miradores_atardeceres', icon: '📸', title: 'Miradores y Atardeceres', description: 'Vistas panorámicas y puntos fotogénicos' },
+  { id: 'barrios_sabores', icon: '🍝', title: 'Barrios y Sabores', description: 'Barrios con vida, mercados y comida local' },
+  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos, iglesias y arte' },
+  { id: 'naturaleza_vistas', icon: '📸', title: 'Naturaleza y Vistas', description: 'Parques, miradores y puntos fotogénicos' },
   { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
   { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
 ]
@@ -3025,9 +3025,9 @@ const EXPERIENCE_CATEGORY_BANK = [
 // y wantsFreeTour) en vez de operar sobre un theme concreto; 'mercadillos_navidenos' tampoco, tira
 // directo de `destData.winter_markets` (ver buildWinterMarketPlaces).
 const CATEGORY_THEME_MAP = {
-  sabores_locales: ['mercado', 'gastronomico'],
+  barrios_sabores: ['mercado', 'gastronomico'],
   arte_museos: ['museo'],
-  miradores_atardeceres: ['mirador'],
+  naturaleza_vistas: ['mirador'],
 }
 
 function isIntocable(placeName, destData) {
@@ -3087,7 +3087,7 @@ function buildWinterMarketPlaces(destData) {
  * `theme: 'imprescindible'` Y cualquier lugar que esté en `destData.intocables` (aunque su theme sea
  * más específico, ej. un museo que también es intocable) NUNCA se tocan aquí — "los intocables nunca
  * se sustituyen" es una regla explícita del punto 4, más fuerte que cualquier preferencia de
- * categoría. `miradores_atardeceres` en negativo tiene una excepción parcial: un mirador que forma
+ * categoría. `naturaleza_vistas` en negativo tiene una excepción parcial: un mirador que forma
  * parte de un `group` se queda (va "en el camino" con el resto de su grupo — los grupos son
  * absolutos, ver punto 1, no se puede romperlos quitando solo un miembro), solo se filtran los
  * miradores sueltos (sin grupo).
@@ -3102,7 +3102,7 @@ function applyExperienceCategoryEffects(rawPlaces, destData, levels, positiveCat
     places = places.filter((place) => {
       if (!themes.includes(place.theme)) return true
       if (place.theme === 'imprescindible' || isIntocable(place.name, destData)) return true
-      if (category === 'miradores_atardeceres' && place.group) return true
+      if (category === 'naturaleza_vistas' && place.group) return true
       return false
     })
   }

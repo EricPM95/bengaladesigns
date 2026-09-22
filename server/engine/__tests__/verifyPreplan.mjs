@@ -89,7 +89,9 @@ for (const pace of ['nonstop', 'tranquilo']) {
           const counts = {}
           for (const s2 of ['morning', 'afternoon']) {
             for (const u of day.slots[s2].units) {
-              if (p.tiers.get(u.id) === 0) continue
+              // El tope cuenta solo el RELLENO: ni el pool (0) ni los imprescindibles (1)
+              // gastan cupo temático, porque entran al margen de lo que el viajero elija.
+              if (p.tiers.get(u.id) <= 1) continue
               const c = u.tags.some((t) => ['museo', 'arte'].includes(t)) ? 'arte' : u.tags.includes('mirador') ? 'mir' : u.tags.some((t) => ['gastronomia', 'mercado'].includes(t)) ? 'gast' : null
               if (c) counts[c] = (counts[c] ?? 0) + 1
             }

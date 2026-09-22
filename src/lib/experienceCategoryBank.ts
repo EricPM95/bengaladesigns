@@ -20,9 +20,9 @@ export interface ExperienceCategoryDefinition {
  */
 export const EXPERIENCE_CATEGORY_BANK: ExperienceCategoryDefinition[] = [
   { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
-  { id: 'sabores_locales', icon: '🍝', title: 'Sabores locales', description: 'Gastronomía real, mercados y comida local' },
-  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos y arte' },
-  { id: 'miradores_atardeceres', icon: '📸', title: 'Miradores y Atardeceres', description: 'Vistas panorámicas y puntos fotogénicos' },
+  { id: 'barrios_sabores', icon: '🍝', title: 'Barrios y Sabores', description: 'Barrios con vida, mercados y comida local' },
+  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos, iglesias y arte' },
+  { id: 'naturaleza_vistas', icon: '📸', title: 'Naturaleza y Vistas', description: 'Parques, miradores y puntos fotogénicos' },
   { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
   { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
 ]
@@ -48,9 +48,9 @@ export function encodeExperienceCategories(positive: ExperienceCategoryId[], neg
  */
 const LEGACY_ID_BY_CATEGORY: Partial<Record<ExperienceCategoryId, ExperienceId>> = {
   imprescindibles: 'atracciones',
-  sabores_locales: 'gastronomia',
+  barrios_sabores: 'gastronomia',
   arte_museos: 'arte_cultura',
-  miradores_atardeceres: 'paisajes_miradores',
+  naturaleza_vistas: 'paisajes_miradores',
   free_tour: 'free_tour',
 }
 

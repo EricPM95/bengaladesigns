@@ -54,11 +54,13 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 10. **`NEVER_MISS_LANDMARKS`**: la red que impide que un imprescindible desaparezca por un ajuste de
     ritmo. *Se perdió el Coliseo en una ruta real.*
 
-11. **"Imprescindibles" es una experiencia que se puede apagar.** Apagada, los de nivel 1 no entran
-    solos: la ruta se monta con pool + experiencias + niveles 2-3. Para quien repite destino y ya
-    vio el Coliseo. Un nivel 1 elegido en el pool SÍ entra — el pool siempre manda.
+11. **El nivel 1 entra SIEMPRE, elija el viajero lo que elija.** "Imprescindibles" como tarjeta es
+    una promesa de la pantalla ("te hemos preparado lo esencial"), no un interruptor: apagarlo desde
+    el cuestionario dejaría sin Coliseo a un primerizo que solo quiso marcar tres temas. Quien repite
+    destino quita el Coliseo desde el menú de la parada, que ya funciona.
+    *Sustituye a la versión anterior de este invariante, en la que la tarjeta sí apagaba el nivel 1.*
 
-12. **Las experiencias elegidas tienen que cambiar la ESPINA DORSAL del día, no el relleno.**
+12. **Las experiencias elegidas sesgan el RELLENO, y el sesgo tiene que notarse.**
     *Medido: elegir "Arte y museos" en un viaje de 3 días no mete ni un museo — solo cambia dos
     lugares de relleno, porque `interestTags` únicamente ordena sobrantes y el núcleo viene fijo del
     reparto curado.* Es el bug estructural que justifica esta reescritura.

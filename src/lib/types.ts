@@ -97,9 +97,9 @@ export type ExperienceId =
  */
 export type ExperienceCategoryId =
   | 'imprescindibles'
-  | 'sabores_locales'
+  | 'barrios_sabores'
   | 'arte_museos'
-  | 'miradores_atardeceres'
+  | 'naturaleza_vistas'
   | 'free_tour'
   /** Solo visible/seleccionable cuando `answers.season === 'winter'`, ver EXPERIENCE_CATEGORY_BANK. */
   | 'mercadillos_navidenos'

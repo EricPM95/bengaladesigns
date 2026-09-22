@@ -59,7 +59,6 @@ export async function buildDayBlockV3(
     hasFreeTour,
     poolNames: mustIncludePlaces ?? [],
     experiencesPositive: experiencesPositive ?? [],
-    essentialsOn: options.essentialsOn ?? true,
     dateRangeStartIso,
   })
 

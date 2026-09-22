@@ -13,6 +13,8 @@
 // cambio, sin ninguna diferencia de comportamiento.
 
 import { readFileSync, readdirSync } from 'node:fs'
+// Una sola tabla de experiencias->tags para los dos motores (ver engine/experienceTags.js).
+import { TAG_INTEREST_MAP, interestTagsFor } from './engine/experienceTags.js'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -109,18 +111,8 @@ export function hasFreeTourFromAnswers(answers) {
 // de relleno con ese tag suben de prioridad (se eligen antes que relleno sin tag coincidente). No
 // existe hoy un mecanismo de exclusión ("no me lo recomiendes") en el selector — solo multi-select
 // positivo — así que solo se implementa el sesgo positivo, no la exclusión negativa del documento.
-const TAG_INTEREST_MAP = {
-  sabores_locales: ['gastronomia', 'mercado'],
-  arte_museos: ['museo', 'arte'],
-  miradores_atardeceres: ['mirador'],
-}
-
 function interestedTagsFromAnswers(answers) {
-  const tags = new Set()
-  for (const id of answers?.experiencesPositive ?? []) {
-    for (const tag of TAG_INTEREST_MAP[id] ?? []) tags.add(tag)
-  }
-  return tags
+  return interestTagsFor(answers?.experiencesPositive)
 }
 
 // ── Helpers de tiempo (reimplementados aquí a propósito — el backend Node no comparte bundle
