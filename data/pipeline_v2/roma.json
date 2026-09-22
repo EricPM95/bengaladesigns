@@ -308,7 +308,8 @@
         "Columna de Trajano",
         "Teatro de Marcelo",
         "Iglesia de Santa Maria della Vittoria"
-      ]
+      ],
+      "zone_priority": 1
     },
     "centro_historico": {
       "name": "Centro Histórico",
@@ -337,7 +338,8 @@
         "Via Condotti",
         "Plaza Farnese",
         "Palazzo Doria Pamphilj"
-      ]
+      ],
+      "zone_priority": 1
     },
     "vaticano": {
       "name": "Vaticano",
@@ -354,7 +356,8 @@
         "Puente Sant'Angelo",
         "Borgo Pio",
         "Cúpula de San Pedro"
-      ]
+      ],
+      "zone_priority": 2
     },
     "trastevere": {
       "name": "Trastevere y Gianicolo",
@@ -368,7 +371,8 @@
         "Iglesia de Santa Maria in Trastevere",
         "Villa Farnesina",
         "Plaza Trilussa"
-      ]
+      ],
+      "zone_priority": 3
     },
     "villa_borghese": {
       "name": "Villa Borghese",
@@ -383,7 +387,8 @@
         "Bioparque de Roma",
         "Galería Nacional de Arte Moderno",
         "Terraza del Pincio"
-      ]
+      ],
+      "zone_priority": 3
     },
     "aventino": {
       "name": "Aventino",
@@ -396,7 +401,8 @@
         "Termas de Caracalla",
         "Jardín de los Naranjos",
         "Ojo de la Cerradura del Aventino"
-      ]
+      ],
+      "zone_priority": 4
     },
     "testaccio": {
       "name": "Testaccio",
@@ -408,7 +414,8 @@
         "Pirámide Cestia",
         "Mercado de Testaccio",
         "Cementerio Protestante"
-      ]
+      ],
+      "zone_priority": 4
     },
     "appia": {
       "name": "Via Appia",
@@ -419,7 +426,8 @@
       "places": [
         "Via Appia Antica",
         "Catacumbas de San Calixto"
-      ]
+      ],
+      "zone_priority": 5
     },
     "san_giovanni": {
       "name": "San Giovanni",
@@ -429,7 +437,8 @@
       ],
       "places": [
         "Basílica de San Juan de Letrán"
-      ]
+      ],
+      "zone_priority": 5
     },
     "esquilino": {
       "name": "Esquilino",
@@ -439,7 +448,8 @@
       ],
       "places": [
         "Basílica de Santa María la Mayor"
-      ]
+      ],
+      "zone_priority": 5
     },
     "nomentano": {
       "name": "Nomentano",
@@ -449,7 +459,8 @@
       ],
       "places": [
         "Quartiere Coppedè"
-      ]
+      ],
+      "zone_priority": 5
     }
   },
   "places": [
