@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
-import type { ExperienceId, TripPace } from '../../lib/types'
+import type { ExperienceCategoryId, ExperienceId, TripPace } from '../../lib/types'
 import { getCurrentSeason } from '../../lib/season'
 import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
@@ -387,14 +387,17 @@ export function Questionnaire() {
               {activeStep === 'experiences' && (
                 <ExperienceCategorySelector
                   season={answers.season}
-                  positive={answers.experiencesPositive ?? ['imprescindibles']}
-                  negative={answers.experiencesNegative ?? []}
-                  onChange={(experiencesPositive, experiencesNegative) =>
-                    updateAnswers({ experiencesPositive, experiencesNegative, experiences: deriveLegacyExperienceIds(experiencesPositive) })
+                  tripStartIso={answers.dateRange?.start ?? null}
+                  selected={answers.experiencesPositive ?? []}
+                  onChange={(experiencesPositive) =>
+                    updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })
                   }
                   onConfirm={() => {
-                    const experiencesPositive = answers.experiencesPositive ?? ['imprescindibles']
-                    const experiencesNegative = answers.experiencesNegative ?? []
+                    const experiencesPositive = answers.experiencesPositive ?? []
+                    // Se manda vacío pero se sigue mandando: el backend decodifica positivas y
+                    // negativas del mismo array con prefijo +/- (ver decodeExperienceCategories), y
+                    // quitar el campo obligaría a tocar ese contrato para nada.
+                    const experiencesNegative: ExperienceCategoryId[] = []
                     const experiences = deriveLegacyExperienceIds(experiencesPositive)
                     // BUG 1: `showPace` (y por tanto el auto-avance basado en que `steps` crezca)
                     // no cambia si `placesStepStarted` ya era true de una vuelta anterior — al
