@@ -1,8 +1,7 @@
 # Estado del motor nuevo — resumen para CHAT
 
 Contexto: implementación del Prompt 9 (flexibilización del algoritmo de rutas) en Viajes Bengala.
-Este documento resume qué está hecho, qué falta y qué decisiones se tomaron. Todo local, **nada
-pusheado todavía** (7 commits).
+Este documento resume qué está hecho, qué falta y qué decisiones se tomaron. **Todo pusheado.**
 
 ---
 
@@ -21,9 +20,9 @@ pusheado todavía** (7 commits).
 
 ---
 
-## ENTREGA B — motor nuevo, a mitad
+## ENTREGA B — motor nuevo, completo y detrás de bandera
 
-### Hecho: el reparto (`server/engine/`)
+### El motor (`server/engine/`)
 
 - **`units.js`** — 67 lugares → **59 unidades** indivisibles. Un `group` del JSON es una sola cosa,
   así que "Coliseo y Foro van el mismo día" y "el orden del grupo no se altera" son imposibles de
@@ -81,16 +80,31 @@ Primeros números sobre Roma 4 días, ritmo completo: **34 paradas el viejo fren
 (menos relleno compulsivo, que es lo que se buscaba) y **13 horas sueltas frente a 0**. En 6 días el
 viejo no devuelve nada —cae a Claude— y el nuevo monta los 5 días de contenido gratis.
 
+### Constructor del día y paseo nocturno — hechos
+
+- **`buildDay.js`**: orden geográfico por vecino más cercano con el orden curado como semilla,
+  redondeo a :00/:30 siempre hacia arriba, encadenado por debajo de 3 minutos, clamp de apertura y
+  comidas en ventana. Reutiliza del motor viejo el parser de horarios multi-tramo, el clamp y los
+  tiempos a pie de Mapbox: son invariantes comprados con bugs reales.
+- **`nightWalk.js`**: hasta 3 nocturnas encadenadas a menos de 900 m, desde el restaurante hacia
+  fuera. Los 3 miradores de doble uso ya están en `night_experiences` y las 7 llevan
+  `allow_same_day`. Medido: Fontana ↔ Panteón 588 m, Fontana ↔ Plaza de España 572 m, Plaza de
+  España ↔ Pincio 678 m — el paseo clásico sale solo; Coliseo (1,4 km) y Janículo (1,6-2,7 km) no
+  encadenan con nada y son la experiencia única de su noche.
+- **`__tests__/verifyDays.mjs`**: 84 días, 639 paradas, 102 nocturnas, 72 encadenadas. Cero horas
+  en :15/:45, cero solapes, cero paradas antes de abrir, cero invasiones de la cena.
+
+Tres fallos más encontrados trazando: la tarde no se cortaba en la cena, a la mañana le faltaba el
+mismo corte en la comida (seis solapes a las 15:00), y **no salía ni un paseo nocturno** porque el
+filtro exigía que la cena fuera de la misma zona que la nocturna — que es justo la zona donde ese
+lugar se visita de día. La medida buena es del restaurante al sitio, no de centro de zona a centro
+de zona.
+
 ### Falta
 
-- **Constructor del día**: orden geográfico dentro de la franja, horas con redondeo a :00/:30 hacia
-  arriba, encadenado por debajo de 3 minutos, clamp de horarios de apertura, comidas en ventana.
-- **Paseo nocturno encadenado**: hasta 3 experiencias nocturnas a menos de 900 m, ordenadas desde la
-  cena. Medido: Fontana ↔ Panteón 588 m, Fontana ↔ Plaza de España 572 m, Plaza de España ↔ Pincio
-  678 m — el paseo clásico sale solo. Coliseo (1,4 km al más cercano) y Janículo (1,6-2,7 km) no
-  encadenan con nada y se quedan como experiencia única de su noche.
-- **Enchufarlo en `generate-day-block`** y pasar el harness completo, ampliado a 1 día y 6-7 días.
-- Los 3 miradores de doble uso aún no están escritos en `night_experiences`.
+- Validar el motor nuevo sobre rutas reales en la app (bandera arriba) y cambiar el defecto.
+- Ampliar el harness viejo a 1 día y 6-7 días y resolver o justificar sus 9 fallos preexistentes.
+- Entrega C: la UI de excursiones y días en blanco (prompt aparte).
 
 ---
 
