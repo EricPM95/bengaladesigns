@@ -4322,8 +4322,8 @@ function logGeographicCoherence(day) {
  * Los precios y valoraciones son PLACEHOLDER hasta que se integren las APIs de afiliados — por eso
  * viajan con ese nombre desde el JSON, para que nadie los confunda con datos reales.
  */
-function excursionsAvailablePayload(destData, dayNumber, options) {
-  return (options ?? excursionOptionsFor(destData)).map((option) => ({
+function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
+  return (options ?? excursionOptionsFor(destData, totalDays)).map((option) => ({
     id: option.id,
     name: option.name,
     duration: option.type === 'half_day' ? 'half_day' : 'full_day',
@@ -4512,7 +4512,7 @@ app.post('/api/generate-day-block', async (req, res) => {
     const dayConfig = getDayConfig(dayNumber, pipelineV2Data)
 
     if (dayConfig.type === 'excursion') {
-      const day = buildExcursionDayV2(pipelineV2Data, dayNumber)
+      const day = buildExcursionDayV2(pipelineV2Data, dayNumber, totalDaysForConfig)
       day.excursion_prominence = dayConfig.excursionProminence
       // Regla 3: la ruta curada NUNCA se pierde. Si este día tenía una escrita a mano, viaja como
       // alternativa ("tenemos una ruta preparada") con un adelanto de lo que contiene, para que
@@ -4521,7 +4521,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       console.log(
         `[pipeline-v2] "${destination}" día ${dayNumber} — día de EXCURSIÓN (${day.excursion_options.length} opciones${day.curated_alternative ? ', con ruta curada de alternativa' : ''}), sin llamada a Claude`,
       )
-      res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber) })
+      res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig) })
       return
     }
 
@@ -4529,7 +4529,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día LIBRE (lo monta el viajero), sin llamada a Claude`)
       // Las excursiones viajan igual: un día libre ofrece "buscar excursiones" como una de sus dos
       // salidas, y necesita el catálogo para enseñarlo sin pedir nada más.
-      res.json({ days: [buildManualDayV2(dayNumber)], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber) })
+      res.json({ days: [buildManualDayV2(dayNumber)], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig) })
       return
     }
   }
@@ -4557,7 +4557,7 @@ app.post('/api/generate-day-block', async (req, res) => {
         // Solo los días prominentes llevan las destacadas: en los sutiles el banner no existe y
         // mandarlas sería peso muerto en la respuesta.
         if (dayConfig.excursionProminence === 'prominent') {
-          dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3))
+          dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3, totalDaysV2))
         }
         console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)
         res.json({
@@ -4565,7 +4565,7 @@ app.post('/api/generate-day-block', async (req, res) => {
           not_included: dayBlockV2.not_included ?? [],
           // El catálogo viaja SIEMPRE con cualquier día del destino: desde la ficha se puede
           // convertir un día normal en excursión, y hacerlo no debe costar otra petición.
-          excursions_available: excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0]),
+          excursions_available: excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2),
         })
         return
       }

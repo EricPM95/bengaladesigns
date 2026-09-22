@@ -267,11 +267,49 @@ async function fetchWalkingMinutes(coordA, coordB, mapboxToken) {
   }
 }
 
-// ── Categoría (para el pin del mapa/icono) — el JSON v2 no trae esta clasificación, se infiere
-// por palabras clave del nombre. Cosmético (no afecta qué lugares/horarios salen), no vale la
-// pena mantener una tabla a mano de 20 entradas para esto. ───────────────────────────────────
+// ── Qué ES un lugar: la etiqueta de su píldora y la categoría de su pin ──────────────────────
+//
+// Sale de los `tags` del JSON del destino, que es donde alguien ya decidió a mano que la Fontana
+// de Trevi es una fuente y un monumento, y que el Panteón es un monumento y una iglesia. Antes se
+// adivinaba con regex sobre el NOMBRE, y fallaba de formas que se veían en pantalla: "Panteón" no
+// contiene ninguna palabra clave, así que salía como "Lugar de interés"; "Piazza Navona" caía en la
+// regex de monumentos y perdía que es una plaza. En las cuatro duraciones por igual.
+//
+// De los tags solo cuentan los que dicen QUÉ ES (fuente, plaza, iglesia...), no los que dicen cómo
+// es (arte, historia, curiosidad). Se muestran los dos primeros EN EL ORDEN DEL JSON, que es
+// editorial: "fuente, monumento" y "monumento, iglesia" están escritos así a propósito.
 
-function categoryFor(name) {
+/** Tag -> cómo se llama eso en pantalla + categoría del pin. Solo tags de TIPO de lugar. */
+const TAG_CATEGORY = {
+  museo: { category: 'museum', label: 'Museo' },
+  iglesia: { category: 'temple', label: 'Iglesia' },
+  mirador: { category: 'viewpoint', label: 'Mirador' },
+  parque: { category: 'park', label: 'Parque' },
+  naturaleza: { category: 'park', label: 'Naturaleza' },
+  zoo: { category: 'park', label: 'Zoo' },
+  mercado: { category: 'market', label: 'Mercado' },
+  barrio: { category: 'neighborhood', label: 'Barrio' },
+  plaza: { category: 'landmark', label: 'Plaza' },
+  fuente: { category: 'landmark', label: 'Fuente' },
+  calle: { category: 'landmark', label: 'Calle' },
+  ruinas: { category: 'landmark', label: 'Ruinas' },
+  monumento: { category: 'landmark', label: 'Monumento' },
+}
+
+/** Cuántas etiquetas caben en la píldora sin que deje de leerse de un vistazo. */
+const MAX_CATEGORY_LABELS = 2
+
+function categoryFor(name, tags) {
+  const kinds = (Array.isArray(tags) ? tags : []).map((tag) => TAG_CATEGORY[tag]).filter(Boolean)
+  if (kinds.length > 0) {
+    return {
+      category: kinds[0].category,
+      category_label: kinds.slice(0, MAX_CATEGORY_LABELS).map((kind) => kind.label).join(' · '),
+    }
+  }
+  // Sin tags de tipo: el Free Tour, las experiencias de noche y los componentes curados de un
+  // recorrido no son lugares del array `places` y no tienen tags propios. Ahí sigue la adivinanza
+  // por nombre de siempre, que para esos pocos casos es mejor que nada.
   const lower = stripAccentsLower(name)
   if (/museo|galeria|capilla/.test(lower)) return { category: 'museum', category_label: 'Museo' }
   if (/basilica|iglesia|catedral/.test(lower)) return { category: 'temple', category_label: 'Basílica' }
@@ -416,7 +454,7 @@ function buildRegularStop(place, startMinutes) {
     // solo un puñado de lugares trae `schedule` (ver mapStop/shellFromStop en el cliente).
     tags: Array.isArray(place.tags) ? place.tags : [],
     schedule: place.schedule ?? null,
-    ...categoryFor(place.name),
+    ...categoryFor(place.name, place.tags),
   }
 }
 
@@ -1794,9 +1832,11 @@ function buildShortTripDay(destData, pace) {
       longitude: place.coordinates[1],
       tip: item.note || place.tip || '',
       description: item.note || place.tip || '',
-      hours: null,
+      hours: place.schedule ?? null,
+      tags: Array.isArray(place.tags) ? place.tags : [],
+      schedule: place.schedule ?? null,
       ...(isNight ? { is_night_experience: true } : {}),
-      ...categoryFor(place.name),
+      ...categoryFor(place.name, place.tags),
     })
   }
 
@@ -2344,7 +2384,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
         hours: null,
         tags: matchingPlace?.tags ?? [],
         schedule: matchingPlace?.schedule ?? null,
-        ...categoryFor(component.name),
+        ...categoryFor(component.name, matchingPlace?.tags),
       })
       cursor += component.duration_minutes
       previousCoords = coords
@@ -2400,7 +2440,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       description: nightExperience.description || '',
       hours: null,
       is_night_experience: true,
-      ...categoryFor(nightExperience.name),
+      ...categoryFor(nightExperience.name, findRawPlace(destData, nightExperience.name)?.tags),
     })
   }
 
@@ -2463,8 +2503,8 @@ export function getDayConfig(dayNumber, destData) {
     las que más convenzan, no las primeras del JSON. Se eligen DENTRO de las que luego enseña "Ver
     todas" (excursionOptionsFor): anunciar en el banner una excursión que no aparece al abrir la
     lista es una promesa rota, aunque tenga mejor nota. */
-export function topExcursions(destData, count = 3) {
-  return [...excursionOptionsFor(destData)]
+export function topExcursions(destData, count = 3, totalDays) {
+  return [...excursionOptionsFor(destData, totalDays)]
     .sort((a, b) => (b.placeholder_rating ?? 0) - (a.placeholder_rating ?? 0))
     .slice(0, count)
 }
@@ -2483,12 +2523,23 @@ export function curatedRoutePreview(destData, totalDays, hasFreeTour, dayNumber,
   return { title: buildDayTitle(franja, destData), places: places.slice(0, count) }
 }
 
-/** Las excursiones que se le enseñan al viajero — `max_display` primeras, en el orden del JSON, que
-    es editorial (lo más imprescindible primero). */
-export function excursionOptionsFor(destData) {
+/**
+ * Cuántas excursiones se le enseñan a alguien que viaja `totalDays` días. Con dos días en Roma
+ * nadie se va a Pompeya: enseñar siete opciones no es generosidad, es ruido delante de una decisión
+ * que no va a tomar. Con cinco días o más sí hay un día suelto y merece la pena poder comparar.
+ */
+export function excursionPoolSize(totalDays) {
+  if (!Number.isFinite(totalDays) || totalDays <= 2) return 3
+  if (totalDays <= 5) return 5
+  return 7
+}
+
+/** Las excursiones que se le enseñan al viajero: las primeras del JSON, que es orden editorial (lo
+    más imprescindible primero), tantas como pida la duración del viaje. */
+export function excursionOptionsFor(destData, totalDays) {
   const excursions = destData?.excursions
   if (!excursions?.options?.length) return []
-  return excursions.options.slice(0, excursions.max_display ?? 4)
+  return excursions.options.slice(0, excursionPoolSize(totalDays))
 }
 
 /**
@@ -2497,7 +2548,7 @@ export function excursionOptionsFor(destData) {
  * pudiendo convertirlo en ruta o montarlo a mano. Devuelve además `excursion_options` para que el
  * servidor las publique en `excursions_available` (el canal que ya existe hacia el cliente).
  */
-export function buildExcursionDayV2(destData, dayNumber) {
+export function buildExcursionDayV2(destData, dayNumber, totalDays) {
   return {
     day_number: dayNumber,
     title: 'Excursión',
@@ -2507,7 +2558,7 @@ export function buildExcursionDayV2(destData, dayNumber) {
     not_included: [],
     times_are_final: true,
     excursion_essential: Boolean(destData?.excursions?.essential),
-    excursion_options: excursionOptionsFor(destData),
+    excursion_options: excursionOptionsFor(destData, totalDays),
   }
 }
 

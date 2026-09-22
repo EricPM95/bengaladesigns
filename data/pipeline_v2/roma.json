@@ -881,7 +881,7 @@
       "tags": [
         "iglesia"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "related_to": "Cúpula de San Pedro",
       "schedule": "07:00-20:00 (todo el año)",
       "search_aliases": [
@@ -1418,7 +1418,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "La iglesia madre de los jesuitas — un interior barroco que te deja sin palabras, especialmente el techo pintado por Baciccia",
       "tip": "Gratis. Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio",
       "search_aliases": [
@@ -1445,7 +1445,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Tres obras maestras de Caravaggio en una capilla lateral — La vocación de San Mateo es hipnótica",
       "tip": "Gratis. Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas de 1€ para encender la luz",
       "search_aliases": [
@@ -1535,7 +1535,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "La única iglesia gótica de Roma, con un Cristo Redentor esculpido por Miguel Ángel",
       "tip": "Gratis. No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido",
       "search_aliases": [
@@ -1563,7 +1563,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "El techo de Andrea Pozzo es un trampantojo que engaña al ojo — parece que la iglesia tiene una cúpula pero es pintura plana",
       "tip": "Gratis. Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta",
       "search_aliases": [
@@ -1820,7 +1820,7 @@
         "iglesia",
         "ruinas"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Tres niveles de historia bajo tus pies — iglesia medieval arriba, iglesia del siglo IV en medio, templo romano de Mitra abajo",
       "tip": "Entrada a los niveles inferiores ~10€. Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma",
       "search_aliases": [
@@ -1846,7 +1846,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Aquí está el Moisés de Miguel Ángel — una escultura tan poderosa que dicen que Miguel Ángel le golpeó la rodilla y le dijo \"¡Habla!\"",
       "tip": "Gratis. El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente",
       "search_aliases": [
@@ -1970,7 +1970,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Una de las cuatro basílicas papales de Roma — los mosaicos del siglo V brillan con oro y el artesonado del techo se hizo con el primer oro traído de América",
       "tip": "Gratis (la basílica). El museo y la loggia con los mosaicos cuestan ~5€. El techo dorado es cortesía de Isabel la Católica",
       "search_aliases": [
@@ -2115,7 +2115,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo",
       "tip": "Gratis. El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales",
       "search_aliases": [
@@ -2144,7 +2144,7 @@
         "iglesia",
         "arte"
       ],
-      "filter_category": "museos_arte",
+      "filter_category": "iglesias",
       "description": "Una de las iglesias más antiguas de Roma — los mosaicos dorados del ábside brillan como el primer día, y la plaza es el corazón de Trastevere",
       "tip": "Gratis. Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio",
       "search_aliases": [
@@ -2259,7 +2259,7 @@
         "iglesia",
         "historia"
       ],
-      "filter_category": "monumentos",
+      "filter_category": "iglesias",
       "schedule": "07:00-18:30",
       "search_aliases": [
         "archbasilica of st john lateran",
@@ -4264,7 +4264,6 @@
   ],
   "excursions": {
     "essential": false,
-    "max_display": 4,
     "day_pattern": {
       "prominent_from": 4,
       "first_excursion": 5,
@@ -4520,5 +4519,9 @@
       "description": "Un barrio residencial de principios del siglo XX, con villas, jardines y una de las mayores rarezas arquitectónicas de la ciudad.",
       "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público y gratuito con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
     }
-  ]
+  ],
+  "destination_config": {
+    "core_days": 4,
+    "max_auto_days": 7
+  }
 }

@@ -17,7 +17,7 @@
  * RESTAURANT_SUB_CATEGORIES abajo y /api/destination-places): un restaurante NO es una parada de la
  * ruta — no tiene duración de visita ni entra en el itinerario, solo se consulta.
  */
-export type PlaceFilterCategory = 'monumentos' | 'museos_arte' | 'miradores' | 'restaurantes'
+export type PlaceFilterCategory = 'monumentos' | 'museos_arte' | 'iglesias' | 'miradores' | 'restaurantes'
 
 export interface PlaceCategoryChip {
   id: PlaceFilterCategory
@@ -35,6 +35,10 @@ export interface PlaceCategoryChip {
 export const PLACE_CATEGORY_CHIPS: PlaceCategoryChip[] = [
   { id: 'monumentos', label: 'Monumentos', color: '#8D6E63', activeBg: '#EFEBE9', icon: '🏛️' },
   { id: 'museos_arte', label: 'Museos y Arte', color: '#7E57C2', activeBg: '#EDE7F6', icon: '🎨' },
+  // Una iglesia no es un museo aunque guarde tres Caravaggios: estaban todas bajo museos_arte y
+  // salían en el mapa con la paleta de museo. Van juntas bajo el chip "Atracciones" igual que los
+  // monumentos — lo que cambia es su pin, que ahora dice lo que son.
+  { id: 'iglesias', label: 'Iglesias', color: '#5C6BC0', activeBg: '#E8EAF6', icon: '⛪' },
   { id: 'miradores', label: 'Miradores y Fotos', color: '#1E88E5', activeBg: '#E3F2FD', icon: '📸' },
   { id: 'restaurantes', label: 'Restaurantes', color: '#E64A19', activeBg: '#FBE9E7', icon: '🍴' },
 ]
@@ -63,7 +67,7 @@ export interface PlaceFilterChip {
 }
 
 export const PLACE_FILTER_CHIPS: PlaceFilterChip[] = [
-  { id: 'atracciones', label: 'Atracciones', color: '#8D6E63', activeBg: '#EFEBE9', icon: '🏛️', categories: ['monumentos', 'museos_arte'] },
+  { id: 'atracciones', label: 'Atracciones', color: '#8D6E63', activeBg: '#EFEBE9', icon: '🏛️', categories: ['monumentos', 'museos_arte', 'iglesias'] },
   { id: 'miradores', label: 'Miradores', color: '#1E88E5', activeBg: '#E3F2FD', icon: '📸', categories: ['miradores'] },
   { id: 'restaurantes', label: 'Restaurantes', color: '#E64A19', activeBg: '#FBE9E7', icon: '🍴', categories: ['restaurantes'] },
   // Dorado: es lo único que cuesta dinero de esta fila, y el viajero lo busca para saber qué tiene
