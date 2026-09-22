@@ -33,7 +33,8 @@
       "zone": "roma_antigua",
       "conflicts_with": [
         "Coliseo"
-      ]
+      ],
+      "allow_same_day": true
     },
     {
       "name": "Fontana de Trevi (noche)",
@@ -46,7 +47,8 @@
       "zone": "centro_historico",
       "conflicts_with": [
         "Fontana de Trevi"
-      ]
+      ],
+      "allow_same_day": true
     },
     {
       "name": "Plaza de España (noche)",
@@ -59,7 +61,8 @@
       "zone": "centro_historico",
       "conflicts_with": [
         "Plaza de España"
-      ]
+      ],
+      "allow_same_day": true
     },
     {
       "name": "Panteón (noche)",
@@ -72,7 +75,50 @@
       "zone": "centro_historico",
       "conflicts_with": [
         "Panteón"
-      ]
+      ],
+      "allow_same_day": true
+    },
+    {
+      "name": "Mirador del Janículo (noche)",
+      "duration": 40,
+      "description": "Vuelve al mismo mirador: Roma iluminada es otra ciudad. Las cúpulas encendidas, el rumor de la ciudad abajo y un silencio que de día no existe.",
+      "coordinates": [
+        41.8912,
+        12.4596
+      ],
+      "zone": "trastevere",
+      "conflicts_with": [
+        "Mirador del Janículo"
+      ],
+      "allow_same_day": true
+    },
+    {
+      "name": "Terraza del Pincio (noche)",
+      "duration": 30,
+      "description": "La misma terraza, otra ciudad: las cúpulas y los tejados encendidos sobre la Piazza del Popolo.",
+      "coordinates": [
+        41.9111,
+        12.4779
+      ],
+      "zone": "villa_borghese",
+      "conflicts_with": [
+        "Terraza del Pincio"
+      ],
+      "allow_same_day": true
+    },
+    {
+      "name": "Puente Sant'Angelo (noche)",
+      "duration": 25,
+      "description": "Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio.",
+      "coordinates": [
+        41.9032,
+        12.4657
+      ],
+      "zone": "vaticano",
+      "conflicts_with": [
+        "Puente Sant'Angelo"
+      ],
+      "allow_same_day": true
     }
   ],
   "closed_on": {

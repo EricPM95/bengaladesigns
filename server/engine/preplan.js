@@ -94,7 +94,7 @@ function zoneCenter(destData, zone) {
   return Array.isArray(center) ? { lat: center[0], lng: center[1] } : null
 }
 
-function zonesAreAdjacent(destData, a, b) {
+export function zonesAreAdjacent(destData, a, b) {
   if (!a || !b) return false
   if (a === b) return true
   const ca = zoneCenter(destData, a)

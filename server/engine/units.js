@@ -94,7 +94,9 @@ function freeTourUnit(destData) {
   if (!tour) return null
   return {
     id: tour.name,
-    places: [tour],
+    // El constructor del día lo reconoce por esta marca: no lleva horario de apertura ni tip de
+    // lugar, y su hora la fija el propio tour, no el cursor del día.
+    places: [{ ...tour, isFreeTour: true, duration_minutes: tour.duration_minutes ?? 150 }],
     zone: tour.zone ?? null,
     minutes: tour.duration_minutes ?? 150,
     level: 1,

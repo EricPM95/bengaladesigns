@@ -170,7 +170,7 @@ function roundUpToQuarter(minutes) {
 // escrito empezando por el lunes daba la hora del lunes como apertura general. Ver la copia
 // compartida de esta misma lógica en src/lib/stopHoursTag.ts (el backend Node no comparte bundle
 // con el cliente Vite, así que se reimplementa a propósito, igual que los helpers de tiempo).
-function parseHoursSessions(schedule) {
+export function parseHoursSessions(schedule) {
   if (typeof schedule !== 'string') return []
   const sessions = []
   for (const match of schedule.matchAll(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/g)) {
@@ -190,7 +190,7 @@ function parseHoursSessions(schedule) {
  * con eso, una parada que cayera a las 13:00 en una iglesia cerrada de 12:30 a 16:00 se programaba
  * igual a las 13:00, porque 13:00 ya es posterior a las 10:00 de apertura.
  */
-function nextOpenMinutes(schedule, minutes) {
+export function nextOpenMinutes(schedule, minutes) {
   const sessions = parseHoursSessions(schedule)
   if (sessions.length === 0) return minutes
   if (sessions.some((session) => minutes >= session.open && minutes <= session.close)) return minutes
@@ -204,7 +204,7 @@ function nextOpenMinutes(schedule, minutes) {
 // el clamp de apertura (Issue B) evita empezar ANTES de que abra, pero no evita empezar tan tarde que
 // ni le da tiempo a cerrar. null si el texto no trae un segundo rango (mismo criterio que
 // parseOpeningMinutes: mejor no bloquear nada que adivinar mal).
-function parseClosingMinutes(schedule) {
+export function parseClosingMinutes(schedule) {
   const sessions = parseHoursSessions(schedule)
   if (sessions.length > 0) return Math.max(...sessions.map((session) => session.close))
   const matches = typeof schedule === 'string' ? [...schedule.matchAll(/(\d{1,2}):(\d{2})/g)] : []
@@ -222,7 +222,7 @@ function parseClosingMinutes(schedule) {
 // bordeando la muralla) y otro salto de 0m entre los otros dos; la distancia real distingue esto
 // correctamente sin tener que curar a mano qué pares concretos de cada grupo están pegados.
 const ADJACENT_ZERO_WALK_KM = 0.3
-function isAdjacentByDistance(coordA, coordB) {
+export function isAdjacentByDistance(coordA, coordB) {
   return haversineKm(coordA, coordB) <= ADJACENT_ZERO_WALK_KM
 }
 
@@ -248,7 +248,7 @@ const DEFAULT_WALK_MINUTES = 15
 const walkingMinutesCache = new Map()
 
 /** `coord` en formato [lat, lng] (como vienen en el JSON v2) — Mapbox espera lng,lat en la URL. Nunca lanza: sin token, sin red, o respuesta rara → minuto por defecto, igual que hace el cliente (ver DEFAULT_WALK_MINUTES en stopScheduling.ts) para que un fallo de Mapbox nunca rompa la generación. */
-async function fetchWalkingMinutes(coordA, coordB, mapboxToken) {
+export async function fetchWalkingMinutes(coordA, coordB, mapboxToken) {
   if (!mapboxToken || !Array.isArray(coordA) || !Array.isArray(coordB)) return DEFAULT_WALK_MINUTES
   const cacheKey = `${coordA[0]},${coordA[1]}>${coordB[0]},${coordB[1]}`
   if (walkingMinutesCache.has(cacheKey)) return walkingMinutesCache.get(cacheKey)
@@ -299,7 +299,7 @@ const TAG_CATEGORY = {
 /** Cuántas etiquetas caben en la píldora sin que deje de leerse de un vistazo. */
 const MAX_CATEGORY_LABELS = 2
 
-function categoryFor(name, tags) {
+export function categoryFor(name, tags) {
   const kinds = (Array.isArray(tags) ? tags : []).map((tag) => TAG_CATEGORY[tag]).filter(Boolean)
   if (kinds.length > 0) {
     return {
@@ -330,7 +330,7 @@ function categoryFor(name, tags) {
 // para buscar: es la tabla de equivalencias que mantiene vivo el nombre viejo. Cada lugar lleva su
 // nombre anterior entre los alias (ver el script de renombrado), y los alias vienen ya normalizados
 // en minúsculas y sin acentos, que es como se comparan.
-function findRawPlace(destData, name) {
+export function findRawPlace(destData, name) {
   const places = destData.places ?? []
   const exact = places.find((place) => place.name === name)
   if (exact) return exact
@@ -612,7 +612,7 @@ function placeToDayPlaceEntry(destData, name) {
 // Histórico" en vez de "en Largo di Torre Argentina zona", Regla E). zoneKey puede faltar (día sin
 // zona asignada) o no tener entrada en meal_zones todavía — en ambos casos ambos campos quedan null
 // y el frontend cae a su comportamiento de siempre.
-function mealZoneInfo(destData, zoneKey, mealType) {
+export function mealZoneInfo(destData, zoneKey, mealType) {
   const entry = zoneKey ? destData.meal_zones?.[zoneKey]?.[mealType] : null
   const options = entry?.options
   return {
