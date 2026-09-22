@@ -95,3 +95,54 @@ export function computeStopHoursTag(hours: string | null, nowMinutes: number): S
   const reopen = next ? next.open : Math.min(...sessions.map((session) => session.open))
   return { label: `Cerrado · abre a las ${formatMinutes(reopen)}`, variant: 'closed' }
 }
+
+// ── Días de cierre ────────────────────────────────────────────
+
+/** Índice de `Date.getDay()` por nombre de día, sin tildes y en singular. */
+const WEEKDAY_INDEX: Record<string, number> = {
+  domingo: 0,
+  lunes: 1,
+  martes: 2,
+  miercoles: 3,
+  jueves: 4,
+  viernes: 5,
+  sabado: 6,
+}
+
+/**
+ * Qué días de la semana cierra un lugar, según su horario escrito.
+ *
+ * Solo lee la forma EXPLÍCITA ("Cerrado lunes", "Cerrado domingos", "Cerrado lunes y martes"), que
+ * es la que usa el dato curado. No intenta deducir el cierre de un listado positivo ("Lun-Sáb
+ * 09:00-14:00"): ahí el rango se puede escribir de diez maneras y una deducción equivocada sale más
+ * cara que no avisar, porque el aviso lo lee alguien que ya ha movido el día.
+ *
+ * Devuelve índices de `Date.getDay()` — 0 es domingo.
+ */
+export function closedWeekdaysFromSchedule(schedule: string | null | undefined): number[] {
+  if (!schedule) return []
+  const normalizado = schedule.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const dias = new Set<number>()
+  // Cada "cerrado ..." abarca hasta el siguiente punto: así "Cerrado domingos (excepto el último
+  // del mes). Mar-Sab 09:00" no se come la frase de al lado.
+  for (const match of normalizado.matchAll(/cerrad[oa]s?\s+([^.]*)/g)) {
+    // Por palabras sueltas y no por expresión regular montada con el nombre dentro: `\b` dentro de
+    // una plantilla de texto es el carácter de retroceso, no un límite de palabra, y la regla se
+    // quedaba muda sin dar ningún error (lo destapó probarla contra los horarios reales de Roma).
+    const palabras = new Set(match[1].split(/[^a-z]+/).filter(Boolean))
+    for (const [nombre, indice] of Object.entries(WEEKDAY_INDEX)) {
+      if (palabras.has(nombre) || palabras.has(`${nombre}s`)) dias.add(indice)
+    }
+  }
+  return [...dias].sort()
+}
+
+/**
+ * "lunes", "sábado"... a partir del índice de `Date.getDay()`, para escribir el aviso.
+ * Con tildes: las claves de WEEKDAY_INDEX van sin ellas porque ahí sirven para comparar, no para leer.
+ */
+const WEEKDAY_NAMES_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+
+export function weekdayNameEs(index: number): string {
+  return WEEKDAY_NAMES_ES[index] ?? ''
+}

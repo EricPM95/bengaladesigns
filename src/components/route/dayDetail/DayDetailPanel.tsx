@@ -13,6 +13,7 @@ import {
   buildSingleDayMarkers,
 } from '../../../lib/routeMapMarkers'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour } from '../../../lib/time'
+import { parseOpeningMinutes } from '../../../lib/stopHoursTag'
 import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
   buildAccommodationConnectorInfo,
@@ -35,6 +36,9 @@ import {
   ManualDayOptions,
 } from './ExcursionBlocks'
 import { ZoneWalkCard } from './ZoneWalkCard'
+import { DndContext, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { SortableStop } from './SortableStop'
 import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
@@ -261,10 +265,13 @@ export function DayDetailPanel({
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
+  const reorderStops = useRouteStore((state) => state.reorderStops)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
   // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
   // parada real: no está en day.stops del store, lo añade el servidor al generar.
   const [dismissedWalks, setDismissedWalks] = useState<Set<string>>(new Set())
+  /** Aviso tras arrastrar una parada a un hueco en el que su sitio todavía está cerrado. */
+  const [reorderWarning, setReorderWarning] = useState<string | null>(null)
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const route = useRouteStore((state) => state.route)
   const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
@@ -343,6 +350,49 @@ export function DayDetailPanel({
   // El primero de los días en blanco por límite: es el único que lleva la explicación.
   // `allDays` viene recortado a id/número/ciudad, así que la marca se busca en la ruta entera.
   const isFirstBeyondAutoDay = (route?.days ?? []).find((candidate) => candidate.beyondAutoDays)?.id === day.id
+
+  // Arrastrar paradas para cambiarlas de orden dentro del día. El umbral de 8 px evita que un tap
+  // torpe cuente como arrastre, y el retardo en táctil deja que el dedo haga scroll por la lista
+  // sin secuestrar el gesto a la primera.
+  const dragSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 8 } }),
+  )
+
+  const handleStopDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const ids = realStops.map((realStop) => realStop.id)
+    const from = ids.indexOf(String(active.id))
+    const to = ids.indexOf(String(over.id))
+    if (from < 0 || to < 0) return
+    const next = [...ids]
+    next.splice(to, 0, next.splice(from, 1)[0])
+    // Mientras las paradas del día sigan siendo la plantilla, `day.stops` está vacío y el store no
+    // encuentra nada que reordenar: hay que cristalizarlas primero, igual que hace añadir una
+    // parada. Sin esto el arrastre se ve, suelta, y no pasa absolutamente nada.
+    if (day.stops.length === 0) seedDayStops(day.id, realStops)
+
+    // Mover una parada puede dejarla antes de que su sitio abra. No se impide —el viajero manda—
+    // pero se dice, porque es justo lo que no se ve a simple vista al arrastrar.
+    const movedStop = realStops[from]
+    const nuevaPosicion = schedule[to]
+    // El horario se lee de la parada MOSTRADA, en el mismo orden de preferencia que la tarjeta
+    // (ver StopAccordion): así el aviso y lo que el viajero está leyendo en pantalla dicen la
+    // misma hora, en vez de que uno hable del horario general y el otro del de esta visita.
+    const mostrada = stops[from]
+    const abreA = parseOpeningMinutes(
+      mostrada?.scheduleText ?? mostrada?.hours ?? movedStop?.scheduleText ?? movedStop?.hours ?? null,
+    )
+    if (movedStop && nuevaPosicion && abreA !== null && nuevaPosicion.startMinutes < abreA) {
+      setReorderWarning(`${movedStop.name} abre a las ${minutesToTime(abreA)} — en ese hueco todavía está cerrado.`)
+    } else {
+      setReorderWarning(null)
+    }
+    // El store recoloca las horas por posición (reassignTimesByPosition): la parada que pasa a ser
+    // la tercera hereda el hueco de la tercera, no se lleva su hora antigua a otro sitio del día.
+    reorderStops(day.id, next)
+  }
   const stopCircleBg = dayColorPastel(dayIndex)
   const stopCircleText = dayColorStrong(dayIndex)
   const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
@@ -734,8 +784,20 @@ export function DayDetailPanel({
 
           {/* Un día de EXCURSIÓN guarda su ruta para poder volver a ella, pero no la enseña. Un día
               LIBRE sí enseña lo que el viajero ya haya montado. */}
-          {(showsRoute || (dayType === 'manual' && stops.length > 0)) &&
-            stops.map((stop, index) => {
+          {reorderWarning && (
+            <div className="flex items-start gap-2 rounded-xl border border-accent-gold/40 bg-accent-gold/10 px-3 py-2.5">
+              <span aria-hidden="true">⚠️</span>
+              <p className="min-w-0 flex-1 text-caption leading-relaxed text-text-soft">{reorderWarning}</p>
+              <button type="button" onClick={() => setReorderWarning(null)} aria-label="Cerrar aviso" className="shrink-0 text-caption text-text-muted hover:text-text">
+                ✕
+              </button>
+            </div>
+          )}
+
+          {(showsRoute || (dayType === 'manual' && stops.length > 0)) && (
+          <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
+          <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
+          {stops.map((stop, index) => {
             const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
             const { slot, startMinutes } = schedule[index]
             const showSlotHeader = index === 0 || slot !== schedule[index - 1].slot
@@ -767,6 +829,9 @@ export function DayDetailPanel({
 
             return (
               <Fragment key={stop.id}>
+                {/* El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia
+                    para un hueco concreto — moverla de sitio no significa nada. */}
+                <SortableStop id={realStops[index]?.id ?? stop.id} disabled={Boolean(realStops[index]?.isZoneWalk)}>
                 <div>
                   {showSlotHeader && (
                     <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
@@ -798,6 +863,7 @@ export function DayDetailPanel({
                     />
                   )}
                 </div>
+                </SortableStop>
                 {showLunchAccordion && (
                   <>
                     {renderMealGap(index + 1)}
@@ -833,6 +899,9 @@ export function DayDetailPanel({
               </Fragment>
             )
           })}
+          </SortableContext>
+          </DndContext>
+          )}
 
           {/* Hueco de fin de día: también se pinta siempre, aunque todavía no se sepa dónde se
               duerme (sin alojamiento elegido no hay `finalConnector` que mostrar, pero sí tiene que

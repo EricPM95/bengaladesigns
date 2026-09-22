@@ -291,6 +291,14 @@ interface RouteStoreState {
   selectDayExcursion: (dayId: string, excursionId: string | null) => void
   removeStop: (dayId: string, stopId: string) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
+  /**
+   * Cambia de sitio un día entero dentro del viaje (arrastrar en la lista de días, DayList.tsx).
+   *
+   * El día se lleva su contenido tal cual: las horas de sus paradas NO se tocan, porque lo que se
+   * mueve es el día, no el plan del día. Lo único que cambia es `dayNumber`, que se reparte por
+   * posición — y con él la fecha, que se calcula siempre como inicio del viaje + dayNumber - 1.
+   */
+  reorderDays: (orderedDayIds: string[]) => void
   moveStopToDay: (stopId: string, fromDayId: string, toDayId: string) => void
   updateStopTime: (dayId: string, stopId: string, newTime: string) => void
   addStop: (dayId: string, stop: Stop) => void
@@ -688,6 +696,21 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             .filter((stop): stop is Stop => Boolean(stop))
           return { ...day, stops: reassignTimesByPosition(day.stops, reordered) }
         }),
+      }
+    }),
+
+  reorderDays: (orderedDayIds) =>
+    set((state) => {
+      if (!state.route) return state
+      const daysById = new Map(state.route.days.map((day) => [day.id, day]))
+      const reordenados = orderedDayIds.map((id) => daysById.get(id)).filter((day): day is DayPlan => Boolean(day))
+      // Si falta alguno no se toca nada: reordenar medio viaje es peor que no reordenarlo.
+      if (reordenados.length !== state.route.days.length) return state
+      return {
+        route: {
+          ...state.route,
+          days: reordenados.map((day, index) => ({ ...day, dayNumber: index + 1 })),
+        },
       }
     }),
 

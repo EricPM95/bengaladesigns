@@ -495,6 +495,16 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       durationMinutes: detail.durationMinutes,
       coordinates: { lat: 0, lng: 0 },
       photoUrl: detail.photoUrl,
+      // El horario del lugar viaja con la parada. Sin esto, cristalizar un día lo borraba: la
+      // tarjeta lo seguía enseñando (lo saca del pool de plantilla), pero todo lo que opera sobre
+      // `Stop` —el aviso al reordenar, el menú, la ficha— veía `hours: undefined` y se quedaba
+      // mudo sin dar ningún error.
+      hours: detail.hours,
+      scheduleText: detail.scheduleText ?? null,
+      tags: detail.tags,
+      isRevisit: detail.isRevisit,
+      revisitReason: detail.revisitReason,
+      isNightExperience: detail.isNightExperience,
     }
   })
 }
