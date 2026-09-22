@@ -14,8 +14,9 @@
  */
 
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
-import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor, slotBudgets } from './modeConfig.js'
+import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, halfDaySlotBudgets, modeConfigFor, slotBudgets } from './modeConfig.js'
 import { categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
+import { halfDayExcursions } from './excursions.js'
 import { planRevisits } from './revisits.js'
 
 // ── Prioridades de la cascada ───────────────────────────────────────────────────────────────
@@ -175,12 +176,26 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
   // con tres días en Roma nadie se va a Pompeya.
   const excursionDay = contentDays >= coreDays ? coreDays : null
 
+  // Las de MEDIO DÍA van en los días de revisitas y en ningún otro: son la mañana de un día en el
+  // que ya no queda ciudad nueva que enseñar, no una alternativa a un día de ruta. Una por día y sin
+  // repetir en el viaje — se reparten en orden editorial y cuando se acaban, se acabaron. Roma tiene
+  // dos (Ostia y Tívoli), así que un viaje de 8 días cubre sus dos días de revisitas y uno de 9 ya
+  // no: el tercer día de revisitas se queda como estaba, con la mañana en la ciudad.
+  const mediaJornada = halfDayExcursions(destData)
+  const halfDayBudgets = halfDaySlotBudgets(mode)
+  let siguienteMediaJornada = 0
+
   const days = []
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     // El día siguiente a la excursión es el core day desplazado: ruta nueva, no revisitas. La
     // repetición empieza un día después.
     const esRepeticion = dayNumber > coreDays + (excursionDay ? 1 : 0)
     const esExcursion = dayNumber === excursionDay
+    const esBlanco = dayNumber > maxAutoDays
+    // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero,
+    // y colocarle una propuesta encima es lo contrario de dejárselo en blanco.
+    const mediaJornadaDelDia =
+      esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
     const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts, esRepeticion)
     days.push({
       dayNumber,
@@ -188,14 +203,17 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
       // Pasado el contenido nuevo del destino, repetir deja de ser un defecto: a Roma le quedan 10
       // lugares en 5 zonas fuera del curado, así que los días 5+ se montan con revisitas.
       allowsRepetition: esRepeticion,
-      isBlank: dayNumber > maxAutoDays,
+      isBlank: esBlanco,
       curated: zones.curated,
+      // La excursión de medio día de este día, si le toca una. La mañana se queda sin presupuesto
+      // (el viajero está fuera) y la tarde arranca a las 16:00 en vez de a las 14:00.
+      halfDayExcursion: mediaJornadaDelDia,
       // Un día de excursión no tiene paradas de ciudad: el viajero está fuera. Sus franjas se
       // quedan vacías a propósito y la cascada las salta (ver unitFitsDay).
       isExcursion: esExcursion,
       slots: {
-        morning: { zone: zones.morning, units: [], budget: budgets.morning, used: 0 },
-        afternoon: { zone: zones.afternoon, units: [], budget: budgets.afternoon, used: 0 },
+        morning: { zone: zones.morning, units: [], budget: mediaJornadaDelDia ? halfDayBudgets.morning : budgets.morning, used: 0 },
+        afternoon: { zone: zones.afternoon, units: [], budget: mediaJornadaDelDia ? halfDayBudgets.afternoon : budgets.afternoon, used: 0 },
       },
       hasLongVisit: false,
     })

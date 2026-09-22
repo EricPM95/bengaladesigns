@@ -68,6 +68,18 @@ for (const pace of ['nonstop', 'tranquilo']) {
         totalStops += day.stops.length
         nightStops += day.stops.filter((s) => s.is_night_experience).length
 
+        // Día de excursión de medio día: la mañana es la excursión y la ciudad no empieza hasta las
+        // 16:00. Sin bloque de comida — a esa hora el viajero está volviendo, no eligiendo
+        // restaurante.
+        if (day.half_day_excursion) {
+          if (day.meals.some((m) => m.time === 'lunch')) fail(`${tag} d${day.day_number}: medio día con bloque de comida`)
+          for (const stop of day.stops.filter((s) => !s.is_night_experience)) {
+            if (t2m(stop.suggested_time) < t2m(day.half_day_excursion.route_starts_at)) {
+              fail(`${tag} d${day.day_number}: medio día con "${stop.name}" a las ${stop.suggested_time}, antes de ${day.half_day_excursion.route_starts_at}`)
+            }
+          }
+        }
+
         const dinner = day.meals.find((m) => m.time === 'dinner')
         const seen = new Set()
         let prevEnd = null

@@ -289,6 +289,12 @@ interface RouteStoreState {
   convertDayType: (dayId: string, dayType: DayType) => void
   /** Elegir (o deseleccionar, con null) la excursión de un día de excursión. */
   selectDayExcursion: (dayId: string, excursionId: string | null) => void
+  /**
+   * "Prefiero quedarme en la ciudad" en la excursión de medio día: se quita de la mañana y no se
+   * vuelve a proponer en ese día. Las paradas de la tarde no se tocan — el día sigue montado, lo
+   * que queda libre es la mañana, que en un día de revisitas es suya.
+   */
+  declineHalfDayExcursion: (dayId: string) => void
   removeStop: (dayId: string, stopId: string) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   /**
@@ -697,6 +703,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           return { ...day, stops: reassignTimesByPosition(day.stops, reordered) }
         }),
       }
+    }),
+
+  declineHalfDayExcursion: (dayId) =>
+    set((state) => {
+      if (!state.route) return state
+      return { route: updateDay(state.route, dayId, (day) => ({ ...day, halfDayExcursionDeclined: true })) }
     }),
 
   reorderDays: (orderedDayIds) =>

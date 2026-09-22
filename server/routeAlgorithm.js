@@ -15,6 +15,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 // Una sola tabla de experiencias->tags para los dos motores (ver engine/experienceTags.js).
 import { TAG_INTEREST_MAP, interestTagsFor } from './engine/experienceTags.js'
+import { fullDayExcursions } from './engine/excursions.js'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -516,17 +517,31 @@ export function buildSkeletonV2(destData, totalDays, hasFreeTour) {
       times_are_final: true,
     }
   }
-  if (totalDays > 5) return null
-
   const variant = destData.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
-  if (!variant?.franjas?.length) return null
 
-  const days = variant.franjas.map((franja) => ({
-    day_number: franja.day,
+  // Con reparto curado para esta duración, cada día viene con su zona ya escrita. Sin él —viajes
+  // de más de 5 días, que `zone_distribution` nunca cubrió— el esqueleto se monta igual: un día de
+  // ciudad por día, sin zona.
+  //
+  // Antes esto devolvía null pasados los 5 días y el esqueleto se lo pedía a Claude. Dos problemas,
+  // los dos reales: costaba una llamada de pago en un destino curado, y Claude repartía el viaje
+  // por CIUDADES — un viaje de 7 días a Roma volvía con "día 3 en Tívoli, día 6 en Ostia Antica",
+  // que la pestaña RUTA lee como cambios de alojamiento e inventa cuatro hoteles donde hay uno. Una
+  // excursión no te cambia de hotel. El motor nuevo no tiene tope de días, así que el esqueleto
+  // tampoco debe tenerlo.
+  const nombresDeDia = variant?.franjas?.length
+    ? variant.franjas.map((franja) => ({ day: franja.day, zone_focus: buildDayTitle(franja, destData) }))
+    : Array.from({ length: totalDays }, (_, index) => ({ day: index + 1, zone_focus: undefined }))
+
+  const days = nombresDeDia.map(({ day, zone_focus }) => ({
+    day_number: day,
+    // El TIPO de cada día (excursión, libre, revisitas) lo decide el motor al construirlo, a partir
+    // de `core_days`/`max_auto_days` del destino. Aquí todos salen como día de ciudad a propósito:
+    // que el esqueleto también opinara era tener dos repartidores discutiendo.
     type: 'city',
     city: destData.destination,
     country_code: null,
-    zone_focus: buildDayTitle(franja, destData),
+    ...(zone_focus ? { zone_focus } : {}),
   }))
 
   return { summary: `${destData.destination} en ${totalDays} días`, days, times_are_final: true }
@@ -2497,7 +2512,7 @@ export function getDayConfig(dayNumber, destData) {
     lista es una promesa rota, aunque tenga mejor nota. */
 export function topExcursions(destData, count = 3, totalDays, pace) {
   return [...excursionOptionsFor(destData, totalDays, pace)]
-    .sort((a, b) => (b.placeholder_rating ?? 0) - (a.placeholder_rating ?? 0))
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
     .slice(0, count)
 }
 
@@ -2537,12 +2552,16 @@ export function excursionPoolSize(totalDays, pace) {
   return tranquilo ? 5 : 7
 }
 
-/** Las excursiones que se le enseñan al viajero: las primeras del JSON, que es orden editorial (lo
-    más imprescindible primero), tantas como pida la duración del viaje. */
+/**
+ * Las excursiones de JORNADA COMPLETA que se le enseñan al viajero: las primeras del JSON, que es
+ * orden editorial (lo más imprescindible primero), tantas como pida la duración del viaje.
+ *
+ * Las de medio día quedan fuera a propósito. No compiten con estas: van en los días de revisitas y
+ * ocupan solo la mañana (ver halfDayExcursionsFor). Mezclarlas aquí pondría un Ostia Antica de tres
+ * horas al lado de un Pompeya de trece como si fueran la misma decisión.
+ */
 export function excursionOptionsFor(destData, totalDays, pace) {
-  const excursions = destData?.excursions
-  if (!excursions?.options?.length) return []
-  return excursions.options.slice(0, excursionPoolSize(totalDays, pace))
+  return fullDayExcursions(destData).slice(0, excursionPoolSize(totalDays, pace))
 }
 
 /**

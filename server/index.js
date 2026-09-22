@@ -20,6 +20,7 @@ import {
   buildExcursionDayV2,
   buildManualDayV2,
 } from './routeAlgorithm.js'
+import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor } from './engine/index.js'
 
@@ -4321,24 +4322,30 @@ function logGeographicCoherence(day) {
 /**
  * Las excursiones del JSON del destino en el formato `excursions_available` que el cliente ya sabe
  * leer (ver mapExcursionsByDay en mapGeneratedRoute.ts), etiquetadas con el día al que pertenecen.
- * Los precios y valoraciones son PLACEHOLDER hasta que se integren las APIs de afiliados — por eso
- * viajan con ese nombre desde el JSON, para que nadie los confunda con datos reales.
+ *
+ * Precios y valoraciones: los que llevan `provisional_pricing` están puestos a mano hasta que se
+ * integre la API de afiliados. Viaja el flag hasta el cliente para que, el día que se decida no
+ * enseñar una nota inventada como si fuera real, no haya que volver a adivinar cuál lo es.
  */
 function excursionsAvailablePayload(destData, dayNumber, options, totalDays, pace) {
   return (options ?? excursionOptionsFor(destData, totalDays, pace)).map((option) => ({
     id: option.id,
     name: option.name,
-    duration: option.type === 'half_day' ? 'half_day' : 'full_day',
+    duration: option.half_day ? 'half_day' : 'full_day',
     duration_hours: option.duration_hours ?? null,
     emoji: option.emoji ?? null,
     description: option.description ?? '',
-    estimated_price: option.placeholder_price ?? '',
-    rating: option.placeholder_rating ?? null,
-    review_count: option.placeholder_reviews ?? null,
+    estimated_price: typeof option.price_from_eur === 'number' ? `${option.price_from_eur}€` : '',
+    rating: option.rating ?? null,
+    review_count: option.review_count ?? null,
+    provisional_pricing: option.provisional_pricing !== false,
+    /** Dónde arranca la excursión, tal cual lo publica el operador. */
+    meeting_point: option.meeting_point ?? null,
     destination_coords: Array.isArray(option.destination_coords) ? { lat: option.destination_coords[0], lng: option.destination_coords[1] } : null,
     // Cómo buscar esta excursión en Civitatis, escrito a mano en el JSON del destino: "pompeya
-    // desde roma" encuentra lo que el viajero quiere; el nombre de la tarjeta ("Pompeya y
-    // Herculano") encuentra bastante menos.
+    // desde roma" encuentra lo que el viajero quiere; el nombre de la tarjeta encuentra bastante
+    // menos. El enlace sigue yendo a la búsqueda y no al `civitatis_slug`: un slug equivocado es un
+    // 404 delante del viajero, y una búsqueda no puede romperse.
     civitatis_search: option.civitatis_search ?? null,
     suggested_day: dayNumber,
   }))
@@ -4540,7 +4547,12 @@ app.post('/api/generate-day-block', async (req, res) => {
   }
 
   if (pipelineV2Data && blockDayNumbers.length === 1) {
-    const totalDaysV2 = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : blockDayNumbers[0]
+    // `all_days` son los días de CONTENIDO (el esqueleto no incluye la vuelta: la añade el cliente
+    // con appendReturnLegDay), pero el motor cuenta el viaje entero y descuenta él la vuelta
+    // (`contentDays = totalDays - 1`, invariante 21). Sin el +1 el motor se comía el último día de
+    // cada viaje: se quedaba sin plan, `buildDayBlockV3` devolvía null y el día caía en una llamada
+    // de pago a Claude — en un destino curado, que es justo lo que el pipeline evita.
+    const totalDaysV2 = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : blockDayNumbers[0] + 1
     // Motor nuevo detrás de bandera (ver server/engine/index.js): `ROUTE_ENGINE=nuevo` en el
     // entorno para todas las rutas, o `"engine": "nuevo"` en el cuerpo para comparar los dos
     // motores en la misma ruta sin reiniciar nada. Por defecto sigue mandando el viejo.
@@ -4584,12 +4596,21 @@ app.post('/api/generate-day-block', async (req, res) => {
         console.log(
           `[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox (motor ${chosenEngine}), sin llamada a Claude`,
         )
+        // El catálogo que viaja con el día son las de jornada completa (desde la ficha se puede
+        // convertir un día normal en excursión). Si ADEMÁS este día lleva una de medio día por la
+        // mañana, se añade la suya: no está en el catálogo porque no compite con ellas, pero el
+        // cliente necesita sus datos para pintar la tarjeta.
+        const excursionesDelDia = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2, answers.pace)
+        const mediaJornadaDelDia = dayBlockV2.half_day_excursion
+          ? halfDayExcursions(pipelineV2Data).find((option) => option.id === dayBlockV2.half_day_excursion.id)
+          : null
+        if (mediaJornadaDelDia) {
+          excursionesDelDia.push(...excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], [mediaJornadaDelDia]))
+        }
         res.json({
           days: [dayBlockV2],
           not_included: dayBlockV2.not_included ?? [],
-          // El catálogo viaja SIEMPRE con cualquier día del destino: desde la ficha se puede
-          // convertir un día normal en excursión, y hacerlo no debe costar otra petición.
-          excursions_available: excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2, answers.pace),
+          excursions_available: excursionesDelDia,
         })
         return
       }

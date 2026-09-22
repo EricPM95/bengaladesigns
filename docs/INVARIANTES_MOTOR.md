@@ -107,6 +107,12 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 21. **`contentDays = días - 1`**: el último día es la vuelta (`appendReturnLegDay`) y no lleva ruta.
     *Se cayó una vez y generó un día fantasma.*
 
+    **Ojo con quién llama.** El esqueleto curado (`buildSkeletonV2`) devuelve días que TODOS llevan
+    contenido — no incluye la vuelta, la añade el cliente. Por eso `generate-day-block` le pasa al
+    motor `all_days.length + 1`: sin ese `+1` el motor descontaba una vuelta que ahí no existe y el
+    último día de cada viaje se quedaba sin plan, caía en una llamada de pago a Claude y llegaba
+    con contenido no curado.
+
 22. **El servidor no tiene Mapbox para los tiempos a pie del cliente**: los trayectos reales que usa
     la UI se calculan en el cliente (`stopScheduling.ts`). El motor produce horas; el cliente las
     afina con distancias reales.
@@ -129,6 +135,19 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 26. **El primer hueco del modo completo (8:00-9:00) es siempre un exterior** cercano al primer
     interior fuerte del día. Casi nada abre antes de las 9:00: es un paseo por la zona mientras
     abren, no un error de horario.
+
+27. **Las excursiones de MEDIO DÍA solo caben en días de revisitas** (`dayNumber > core_days + 1`),
+    una por día y sin repetir en el viaje. Ocupan 08:00-14:00, dejan 14:00-16:00 vacío a propósito
+    (volver, comer, dejar la mochila) y la ruta de ciudad arranca a las 16:00. Ese día NO lleva
+    bloque de comida: a esa hora el viajero está volviendo, no eligiendo restaurante. Tampoco lleva
+    el banner de excursiones de jornada completa — proponerle salir de la ciudad a un día que ya
+    sale es contradecirse.
+
+28. **El TIPO de cada día lo decide el motor, no el esqueleto**: `core_days`/`max_auto_days` del
+    destino mandan sobre el `day_pattern` viejo. El esqueleto marca todos los días como `city` y el
+    cliente deja ganar al bloque (`type: blockDay.type ?? day.type` en el orquestador). *Con los dos
+    decidiendo, un día de ciudad con excursión de media jornada llegaba pintado como día de
+    excursión entero.*
 
 ---
 

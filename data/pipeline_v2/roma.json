@@ -4330,108 +4330,154 @@
     },
     "options": [
       {
-        "id": "pompeya_herculano",
-        "name": "Pompeya y Herculano",
-        "type": "full_day",
-        "duration_hours": 12,
+        "id": "pompeya_sorrento",
+        "name": "Excursión a Pompeya y Sorrento",
+        "half_day": false,
+        "preselected": true,
+        "duration_hours": 13,
         "emoji": "🏛",
-        "description": "Recorre las ruinas de dos ciudades romanas sepultadas por el Vesubio. Transporte, guía en español y entradas incluidas.",
+        "price_from_eur": 65,
+        "rating": 4.8,
+        "review_count": 2340,
+        "provisional_pricing": true,
+        "meeting_point": "Estación de Termini",
+        "description": "Descubre las ruinas de Pompeya con guía y pasea por Sorrento, la joya de la costa napolitana. Incluye transporte en autobús, entrada a Pompeya y tiempo libre en Sorrento.",
         "destination_coords": [
-          40.7509,
+          40.7497,
           14.4869
         ],
-        "civitatis_search": "pompeya desde roma",
-        "gyg_search": "pompeii from rome",
-        "placeholder_price": "65€",
-        "placeholder_rating": 4.8,
-        "placeholder_reviews": 2340
+        "civitatis_slug": "excursion-pompeya-sorrento",
+        "civitatis_search": "pompeya sorrento desde roma",
+        "gyg_search": "pompeii sorrento from rome"
       },
       {
-        "id": "costa_amalfitana",
-        "name": "Costa Amalfitana",
-        "type": "full_day",
-        "duration_hours": 10,
-        "emoji": "🏖",
-        "description": "Positano, Amalfi y Ravello en un día. Paradas para fotos en los miradores más icónicos de la costa. Transporte y guía incluidos.",
+        "id": "florencia_pisa",
+        "name": "Excursión a Florencia y Pisa",
+        "half_day": false,
+        "preselected": false,
+        "duration_hours": 12,
+        "emoji": "🎨",
+        "price_from_eur": 89,
+        "rating": 4.7,
+        "review_count": 1850,
+        "provisional_pricing": true,
+        "meeting_point": "Estación de Termini",
+        "description": "Visita la cuna del Renacimiento y la famosa Torre Inclinada en un solo día. Incluye transporte en autobús, guía en Florencia y tiempo libre en Pisa.",
         "destination_coords": [
-          40.6333,
-          14.6029
+          43.7696,
+          11.2558
         ],
-        "civitatis_search": "costa amalfitana desde roma",
-        "gyg_search": "amalfi coast from rome",
-        "placeholder_price": "75€",
-        "placeholder_rating": 4.7,
-        "placeholder_reviews": 1850
+        "civitatis_slug": "excursion-florencia-pisa",
+        "civitatis_search": "florencia pisa desde roma",
+        "gyg_search": "florence pisa from rome"
       },
       {
-        "id": "napoles",
-        "name": "Nápoles en un día",
-        "type": "full_day",
-        "duration_hours": 8,
+        "id": "napoles_pompeya_tren",
+        "name": "Excursión a Nápoles y Pompeya en tren",
+        "half_day": false,
+        "preselected": false,
+        "duration_hours": 11,
         "emoji": "🍕",
-        "description": "Centro histórico, pizza napolitana auténtica y barrio Español. Opción de visitar el Museo Arqueológico Nacional.",
+        "price_from_eur": 55,
+        "rating": 4.6,
+        "review_count": 1420,
+        "provisional_pricing": true,
+        "meeting_point": "Estación de Termini",
+        "description": "Viaja en tren de alta velocidad a Nápoles, recorre su centro histórico con guía y continúa hasta Pompeya para explorar las ruinas.",
         "destination_coords": [
           40.8518,
           14.2681
         ],
-        "civitatis_search": "napoles desde roma",
-        "gyg_search": "naples from rome",
-        "placeholder_price": "55€",
-        "placeholder_rating": 4.6,
-        "placeholder_reviews": 3100
+        "civitatis_slug": "excursion-napoles-pompeya-tren",
+        "civitatis_search": "napoles pompeya desde roma",
+        "gyg_search": "naples pompeii from rome"
       },
       {
-        "id": "frascati_vinos",
-        "name": "Cata de vinos en Frascati",
-        "type": "half_day",
+        "id": "costa_amalfitana",
+        "name": "Excursión a la Costa Amalfitana",
+        "half_day": false,
+        "preselected": false,
+        "duration_hours": 13,
+        "emoji": "🏖",
+        "price_from_eur": 95,
+        "rating": 4.8,
+        "review_count": 2100,
+        "provisional_pricing": true,
+        "meeting_point": "Estación de Termini",
+        "description": "Recorre la espectacular Costa Amalfitana en autobús y barco. Paradas en Positano y Amalfi con tiempo libre para explorar sus callejuelas, playas y vistas al Mediterráneo.",
+        "destination_coords": [
+          40.634,
+          14.6027
+        ],
+        "civitatis_slug": "excursion-costa-amalfitana",
+        "civitatis_search": "costa amalfitana desde roma",
+        "gyg_search": "amalfi coast from rome"
+      },
+      {
+        "id": "florencia_tren",
+        "name": "Excursión a Florencia en tren de alta velocidad",
+        "half_day": false,
+        "preselected": false,
+        "duration_hours": 12,
+        "emoji": "🚄",
+        "price_from_eur": 109,
+        "rating": 4.5,
+        "review_count": 980,
+        "provisional_pricing": true,
+        "meeting_point": "Estación de Termini",
+        "description": "Viaja en Frecciarossa a Florencia y descúbrela a tu ritmo. Incluye tren ida y vuelta y guía para un recorrido por el Duomo, Ponte Vecchio y las plazas del centro histórico.",
+        "destination_coords": [
+          43.7696,
+          11.2558
+        ],
+        "civitatis_slug": "excursion-florencia-tren",
+        "civitatis_search": "florencia tren desde roma",
+        "gyg_search": "florence train from rome"
+      },
+      {
+        "id": "ostia_antica",
+        "name": "Excursión a Ostia Antica",
+        "half_day": true,
+        "preselected": false,
+        "duration_hours": 3,
+        "emoji": "🏺",
+        "price_from_eur": 52,
+        "rating": 4.8,
+        "review_count": 278,
+        "provisional_pricing": false,
+        "meeting_point": "Piazzale Ostiense (metro Pirámide)",
+        "description": "Explora el puerto romano mejor conservado del mundo. Teatros, termas, mosaicos y calles que llevan enterradas más de mil años, a solo 30 minutos de Roma.",
+        "destination_coords": [
+          41.7556,
+          12.2917
+        ],
+        "civitatis_slug": "excursion-ostia-antica",
+        "civitatis_search": "ostia antica desde roma",
+        "gyg_search": "ostia antica from rome"
+      },
+      {
+        "id": "tivoli_villas",
+        "name": "Excursión a Tívoli — Villa d'Este y Villa Adriana",
+        "half_day": true,
+        "preselected": false,
         "duration_hours": 5,
-        "emoji": "🍷",
-        "description": "Escapada a los viñedos de los Castelli Romani. Degustación de vinos locales, quesos y embutidos con vistas al campo.",
-        "destination_coords": [
-          41.8063,
-          12.681
-        ],
-        "civitatis_search": "frascati vinos desde roma",
-        "gyg_search": "frascati wine from rome",
-        "placeholder_price": "45€",
-        "placeholder_rating": 4.9,
-        "placeholder_reviews": 890
-      },
-      {
-        "id": "tivoli",
-        "name": "Tívoli: Villa Adriana y Villa d'Este",
-        "type": "full_day",
-        "duration_hours": 8,
         "emoji": "⛲",
-        "description": "Dos villas Patrimonio de la UNESCO: las ruinas de la residencia del emperador Adriano y los jardines renacentistas con sus célebres fuentes.",
+        "price_from_eur": 125,
+        "rating": 4.4,
+        "review_count": 367,
+        "provisional_pricing": false,
+        "meeting_point": "Recogida en hotel o Viale de Giorgio Washington (Villa Borghese)",
+        "description": "Visita las dos joyas de Tívoli: la villa del emperador Adriano con sus palacios y termas, y Villa d'Este con más de 500 fuentes renacentistas entre jardines espectaculares.",
         "destination_coords": [
-          41.9634,
-          12.7956
+          41.9633,
+          12.7955
         ],
-        "civitatis_search": "tivoli desde roma",
-        "gyg_search": "tivoli from rome",
-        "placeholder_price": "60€",
-        "placeholder_rating": 4.7,
-        "placeholder_reviews": 1520
-      },
-      {
-        "id": "orvieto",
-        "name": "Orvieto y pueblos de Umbría",
-        "type": "full_day",
-        "duration_hours": 10,
-        "emoji": "🏰",
-        "description": "Catedral gótica, ciudad subterránea y pueblos medievales en lo alto de colinas. La Umbría más auténtica a una hora de Roma.",
-        "destination_coords": [
-          42.7185,
-          12.1107
-        ],
-        "civitatis_search": "orvieto desde roma",
-        "gyg_search": "orvieto from rome",
-        "placeholder_price": "70€",
-        "placeholder_rating": 4.8,
-        "placeholder_reviews": 1100
+        "civitatis_slug": "excursion-villa-adriana-villa-este",
+        "civitatis_search": "tivoli villa este villa adriana desde roma",
+        "gyg_search": "tivoli villa este hadrian villa from rome"
       }
-    ]
+    ],
+    "civitatis_city": "roma"
   },
   "zone_walks": [
     {
@@ -4583,7 +4629,6 @@
     "max_auto_days": 7,
     "category_cap_selected": 4,
     "category_cap_default": 2,
-    "default_excursion": "pompeya_herculano",
     "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya"
   }
 }

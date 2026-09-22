@@ -90,3 +90,25 @@ export function slotBudgets(mode) {
     afternoon: mode.dayEndTarget - mode.afternoonStart,
   }
 }
+
+/**
+ * Un día de excursión de MEDIO DÍA, en horas:
+ *
+ *   EXCURSIÓN   08:00 - 14:00   la mañana entera, sin paradas de ciudad
+ *   DESCANSO    14:00 - 16:00   vacío a propósito: se vuelve, se come, se deja la mochila
+ *   RUTA        16:00 en adelante
+ *
+ * Las horas de la excursión las pone el operador, no el ritmo del viaje: una excursión sale cuando
+ * sale. Lo que sí depende del ritmo es hasta cuándo llega la tarde, así que el presupuesto se
+ * calcula contra el `dayEndTarget` de cada modo (completo 20:00 → 4h; tranquilo 19:30 → 3,5h).
+ */
+export const HALF_DAY_EXCURSION_START = HHMM('08:00')
+export const HALF_DAY_EXCURSION_END = HHMM('14:00')
+export const HALF_DAY_ROUTE_START = HHMM('16:00')
+
+export function halfDaySlotBudgets(mode) {
+  return {
+    morning: 0,
+    afternoon: Math.max(0, mode.dayEndTarget - HALF_DAY_ROUTE_START),
+  }
+}

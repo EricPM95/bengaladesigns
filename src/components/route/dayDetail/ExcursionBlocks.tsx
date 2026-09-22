@@ -305,6 +305,90 @@ export function ManualDayLink({ onClick }: { onClick: () => void }) {
 }
 
 /**
+ * La excursión de MEDIO DÍA que ocupa la mañana de un día de revisitas.
+ *
+ * No es el día entero, así que no se presenta como tal: no hay prueba social, ni alternativas
+ * plegadas, ni pregunta de "¿qué hacemos con este día?". Es un bloque de mañana con la franja
+ * horaria delante, igual que las paradas que vienen después llevan la suya — el viajero tiene que
+ * poder leer el día de arriba abajo sin cambiar de idioma a mitad.
+ *
+ * Quitarla no pide explicaciones: la tarde sigue montada y la mañana se queda libre, que en un día
+ * de revisitas es una mañana suya, no un hueco que arreglar.
+ */
+export function HalfDayExcursionBlock({
+  excursion,
+  startsAt,
+  endsAt,
+  onDismiss,
+}: {
+  excursion: Excursion
+  startsAt: string
+  endsAt: string
+  onDismiss: () => void
+}) {
+  return (
+    <div>
+      <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
+        Mañana · {startsAt} — {endsAt}
+      </p>
+      <div className="rounded-xl border border-accent bg-accent-soft p-3">
+        <div className="flex items-start gap-3">
+          <span className="text-3xl leading-none" aria-hidden="true">
+            {excursion.emoji ?? '🚌'}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <p className="min-w-0 text-body font-semibold text-text">{excursion.title}</p>
+              <span className="shrink-0 rounded-full border border-accent/40 bg-bg-card px-2 py-0.5 text-caption font-semibold text-accent-hover">
+                ½ día
+              </span>
+            </div>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-caption text-text-soft">
+              <span className="whitespace-nowrap">{excursion.durationLabel}</span>
+              {formatPrice(excursion) && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span className="whitespace-nowrap">desde {formatPrice(excursion)}</span>
+                </>
+              )}
+              {excursion.rating ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <RatingLabel excursion={excursion} />
+                </>
+              ) : null}
+            </p>
+          </div>
+        </div>
+        {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
+        {excursion.meetingPoint && (
+          <p className="mt-2 text-caption text-text-muted">
+            <span className="font-semibold">Punto de encuentro:</span> {excursion.meetingPoint}
+          </p>
+        )}
+        {excursion.bookUrl && (
+          <a
+            href={excursion.bookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            Ver disponibilidad
+          </a>
+        )}
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="mt-2 w-full text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+        >
+          Prefiero quedarme en la ciudad
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/**
  * El día de excursión, tal como se le presenta al viajero: una propuesta concreta, no un formulario
  * en blanco con seis opciones iguales.
  *

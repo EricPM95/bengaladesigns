@@ -31,6 +31,7 @@ import {
   CuratedAlternativeBanner,
   ExcursionBanner,
   ExcursionDayProposal,
+  HalfDayExcursionBlock,
   ExcursionLink,
   ManualDayLink,
   ManualDayOptions,
@@ -273,6 +274,7 @@ export function DayDetailPanel({
   /** Aviso tras arrastrar una parada a un hueco en el que su sitio todavía está cerrado. */
   const [reorderWarning, setReorderWarning] = useState<string | null>(null)
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
+  const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
   const route = useRouteStore((state) => state.route)
   const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
@@ -609,6 +611,12 @@ export function DayDetailPanel({
       .find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates ?? null
 
   const selectedExcursion = dayType === 'excursion' ? (excursionOptions.find((option) => option.id === day.selectedExcursionId) ?? null) : null
+  // La de medio día no vive en `selectedExcursionId` (ese es el día de excursión entero): el día
+  // sigue siendo un día de ciudad y la excursión solo le ocupa la mañana.
+  const halfDayExcursion =
+    day.halfDayExcursion && !day.halfDayExcursionDeclined
+      ? (excursionOptions.find((option) => option.id === day.halfDayExcursion!.id) ?? null)
+      : null
   const excursionTarget =
     selectedExcursion?.destinationCoords && hasRealCoordinates(selectedExcursion.destinationCoords)
       ? { name: selectedExcursion.title, coordinates: selectedExcursion.destinationCoords }
@@ -720,7 +728,10 @@ export function DayDetailPanel({
         <div className="space-y-2 px-3 pb-3">
           {/* Prominente: el banner va ENCIMA de la ruta y no la quita — el viajero ve las dos cosas
               y elige. Se puede cerrar sin perder nada (regla 9). */}
-          {showsRoute && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && (
+          {/* El banner de excursiones de jornada completa no sale en un día que YA tiene una de
+              medio día por la mañana: "muchos viajeros aprovechan este día para salir de Roma"
+              encima de una mañana que ya sale de Roma es contradecirse en dos centímetros. */}
+          {showsRoute && !halfDayExcursion && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && (
             <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} onSeeAll={() => convertDay('excursion')} />
           )}
 
@@ -792,6 +803,19 @@ export function DayDetailPanel({
                 ✕
               </button>
             </div>
+          )}
+
+          {/* La excursión de medio día ocupa la mañana de este día y las paradas de abajo empiezan
+              a las 16:00. La franja 14:00-16:00 no se pinta a propósito: es el hueco de volver,
+              comer y dejar la mochila, y dibujarlo sería llenar de UI un rato que el viajero no
+              tiene que planificar. */}
+          {halfDayExcursion && (
+            <HalfDayExcursionBlock
+              excursion={halfDayExcursion}
+              startsAt={day.halfDayExcursion!.startsAt}
+              endsAt={day.halfDayExcursion!.endsAt}
+              onDismiss={() => declineHalfDayExcursion(day.id)}
+            />
           )}
 
           {(showsRoute || (dayType === 'manual' && stops.length > 0)) && (
@@ -911,7 +935,7 @@ export function DayDetailPanel({
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
-          {showsRoute && prominence === 'subtle' && !day.excursionDeclined && (
+          {showsRoute && !halfDayExcursion && prominence === 'subtle' && !day.excursionDeclined && (
             <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />
           )}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}

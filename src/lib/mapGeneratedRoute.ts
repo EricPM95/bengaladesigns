@@ -118,6 +118,8 @@ export interface GeneratedDay {
   excursion_social_proof?: string | null
   beyond_auto_days?: boolean
   max_auto_days?: number | null
+  /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
+  half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -183,6 +185,10 @@ export interface GeneratedExcursion {
   estimated_price: string
   /** Búsqueda curada para el enlace de reserva — ver excursionsAvailablePayload en server/index.js. */
   civitatis_search?: string | null
+  /** Dónde arranca la excursión, tal cual lo publica el operador — solo las curadas. */
+  meeting_point?: string | null
+  /** El precio y la nota están puestos a mano hasta que se integre la API de afiliados. */
+  provisional_pricing?: boolean
   suggested_day?: number
 }
 
@@ -408,6 +414,8 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       rating: excursion.rating ?? undefined,
       reviewCount: excursion.review_count ?? undefined,
       destinationCoords: excursion.destination_coords ?? null,
+      meetingPoint: excursion.meeting_point ?? null,
+      provisionalPricing: excursion.provisional_pricing ?? false,
       bookUrl: buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])
@@ -509,6 +517,14 @@ function mapDay(
     excursionSocialProof: generated.excursion_social_proof ?? null,
     beyondAutoDays: generated.beyond_auto_days ?? false,
     maxAutoDays: generated.max_auto_days ?? null,
+    halfDayExcursion: generated.half_day_excursion
+      ? {
+          id: generated.half_day_excursion.id,
+          startsAt: generated.half_day_excursion.starts_at,
+          endsAt: generated.half_day_excursion.ends_at,
+          routeStartsAt: generated.half_day_excursion.route_starts_at,
+        }
+      : null,
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,

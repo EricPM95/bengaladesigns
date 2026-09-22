@@ -27,6 +27,7 @@ import {
   nextOpenMinutes,
   parseClosingMinutes,
 } from '../routeAlgorithm.js'
+import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { metersBetween } from './preplan.js'
 import { nightStopsFor } from './nightWalk.js'
 
@@ -219,22 +220,29 @@ export async function buildDayFromPlan({ destData, dayPlan, mode, mapboxToken, c
     ...(dayPlan.curated?.afternoon?.places ?? []),
   ])
 
-  const morningPlaces = placesForSlot(dayPlan.slots.morning, null, curatedNames)
+  // Excursión de medio día: la mañana es la excursión (08:00-14:00) y la ciudad no empieza hasta
+  // las 16:00. No lleva bloque de comida: a la hora de comer el viajero está volviendo de Ostia, y
+  // proponerle un restaurante en Trastevere a las 13:30 es proponerle algo imposible.
+  const mediaJornada = dayPlan.halfDayExcursion ?? null
+
+  const morningPlaces = mediaJornada ? [] : placesForSlot(dayPlan.slots.morning, null, curatedNames)
   // La mañana se corta en la comida, igual que la tarde se corta en la cena. Sin esto una mañana
   // larga se comía la comida y la tarde arrancaba encima de ella: seis solapes, todos a las 15:00.
   const morning = await schedulePlaces(morningPlaces, mode.dayStart, mapboxToken, mode, mode.lunchWindow[1])
 
   const lunchAt = mealTimeWithin(morning.cursor, mode.lunchWindow)
-  const meals = [
-    {
-      time: 'lunch',
-      suggested_time: minutesToTime(lunchAt),
-      options: [],
-      ...zoneFields(destData, dayPlan.slots.morning.zone, 'comida'),
-    },
-  ]
+  const meals = mediaJornada
+    ? []
+    : [
+        {
+          time: 'lunch',
+          suggested_time: minutesToTime(lunchAt),
+          options: [],
+          ...zoneFields(destData, dayPlan.slots.morning.zone, 'comida'),
+        },
+      ]
 
-  const afternoonStart = Math.max(lunchAt + mode.lunchMinutes, mode.afternoonStart)
+  const afternoonStart = mediaJornada ? HALF_DAY_ROUTE_START : Math.max(lunchAt + mode.lunchMinutes, mode.afternoonStart)
   const lastMorning = morningPlaces[morningPlaces.length - 1] ?? null
   const afternoonPlaces = placesForSlot(dayPlan.slots.afternoon, lastMorning ? coordsOf(lastMorning) : null, curatedNames)
   const afternoon = await schedulePlaces(afternoonPlaces, afternoonStart, mapboxToken, mode, mode.dinnerWindow[0])
@@ -262,6 +270,16 @@ export async function buildDayFromPlan({ destData, dayPlan, mode, mapboxToken, c
     times_are_final: true,
     // Lo que el viajero pidió y no cupo viaja hasta la UI: mejor avisar que callar.
     dinner_zone: dinnerZone,
+    // La excursión de la mañana, con sus horas ya resueltas, para que la UI no tenga que volver a
+    // calcularlas (y no pueda calcularlas distinto).
+    half_day_excursion: mediaJornada
+      ? {
+          id: mediaJornada.id,
+          starts_at: minutesToTime(HALF_DAY_EXCURSION_START),
+          ends_at: minutesToTime(HALF_DAY_EXCURSION_END),
+          route_starts_at: minutesToTime(HALF_DAY_ROUTE_START),
+        }
+      : null,
   }
 }
 

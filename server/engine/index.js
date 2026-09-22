@@ -15,6 +15,7 @@
  */
 
 import { buildExcursionDayV2, buildManualDayV2 } from '../routeAlgorithm.js'
+import { preselectedExcursionId } from './excursions.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
@@ -87,7 +88,7 @@ export async function buildDayBlockV3(
   if (dayPlan.isExcursion) {
     const config = destData.destination_config ?? {}
     const day = buildExcursionDayV2(destData, dayNumber, totalDays, pace)
-    const preferida = day.excursion_options.find((option) => option.id === config.default_excursion)
+    const preferida = day.excursion_options.find((option) => option.id === preselectedExcursionId(destData))
     if (preferida) {
       // La preseleccionada va la primera: es la que la ficha enseña en grande y el resto quedan
       // como alternativas.

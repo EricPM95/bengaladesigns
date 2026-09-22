@@ -430,7 +430,12 @@ function mergeBlockDaysIntoGenerated(
     days: generated.days.map((day) => {
       const blockDay = byDayNumber.get(day.day_number)
       if (!blockDay) return day
-      return { ...day, ...blockDay, city: day.city, country_code: day.country_code, type: day.type, phase_type: day.phase_type }
+      // El TIPO es la excepción: si el bloque trae uno, manda el bloque. Lo devuelve el motor de
+      // rutas curadas, que decide dónde cae la excursión a partir de `core_days`/`max_auto_days`
+      // del destino; el esqueleto lo decidía con el `day_pattern` viejo y le ganaba, así que un día
+      // de ciudad con excursión de media jornada llegaba a la ficha pintado como día de excursión
+      // entero. Los días que genera Claude no traen tipo y siguen usando el del esqueleto.
+      return { ...day, ...blockDay, city: day.city, country_code: day.country_code, type: blockDay.type ?? day.type, phase_type: day.phase_type }
     }),
     not_included: [...(generated.not_included ?? []), ...(notIncluded ?? [])],
     excursions_available: [...(generated.excursions_available ?? []), ...(excursions ?? [])],

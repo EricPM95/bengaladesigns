@@ -426,6 +426,28 @@ export interface Excursion {
   /** Precio tal cual viene del JSON ("65€"). Es un PLACEHOLDER hasta integrar las APIs de afiliados
       (Civitatis/GYG) — nunca se presenta como precio real cerrado. */
   priceLabel?: string | null
+  /** Dónde arranca la excursión, tal cual lo publica el operador. */
+  meetingPoint?: string | null
+  /** El precio y la nota de esta excursión están puestos a mano, no vienen de la API del operador. */
+  provisionalPricing?: boolean
+}
+
+/**
+ * Una excursión de MEDIO DÍA colocada en la mañana de un día de revisitas.
+ *
+ * El día sigue siendo un día de ciudad —tiene sus paradas de tarde— así que no es un `dayType`
+ * nuevo: es un bloque que ocupa la mañana. Las horas vienen resueltas del motor (ver
+ * HALF_DAY_EXCURSION_* en server/engine/modeConfig.js) para que la UI no las recalcule distinto.
+ */
+export interface HalfDayExcursionSlot {
+  /** Id de la excursión dentro de `day.excursions`. */
+  id: string
+  /** "08:00" */
+  startsAt: string
+  /** "14:00" */
+  endsAt: string
+  /** "16:00" — a partir de aquí empiezan las paradas del día. */
+  routeStartsAt: string
 }
 
 // ── Didn't make the cut ───────────────────────────────────
@@ -497,6 +519,10 @@ export interface DayPlan {
   excursionSocialProof?: string | null
   /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
   excursionDeclined?: boolean
+  /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
+  halfDayExcursion?: HalfDayExcursionSlot | null
+  /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
+  halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo
       convirtiera a libre. Solo el primero explica por qué. */
   beyondAutoDays?: boolean
