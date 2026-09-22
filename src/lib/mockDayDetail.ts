@@ -223,6 +223,9 @@ export interface MockStopDetail {
   tags?: string[]
   /** Ver Stop.scheduleText en types.ts. */
   scheduleText?: string | null
+  /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
+  isRevisit?: boolean
+  revisitReason?: string
 }
 
 type StopTemplate = (city: string, rand: () => number) => MockStopDetail
@@ -429,6 +432,8 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     isNightExperience: stop.isNightExperience,
     tags: stop.tags,
     scheduleText: stop.scheduleText,
+    isRevisit: stop.isRevisit,
+    revisitReason: stop.revisitReason,
   }
 }
 
@@ -455,7 +460,13 @@ export function resolveDisplayStops(day: DayPlan): MockStopDetail[] {
   const templatePool = buildMockStopsForDay(day)
   if (day.stops.length === 0) return templatePool
   const richById = new Map(templatePool.map((stop) => [stop.id, stop]))
-  return day.stops.map((stop) => richById.get(stop.id) ?? shellFromStop(stop))
+  // La marca de revisita es dato de la RUTA, no de la plantilla: si la parada resuelve a su
+  // versión rica, se le vuelve a pegar encima o se perdería el badge.
+  return day.stops.map((stop) => {
+    const rich = richById.get(stop.id)
+    if (!rich) return shellFromStop(stop)
+    return stop.isRevisit ? { ...rich, isRevisit: true, revisitReason: stop.revisitReason } : rich
+  })
 }
 
 /** Minutos a pie entre paradas de plantilla cuando se cristalizan (sin coordenadas reales todavía, así que no hay conector real que consultar) — mismo valor de reserva que el resto del cálculo horario de la app, ver DEFAULT_WALK_MINUTES en DayDetailPanel.tsx. */

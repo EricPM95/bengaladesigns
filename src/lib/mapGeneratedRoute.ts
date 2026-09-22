@@ -41,6 +41,8 @@ interface GeneratedTravelToNext {
 interface GeneratedStop {
   /** Ver Stop.isZoneWalk — solo pipeline v2. */
   is_zone_walk?: boolean
+  is_revisit?: boolean
+  revisit_reason?: string
   id: string
   name: string
   description: string
@@ -290,6 +292,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     photoUrl: buildPlaceholderPhotoUrl(generated.id, generated.name),
     wikipediaTitle: generated.wikipedia_title ?? null,
     isZoneWalk: generated.is_zone_walk ?? false,
+    isRevisit: generated.is_revisit ?? false,
+    revisitReason: generated.revisit_reason,
     category: (generated.category && CATEGORY_MAP[generated.category]) || 'sight',
     categoryLabel: generated.category_label,
     hours: generated.hours ?? null,

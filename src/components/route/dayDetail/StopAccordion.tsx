@@ -77,7 +77,15 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
           <p className="flex items-center gap-1.5 text-body font-semibold text-text">
             {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
             <span className="min-w-0 flex-1">{displayStopName(stop.name)}</span>
+            {/* Una revisita sin avisar se lee como un duplicado por descuido. El badge dice que es
+                a propósito, y el motivo de abajo dice por qué merece la pena volver. */}
+            {stop.isRevisit && (
+              <span className="shrink-0 rounded-full bg-bg-hover px-2 py-0.5 text-caption font-semibold text-text-muted">↩ Revisita</span>
+            )}
           </p>
+          {stop.isRevisit && stop.revisitReason && (
+            <p className="text-caption italic text-text-soft">{stop.revisitReason}</p>
+          )}
 
           {/* Ronda 8D, Issue D: el ⏳ se movió del lado derecho de la cabecera (junto al nombre) a
               esta línea, junto al horario/acceso libre — así queda a la izquierda, agrupado con la

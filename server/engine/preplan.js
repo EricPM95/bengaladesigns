@@ -16,6 +16,7 @@
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
 import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor, slotBudgets } from './modeConfig.js'
 import { categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
+import { planRevisits } from './revisits.js'
 
 // ── Prioridades de la cascada ───────────────────────────────────────────────────────────────
 //
@@ -123,7 +124,7 @@ function themeCountByZone(destData, interestTags) {
 const MAX_THEME_ZONE_BONUS = 1.5
 const THEME_ZONE_BONUS_PER_PLACE = 0.4
 
-function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts = new Map()) {
+function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts = new Map(), repetitionDay = false) {
   const variant = destData?.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
   const franja = variant?.franjas?.find((f) => f.day === dayNumber)
   if (franja) {
@@ -143,8 +144,14 @@ function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCount
       return { id, priority: base - bonus }
     })
     .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id, 'es'))
-  const index = (dayNumber - 1) % Math.max(1, ordered.length)
-  return { morning: ordered[index]?.id ?? null, afternoon: ordered[index]?.id ?? null, curated: null }
+  // Un día de repetición VUELVE a las zonas buenas en vez de seguir bajando por la lista hacia la
+  // periferia. Es lo que pide la Parte 13 del Prompt 9 —"pasar la mañana entera en Trastevere en
+  // vez de cruzarlo en una hora"— y sin esto las revisitas no existían: los días tardíos caían en
+  // Esquilino o la Via Appia, donde no hay nada que revisitar porque su poco contenido ya se está
+  // usando como parada nueva.
+  const pool = repetitionDay ? ordered.slice(0, Math.max(1, Math.min(3, ordered.length))) : ordered
+  const index = (dayNumber - 1) % Math.max(1, pool.length)
+  return { morning: pool[index]?.id ?? null, afternoon: pool[index]?.id ?? null, curated: null }
 }
 
 function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCounts = new Map()) {
@@ -156,15 +163,18 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
   // El último día es la vuelta y no lleva ruta (invariante 21).
   const contentDays = Math.max(1, totalDays - 1)
 
+  // Unidad -> franja en la que quedó. Lo necesitan las revisitas, que van a la OTRA franja.
+  const placedSlot = new Map()
   const days = []
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
-    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts)
+    const esRepeticion = dayNumber > coreDays
+    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts, esRepeticion)
     days.push({
       dayNumber,
       weekday: weekdayForDay(dateRangeStartIso, dayNumber),
       // Pasado el contenido nuevo del destino, repetir deja de ser un defecto: a Roma le quedan 10
       // lugares en 5 zonas fuera del curado, así que los días 5+ se montan con revisitas.
-      allowsRepetition: dayNumber > coreDays,
+      allowsRepetition: esRepeticion,
       isBlank: dayNumber > maxAutoDays,
       curated: zones.curated,
       slots: {
@@ -174,7 +184,7 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
       hasLongVisit: false,
     })
   }
-  return { mode, days }
+  return { mode, days, placedSlot }
 }
 
 // ── Paso 3: la cascada ──────────────────────────────────────────────────────────────────────
@@ -360,6 +370,7 @@ function tryPlaceIn(unit, best, plan, tiers, mode, evicted, tier) {
 
   slot.units.push(unit)
   slot.used += cost
+  plan.placedSlot.set(unit.id, best.slotName)
   if (unit.isLong) best.day.hasLongVisit = true
   // La franja ADOPTA la zona de lo primero que cae dentro. Y si lo primero es una elección del
   // pool, se queda con su zona aunque el reparto curado dijera otra: así es como elegir la Galería
@@ -535,6 +546,18 @@ export function preplanTrip({
         closedOn: unit.closedOn,
       }
     })
+
+  // Revisitas: los días por encima de `core_days` se completan volviendo a sitios de días
+  // anteriores a otra hora, en vez de rascar relleno de tercera que nadie ha pedido (ver
+  // revisits.js). Va al final, cuando ya se sabe qué hay en cada día y cuánto hueco queda.
+  planRevisits(
+    plan,
+    units,
+    placed,
+    plan.placedSlot,
+    (unit, slot) => slotCost(unit, slot, plan.mode),
+    (zoneA, zoneB) => zonesAreAdjacent(destData, zoneA, zoneB),
+  )
 
   return { ...plan, tiers, placed, unplaced, unplacedPool, units }
 }

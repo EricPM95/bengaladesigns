@@ -33,14 +33,31 @@ for (const pace of ['nonstop', 'tranquilo']) {
             for (const u of day.slots[slotName].units) {
               if (u.isLong) longs++
               for (const pl of u.places) {
-                if (seen.has(pl.name)) fail(`${tag}: REPETIDO ${pl.name} (d${seen.get(pl.name)} y d${day.dayNumber})`)
-                seen.set(pl.name, day.dayNumber)
+                // Una revisita SÍ repite lugar, y es a propósito (invariante 4: "salvo que sea una
+                // revisita explícita"). Lo que no puede es repetirse sin marca.
+                if (!u.isRevisit && seen.has(pl.name)) fail(`${tag}: REPETIDO ${pl.name} (d${seen.get(pl.name)} y d${day.dayNumber})`)
+                if (!u.isRevisit) seen.set(pl.name, day.dayNumber)
               }
               if (day.weekday && u.closedOn.includes(day.weekday)) fail(`${tag}: ${u.id} en ${day.weekday}, que cierra`)
             }
             if (day.slots[slotName].used > day.slots[slotName].budget) fail(`${tag} d${day.dayNumber} ${slotName}: se pasa del presupuesto`)
           }
           if (longs > 1 && p.days.length > 1) fail(`${tag} d${day.dayNumber}: ${longs} visitas largas`)
+
+          // Reglas de la revisita (Prompt 9, Parte 13).
+          const revisitas = ['morning', 'afternoon'].flatMap((s2) => day.slots[s2].units.filter((u) => u.isRevisit))
+          if (revisitas.length > 3) fail(`${tag} d${day.dayNumber}: ${revisitas.length} revisitas (máx. 3)`)
+          if (revisitas.length > 0 && !day.allowsRepetition) {
+            fail(`${tag} d${day.dayNumber}: revisitas en un día que no permite repetición`)
+          }
+          for (const r of revisitas) {
+            if (r.requiresTicket) fail(`${tag} d${day.dayNumber}: revisita de pago — ${r.id}`)
+            if (r.isLong) fail(`${tag} d${day.dayNumber}: revisita de visita larga — ${r.id}`)
+            const original = p.placed.get(r.id)
+            if (original !== undefined && original >= day.dayNumber) {
+              fail(`${tag} d${day.dayNumber}: revisita de algo que no se ha visto antes — ${r.id}`)
+            }
+          }
           totalDays++
           totalStops += [...day.slots.morning.units, ...day.slots.afternoon.units].reduce((n, u) => n + u.places.length, 0)
         }

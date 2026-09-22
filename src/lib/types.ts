@@ -240,6 +240,8 @@ export interface Stop {
   walkingTimeToNextMinutes?: number
   nextStopNote?: string
   isRevisit?: boolean
+  /** Por qué merece la pena volver — lo escribe el motor (ver revisits.js en el servidor). */
+  revisitReason?: string
   isFreeTime?: boolean
   detail?: PlaceDetail
   /** Modo Hoy: instante real (ISO) en que el viajero pulsó "Ya he estado aquí" / "Ya terminé, seguir" — null/undefined mientras no se ha hecho check-in. Vive en el Stop porque es un hecho de esa visita concreta, no del día. */

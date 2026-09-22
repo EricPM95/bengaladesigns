@@ -115,7 +115,11 @@ function placesForSlot(slot, entryCoords, curatedNames) {
         curatedNames,
       )
   const byHead = new Map(heads.map((h) => [h.head.name, h.unit]))
-  return orderedHeads.flatMap((head) => byHead.get(head.name).places)
+  // El motivo de la revisita viaja pegado al lugar: la unidad se pierde al aplanar a paradas.
+  return orderedHeads.flatMap((head) => {
+    const unit = byHead.get(head.name)
+    return unit.isRevisit ? unit.places.map((place) => ({ ...place, _revisitReason: unit.revisitReason })) : unit.places
+  })
 }
 
 /**
@@ -159,14 +163,14 @@ async function schedulePlaces(places, startMinutes, mapboxToken, mode, cutoff = 
     // misma hora que el restaurante.
     if (start + duration > cutoff) continue
 
-    stops.push(buildStop(place, start, duration))
+    stops.push(buildStop(place, start, duration, place._revisitReason))
     cursor = start + duration
     previous = place
   }
   return { stops, cursor }
 }
 
-function buildStop(place, startMinutes, durationMinutes) {
+function buildStop(place, startMinutes, durationMinutes, revisitReason) {
   return {
     name: place.name,
     suggested_time: minutesToTime(startMinutes),
@@ -180,6 +184,9 @@ function buildStop(place, startMinutes, durationMinutes) {
     tags: Array.isArray(place.tags) ? place.tags : [],
     schedule: place.schedule ?? null,
     ...(place.isFreeTour ? { is_free_tour: true, free_tour_meeting_point: place.meeting_point ?? null } : {}),
+    // Volver a un sitio a otra hora no es un duplicado por descuido: la ficha lo dice y explica por
+    // qué merece la pena (ver revisits.js).
+    ...(revisitReason ? { is_revisit: true, revisit_reason: revisitReason } : {}),
     ...categoryFor(place.name, place.tags),
   }
 }
