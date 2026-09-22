@@ -223,6 +223,12 @@ function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays, 
   // es no terminarlas.
   if (unit.isLong) score += slotName === 'morning' ? 300 : -300
 
+  // El Free Tour va por la mañana y punto, por encima incluso de la zona (invariante 1: es la
+  // PRIMERA parada de su día). Sin esto acababa en la TARDE del día 1: el tour es del centro
+  // histórico y la tarde de ese día también, así que ganaba por coincidencia de zona. Un free tour
+  // a las 15:00 no existe — se reservan a las 10:00 y quien llega tarde se queda fuera.
+  if (unit.isFreeTour) score += slotName === 'morning' ? 2000 : -2000
+
   // best_time como BONUS de desempate, nunca como requisito (solo lo llevan 3 lugares de 67, y
   // ningún mirador — por eso dejó de tener sentido como restricción).
   if (unit.bestTime) {

@@ -73,6 +73,14 @@ for (const pace of ['nonstop', 'tranquilo']) {
         let prevEnd = null
         let prevStop = null
 
+        // Invariante 1: el Free Tour abre su día. Se coló en la TARDE del día 1 al reescribir el
+        // motor, porque ganaba la franja por coincidencia de zona.
+        const freeTourIndex = day.stops.findIndex((s) => s.is_free_tour)
+        if (freeTourIndex > 0) fail(`${tag} d${day.day_number}: el Free Tour no abre el día (va el ${freeTourIndex + 1}º)`)
+        if (freeTourIndex === 0 && t2m(day.stops[0].suggested_time) >= 12 * 60) {
+          fail(`${tag} d${day.day_number}: Free Tour a las ${day.stops[0].suggested_time}`)
+        }
+
         for (const stop of day.stops) {
           const start = t2m(stop.suggested_time)
           const end = start + stop.duration_minutes

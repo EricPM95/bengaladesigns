@@ -102,12 +102,18 @@ function placesForSlot(slot, entryCoords, curatedNames) {
   // Lo que se ordena es el conjunto de unidades, representadas por su primer lugar.
   const units = slot.units
   if (units.length === 0) return []
-  const heads = units.map((unit) => ({ unit, head: unit.places[0] }))
-  const orderedHeads = orderPlaces(
-    heads.map((h) => h.head),
-    entryCoords,
-    curatedNames,
-  )
+  // El Free Tour abre su día siempre (invariante 1), así que no entra en el orden geográfico: se
+  // queda delante y el resto de la franja se ordena a partir de donde acaba.
+  const units2 = [...units].sort((a, b) => Number(b.isFreeTour) - Number(a.isFreeTour))
+  const heads = units2.map((unit) => ({ unit, head: unit.places[0] }))
+  const freeTourHead = heads.find((h) => h.unit.isFreeTour)?.head ?? null
+  const orderedHeads = freeTourHead
+    ? [freeTourHead, ...orderPlaces(heads.filter((h) => !h.unit.isFreeTour).map((h) => h.head), coordsOf(freeTourHead), curatedNames)]
+    : orderPlaces(
+        heads.map((h) => h.head),
+        entryCoords,
+        curatedNames,
+      )
   const byHead = new Map(heads.map((h) => [h.head.name, h.unit]))
   return orderedHeads.flatMap((head) => byHead.get(head.name).places)
 }
