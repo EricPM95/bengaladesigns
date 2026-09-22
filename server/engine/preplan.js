@@ -165,9 +165,22 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
 
   // Unidad -> franja en la que quedó. Lo necesitan las revisitas, que van a la OTRA franja.
   const placedSlot = new Map()
+  // Dónde cae la excursión de día completo: SIEMPRE en el día `core_days` del destino, y el core
+  // day que desplaza pasa al siguiente. Es universal y escala con cada destino — Roma (core 4) la
+  // pone el día 4, Lisboa (core 3) el día 3.
+  //
+  // Se mide en días de CONTENIDO, no en días de viaje: el último día del viaje es la vuelta y no
+  // lleva ruta (invariante 21), así que un viaje de 5 días tiene 4 de contenido y la excursión cae
+  // en el último de ellos. Un viaje que no llega a `core_days` de contenido no lleva excursión:
+  // con tres días en Roma nadie se va a Pompeya.
+  const excursionDay = contentDays >= coreDays ? coreDays : null
+
   const days = []
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
-    const esRepeticion = dayNumber > coreDays
+    // El día siguiente a la excursión es el core day desplazado: ruta nueva, no revisitas. La
+    // repetición empieza un día después.
+    const esRepeticion = dayNumber > coreDays + (excursionDay ? 1 : 0)
+    const esExcursion = dayNumber === excursionDay
     const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts, esRepeticion)
     days.push({
       dayNumber,
@@ -177,6 +190,9 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
       allowsRepetition: esRepeticion,
       isBlank: dayNumber > maxAutoDays,
       curated: zones.curated,
+      // Un día de excursión no tiene paradas de ciudad: el viajero está fuera. Sus franjas se
+      // quedan vacías a propósito y la cascada las salta (ver unitFitsDay).
+      isExcursion: esExcursion,
       slots: {
         morning: { zone: zones.morning, units: [], budget: budgets.morning, used: 0 },
         afternoon: { zone: zones.afternoon, units: [], budget: budgets.afternoon, used: 0 },
@@ -226,7 +242,7 @@ function assignTiers(units, poolNames) {
 }
 
 function unitFitsDay(unit, day, mode) {
-  if (day.isBlank) return false
+  if (day.isBlank || day.isExcursion) return false
   if (unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)) return false
   return true
 }

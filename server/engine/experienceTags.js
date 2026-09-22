@@ -49,9 +49,12 @@ const FALLBACK_CAP_DEFAULT = 2
 export function categoryCapFor(destData, category, selectedCategories) {
   if (!category) return Infinity
   const elegido = (selectedCategories ?? []).includes(category)
+  // En `destination_config` desde la Entrega C; se sigue leyendo la raíz como reserva para un
+  // JSON de destino que no se haya migrado todavía.
+  const config = destData?.destination_config ?? {}
   return elegido
-    ? (destData?.category_cap_selected ?? FALLBACK_CAP_SELECTED)
-    : (destData?.category_cap_default ?? FALLBACK_CAP_DEFAULT)
+    ? (config.category_cap_selected ?? destData?.category_cap_selected ?? FALLBACK_CAP_SELECTED)
+    : (config.category_cap_default ?? destData?.category_cap_default ?? FALLBACK_CAP_DEFAULT)
 }
 
 /** Los tags que le interesan a este viajero, según las experiencias que haya elegido. */

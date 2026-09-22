@@ -14,7 +14,7 @@
  * con `zone_priority` y sale gratis e instantáneo.
  */
 
-import { buildManualDayV2 } from '../routeAlgorithm.js'
+import { buildExcursionDayV2, buildManualDayV2 } from '../routeAlgorithm.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
@@ -73,6 +73,22 @@ export async function buildDayBlockV3(
   // Claude y generara el día con IA: cada día por encima del límite costaba una llamada de pago y
   // salía lleno de relleno, que es exactamente lo contrario de lo que el límite quiere conseguir.
   if (dayPlan.isBlank) return buildManualDayV2(dayNumber)
+
+  // Día de excursión: no tiene paradas de ciudad, tiene OPCIONES, con una ya preseleccionada — la
+  // más popular del destino. El viajero puede cambiarla, o rechazarla y recuperar un día de ruta.
+  if (dayPlan.isExcursion) {
+    const config = destData.destination_config ?? {}
+    const day = buildExcursionDayV2(destData, dayNumber, totalDays, pace)
+    const preferida = day.excursion_options.find((option) => option.id === config.default_excursion)
+    if (preferida) {
+      // La preseleccionada va la primera: es la que la ficha enseña en grande y el resto quedan
+      // como alternativas.
+      day.excursion_options = [preferida, ...day.excursion_options.filter((option) => option.id !== preferida.id)]
+      day.excursion_preselected = preferida.id
+    }
+    day.excursion_social_proof = config.excursion_social_proof ?? null
+    return day
+  }
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()

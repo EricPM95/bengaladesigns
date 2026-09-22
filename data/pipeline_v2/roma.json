@@ -4580,8 +4580,10 @@
   ],
   "destination_config": {
     "core_days": 4,
-    "max_auto_days": 7
-  },
-  "category_cap_selected": 4,
-  "category_cap_default": 2
+    "max_auto_days": 7,
+    "category_cap_selected": 4,
+    "category_cap_default": 2,
+    "default_excursion": "pompeya_herculano",
+    "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya"
+  }
 }

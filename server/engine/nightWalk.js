@@ -68,7 +68,8 @@ export function planNightWalks(destData, plan) {
   const byDay = new Map()
 
   for (const day of plan.days) {
-    if (day.isBlank) continue
+    // Ni en blanco ni de excursión: no hay cena en la ciudad de la que salir a pasear.
+    if (day.isBlank || day.isExcursion) continue
     const dinnerZone = day.slots.afternoon.zone ?? day.slots.morning.zone
     if (!dinnerZone) continue
     // Se sale desde donde se ha cenado: el centro de la zona de la cena es la mejor aproximación

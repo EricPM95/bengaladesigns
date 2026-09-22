@@ -82,7 +82,8 @@ for (const pace of ['nonstop', 'tranquilo']) {
           if (u.level !== 1 || p.placed.has(u.id)) continue
           const intocable = (o) => o.level === 1 || p.tiers.get(o.id) === 0
           const cabriaEnAlgunDia = p.days.some((d) => {
-            if (d.isBlank) return false
+            // Un día de excursión no es sitio libre: el viajero está fuera de la ciudad.
+            if (d.isBlank || d.isExcursion) return false
             if (d.weekday && u.closedOn.includes(d.weekday)) return false
             const largasDelDia = ['morning', 'afternoon'].flatMap((s2) => d.slots[s2].units.filter((x) => x.isLong))
             if (u.isLong && largasDelDia.some(intocable)) return false
