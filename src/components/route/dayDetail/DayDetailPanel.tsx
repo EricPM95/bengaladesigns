@@ -29,10 +29,13 @@ import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { dinnerWindowFor } from '../../../lib/todayMode'
 import {
   CuratedAlternativeBanner,
+  BlankDayFullExcursion,
   ExcursionBanner,
   ExcursionDayProposal,
+  FreeAfternoonBlock,
   HalfDayExcursionBlock,
   ExcursionLink,
+  ExcursionOptions,
   ManualDayLink,
   ManualDayOptions,
 } from './ExcursionBlocks'
@@ -275,6 +278,7 @@ export function DayDetailPanel({
   const [reorderWarning, setReorderWarning] = useState<string | null>(null)
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
+  const addBlankDayExcursion = useRouteStore((state) => state.addBlankDayExcursion)
   const route = useRouteStore((state) => state.route)
   const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
@@ -315,7 +319,13 @@ export function DayDetailPanel({
     day.dayNumber === 1 || isLastDay ? (route?.transportContext.transport_option?.id ?? null) : (day.transport?.mode ?? null)
 
   const stops = resolveDisplayStops(day)
-  const realStops: Stop[] = day.stops.length > 0 ? day.stops : seedStopsFromTemplate(day)
+  // Un día LIBRE está vacío a propósito y no tiene plantilla que cristalizar — misma distinción que
+  // hace resolveDisplayStops, y tiene que ser la misma o los dos arrays dejan de ir en paralelo.
+  //
+  // Sin esto, añadir la primera parada a un día en blanco le metía la plantilla mock ENTERA: el
+  // lugar elegido entraba bien y detrás aparecían "Catedral de Roma" y "Yacimiento arqueológico de
+  // Roma" a las 09:00, que no son lugares, son relleno de maqueta.
+  const realStops: Stop[] = day.stops.length > 0 || (day.dayType ?? 'normal') === 'manual' ? day.stops : seedStopsFromTemplate(day)
   const stopIdsKey = realStops.map((stop) => stop.id).join(',')
 
   // Progresivo: pide la distancia/tiempo REAL (Mapbox Directions) de cada conector parada→parada
@@ -459,7 +469,14 @@ export function DayDetailPanel({
 
   const addPickedStop = (newStop: Stop) => {
     if (day.stops.length === 0) seedDayStops(day.id, realStops)
-    if (insertAt !== null) insertStopAt(day.id, insertAt, newStop)
+    // La primera parada de una tarde que arranca tras una excursión de medio día empieza a las
+    // 16:00, no a la hora de siempre: el viajero está volviendo hasta entonces. A partir de ahí el
+    // store encadena las demás desde esta, como en cualquier otro día.
+    const conHoraDeTarde =
+      day.halfDayExcursion && !day.halfDayExcursionDeclined && day.stops.length === 0
+        ? { ...newStop, time: day.halfDayExcursion.routeStartsAt }
+        : newStop
+    if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
     setInsertAt(null)
     setAddStopInitialQuery(undefined)
   }
@@ -617,6 +634,20 @@ export function DayDetailPanel({
     day.halfDayExcursion && !day.halfDayExcursionDeclined
       ? (excursionOptions.find((option) => option.id === day.halfDayExcursion!.id) ?? null)
       : null
+
+  // ── Día en blanco con excursión puesta a mano ───────────────────────────────────────────────
+  // Solo los días que el destino ya no sabe llenar (`beyondAutoDays`). Los que coloca el motor
+  // (día de excursión y media jornada en día de revisitas) tienen su propia lógica y no pasan por
+  // aquí. Lo que decide qué ve el viajero es la DURACIÓN de lo que eligió, no cómo llegó hasta él.
+  const esDiaEnBlanco = Boolean(day.beyondAutoDays)
+  const excursionElegidaEnBlanco = esDiaEnBlanco
+    ? (excursionOptions.find((option) => option.id === day.selectedExcursionId) ?? null)
+    : null
+  const excursionEnteraEnBlanco = excursionElegidaEnBlanco?.length === 'full-day' ? excursionElegidaEnBlanco : null
+  /** Media jornada a mano y todavía sin paradas por la tarde: hay que ofrecerle montarla. */
+  const tardeLibreEnBlanco = esDiaEnBlanco && halfDayExcursion !== null && stops.length === 0
+  /** ¿Está el día enseñando su lista de paradas? Lo comparten la lista y el hueco de fin de día. */
+  const muestraParadas = showsRoute || (dayType === 'manual' && stops.length > 0)
   const excursionTarget =
     selectedExcursion?.destinationCoords && hasRealCoordinates(selectedExcursion.destinationCoords)
       ? { name: selectedExcursion.title, coordinates: selectedExcursion.destinationCoords }
@@ -735,11 +766,46 @@ export function DayDetailPanel({
             <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} onSeeAll={() => convertDay('excursion')} />
           )}
 
-          {dayType === 'excursion' && (
+          {/* Día en blanco al que el viajero le ha puesto una excursión de jornada completa: el día
+              está resuelto y no hay hueco que ofrecer. */}
+          {excursionEnteraEnBlanco && (
+            <BlankDayFullExcursion
+              excursion={excursionEnteraEnBlanco}
+              onRemove={() => {
+                selectDayExcursion(day.id, null)
+                convertDay('manual')
+              }}
+            />
+          )}
+
+          {dayType === 'excursion' && !excursionEnteraEnBlanco && (
             <div className="space-y-3 pt-1">
               {/* Regla 10: si este día tenía ruta curada, SIEMPRE se ofrece volver a ella. */}
               {day.curatedAlternative && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
-              {excursionOptions.length > 0 ? (
+              {esDiaEnBlanco ? (
+                // En un día en blanco no se propone: el viajero vino a elegir. Y no lleva la salida
+                // "te montamos otro día de ruta" — este día está en blanco justamente porque el
+                // destino ya no da para más, así que sería prometerle algo que no existe.
+                <div className="space-y-2">
+                  <p className="text-small leading-relaxed text-text-soft">Elige una excursión para el día {day.dayNumber}.</p>
+                  <ExcursionOptions
+                    options={excursionOptions}
+                    selectedId={day.selectedExcursionId ?? null}
+                    onSelect={(id) => {
+                      const elegida = excursionOptions.find((option) => option.id === id)
+                      if (elegida) addBlankDayExcursion(day.id, elegida)
+                      else selectDayExcursion(day.id, null)
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => convertDay('manual')}
+                    className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+                  >
+                    Mejor monto el día yo
+                  </button>
+                </div>
+              ) : excursionOptions.length > 0 ? (
                 <ExcursionDayProposal
                   destination={day.city}
                   options={excursionOptions}
@@ -757,7 +823,10 @@ export function DayDetailPanel({
             </div>
           )}
 
-          {dayType === 'manual' && stops.length === 0 && (
+          {/* Con la mañana ya resuelta por una excursión de medio día, la tarde tiene su propio
+              bloque (arriba) y estas dos salidas sobran: "buscar excursiones" le ofrecería una
+              segunda excursión al mismo día. */}
+          {dayType === 'manual' && stops.length === 0 && !halfDayExcursion && (
             <div className="space-y-2 pt-1">
               {/* Solo en el día en blanco por límite del destino, y solo en el PRIMERO: repetirlo en
                   cada día a partir del octavo sería regañar al viajero por alargar su viaje. No es
@@ -815,10 +884,22 @@ export function DayDetailPanel({
               startsAt={day.halfDayExcursion!.startsAt}
               endsAt={day.halfDayExcursion!.endsAt}
               onDismiss={() => declineHalfDayExcursion(day.id)}
+              dismissLabel={esDiaEnBlanco ? 'Quitar esta excursión' : undefined}
             />
           )}
 
-          {(showsRoute || (dayType === 'manual' && stops.length > 0)) && (
+          {/* Media jornada en un día en blanco: la tarde queda suya y hay que decírselo, con la
+              hora a la que empieza. El hueco 14:00-16:00 no se pinta, igual que en los días que
+              monta el motor. */}
+          {tardeLibreEnBlanco && (
+            <FreeAfternoonBlock
+              destination={day.city}
+              startsAt={day.halfDayExcursion!.routeStartsAt}
+              onAddStops={() => setInsertAt(0)}
+            />
+          )}
+
+          {muestraParadas && (
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
           {stops.map((stop, index) => {
@@ -930,7 +1011,12 @@ export function DayDetailPanel({
           {/* Hueco de fin de día: también se pinta siempre, aunque todavía no se sepa dónde se
               duerme (sin alojamiento elegido no hay `finalConnector` que mostrar, pero sí tiene que
               poder añadirse una parada al final del día). */}
-          {stops.length > 0 &&
+          {/* Solo si el día ESTÁ enseñando sus paradas. Un día de excursión resuelve `stops` a la
+              plantilla mock aunque no la pinte, así que con la condición puesta solo en
+              `stops.length` aparecía un "Fin del día · + Añadir parada" suelto al final de un día
+              que no tiene ninguna parada a la vista. */}
+          {muestraParadas &&
+            stops.length > 0 &&
             renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
@@ -940,7 +1026,9 @@ export function DayDetailPanel({
           )}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
           {showsRoute && day.excursionDeclined && <ExcursionLink label="Añadir excursión" onClick={() => convertDay('excursion')} />}
-          {dayType === 'excursion' && (
+          {/* No en un día en blanco: está en blanco porque el destino ya no da para más contenido
+              nuevo, así que "generamos una ruta" sería prometerle algo que no existe. */}
+          {dayType === 'excursion' && !esDiaEnBlanco && (
             <ExcursionLink label="Generar una ruta para este día" onClick={() => convertDay('smart_route')} />
           )}
           {dayType !== 'manual' && prominence !== 'none' && <ManualDayLink onClick={() => convertDay('manual')} />}

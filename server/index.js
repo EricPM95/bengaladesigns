@@ -4600,12 +4600,16 @@ app.post('/api/generate-day-block', async (req, res) => {
         // convertir un día normal en excursión). Si ADEMÁS este día lleva una de medio día por la
         // mañana, se añade la suya: no está en el catálogo porque no compite con ellas, pero el
         // cliente necesita sus datos para pintar la tarjeta.
+        //
+        // Un día EN BLANCO (por encima de `max_auto_days`) se lleva TODAS las de medio día: ahí el
+        // viajero elige él lo que hace con el día, y media jornada fuera con la tarde libre es
+        // justo lo que mejor le encaja a un día que el destino ya no sabe llenar.
         const excursionesDelDia = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2, answers.pace)
-        const mediaJornadaDelDia = dayBlockV2.half_day_excursion
-          ? halfDayExcursions(pipelineV2Data).find((option) => option.id === dayBlockV2.half_day_excursion.id)
-          : null
-        if (mediaJornadaDelDia) {
-          excursionesDelDia.push(...excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], [mediaJornadaDelDia]))
+        const mediasJornadas = dayBlockV2.beyond_auto_days
+          ? halfDayExcursions(pipelineV2Data)
+          : halfDayExcursions(pipelineV2Data).filter((option) => option.id === dayBlockV2.half_day_excursion?.id)
+        if (mediasJornadas.length > 0) {
+          excursionesDelDia.push(...excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], mediasJornadas))
         }
         res.json({
           days: [dayBlockV2],

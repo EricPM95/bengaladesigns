@@ -411,8 +411,15 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       transportSuggestion: excursion.transport_suggestion,
       emoji: excursion.emoji ?? null,
       durationHours: excursion.duration_hours ?? null,
-      rating: excursion.rating ?? undefined,
-      reviewCount: excursion.review_count ?? undefined,
+      // Nota y nº de reseñas SOLO si son reales. Mientras no esté integrada la API del operador,
+      // buena parte del catálogo curado los lleva puestos a mano: un "⭐4,8 (2.340 reseñas)"
+      // inventado es mentirle al viajero sobre algo que va a pagar. El precio sí se queda — es
+      // aproximado y se presenta siempre como "desde".
+      //
+      // Se corta aquí, en la frontera, y no en cada tarjeta: así ninguna pantalla puede enseñarlo
+      // por descuido, ni esta ni la que se escriba mañana.
+      rating: excursion.provisional_pricing ? undefined : (excursion.rating ?? undefined),
+      reviewCount: excursion.provisional_pricing ? undefined : (excursion.review_count ?? undefined),
       destinationCoords: excursion.destination_coords ?? null,
       meetingPoint: excursion.meeting_point ?? null,
       provisionalPricing: excursion.provisional_pricing ?? false,

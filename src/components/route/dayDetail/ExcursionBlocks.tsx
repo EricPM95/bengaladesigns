@@ -195,6 +195,10 @@ export function ExcursionOptions({
               </span>
               <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption text-text-soft">
                 <span className="whitespace-nowrap">{excursion.durationLabel}</span>
+                {/* "3h" no dice si te queda tarde libre o no, y es justo lo que decide la elección. */}
+                {excursion.length === 'half-day' && (
+                  <span className="shrink-0 rounded-full border border-accent/40 px-1.5 py-0.5 text-caption font-semibold text-accent-hover">½ día</span>
+                )}
                 {formatPrice(excursion) && (
                   <>
                     <span className="text-text-muted" aria-hidden="true">
@@ -320,11 +324,14 @@ export function HalfDayExcursionBlock({
   startsAt,
   endsAt,
   onDismiss,
+  dismissLabel = 'Prefiero quedarme en la ciudad',
 }: {
   excursion: Excursion
   startsAt: string
   endsAt: string
   onDismiss: () => void
+  /** En un día que el viajero montó él, "quitar" es lo que ha hecho, no "quedarse en la ciudad". */
+  dismissLabel?: string
 }) {
   return (
     <div>
@@ -381,7 +388,113 @@ export function HalfDayExcursionBlock({
           onClick={onDismiss}
           className="mt-2 w-full text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
         >
-          Prefiero quedarme en la ciudad
+          {dismissLabel}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Una excursión de JORNADA COMPLETA que el viajero ha añadido él a un día en blanco.
+ *
+ * Aquí no se propone nada: ya eligió. Lo único que falta por decir es que el día está resuelto —
+ * sin esa frase, un día con una tarjeta y nada más se lee como un día a medio montar, y el viajero
+ * se queda buscando dónde añadir paradas que no caben.
+ *
+ * Y no lleva la salida "te montamos otro día de ruta" del día de excursión del motor: este día está
+ * en blanco precisamente porque el destino ya no da para más contenido nuevo, así que ofrecerlo
+ * sería prometer algo que no existe. La salida es quitar la excursión y volver a decidir.
+ */
+export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excursion; onRemove: () => void }) {
+  return (
+    <div className="space-y-2 pt-1">
+      <div className="rounded-xl border border-accent bg-accent-soft p-3">
+        <div className="flex items-start gap-3">
+          <span className="text-3xl leading-none" aria-hidden="true">
+            {excursion.emoji ?? '🚌'}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-body font-semibold text-text">{excursion.title}</p>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-caption text-text-soft">
+              <span className="whitespace-nowrap">{excursion.durationLabel}</span>
+              {formatPrice(excursion) && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span className="whitespace-nowrap">desde {formatPrice(excursion)}</span>
+                </>
+              )}
+              {excursion.rating ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <RatingLabel excursion={excursion} />
+                </>
+              ) : null}
+            </p>
+          </div>
+        </div>
+        {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
+        {excursion.meetingPoint && (
+          <p className="mt-2 text-caption text-text-muted">
+            <span className="font-semibold">Punto de encuentro:</span> {excursion.meetingPoint}
+          </p>
+        )}
+        {excursion.bookUrl && (
+          <a
+            href={excursion.bookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            Ver disponibilidad
+          </a>
+        )}
+      </div>
+
+      <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
+        Esta excursión ocupa el día entero — relájate y disfruta.
+      </p>
+
+      <button
+        type="button"
+        onClick={onRemove}
+        className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+      >
+        Quitar esta excursión
+      </button>
+    </div>
+  )
+}
+
+/**
+ * La tarde libre que deja una excursión de medio día en un día que monta el viajero.
+ *
+ * Se pinta aunque esté vacía, con su franja horaria delante, para que el día se lea entero: una
+ * mañana resuelta y una tarde que empieza a una hora concreta. Sin la franja, "añade las paradas
+ * que quieras" no dice desde cuándo, y el viajero no sabe si le caben dos cosas o seis.
+ */
+export function FreeAfternoonBlock({
+  destination,
+  startsAt,
+  onAddStops,
+}: {
+  destination: string
+  startsAt: string
+  onAddStops: () => void
+}) {
+  return (
+    <div>
+      <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">Tarde · desde {startsAt}</p>
+      <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
+        <p className="text-small leading-relaxed text-text-soft">
+          Tu tarde en {destination} está libre — añade las paradas que quieras y organizamos los tiempos.
+        </p>
+        <button
+          type="button"
+          onClick={onAddStops}
+          className="w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Añadir paradas
         </button>
       </div>
     </div>

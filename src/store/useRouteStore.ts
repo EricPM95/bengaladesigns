@@ -10,6 +10,7 @@ import type {
   DateRange,
   DayPlan,
   DestinationArchetype,
+  Excursion,
   ExperienceId,
   Place,
   PlaceCandidate,
@@ -295,6 +296,14 @@ interface RouteStoreState {
    * que queda libre es la mañana, que en un día de revisitas es suya.
    */
   declineHalfDayExcursion: (dayId: string) => void
+  /**
+   * El viajero añade a mano una excursión a un día EN BLANCO (por encima de `max_auto_days`).
+   *
+   * Lo que pasa después lo decide la DURACIÓN de la excursión, no el viajero: una de jornada
+   * completa se queda el día entero y no deja hueco que ofrecer; una de medio día ocupa la mañana
+   * y deja la tarde libre, así que el día vuelve a ser un día suyo con la mañana ya resuelta.
+   */
+  addBlankDayExcursion: (dayId: string, excursion: Excursion) => void
   removeStop: (dayId: string, stopId: string) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   /**
@@ -709,6 +718,27 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return { route: updateDay(state.route, dayId, (day) => ({ ...day, halfDayExcursionDeclined: true })) }
+    }),
+
+  addBlankDayExcursion: (dayId, excursion) =>
+    set((state) => {
+      if (!state.route) return state
+      const mediaJornada = excursion.length === 'half-day'
+      return {
+        route: updateDay(state.route, dayId, (day) => ({
+          ...day,
+          selectedExcursionId: excursion.id,
+          // Media jornada: el día sigue siendo SUYO (tipo 'manual'), solo que con la mañana ya
+          // resuelta. Así la tarde se comporta como cualquier día montado a mano — añadir paradas,
+          // arrastrarlas, horarios — en vez de tener que reinventar todo eso para este caso.
+          dayType: mediaJornada ? 'manual' : 'excursion',
+          halfDayExcursion: mediaJornada
+            ? { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' }
+            : null,
+          // Se limpia el "no, gracias" anterior: si vuelve a elegir una, es que la quiere.
+          halfDayExcursionDeclined: false,
+        })),
+      }
     }),
 
   reorderDays: (orderedDayIds) =>
