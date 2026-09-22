@@ -11,6 +11,7 @@
  *   - determinismo: dos llamadas idénticas dan el mismo reparto (invariante 20)
  */
 import { preplanTrip } from '../preplan.js'
+import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor } from '../modeConfig.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
 const D = findPipelineV2Data('Roma')
 const fails = []
@@ -57,6 +58,45 @@ for (const pace of ['nonstop', 'tranquilo']) {
           )
           if (abierto && !todoElDiaEsPool) fail(`${tag}: POOL "${name}" no colocado`)
         }
+        // Invariante 10: un imprescindible no se cae del viaje MIENTRAS HAYA SITIO. No basta con
+        // comprobar que está: hay que comprobar que, si no está, es porque de verdad no cabía —
+        // ningún día tenía hueco ni sacrificando todo lo que no es de nivel 1 ni del pool.
+        for (const u of p.units) {
+          if (u.level !== 1 || p.placed.has(u.id)) continue
+          const intocable = (o) => o.level === 1 || p.tiers.get(o.id) === 0
+          const cabriaEnAlgunDia = p.days.some((d) => {
+            if (d.isBlank) return false
+            if (d.weekday && u.closedOn.includes(d.weekday)) return false
+            const largasDelDia = ['morning', 'afternoon'].flatMap((s2) => d.slots[s2].units.filter((x) => x.isLong))
+            if (u.isLong && largasDelDia.some(intocable)) return false
+            return ['morning', 'afternoon'].some((s2) => {
+              const slot = d.slots[s2]
+              const liberable = slot.units.filter((x) => !intocable(x)).reduce((n, x) => n + x.minutes, 0)
+              // MISMO coste que usa el motor, o el verificador dice "cabía" por los 22 minutos de
+              // trayecto y redondeo que no estaba contando, y acusa al motor de perder cosas que
+              // de verdad no entraban.
+              const mode = modeConfigFor(pace)
+              const bonus = u.isFreeTour ? 0 : mode.visitDurationBonus * u.places.length
+              const overhead = slot.units.length > 0 ? AVG_TRAVEL_MINUTES + AVG_ROUNDING_LOSS_MINUTES : 0
+              return u.minutes + bonus + overhead <= slot.budget - slot.used + liberable
+            })
+          })
+          if (cabriaEnAlgunDia) fail(`${tag}: IMPRESCINDIBLE "${u.id}" fuera del viaje teniendo sitio`)
+        }
+
+        // Tope por categoría: la experiencia sesga el día, no lo monopoliza.
+        for (const day of p.days) {
+          const counts = {}
+          for (const s2 of ['morning', 'afternoon']) {
+            for (const u of day.slots[s2].units) {
+              if (p.tiers.get(u.id) === 0) continue
+              const c = u.tags.some((t) => ['museo', 'arte'].includes(t)) ? 'arte' : u.tags.includes('mirador') ? 'mir' : u.tags.some((t) => ['gastronomia', 'mercado'].includes(t)) ? 'gast' : null
+              if (c) counts[c] = (counts[c] ?? 0) + 1
+            }
+          }
+          for (const [c, n] of Object.entries(counts)) if (n > 2) fail(`${tag} d${day.dayNumber}: ${n} de categoría ${c} (tope 2)`)
+        }
+
         // Determinismo: dos llamadas idénticas, mismo resultado
         const p2 = preplanTrip({ destData: D, totalDays: totalDays_, pace, hasFreeTour: ft, poolNames: pool, dateRangeStartIso: '2026-05-04' })
         const key = (x) => x.days.map((d) => ['morning', 'afternoon'].map((s) => d.slots[s].units.map((u) => u.id).join(',')).join('|')).join('//')

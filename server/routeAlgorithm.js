@@ -2503,8 +2503,8 @@ export function getDayConfig(dayNumber, destData) {
     las que más convenzan, no las primeras del JSON. Se eligen DENTRO de las que luego enseña "Ver
     todas" (excursionOptionsFor): anunciar en el banner una excursión que no aparece al abrir la
     lista es una promesa rota, aunque tenga mejor nota. */
-export function topExcursions(destData, count = 3, totalDays) {
-  return [...excursionOptionsFor(destData, totalDays)]
+export function topExcursions(destData, count = 3, totalDays, pace) {
+  return [...excursionOptionsFor(destData, totalDays, pace)]
     .sort((a, b) => (b.placeholder_rating ?? 0) - (a.placeholder_rating ?? 0))
     .slice(0, count)
 }
@@ -2524,22 +2524,33 @@ export function curatedRoutePreview(destData, totalDays, hasFreeTour, dayNumber,
 }
 
 /**
- * Cuántas excursiones se le enseñan a alguien que viaja `totalDays` días. Con dos días en Roma
- * nadie se va a Pompeya: enseñar siete opciones no es generosidad, es ruido delante de una decisión
- * que no va a tomar. Con cinco días o más sí hay un día suelto y merece la pena poder comparar.
+ * Cuántas excursiones se le enseñan a alguien que viaja `totalDays` días a este ritmo.
+ *
+ * Con dos días en Roma nadie se va a Pompeya: enseñar siete opciones no es generosidad, es ruido
+ * delante de una decisión que no va a tomar. Con cinco días o más sí hay un día suelto y merece la
+ * pena poder comparar.
+ *
+ * Y el ritmo tranquilo ve menos: tiene menos horas por día (empieza a las 10:00 y acaba antes), así
+ * que ofrecerle tantas excursiones como al ritmo completo solo sirve para que elija algo que luego
+ * no le cabe.
+ *
+ *            1-2 días   3-5 días   5+ días
+ *  completo      3          5         7
+ *  tranquilo     2          3         5
  */
-export function excursionPoolSize(totalDays) {
-  if (!Number.isFinite(totalDays) || totalDays <= 2) return 3
-  if (totalDays <= 5) return 5
-  return 7
+export function excursionPoolSize(totalDays, pace) {
+  const tranquilo = pace === 'tranquilo'
+  if (!Number.isFinite(totalDays) || totalDays <= 2) return tranquilo ? 2 : 3
+  if (totalDays <= 5) return tranquilo ? 3 : 5
+  return tranquilo ? 5 : 7
 }
 
 /** Las excursiones que se le enseñan al viajero: las primeras del JSON, que es orden editorial (lo
     más imprescindible primero), tantas como pida la duración del viaje. */
-export function excursionOptionsFor(destData, totalDays) {
+export function excursionOptionsFor(destData, totalDays, pace) {
   const excursions = destData?.excursions
   if (!excursions?.options?.length) return []
-  return excursions.options.slice(0, excursionPoolSize(totalDays))
+  return excursions.options.slice(0, excursionPoolSize(totalDays, pace))
 }
 
 /**
@@ -2548,7 +2559,7 @@ export function excursionOptionsFor(destData, totalDays) {
  * pudiendo convertirlo en ruta o montarlo a mano. Devuelve además `excursion_options` para que el
  * servidor las publique en `excursions_available` (el canal que ya existe hacia el cliente).
  */
-export function buildExcursionDayV2(destData, dayNumber, totalDays) {
+export function buildExcursionDayV2(destData, dayNumber, totalDays, pace) {
   return {
     day_number: dayNumber,
     title: 'Excursión',
@@ -2558,7 +2569,7 @@ export function buildExcursionDayV2(destData, dayNumber, totalDays) {
     not_included: [],
     times_are_final: true,
     excursion_essential: Boolean(destData?.excursions?.essential),
-    excursion_options: excursionOptionsFor(destData, totalDays),
+    excursion_options: excursionOptionsFor(destData, totalDays, pace),
   }
 }
 

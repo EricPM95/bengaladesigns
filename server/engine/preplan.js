@@ -38,6 +38,41 @@ const TAG_INTEREST_MAP = {
   miradores_atardeceres: ['mirador'],
 }
 
+/**
+ * Cuántas cosas de la misma categoría aguanta UN día.
+ *
+ * La experiencia elegida SESGA la ruta, no la monopoliza. Elegir "Arte y museos" significa que los
+ * huecos se llenan de museos en vez de iglesias, no que el día sean cinco museos seguidos: la fatiga
+ * museística es real y al tercer mirador del día ya no impresiona ninguno — todos son vistas desde
+ * arriba. Un buen día de arte es museo por la mañana, barrio, plaza, segundo museo por la tarde y
+ * mirador al atardecer.
+ *
+ * El tope NO se le aplica a lo que el viajero eligió a mano: si marca tres museos en el pool, van
+ * los tres. Manda él, no el motor.
+ */
+const CATEGORY_DAY_CAP = {
+  arte_museos: 2,
+  miradores_atardeceres: 2,
+  sabores_locales: 2,
+}
+
+/** A qué categoría con tope pertenece una unidad, si pertenece a alguna. */
+function categoryOf(unit) {
+  for (const [category, tags] of Object.entries(TAG_INTEREST_MAP)) {
+    if (unit.tags.some((tag) => tags.includes(tag))) return category
+  }
+  return null
+}
+
+/** Cuántas unidades de esa categoría hay ya ese día, contando las dos franjas. */
+function categoryCountInDay(day, category) {
+  if (!category) return 0
+  return SLOTS.reduce(
+    (count, slotName) => count + day.slots[slotName].units.filter((unit) => categoryOf(unit) === category).length,
+    0,
+  )
+}
+
 const SLOTS = ['morning', 'afternoon']
 
 // ── Geografía ───────────────────────────────────────────────────────────────────────────────
@@ -234,6 +269,7 @@ function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays) 
  */
 function placeUnit(destData, unit, plan, tiers, mode, evicted) {
   const tier = tiers.get(unit.id)
+  const category = categoryOf(unit)
   // TODOS los candidatos ordenados de mejor a peor, no solo el mejor. Quedarse con el primero y
   // rendirse si no cabe tenía una consecuencia concreta: el Vaticano (285 min) ganaba la mañana por
   // puntuación y la mañana de ritmo tranquilo solo tiene 180 minutos, así que se caía del viaje en
@@ -256,6 +292,8 @@ function placeUnit(destData, unit, plan, tiers, mode, evicted) {
       // viaje porque las dos franjas del único día ya se habían asentado lejos.
       const slot = day.slots[slotName]
       if (tier !== TIER.POOL && slot.zone && slot.units.length > 0 && !zonesAreAdjacent(destData, slot.zone, unit.zone)) continue
+      // Tope de categoría: una vez el día tiene sus dos museos, el relleno pasa a otra cosa.
+      if (tier !== TIER.POOL && category && categoryCountInDay(day, category) >= (CATEGORY_DAY_CAP[category] ?? Infinity)) continue
       const score = scoreSlot(destData, unit, day, slotName, mode, tier, plan.days.length)
       candidates.push({ day, slotName, score })
     }
@@ -309,6 +347,67 @@ function tryPlaceIn(unit, best, plan, tiers, mode, evicted, tier) {
 }
 
 /**
+ * Hace sitio a un imprescindible que se ha quedado sin día, desplazando lo de menor prioridad que
+ * baste. Devuelve el día donde acaba, o null si no hay forma.
+ */
+function rescueEssential(destData, unit, plan, tiers, mode, placed) {
+  for (const day of plan.days) {
+    if (!unitFitsDay(unit, day, mode)) continue
+
+    // Otro imprescindible NUNCA es víctima: cambiar el Coliseo por el Vaticano no rescata nada,
+    // solo mueve el agujero de sitio. Pasó tal cual en el primer intento de esta función.
+    const untouchable = (other) => other.level === 1 || tiers.get(other.id) === TIER.POOL
+
+    // Una visita larga necesita además que el día se quede SIN otra larga, o se incumpliría la
+    // regla que causó el problema. Si la larga que ocupa el día es intocable, este día no sirve.
+    const longsInDay = SLOTS.flatMap((slotName) => day.slots[slotName].units.filter((u) => u.isLong))
+    if (unit.isLong && longsInDay.some(untouchable)) continue
+
+    for (const slotName of SLOTS) {
+      const slot = day.slots[slotName]
+      const cost = slotCost(unit, slot, mode)
+
+      if (slot.used + cost <= slot.budget && (!unit.isLong || longsInDay.length === 0)) {
+        slot.units.push(unit)
+        slot.used += cost
+        if (unit.isLong) day.hasLongVisit = true
+        return day
+      }
+
+      // Sacrificio: primero lo obligatorio (las largas del día, si entra una larga), luego lo menos
+      // importante hasta que quepa. Sin lo segundo, meter 210 minutos expulsando solo una unidad de
+      // 120 seguía sin caber y el rescate se iba a otro día a romperlo.
+      const mandatory = unit.isLong ? slot.units.filter((u) => u.isLong && !untouchable(u)) : []
+      const optional = slot.units
+        .filter((u) => !untouchable(u) && !mandatory.includes(u))
+        .sort((a, b) => tiers.get(b.id) - tiers.get(a.id) || a.minutes - b.minutes)
+
+      const kicked = [...mandatory]
+      let freed = kicked.reduce((sum, u) => sum + slotCost(u, slot, mode), 0)
+      for (const victim of optional) {
+        if (slot.used - freed + cost <= slot.budget) break
+        freed += slotCost(victim, slot, mode)
+        kicked.push(victim)
+      }
+      if (kicked.length === 0 || slot.used - freed + cost > slot.budget) continue
+      // Si entra una larga, la otra franja tampoco puede tener una larga intocable.
+      if (unit.isLong && longsInDay.some((u) => !kicked.includes(u))) continue
+
+      for (const victim of kicked) {
+        slot.units = slot.units.filter((u) => u.id !== victim.id)
+        slot.used -= slotCost(victim, slot, mode)
+        placed.delete(victim.id)
+      }
+      slot.units.push(unit)
+      slot.used += cost
+      day.hasLongVisit = SLOTS.some((s2) => day.slots[s2].units.some((u) => u.isLong))
+      return day
+    }
+  }
+  return null
+}
+
+/**
  * Reparto completo del viaje. Función pura: mismos argumentos, mismo resultado, siempre.
  *
  * @returns {{mode:object, days:object[], placed:Map<string,number>, unplaced:object[]}}
@@ -350,6 +449,29 @@ export function preplanTrip({
     else unplaced.push(unit)
   }
 
+  // Rescate de imprescindibles (invariante 10: NEVER_MISS_LANDMARKS).
+  //
+  // Aquí chocan dos reglas de verdad, y se vio en una ruta real: con "Arte y museos" elegido en un
+  // viaje de 3 días, las tres jornadas se quedaban con su visita larga (Capitolinos, Vaticano,
+  // Borghese, todas de la experiencia) y el Coliseo era la cuarta — se caía del viaje entero. La
+  // cascada dice experiencias por encima de nivel 1; el invariante dice que un imprescindible no
+  // desaparece en silencio.
+  //
+  // El arbitraje: las experiencias mandan en el REPARTO (se colocan antes y se quedan los mejores
+  // huecos), pero no pueden dejar un nivel 1 FUERA DEL VIAJE. Si un nivel 1 se ha quedado sin sitio,
+  // desplaza a la unidad de menor prioridad que le haga hueco — aunque sea de una experiencia. Lo
+  // desplazado vuelve a la cola e intenta recolocarse.
+  for (const unit of queue) {
+    if (placed.has(unit.id) || unit.level !== 1) continue
+    if (tiers.get(unit.id) > TIER.ESSENTIAL) continue // "Imprescindibles" apagado: no se rescata
+    const rescued = rescueEssential(destData, unit, plan, tiers, plan.mode, placed)
+    if (rescued) {
+      placed.set(unit.id, rescued.dayNumber)
+      const index = unplaced.findIndex((u) => u.id === unit.id)
+      if (index >= 0) unplaced.splice(index, 1)
+    }
+  }
+
   // Segunda pasada: lo que fue desalojado por el pool tiene que volver a entrar en algún sitio. Un
   // nivel 1 nunca se cae del viaje, solo cambia de día (invariante 10).
   for (const unit of queue) {
@@ -363,5 +485,21 @@ export function preplanTrip({
     }
   }
 
-  return { ...plan, tiers, placed, unplaced, units }
+  // Lo que el viajero eligió y no ha cabido, CON el motivo. Es mejor avisar que dejarlo fuera en
+  // silencio: el viajero decide si mueve algo de día, alarga el viaje o cambia de ritmo — el motor
+  // no decide por él. Viaja hasta la UI por el canal `not_included`, que ya existe.
+  const unplacedPool = unplaced
+    .filter((unit) => tiers.get(unit.id) === TIER.POOL)
+    .map((unit) => {
+      const cierraSiempre = plan.days.every((day) => day.weekday && unit.closedOn.includes(day.weekday))
+      return {
+        name: unit.places[0]?.name ?? unit.id,
+        unitId: unit.id,
+        minutes: unit.minutes,
+        reason: cierraSiempre ? 'closed_every_day' : unit.isLong ? 'no_room_long_visit' : 'no_room',
+        closedOn: unit.closedOn,
+      }
+    })
+
+  return { ...plan, tiers, placed, unplaced, unplacedPool, units }
 }
