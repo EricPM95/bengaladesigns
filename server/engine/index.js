@@ -14,6 +14,7 @@
  * con `zone_priority` y sale gratis e instantáneo.
  */
 
+import { buildManualDayV2 } from '../routeAlgorithm.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
@@ -63,8 +64,15 @@ export async function buildDayBlockV3(
   })
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
-  // Más allá de `max_auto_days` el día sale en blanco a propósito: el viajero lo monta a mano.
-  if (!dayPlan || dayPlan.isBlank) return null
+  if (!dayPlan) return null
+
+  // Más allá de `max_auto_days` el día sale EN BLANCO a propósito: el destino ya no da para más
+  // contenido nuevo y a partir de ahí lo monta el viajero (Prompt 9, Parte 16).
+  //
+  // Se devuelve un día manual, no `null`. Devolver null hacía que el servidor cayera al camino de
+  // Claude y generara el día con IA: cada día por encima del límite costaba una llamada de pago y
+  // salía lleno de relleno, que es exactamente lo contrario de lo que el límite quiere conseguir.
+  if (dayPlan.isBlank) return buildManualDayV2(dayNumber)
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
