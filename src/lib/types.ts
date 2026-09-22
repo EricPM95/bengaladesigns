@@ -497,6 +497,10 @@ export interface DayPlan {
   excursionSocialProof?: string | null
   /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
   excursionDeclined?: boolean
+  /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo
+      convirtiera a libre. Solo el primero explica por qué. */
+  beyondAutoDays?: boolean
+  maxAutoDays?: number | null
   /**
    * Foto de las paradas de este día ANTES de convertirlo en excursión o día libre. Existe para que
    * "el algoritmo propone, el viajero dispone" no cueste contenido: volver a la ruta es restaurar

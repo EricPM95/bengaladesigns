@@ -116,6 +116,8 @@ export interface GeneratedDay {
   excursion_prominence?: string
   excursion_preselected?: string
   excursion_social_proof?: string | null
+  beyond_auto_days?: boolean
+  max_auto_days?: number | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -505,6 +507,8 @@ function mapDay(
     selectedExcursionId: generated.excursion_preselected ?? null,
     excursionPreselectedId: generated.excursion_preselected ?? null,
     excursionSocialProof: generated.excursion_social_proof ?? null,
+    beyondAutoDays: generated.beyond_auto_days ?? false,
+    maxAutoDays: generated.max_auto_days ?? null,
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,

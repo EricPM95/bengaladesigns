@@ -72,7 +72,15 @@ export async function buildDayBlockV3(
   // Se devuelve un día manual, no `null`. Devolver null hacía que el servidor cayera al camino de
   // Claude y generara el día con IA: cada día por encima del límite costaba una llamada de pago y
   // salía lleno de relleno, que es exactamente lo contrario de lo que el límite quiere conseguir.
-  if (dayPlan.isBlank) return buildManualDayV2(dayNumber)
+  if (dayPlan.isBlank) {
+    const day = buildManualDayV2(dayNumber)
+    // Se marca de dónde viene el día en blanco: un día que el viajero convirtió a mano en libre y
+    // uno que sale en blanco porque el destino ya no da para más contenido nuevo son la misma
+    // pantalla, pero solo el segundo tiene algo que explicar.
+    day.beyond_auto_days = true
+    day.max_auto_days = destData.destination_config?.max_auto_days ?? null
+    return day
+  }
 
   // Día de excursión: no tiene paradas de ciudad, tiene OPCIONES, con una ya preseleccionada — la
   // más popular del destino. El viajero puede cambiarla, o rechazarla y recuperar un día de ruta.

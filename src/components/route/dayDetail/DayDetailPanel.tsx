@@ -340,6 +340,9 @@ export function DayDetailPanel({
     allDays.findIndex((candidate) => candidate.id === day.id),
     0,
   )
+  // El primero de los días en blanco por límite: es el único que lleva la explicación.
+  // `allDays` viene recortado a id/número/ciudad, así que la marca se busca en la ruta entera.
+  const isFirstBeyondAutoDay = (route?.days ?? []).find((candidate) => candidate.beyondAutoDays)?.id === day.id
   const stopCircleBg = dayColorPastel(dayIndex)
   const stopCircleText = dayColorStrong(dayIndex)
   const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
@@ -682,9 +685,10 @@ export function DayDetailPanel({
                   selectedId={day.selectedExcursionId ?? null}
                   socialProof={day.excursionSocialProof}
                   onSelect={(id) => selectDayExcursion(day.id, id)}
-                  // Rechazar devuelve el día a ruta de ciudad. El motor ya tiene el core day
-                  // desplazado esperando, así que el día no se queda vacío ni repetido.
-                  onDecline={() => convertDay('normal')}
+                  // Rechazar no decide por el viajero: "ruta" devuelve el día a ciudad (el motor ya
+                  // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y
+                  // "vacío" lo deja libre para que lo monte él.
+                  onDecline={(fill) => convertDay(fill === 'route' ? 'normal' : 'manual')}
                 />
               ) : (
                 <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>
@@ -693,7 +697,15 @@ export function DayDetailPanel({
           )}
 
           {dayType === 'manual' && stops.length === 0 && (
-            <div className="pt-1">
+            <div className="space-y-2 pt-1">
+              {/* Solo en el día en blanco por límite del destino, y solo en el PRIMERO: repetirlo en
+                  cada día a partir del octavo sería regañar al viajero por alargar su viaje. No es
+                  un error ni un bloqueo — a partir de aquí manda él. */}
+              {day.beyondAutoDays && isFirstBeyondAutoDay && (
+                <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
+                  A partir del día {day.dayNumber}, tú decides. Añade las paradas que quieras y nosotros organizamos los tiempos.
+                </p>
+              )}
               <ManualDayOptions onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
             </div>
           )}

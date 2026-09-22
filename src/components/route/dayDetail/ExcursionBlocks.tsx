@@ -331,9 +331,13 @@ export function ExcursionDayProposal({
   selectedId: string | null
   socialProof?: string | null
   onSelect: (id: string | null) => void
-  onDecline: () => void
+  onDecline: (fill: 'route' | 'empty') => void
 }) {
   const [showAll, setShowAll] = useState(false)
+  // Quitar la excursión no decide sola qué hacer con el día: hay quien quiere que le montemos otra
+  // cosa y hay quien quiere el día libre para organizarlo por su cuenta. Decidirlo por él es
+  // quitarle el día que acaba de recuperar.
+  const [asking, setAsking] = useState(false)
   const featured = options.find((option) => option.id === selectedId) ?? options[0] ?? null
   const alternatives = options.filter((option) => option.id !== featured?.id)
   if (!featured) return null
@@ -398,13 +402,42 @@ export function ExcursionDayProposal({
         </>
       )}
 
-      <button
-        type="button"
-        onClick={onDecline}
-        className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
-      >
-        ¿Prefieres seguir en {destination}? Te montamos otro día de ruta
-      </button>
+      {asking ? (
+        <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
+          <p className="text-small font-semibold text-text">¿Qué hacemos con este día?</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => onDecline('route')}
+              className="flex-1 rounded-xl bg-accent py-2 text-caption font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Montadme ruta por {destination}
+            </button>
+            <button
+              type="button"
+              onClick={() => onDecline('empty')}
+              className="flex-1 rounded-xl border border-border py-2 text-caption font-semibold text-text-soft transition-colors hover:bg-bg-hover"
+            >
+              Lo organizo yo
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAsking(false)}
+            className="w-full text-center text-caption text-text-muted underline hover:text-text-soft"
+          >
+            Mejor me quedo con la excursión
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setAsking(true)}
+          className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+        >
+          ¿Prefieres seguir en {destination}? Te montamos otro día de ruta
+        </button>
+      )}
     </div>
   )
 }
