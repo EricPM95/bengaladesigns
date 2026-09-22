@@ -4581,5 +4581,7 @@
   "destination_config": {
     "core_days": 4,
     "max_auto_days": 7
-  }
+  },
+  "category_cap_selected": 4,
+  "category_cap_default": 2
 }

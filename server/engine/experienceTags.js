@@ -22,20 +22,36 @@ export const TAG_INTEREST_MAP = {
 }
 
 /**
- * Cuántas cosas de la misma categoría aguanta UN día.
+ * Cuántas cosas de la misma categoría aguanta UN día. Depende de si el viajero eligió ese tema.
  *
- * La experiencia elegida SESGA el relleno, no monopoliza el día. Elegir "Arte y Museos" significa
- * que los huecos se llenan de museos antes que de otra cosa, no que el día sean cinco museos
- * seguidos: la fatiga museística es real y al tercer mirador del día ya no impresiona ninguno —
- * todos son vistas desde arriba.
+ * Con un tope único no había forma de que la elección se notara, y está medido: Roma tiene 5-6
+ * lugares de arte de nivel 2-3 que entran POR GEOGRAFÍA aunque no elijas nada, así que con el tope
+ * en 2 y tres días de contenido el techo ya estaba tocado antes de elegir. Elegir "Arte y Museos"
+ * no añadía ni un lugar; quitando el tope pasaba de 6 a 11.
+ *
+ * Ahora el tema elegido respira y el no elegido se contiene. Sigue sin monopolizar: cuatro paradas
+ * del tema y cinco de otra cosa son un día variado, y "arte" incluye iglesias de veinte minutos, no
+ * cuatro museos grandes.
+ *
+ * Configurable por destino porque no todos aguantan lo mismo: Roma tiene 67 lugares y soporta 4/2,
+ * pero un destino de 25-30 (Brujas, Praga) se queda sin variedad con esos números y necesita 3/1.
+ * Van en la RAÍZ del JSON del destino:
+ *
+ *   "category_cap_selected": 4,
+ *   "category_cap_default": 2
  *
  * El tope NO se le aplica a lo que el viajero eligió a mano: si marca tres museos en el pool, van
- * los tres. Manda él, no el motor.
+ * los tres. Manda él, no el motor. Tampoco a los imprescindibles, que entran al margen del tema.
  */
-export const CATEGORY_DAY_CAP = {
-  arte_museos: 2,
-  naturaleza_vistas: 2,
-  barrios_sabores: 2,
+const FALLBACK_CAP_SELECTED = 4
+const FALLBACK_CAP_DEFAULT = 2
+
+export function categoryCapFor(destData, category, selectedCategories) {
+  if (!category) return Infinity
+  const elegido = (selectedCategories ?? []).includes(category)
+  return elegido
+    ? (destData?.category_cap_selected ?? FALLBACK_CAP_SELECTED)
+    : (destData?.category_cap_default ?? FALLBACK_CAP_DEFAULT)
 }
 
 /** Los tags que le interesan a este viajero, según las experiencias que haya elegido. */

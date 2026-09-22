@@ -15,7 +15,7 @@
 
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
 import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor, slotBudgets } from './modeConfig.js'
-import { CATEGORY_DAY_CAP, categoryOfTags, interestTagsFor } from './experienceTags.js'
+import { categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
 
 // ── Prioridades de la cascada ───────────────────────────────────────────────────────────────
 //
@@ -100,7 +100,30 @@ function weekdayForDay(dateRangeStartIso, dayNumber) {
  *   2. `zone_priority`, para lo que no tiene curado (días 6-7, destinos nuevos)
  * El pool puede cambiarlas después: la zona de una franja se recalcula con lo que acabe dentro.
  */
-function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber) {
+/**
+ * Cuánto material del tema elegido tiene cada zona, en nivel 2-3. Es el bonus de zona: si "Arte y
+ * Museos" está marcado, las zonas con más museos e iglesias se adelantan en el reparto por días.
+ *
+ * Solo cuenta nivel 2-3: el nivel 1 entra siempre y en todas partes, así que contarlo no distingue
+ * una zona de otra.
+ */
+function themeCountByZone(destData, interestTags) {
+  const counts = new Map()
+  if (interestTags.size === 0) return counts
+  for (const place of destData?.places ?? []) {
+    if ((place.level ?? 3) === 1) continue
+    if (!(place.tags ?? []).some((tag) => interestTags.has(tag))) continue
+    counts.set(place.zone, (counts.get(place.zone) ?? 0) + 1)
+  }
+  return counts
+}
+
+/** Cuánto puede adelantar el tema a una zona. Tope bajo a propósito: que una zona con museos suba
+    un puesto está bien; que mande al viajero al otro lado de la ciudad, no. */
+const MAX_THEME_ZONE_BONUS = 1.5
+const THEME_ZONE_BONUS_PER_PLACE = 0.4
+
+function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts = new Map()) {
   const variant = destData?.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
   const franja = variant?.franjas?.find((f) => f.day === dayNumber)
   if (franja) {
@@ -110,15 +133,21 @@ function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber) {
       curated: franja,
     }
   }
-  // Sin curado: las zonas por prioridad, repartidas de dos en dos por día.
+  // Sin curado (días 6-7, destinos nuevos): las zonas por prioridad, con el tema elegido
+  // adelantando a las que tienen más material suyo. Aquí SÍ hay una decisión de zona que sesgar —
+  // en los viajes con reparto curado no la hay, porque las zonas vienen escritas a mano.
   const ordered = Object.entries(destData?.zones ?? {})
-    .map(([id, zone]) => ({ id, priority: zone.zone_priority ?? 9 }))
+    .map(([id, zone]) => {
+      const base = zone.zone_priority ?? 9
+      const bonus = Math.min((themeCounts.get(id) ?? 0) * THEME_ZONE_BONUS_PER_PLACE, MAX_THEME_ZONE_BONUS)
+      return { id, priority: base - bonus }
+    })
     .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id, 'es'))
   const index = (dayNumber - 1) % Math.max(1, ordered.length)
   return { morning: ordered[index]?.id ?? null, afternoon: ordered[index]?.id ?? null, curated: null }
 }
 
-function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso) {
+function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCounts = new Map()) {
   const mode = modeConfigFor(pace)
   const budgets = slotBudgets(mode)
   const config = destData?.destination_config ?? {}
@@ -129,7 +158,7 @@ function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStart
 
   const days = []
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
-    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber)
+    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts)
     days.push({
       dayNumber,
       weekday: weekdayForDay(dateRangeStartIso, dayNumber),
@@ -261,7 +290,7 @@ function scoreSlot(destData, unit, day, slotName, mode, tier, totalContentDays, 
  * expulsado vuelve a la cola — y un nivel 1 desalojado se MUEVE de día, nunca se borra del viaje
  * (invariante 10).
  */
-function placeUnit(destData, unit, plan, tiers, mode, evicted, matchesInterest = false) {
+function placeUnit(destData, unit, plan, tiers, mode, evicted, matchesInterest = false, selectedCategories = []) {
   const tier = tiers.get(unit.id)
   const category = categoryOfTags(unit.tags)
   // TODOS los candidatos ordenados de mejor a peor, no solo el mejor. Quedarse con el primero y
@@ -287,7 +316,7 @@ function placeUnit(destData, unit, plan, tiers, mode, evicted, matchesInterest =
       const slot = day.slots[slotName]
       if (tier !== TIER.POOL && slot.zone && slot.units.length > 0 && !zonesAreAdjacent(destData, slot.zone, unit.zone)) continue
       // Tope de categoría: una vez el día tiene sus dos museos, el relleno pasa a otra cosa.
-      if (tier > TIER.ESSENTIAL && category && categoryCountInDay(day, category, tiers) >= (CATEGORY_DAY_CAP[category] ?? Infinity)) continue
+      if (tier > TIER.ESSENTIAL && category && categoryCountInDay(day, category, tiers) >= categoryCapFor(destData, category, selectedCategories)) continue
       const score = scoreSlot(destData, unit, day, slotName, mode, tier, plan.days.length, matchesInterest)
       candidates.push({ day, slotName, score })
     }
@@ -421,14 +450,20 @@ export function preplanTrip({
   // elige entre iguales cuando compiten por el mismo hueco.
   const interestTags = interestTagsFor(experiencesPositive)
   const matchesInterest = (unit) => interestTags.size > 0 && unit.tags.some((tag) => interestTags.has(tag))
-  const plan = buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso)
+  const plan = buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCountByZone(destData, interestTags))
 
   // Orden determinista: primero por prioridad, luego lo más imprescindible, luego lo más largo (lo
   // grande necesita el hueco grande y hay que colocarlo antes), y el nombre para desempatar.
+  // El relleno de nivel 2 y el de nivel 3 son UNA sola banda a la hora de ordenar. Separarlos hacía
+  // que el tema elegido nunca adelantara al nivel: las dos fuentes de Roma son nivel 3, así que con
+  // "Naturaleza y Vistas" marcado seguían entrando detrás de todo el nivel 2 y se quedaban fuera.
+  // El nivel sigue contando, pero DESPUÉS del tema, no antes.
+  const band = (unit) => Math.min(tiers.get(unit.id), TIER.FILLER_2)
+
   const queue = [...units].sort(
     (a, b) =>
-      tiers.get(a.id) - tiers.get(b.id) ||
-      // Dentro de la misma prioridad manda el tema que el viajero eligió: es lo que hace que "Arte
+      band(a) - band(b) ||
+      // Dentro de la misma banda manda el tema que el viajero eligió: es lo que hace que "Arte
       // y Museos" llene los huecos de museos en vez de con lo primero que pase por la zona.
       Number(matchesInterest(b)) - Number(matchesInterest(a)) ||
       a.level - b.level ||
@@ -444,7 +479,7 @@ export function preplanTrip({
     // En tranquilo el nivel 3 no entra: 5-7 paradas gastadas en relleno de tercer nivel es lo que
     // hace que un día tranquilo se sienta vacío en vez de tranquilo.
     if (tiers.get(unit.id) === TIER.FILLER_3 && !plan.mode.fillLevels.includes(3)) continue
-    const day = placeUnit(destData, unit, plan, tiers, plan.mode, evicted, matchesInterest(unit))
+    const day = placeUnit(destData, unit, plan, tiers, plan.mode, evicted, matchesInterest(unit), experiencesPositive ?? [])
     if (day) placed.set(unit.id, day.dayNumber)
     else unplaced.push(unit)
   }
@@ -477,7 +512,7 @@ export function preplanTrip({
   for (const unit of queue) {
     if (placed.has(unit.id)) continue
     if (!evicted.has(unit.id)) continue
-    const day = placeUnit(destData, unit, plan, tiers, plan.mode, new Set(), matchesInterest(unit))
+    const day = placeUnit(destData, unit, plan, tiers, plan.mode, new Set(), matchesInterest(unit), experiencesPositive ?? [])
     if (day) {
       placed.set(unit.id, day.dayNumber)
       const index = unplaced.findIndex((u) => u.id === unit.id)
