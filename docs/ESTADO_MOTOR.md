@@ -63,7 +63,25 @@ pusheado todavía** (7 commits).
 6. El primer rescate sacrificaba **otro imprescindible** (cambiaba el Coliseo por el Vaticano), y
    solo sabía expulsar visitas largas, así que meter 210 minutos sacando una de 120 seguía sin caber.
 
-### Falta (parte 2 del motor)
+### Cómo probarlo (bandera)
+
+El motor nuevo está enchufado **detrás de bandera**, así que la app sigue sirviendo el viejo por
+defecto. Para compararlos sobre la misma ruta:
+
+```
+node server/engine/__tests__/compararMotores.mjs 4 nonstop
+node server/engine/__tests__/compararMotores.mjs 6 tranquilo
+node server/engine/__tests__/compararMotores.mjs 3 nonstop "Galería Borghese"
+```
+
+Para que la app entera use el nuevo: `ROUTE_ENGINE=nuevo` en `.env.local` y reiniciar el servidor.
+Para una sola petición, `"engine": "nuevo"` en el cuerpo de `/api/generate-day-block`.
+
+Primeros números sobre Roma 4 días, ritmo completo: **34 paradas el viejo frente a 29 el nuevo**
+(menos relleno compulsivo, que es lo que se buscaba) y **13 horas sueltas frente a 0**. En 6 días el
+viejo no devuelve nada —cae a Claude— y el nuevo monta los 5 días de contenido gratis.
+
+### Falta
 
 - **Constructor del día**: orden geográfico dentro de la franja, horas con redondeo a :00/:30 hacia
   arriba, encadenado por debajo de 3 minutos, clamp de horarios de apertura, comidas en ventana.

@@ -20,6 +20,8 @@ import {
   buildExcursionDayV2,
   buildManualDayV2,
 } from './routeAlgorithm.js'
+// Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
+import { buildDayBlockV3, engineFor } from './engine/index.js'
 
 config({ path: '.env.local' })
 
@@ -4481,7 +4483,7 @@ app.post('/api/place-photo', async (req, res) => {
 })
 
 app.post('/api/generate-day-block', async (req, res) => {
-  const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip, must_include_places } = req.body ?? {}
+  const { destination, answers, block_days, places_for_block, all_days, is_first_block_of_trip, must_include_places, engine } = req.body ?? {}
   if (!destination || !hasRequiredAnswers(answers) || !Array.isArray(block_days) || block_days.length === 0) {
     res.status(400).json({ error: 'Faltan datos necesarios para generar este bloque de días.' })
     return
@@ -4536,8 +4538,25 @@ app.post('/api/generate-day-block', async (req, res) => {
 
   if (pipelineV2Data && blockDayNumbers.length === 1) {
     const totalDaysV2 = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : blockDayNumbers[0]
+    // Motor nuevo detrás de bandera (ver server/engine/index.js): `ROUTE_ENGINE=nuevo` en el
+    // entorno para todas las rutas, o `"engine": "nuevo"` en el cuerpo para comparar los dos
+    // motores en la misma ruta sin reiniciar nada. Por defecto sigue mandando el viejo.
+    const chosenEngine = engineFor(engine)
     try {
-      const dayBlockV2 = await buildDayBlockV2(
+      const dayBlockV2 = chosenEngine === 'nuevo'
+        ? await buildDayBlockV3(
+            pipelineV2Data,
+            totalDaysV2,
+            hasFreeTourFromAnswers(answers),
+            blockDayNumbers[0],
+            answers.pace,
+            MAPBOX_TOKEN,
+            answers.dateRange?.start,
+            must_include_places,
+            answers.experiencesPositive,
+            { city: destination },
+          )
+        : await buildDayBlockV2(
         pipelineV2Data,
         totalDaysV2,
         hasFreeTourFromAnswers(answers),
@@ -4559,7 +4578,9 @@ app.post('/api/generate-day-block', async (req, res) => {
         if (dayConfig.excursionProminence === 'prominent') {
           dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3, totalDaysV2, answers.pace))
         }
-        console.log(`[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox, sin llamada a Claude`)
+        console.log(
+          `[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox (motor ${chosenEngine}), sin llamada a Claude`,
+        )
         res.json({
           days: [dayBlockV2],
           not_included: dayBlockV2.not_included ?? [],
