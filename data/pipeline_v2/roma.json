@@ -1200,7 +1200,10 @@
         12.4833
       ],
       "duration_minutes": 60,
-      "type": "exterior",
+      "schedule": "09:30-19:30",
+      "last_entry": "18:45",
+      "is_free_access": true,
+      "type": "interior",
       "tip": "Conocido también como Monumento a Vittorio Emanuele II. El ascensor a la terraza cuesta 7€ y merece cada céntimo. Las vistas son 360° sobre Roma.",
       "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba.",
       "tier": "imprescindible",
@@ -1893,13 +1896,15 @@
     {
       "name": "Iglesia de San Pietro in Vincoli",
       "duration_minutes": 20,
+      "schedule": "08:00-12:30 / 15:00-18:00",
+      "is_free_access": true,
       "zone": "roma_antigua",
       "coordinates": [
         41.8939,
         12.4932
       ],
       "level": 2,
-      "type": "exterior",
+      "type": "interior",
       "tags": [
         "iglesia",
         "arte"
@@ -2017,13 +2022,16 @@
     {
       "name": "Basílica de Santa María la Mayor",
       "duration_minutes": 30,
+      "schedule": "07:00-19:00",
+      "last_entry": "18:30",
+      "is_free_access": true,
       "zone": "esquilino",
       "coordinates": [
         41.8976,
         12.4984
       ],
       "level": 2,
-      "type": "exterior",
+      "type": "interior",
       "tags": [
         "iglesia",
         "arte"
@@ -2162,13 +2170,15 @@
     {
       "name": "Iglesia de Santa Maria della Vittoria",
       "duration_minutes": 20,
+      "schedule": "08:30-12:00 / 15:30-18:00",
+      "is_free_access": true,
       "zone": "roma_antigua",
       "coordinates": [
         41.905,
         12.494
       ],
       "level": 3,
-      "type": "exterior",
+      "type": "interior",
       "tags": [
         "iglesia",
         "arte"
