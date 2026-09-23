@@ -16,7 +16,7 @@
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
 import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, halfDaySlotBudgets, modeConfigFor, slotBudgets } from './modeConfig.js'
 import { categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
-import { halfDayExcursions } from './excursions.js'
+import { tripDays } from '../../shared/routeEngine/tripSkeleton.js'
 import { planRevisits } from './revisits.js'
 
 // ── Prioridades de la cascada ───────────────────────────────────────────────────────────────
@@ -85,16 +85,9 @@ export function zonesAreAdjacent(destData, a, b) {
 
 // ── Paso 2: esqueleto de días ───────────────────────────────────────────────────────────────
 
-const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
-
-/** Qué día de la semana es el día N del viaje. Null si el viajero no fijó fechas. */
-function weekdayForDay(dateRangeStartIso, dayNumber) {
-  if (!dateRangeStartIso) return null
-  const start = new Date(`${dateRangeStartIso}T12:00:00`)
-  if (Number.isNaN(start.getTime())) return null
-  start.setDate(start.getDate() + (dayNumber - 1))
-  return WEEKDAYS[start.getDay()]
-}
+// El tipo de cada día (excursión, en blanco, media jornada, revisitas) y el día de la semana salen
+// del esqueleto compartido con el motor v3 (shared/routeEngine/tripSkeleton.js): los dos motores
+// tienen que decidir lo mismo, porque el tipo de día se ve en pantalla.
 
 /**
  * Zonas por defecto de cada franja, en este orden de mando (invariante 7):
@@ -158,66 +151,25 @@ function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCount
 function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCounts = new Map()) {
   const mode = modeConfigFor(pace)
   const budgets = slotBudgets(mode)
-  const config = destData?.destination_config ?? {}
-  const coreDays = config.core_days ?? totalDays
-  const maxAutoDays = config.max_auto_days ?? totalDays
-  // El último día es la vuelta y no lleva ruta (invariante 21).
-  const contentDays = Math.max(1, totalDays - 1)
-
+  const halfDayBudgets = halfDaySlotBudgets(mode)
   // Unidad -> franja en la que quedó. Lo necesitan las revisitas, que van a la OTRA franja.
   const placedSlot = new Map()
-  // Dónde cae la excursión de día completo: SIEMPRE en el día `core_days` del destino, y el core
-  // day que desplaza pasa al siguiente. Es universal y escala con cada destino — Roma (core 4) la
-  // pone el día 4, Lisboa (core 3) el día 3.
-  //
-  // Se mide en días de CONTENIDO, no en días de viaje: el último día del viaje es la vuelta y no
-  // lleva ruta (invariante 21), así que un viaje de 5 días tiene 4 de contenido y la excursión cae
-  // en el último de ellos. Un viaje que no llega a `core_days` de contenido no lleva excursión:
-  // con tres días en Roma nadie se va a Pompeya.
-  const excursionDay = contentDays >= coreDays ? coreDays : null
 
-  // Las de MEDIO DÍA van en los días de revisitas y en ningún otro: son la mañana de un día en el
-  // que ya no queda ciudad nueva que enseñar, no una alternativa a un día de ruta. Una por día y sin
-  // repetir en el viaje — se reparten en orden editorial y cuando se acaban, se acabaron. Roma tiene
-  // dos (Ostia y Tívoli), así que un viaje de 8 días cubre sus dos días de revisitas y uno de 9 ya
-  // no: el tercer día de revisitas se queda como estaba, con la mañana en la ciudad.
-  const mediaJornada = halfDayExcursions(destData)
-  const halfDayBudgets = halfDaySlotBudgets(mode)
-  let siguienteMediaJornada = 0
-
-  const days = []
-  for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
-    // El día siguiente a la excursión es el core day desplazado: ruta nueva, no revisitas. La
-    // repetición empieza un día después.
-    const esRepeticion = dayNumber > coreDays + (excursionDay ? 1 : 0)
-    const esExcursion = dayNumber === excursionDay
-    const esBlanco = dayNumber > maxAutoDays
-    // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero,
-    // y colocarle una propuesta encima es lo contrario de dejárselo en blanco.
-    const mediaJornadaDelDia =
-      esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
-    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCounts, esRepeticion)
-    days.push({
-      dayNumber,
-      weekday: weekdayForDay(dateRangeStartIso, dayNumber),
-      // Pasado el contenido nuevo del destino, repetir deja de ser un defecto: a Roma le quedan 10
-      // lugares en 5 zonas fuera del curado, así que los días 5+ se montan con revisitas.
-      allowsRepetition: esRepeticion,
-      isBlank: esBlanco,
+  const days = tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso }).map((day) => {
+    const zones = defaultZonesFor(destData, totalDays, hasFreeTour, day.dayNumber, themeCounts, day.allowsRepetition)
+    const mediaJornada = day.halfDayExcursion
+    return {
+      ...day,
       curated: zones.curated,
-      // La excursión de medio día de este día, si le toca una. La mañana se queda sin presupuesto
-      // (el viajero está fuera) y la tarde arranca a las 16:00 en vez de a las 14:00.
-      halfDayExcursion: mediaJornadaDelDia,
-      // Un día de excursión no tiene paradas de ciudad: el viajero está fuera. Sus franjas se
-      // quedan vacías a propósito y la cascada las salta (ver unitFitsDay).
-      isExcursion: esExcursion,
+      // Con excursión de medio día la mañana se queda sin presupuesto (el viajero está fuera) y la
+      // tarde arranca a las 16:00 en vez de a las 14:00.
       slots: {
-        morning: { zone: zones.morning, units: [], budget: mediaJornadaDelDia ? halfDayBudgets.morning : budgets.morning, used: 0 },
-        afternoon: { zone: zones.afternoon, units: [], budget: mediaJornadaDelDia ? halfDayBudgets.afternoon : budgets.afternoon, used: 0 },
+        morning: { zone: zones.morning, units: [], budget: mediaJornada ? halfDayBudgets.morning : budgets.morning, used: 0 },
+        afternoon: { zone: zones.afternoon, units: [], budget: mediaJornada ? halfDayBudgets.afternoon : budgets.afternoon, used: 0 },
       },
       hasLongVisit: false,
-    })
-  }
+    }
+  })
   return { mode, days, placedSlot }
 }
 

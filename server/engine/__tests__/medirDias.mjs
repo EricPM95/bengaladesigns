@@ -125,8 +125,9 @@ async function buildTrip(motor, contentDays, pace, exps) {
         : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }
-  const plan = motor !== 'viejo' ? preplanTrip({ destData: D, totalDays, pace, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
-  return { days, plan, totalDays, hasFreeTour, experiencesPositive }
+  // En v3 no hay un reparto aparte con el que comparar: el reparto ya le pregunta al programador.
+  const plan = motor === 'nuevo' ? preplanTrip({ destData: D, totalDays, pace, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
+  return { days, plan, totalDays, hasFreeTour, experiencesPositive, motor }
 }
 
 // ── Métricas de un día ──────────────────────────────────────────────────────────────────────
@@ -204,7 +205,10 @@ function measureTrip(trip, pace, exps) {
     const planned = planDay && !planDay.isBlank && !planDay.isExcursion
       ? new Set(['morning', 'afternoon'].flatMap((slot) => planDay.slots[slot].units.filter((u) => !u.isFreeTour).flatMap((u) => u.places.map((p) => p.name))))
       : null
-    return { dayNumber: index + 1, ...measureDay(day, pace, interestTags, planned) }
+    const measured = measureDay(day, pace, interestTags, planned)
+    // v3: lo que no ha cabido en ningún día viaja en not_included, con su motivo.
+    if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) measured.dropped = (day.not_included ?? []).map((item) => item.name)
+    return { dayNumber: index + 1, ...measured }
   })
 
   // Dónde cae cada lugar en el viaje, para grupos y nivel 1.

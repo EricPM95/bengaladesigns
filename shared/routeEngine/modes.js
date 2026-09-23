@@ -25,6 +25,9 @@ const SHARED = {
   dayEndWithDinner: HHMM('21:30'),
   chainMaxWalkMinutes: 3,
   longVisitMinutes: 180,
+  // Día con excursión de medio día: la mañana (08:00-14:00) es la excursión, 14:00-16:00 es volver
+  // y comer, y la ciudad empieza aquí. La hora la pone el operador de la excursión, no el ritmo.
+  halfDayRouteStart: HHMM('16:00'),
 }
 
 export const MODES_V3 = {

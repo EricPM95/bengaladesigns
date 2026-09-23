@@ -19,8 +19,8 @@ import { preselectedExcursionId } from './excursions.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
-import { buildDayV3 } from './buildDayV3.js'
-import { interestTagsFor } from './experienceTags.js'
+import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
+import { planTrip } from '../../shared/routeEngine/planTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 
 /**
@@ -34,8 +34,9 @@ import { findPipelineV2Key } from '../routeAlgorithm.js'
 export function engineFor(requestEngine) {
   const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
   if (choice === 'viejo' || choice === 'v2' || choice === 'old') return 'viejo'
-  // Motor v3 en construcción (reparto actual + programador nuevo con reloj real). Solo bajo
-  // petición: el defecto sigue siendo 'nuevo' hasta que las métricas digan que gana.
+  // Motor v3 en construcción (repartidor que pregunta al programador + programador con reloj
+  // real, ver shared/routeEngine/). Solo bajo petición: el defecto sigue siendo 'nuevo' hasta que
+  // las métricas digan que gana.
   if (choice === 'v3') return 'v3'
   return 'nuevo'
 }
@@ -61,7 +62,8 @@ export async function buildDayBlockV3(
   // El reparto del viaje ENTERO se recalcula en cada llamada: es una función pura y cuesta
   // milisegundos, y es lo que permite que un día construido aislado sepa qué hacen los demás
   // (invariante 20).
-  const plan = preplanTrip({
+  const isV3 = options.scheduler === 'v3'
+  const tripArgs = {
     destData,
     totalDays,
     pace,
@@ -69,7 +71,8 @@ export async function buildDayBlockV3(
     poolNames: mustIncludePlaces ?? [],
     experiencesPositive: experiencesPositive ?? [],
     dateRangeStartIso,
-  })
+  }
+  const plan = isV3 ? planTrip({ ...tripArgs, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
   if (!dayPlan) return null
@@ -106,6 +109,8 @@ export async function buildDayBlockV3(
     return day
   }
 
+  if (isV3) return buildCityDayV3(destData, plan, dayPlan, options)
+
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
   for (const day of plan.days) {
@@ -116,44 +121,53 @@ export async function buildDayBlockV3(
     }
   }
 
-  const day =
-    options.scheduler === 'v3'
-      ? buildDayV3({
-          destData,
-          destinationKey: findPipelineV2Key(destData.destination ?? options.city ?? ''),
-          dayPlan,
-          modeId: plan.mode.id,
-          tiers: plan.tiers,
-          interestTags: interestTagsFor(experiencesPositive),
-          city: destData.destination ?? options.city ?? '',
-          nightChain: nights.get(dayNumber) ?? [],
-          dayVisitedNames,
-          contentDays: plan.days.length,
-          poolNames: mustIncludePlaces ?? [],
-        })
-      : await buildDayFromPlan({
-          destData,
-          dayPlan,
-          mode: plan.mode,
-          mapboxToken,
-          city: destData.destination ?? options.city ?? '',
-          nightChain: nights.get(dayNumber) ?? [],
-          dayVisitedNames,
-        })
+  const day = await buildDayFromPlan({
+    destData,
+    dayPlan,
+    mode: plan.mode,
+    mapboxToken,
+    city: destData.destination ?? options.city ?? '',
+    nightChain: nights.get(dayNumber) ?? [],
+    dayVisitedNames,
+  })
 
   // Lo que el viajero eligió y no cupo viaja con el día, con su motivo. Mejor avisar que dejarlo
   // fuera en silencio: decide él si mueve algo de día, alarga el viaje o cambia de ritmo.
-  const notScheduled = (day.unscheduled ?? [])
-    .filter((item) => item.priority <= 1)
-    .map((item) => ({ name: item.places[0], reason: item.reason_text, suggestion: 'Muévelo a otro día desde el menú de la parada' }))
-  day.not_included = [...notScheduled, ...plan.unplacedPool.map((item) => ({
+  day.not_included = plan.unplacedPool.map((item) => ({
     name: item.name,
     reason:
       item.reason === 'closed_every_day'
         ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
         : 'No cabía en ningún día del viaje',
     suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
-  }))]
+  }))
 
+  return day
+}
+
+/**
+ * Un día de ciudad del motor v3. El reparto y las horas ya están decididos (planTrip); aquí se le
+ * añaden las nocturnas —calculadas con lo que de verdad se visita— y lo que no ha cabido.
+ */
+function buildCityDayV3(destData, trip, tripDay, options) {
+  const nights = planNightWalks(destData, nightWalkPlan(trip))
+  const dayVisitedNames = new Set(trip.days.flatMap((day) => (day.schedule?.visits ?? []).map((visit) => visit.place.name)))
+  const day = formatDayV3({
+    destData,
+    tripDay,
+    city: destData.destination ?? options.city ?? '',
+    nightChain: nights.get(tripDay.dayNumber) ?? [],
+    dayVisitedNames,
+  })
+  // Lo elegido a mano y los imprescindibles que no han cabido en ningún día, con su motivo. Nunca en
+  // silencio: en un viaje de un día es el "No te dio tiempo".
+  day.not_included = [
+    ...trip.unplacedPool.map((item) => ({
+      name: item.name,
+      reason: item.reason === 'closed_every_day' ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})` : 'No cabía en ningún día del viaje',
+      suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
+    })),
+    ...trip.unplacedEssentials.map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+  ]
   return day
 }

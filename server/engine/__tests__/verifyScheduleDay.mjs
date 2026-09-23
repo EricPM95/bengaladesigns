@@ -22,7 +22,7 @@ import { closesDuringVisit, effectiveSchedule, nextOpenMinutes } from '../../../
 import { buildUnits } from '../units.js'
 import { preplanTrip } from '../preplan.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
-import { placesForScheduler } from '../buildDayV3.js'
+import { placesForScheduler } from '../../../shared/routeEngine/planTrip.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
 const D = findPipelineV2Data('Roma')

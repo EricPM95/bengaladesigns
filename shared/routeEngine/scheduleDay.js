@@ -156,6 +156,106 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
   }
 }
 
+/**
+ * Un día ABIERTO, para el repartidor: se le prueban unidades de una en una sobre el orden que ya
+ * tiene, sin reprogramar todo en cada pregunta (el repartidor pregunta cientos de veces por viaje).
+ *
+ * Mismas reglas que `scheduleDay`, porque usa la misma simulación: lo que `tryAdd` acepta, el día
+ * final lo contiene. Esa es toda la gracia — el reparto y el programador ya no pueden divergir.
+ *
+ * @param {object} input  lo mismo que scheduleDay, sin `units`
+ */
+export function openDay(input) {
+  const makeCtx = (mode, start) => ({
+    mode,
+    travel: input.travel,
+    start,
+    pendingMeals: input.pendingMeals ?? { lunch: true, dinner: true },
+    longVisitsAnytime: input.longVisitsAnytime ?? false,
+    dinnerLatest: latestDinnerStart(mode),
+  })
+  let ctx = makeCtx(input.mode, input.start)
+  let sequence = ctx.pendingMeals.lunch ? [LUNCH] : []
+  let currentCost = simulate(sequence, ctx).cost ?? 0
+  let modeFallback = null
+
+  const units = () => sequence.filter((element) => element !== LUNCH)
+
+  return {
+    units,
+    get modeFallback() {
+      return modeFallback
+    },
+
+    /** Dónde entraría la unidad y cuánto tiempo muerto + paseo añade. null si no cabe. */
+    tryAdd(unit) {
+      const candidate = bestInsertion(sequence, unit, ctx)
+      if (!candidate) return null
+      return { sequence: candidate, addedCost: simulate(candidate, ctx).cost - currentCost }
+    },
+
+    /** Mete la unidad (lo que devolvió `tryAdd`, o la unidad a secas). false si no cabe. */
+    add(unitOrTry) {
+      const attempt = unitOrTry.sequence ? unitOrTry : this.tryAdd(unitOrTry)
+      if (!attempt) return false
+      sequence = attempt.sequence
+      currentCost = simulate(sequence, ctx).cost
+      return true
+    },
+
+    /** Saca una unidad. Quitar nunca rompe un día que ya era posible. */
+    remove(unitId) {
+      sequence = sequence.filter((element) => element === LUNCH || element.id !== unitId)
+      currentCost = simulate(sequence, ctx).cost ?? 0
+    },
+
+    /**
+     * El plan B de un imprescindible que no cabe con el ritmo: el día entero pasa a `fallbackMode`
+     * (empieza antes, sin el extra de duración) SOLO si con él cabe todo lo que ya había más la
+     * unidad nueva. true si el día ha cambiado de modo.
+     */
+    tryWithFallback(unit, fallbackMode) {
+      if (!fallbackMode || modeFallback) return false
+      const start = { ...input.start, minutes: input.start.minutes === input.mode.dayStart ? Math.min(input.start.minutes, fallbackMode.dayStart) : input.start.minutes }
+      const altCtx = makeCtx(fallbackMode, start)
+      let alt = altCtx.pendingMeals.lunch ? [LUNCH] : []
+      const queue = [...units(), unit].sort((a, b) => a.priority - b.priority || unitMinutes(b) - unitMinutes(a) || a.id.localeCompare(b.id, 'es'))
+      for (const item of queue) {
+        alt = bestInsertion(alt, item, altCtx)
+        if (!alt) return false
+      }
+      ctx = altCtx
+      sequence = alt
+      currentCost = simulate(sequence, ctx).cost
+      modeFallback = { recoveredUnitIds: [unit.id], startedAt: start.minutes }
+      return true
+    },
+
+    /** Foto exacta del día, para deshacer un intento sin depender de volver a encajarlo igual. */
+    snapshot() {
+      return { ctx, sequence, currentCost, modeFallback }
+    },
+    restore(snap) {
+      ;({ ctx, sequence, currentCost, modeFallback } = snap)
+    },
+
+    /** El día terminado: orden mejorado y horas puestas. */
+    finish() {
+      sequence = improve(sequence, ctx)
+      const result = simulate(sequence, ctx)
+      return {
+        visits: result.visits,
+        meals: result.meals,
+        unscheduled: [],
+        walkMinutes: result.walk,
+        idleMinutes: result.idle,
+        idleBeforeDinner: result.idleBeforeDinner,
+        modeFallback,
+      }
+    },
+  }
+}
+
 function unitMinutes(unit) {
   return unit.places.reduce((sum, place) => sum + (place.duration_minutes ?? 30), 0)
 }
@@ -330,19 +430,34 @@ function insertByDisplacing(sequence, unit, ctx) {
   return null
 }
 
-/** Mueve cada pieza (unidades y comida) a cada otra posición mientras el día mejore. */
+/**
+ * Mejora el orden mientras el día pierda menos tiempo. Tres movimientos:
+ *   - mover una pieza (unidad o comida) a otra posición;
+ *   - intercambiar dos piezas;
+ *   - invertir un tramo entero (2-opt). Es el que deshace un zigzag: A → C → B → D, donde ir y
+ *     volver cruza la ciudad dos veces, pasa a A → B → C → D. Moviendo piezas de una en una no se
+ *     llega, porque cada paso intermedio es peor que el de partida.
+ */
 function improve(sequence, ctx) {
   let current = sequence
   let currentCost = simulate(current, ctx).cost ?? Infinity
+  const consider = (candidate, best) => {
+    const result = simulate(candidate, ctx)
+    return result.ok && result.cost < (best?.cost ?? currentCost) ? { sequence: candidate, cost: result.cost } : best
+  }
   for (let pass = 0; pass < MAX_IMPROVEMENT_PASSES; pass++) {
     let bestMove = null
     for (let from = 0; from < current.length; from++) {
       const without = [...current.slice(0, from), ...current.slice(from + 1)]
       for (let to = 0; to <= without.length; to++) {
         if (to === from) continue
-        const candidate = [...without.slice(0, to), current[from], ...without.slice(to)]
-        const result = simulate(candidate, ctx)
-        if (result.ok && result.cost < (bestMove?.cost ?? currentCost)) bestMove = { sequence: candidate, cost: result.cost }
+        bestMove = consider([...without.slice(0, to), current[from], ...without.slice(to)], bestMove)
+      }
+      for (let other = from + 1; other < current.length; other++) {
+        const swapped = [...current]
+        ;[swapped[from], swapped[other]] = [swapped[other], swapped[from]]
+        bestMove = consider(swapped, bestMove)
+        if (other - from >= 2) bestMove = consider([...current.slice(0, from), ...current.slice(from, other + 1).reverse(), ...current.slice(other + 1)], bestMove)
       }
     }
     if (!bestMove) break
