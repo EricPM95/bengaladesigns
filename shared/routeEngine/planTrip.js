@@ -110,7 +110,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         poolIndex !== null || unit.isFreeTour
           ? PRIORITY.POOL
           : unit.level === 1
-            ? PRIORITY.ESSENTIAL
+            ? unit.places.some((place) => place.tier === 'joya')
+              ? PRIORITY.JOYA
+              : PRIORITY.ESSENTIAL
             : matchesTheme(unit)
               ? PRIORITY.THEME
               : PRIORITY.FILLER
@@ -233,9 +235,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     let placed = false
     for (const day of candidates) {
       if (placed || !eligible(day, unit)) continue
+      // Se mueve antes un imprescindible que una joya; y de igual escalón, lo más largo.
       const movable = dayUnits(day)
-        .filter((u) => u.priority === PRIORITY.ESSENTIAL)
-        .sort((a, b) => b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))
+        .filter((u) => u.priority > PRIORITY.POOL && u.priority <= PRIORITY.ESSENTIAL)
+        .sort((a, b) => b.priority - a.priority || b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))
       for (const victim of movable) {
         const before = day.open.snapshot()
         day.open.remove(victim.id)
@@ -260,7 +263,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   // ── Paso 4: el resto de imprescindibles ───────────────────────────────────────────────────
-  for (const unit of units.filter((u) => u.priority === PRIORITY.ESSENTIAL && !placedDay.has(u.id)).sort((a, b) => b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))) {
+  // Primero las joyas, luego los imprescindibles: si no cabe todo, lo que se queda fuera es de abajo.
+  const pendingLevel1 = units.filter((u) => u.priority > PRIORITY.POOL && u.priority <= PRIORITY.ESSENTIAL && !placedDay.has(u.id))
+  for (const unit of pendingLevel1.sort((a, b) => a.priority - b.priority || b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))) {
     if (!daysByProximity(unit).some((day) => placeOnDay(day, unit))) {
       unplacedEssentials.push({ unitId: unit.id, name: unit.places[0].name, reason: 'no_room' })
     }

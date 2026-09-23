@@ -37,8 +37,15 @@ import { roundUpToFive, roundUpToSlot, toMinutes } from './time.js'
 import { earliestVisitStart, effectiveSchedule, nextOpenMinutes } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
 
-/** Prioridades: cuanto más bajo, más manda. Solo pool e imprescindibles pueden desplazar a otros. */
-export const PRIORITY = { POOL: 0, ESSENTIAL: 1, THEME: 2, FILLER: 3 }
+/**
+ * Prioridades: cuanto más bajo, más manda. Solo pool y nivel 1 pueden desplazar a otros.
+ *
+ * El nivel 1 tiene dos escalones (el `tier` del JSON del destino): las JOYAS y el resto de
+ * IMPRESCINDIBLES. Entran todos siempre; el escalón solo decide qué va primero cuando no cabe
+ * todo (viajes cortos): una joya puede desplazar a un imprescindible, nunca al revés, y lo que no
+ * quepa va a "No te dio tiempo". Todo lo que compara con `<= ESSENTIAL` incluye a las joyas.
+ */
+export const PRIORITY = { POOL: 0, JOYA: 1, ESSENTIAL: 1.5, THEME: 2, FILLER: 3 }
 
 /** Penalización por cada pareja de unidades curadas que se visita al revés que el reparto a mano.
     Pequeña a propósito: el orden curado es buen punto de partida (medido), no una cárcel. */
