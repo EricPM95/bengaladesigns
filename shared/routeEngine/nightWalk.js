@@ -164,7 +164,9 @@ export function nightStopsFor(chain, dayVisitedNames) {
  */
 export function dinnerZoneOf(tripDay) {
   const visits = tripDay.schedule?.visits ?? []
-  return tripDay.dinnerZone ?? visits[visits.length - 1]?.place.zone ?? tripDay.curated?.afternoon?.zone ?? tripDay.curated?.morning?.zone ?? null
+  // El barrio de cena es de restaurantes ("tridente_spagna"); el paseo nocturno se busca por la
+  // zona de lugares más cercana a él.
+  return tripDay.dinnerPlaceZone ?? tripDay.dinnerZone ?? visits[visits.length - 1]?.place.zone ?? tripDay.curated?.afternoon?.zone ?? tripDay.curated?.morning?.zone ?? null
 }
 
 /**

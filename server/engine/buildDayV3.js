@@ -16,6 +16,7 @@ import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
+import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
@@ -36,6 +37,16 @@ export function travelTimesFor(destinationKey) {
     travelByDestination.set(destinationKey, createTravelTimes(matrix))
   }
   return travelByDestination.get(destinationKey)
+}
+
+/**
+ * La cena en su barrio de cena (calculado de los restaurantes, dinnerZones.js): `zone` es la etiqueta
+ * de los restaurantes ("Tridente / Spagna"), que es lo que busca la ficha de la cena. Sin barrio de
+ * cena, la zona de lugares como antes.
+ */
+function dinnerFields(destData, dinnerZoneId, placeZone) {
+  const zone = dinnerZoneId ? dinnerZones(destData).find((option) => option.id === dinnerZoneId) : null
+  return zone ? { zone: zone.label, zone_display: zone.display } : zoneFields(destData, placeZone, 'cena')
 }
 
 function zoneFields(destData, zoneKey, mealType) {
@@ -73,7 +84,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     suggested_time: toHHMM(meal.start),
     options: [],
     // La comida, donde se está; la cena, en el barrio hacia el que va la tarde.
-    ...(meal.type === 'lunch' ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida') : zoneFields(destData, dinnerZone, 'cena')),
+    ...(meal.type === 'lunch' ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida') : dinnerFields(destData, tripDay.dinnerZone, dinnerZone)),
   }))
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un
@@ -90,7 +101,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     meals,
     not_included: [],
     times_are_final: true,
-    dinner_zone: dinnerZone,
+    dinner_zone: tripDay.dinnerZone ?? dinnerZone,
     half_day_excursion: mediaJornada
       ? {
           id: mediaJornada.id,

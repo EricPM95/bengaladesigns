@@ -30,6 +30,7 @@ import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { planTrip } from '../../../shared/routeEngine/planTrip.js'
 import { TAG_INTEREST_MAP } from '../../../shared/routeEngine/experienceTags.js'
+import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -142,9 +143,9 @@ for (const pace of ['nonstop', 'tranquilo']) {
               }
             }
             // Cenas: en barrios de cena y sin repetir mientras queden.
-            const dinnerZones = D.destination_config.dinner_zones
+            const zoneIds = dinnerZones(D).map((zone) => zone.id)
             const dinners = city.map((day) => day.dinnerZone)
-            if (dinners.some((zone) => zone && !dinnerZones.includes(zone))) fail(`${tag}: cena fuera de los barrios de cena (${dinners.join(', ')})`)
+            if (dinners.some((zone) => zone && !zoneIds.includes(zone))) fail(`${tag}: cena fuera de los barrios de cena (${dinners.join(', ')})`)
             for (const day of city) {
               if (day.dinnerRepeatWalk != null && day.dinnerRepeatWalk > 15) fail(`${tag} d${day.dayNumber}: repite barrio de cena estando a ${day.dinnerRepeatWalk} min`)
             }

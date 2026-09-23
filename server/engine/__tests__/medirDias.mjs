@@ -30,6 +30,7 @@ import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { earliestVisitStart, effectiveSchedule } from '../../../shared/routeEngine/openingHours.js'
 import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
+import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { buildDayBlockV3 } from '../index.js'
 import { preplanTrip } from '../preplan.js'
 import { interestTagsFor, TAG_INTEREST_MAP } from '../experienceTags.js'
@@ -41,6 +42,12 @@ const destinoIndex = process.argv.indexOf('--destino')
 const DESTINO = (destinoIndex >= 0 ? process.argv[destinoIndex + 1] : 'roma').toLowerCase()
 const D = findPipelineV2Data(DESTINO)
 if (!D) throw new Error(`medirDias: no hay datos de "${DESTINO}" en data/pipeline_v2/`)
+// Regla general: afternoon_flow y short_trips son OPCIONALES — el motor tiene que dar buenas rutas
+// sin ellos (el kit los propone como borrador). Con --sin-opcionales se mide así.
+if (process.argv.includes('--sin-opcionales')) {
+  delete D.afternoon_flow
+  delete D.short_trips
+}
 const MATRIX = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/travel/${DESTINO}.json`), 'utf8'))
 const travel = createTravelTimes(MATRIX)
 
@@ -102,6 +109,7 @@ for (const place of D.places) {
 }
 for (const members of GROUPS.values()) members.sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0))
 
+const DINNER_ZONES = dinnerZones(D)
 const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) => place.name)
 
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
@@ -254,12 +262,14 @@ function measureDay(day, pace, interestTags, plannedNames) {
   const dropped = plannedNames ? [...plannedNames].filter((name) => !builtNames.has(name)) : []
 
   const freeTour = dayStops.find((stop) => stop.is_free_tour)
-  const dinnerCoords = day.dinner_zone ? D.meal_zones?.[day.dinner_zone]?.cena?.coordinates ?? null : null
+  const dinnerCoords = day.dinner_zone ? (DINNER_ZONES.find((zone) => zone.id === day.dinner_zone)?.coordinates ?? D.meal_zones?.[day.dinner_zone]?.cena?.coordinates ?? null) : null
   const tarde = afternoonMeters(dayStops, lunchAt, pace, dinnerCoords ? { coordinates: dinnerCoords, at: dinnerAt } : null)
 
   return {
     kind: 'ciudad',
     stops: dayStops.length,
+    // Para el ritmo, el Free Tour cuenta como los lugares que recorre (decisión del 2026-09-23).
+    placesSeen: dayStops.reduce((sum, stop) => sum + (stop.is_free_tour ? Math.max(1, stop.free_tour_covers?.length ?? 1) : 1), 0),
     firstStart: t2m(dayStops[0].suggested_time),
     lastEnd,
     idleBetweenStops: gaps.reduce((sum, gap) => sum + Math.max(0, gap.idle), 0),
@@ -539,10 +549,10 @@ const SEMAFORO_CRITERIOS = [
   },
   {
     id: 'ritmo',
-    label: 'Días con menos paradas que el mínimo del ritmo (8 completo / 5 tranquilo), hasta core_days',
+    label: 'Días con menos lugares que el mínimo del ritmo (8 completo / 5 tranquilo; el Free Tour cuenta lo que recorre), hasta core_days',
     limite: '0',
     applies: (n) => n >= 2 && n <= (D.destination_config?.core_days ?? 4),
-    value: (rows, days, pace) => days.filter((d) => d.stops < (pace === 'tranquilo' ? 5 : 8)).length,
+    value: (rows, days, pace) => days.filter((d) => d.placesSeen < (pace === 'tranquilo' ? 5 : 8)).length,
     ok: (v) => v === 0,
   },
 ]

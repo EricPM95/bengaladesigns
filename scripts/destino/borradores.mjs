@@ -27,6 +27,7 @@ import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTri
 import { PRIORITY, scheduleFixedOrder } from '../../shared/routeEngine/scheduleDay.js'
 import { placesForScheduler } from '../../shared/routeEngine/planTrip.js'
 import { MODES_V3 } from '../../shared/routeEngine/modes.js'
+import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? '').toLowerCase()
@@ -58,9 +59,7 @@ const WIKIPEDIA_PAUSE_MS = 1500
 const places = D.places ?? []
 const byName = new Map(places.map((place) => [place.name, place]))
 const walk = (a, b) => travel.leg(a, b)?.minutes ?? Infinity
-const dinnerPoints = (D.destination_config?.dinner_zones ?? [])
-  .map((zone) => ({ zone, coordinates: D.meal_zones?.[zone]?.cena?.coordinates }))
-  .filter((option) => Array.isArray(option.coordinates))
+const dinnerPoints = dinnerZones(D).map((zone) => ({ zone: zone.id, coordinates: zone.coordinates }))
 const nearestDinner = (coords) => [...dinnerPoints].sort((a, b) => walk(coords, a.coordinates) - walk(coords, b.coordinates))[0] ?? null
 const borradores = { generado: 'scripts/destino/borradores.mjs', destino: D.destination }
 
@@ -224,7 +223,7 @@ for (const unit of longUnits) {
       priority: PRIORITY.ESSENTIAL,
     }))
     const morning = block.preferred_slot === 'manana'
-    const dinner = D.meal_zones?.[block.dinner_zone_if_afternoon]?.cena?.coordinates ?? null
+    const dinner = dinnerPoints.find((point) => point.zone === block.dinner_zone_if_afternoon)?.coordinates ?? null
     const result = scheduleFixedOrder({
       units: blockUnits,
       mode,

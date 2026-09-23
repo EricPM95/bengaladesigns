@@ -1,5 +1,6 @@
 import express from 'express'
 import { config } from 'dotenv'
+import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -845,9 +846,10 @@ const MEAL_PROBE_MINUTES = { comida: 13 * 60 + 30, cena: 20 * 60 + 30 }
 function curatedRestaurantsNear(destino, zona, franja, coordinates) {
   const data = findPipelineV2Data(destino)
   if (!Array.isArray(data?.restaurants) || data.restaurants.length === 0) return []
-  const dinnerZone = franja === 'cena' ? Object.values(data.meal_zones ?? {}).find((zone) => zone?.cena?.options?.includes(zona) && Array.isArray(zone.cena.coordinates)) : null
-  const center = dinnerZone ? { lat: dinnerZone.cena.coordinates[0], lng: dinnerZone.cena.coordinates[1] } : coordinates
+  const dinnerZone = franja === 'cena' ? dinnerZones(data).find((zone) => zone.label === zona) : null
+  const center = dinnerZone ? { lat: dinnerZone.coordinates[0], lng: dinnerZone.coordinates[1] } : coordinates
   if (!Number.isFinite(center?.lat) || !Number.isFinite(center?.lng) || (center.lat === 0 && center.lng === 0)) return []
+  const usesMeal = data.restaurants.some((place) => place.meal)
   const walkMinutes = (place) => (haversineMeters(center, place.coordinates) * 1.32) / 83
   const opensAt = (hours, minutes) => {
     if (!hours) return true
@@ -855,7 +857,9 @@ function curatedRestaurantsNear(destino, zona, franja, coordinates) {
     return ranges.length === 0 || ranges.some(([open, close]) => open <= minutes && (close <= open ? close + 24 * 60 : close) >= minutes)
   }
   return data.restaurants
-    .filter((place) => MEAL_SUB_CATEGORIES[franja].includes(place.sub_category) && Number.isFinite(place.coordinates?.lat))
+    // El campo `meal` del JSON manda (sin él, en un destino que lo usa, no es sitio de comer: cafés,
+    // heladerías, aperitivo); en un destino que no lo usa, por tipo de sitio.
+    .filter((place) => (usesMeal ? (franja === 'cena' ? servesDinner(place) : servesLunch(place)) : MEAL_SUB_CATEGORIES[franja].includes(place.sub_category)) && Number.isFinite(place.coordinates?.lat))
     .filter((place) => opensAt(place.hours, MEAL_PROBE_MINUTES[franja]))
     .map((place) => ({ place, minutes: walkMinutes(place) }))
     .filter((item) => item.minutes <= CURATED_MEAL_MAX_WALK_MINUTES)

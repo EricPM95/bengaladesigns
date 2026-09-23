@@ -19,6 +19,7 @@
 import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
+import { dinnerZones } from './dinnerZones.js'
 import { modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 
@@ -224,8 +225,16 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
     const units = [...(morning ? unitsForBlock(morning.id, 'manana') : []), ...(afternoon ? unitsForBlock(afternoon.id, 'tarde') : [])]
     // Si el Free Tour sustituye a B, comida y cena del bloque B siguen valiendo (recorre el Centro).
     const lunchZone = morning ? blocks[morning.id].lunch_zone_if_morning : null
-    const dinnerZone = afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon : null
-    const dinnerCoords = dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null
+    // La cena, en el barrio de cena más cercano a donde acaba la tarde (dinnerZones.js): el bloque ya
+    // no lo dice. Sin barrios de cena en el destino, el que diga el bloque, si lo dice.
+    const lastOfAfternoon = afternoon ? unitsForBlock(afternoon.id, 'tarde').at(-1)?.places.at(-1) : null
+    const nearestDinner = lastOfAfternoon
+      ? dinnerZones(destData)
+          .map((option) => ({ option, walk: travel.leg(lastOfAfternoon.end_coordinates ?? lastOfAfternoon.coordinates, option.coordinates)?.minutes ?? Infinity }))
+          .sort((a, b) => a.walk - b.walk || a.option.id.localeCompare(b.option.id, 'es'))[0]?.option ?? null
+      : null
+    const dinnerZone = nearestDinner?.id ?? (afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon ?? null : null)
+    const dinnerCoords = nearestDinner?.coordinates ?? (dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null)
     const startMinutes = morning ? mode.dayStart : toMinutes(blocks[afternoon.id]?.afternoon_start ?? DEFAULT_AFTERNOON_START)
     const schedule = scheduleFixedOrder({
       units,

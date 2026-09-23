@@ -188,14 +188,10 @@
         ]
       },
       "cena": {
-        "display": "en Borgo Pio",
+        "display": "cerca del Vaticano",
         "options": [
-          "Borgo Pio",
-          "Prati"
-        ],
-        "coordinates": [
-          41.9038,
-          12.4607
+          "Prati",
+          "Borgo Pio"
         ]
       }
     },
@@ -325,60 +321,6 @@
           "Quartiere Trieste"
         ]
       }
-    },
-    "spagna": {
-      "comida": {
-        "display": "cerca de Plaza de España",
-        "options": [
-          "Plaza de España"
-        ]
-      },
-      "cena": {
-        "display": "cerca de Plaza de España",
-        "options": [
-          "Plaza de España"
-        ],
-        "coordinates": [
-          41.9072,
-          12.4794
-        ]
-      }
-    },
-    "trevi": {
-      "comida": {
-        "display": "junto a la Fontana de Trevi",
-        "options": [
-          "Fontana de Trevi"
-        ]
-      },
-      "cena": {
-        "display": "junto a la Fontana de Trevi",
-        "options": [
-          "Fontana de Trevi"
-        ],
-        "coordinates": [
-          41.9018,
-          12.4856
-        ]
-      }
-    },
-    "coliseo": {
-      "comida": {
-        "display": "junto al Coliseo",
-        "options": [
-          "Celio"
-        ]
-      },
-      "cena": {
-        "display": "junto al Coliseo",
-        "options": [
-          "Celio"
-        ],
-        "coordinates": [
-          41.8891,
-          12.4957
-        ]
-      }
     }
   },
   "evening_blocks": [
@@ -499,7 +441,10 @@
         "Isla Tiberina",
         "Iglesia de Santa Maria in Trastevere",
         "Villa Farnesina",
-        "Plaza Trilussa"
+        "Plaza Trilussa",
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola",
+        "Basílica de Santa Cecilia in Trastevere"
       ],
       "zone_priority": 3
     },
@@ -2713,6 +2658,97 @@
         "cimitero",
         "acattolico"
       ]
+    },
+    {
+      "name": "San Pietro in Montorio y Tempietto de Bramante",
+      "duration_minutes": 30,
+      "zone": "trastevere",
+      "coordinates": [
+        41.8886,
+        12.4667
+      ],
+      "level": 2,
+      "type": "interior",
+      "schedule": "14:00-18:00",
+      "tags": [
+        "iglesia",
+        "arte",
+        "arquitectura"
+      ],
+      "filter_category": "iglesias",
+      "description": "El Tempietto de Bramante, en el patio de San Pietro in Montorio: el templete redondo que inventó el Renacimiento romano, en lo alto del Janículo",
+      "tip": "Entrada al patio gratuita. Los fines de semana abre también por la mañana (10:00-18:00); entre semana, por la tarde. Queda de camino entre el mirador del Janículo y Trastevere",
+      "search_aliases": [
+        "tempietto",
+        "tempietto de bramante",
+        "san pietro in montorio",
+        "tempietto di bramante"
+      ],
+      "wikipedia_title": "en:Tempietto del Bramante",
+      "search_en": "Tempietto Bramante San Pietro in Montorio Rome",
+      "search_en_keywords": [
+        "tempietto",
+        "montorio"
+      ]
+    },
+    {
+      "name": "Fontana dell'Acqua Paola",
+      "duration_minutes": 15,
+      "zone": "trastevere",
+      "coordinates": [
+        41.8881,
+        12.4655
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "fuente",
+        "mirador"
+      ],
+      "filter_category": "miradores",
+      "description": "El Fontanone del Janículo: una fuente monumental de 1612 con vistas sobre los tejados de Roma",
+      "tip": "Gratis. Desde la barandilla de enfrente se ve media Roma; bajando por las escaleras de Via Garibaldi llegas a Trastevere en 10 minutos",
+      "search_aliases": [
+        "fontanone",
+        "fontana acqua paola",
+        "il fontanone",
+        "fontana del gianicolo"
+      ],
+      "wikipedia_title": "en:Acqua Paola Fountain",
+      "search_en": "Fontana dell Acqua Paola Rome",
+      "search_en_keywords": [
+        "fontanone",
+        "acqua paola"
+      ]
+    },
+    {
+      "name": "Basílica de Santa Cecilia in Trastevere",
+      "duration_minutes": 30,
+      "zone": "trastevere",
+      "coordinates": [
+        41.8876,
+        12.4759
+      ],
+      "level": 3,
+      "type": "interior",
+      "schedule": "10:00-12:30, 16:30-18:30",
+      "tags": [
+        "iglesia",
+        "arte"
+      ],
+      "filter_category": "iglesias",
+      "description": "La basílica de la patrona de la música, con la escultura de Santa Cecilia de Maderno, la cripta sobre una casa romana y el Juicio Final de Cavallini",
+      "tip": "La iglesia es gratis; la cripta y el fresco de Cavallini (solo por la mañana, 10:00-12:30) tienen entrada aparte",
+      "search_aliases": [
+        "santa cecilia",
+        "santa cecilia in trastevere",
+        "basilica di santa cecilia"
+      ],
+      "wikipedia_title": "en:Santa Cecilia in Trastevere",
+      "search_en": "Santa Cecilia in Trastevere Rome",
+      "search_en_keywords": [
+        "santa cecilia"
+      ]
     }
   ],
   "groups": {
@@ -3151,9 +3187,9 @@
                 "nomentano"
               ],
               "places": [
-                "Plaza de España",
                 "Piazza del Popolo",
-                "Via del Corso"
+                "Terraza del Pincio",
+                "Plaza de España"
               ],
               "note": "Norte del centro — paseo de compras y miradores"
             },
@@ -3317,9 +3353,9 @@
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza de España",
                 "Piazza del Popolo",
-                "Via del Corso"
+                "Terraza del Pincio",
+                "Plaza de España"
               ],
               "note": "Norte centro + compras"
             },
@@ -3536,9 +3572,9 @@
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza de España",
                 "Piazza del Popolo",
-                "Via del Corso"
+                "Terraza del Pincio",
+                "Plaza de España"
               ],
               "note": "Norte del centro + Pincio atardecer"
             },
@@ -3686,9 +3722,9 @@
             "afternoon": {
               "zone": "centro_historico",
               "places": [
-                "Plaza de España",
                 "Piazza del Popolo",
-                "Via del Corso"
+                "Terraza del Pincio",
+                "Plaza de España"
               ],
               "note": "Norte centro + compras"
             },
@@ -3795,7 +3831,6 @@
         ],
         "extras_completo": [],
         "lunch_zone_if_morning": "centro_historico",
-        "dinner_zone_if_afternoon": "spagna",
         "swaps": {
           "naturaleza_vistas": {
             "insert_before": "Plaza de España",
@@ -4061,6 +4096,7 @@
     {
       "name": "Armando al Pantheon",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Salita dei Crescenzi, 31, 00186 Roma",
       "coordinates": {
         "lat": 41.8986,
@@ -4077,6 +4113,7 @@
     {
       "name": "Trattoria Da Enzo al 29",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via dei Vascellari, 29, 00153 Roma",
       "coordinates": {
         "lat": 41.888,
@@ -4093,6 +4130,7 @@
     {
       "name": "Felice a Testaccio",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via Mastro Giorgio, 29, 00153 Roma",
       "coordinates": {
         "lat": 41.879,
@@ -4109,6 +4147,7 @@
     {
       "name": "Trattoria Monti",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via di San Vito, 13A, 00185 Roma",
       "coordinates": {
         "lat": 41.896,
@@ -4125,6 +4164,7 @@
     {
       "name": "Trattoria Dal Cavalier Gino",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Vicolo Rosini, 4, 00186 Roma",
       "coordinates": {
         "lat": 41.9012,
@@ -4141,6 +4181,7 @@
     {
       "name": "Tonnarello",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via della Paglia, 77, 00153 Roma",
       "coordinates": {
         "lat": 41.8893,
@@ -4157,6 +4198,7 @@
     {
       "name": "Taverna Trilussa",
       "sub_category": "trattoria",
+      "meal": "cena",
       "address": "Via del Politeama, 23/25, 00153 Roma",
       "coordinates": {
         "lat": 41.8893,
@@ -4173,6 +4215,7 @@
     {
       "name": "SantoPalato",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Piazza Tarquinia, 4A/B, 00183 Roma",
       "coordinates": {
         "lat": 41.8845,
@@ -4189,6 +4232,7 @@
     {
       "name": "Pizzarium (Bonci)",
       "sub_category": "pizza",
+      "meal": "ambos",
       "address": "Via della Meloria, 43, 00136 Roma",
       "coordinates": {
         "lat": 41.9071,
@@ -4205,6 +4249,7 @@
     {
       "name": "Antico Forno Roscioli",
       "sub_category": "pizza",
+      "meal": "comida",
       "address": "Via dei Chiavari, 34, 00186 Roma",
       "coordinates": {
         "lat": 41.8949,
@@ -4221,6 +4266,7 @@
     {
       "name": "Forno Campo de' Fiori",
       "sub_category": "pizza",
+      "meal": "comida",
       "address": "Vicolo del Gallo, 14, 00186 Roma",
       "coordinates": {
         "lat": 41.8955,
@@ -4237,6 +4283,7 @@
     {
       "name": "Ai Marmi (Panattoni)",
       "sub_category": "pizza",
+      "meal": "cena",
       "address": "Viale di Trastevere, 53, 00153 Roma",
       "coordinates": {
         "lat": 41.8861,
@@ -4253,6 +4300,7 @@
     {
       "name": "Da Remo",
       "sub_category": "pizza",
+      "meal": "cena",
       "address": "Piazza di Santa Maria Liberatrice, 44, 00153 Roma",
       "coordinates": {
         "lat": 41.878,
@@ -4557,6 +4605,7 @@
     {
       "name": "Trapizzino (Trastevere)",
       "sub_category": "street_food",
+      "meal": "ambos",
       "address": "Piazza Trilussa, 46, 00153 Roma",
       "coordinates": {
         "lat": 41.889,
@@ -4573,6 +4622,7 @@
     {
       "name": "Supplizio",
       "sub_category": "street_food",
+      "meal": "ambos",
       "address": "Via dei Banchi Vecchi, 143, 00186 Roma",
       "coordinates": {
         "lat": 41.8966,
@@ -4589,6 +4639,7 @@
     {
       "name": "Dar Filettaro a Santa Barbara",
       "sub_category": "street_food",
+      "meal": "cena",
       "address": "Largo dei Librari, 88, 00186 Roma",
       "coordinates": {
         "lat": 41.8951,
@@ -4605,6 +4656,7 @@
     {
       "name": "Er Buchetto",
       "sub_category": "street_food",
+      "meal": "ambos",
       "address": "Via del Viminale, 2F, 00185 Roma",
       "coordinates": {
         "lat": 41.9008,
@@ -4621,6 +4673,7 @@
     {
       "name": "Mordi e Vai",
       "sub_category": "street_food",
+      "meal": "comida",
       "address": "Mercato di Testaccio, Box 15, Via Beniamino Franklin, 00153 Roma",
       "coordinates": {
         "lat": 41.8773,
@@ -4637,6 +4690,7 @@
     {
       "name": "La Prosciutteria (Trastevere)",
       "sub_category": "street_food",
+      "meal": "ambos",
       "address": "Via della Scala, 71, 00153 Roma",
       "coordinates": {
         "lat": 41.8897,
@@ -4653,6 +4707,7 @@
     {
       "name": "200 Gradi",
       "sub_category": "street_food",
+      "meal": "ambos",
       "address": "Piazza del Risorgimento 3, 00192 Roma",
       "coordinates": {
         "lat": 41.90645,
@@ -4669,6 +4724,7 @@
     {
       "name": "Pizzeria Da Baffetto",
       "sub_category": "pizza",
+      "meal": "cena",
       "address": "Via del Governo Vecchio, 114, 00186 Roma",
       "coordinates": {
         "lat": 41.898,
@@ -4685,6 +4741,7 @@
     {
       "name": "Coming Out",
       "sub_category": "pizza",
+      "meal": "ambos",
       "address": "Via di S. Giovanni in Laterano 8, 00184 Roma",
       "coordinates": {
         "lat": 41.89006,
@@ -4701,6 +4758,7 @@
     {
       "name": "Li Rioni",
       "sub_category": "pizza",
+      "meal": "cena",
       "address": "Via dei Santi Quattro 24, 00184 Roma",
       "coordinates": {
         "lat": 41.88869,
@@ -4717,6 +4775,7 @@
     {
       "name": "La Prezzemolina",
       "sub_category": "pizza",
+      "meal": "comida",
       "address": "Via del Colosseo 1/E-F, 00184 Roma",
       "coordinates": {
         "lat": 41.89318,
@@ -4733,6 +4792,7 @@
     {
       "name": "La Boccaccia",
       "sub_category": "pizza",
+      "meal": "ambos",
       "address": "Via Leonina 73, 00184 Roma",
       "coordinates": {
         "lat": 41.89471,
@@ -4749,6 +4809,7 @@
     {
       "name": "Piccolo Buco",
       "sub_category": "pizza",
+      "meal": "ambos",
       "address": "Via del Lavatore 91, 00187 Roma",
       "coordinates": {
         "lat": 41.90132,
@@ -4829,6 +4890,7 @@
     {
       "name": "Osteria Fernanda",
       "sub_category": "trattoria",
+      "meal": "cena",
       "address": "Via Crescenzo del Monte, 18, 00153 Roma",
       "coordinates": {
         "lat": 41.8835,
@@ -4845,6 +4907,7 @@
     {
       "name": "Trecca - Cucina di Mercato",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via di Porta Cavalleggeri, 126, 00165 Roma",
       "coordinates": {
         "lat": 41.8972,
@@ -4861,6 +4924,7 @@
     {
       "name": "Il Bocconcino",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via Ostilia 23, 00184 Roma",
       "coordinates": {
         "lat": 41.88861,
@@ -4877,6 +4941,7 @@
     {
       "name": "La Taverna dei Fori Imperiali",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via della Madonna dei Monti 9, 00184 Roma",
       "coordinates": {
         "lat": 41.89397,
@@ -4893,6 +4958,7 @@
     {
       "name": "Enoteca Corsi",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via del Gesù 87/88, 00186 Roma",
       "coordinates": {
         "lat": 41.89693,
@@ -4909,6 +4975,7 @@
     {
       "name": "Il Gabriello",
       "sub_category": "trattoria",
+      "meal": "cena",
       "address": "Via Vittoria 51, 00187 Roma",
       "coordinates": {
         "lat": 41.90693,
@@ -4925,6 +4992,7 @@
     {
       "name": "Edy",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Vicolo del Babuino 4, 00187 Roma",
       "coordinates": {
         "lat": 41.9089,
@@ -4941,6 +5009,7 @@
     {
       "name": "Sgarro Bistrot",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via Belsiana 14, 00187 Roma",
       "coordinates": {
         "lat": 41.90589,
@@ -4957,6 +5026,7 @@
     {
       "name": "Poldo e Gianna Osteria",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Vicolo Rosini 6/7, 00186 Roma",
       "coordinates": {
         "lat": 41.90223,
@@ -4973,6 +5043,7 @@
     {
       "name": "Piccolo Arancio",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Vicolo Scanderbeg 112, 00187 Roma",
       "coordinates": {
         "lat": 41.901,
@@ -4989,6 +5060,7 @@
     {
       "name": "Colline Emiliane",
       "sub_category": "trattoria",
+      "meal": "ambos",
       "address": "Via degli Avignonesi 22, 00187 Roma",
       "coordinates": {
         "lat": 41.90298,
@@ -5005,6 +5077,7 @@
     {
       "name": "Ristorante Arlù",
       "sub_category": "trattoria",
+      "meal": "comida",
       "address": "Borgo Pio 135, 00193 Roma",
       "coordinates": {
         "lat": 41.90389,
@@ -5021,6 +5094,7 @@
     {
       "name": "Borghiciana Pastificio Artigianale",
       "sub_category": "trattoria",
+      "meal": "comida",
       "address": "Borgo Pio 186, 00193 Roma",
       "coordinates": {
         "lat": 41.90374,
@@ -5345,16 +5419,6 @@
     "category_cap_selected": 4,
     "category_cap_default": 2,
     "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya",
-    "dinner_zones": [
-      "centro_historico",
-      "roma_antigua",
-      "trastevere",
-      "testaccio",
-      "spagna",
-      "trevi",
-      "coliseo",
-      "vaticano"
-    ],
     "unrelated_pairs": [
       [
         "Coliseo",

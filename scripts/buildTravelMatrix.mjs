@@ -42,6 +42,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dinnerZones } from '../shared/routeEngine/dinnerZones.js'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -86,8 +87,8 @@ function collectPoints(destData) {
   }
   for (const [zoneId, zone] of Object.entries(destData.zones ?? {})) entries.push({ kind: 'zone_center', name: zoneId, coordinates: zone.center })
   // Dónde se cena en cada barrio: el motor planifica la tarde hacia ahí y cuenta el paseo hasta la cena.
-  for (const [zoneId, meals] of Object.entries(destData.meal_zones ?? {})) {
-    if (meals?.cena?.coordinates) entries.push({ kind: 'dinner', name: zoneId, coordinates: meals.cena.coordinates })
+  for (const zone of dinnerZones(destData)) {
+    entries.push({ kind: 'dinner', name: zone.id, coordinates: zone.coordinates })
   }
 
   const byKey = new Map()

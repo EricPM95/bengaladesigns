@@ -410,6 +410,11 @@ export function openDay(input) {
       return { visits: result.visits ?? [], meals: result.meals ?? [] }
     },
 
+    /** Las unidades que van después de comer (todas, si el día no tiene comida pendiente). */
+    afternoonUnits() {
+      return sequence.slice(sequence.indexOf(LUNCH) + 1)
+    },
+
     /** Las visitas tal como están ahora (sin mejorar el orden). */
     visits() {
       return simulate(sequence, ctx).visits ?? []

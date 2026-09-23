@@ -251,13 +251,19 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 
 **La tarde y la cena**
 
-41. **Cada día cena en un barrio de `dinner_zones`**: uno nuevo a 15 min o menos; si no, repetir uno
-    a 15 min o menos; si no, el nuevo más cercano. El barrio se elige DESPUÉS del relleno, donde
-    acaba la tarde (la tarde va primero adonde queda contenido sin ver); luego se rellena otra vuelta
-    ya hacia la cena, y el paseo cuenta. *Elegido antes, mandaba la tarde a una zona ya agotada y el
-    día acababa a las 13:00.* En 1 día el barrio lo dice el bloque (`dinner_zone_if_afternoon`).
+41. **Dónde se cena, por contenido** (decisión del 2026-09-23, sin listas ni reglas por día). Los
+    barrios de cena salen solos de los restaurantes (49). Desde donde acaba la parte FIJA de la tarde
+    (lo curado, el nivel 1, el pool; el relleno de la primera vuelta se aparta como provisional),
+    entre los barrios a 30 min o menos, puntúa el contenido sin ver DE CAMINO (rodeo de 15 min o
+    menos), hasta lo que cabe en la tarde que queda, más un extra si hay un mirador para el atardecer.
+    El reparto es CONJUNTO: la combinación de barrios que más suma en todo el viaje (por turnos, el
+    día 1 se quedaba Trastevere por 32 min de ventaja y el del Vaticano, que perdía 63, cenaba sin
+    nada que ver). Un barrio lo comparten dos días solo si uno de ellos está a 15 min o menos. Si el
+    barrio ganó por el mirador, el mirador entra el primero; luego se rellena hacia la cena. Resultado
+    en Roma, sin escribirlo en ningún sitio: el día del Vaticano cena en Trastevere subiendo a la
+    Fontana dell'Acqua Paola. En 1 y 1,5 días, el barrio de cena más cercano a donde acaba la tarde.
 42. **El recorrido de tarde (`afternoon_flow`) impone su orden** y está exento de la regla de tema y
-    del tope de categoría: es el destino hablando.
+    del tope de categoría: es el destino hablando. Es OPCIONAL (50).
 43. **"De paso"**: un nivel 1 con `pass_by`, visto un día anterior, se repasa por fuera camino de la
     cena si quedan 45+ min libres y el desvío es de 10 min o menos. Siempre al final del día, con su
     mensaje, una vez por viaje; nunca si esa noche sale como experiencia nocturna.
@@ -266,7 +272,7 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 
 **Viajes cortos y relaciones**
 
-45. **1 y 1,5 días = rutas curadas por bloques** (`short_trips`: un bloque por franja, en su orden,
+45. **1 y 1,5 días = rutas curadas por bloques, si el destino las tiene** (`short_trips`, OPCIONAL, 50: un bloque por franja, en su orden,
     núcleo en tranquilo, extras en completo, swaps por experiencia). El motor no reordena; pone horas
     y comprueba. Lo del pool sustituye a lo de menor prioridad y, si no cabe, devuelve su sitio; un
     par inseparable se sustituye entero.
@@ -279,12 +285,18 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
     "Añadir parada", y allí se enseña la nota ("Solo vie-dom, visita guiada con reserva"). Con
     fechas, como cualquier otro, solo los días que abre.
 
-49. **Restaurantes curados = barrios de cena y ficha de comida.** Cada zona de imprescindibles
-    necesita restaurantes curados cerca; con ellos se define su barrio de cena (`meal_zones.<x>.cena`
-    con coordenadas, en `dinner_zones`). La ficha de comida/cena de un destino curado enseña los
+49. **Restaurantes curados = barrios de cena y ficha de comida.** Cada sitio de comer lleva `meal`:
+    "comida" | "cena" | "ambos" (cafés, heladerías y bares de aperitivo no). Una zona (`zone` del
+    restaurante) es barrio de cena si tiene 3 o más restaurantes con `meal` "cena" o "ambos"; su punto
+    es el centro de esos restaurantes (shared/routeEngine/dinnerZones.js). Se calcula solo, en
+    cualquier destino: nada de `dinner_zones` a mano. Cada zona de imprescindibles necesita
+    restaurantes curados cerca (el validador avisa). La ficha de comida/cena de un destino curado enseña los
     restaurantes del JSON a 12 min o menos andando (desde la parada, o desde el barrio de la cena),
     abiertos a esa hora, en lista y en el mapa; solo si no hay ninguno se busca en la web.
     *Sin barrio de cena en el norte, la tarde de Plaza de España/Popolo se podaba entera.*
+
+50. **`afternoon_flow` y `short_trips` son OPCIONALES.** El motor tiene que dar buenas rutas sin
+    ellos; el kit los propone como borrador. Se mide con `medirDias --semaforo --sin-opcionales`.
 
 **Tiempos a pie y pureza**
 
@@ -299,7 +311,8 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 
 1. **Datos** — `node scripts/destino/validar.mjs <destino>`: referencias, grupos, nivel 1 (4-5
    joyas, 10-12 en total), visitas largas frente a `core_days`, horarios, pares a menos de 150 m
-   decididos (y propuestas hasta 300 m), coordenadas contra Wikipedia (rojo a más de 200 m).
+   decididos (y propuestas hasta 300 m), coordenadas contra Wikipedia (rojo a más de 200 m),
+   restaurantes con `meal` y barrios de cena que salen (y a qué zonas les falta uno).
 2. **Borradores de criterio** — `node scripts/destino/borradores.mjs <destino>`: joyas por
    popularidad, recorrido de tarde por zona y rutas de 1 y 1,5 días, probadas con el motor. Se
    revisan a mano y se copian al JSON; no se usan tal cual.

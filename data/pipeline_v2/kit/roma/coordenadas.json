@@ -534,5 +534,23 @@
    12.4799
   ],
   "mapbox": null
+ },
+ "San Pietro in Montorio y Tempietto de Bramante": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": null
+ },
+ "Fontana dell'Acqua Paola": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": null
+ },
+ "Basílica de Santa Cecilia in Trastevere": {
+  "version": 2,
+  "wikipedia": [
+   41.88755556,
+   12.47589167
+  ],
+  "mapbox": null
  }
 }

@@ -19,6 +19,10 @@
  *   6. Pares cercanos sin decidir, con propuesta de `contained_in` o `neighbor_of` (INVARIANTES 16):
  *      a menos de 150 m hay que decidir (rojo); de 150 a 300 m es una propuesta (amarillo). Lo
  *      decidido "sin relación" se apunta en `destination_config.unrelated_pairs`.
+ *   8. Restaurantes y barrios de cena: cada sitio de comer lleva `meal` (comida/cena/ambos); los
+ *      barrios de cena salen solos (3+ restaurantes que sirven cenas en la misma zona). Se listan los
+ *      que salen y las zonas a las que les falta poco, y cada zona de imprescindibles sin barrio de
+ *      cena a 15 min o menos.
  *   7. Coordenadas contra Wikipedia: rojo si se separan más de 200 m. Mapbox solo como segunda
  *      opinión (amarillo) cuando Wikipedia no encuentra el sitio: su buscador devuelve tiendas y
  *      bares que se llaman como el monumento (medido en Roma: 27 de 67 a más de 200 m, ninguno
@@ -33,6 +37,7 @@ import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
+import { MIN_DINNER_RESTAURANTS, dinnerZones, servesDinner } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? '').toLowerCase()
@@ -97,9 +102,6 @@ const section = (title) => {
   }
   const tour = D.default_free_tour
   for (const name of [...(tour?.covers ?? []), ...(tour?.early_visit_ok ?? [])]) check('default_free_tour', name)
-  for (const zone of D.destination_config?.dinner_zones ?? []) {
-    if (!Array.isArray(D.meal_zones?.[zone]?.cena?.coordinates)) s.red.push(`destination_config.dinner_zones: "${zone}" sin meal_zones.${zone}.cena.coordinates`)
-  }
   for (const pair of D.destination_config?.unrelated_pairs ?? []) for (const name of pair) check('destination_config.unrelated_pairs', name)
 }
 
@@ -225,6 +227,26 @@ const section = (title) => {
     }
   }
   if (s.red.length || s.warn.length) s.info.push('Lo que se decida "sin relación" va en destination_config.unrelated_pairs para que no vuelva a salir.')
+}
+
+// ── 8. Restaurantes y barrios de cena ───────────────────────────────────────────────────────
+{
+  const s = section('Restaurantes y barrios de cena')
+  const MEAL_PLACES = ['trattoria', 'pizza', 'street_food']
+  for (const restaurant of D.restaurants ?? []) {
+    if (MEAL_PLACES.includes(restaurant.sub_category) && !['comida', 'cena', 'ambos'].includes(restaurant.meal)) s.red.push(`${restaurant.name}: sin meal (comida | cena | ambos)`)
+  }
+  const zones = dinnerZones(D)
+  if (zones.length === 0) s.red.push(`ningún barrio de cena: hacen falta ${MIN_DINNER_RESTAURANTS}+ restaurantes que sirvan cenas en una misma zona`)
+  for (const zone of zones) s.info.push(`barrio de cena ${zone.label}: ${zone.restaurants.length} restaurantes (${zone.restaurants.join(', ')})`)
+  const counts = new Map()
+  for (const restaurant of D.restaurants ?? []) if (servesDinner(restaurant) && restaurant.zone) counts.set(restaurant.zone, (counts.get(restaurant.zone) ?? 0) + 1)
+  for (const [label, count] of counts) if (count === MIN_DINNER_RESTAURANTS - 1) s.warn.push(`${label}: ${count} restaurantes de cena — con uno más sería barrio de cena`)
+  // Cada imprescindible con un barrio de cena a mano (~15 min andando, 1.100 m en línea recta).
+  for (const place of places.filter((p) => p.level === 1)) {
+    const nearest = Math.min(...zones.map((zone) => straightLineMeters(place.coordinates, zone.coordinates)))
+    if (!(nearest <= 1100)) s.warn.push(`${place.name}: el barrio de cena más cercano está a ${Math.round(nearest)} m`)
+  }
 }
 
 // ── 7. Coordenadas contra Wikipedia y Mapbox ────────────────────────────────────────────────
