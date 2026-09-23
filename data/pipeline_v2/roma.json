@@ -578,7 +578,8 @@
         "includes": [
           "Arco de Constantino"
         ]
-      }
+      },
+      "visible_from_outside": true
     },
     {
       "name": "Foro Romano y Palatino",
@@ -1106,7 +1107,10 @@
         "castel",
         "angelo"
       ],
-      "related_to": "Puente Sant'Angelo"
+      "related_to": "Puente Sant'Angelo",
+      "group": "castillo_santangelo_group",
+      "group_order": 2,
+      "visible_from_outside": true
     },
     {
       "name": "Mirador del Janículo",
@@ -1231,7 +1235,8 @@
       "search_en_keywords": [
         "bioparco",
         "zoo"
-      ]
+      ],
+      "is_free_access": false
     },
     {
       "name": "Galería Nacional de Arte Moderno",
@@ -1338,7 +1343,9 @@
       "related_to": "Castillo de Sant'Angelo",
       "approach_to": [
         "Castillo de Sant'Angelo"
-      ]
+      ],
+      "group": "castillo_santangelo_group",
+      "group_order": 1
     },
     {
       "name": "Isla Tiberina",
@@ -2737,6 +2744,30 @@
       "note": "Ruta natural cuesta arriba por el Aventino, de la Bocca de la Verdad al jardín y termina con la vista de San Pedro por el ojo de la cerradura.",
       "breakable_if_short": false,
       "combined_duration_minutes": 60
+    },
+    "castillo_santangelo_group": {
+      "name": "Castillo y Puente Sant'Angelo",
+      "places": [
+        "Puente Sant'Angelo",
+        "Castillo de Sant'Angelo"
+      ],
+      "order": [
+        "Puente Sant'Angelo",
+        "Castillo de Sant'Angelo"
+      ],
+      "order_evening": [
+        "Puente Sant'Angelo",
+        "Castillo de Sant'Angelo"
+      ],
+      "note": "Se llega por el puente y se entra al castillo. Inseparables: el castillo se disfruta también desde fuera (como el Coliseo), así que puente y castillo son una sola visita aunque la entrada sea de pago.",
+      "inseparable": [
+        [
+          "Puente Sant'Angelo",
+          "Castillo de Sant'Angelo"
+        ]
+      ],
+      "breakable_if_short": false,
+      "combined_duration_minutes": 90
     }
   },
   "zone_distribution": {

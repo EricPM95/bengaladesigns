@@ -95,6 +95,14 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     el mismo día (preferencia, no regla: a diferencia de un grupo, se puede separar). Castillo ↔
     Puente se citaba aquí de ejemplo pero no estaba en el JSON hasta el 2026-09-23.
 
+17b. **Acceso + monumento (`approach_to`)**: la plaza, el puente o el parque va SIEMPRE antes del
+    monumento al que da acceso (regla del programador; se acepta un rodeo de 10-50 m). Y son un
+    grupo INSEPARABLE cuando el monumento se visita gratis (Basílica de San Pedro, Altar de la
+    Patria: lo de pago es la cúpula o la terraza) o se disfruta también desde fuera
+    (`visible_from_outside`: Castillo de Sant'Angelo, como el Coliseo). Si hay que entrar sí o sí
+    (Museos Capitolinos, Galería Borghese), no: la plaza o el parque se ven sin el museo. El acceso
+    no ocupa sitio propio: va encadenado y cuenta como una sola visita. Lo vigila verifyPlanTrip.
+
 18. **`search_aliases`**: la tabla de equivalencias que hace que un viaje guardado con nombres
     antiguos siga resolviendo. Si el motor nuevo cambia nombres, los alias se actualizan **en el
     mismo commit**.

@@ -25,6 +25,10 @@ gratis, y sin ese campo el cambio de tipo los habría metido en el filtro "Entra
 
 ## Otros pendientes
 
+- **Exteriores "gratis" por deducción**: 41 lugares `exterior` sin `is_free_access` escrito, que la app
+  da por gratis. El Bioparque de Roma (zoo al aire libre, de pago) era uno: corregido el 2026-09-23.
+  Revisar si hay más exteriores de pago.
+
 - **Ara Pacis — coordenadas corregidas el 2026-09-23**: estaba en [41.9038, 12.472] (junto al río,
   a 350 m del Castillo de Sant'Angelo). Pasa a [41.9061, 12.4754], el museo del Lungotevere in Augusta.
   Confirmar. Con la coordenada vieja parecía "de camino" del Castillo a Trastevere.

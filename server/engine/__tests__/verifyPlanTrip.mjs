@@ -41,6 +41,21 @@ const THEMES = [[], ['arte_museos'], ['barrios_sabores'], ['naturaleza_vistas']]
 const POOLS = [[], ['Galería Borghese'], ['Mercado de Testaccio', 'Museos Vaticanos y Capilla Sixtina', 'Villa Farnesina']]
 const DATES = [null, '2026-05-04']
 
+// Norma de datos (2026-09-23): un acceso (plaza, puente, parque con approach_to) y su monumento son
+// INSEPARABLES si el monumento se visita gratis o se disfruta también desde fuera
+// (visible_from_outside: el Castillo, como el Coliseo). Si hay que entrar sí o sí (un museo, una
+// galería), el acceso se puede ver sin él y no lo son.
+for (const access of D.places.filter((p) => p.approach_to)) {
+  for (const name of access.approach_to) {
+    const monument = D.places.find((p) => p.name === name)
+    const free = monument.is_free_access ?? monument.type === 'exterior'
+    if (!free && !monument.visible_from_outside) continue
+    const group = access.group && access.group === monument.group ? D.groups[access.group] : null
+    const inseparable = group?.inseparable?.some((pair) => pair.includes(access.name) && pair.includes(monument.name))
+    if (!inseparable) fail(`datos: ${access.name} + ${monument.name} deberían ser un grupo inseparable (${free ? 'visita gratis' : 'se ve desde fuera'})`)
+  }
+}
+
 let trips = 0
 let cityDays = 0
 
