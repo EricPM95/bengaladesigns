@@ -6,6 +6,8 @@
  *   node server/engine/__tests__/medirDias.mjs --motor todos          # viejo, nuevo y v3
  *   node server/engine/__tests__/medirDias.mjs --salida docs/metricas/motor-actual.json
  *   node server/engine/__tests__/medirDias.mjs --caso 3 nonstop arte_museos,free_tour
+ *   node server/engine/__tests__/medirDias.mjs --motor v3 --semaforo              # destino listo = todo en verde
+ *   node server/engine/__tests__/medirDias.mjs --destino lisboa --motor v3 --semaforo
  *
  * Por qué hace falta además de verifyPreplan/verifyDays: esos dos comprueban reglas (pasa o no
  * pasa) y verifyPreplan mira el REPARTO. El reparto de la ruta de Roma de 3 días salía perfecto —
@@ -34,8 +36,12 @@ import { interestTagsFor, TAG_INTEREST_MAP } from '../experienceTags.js'
 import { buildDayBlockV2, findPipelineV2Data, parseHoursSessions } from '../../routeAlgorithm.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
-const D = findPipelineV2Data('Roma')
-const MATRIX = JSON.parse(readFileSync(join(ROOT, 'data/pipeline_v2/travel/roma.json'), 'utf8'))
+// Cualquier destino curado (--destino roma por defecto); su matriz: data/pipeline_v2/travel/<destino>.json.
+const destinoIndex = process.argv.indexOf('--destino')
+const DESTINO = (destinoIndex >= 0 ? process.argv[destinoIndex + 1] : 'roma').toLowerCase()
+const D = findPipelineV2Data(DESTINO)
+if (!D) throw new Error(`medirDias: no hay datos de "${DESTINO}" en data/pipeline_v2/`)
+const MATRIX = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/travel/${DESTINO}.json`), 'utf8'))
 const travel = createTravelTimes(MATRIX)
 
 // ── Argumentos ──────────────────────────────────────────────────────────────────────────────
@@ -47,6 +53,7 @@ const flag = (name) => {
 }
 const MOTORES = { nuevo: ['nuevo'], viejo: ['viejo'], v3: ['v3'], ambos: ['viejo', 'nuevo'], todos: ['viejo', 'nuevo', 'v3'] }[flag('--motor') ?? 'nuevo']
 const SALIDA = flag('--salida')
+const SEMAFORO = args.includes('--semaforo')
 const FECHA = flag('--fecha') // sin fecha, closed_on no se aplica (igual que en la app)
 const casoIndex = args.indexOf('--caso')
 const CASO = casoIndex >= 0 ? { days: Number(args[casoIndex + 1]), pace: args[casoIndex + 2], exps: (args[casoIndex + 3] ?? '').split(',').filter(Boolean) } : null
@@ -200,7 +207,7 @@ async function buildTrip(motor, contentDays, pace, exps) {
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     const day =
       motor !== 'viejo'
-        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: 'Roma', scheduler: motor === 'v3' ? 'v3' : undefined })
+        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined })
         : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }
@@ -234,7 +241,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
     walkMeters += leg?.meters ?? 0
     // Entre la mañana y la tarde está la comida: ese tramo se mide aparte.
     if (lunchAt !== null && prevEnd <= lunchAt && nextStart >= lunchAt) continue
-    gaps.push({ from: prev.name, to: next.name, idle: nextStart - prevEnd - (leg?.minutes ?? 0), walk: leg?.minutes ?? 0 })
+    // toFixedTime: la espera antes de algo con hora fija (el Free Tour) es a propósito, no un hueco del motor.
+    gaps.push({ from: prev.name, to: next.name, idle: nextStart - prevEnd - (leg?.minutes ?? 0), walk: leg?.minutes ?? 0, toFixedTime: Boolean(next.is_free_tour) })
   }
 
   const morning = lunchAt === null ? [] : dayStops.filter((stop) => t2m(stop.suggested_time) < lunchAt)
@@ -467,8 +475,99 @@ function printThemeSupply() {
   }
 }
 
+// ── Semáforo: ¿está listo el destino? ───────────────────────────────────────────────────────
+//
+// Límites sacados de las DECISIONES del motor (INVARIANTES_MOTOR.md), no de lo que da un destino:
+// cada criterio es algo que el viajero vería mal en pantalla. Destino listo = todo en verde.
+// Lo que se decidió NO perseguir (el tiempo libre antes de cenar) se enseña, pero no puntúa.
+
+const sum = (list, fn) => list.reduce((total, item) => total + fn(item), 0)
+const LATEST_FIRST_AFTERNOON_END = 16 * 60
+const SEMAFORO_CRITERIOS = [
+  { id: 'horario', label: 'Paradas fuera de horario', limite: '0', value: (rows, days) => sum(days, (d) => d.outOfHours.length), ok: (v) => v === 0 },
+  { id: 'grupos', label: 'Grupos del JSON rotos (separados o incompletos)', limite: '0', value: (rows) => sum(rows, (r) => r.brokenGroups.length), ok: (v) => v === 0 },
+  { id: 'freeTour', label: 'Free Tour fuera de su hora', limite: '0', value: (rows) => sum(rows, (r) => r.freeTourOffTime), ok: (v) => v === 0 },
+  {
+    id: 'comidas',
+    label: 'Comida y cena dentro de su ventana',
+    limite: '100%',
+    value: (rows, days) => {
+      const checks = days.flatMap((d) => [d.lunchInWindow, d.dinnerInWindow]).filter((v) => v !== null)
+      return checks.length ? Math.round((checks.filter(Boolean).length / checks.length) * 100) : 100
+    },
+    ok: (v) => v === 100,
+    fmt: (v) => `${v}%`,
+  },
+  // En 1-2 días no cabe todo por diseño: lo que se queda fuera sale en "No te dio tiempo".
+  { id: 'nivel1', label: 'Viajes de 3+ días sin algún imprescindible', limite: '0', applies: (n) => n >= 3, value: (rows) => rows.filter((r) => r.missingLevel1.length > 0).length, ok: (v) => v === 0 },
+  { id: 'fuera', label: 'Lugares que no caben, viajes de 3+ días', limite: '0', applies: (n) => n >= 3, value: (rows, days) => sum(days, (d) => d.dropped.length), ok: (v) => v === 0 },
+  {
+    id: 'huecos',
+    label: 'Huecos entre paradas por encima de la tolerancia del ritmo (sin contar la espera a una hora fija)',
+    limite: '0',
+    value: (rows, days, pace) => sum(days, (d) => d.gaps.filter((g) => !g.toFixedTime && g.idle > REF.gapTolerance[pace]).length),
+    ok: (v) => v === 0,
+  },
+  { id: 'zigzag', label: 'Tardes que andan más de 400 m de más frente al mínimo', limite: '0', value: (rows, days) => days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.4).length, ok: (v) => v === 0 },
+  {
+    id: 'tardeKm',
+    label: 'Km de más por la tarde frente al mínimo con las mismas paradas',
+    limite: '≤ 2%',
+    value: (rows, days) => {
+      const measured = days.filter((d) => d.afternoonKm !== null)
+      const min = sum(measured, (d) => d.afternoonMinKm)
+      return min > 0 ? ((sum(measured, (d) => d.afternoonKm) - min) / min) * 100 : 0
+    },
+    ok: (v) => v <= 2,
+    fmt: (v) => `${v.toFixed(1)}%`,
+  },
+  { id: 'sinTarde', label: 'Días de ciudad que acaban antes de las 16:00', limite: '0', value: (rows, days) => days.filter((d) => d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
+  {
+    id: 'ritmo',
+    label: 'Días con menos paradas que el mínimo del ritmo (8 completo / 5 tranquilo), hasta core_days',
+    limite: '0',
+    applies: (n) => n >= 2 && n <= (D.destination_config?.core_days ?? 4),
+    value: (rows, days, pace) => days.filter((d) => d.stops < (pace === 'tranquilo' ? 5 : 8)).length,
+    ok: (v) => v === 0,
+  },
+]
+
+function printSemaforo(motor) {
+  const rows = results.filter((r) => r.motor === motor)
+  const cells = []
+  console.log(`\n=== Semáforo · ${D.destination} · motor ${motor} · ${rows.length} viajes ===`)
+  console.log(`ritmo      días  ${SEMAFORO_CRITERIOS.map((c) => c.id.padStart(8)).join(' ')}   libre antes de cenar`)
+  for (const pace of ['nonstop', 'tranquilo']) {
+    for (let n = 1; n <= 7; n++) {
+      const group = rows.filter((r) => r.pace === pace && r.days.length === n)
+      if (group.length === 0) continue
+      const days = group.flatMap((r) => r.days.filter((d) => d.kind === 'ciudad'))
+      const line = SEMAFORO_CRITERIOS.map((c) => {
+        if (c.applies && !c.applies(n)) return '·'.padStart(8)
+        const value = c.value(group, days, pace)
+        const ok = c.ok(value)
+        cells.push({ criterio: c, ok, pace, n, value })
+        return `${ok ? '🟢' : '🔴'}${(c.fmt ?? String)(value)}`.padStart(8)
+      })
+      const idle = avg(days.map((d) => d.deadBeforeDinner).filter((v) => v !== null))
+      console.log(`${pace.padEnd(10)} ${String(n).padStart(4)}  ${line.join(' ')}   ${fmt(idle)} min`)
+    }
+  }
+  console.log('\nLímites (verde si se cumple):')
+  for (const c of SEMAFORO_CRITERIOS) {
+    const reds = cells.filter((cell) => cell.criterio === c && !cell.ok)
+    console.log(`  ${reds.length ? '🔴' : '🟢'} ${c.id.padEnd(9)} ${c.limite.padEnd(5)} ${c.label}${reds.length ? ` — en rojo: ${reds.map((r) => `${r.pace} ${r.n}d`).join(', ')}` : ''}`)
+  }
+  const ready = cells.every((cell) => cell.ok)
+  console.log(`\n${ready ? '✅ DESTINO LISTO: todo en verde' : `❌ DESTINO NO LISTO: ${cells.filter((c) => !c.ok).length} casillas en rojo`}`)
+  return ready
+}
+
 if (CASO) printCase()
-else {
+else if (SEMAFORO) {
+  const ready = MOTORES.map((motor) => printSemaforo(motor)).every(Boolean)
+  if (!ready) process.exitCode = 1
+} else {
   for (const motor of MOTORES) printSummaryTable(motor)
   printThemeSupply()
 }

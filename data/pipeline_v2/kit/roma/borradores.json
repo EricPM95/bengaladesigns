@@ -1,0 +1,251 @@
+{
+  "generado": "scripts/destino/borradores.mjs",
+  "destino": "Roma",
+  "nivel_1": {
+    "_nota": "Por visitas a su página de Wikipedia (60 días). Revisar: la fama no es lo mismo que merecer el viaje.",
+    "joyas": [
+      "Coliseo",
+      "Panteón",
+      "Basílica de San Pedro",
+      "Fontana de Trevi"
+    ],
+    "imprescindibles": [
+      "Plaza de España",
+      "Castillo de Sant'Angelo",
+      "Circo Máximo",
+      "Foro Romano y Palatino",
+      "Via Appia Antica",
+      "Basílica de Santa María la Mayor",
+      "Columna de Trajano"
+    ],
+    "popularidad": [
+      {
+        "name": "Coliseo",
+        "views": 178213,
+        "title": "en:Colosseum"
+      },
+      {
+        "name": "Panteón",
+        "views": 154881,
+        "title": "en:Pantheon, Rome"
+      },
+      {
+        "name": "Basílica de San Pedro",
+        "views": 94131,
+        "title": "en:St. Peter's Basilica"
+      },
+      {
+        "name": "Fontana de Trevi",
+        "views": 75170,
+        "title": "en:Trevi Fountain"
+      },
+      {
+        "name": "Plaza de España",
+        "views": 51300,
+        "title": "en:Spanish Steps"
+      },
+      {
+        "name": "Castillo de Sant'Angelo",
+        "views": 38337,
+        "title": "en:Castel Sant'Angelo"
+      },
+      {
+        "name": "Circo Máximo",
+        "views": 34604,
+        "title": "en:Circus Maximus"
+      },
+      {
+        "name": "Foro Romano y Palatino",
+        "views": 33724,
+        "title": "en:Roman Forum"
+      },
+      {
+        "name": "Via Appia Antica",
+        "views": 31366,
+        "title": "en:Appian Way"
+      },
+      {
+        "name": "Basílica de Santa María la Mayor",
+        "views": 28520,
+        "title": "en:Santa Maria Maggiore"
+      },
+      {
+        "name": "Columna de Trajano",
+        "views": 20780,
+        "title": "en:Trajan's Column"
+      },
+      {
+        "name": "Arco de Constantino",
+        "views": 17517,
+        "title": "en:Arch of Constantine"
+      },
+      {
+        "name": "Museos Vaticanos y Capilla Sixtina",
+        "views": 16870,
+        "title": "en:Vatican Museums"
+      },
+      {
+        "name": "Termas de Caracalla",
+        "views": 15815,
+        "title": "en:Baths of Caracalla"
+      },
+      {
+        "name": "Domus Aurea",
+        "views": 15217,
+        "title": "en:Domus Aurea"
+      },
+      {
+        "name": "Piazza Navona",
+        "views": 14605,
+        "title": "en:Piazza Navona"
+      }
+    ],
+    "sin_datos": [
+      "Altar de la Patria",
+      "Barrio Judío"
+    ]
+  },
+  "afternoon_flow": {
+    "roma_antigua": {
+      "desde": "Arco de Constantino + Coliseo + Foro Romano y Palatino",
+      "cena": "roma_antigua",
+      "recorrido": [
+        "Via dei Fori Imperiali",
+        "Mercados de Trajano",
+        "Iglesia de San Pietro in Vincoli"
+      ]
+    },
+    "vaticano": {
+      "desde": "Museos Vaticanos y Capilla Sixtina + Plaza de San Pedro + Basílica de San Pedro",
+      "cena": "centro_historico",
+      "recorrido": [
+        "Cúpula de San Pedro",
+        "Via della Conciliazione",
+        "Borgo Pio",
+        "Puente Sant'Angelo",
+        "Castillo de Sant'Angelo"
+      ]
+    }
+  },
+  "short_trips": {
+    "franjas": {
+      "_nota": "1 franja = una mañana o una tarde libre. 2 franjas = 1 día (mañana+tarde, o tarde + mañana siguiente). 3 franjas = 1,5 días.",
+      "manana": "hasta la comida",
+      "tarde": "desde la comida hasta la cena, con cena y nocturna al final"
+    },
+    "blocks": {
+      "A": {
+        "label": "Roma Antigua",
+        "preferred_slot": "manana",
+        "allowed_slots": [
+          "manana",
+          "tarde"
+        ],
+        "core": [
+          "Arco de Constantino",
+          "Coliseo",
+          "Foro Romano y Palatino"
+        ],
+        "extras_completo": [
+          "Plaza Venecia",
+          "Altar de la Patria"
+        ],
+        "lunch_zone_if_morning": "roma_antigua",
+        "dinner_zone_if_afternoon": "centro_historico",
+        "swaps": {}
+      },
+      "B": {
+        "label": "Centro Histórico",
+        "preferred_slot": "tarde",
+        "allowed_slots": [
+          "tarde",
+          "manana"
+        ],
+        "core": [
+          "Plaza de España",
+          "Fontana de Trevi",
+          "Panteón",
+          "Piazza Navona"
+        ],
+        "extras_completo": [],
+        "lunch_zone_if_morning": "centro_historico",
+        "dinner_zone_if_afternoon": "centro_historico",
+        "swaps": {},
+        "free_tour": {
+          "replaces_block": true,
+          "_nota": "El Free Tour recorre la mayor parte de este bloque."
+        }
+      },
+      "C": {
+        "label": "Vaticano",
+        "preferred_slot": "manana",
+        "allowed_slots": [
+          "manana",
+          "tarde"
+        ],
+        "core": [
+          "Museos Vaticanos y Capilla Sixtina",
+          "Plaza de San Pedro",
+          "Basílica de San Pedro"
+        ],
+        "extras_completo": [
+          "Cúpula de San Pedro"
+        ],
+        "lunch_zone_if_morning": "vaticano",
+        "dinner_zone_if_afternoon": "centro_historico",
+        "swaps": {}
+      }
+    },
+    "combinations": {
+      "1_dia": {
+        "default": [
+          "A",
+          "B"
+        ],
+        "if_pool_contains": {
+          "Museos Vaticanos y Capilla Sixtina": {
+            "blocks": [
+              "C",
+              "B"
+            ]
+          }
+        },
+        "not_included": {
+          "C": "Con medio día más podrías ver Vaticano."
+        }
+      },
+      "1_5_dias": {
+        "default": [
+          "B",
+          "A",
+          "C"
+        ],
+        "slot_rules": [
+          "B va en una tarde.",
+          "A va en una mañana.",
+          "C va en una mañana."
+        ]
+      }
+    },
+    "reglas": {
+      "ritmo": {
+        "completo": "core + extras_completo de cada bloque.",
+        "tranquilo": "solo core. Lo que no quepa va a 'No te dio tiempo'."
+      },
+      "experiencias": "Los swaps se aplican según las experiencias elegidas. Si hay varias que tocan el mismo bloque, se aplican todas las que no choquen; si dos sustituyen lo mismo, gana la que el viajero eligió primero.",
+      "pool": "Si el pool pide algo que no está en los bloques elegidos, sustituye a la parada de menor prioridad (primero extras, luego core que no sea joya). Si no cabe, va a 'No te dio tiempo'. El orden de selección del pool decide.",
+      "nocturnas": "En viajes de 1-2 días se puede repetir de noche un lugar visto de día (regla ya existente)."
+    },
+    "_pruebas": {
+      "tranquilo_no_cabe": [
+        "Vaticano",
+        "Plaza de España",
+        "Plaza de San Pedro",
+        "Basílica de San Pedro"
+      ],
+      "completo_no_cabe": [
+        "Vaticano"
+      ]
+    }
+  }
+}

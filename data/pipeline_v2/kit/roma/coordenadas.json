@@ -1,0 +1,538 @@
+{
+ "Coliseo": {
+  "version": 2,
+  "wikipedia": [
+   41.8903,
+   12.4922
+  ],
+  "mapbox": null
+ },
+ "Foro Romano y Palatino": {
+  "version": 2,
+  "wikipedia": [
+   41.8922,
+   12.4852
+  ],
+  "mapbox": null
+ },
+ "Arco de Constantino": {
+  "version": 2,
+  "wikipedia": [
+   41.88972222,
+   12.49083333
+  ],
+  "mapbox": null
+ },
+ "Boca de la Verdad": {
+  "version": 2,
+  "wikipedia": [
+   41.88805556,
+   12.48166667
+  ],
+  "mapbox": null
+ },
+ "Circo Máximo": {
+  "version": 2,
+  "wikipedia": [
+   41.8859,
+   12.4857
+  ],
+  "mapbox": null
+ },
+ "Fontana de Trevi": {
+  "version": 2,
+  "wikipedia": [
+   41.90083333,
+   12.48305556
+  ],
+  "mapbox": null
+ },
+ "Panteón": {
+  "version": 2,
+  "wikipedia": [
+   41.8986,
+   12.4768
+  ],
+  "mapbox": null
+ },
+ "Piazza Navona": {
+  "version": 2,
+  "wikipedia": [
+   41.899,
+   12.4731
+  ],
+  "mapbox": null
+ },
+ "Plaza de España": {
+  "version": 2,
+  "wikipedia": [
+   41.9061,
+   12.4828
+  ],
+  "mapbox": null
+ },
+ "Piazza del Popolo": {
+  "version": 2,
+  "wikipedia": [
+   41.9107,
+   12.4763
+  ],
+  "mapbox": null
+ },
+ "Largo di Torre Argentina": {
+  "version": 2,
+  "wikipedia": [
+   41.89527778,
+   12.47694444
+  ],
+  "mapbox": null
+ },
+ "Via del Corso": {
+  "version": 2,
+  "wikipedia": [
+   41.90602778,
+   12.47827222
+  ],
+  "mapbox": null
+ },
+ "Museos Vaticanos y Capilla Sixtina": {
+  "version": 2,
+  "wikipedia": [
+   41.9064,
+   12.4544
+  ],
+  "mapbox": null
+ },
+ "Basílica de San Pedro": {
+  "version": 2,
+  "wikipedia": [
+   41.90222222,
+   12.45333333
+  ],
+  "mapbox": null
+ },
+ "Plaza de San Pedro": {
+  "version": 2,
+  "wikipedia": [
+   41.9022,
+   12.4572
+  ],
+  "mapbox": null
+ },
+ "Via della Conciliazione": {
+  "version": 2,
+  "wikipedia": [
+   41.9023,
+   12.462
+  ],
+  "mapbox": null
+ },
+ "Castillo de Sant'Angelo": {
+  "version": 2,
+  "wikipedia": [
+   41.9031,
+   12.4663
+  ],
+  "mapbox": null
+ },
+ "Mirador del Janículo": {
+  "version": 2,
+  "wikipedia": [
+   41.89166667,
+   12.46111111
+  ],
+  "mapbox": null
+ },
+ "Galería Borghese": {
+  "version": 2,
+  "wikipedia": [
+   41.9142,
+   12.4922
+  ],
+  "mapbox": null
+ },
+ "Parque de Villa Borghese": {
+  "version": 2,
+  "wikipedia": [
+   41.91416667,
+   12.49222222
+  ],
+  "mapbox": null
+ },
+ "Bioparque de Roma": {
+  "version": 2,
+  "wikipedia": [
+   41.9175,
+   12.48527778
+  ],
+  "mapbox": null
+ },
+ "Galería Nacional de Arte Moderno": {
+  "version": 2,
+  "wikipedia": [
+   41.917,
+   12.4821
+  ],
+  "mapbox": null
+ },
+ "Altar de la Patria": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": [
+   41.8949082,
+   12.4829412
+  ]
+ },
+ "Puente Sant'Angelo": {
+  "version": 2,
+  "wikipedia": [
+   41.90192,
+   12.46645
+  ],
+  "mapbox": null
+ },
+ "Isla Tiberina": {
+  "version": 2,
+  "wikipedia": [
+   41.89083333,
+   12.47722222
+  ],
+  "mapbox": null
+ },
+ "Via dei Fori Imperiali": {
+  "version": 2,
+  "wikipedia": [
+   41.89194444,
+   12.48916667
+  ],
+  "mapbox": null
+ },
+ "Campo de' Fiori": {
+  "version": 2,
+  "wikipedia": [
+   41.8957,
+   12.472
+  ],
+  "mapbox": null
+ },
+ "Borgo Pio": {
+  "version": 2,
+  "wikipedia": [
+   41.90166667,
+   12.4625
+  ],
+  "mapbox": null
+ },
+ "Plaza Venecia": {
+  "version": 2,
+  "wikipedia": [
+   41.8964,
+   12.4825
+  ],
+  "mapbox": null
+ },
+ "Mercados de Trajano": {
+  "version": 2,
+  "wikipedia": [
+   41.89561,
+   12.48619
+  ],
+  "mapbox": null
+ },
+ "Cúpula de San Pedro": {
+  "version": 2,
+  "wikipedia": [
+   41.90222222,
+   12.45333333
+  ],
+  "mapbox": null
+ },
+ "Iglesia del Gesù": {
+  "version": 2,
+  "wikipedia": [
+   41.89583333,
+   12.47972222
+  ],
+  "mapbox": null
+ },
+ "Iglesia de San Luigi dei Francesi": {
+  "version": 2,
+  "wikipedia": [
+   41.89972222,
+   12.47472222
+  ],
+  "mapbox": null
+ },
+ "Ara Pacis": {
+  "version": 2,
+  "wikipedia": [
+   41.90638889,
+   12.47555556
+  ],
+  "mapbox": null
+ },
+ "Barrio Judío": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": [
+   41.8927826,
+   12.47771
+  ]
+ },
+ "Iglesia de Santa Maria sopra Minerva": {
+  "version": 2,
+  "wikipedia": [
+   41.89805556,
+   12.47833333
+  ],
+  "mapbox": null
+ },
+ "Iglesia de San Ignacio de Loyola": {
+  "version": 2,
+  "wikipedia": [
+   41.899,
+   12.47977778
+  ],
+  "mapbox": null
+ },
+ "Elefantino de Bernini": {
+  "version": 2,
+  "wikipedia": [
+   41.89798333,
+   12.47757222
+  ],
+  "mapbox": null
+ },
+ "Fuente de las Tortugas": {
+  "version": 2,
+  "wikipedia": [
+   41.89388889,
+   12.4775
+  ],
+  "mapbox": null
+ },
+ "Fuente del Tritón": {
+  "version": 2,
+  "wikipedia": [
+   41.90361111,
+   12.48833333
+  ],
+  "mapbox": null
+ },
+ "Plaza Colonna": {
+  "version": 2,
+  "wikipedia": [
+   41.90105556,
+   12.47991667
+  ],
+  "mapbox": null
+ },
+ "Via Condotti": {
+  "version": 2,
+  "wikipedia": [
+   41.9051,
+   12.4805
+  ],
+  "mapbox": null
+ },
+ "Plaza Farnese": {
+  "version": 2,
+  "wikipedia": [
+   41.89472222,
+   12.47083333
+  ],
+  "mapbox": null
+ },
+ "Plaza del Campidoglio": {
+  "version": 2,
+  "wikipedia": [
+   41.89333333,
+   12.48277778
+  ],
+  "mapbox": null
+ },
+ "Museos Capitolinos": {
+  "version": 2,
+  "wikipedia": [
+   41.8931,
+   12.4828
+  ],
+  "mapbox": null
+ },
+ "Basílica de San Clemente": {
+  "version": 2,
+  "wikipedia": [
+   41.88944444,
+   12.4975
+  ],
+  "mapbox": null
+ },
+ "Iglesia de San Pietro in Vincoli": {
+  "version": 2,
+  "wikipedia": [
+   41.89388889,
+   12.49305556
+  ],
+  "mapbox": null
+ },
+ "Domus Aurea": {
+  "version": 2,
+  "wikipedia": [
+   41.89138889,
+   12.49527778
+  ],
+  "mapbox": null
+ },
+ "Termas de Caracalla": {
+  "version": 2,
+  "wikipedia": [
+   41.87944444,
+   12.49305556
+  ],
+  "mapbox": null
+ },
+ "Jardín de los Naranjos": {
+  "version": 2,
+  "wikipedia": [
+   41.8851,
+   12.4804
+  ],
+  "mapbox": null
+ },
+ "Basílica de Santa María la Mayor": {
+  "version": 2,
+  "wikipedia": [
+   41.8975,
+   12.49861111
+  ],
+  "mapbox": null
+ },
+ "Columna de Trajano": {
+  "version": 2,
+  "wikipedia": [
+   41.89583333,
+   12.48416667
+  ],
+  "mapbox": null
+ },
+ "Teatro de Marcelo": {
+  "version": 2,
+  "wikipedia": [
+   41.89191,
+   12.47948
+  ],
+  "mapbox": null
+ },
+ "Ojo de la Cerradura del Aventino": {
+  "version": 2,
+  "wikipedia": [
+   41.88361111,
+   12.4775
+  ],
+  "mapbox": null
+ },
+ "Pirámide Cestia": {
+  "version": 2,
+  "wikipedia": [
+   41.87638889,
+   12.48083333
+  ],
+  "mapbox": null
+ },
+ "Iglesia de Santa Maria della Vittoria": {
+  "version": 2,
+  "wikipedia": [
+   41.90472222,
+   12.49416667
+  ],
+  "mapbox": null
+ },
+ "Iglesia de Santa Maria in Trastevere": {
+  "version": 2,
+  "wikipedia": [
+   41.88944444,
+   12.46972222
+  ],
+  "mapbox": null
+ },
+ "Villa Farnesina": {
+  "version": 2,
+  "wikipedia": [
+   41.893611,
+   12.4675
+  ],
+  "mapbox": null
+ },
+ "Plaza Trilussa": {
+  "version": 2,
+  "wikipedia": [
+   41.88722222,
+   12.46555556
+  ],
+  "mapbox": null
+ },
+ "Terraza del Pincio": {
+  "version": 2,
+  "wikipedia": [
+   41.91166667,
+   12.47972222
+  ],
+  "mapbox": null
+ },
+ "Basílica de San Juan de Letrán": {
+  "version": 2,
+  "wikipedia": [
+   41.88527778,
+   12.50944444
+  ],
+  "mapbox": null
+ },
+ "Quartiere Coppedè": {
+  "version": 2,
+  "wikipedia": [
+   44.40722222,
+   8.93388889
+  ],
+  "mapbox": null
+ },
+ "Mercado de Testaccio": {
+  "version": 2,
+  "wikipedia": [
+   41.87611111,
+   12.475
+  ],
+  "mapbox": null
+ },
+ "Palazzo Doria Pamphilj": {
+  "version": 2,
+  "wikipedia": [
+   41.897669,
+   12.481145
+  ],
+  "mapbox": null
+ },
+ "Via Appia Antica": {
+  "version": 2,
+  "wikipedia": [
+   41.84138889,
+   12.5325
+  ],
+  "mapbox": null
+ },
+ "Catacumbas de San Calixto": {
+  "version": 2,
+  "wikipedia": [
+   41.858927,
+   12.510808
+  ],
+  "mapbox": null
+ },
+ "Cementerio Protestante": {
+  "version": 2,
+  "wikipedia": [
+   41.8764,
+   12.4799
+  ],
+  "mapbox": null
+ }
+}

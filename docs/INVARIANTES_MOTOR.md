@@ -159,7 +159,7 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 
 ## E. Reglas de ritmo del motor nuevo
 
-25. **Ventana de cena por modo**: completo 20:00-21:00, tranquilo 19:30-20:30. *En tranquilo el día
+25. **Ventana de cena por modo** *(sustituido por el 36: 20:00-21:00 en los dos ritmos)*: completo 20:00-21:00, tranquilo 19:30-20:30. *En tranquilo el día
     acaba sobre las 19:00 y la ventana de completo dejaba una hora muerta justo antes de cenar.*
 
 26. **El primer hueco del modo completo (8:00-9:00) es siempre un exterior** cercano al primer
@@ -190,6 +190,104 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     *Por qué: Castillo → Tortugas → Minerva → Elefantino → Trastevere bajaba, subía y volvía a bajar
     (6,0 km frente a 5,2); medido sobre 96 viajes, las tardes andaban un 5,8% de más y 35 hacían
     más de 400 m de más.*
+
+---
+
+## H. Reglas generales del motor v3 (decisiones del 2026-09-23)
+
+Valen para CUALQUIER destino: el motor (`shared/routeEngine/`) no sabe nada de Roma; lo propio de
+cada ciudad vive en su JSON. Roma aparece solo como ejemplo. Un destino nuevo no necesita tocar el
+motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
+
+**Reparto y programador**
+
+30. **El reparto PREGUNTA al programador.** Cada vez que quiere meter algo en un día, el
+    programador lo prueba con los trayectos de la matriz, los horarios y las comidas
+    (`openDay().tryAdd`). Lo que el reparto da por hecho, el día final lo contiene; nada se tira en
+    silencio. *El motor anterior suponía minutos y perdía 488 paradas en 112 viajes.*
+31. **Nivel 1 = 4-5 joyas + imprescindibles, 10-12 en total.** Entra siempre en viajes de 3+ días
+    de ciudad. Nunca se cae por el ritmo: si no cabe, ese día pasa al horario normal (empieza antes,
+    sin el extra de duración) y se avisa con una línea discreta (`pace_notice`). En 1-2 días lo que
+    no cabe va a "No te dio tiempo"; una joya puede desplazar a un imprescindible, nunca al revés.
+32. **El reparto curado FIJA el nivel 1 a su día.** Pool y experiencias solo pueden moverlo de día,
+    nunca quitarlo del viaje. El pool va en el orden en que el viajero lo eligió.
+33. **Experiencias = CUOTA, no prioridad absoluta.** Una del tema por día si hay algo a 20 min o
+    menos andando, y como mínimo una por día de ciudad en el viaje. Fuera de eso, un lugar del tema
+    solo entra DE CAMINO: sin alejarse de la cena más de 2 min andando y sin añadir más de 10. Lo
+    curado y el recorrido de tarde están exentos, y lo que va de camino (<= 5 min) no cuenta para el
+    tope de categoría. Si un día se queda sin su tema, se dice por qué (`quotaMisses`).
+34. **Visita larga = 180+ min** (contando grupos). Una por día en viajes de 2+ días, siempre de
+    mañana, salvo en viajes de un día.
+35. **El ritmo se mide en VISITAS**: lo encadenado (un grupo, sitios a <= 3 min, lo que está dentro
+    de otro) cuenta como una. Completo: desde las 08:00, comida de 60 min, 8-10 visitas. Tranquilo:
+    desde las 10:00, comida de 90 min, +15 min por visita (una vez por grupo, en el lugar principal;
+    nunca en una parada "de paso"), 5-7 visitas. La app sigue enseñando lugares.
+
+**Horas**
+
+36. **Comida 13:00-14:00; cena 20:00-21:00 en los dos ritmos**; el día acaba con la cena (~21:30).
+    La comida puede caer dentro de un grupo, entre dos de sus lugares, salvo entre un par
+    inseparable. *Sustituye a la ventana de cena de tranquilo del invariante 25.*
+37. **Horarios**: nada empieza antes de abrir ni se queda sin tiempo antes de cerrar; con cierre de
+    mediodía se espera a la tarde. `last_entry` es opcional y se respeta si está. Un interior sin
+    horario se supone de 09:00 a 17:00; un exterior, siempre abierto. Horarios sin días de la semana
+    ni festivos.
+38. **Encadenado manda sobre redondeo**: dentro de un grupo, a <= 3 min andando o dentro de su
+    contenedor se entra al llegar, redondeando a 5 min. Lo demás, :00/:30 por la mañana y :15 por la
+    tarde (ver F).
+39. **"Primera hora" (`best_time`) es cuanto antes**, y lo curado de mañana va antes de comer.
+
+**Free Tour**
+
+40. **El Free Tour va a SU hora** (`default_free_tour.default_time`), uno por ciudad. En tranquilo
+    es lo primero del día; en completo pueden ir antes 1-2 exteriores rápidos, solo los de
+    `early_visit_ok`, sin plan B (si no caben, el tour ya los enseña). Lo que recorre (`covers`) no
+    vuelve a salir suelto ese día. Cambiar su hora recalcula el día alrededor.
+
+**La tarde y la cena**
+
+41. **Cada día cena en un barrio de `dinner_zones`**: uno nuevo a 15 min o menos; si no, repetir uno
+    a 15 min o menos; si no, el nuevo más cercano. La tarde va HACIA la cena y el paseo cuenta.
+42. **El recorrido de tarde (`afternoon_flow`) impone su orden** y está exento de la regla de tema y
+    del tope de categoría: es el destino hablando.
+43. **"De paso"**: un nivel 1 con `pass_by`, visto un día anterior, se repasa por fuera camino de la
+    cena si quedan 45+ min libres y el desvío es de 10 min o menos. Siempre al final del día, con su
+    mensaje, una vez por viaje; nunca si esa noche sale como experiencia nocturna.
+44. **El tiempo libre antes de cenar no se persigue**: 45+ min se enseñan como bloque de tiempo
+    libre (descanso, aperitivo, "Ver en el mapa"), no como un hueco que haya que rellenar.
+
+**Viajes cortos y relaciones**
+
+45. **1 y 1,5 días = rutas curadas por bloques** (`short_trips`: un bloque por franja, en su orden,
+    núcleo en tranquilo, extras en completo, swaps por experiencia). El motor no reordena; pone horas
+    y comprueba. Lo del pool sustituye a lo de menor prioridad y, si no cabe, devuelve su sitio; un
+    par inseparable se sustituye entero.
+46. **Relaciones entre lugares, en el dato y nunca deducidas por distancia**: grupos e inseparables
+    (14, 17b), `contained_in` y `neighbor_of` (16), `approach_to` (17b), `related_to` (17). La
+    distancia solo sirve para PROPONER (el validador lista los pares a menos de 300 m).
+
+**Tiempos a pie y pureza**
+
+47. **Los tiempos salen de la matriz del destino** (`data/pipeline_v2/travel/<destino>.json`), con
+    la API de RUTAS de Mapbox (la que usa la app), en los dos sentidos, con el modo como dato. El
+    motor es un módulo puro: sin red, sin reloj, sin Node — el mismo que usará Modo Hoy con hora,
+    posición y paradas restantes.
+
+---
+
+## I. Kit de nuevo destino: cuándo un destino está listo
+
+1. **Datos** — `node scripts/destino/validar.mjs <destino>`: referencias, grupos, nivel 1 (4-5
+   joyas, 10-12 en total), visitas largas frente a `core_days`, horarios, pares a menos de 150 m
+   decididos (y propuestas hasta 300 m), coordenadas contra Wikipedia (rojo a más de 200 m).
+2. **Borradores de criterio** — `node scripts/destino/borradores.mjs <destino>`: joyas por
+   popularidad, recorrido de tarde por zona y rutas de 1 y 1,5 días, probadas con el motor. Se
+   revisan a mano y se copian al JSON; no se usan tal cual.
+3. **Matriz** — `node scripts/buildTravelMatrix.mjs <destino>`.
+4. **Semáforo** — `node server/engine/__tests__/medirDias.mjs --destino <destino> --motor v3
+   --semaforo`: las 112 variantes contra límites que salen de estas reglas. **Destino listo = datos
+   sin rojos + semáforo todo en verde.** Los límites no se aflojan para que un destino pase: si algo
+   sale en rojo, o el dato está mal o el motor tiene un fallo.
 
 ---
 
