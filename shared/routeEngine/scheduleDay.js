@@ -45,6 +45,11 @@
  *   - `latest_end`: tiene que haber acabado a esa hora (Trevi a las 08:00, antes del Free Tour).
  *   - `related_to`: las parejas naturales del JSON, seguidas si caen el mismo día.
  *
+ * Por delante del monumento, SIEMPRE (regla, no preferencia): la plaza, el puente o el parque que
+ * lo contiene o da acceso (`approach_to` en el JSON: Plaza de San Pedro → Basílica, Puente
+ * Sant'Angelo → Castillo, Parque de Villa Borghese → Galería Borghese). Si caen el mismo día, el
+ * monumento no puede ir antes; se acepta el pequeño rodeo que eso cueste.
+ *
  * Las paradas "de paso" (`passBy`: repasar por fuera un imprescindible ya visto otro día, camino de
  * la cena) van SIEMPRE al final del día, detrás de todo lo nuevo. Es una regla del orden, no una
  * preferencia: si la mejora del orden pudiera moverlas, "de camino a cenar" acabaría a mediodía.
@@ -458,6 +463,17 @@ function simulate(sequence, ctx) {
   let idle = 0
   let preference = 0 // penalizaciones de hora (ver preferMorning / preferEarly)
   const visits = []
+  // Monumento -> accesos (plaza, puente, parque) que van en este mismo día y tienen que ir antes.
+  const approachesOf = new Map()
+  for (const element of sequence) {
+    if (element === LUNCH) continue
+    for (const place of element.places) {
+      for (const monument of place.approach_to ?? []) {
+        if (!approachesOf.has(monument)) approachesOf.set(monument, [])
+        approachesOf.get(monument).push(place.name)
+      }
+    }
+  }
   const meals = []
 
   /** Come ahora. false si ya no entra en la ventana. */
@@ -525,6 +541,9 @@ function simulate(sequence, ctx) {
       if (place.last_entry && at > toMinutes(place.last_entry)) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
       if (place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
+
+      const pendingApproach = (approachesOf.get(place.name) ?? []).find((name) => !visits.some((visit) => visit.place.name === name))
+      if (pendingApproach) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
 
       walk += walkMinutes
       idle += at - arrive

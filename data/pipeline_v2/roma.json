@@ -989,7 +989,7 @@
       "type": "interior",
       "is_free_access": true,
       "group": "vaticano_core",
-      "group_order": 2,
+      "group_order": 3,
       "group_order_evening": 2,
       "tip": "Gratis la entrada a la basílica. La cúpula (subida) cuesta 8€ con ascensor + escaleras — MERECE LA PENA, la mejor vista de Roma. Código de vestimenta: hombros y rodillas cubiertas.",
       "photo_tip": "Desde la cúpula miras hacia abajo a la Plaza de San Pedro — la perspectiva que ves en todas las postales. Dentro, la Pietà de Miguel Ángel está nada más entrar a la derecha.",
@@ -1024,7 +1024,7 @@
       "duration_minutes": 30,
       "type": "exterior",
       "group": "vaticano_core",
-      "group_order": 3,
+      "group_order": 2,
       "group_order_evening": 1,
       "tip": "Las columnatas de Bernini abrazan la plaza. Busca el punto en el suelo donde las 4 filas de columnas se alinean en una sola — efecto óptico increíble.",
       "photo_tip": "Desde el centro de la plaza mirando hacia la basílica con el obelisco en primer plano.",
@@ -1047,7 +1047,10 @@
       "pass_by": {
         "minutes": 15,
         "label": "la Plaza de San Pedro"
-      }
+      },
+      "approach_to": [
+        "Basílica de San Pedro"
+      ]
     },
     {
       "name": "Via della Conciliazione",
@@ -1194,6 +1197,10 @@
       "search_en": "Villa Borghese gardens Rome",
       "search_en_keywords": [
         "borghese"
+      ],
+      "approach_to": [
+        "Galería Borghese",
+        "Bioparque de Roma"
       ]
     },
     {
@@ -1328,7 +1335,10 @@
         "bridge",
         "angelo"
       ],
-      "related_to": "Castillo de Sant'Angelo"
+      "related_to": "Castillo de Sant'Angelo",
+      "approach_to": [
+        "Castillo de Sant'Angelo"
+      ]
     },
     {
       "name": "Isla Tiberina",
@@ -1470,6 +1480,9 @@
       "search_en_keywords": [
         "piazza venezia",
         "venezia"
+      ],
+      "approach_to": [
+        "Altar de la Patria"
       ]
     },
     {
@@ -1902,6 +1915,9 @@
       "search_en_keywords": [
         "campidoglio",
         "capitoline"
+      ],
+      "approach_to": [
+        "Museos Capitolinos"
       ]
     },
     {
@@ -2632,8 +2648,8 @@
       ],
       "order": [
         "Museos Vaticanos y Capilla Sixtina",
-        "Basílica de San Pedro",
-        "Plaza de San Pedro"
+        "Plaza de San Pedro",
+        "Basílica de San Pedro"
       ],
       "order_evening": [
         "Plaza de San Pedro",
@@ -3682,12 +3698,12 @@
         "afternoon_start": "14:30",
         "core": [
           "Museos Vaticanos y Capilla Sixtina",
-          "Basílica de San Pedro",
-          "Plaza de San Pedro"
+          "Plaza de San Pedro",
+          "Basílica de San Pedro"
         ],
         "extras_completo": [
-          "Castillo de Sant'Angelo",
-          "Puente Sant'Angelo"
+          "Puente Sant'Angelo",
+          "Castillo de Sant'Angelo"
         ],
         "lunch_zone_if_morning": "vaticano",
         "dinner_zone_if_afternoon": "trastevere",
@@ -3916,6 +3932,7 @@
       "Plaza de San Pedro",
       "Via della Conciliazione",
       "Borgo Pio",
+      "Puente Sant'Angelo",
       "Castillo de Sant'Angelo",
       "Via del Corso",
       "Piazza del Popolo",

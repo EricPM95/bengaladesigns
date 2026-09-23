@@ -66,6 +66,17 @@ for (const kind of ['1_dia', '1_5_dias_salida_mediodia', '1_5_dias_llegada_tarde
               if (pace === 'tranquilo' && !exps.length && !pool.length && day.blocks.some((b) => (blocks[b.id]?.extras_completo ?? []).includes(v.place.name))) fail(`${tag}: extra ${v.place.name} en tranquilo`)
             }
 
+            // Plaza, puente o parque por delante del monumento que da acceso (approach_to).
+            {
+              const order = visits.map((v) => v.place.name)
+              for (const place of D.places.filter((p) => p.approach_to)) {
+                for (const monument of place.approach_to) {
+                  const a = order.indexOf(place.name)
+                  const m = order.indexOf(monument)
+                  if (a >= 0 && m >= 0 && a > m) fail(`${tag} d${day.dayNumber}: ${monument} antes que ${place.name}`)
+                }
+              }
+            }
             // Orden curado: dentro de cada bloque, lo que sale va en el orden del JSON.
             for (const block of day.blocks) {
               if (block.label === 'Free Tour') continue

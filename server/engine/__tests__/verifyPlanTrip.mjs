@@ -80,6 +80,17 @@ for (const pace of ['nonstop', 'tranquilo']) {
               }
               if (city.length > 1 && day.units.filter((u) => u.isLong).length > 1) fail(`${tag} d${day.dayNumber}: dos visitas largas`)
 
+              // Plaza, puente o parque por delante del monumento que da acceso (approach_to).
+              {
+                const order = day.schedule.visits.map((v) => v.place.name)
+                for (const place of D.places.filter((p) => p.approach_to)) {
+                  for (const monument of place.approach_to) {
+                    const a = order.indexOf(place.name)
+                    const m = order.indexOf(monument)
+                    if (a >= 0 && m >= 0 && a > m) fail(`${tag} d${day.dayNumber}: ${monument} antes que ${place.name}`)
+                  }
+                }
+              }
               // Cuota: el día lleva el tema, o el reparto dice por qué no.
               for (const theme of themes) {
                 const tags = new Set(TAG_INTEREST_MAP[theme])
