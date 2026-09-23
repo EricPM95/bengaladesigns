@@ -16,7 +16,10 @@
  *   - determinismo: dos llamadas iguales, el mismo viaje
  *   - Free Tour: entra (o se avisa), y lo que recorre no sale suelto ese día, salvo lo de
  *     `early_visit_ok` acabando antes de que empiece el tour
- *   - la cena de cada día cae en un barrio de `dinner_zones`, sin repetir mientras queden
+ *   - la cena de cada día cae en un barrio de `dinner_zones`; solo repite barrio si al elegirlo
+ *     estaba a 15 min o menos andando
+ *   - "de paso": solo nivel 1 con `pass_by`, visto un día anterior, nunca la nocturna de esa noche,
+ *     siempre al final del día y con su mensaje
  */
 
 import { readFileSync } from 'node:fs'
@@ -90,7 +93,8 @@ for (const pace of ['nonstop', 'tranquilo']) {
               const day = trip.days.find((d) => d.dayNumber === miss.dayNumber)
               const tags = new Set(TAG_INTEREST_MAP[miss.theme])
               const coords = day.schedule.visits.map((v) => v.place.coordinates)
-              const near = D.places.find((p) => (p.tags ?? []).some((t) => tags.has(t)) && !seen.has(p.name) && coords.some((c) => travel.leg(c, p.coordinates).minutes <= 20))
+              const coveredByTour = new Set(trip.coveredByFreeTour.flatMap((item) => item.names))
+              const near = D.places.find((p) => (p.tags ?? []).some((t) => tags.has(t)) && !seen.has(p.name) && !coveredByTour.has(p.name) && coords.some((c) => travel.leg(c, p.coordinates).minutes <= 20))
               if (near) fail(`${tag} d${miss.dayNumber}: dice que no hay nada de ${miss.theme} cerca y ${near.name} está a menos de 20 min`)
             }
 
@@ -113,9 +117,23 @@ for (const pace of ['nonstop', 'tranquilo']) {
             const dinnerZones = D.destination_config.dinner_zones
             const dinners = city.map((day) => day.dinnerZone)
             if (dinners.some((zone) => zone && !dinnerZones.includes(zone))) fail(`${tag}: cena fuera de los barrios de cena (${dinners.join(', ')})`)
-            for (let i = 0; i < dinners.length; i += dinnerZones.length) {
-              const chunk = dinners.slice(i, i + dinnerZones.length).filter(Boolean)
-              if (new Set(chunk).size !== chunk.length && !date) fail(`${tag}: se repite barrio de cena antes de agotarlos (${dinners.join(', ')})`)
+            for (const day of city) {
+              if (day.dinnerRepeatWalk != null && day.dinnerRepeatWalk > 15) fail(`${tag} d${day.dayNumber}: repite barrio de cena estando a ${day.dinnerRepeatWalk} min`)
+            }
+            // De paso.
+            for (const day of city) {
+              const visits = day.schedule.visits
+              visits.forEach((visit, index) => {
+                if (!visit.place.passBy) {
+                  if (visits.slice(0, index).some((v) => v.place.passBy)) fail(`${tag} d${day.dayNumber}: ${visit.place.name} después de una parada de paso`)
+                  return
+                }
+                const source = D.places.find((p) => p.name === visit.place.name)
+                if (!source?.pass_by || source.level !== 1) fail(`${tag} d${day.dayNumber}: de paso ${visit.place.name} sin pass_by o sin nivel 1`)
+                if (!(visit.place.passBy.seenOnDay < day.dayNumber)) fail(`${tag} d${day.dayNumber}: de paso ${visit.place.name} sin haberlo visto antes`)
+                const unit = day.units.find((u) => u.id === visit.unitId)
+                if (!/^Ya visitaste .+ el Día \d+\. De camino a cenar .+ pasas por delante: dedícale \d+ minutos y hazte fotos nuevas con la luz de la tarde\.$/.test(unit?.revisitReason ?? '')) fail(`${tag} d${day.dayNumber}: mensaje de paso mal formado: ${unit?.revisitReason}`)
+              })
             }
 
             if (contentDays >= 3) {

@@ -44,6 +44,10 @@
  *   - `preferEarly`: `best_time` "primera hora" (Coliseo, Vaticano, Trevi), cuanto antes mejor.
  *   - `latest_end`: tiene que haber acabado a esa hora (Trevi a las 08:00, antes del Free Tour).
  *   - `related_to`: las parejas naturales del JSON, seguidas si caen el mismo día.
+ *
+ * Las paradas "de paso" (`passBy`: repasar por fuera un imprescindible ya visto otro día, camino de
+ * la cena) van SIEMPRE al final del día, detrás de todo lo nuevo. Es una regla del orden, no una
+ * preferencia: si la mejora del orden pudiera moverlas, "de camino a cenar" acabaría a mediodía.
  */
 
 import { roundUpToFive, roundUpToSlot, toMinutes } from './time.js'
@@ -308,6 +312,11 @@ export function openDay(input) {
       return true
     },
 
+    /** Las visitas tal como están ahora (sin mejorar el orden). */
+    visits() {
+      return simulate(sequence, ctx).visits ?? []
+    },
+
     /** Minutos libres antes de cenar, ya descontado el paseo hasta la cena (null sin cena). */
     idleBeforeDinner() {
       return simulate(sequence, ctx).idleBeforeDinner ?? null
@@ -392,6 +401,8 @@ function simulate(sequence, ctx) {
 
     const unit = element
     if (unit.isLong && !longVisitsAnytime && pendingMeals.lunch && lunchDone) return { ok: false, reason: 'long_visit_after_lunch', unitId: unit.id }
+    // Nada nuevo después de una parada "de paso": esas van camino de la cena, al final.
+    if (!unit.places.some((place) => place.passBy) && visits.some((visit) => visit.place.passBy)) return { ok: false, reason: 'pass_by_not_last', unitId: unit.id }
     const unitStartsAt = visits.length
     // La comida puede meterse dentro de este grupo solo si es lo que viene justo después de él.
     const lunchComesNext = !lunchDone && sequence[elementIndex + 1] === LUNCH
@@ -479,7 +490,9 @@ function simulate(sequence, ctx) {
  */
 function visitMinutes(unit, index, mode) {
   const place = unit.places[index]
-  if (place.isFreeTour) return place.duration_minutes ?? 30
+  // El Free Tour dura lo que dura; una parada "de paso" dura lo que dice su mensaje ("dedícale 15
+  // minutos"), sin el extra del ritmo.
+  if (place.isFreeTour || place.passBy) return place.duration_minutes ?? 30
   const durations = unit.places.map((p) => p.duration_minutes ?? 30)
   const main = durations.indexOf(Math.max(...durations))
   return durations[index] + (index === main ? mode.visitDurationBonus : 0)

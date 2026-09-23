@@ -570,7 +570,15 @@
       "search_en_keywords": [
         "colosseum",
         "colosseo"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 20,
+        "max_minutes": 30,
+        "label": "el Coliseo",
+        "includes": [
+          "Arco de Constantino"
+        ]
+      }
     },
     {
       "name": "Foro Romano y Palatino",
@@ -605,7 +613,16 @@
         "forum",
         "foro romano",
         "palatine"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "el Foro Romano",
+        "from": "Via dei Fori Imperiali",
+        "coordinates": [
+          41.8938,
+          12.4857
+        ]
+      }
     },
     {
       "name": "Arco de Constantino",
@@ -725,7 +742,11 @@
       "search_en": "Trevi Fountain Rome",
       "search_en_keywords": [
         "trevi"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "la Fontana de Trevi"
+      }
     },
     {
       "name": "Panteón",
@@ -758,7 +779,11 @@
       "search_en_keywords": [
         "pantheon",
         "panteon"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "el Panteón"
+      }
     },
     {
       "name": "Piazza Navona",
@@ -789,7 +814,11 @@
       "search_en": "Piazza Navona Rome",
       "search_en_keywords": [
         "navona"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "la Piazza Navona"
+      }
     },
     {
       "name": "Plaza de España",
@@ -822,7 +851,11 @@
         "spanish steps",
         "piazza di spagna",
         "trinita dei monti"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "la Plaza de España"
+      }
     },
     {
       "name": "Piazza del Popolo",
@@ -1010,7 +1043,11 @@
         "square",
         "piazza san pietro",
         "st peter"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "la Plaza de San Pedro"
+      }
     },
     {
       "name": "Via della Conciliazione",
@@ -1255,7 +1292,14 @@
         "altare della patria",
         "vittoriano",
         "victor emmanuel"
-      ]
+      ],
+      "pass_by": {
+        "minutes": 15,
+        "label": "el Altar de la Patria",
+        "includes": [
+          "Plaza Venecia"
+        ]
+      }
     },
     {
       "name": "Puente Sant'Angelo",

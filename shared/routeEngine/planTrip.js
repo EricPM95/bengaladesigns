@@ -40,6 +40,7 @@ import { MAX_REVISITS_PER_DAY, RELAXED_DAY_TARGET_STOPS, canRevisit, revisitReas
 import { tripDays } from './tripSkeleton.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
+import { nightWalkPlan, planNightWalks } from './nightWalk.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
@@ -55,7 +56,7 @@ const FILL_SCORE = { theme: 20, level1: 50, level2: 30, curatedForDay: 25, revis
 /** Relleno que añade más que esto en paseo + espera no compensa: no es "de camino", es un desvío. */
 const MAX_FILL_ADDED_MINUTES = 30
 
-/** Por encima del mínimo de paradas del ritmo solo entra lo que cae de camino. */
+/** Por encima del mínimo de paradas del ritmo solo entra lo que cae de camino (ver ON_THE_WAY_MINUTES). */
 const CHEAP_FILL_ADDED_MINUTES = 10
 
 /**
@@ -73,6 +74,22 @@ const EXTRA_STOPS_WHILE_AFTERNOON_EMPTY = 2
  * compensaba cualquier desvío.
  */
 const MAX_FILL_ADDED_WALK_MINUTES = 15
+
+/**
+ * Lo que queda de camino SIN desvío (añade como mucho esto andando) no cuenta para el tope de
+ * calles/plazas/iglesias del día: el Borgo Pio entre la Via della Conciliazione y el Castillo no es
+ * "otra calle más", es la calle por la que se va.
+ */
+const ON_THE_WAY_MINUTES = 5
+
+/** Se puede repetir barrio de cena si en ese momento se está a esto o menos andando (decisión). */
+const DINNER_REPEAT_MAX_WALK_MINUTES = 15
+
+/** Por debajo de este hueco antes de cenar no se repite nada de paso: es caminar tranquilo. */
+const PASS_BY_MIN_GAP_MINUTES = 45
+
+/** Desvío máximo de una parada "de paso": tiene que pillar de camino a la cena. */
+const PASS_BY_MAX_ADDED_WALK_MINUTES = 10
 
 /**
  * Los lugares de una unidad, listos para el programador: con la hora fija del Free Tour y la marca
@@ -95,6 +112,38 @@ export function placesForScheduler(unit, destData, freeTourTime) {
       ...(next && joined(place.name, next.name) ? { inseparableWithNext: true } : {}),
     }
   })
+}
+
+/**
+ * Un imprescindible ya visto, repasado por fuera camino de la cena. Sin horario (por fuera no hay
+ * puerta), con los minutos de paso del JSON, desde donde se ve (`pass_by.coordinates`: el Foro se
+ * mira desde la Via dei Fori Imperiali) y con el mensaje que explica por qué vuelve a salir.
+ */
+function passByUnit(place, passBy, minutes, seenOnDay, dinnerDisplay) {
+  const message = `Ya visitaste ${passBy.label ?? place.name} el Día ${seenOnDay}. De camino a cenar ${dinnerDisplay} pasas por delante: dedícale ${minutes} minutos y hazte fotos nuevas con la luz de la tarde.`
+  return {
+    id: `${place.name} (de paso)`,
+    places: [
+      {
+        name: place.name,
+        coordinates: passBy.coordinates ?? place.coordinates,
+        duration_minutes: minutes,
+        type: 'exterior',
+        tags: place.tags ?? [],
+        wikipedia_title: place.wikipedia_title,
+        zone: place.zone,
+        passBy: { seenOnDay, includes: passBy.includes ?? [], from: passBy.from ?? null },
+      },
+    ],
+    priority: PRIORITY.FILLER,
+    level: 1,
+    tags: place.tags ?? [],
+    closedOn: [],
+    minutes,
+    isRevisit: true,
+    revisitReason: message,
+    capExempt: true,
+  }
 }
 
 /** Zonas por prioridad, para los días que no tienen reparto curado (6+ días, destinos nuevos). */
@@ -229,15 +278,23 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   /** ¿Puede ir este día, antes de preguntar al programador? Cierres, visita larga, tope de tema. */
   function eligible(day, unit) {
+    return eligibleIgnoringCap(day, unit) && withinCategoryCap(day, unit)
+  }
+
+  /** Cierres y visita larga: lo que ni yendo de camino se puede saltar. */
+  function eligibleIgnoringCap(day, unit) {
     if (unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)) return false
     if (unit.isLong && cityDays.length > 1 && dayUnits(day).some((u) => u.isLong)) return false
-    if (unit.priority > PRIORITY.ESSENTIAL) {
-      const category = categoryOfTags(unit.tags)
-      const cap = categoryCapFor(destData, category, selectedThemes)
-      const sameCategory = dayUnits(day).filter((u) => u.priority > PRIORITY.ESSENTIAL && categoryOfTags(u.tags) === category).length
-      if (category && sameCategory >= cap) return false
-    }
-    return true
+    return withinCategoryCap(day, unit)
+  }
+
+  /** ¿Cabe en el tope de su categoría? Lo que entró "de camino, sin desvío" no cuenta. */
+  function withinCategoryCap(day, unit) {
+    if (unit.priority <= PRIORITY.ESSENTIAL || unit.capExempt) return true
+    const category = categoryOfTags(unit.tags)
+    if (!category) return true
+    const sameCategory = dayUnits(day).filter((u) => u.priority > PRIORITY.ESSENTIAL && !u.capExempt && categoryOfTags(u.tags) === category).length
+    return sameCategory < categoryCapFor(destData, category, selectedThemes)
   }
 
   /**
@@ -390,9 +447,11 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   // ── Paso 4b: dónde se cena cada día — la tarde irá hacia allí ─────────────────────────────
-  // El barrio bueno para cenar más cercano a donde acaba la tarde, sin repetir barrio de una noche a
-  // otra mientras queden (cenar tres noches en Campo de' Fiori no es conocer Roma). Se elige ya, con
-  // lo gordo colocado y antes del relleno, para que el relleno llene la tarde EN ESA DIRECCIÓN.
+  // El barrio bueno para cenar más cercano a donde acaba la tarde. Sin repetir barrio de una noche a
+  // otra mientras queden, SALVO que en ese momento se esté a 15 min o menos andando (decisión del
+  // 2026-09-23): "no repetir" mandaba la tarde de un día de centro a cenar a Monti, a una zona ya
+  // agotada, y la tarde se quedaba vacía. Se elige ya, con lo gordo colocado y antes del relleno,
+  // para que el relleno llene la tarde EN ESA DIRECCIÓN.
   const dinnerOptions = (destData.destination_config?.dinner_zones ?? [])
     .map((zone) => ({ zone, coordinates: destData.meal_zones?.[zone]?.cena?.coordinates }))
     .filter((option) => Array.isArray(option.coordinates))
@@ -401,15 +460,25 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (dinnerOptions.length === 0) break
     if (usedDinnerZones.size >= dinnerOptions.length) usedDinnerZones = new Set()
     const from = day.open.endCoordinates() ?? day.seedCoords
+    // Orden de preferencia: un barrio nuevo a mano; si no hay, repetir uno que esté a mano; si
+    // tampoco, el barrio nuevo más cercano. Repetir es la excepción, no el atajo: eligiendo siempre
+    // el más cercano, el día del Vaticano volvía a cenar a Campo de' Fiori (a 14 min del Castillo).
+    const rank = (option) => {
+      const near = option.walk <= DINNER_REPEAT_MAX_WALK_MINUTES
+      const fresh = !usedDinnerZones.has(option.zone)
+      return fresh && near ? 0 : near ? 1 : fresh ? 2 : 3
+    }
     const chosen = dinnerOptions
-      .filter((option) => !usedDinnerZones.has(option.zone))
       .map((option) => ({ ...option, walk: from ? (travel.leg(from, option.coordinates)?.minutes ?? Infinity) : 0 }))
-      .sort((a, b) => a.walk - b.walk || a.zone.localeCompare(b.zone, 'es'))
+      .filter((option) => rank(option) < 3)
+      .sort((a, b) => rank(a) - rank(b) || a.walk - b.walk || a.zone.localeCompare(b.zone, 'es'))
       // Si con el paseo hasta allí el día deja de caber, el siguiente barrio.
       .find((option) => day.open.setDinnerPoint(option.coordinates))
     if (!chosen) continue
     day.dinnerZone = chosen.zone
     day.dinnerCoords = chosen.coordinates
+    // Para poder comprobarlo: si se repite barrio, a cuánto estaba al elegirlo.
+    day.dinnerRepeatWalk = usedDinnerZones.has(chosen.zone) ? chosen.walk : null
     usedDinnerZones.add(chosen.zone)
   }
 
@@ -468,8 +537,15 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         // En tranquilo el nivel 3 no entra como relleno: 5-7 paradas gastadas en tercera fila es lo
         // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
         if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level)) continue
-        if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligible(day, unit)) continue
-        const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: MAX_FILL_ADDED_WALK_MINUTES })
+        if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligibleIgnoringCap(day, unit)) continue
+        // Fuera de su tope de categoría solo entra si va de camino, sin desvío — y entonces no cuenta.
+        const overCap = !withinCategoryCap(day, unit)
+        const candidate = overCap ? { ...forDay(day, unit), capExempt: true } : forDay(day, unit)
+        // Con la tarde todavía vacía se admite un desvío corto; con la tarde ya llena, solo lo que
+        // cae de camino. Por minutos, no por número de paradas: con "a partir de 8 paradas, solo de
+        // camino", el día del Free Tour (una "parada" de 2h30) se cerraba a las 16:10.
+        const walkCap = overCap || !afternoonEmpty ? ON_THE_WAY_MINUTES : MAX_FILL_ADDED_WALK_MINUTES
+        const attempt = day.open.tryAdd(candidate, { maxAddedWalk: walkCap })
         if (!attempt) continue
         if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
         const score =
@@ -503,8 +579,53 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     else quotaMisses.splice(quotaMisses.indexOf(miss), 1)
   }
 
+  // ── Paso 7: de paso hacia la cena ─────────────────────────────────────────────────────────
+  // Si después de todo lo anterior la tarde sigue con 45 min o más libres, se repasa POR FUERA un
+  // imprescindible ya visto otro día que pille camino de la cena (decisión del 2026-09-23):
+  //   - solo nivel 1 con `pass_by` en el JSON (minutos de paso, cómo se nombra, desde dónde se ve);
+  //   - visto un día ANTERIOR (o con el Free Tour), una vez por viaje;
+  //   - nunca si esa misma noche sale como experiencia nocturna: la versión de noche manda;
+  //   - siempre al final del día, camino de la cena (el programador no deja moverlo).
+  const passedBy = new Set()
+  const nightsBeforePassBy = planNightWalks(destData, nightWalkPlan({
+    days: skeleton.map((day) => {
+      const city = cityDays.find((d) => d.dayNumber === day.dayNumber)
+      return city ? { ...day, dinnerZone: city.dinnerZone, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
+    }),
+  }))
+  const firstSeenDay = new Map()
+  for (const day of cityDays) {
+    for (const visit of day.open.visits()) if (!firstSeenDay.has(visit.place.name)) firstSeenDay.set(visit.place.name, day.dayNumber)
+  }
+  for (const item of coveredByFreeTour) for (const name of item.names) if (!firstSeenDay.has(name)) firstSeenDay.set(name, item.dayNumber)
+
+  for (const day of cityDays) {
+    const tonight = new Set((nightsBeforePassBy.get(day.dayNumber) ?? []).flatMap((entry) => entry.conflicts_with ?? []))
+    const dinnerDisplay = destData.meal_zones?.[day.dinnerZone]?.cena?.display ?? ''
+    while ((day.open.idleBeforeDinner() ?? 0) >= PASS_BY_MIN_GAP_MINUTES) {
+      const onDay = new Set(day.open.visits().map((visit) => visit.place.name))
+      let best = null
+      for (const place of destData.places ?? []) {
+        const passBy = place.pass_by
+        if (!passBy || place.level !== 1 || passedBy.has(place.name) || onDay.has(place.name) || tonight.has(place.name)) continue
+        const seenOn = firstSeenDay.get(place.name)
+        if (seenOn == null || seenOn >= day.dayNumber) continue
+        // El Coliseo tiene 20-30 min: se prueba primero el rato largo.
+        for (const minutes of [...new Set([passBy.max_minutes, passBy.minutes].filter(Number.isFinite))]) {
+          const unit = passByUnit(place, passBy, minutes, seenOn, dinnerDisplay)
+          const attempt = day.open.tryAdd(unit, { maxAddedWalk: PASS_BY_MAX_ADDED_WALK_MINUTES })
+          if (attempt && (!best || attempt.addedCost < best.attempt.addedCost)) best = { place, attempt }
+          if (attempt) break
+        }
+      }
+      if (!best) break
+      day.open.add(best.attempt)
+      passedBy.add(best.place.name)
+    }
+  }
+
   // ── Resultado ─────────────────────────────────────────────────────────────────────────────
-  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone }]))
+  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null }]))
   return {
     mode,
     days: skeleton.map((day) => ({ ...day, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),

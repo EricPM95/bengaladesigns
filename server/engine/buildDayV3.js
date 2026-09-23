@@ -15,7 +15,9 @@ import { toHHMM } from '../../shared/routeEngine/time.js'
 import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
-import { nightStopsFor } from './nightWalk.js'
+import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
+
+export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
 export { placesForScheduler } from '../../shared/routeEngine/planTrip.js'
 
@@ -34,30 +36,6 @@ export function travelTimesFor(destinationKey) {
     travelByDestination.set(destinationKey, createTravelTimes(matrix))
   }
   return travelByDestination.get(destinationKey)
-}
-
-/**
- * Dónde se cena ese día: el barrio que eligió el repartidor (la tarde va hacia allí). Si el destino
- * no tiene barrios de cena, la zona de la última visita. De ahí sale también el paseo nocturno.
- */
-export function dinnerZoneOf(tripDay) {
-  const visits = tripDay.schedule?.visits ?? []
-  return tripDay.dinnerZone ?? visits[visits.length - 1]?.place.zone ?? tripDay.curated?.afternoon?.zone ?? tripDay.curated?.morning?.zone ?? null
-}
-
-/**
- * El viaje del motor v3 con la forma que espera planNightWalks (nightWalk.js). Con las paradas que
- * de verdad se visitan, no con las del reparto: el motor anterior apartaba el Coliseo nocturno del
- * día 1 "porque ya se había visto" cuando el constructor lo había tirado sin avisar.
- */
-export function nightWalkPlan(trip) {
-  return {
-    days: trip.days.map((day) => {
-      const zone = dinnerZoneOf(day)
-      const units = (day.schedule?.visits ?? []).map((visit) => ({ places: [visit.place] }))
-      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
-    }),
-  }
 }
 
 function zoneFields(destData, zoneKey, mealType) {
@@ -82,6 +60,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
+    // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
+    if (visit.place.passBy) stop.is_pass_by = true
     return stop
   })
 

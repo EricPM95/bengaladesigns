@@ -99,7 +99,8 @@ const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) =
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
 function outOfHours(stop) {
   const place = placeByName.get(stop.name)
-  if (!place) return null
+  // Una parada "de paso" se ve por fuera (el Foro, desde la Via dei Fori Imperiali): no tiene puerta.
+  if (!place || stop.is_pass_by) return null
   const start = t2m(stop.suggested_time)
   const end = start + stop.duration_minutes
   if (place.last_entry && start > t2m(place.last_entry)) return `empieza ${stop.suggested_time}, última entrada ${place.last_entry}`
