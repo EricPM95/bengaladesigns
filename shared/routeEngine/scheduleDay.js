@@ -16,7 +16,8 @@
  * reajustar en directo (hora y posición de inicio + lo que queda + si ya se ha comido).
  *
  * Reglas de tiempo (decisiones del 2026-09-23):
- *   - Las horas caen en :00 o :30, redondeando hacia arriba.
+ *   - Las horas caen en :00 o :30 por la mañana y en cuartos de hora por la tarde (después de
+ *     comer), redondeando hacia arriba.
  *   - Encadenado manda sobre redondeo: dentro de un grupo, o a <= 3 min a pie, se entra al llegar,
  *     redondeando solo a 5 min (15:07 -> 15:10).
  *   - La comida puede caer DENTRO de un grupo, entre dos de sus lugares, si solo así entra en su
@@ -50,12 +51,19 @@
  * Sant'Angelo → Castillo, Parque de Villa Borghese → Galería Borghese). Si caen el mismo día, el
  * monumento no puede ir antes; se acepta el pequeño rodeo que eso cueste.
  *
+ * Lo que está DENTRO de otro (`contained_in`) va justo detrás de él y cuenta como una visita; los
+ * VECINOS (`neighbor_of`) van seguidos si caen el mismo día (ver `relationBroken`). Qué día le toca a
+ * cada uno lo decide el repartidor.
+ *
+ * La tarde se ordena al final por lo que MENOS CAMINA (`bestAfternoon`), probando todos los órdenes;
+ * el relleno que obliga a volver atrás se quita (`pruneAfternoon`).
+ *
  * Las paradas "de paso" (`passBy`: repasar por fuera un imprescindible ya visto otro día, camino de
  * la cena) van SIEMPRE al final del día, detrás de todo lo nuevo. Es una regla del orden, no una
  * preferencia: si la mejora del orden pudiera moverlas, "de camino a cenar" acabaría a mediodía.
  */
 
-import { roundUpToFive, roundUpToSlot, toMinutes } from './time.js'
+import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './time.js'
 import { earliestVisitStart, effectiveSchedule, nextOpenMinutes } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
 
@@ -73,6 +81,8 @@ export const PRIORITY = { POOL: 0, JOYA: 1, ESSENTIAL: 1.5, THEME: 2, FILLER: 3 
     Pequeña a propósito: el orden curado es buen punto de partida (medido), no una cárcel. */
 const CURATED_INVERSION_PENALTY = 10
 const MAX_IMPROVEMENT_PASSES = 30
+/** Piezas de tarde hasta las que se prueban TODOS los órdenes (8! = 40.320 simulaciones). Medido: ninguna tarde pasa de 8. */
+const MAX_AFTERNOON_PIECES = 8
 /** Lo curado de mañana que acaba después de comer. Alto: el Coliseo a las 15:30 es otro viaje. */
 const MORNING_AFTER_LUNCH_PENALTY = 90
 /** Cada minuto que una visita de "primera hora" se retrasa respecto al inicio del día. */
@@ -103,6 +113,8 @@ const LUNCH = { kind: 'lunch' }
  * @property {string} [type]          'exterior' | 'interior' — decide el horario por defecto
  * @property {string} [latest_end]    "HH:MM": la visita tiene que haber acabado a esta hora
  * @property {[number, number]} [end_coordinates]  dónde se acaba (un recorrido a pie no acaba donde empieza)
+ * @property {string} [contained_in]  está dentro de este otro lugar: va justo detrás, como una visita
+ * @property {string[]} [neighbor_of] vecino pegado de estos lugares: si caen el mismo día, seguidos
  *
  * @typedef {object} ScheduleUnit
  * @property {string} id
@@ -190,6 +202,7 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
       unscheduled.splice(unscheduled.indexOf(item), 1)
     }
   }
+  sequence = bestAfternoon(sequence, ctx).sequence
 
   const result = simulate(sequence, ctx)
   return {
@@ -422,9 +435,37 @@ export function openDay(input) {
       ;({ ctx, sequence, currentCost, modeFallback, dinnerPoint } = snap)
     },
 
+    /**
+     * Quita el relleno de tarde que obliga a volver atrás (decisión del 2026-09-23): si el mejor orden
+     * CON él camina más de `maxExtraWalk` minutos que el mejor orden SIN él, fuera. Un relleno nunca
+     * justifica un zigzag. De uno en uno, el peor primero, hasta que no quede ninguno así.
+     * @param {(unit: object) => boolean} isRemovable  qué es relleno (lo decide el repartidor)
+     * @returns {object[]} las unidades quitadas
+     */
+    pruneAfternoon(isRemovable, maxExtraWalk) {
+      const removed = []
+      let base = bestAfternoon(improve(sequence, ctx), ctx)
+      for (;;) {
+        const afternoon = base.sequence.slice(base.sequence.indexOf(LUNCH) + 1)
+        let worst = null
+        for (const unit of afternoon.filter((element) => element !== LUNCH && isRemovable(element))) {
+          const without = bestAfternoon(base.sequence.filter((element) => element !== unit), ctx)
+          if (!without.result.ok) continue
+          const extra = base.result.walk - without.result.walk
+          if (extra > maxExtraWalk && (!worst || extra > worst.extra)) worst = { unit, extra, without }
+        }
+        if (!worst) break
+        removed.push(worst.unit)
+        base = worst.without
+      }
+      sequence = base.sequence
+      currentCost = base.result.cost
+      return removed
+    },
+
     /** El día terminado: orden mejorado y horas puestas. */
     finish() {
-      sequence = improve(sequence, ctx)
+      sequence = bestAfternoon(improve(sequence, ctx), ctx).sequence
       const result = simulate(sequence, ctx)
       return {
         visits: result.visits,
@@ -460,6 +501,7 @@ function simulate(sequence, ctx) {
   let afterMeal = false
   let seenVisit = false
   let walk = 0
+  let meters = 0
   let idle = 0
   let preference = 0 // penalizaciones de hora (ver preferMorning / preferEarly)
   const visits = []
@@ -475,6 +517,8 @@ function simulate(sequence, ctx) {
     }
   }
   const meals = []
+  /** Índice de la primera visita después de comer (la comida va entre esa y la anterior). */
+  let lunchBeforeVisit = null
 
   /** Come ahora. false si ya no entra en la ventana. */
   const takeLunch = () => {
@@ -482,6 +526,7 @@ function simulate(sequence, ctx) {
     if (at > lunchClose) return false
     idle += at - cursor
     meals.push({ type: 'lunch', start: at, end: at + mode.mealMinutes, coordinates: position })
+    lunchBeforeVisit = visits.length
     cursor = at + mode.mealMinutes
     lunchDone = true
     afterMeal = true
@@ -518,21 +563,27 @@ function simulate(sequence, ctx) {
       const walkMinutes = leg?.minutes ?? 0
       const arrive = cursor + walkMinutes
       // Encadenado: el siguiente miembro de un grupo, o un sitio a <= 3 min; nunca al volver de comer.
-      const chained = !afterMeal && (index > 0 || (seenVisit && position !== null && walkMinutes <= mode.chainMaxWalkMinutes))
+      // Lo que está DENTRO de otro (`contained_in`: el Elefantino en la plaza de la Minerva) va con su
+      // contenedor como una sola visita, aunque haya 4 minutos andando.
+      const previous = visits[visits.length - 1]
+      const withContainer = Boolean(place.contained_in && previous && (previous.place.name === place.contained_in || previous.place.contained_in === place.contained_in))
+      const chained = !afterMeal && (index > 0 || withContainer || (seenVisit && position !== null && walkMinutes <= mode.chainMaxWalkMinutes))
+      // Por la tarde, cuartos de hora; por la mañana, :00/:30.
+      const roundSlot = lunchDone ? roundUpToQuarter : roundUpToSlot
 
-      let at = chained ? roundUpToFive(arrive) : roundUpToSlot(arrive)
+      let at = chained ? roundUpToFive(arrive) : roundSlot(arrive)
       if (place.fixed_start) {
         const fixed = toMinutes(place.fixed_start)
         if (arrive > fixed) return { ok: false, reason: 'fixed_start_missed', unitId: unit.id }
         at = fixed
       }
-      if (place.not_before) at = Math.max(at, roundUpToSlot(toMinutes(place.not_before)))
+      if (place.not_before) at = Math.max(at, roundSlot(toMinutes(place.not_before)))
 
       const duration = visitMinutes(unit, index, mode)
       // Abierto de principio a fin, en el primer tramo donde quepa entera (con cierre de mediodía,
       // se espera a la tarde en vez de descartarla).
       const schedule = effectiveSchedule(place)
-      const fitAt = earliestVisitStart(schedule, at, duration, roundUpToSlot)
+      const fitAt = earliestVisitStart(schedule, at, duration, roundSlot)
       if (fitAt === null) {
         return { ok: false, reason: nextOpenMinutes(schedule, at) === null ? 'closed' : 'closes_during_visit', unitId: unit.id }
       }
@@ -546,6 +597,7 @@ function simulate(sequence, ctx) {
       if (pendingApproach) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
 
       walk += walkMinutes
+      meters += leg?.meters ?? 0
       idle += at - arrive
       visits.push({ unitId: unit.id, place, start: at, end: at + duration, chained, walkMinutes, walkSource: leg?.source ?? null })
       cursor = at + duration
@@ -565,6 +617,8 @@ function simulate(sequence, ctx) {
   }
 
   if (!lunchDone) return { ok: false, reason: 'lunch_missing' }
+  const apart = relationBroken(visits, lunchBeforeVisit)
+  if (apart) return { ok: false, reason: apart.reason, unitId: apart.unitId }
 
   let idleBeforeDinner = null
   let dinnerIdlePenalty = 0
@@ -574,6 +628,7 @@ function simulate(sequence, ctx) {
     const at = Math.max(roundUpToSlot(cursor + walkToDinner), mode.dinnerWindow[0])
     if (at > dinnerLatest) return { ok: false, reason: 'dinner_out_of_window' }
     walk += walkToDinner
+    meters += walkToDinner > 0 ? (travel.leg(position, dinnerPoint)?.meters ?? 0) : 0
     idleBeforeDinner = at - cursor - walkToDinner
     // Hasta la tolerancia del ritmo es caminar tranquilo, un helado; por encima, una tarde vacía.
     dinnerIdlePenalty = Math.max(0, idleBeforeDinner - mode.gapTolerance) * DINNER_IDLE_PENALTY_PER_MINUTE
@@ -581,7 +636,50 @@ function simulate(sequence, ctx) {
   }
 
   const cost = walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY + preference + relatedApart(visits) * RELATED_APART_PENALTY
-  return { ok: true, visits, meals, walk, idle, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
+  return { ok: true, visits, meals, walk, meters, idle, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
+}
+
+/**
+ * Sitios que están dentro de otro o pegados a otro (decisión del 2026-09-23, datos del destino):
+ *   - `contained_in`: lo de dentro va JUSTO DETRÁS de su contenedor, como una sola visita (el
+ *     Elefantino detrás de la Minerva; las Tortugas y el Teatro de Marcelo, detrás del Barrio Judío).
+ *   - `neighbor_of`: vecinos pegados (Campo de' Fiori y Plaza Farnese). Si caen el mismo día, van
+ *     seguidos. Lo de dentro de cada uno va con él: la Minerva y su Elefantino son un bloque que
+ *     tiene que tocar al Panteón.
+ * La comida no puede ir en medio de ninguno de los dos. Las paradas "de paso" no cuentan: repasar
+ * el Foro por fuera no es visitarlo.
+ * @returns {{reason: string, unitId: string} | null}
+ */
+function relationBroken(visits, lunchBeforeVisit) {
+  const indexOf = new Map()
+  visits.forEach((visit, index) => {
+    if (!visit.place.passBy && !indexOf.has(visit.place.name)) indexOf.set(visit.place.name, index)
+  })
+  const lunchBetween = (a, b) => lunchBeforeVisit !== null && lunchBeforeVisit > Math.min(a, b) && lunchBeforeVisit <= Math.max(a, b)
+  // El bloque de un lugar: él y lo que tiene dentro, que va detrás.
+  const blockEnd = (index) => {
+    let end = index
+    while (end + 1 < visits.length && visits[end + 1].place.contained_in === visits[index].place.name) end++
+    return end
+  }
+  for (const [index, visit] of visits.entries()) {
+    const place = visit.place
+    if (place.passBy) continue
+    const container = place.contained_in ? indexOf.get(place.contained_in) : undefined
+    if (container !== undefined) {
+      const between = visits.slice(container + 1, index)
+      if (container > index || between.some((other) => other.place.contained_in !== place.contained_in) || lunchBetween(container, index)) {
+        return { reason: 'contained_apart', unitId: visit.unitId }
+      }
+    }
+    for (const partner of place.neighbor_of ?? []) {
+      const other = indexOf.get(partner)
+      if (other === undefined) continue
+      const [first, second] = other < index ? [other, index] : [index, other]
+      if (blockEnd(first) + 1 !== second || lunchBetween(first, second)) return { reason: 'neighbor_apart', unitId: visit.unitId }
+    }
+  }
+  return null
 }
 
 /**
@@ -700,6 +798,58 @@ function improve(sequence, ctx) {
     currentCost = bestMove.cost
   }
   return current
+}
+
+/**
+ * La tarde, en el orden que MENOS CAMINA (decisión del 2026-09-23). Con la salida fija (donde se
+ * come) y la llegada fija (el barrio de la cena), se prueban todos los órdenes de lo que va después
+ * de comer y se queda el de menos metros que respete horarios y reglas; a igualdad, el que menos
+ * tiempo pierde. Lo curado y el recorrido de tarde del destino (`curatedIndex`) no se mueven entre
+ * sí: solo se intercala lo demás. Las paradas "de paso" siguen al final.
+ *
+ * Es lo que la mejora por pasos no consigue: medía paseo + espera, y con el redondeo la espera
+ * pesaba tanto que el motor elegía un zigzag que llegaba "en punto" (Castillo → Tortugas → Minerva →
+ * Elefantino → Trastevere: bajar, subir y volver a bajar).
+ */
+function bestAfternoon(sequence, ctx) {
+  const current = { sequence, result: simulate(sequence, ctx) }
+  const lunchAt = sequence.indexOf(LUNCH)
+  const head = sequence.slice(0, lunchAt + 1)
+  const afternoon = sequence.slice(lunchAt + 1)
+  const isPassBy = (unit) => unit.places.some((place) => place.passBy)
+  const tail = afternoon.filter(isPassBy)
+  const pieces = afternoon.filter((unit) => !isPassBy(unit))
+  const fixed = pieces.filter((unit) => unit.curatedIndex != null)
+  const movable = pieces.filter((unit) => unit.curatedIndex == null)
+  if (movable.length === 0 || pieces.length > MAX_AFTERNOON_PIECES) return current
+
+  let best = current.result.ok ? current : null
+  const better = (a, b) => !b || a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)
+  const order = []
+  const used = new Array(movable.length).fill(false)
+  const walkOrders = (nextFixed) => {
+    if (order.length === pieces.length) {
+      const candidate = [...head, ...order, ...tail]
+      const result = simulate(candidate, ctx)
+      if (result.ok && better(result, best?.result)) best = { sequence: candidate, result }
+      return
+    }
+    if (nextFixed < fixed.length) {
+      order.push(fixed[nextFixed])
+      walkOrders(nextFixed + 1)
+      order.pop()
+    }
+    for (let i = 0; i < movable.length; i++) {
+      if (used[i]) continue
+      used[i] = true
+      order.push(movable[i])
+      walkOrders(nextFixed)
+      order.pop()
+      used[i] = false
+    }
+  }
+  walkOrders(0)
+  return best ?? current
 }
 
 /**

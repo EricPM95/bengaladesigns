@@ -102,6 +102,13 @@ const THEME_ON_THE_WAY_MINUTES = 10
  */
 const AWAY_FROM_DINNER_TOLERANCE_MINUTES = 2
 
+/**
+ * Relleno de tarde que obliga a volver atrás (decisión del 2026-09-23): si el mejor orden de la tarde
+ * con él camina más que esto por encima del mejor orden sin él, se quita. Un relleno nunca
+ * justifica un zigzag.
+ */
+const MAX_BACKTRACK_WALK_MINUTES = 5
+
 /** Desvío máximo de una parada "de paso": tiene que pillar de camino a la cena. */
 const PASS_BY_MAX_ADDED_WALK_MINUTES = 10
 
@@ -248,6 +255,30 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   const placedDay = new Map() // unit.id -> dayNumber
+  // Relleno quitado de un día por obligar a volver atrás: a ESE día no vuelve.
+  const bannedOnDay = new Set() // `${dayNumber}|${unit.id}`
+  // Vecinos y contenidos que no cupieron el día de su pareja: fuera del viaje, pero la cuota los ve
+  // (si el tema solo tenía eso cerca, el motivo es "no cabe", no "no hay nada").
+  const droppedByRelation = new Set()
+
+  // Dentro de otro (`contained_in`) y vecinos (`neighbor_of`): con quién tiene que ir cada unidad.
+  const unitIdOfPlace = new Map(units.flatMap((unit) => unit.places.map((place) => [place.name, unit.id])))
+  const partnersOf = (unit) =>
+    unit.places
+      .flatMap((place) => [place.contained_in, ...(place.neighbor_of ?? [])])
+      .filter(Boolean)
+      .map((name) => unitIdOfPlace.get(name))
+      .filter((id) => id && id !== unit.id)
+  /**
+   * Días en los que puede ir por sus relaciones: si su contenedor o su vecino principal está en el
+   * viaje, SOLO el día de él (lo de dentro no vuelve a salir otro día; el vecino que no cabe ese día
+   * se queda fuera). null = sin restricción.
+   */
+  const relationDays = (unit) => {
+    if (unit.isRevisit || unit.places.some((place) => place.passBy)) return null
+    const days = partnersOf(unit).map((id) => placedDay.get(id)).filter((day) => day != null)
+    return days.length > 0 ? days : null
+  }
   const revisited = new Set()
   const unplacedPool = []
   const unplacedEssentials = []
@@ -302,6 +333,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   /** Cierres y visita larga: lo que ni yendo de camino se puede saltar. */
   function eligibleIgnoringCap(day, unit) {
+    if (bannedOnDay.has(`${day.dayNumber}|${unit.id}`)) return false
+    const allowedDays = relationDays(unit)
+    if (allowedDays && !allowedDays.includes(day.dayNumber)) return false
     if (unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)) return false
     if (unit.isLong && cityDays.length > 1 && dayUnits(day).some((u) => u.isLong)) return false
     return withinCategoryCap(day, unit)
@@ -330,6 +364,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const withIndex = forDay(day, unit)
     if (day.open.add(withIndex) || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
       placedDay.set(unit.id, day.dayNumber)
+      droppedByRelation.delete(unit.id)
       return true
     }
     return false
@@ -568,7 +603,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const ofTheme = (unit) => unit.tags.some((tag) => tags.has(tag))
     if (dayUnits(day).some(ofTheme)) return null
     const candidates = units
-      .filter((unit) => !placedDay.has(unit.id) && ofTheme(unit))
+      .filter((unit) => (!placedDay.has(unit.id) || droppedByRelation.has(unit.id)) && ofTheme(unit))
       .map((unit) => ({ unit, walk: walkFromDay(day, unit) }))
       // Nunca cruzar la ciudad para cumplir la cuota: si no hay nada cerca, el día se queda sin.
       .filter((item) => item.walk <= NEAR_WALK_MINUTES)
@@ -603,62 +638,95 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // se quería quitar.
   const minTargetOf = (day) => (day.allowsRepetition ? RELAXED_DAY_TARGET_STOPS : mode.targetStops[0])
   const maxTargetOf = (day) => (day.allowsRepetition ? RELAXED_DAY_TARGET_STOPS : mode.targetStops[1])
-  let progress = true
-  while (progress) {
-    progress = false
-    for (const day of cityDays) {
-      // Se sigue mientras falte el mínimo del ritmo, o mientras la tarde siga vacía antes de cenar.
-      const afternoonEmpty = (day.open.idleBeforeDinner() ?? 0) > mode.gapTolerance
-      const cap = maxTargetOf(day) + (afternoonEmpty ? EXTRA_STOPS_WHILE_AFTERNOON_EMPTY : 0)
-      if (visitCount(day) >= cap) continue
-      if (visitCount(day) >= minTargetOf(day) && !afternoonEmpty) continue
-      const aboveMinimum = visitCount(day) >= minTargetOf(day)
-      const fresh = units.filter((unit) => !placedDay.has(unit.id))
-      // Revisitas: solo en días de repetición, de algo visto en un día ANTERIOR, una vez por viaje.
-      const revisits = day.allowsRepetition && day.revisits < MAX_REVISITS_PER_DAY
-        ? units
-            .filter((unit) => placedDay.get(unit.id) != null && placedDay.get(unit.id) < day.dayNumber && !revisited.has(unit.id) && canRevisit(unit))
-            .map((unit) => ({ ...unit, id: `${unit.id} (revisita)`, originalId: unit.id, isRevisit: true, revisitReason: revisitReasonFor(unit), priority: PRIORITY.FILLER }))
-        : []
-
-      let best = null
-      for (const unit of [...fresh, ...revisits]) {
-        // En tranquilo el nivel 3 no entra como relleno: 5-7 paradas gastadas en tercera fila es lo
-        // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
-        if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level)) continue
-        if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligibleIgnoringCap(day, unit)) continue
-        // Fuera de su tope de categoría solo entra si va de camino, sin desvío — y entonces no cuenta.
-        const overCap = !withinCategoryCap(day, unit)
-        const candidate = overCap ? { ...forDay(day, unit), capExempt: true } : forDay(day, unit)
-        // Con la tarde todavía vacía se admite un desvío corto; con la tarde ya llena, solo lo que
-        // cae de camino. Por minutos, no por número de paradas: con "a partir de 8 paradas, solo de
-        // camino", el día del Free Tour (una "parada" de 2h30) se cerraba a las 16:10.
-        const walkCap = overCap || !afternoonEmpty ? ON_THE_WAY_MINUTES : MAX_FILL_ADDED_WALK_MINUTES
-        const attempt = day.open.tryAdd(candidate, { maxAddedWalk: walkCap })
-        if (!attempt) continue
-        if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
-        if (!themeMayEnter(day, unit, attempt)) continue
-        const score =
-          (matchesTheme(unit) ? FILL_SCORE.theme : 0) +
-          (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +
-          (curatedIndexIn(day, unit) !== null ? FILL_SCORE.curatedForDay : 0) +
-          (unit.isRevisit ? FILL_SCORE.revisit : 0) -
-          attempt.addedCost * FILL_SCORE.perAddedMinute -
-          // El paseo añadido cuenta además de en el coste: a igualdad, lo que está más a mano.
-          attempt.addedWalk * FILL_SCORE.perAddedMinute
-        if (!best || score > best.score || (score === best.score && unit.id.localeCompare(best.unit.id, 'es') < 0)) best = { unit, attempt, score }
+  function fillRounds() {
+    let progress = true
+    while (progress) {
+      progress = false
+      for (const day of cityDays) {
+        // Se sigue mientras falte el mínimo del ritmo, o mientras la tarde siga vacía antes de cenar.
+        const afternoonEmpty = (day.open.idleBeforeDinner() ?? 0) > mode.gapTolerance
+        const cap = maxTargetOf(day) + (afternoonEmpty ? EXTRA_STOPS_WHILE_AFTERNOON_EMPTY : 0)
+        if (visitCount(day) >= cap) continue
+        if (visitCount(day) >= minTargetOf(day) && !afternoonEmpty) continue
+        const aboveMinimum = visitCount(day) >= minTargetOf(day)
+        const fresh = units.filter((unit) => !placedDay.has(unit.id))
+        // Revisitas: solo en días de repetición, de algo visto en un día ANTERIOR, una vez por viaje.
+        const revisits = day.allowsRepetition && day.revisits < MAX_REVISITS_PER_DAY
+          ? units
+              .filter((unit) => placedDay.get(unit.id) != null && placedDay.get(unit.id) < day.dayNumber && !revisited.has(unit.id) && canRevisit(unit))
+              .map((unit) => ({ ...unit, id: `${unit.id} (revisita)`, originalId: unit.id, isRevisit: true, revisitReason: revisitReasonFor(unit), priority: PRIORITY.FILLER }))
+          : []
+  
+        let best = null
+        for (const unit of [...fresh, ...revisits]) {
+          // En tranquilo el nivel 3 no entra como relleno: 5-7 paradas gastadas en tercera fila es lo
+          // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
+          if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level)) continue
+          if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligibleIgnoringCap(day, unit)) continue
+          // Fuera de su tope de categoría solo entra si va de camino, sin desvío — y entonces no cuenta.
+          const overCap = !withinCategoryCap(day, unit)
+          const candidate = overCap ? { ...forDay(day, unit), capExempt: true } : forDay(day, unit)
+          // Con la tarde todavía vacía se admite un desvío corto; con la tarde ya llena, solo lo que
+          // cae de camino. Por minutos, no por número de paradas: con "a partir de 8 paradas, solo de
+          // camino", el día del Free Tour (una "parada" de 2h30) se cerraba a las 16:10.
+          const walkCap = overCap || !afternoonEmpty ? ON_THE_WAY_MINUTES : MAX_FILL_ADDED_WALK_MINUTES
+          const attempt = day.open.tryAdd(candidate, { maxAddedWalk: walkCap })
+          if (!attempt) continue
+          if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
+          if (!themeMayEnter(day, unit, attempt)) continue
+          const score =
+            (matchesTheme(unit) ? FILL_SCORE.theme : 0) +
+            (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +
+            (curatedIndexIn(day, unit) !== null ? FILL_SCORE.curatedForDay : 0) +
+            (unit.isRevisit ? FILL_SCORE.revisit : 0) -
+            attempt.addedCost * FILL_SCORE.perAddedMinute -
+            // El paseo añadido cuenta además de en el coste: a igualdad, lo que está más a mano.
+            attempt.addedWalk * FILL_SCORE.perAddedMinute
+          if (!best || score > best.score || (score === best.score && unit.id.localeCompare(best.unit.id, 'es') < 0)) best = { unit, attempt, score }
+        }
+        if (!best) continue
+        day.open.add(best.attempt)
+        if (best.unit.isRevisit) {
+          revisited.add(best.unit.originalId)
+          day.revisits++
+        } else {
+          placedDay.set(best.unit.id, day.dayNumber)
+        }
+        progress = true
       }
-      if (!best) continue
-      day.open.add(best.attempt)
-      if (best.unit.isRevisit) {
-        revisited.add(best.unit.originalId)
-        day.revisits++
-      } else {
-        placedDay.set(best.unit.id, day.dayNumber)
-      }
-      progress = true
     }
   }
+
+  /**
+   * Lo que quedó en un día que no es el de su contenedor o su vecino principal (el vecino entró
+   * antes que él, o el contenedor llegó después): se lleva a ese día; si allí no cabe, fuera.
+   */
+  function enforceRelations() {
+    // Mover un contenedor arrastra lo suyo: se repasa hasta que no cambie nada.
+    for (let changed = true; changed; ) {
+      changed = false
+      for (const day of cityDays) {
+        for (const unit of dayUnits(day)) {
+          const allowedDays = relationDays(unit)
+          if (!allowedDays || allowedDays.includes(day.dayNumber)) continue
+          day.open.remove(unit.id)
+          placedDay.delete(unit.id)
+          const target = cityDays.filter((other) => allowedDays.includes(other.dayNumber)).find((other) => placeOnDay(other, unit))
+          // El vecino que no cabe con su pareja se queda fuera.
+          if (target) droppedByRelation.delete(unit.id)
+          else {
+            placedDay.set(unit.id, null)
+            droppedByRelation.add(unit.id)
+          }
+          changed = true
+        }
+      }
+    }
+  }
+
+  fillRounds()
+  enforceRelations()
+  fillRounds()
 
   // Segundo repaso de la cuota con los días ya completos: en el paso 5 el día solo tenía sus
   // imprescindibles, y "no hay nada del tema cerca" era verdad entonces pero puede dejar de serlo
@@ -668,6 +736,47 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (reason) miss.reason = reason
     else quotaMisses.splice(quotaMisses.indexOf(miss), 1)
   }
+
+  // ── Paso 6b: la tarde sin zigzag ──────────────────────────────────────────────────────────
+  // Con la tarde ya llena, se prueba su orden entero (el que menos camina) y se quita el relleno que
+  // obliga a volver atrás. Lo quitado no vuelve a ese día; se rellena otra vez con lo que sí cae de
+  // camino, y así hasta que no quede nada que quitar.
+  const themeUnitsInDay = (day, theme) => dayUnits(day).filter((u) => u.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag)))
+  const isRemovableIn = (day) => (unit) =>
+    unit.priority >= PRIORITY.THEME &&
+    unit.curatedIndex == null &&
+    !unit.places.some((place) => place.passBy) &&
+    // El mínimo de experiencias no se baja: lo único del tema en el día se queda.
+    !selectedThemes.some((theme) => themeUnitsInDay(day, theme).length === 1 && themeUnitsInDay(day, theme)[0].id === unit.id)
+  for (let round = 0; round < 5; round++) {
+    let removedAny = false
+    for (const day of cityDays) {
+      for (const unit of day.open.pruneAfternoon(isRemovableIn(day), MAX_BACKTRACK_WALK_MINUTES)) {
+        removedAny = true
+        const id = unit.originalId ?? unit.id
+        bannedOnDay.add(`${day.dayNumber}|${unit.id}`)
+        if (unit.isRevisit) {
+          revisited.delete(unit.originalId)
+          day.revisits--
+        } else placedDay.delete(id)
+      }
+    }
+    if (!removedAny) break
+    fillRounds()
+    enforceRelations()
+  }
+
+  // La cuota, otra vez con la tarde ya definitiva: quitar relleno o mover vecinos puede haber dejado
+  // un día sin su tema, y el mínimo de experiencias no se baja.
+  for (const theme of selectedThemes) {
+    for (const day of cityDays) {
+      const reason = fulfilQuota(day, theme)
+      const existing = quotaMisses.findIndex((miss) => miss.dayNumber === day.dayNumber && miss.theme === theme)
+      if (existing >= 0) quotaMisses.splice(existing, 1)
+      if (reason) quotaMisses.push({ dayNumber: day.dayNumber, theme, reason })
+    }
+  }
+  quotaMisses.sort((a, b) => a.dayNumber - b.dayNumber || selectedThemes.indexOf(a.theme) - selectedThemes.indexOf(b.theme))
 
   // ── Paso 7: de paso hacia la cena ─────────────────────────────────────────────────────────
   // Si después de todo lo anterior la tarde sigue con 45 min o más libres, se repasa POR FUERA un

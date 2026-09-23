@@ -18,6 +18,8 @@
  *     `early_visit_ok` acabando antes de que empiece el tour
  *   - la cena de cada día cae en un barrio de `dinner_zones`; solo repite barrio si al elegirlo
  *     estaba a 15 min o menos andando
+ *   - lo que está dentro de otro (contained_in) y los vecinos (neighbor_of) van el día de su pareja y
+ *     seguidos
  *   - "de paso": solo nivel 1 con `pass_by`, visto un día anterior, nunca la nocturna de esa noche,
  *     siempre al final del día y con su mensaje
  */
@@ -160,6 +162,27 @@ for (const pace of ['nonstop', 'tranquilo']) {
                 const unit = day.units.find((u) => u.id === visit.unitId)
                 if (!/^Ya visitaste .+ el Día \d+\. De camino a cenar .+ pasas por delante: dedícale \d+ minutos y hazte fotos nuevas con la luz de la tarde\.$/.test(unit?.revisitReason ?? '')) fail(`${tag} d${day.dayNumber}: mensaje de paso mal formado: ${unit?.revisitReason}`)
               })
+            }
+
+            // Dentro de otro (contained_in) y vecinos (neighbor_of): solo el día de su pareja, y seguidos.
+            for (const place of D.places.filter((p) => p.contained_in || p.neighbor_of)) {
+              if (!seen.has(place.name)) continue
+              for (const partner of [place.contained_in, ...(place.neighbor_of ?? [])].filter(Boolean)) {
+                if (!seen.has(partner)) continue
+                const days = [...new Set([...(place.neighbor_of ?? [])].map((n) => seen.get(n)).filter(Boolean))]
+                const ok = place.contained_in === partner ? seen.get(partner) === seen.get(place.name) : days.includes(seen.get(place.name))
+                if (!ok) fail(`${tag}: ${place.name} el día ${seen.get(place.name)} y ${partner} el ${seen.get(partner)}`)
+                const day = city.find((d) => d.dayNumber === seen.get(place.name))
+                const order = day.schedule.visits.filter((v) => !v.place.passBy).map((v) => v.place)
+                const i = order.findIndex((p) => p.name === place.name)
+                const j = order.findIndex((p) => p.name === partner)
+                if (i < 0 || j < 0) continue
+                // Entre los dos solo puede haber lo que está dentro del primero.
+                const between = order.slice(Math.min(i, j) + 1, Math.max(i, j))
+                const first = order[Math.min(i, j)].name
+                if (place.contained_in === partner && i < j) fail(`${tag}: ${place.name} antes que ${partner}, que lo contiene`)
+                if (between.some((p) => p.contained_in !== first && p.contained_in !== partner)) fail(`${tag}: ${place.name} y ${partner} no van seguidos (${between.map((p) => p.name).join(', ')} en medio)`)
+              }
             }
 
             if (contentDays >= 3) {

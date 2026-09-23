@@ -56,9 +56,12 @@ function check(tag, input, result) {
 
   for (const v of result.visits) {
     const name = v.place.name
-    if (!v.chained && v.start % 30 !== 0) fail(`${tag}: ${name} a las ${hhmm(v.start)}, ni redonda ni encadenada`)
+    // Por la mañana :00/:30; después de comer, cuartos de hora.
+    const lunch = result.meals.find((m) => m.type === 'lunch')
+    const slot = input.pendingMeals?.lunch === false || (lunch && v.start >= lunch.end) ? 15 : 30
+    if (!v.chained && v.start % slot !== 0) fail(`${tag}: ${name} a las ${hhmm(v.start)}, ni redonda ni encadenada`)
     if (v.chained && v.start % 5 !== 0) fail(`${tag}: ${name} encadenada a las ${hhmm(v.start)}, no redondeada a 5 min`)
-    if (v.chained && v.walkMinutes > mode.chainMaxWalkMinutes && !groupOf.get(v.unitId).places.some((p, i) => i > 0 && p.name === name)) {
+    if (v.chained && v.walkMinutes > mode.chainMaxWalkMinutes && !v.place.contained_in && !groupOf.get(v.unitId).places.some((p, i) => i > 0 && p.name === name)) {
       fail(`${tag}: ${name} encadenada con ${v.walkMinutes} min a pie sin ser del mismo grupo`)
     }
     const schedule = effectiveSchedule(v.place)

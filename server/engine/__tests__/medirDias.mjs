@@ -26,7 +26,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
-import { effectiveSchedule } from '../../../shared/routeEngine/openingHours.js'
+import { earliestVisitStart, effectiveSchedule } from '../../../shared/routeEngine/openingHours.js'
+import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
 import { buildDayBlockV3 } from '../index.js'
 import { preplanTrip } from '../preplan.js'
 import { interestTagsFor, TAG_INTEREST_MAP } from '../experienceTags.js'
@@ -112,6 +113,83 @@ function outOfHours(stop) {
   return inside ? null : `${stop.suggested_time}-${m2t(end)} fuera de "${schedule}"`
 }
 
+/** Piezas de tarde hasta las que se prueban todos los órdenes para el mínimo (8! = 40.320). */
+const MAX_PIEZAS_TARDE = 8
+
+/**
+ * Km de la tarde: los que se andan y el MÍNIMO posible con las mismas paradas (decisión del
+ * 2026-09-23: "km andados frente al mínimo posible"). Mismo punto de salida (la última parada antes
+ * de comer), misma llegada (el barrio de la cena, si el motor lo dice) y respetando horarios y
+ * grupos del JSON; lo que va dentro de otro (`contained_in`) sigue a su contenedor y lo "de paso",
+ * al final. El orden curado NO se respeta aquí: el mínimo es el de verdad, así que lo que quede de
+ * diferencia en v3 es lo que cuesta mantener el orden escrito a mano.
+ * @returns {{real: number, min: number} | null}  metros; null si la tarde no se puede medir
+ */
+function afternoonMeters(dayStops, lunchAt, pace, dinnerStop) {
+  if (lunchAt === null) return null
+  const before = dayStops.filter((stop) => t2m(stop.suggested_time) < lunchAt)
+  const after = dayStops.filter((stop) => t2m(stop.suggested_time) >= lunchAt)
+  if (after.length < 2) return null
+  const start = before.length ? coordsOfStop(before[before.length - 1]) : null
+  const end = dinnerStop?.coordinates ?? null
+
+  // Piezas: un grupo del JSON o un contenedor con lo suyo van juntos; lo de paso, fijo al final.
+  const pieces = []
+  const tail = []
+  for (const stop of after) {
+    if (stop.is_pass_by) {
+      tail.push(stop)
+      continue
+    }
+    const place = placeByName.get(stop.name)
+    const last = pieces[pieces.length - 1]
+    const lastPlace = last ? placeByName.get(last[last.length - 1].name) : null
+    const sameGroup = last && place?.group && lastPlace?.group === place.group
+    const inside = last && place?.contained_in && last.some((s) => s.name === place.contained_in || placeByName.get(s.name)?.contained_in === place.contained_in)
+    if (sameGroup || inside) last.push(stop)
+    else pieces.push([stop])
+  }
+  if (pieces.length > MAX_PIEZAS_TARDE) return null
+
+  const firstStart = t2m(after[0].suggested_time)
+  const measure = (order, checkHours) => {
+    let cursor = firstStart
+    let position = start
+    let meters = 0
+    for (const stop of order.flat().concat(tail)) {
+      const coords = coordsOfStop(stop)
+      const leg = position ? travel.leg(position, coords) : { minutes: 0, meters: 0 }
+      meters += leg.meters
+      const place = placeByName.get(stop.name)
+      let at = roundUpToQuarter(cursor + leg.minutes)
+      if (checkHours && place && !stop.is_pass_by) {
+        at = earliestVisitStart(effectiveSchedule(place), at, stop.duration_minutes, roundUpToQuarter)
+        if (at === null) return null
+      }
+      cursor = at + stop.duration_minutes
+      position = coords
+    }
+    if (end) {
+      const leg = travel.leg(position, end)
+      meters += leg.meters
+      if (checkHours && dinnerStop.at !== null && cursor + leg.minutes > dinnerStop.at) return null
+    }
+    return meters
+  }
+  const real = measure(pieces, false)
+  let min = real
+  const permute = (rest, order) => {
+    if (rest.length === 0) {
+      const meters = measure(order, true)
+      if (meters !== null && meters < min) min = meters
+      return
+    }
+    for (let i = 0; i < rest.length; i++) permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...order, rest[i]])
+  }
+  permute(pieces, [])
+  return { real, min }
+}
+
 // ── Construcción de un viaje con un motor ───────────────────────────────────────────────────
 
 async function buildTrip(motor, contentDays, pace, exps) {
@@ -168,6 +246,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
   const dropped = plannedNames ? [...plannedNames].filter((name) => !builtNames.has(name)) : []
 
   const freeTour = dayStops.find((stop) => stop.is_free_tour)
+  const dinnerCoords = day.dinner_zone ? D.meal_zones?.[day.dinner_zone]?.cena?.coordinates ?? null : null
+  const tarde = afternoonMeters(dayStops, lunchAt, pace, dinnerCoords ? { coordinates: dinnerCoords, at: dinnerAt } : null)
 
   return {
     kind: 'ciudad',
@@ -185,6 +265,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
     dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= REF.dinnerWindow[1],
     dayEndWithDinner: dinnerAt !== null ? dinnerAt + meal : lastEnd,
     walkKm: walkMeters / 1000,
+    afternoonKm: tarde ? tarde.real / 1000 : null,
+    afternoonMinKm: tarde ? tarde.min / 1000 : null,
     outOfHours: dayStops.map((stop) => ({ name: stop.name, why: outOfHours(stop) })).filter((item) => item.why),
     dropped,
     themeStops: dayStops.filter((stop) => (placeByName.get(stop.name)?.tags ?? []).some((tag) => interestTags.has(tag))).length,
@@ -305,6 +387,14 @@ function summarize(rows) {
     comidaEnVentana: pct(cityDays.map((d) => d.lunchInWindow).filter((v) => v !== null)),
     cenaEnVentana: pct(cityDays.map((d) => d.dinnerInWindow).filter((v) => v !== null)),
     kmAPie: avg(cityDays.map((d) => d.walkKm)),
+    // Tarde: cuánto de más se anda frente al mínimo con las mismas paradas (en % de ese mínimo).
+    kmTardeDeMas: (() => {
+      const measured = cityDays.filter((d) => d.afternoonKm !== null)
+      const real = measured.reduce((sum, d) => sum + d.afternoonKm, 0)
+      const min = measured.reduce((sum, d) => sum + d.afternoonMinKm, 0)
+      return min > 0 ? ((real - min) / min) * 100 : null
+    })(),
+    tardesConZigzag: cityDays.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.4).length,
     fueraDeHorario: cityDays.reduce((sum, d) => sum + d.outOfHours.length, 0),
     perdidasPorElConstructor: cityDays.reduce((sum, d) => sum + d.dropped.length, 0),
     viajesSinAlgunNivel1: rows.filter((row) => row.missingLevel1.length > 0).length,
@@ -316,14 +406,14 @@ function summarize(rows) {
 function printSummaryTable(motor) {
   const rows = results.filter((r) => r.motor === motor)
   console.log(`\n=== Motor ${motor} — ${rows.length} viajes ===`)
-  console.log('ritmo      días  paradas  muerto  hueco>tol  pre-comer  post-comer  pre-cena  fin      km   fuera  perdidas  sinL1  grupos')
+  console.log('ritmo      días  paradas  muerto  hueco>tol  pre-comer  post-comer  pre-cena  fin      km  tarde+%  zigzag  fuera  perdidas  sinL1  grupos')
   for (const pace of ['nonstop', 'tranquilo']) {
     for (let days = 1; days <= 7; days++) {
       const group = rows.filter((r) => r.pace === pace && r.days.length === days)
       if (group.length === 0) continue
       const s = summarize(group)
       console.log(
-        `${pace.padEnd(10)} ${String(days).padStart(4)}  ${fmt(s.paradasMedia, 1).padStart(7)}  ${fmt(s.muertoEntreParadas).padStart(6)}  ${String(s.huecosSobreTolerancia).padStart(9)}  ${fmt(s.esperaAntesDeComer).padStart(9)}  ${fmt(s.muertoTrasComer).padStart(10)}  ${fmt(s.muertoAntesDeCenar).padStart(8)}  ${(s.finUltimaParada ? m2t(s.finUltimaParada) : '—').padStart(5)}  ${fmt(s.kmAPie, 1).padStart(5)}  ${String(s.fueraDeHorario).padStart(5)}  ${String(s.perdidasPorElConstructor).padStart(8)}  ${String(s.viajesSinAlgunNivel1).padStart(5)}  ${String(s.gruposRotos).padStart(6)}`,
+        `${pace.padEnd(10)} ${String(days).padStart(4)}  ${fmt(s.paradasMedia, 1).padStart(7)}  ${fmt(s.muertoEntreParadas).padStart(6)}  ${String(s.huecosSobreTolerancia).padStart(9)}  ${fmt(s.esperaAntesDeComer).padStart(9)}  ${fmt(s.muertoTrasComer).padStart(10)}  ${fmt(s.muertoAntesDeCenar).padStart(8)}  ${(s.finUltimaParada ? m2t(s.finUltimaParada) : '—').padStart(5)}  ${fmt(s.kmAPie, 1).padStart(5)}  ${fmt(s.kmTardeDeMas, 1).padStart(7)}  ${String(s.tardesConZigzag).padStart(6)}  ${String(s.fueraDeHorario).padStart(5)}  ${String(s.perdidasPorElConstructor).padStart(8)}  ${String(s.viajesSinAlgunNivel1).padStart(5)}  ${String(s.gruposRotos).padStart(6)}`,
       )
     }
   }
@@ -340,7 +430,7 @@ function printCase() {
       for (const line of day.timeline) console.log(`   ${line}`)
       console.log(`   comida ${day.meals.lunch ?? '—'} · cena ${day.meals.dinner ?? '—'}`)
       for (const gap of day.gaps.filter((g) => g.idle > 0)) console.log(`   · ${gap.idle} min parado entre ${gap.from} → ${gap.to} (${gap.walk} min a pie)`)
-      console.log(`   muerto entre paradas ${day.idleBetweenStops} min · antes de comer ${day.waitBeforeLunch ?? '—'} · tras comer ${day.idleAfterLunch ?? '—'} · antes de cenar ${day.deadBeforeDinner ?? '—'} · ${day.walkKm.toFixed(1)} km`)
+      console.log(`   muerto entre paradas ${day.idleBetweenStops} min · antes de comer ${day.waitBeforeLunch ?? '—'} · tras comer ${day.idleAfterLunch ?? '—'} · antes de cenar ${day.deadBeforeDinner ?? '—'} · ${day.walkKm.toFixed(1)} km${day.afternoonKm !== null ? ` (tarde ${day.afternoonKm.toFixed(2)} km, mínimo ${day.afternoonMinKm.toFixed(2)})` : ''}`)
       if (day.dropped.length) console.log(`   NO PROGRAMADAS: ${day.dropped.map((name) => { const u = day.unscheduled?.find((item) => item.places.includes(name)); return u ? `${name} (${u.reason})` : name }).join(', ')}`)
       if (day.outOfHours.length) console.log(`   FUERA DE HORARIO: ${day.outOfHours.map((o) => `${o.name} (${o.why})`).join('; ')}`)
     }

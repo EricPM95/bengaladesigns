@@ -1400,7 +1400,8 @@
       "search_en_keywords": [
         "fori imperiali",
         "imperial forum"
-      ]
+      ],
+      "contained_in": "Foro Romano y Palatino"
     },
     {
       "name": "Campo de' Fiori",
@@ -1553,7 +1554,8 @@
         "dome",
         "cupola",
         "st peter"
-      ]
+      ],
+      "contained_in": "Basílica de San Pedro"
     },
     {
       "name": "Iglesia del Gesù",
@@ -1698,6 +1700,9 @@
       "search_en": "Santa Maria sopra Minerva Rome",
       "search_en_keywords": [
         "minerva"
+      ],
+      "neighbor_of": [
+        "Panteón"
       ]
     },
     {
@@ -1759,7 +1764,8 @@
         "elephant",
         "elefante",
         "obelisk"
-      ]
+      ],
+      "contained_in": "Iglesia de Santa Maria sopra Minerva"
     },
     {
       "name": "Fuente de las Tortugas",
@@ -1786,7 +1792,8 @@
       "search_en_keywords": [
         "tartarughe",
         "turtle"
-      ]
+      ],
+      "contained_in": "Barrio Judío"
     },
     {
       "name": "Fuente del Tritón",
@@ -1866,6 +1873,10 @@
       "search_en": "Via Condotti Rome",
       "search_en_keywords": [
         "condotti"
+      ],
+      "neighbor_of": [
+        "Plaza de España",
+        "Via del Corso"
       ]
     },
     {
@@ -1892,6 +1903,9 @@
       "search_en": "Piazza Farnese Rome",
       "search_en_keywords": [
         "farnese"
+      ],
+      "neighbor_of": [
+        "Campo de' Fiori"
       ]
     },
     {
@@ -1924,6 +1938,9 @@
         "capitoline"
       ],
       "approach_to": [
+        "Museos Capitolinos"
+      ],
+      "neighbor_of": [
         "Museos Capitolinos"
       ]
     },
@@ -2198,7 +2215,8 @@
       "search_en_keywords": [
         "marcellus",
         "marcello"
-      ]
+      ],
+      "contained_in": "Barrio Judío"
     },
     {
       "name": "Ojo de la Cerradura del Aventino",
@@ -2401,6 +2419,9 @@
       "search_en_keywords": [
         "pincio",
         "pincian"
+      ],
+      "neighbor_of": [
+        "Piazza del Popolo"
       ]
     },
     {

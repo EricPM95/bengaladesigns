@@ -24,6 +24,16 @@ export function roundUpToSlot(minutes) {
 }
 
 /**
+ * Al siguiente cuarto de hora, hacia arriba: las paradas de TARDE (decisión del 2026-09-23). Con
+ * :00/:30 la tarde pagaba hasta 29 minutos de espera por parada, y el orden que menos camina salía
+ * perdiendo frente a un zigzag que por casualidad llegaba "en punto".
+ */
+export function roundUpToQuarter(minutes) {
+  const remainder = ((minutes % 15) + 15) % 15
+  return remainder === 0 ? minutes : minutes + (15 - remainder)
+}
+
+/**
  * Al siguiente múltiplo de 5 minutos, hacia arriba. Para las paradas ENCADENADAS: no esperan al
  * :00/:30, pero tampoco salen a las 15:07 — un plan dice "15:10", no la hora de un tren.
  */

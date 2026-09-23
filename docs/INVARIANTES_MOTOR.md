@@ -86,8 +86,24 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     entras. No cuenta para "una visita larga por día": puede convivir con los Vaticanos o el Coliseo
     el mismo día.
 
-16. **`contained_in` (2 lugares)**: un lugar que está DENTRO de otro no se programa como parada
-    suelta a otra hora del día.
+16. **`contained_in` y `neighbor_of`: sitios dentro de otro o pegados a otro** (decisión del
+    2026-09-23). Se deciden a mano, par a par, sobre la lista de lugares a menos de 300 m.
+    - `contained_in` (lo de dentro → su contenedor: una fuente en su plaza, un monumento en su
+      barrio, la cúpula en su basílica). Si el contenedor está en el viaje, lo de dentro solo sale
+      SU día, justo detrás de él y como una sola visita (encadenado aunque haya 4-5 min). Si el
+      contenedor no está en el viaje, sale con normalidad.
+    - `neighbor_of` (secundario → principal; el secundario es el de menor nivel, y a igualdad, el
+      que se visita desde el otro). Si los dos están en el viaje, van el mismo día y seguidos (lo
+      de dentro de cada uno va con él). Si el secundario no cabe ese día, se queda fuera: no se va
+      a otro día. Un secundario con dos principales va con el que esté en su día, o entre los dos.
+      Excepción de dirección: si el "principal" es un museo de pago y la plaza es su acceso
+      (`approach_to`), manda el museo — la plaza va al día del museo, delante; sin el museo en el
+      viaje, la plaza va en su día normal.
+    - Un grupo del JSON ya es inseparable: no hace falta marcar sus miembros como vecinos.
+    - Programador: `relationBroken` (scheduleDay.js). Repartidor: `relationDays` +
+      `enforceRelations` (planTrip.js). Lo vigila verifyPlanTrip.
+    *Por qué: el Elefantino salía el día 3 con la Minerva vista el día 1, y Campo de' Fiori y Plaza
+    Farnese (a 108 m) se repartían en dos días distintos en 21 de 96 viajes.*
 
 17. **`related_to` (10 lugares)**: pareja natural (Castillo ↔ Puente Sant'Angelo, Basílica ↔ Cúpula,
     Mercados ↔ Columna de Trajano...). Se usa para sustituir una elección del pool por su pareja
@@ -163,6 +179,18 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     decidiendo, un día de ciudad con excursión de media jornada llegaba pintado como día de
     excursión entero.*
 
+29. **La tarde, sin zigzag** (decisión del 2026-09-23). Con la tarde ya llena, se prueban TODOS
+    los órdenes de lo que va después de comer (hasta 8 piezas) con salida fija (donde se come) y
+    llegada fija (el barrio de la cena), y se queda el de menos metros que respete horarios y
+    reglas. Lo curado y el recorrido de tarde (`afternoon_flow`) no se mueven entre sí; solo se
+    intercala lo demás. Si el mejor orden CON un relleno camina más de 5 min que el mejor orden SIN
+    él, el relleno se quita (y no vuelve a ese día): un relleno nunca justifica un zigzag. Lo único
+    del tema elegido en el día no se quita: el mínimo de experiencias no se baja. Métrica: tarde+%
+    y zigzag en medirDias (km andados frente al mínimo con las mismas paradas).
+    *Por qué: Castillo → Tortugas → Minerva → Elefantino → Trastevere bajaba, subía y volvía a bajar
+    (6,0 km frente a 5,2); medido sobre 96 viajes, las tardes andaban un 5,8% de más y 35 hacían
+    más de 400 m de más.*
+
 ---
 
 ## F. Lo que SÍ se tira (y hay que reemplazar, no solo borrar)
@@ -175,7 +203,9 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 - **`best_time` como restricción**: solo lo llevan 3 lugares (Coliseo, Fontana, Vaticanos) y ningún
   mirador. Pasa a bonus de desempate.
 - **El redondeo al cuarto más cercano** (`:15`/`:45`, hoy el 38% de las horas): pasa a :00/:30 hacia
-  arriba, siempre.
+  arriba por la MAÑANA; por la TARDE (después de comer), al cuarto de hora siguiente, hacia arriba
+  (decisión del 2026-09-23: con :00/:30 cada parada de tarde podía esperar hasta 29 minutos y el
+  orden que menos camina perdía frente a un zigzag que llegaba "en punto"). Las encadenadas, a 5 min.
 - **Los parches de reparto de relleno** (tope de tarde, fase antihuérfanos): se van con el motor
   viejo. Lo que NO se va es el problema que resolvían — que un día se quede sin contenido mientras
   otro se queda con el doble.
