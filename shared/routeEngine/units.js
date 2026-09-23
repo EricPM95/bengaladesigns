@@ -136,7 +136,12 @@ export function buildUnits(destData, hasFreeTour = false) {
 
   const units = []
   for (const [group, members] of byGroup) {
-    members.sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0) || a.name.localeCompare(b.name, 'es'))
+    // El orden de visita lo manda `groups.<id>.order` del JSON; el `group_order` de cada lugar es la
+    // reserva. Eran dos fuentes para el mismo dato y se separaron: el grupo decía Arco → Coliseo →
+    // Foro y los lugares Coliseo → Foro → Arco, que es lo que salía en la ruta.
+    const declared = destData?.groups?.[group]?.order ?? []
+    const rank = (place) => (declared.includes(place.name) ? declared.indexOf(place.name) : declared.length + (place.group_order ?? 0))
+    members.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'es'))
     units.push(unitFromPlaces(group, members))
   }
   for (const place of singles) units.push(unitFromPlaces(place.name, [place]))

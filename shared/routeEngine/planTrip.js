@@ -18,6 +18,14 @@
  *   5. La cuota de experiencias: al menos una cosa del tema por día, si hay algo cerca.
  *   6. Relleno hasta el objetivo de paradas del ritmo, repartido por turnos entre los días.
  *
+ * Y dos cosas del paso 4 (la tarde hacia la cena):
+ *   - El Free Tour se coloca el primero y se lleva lo que recorre (`default_free_tour.covers`): esos
+ *     lugares no vuelven a salir sueltos ese día —el Día 1 pasaba dos veces por los mismos sitios—,
+ *     salvo los de `early_visit_ok` antes del tour (Trevi a las 08:00, vacía, es otra experiencia).
+ *   - Cada día elige dónde se cena: el barrio bueno para cenar (`destination_config.dinner_zones`)
+ *     más cercano a donde acaba su tarde, sin repetir barrio de una noche a otra mientras queden. El
+ *     relleno llena entonces la tarde hacia allí, y el programador cuenta el paseo hasta la cena.
+ *
  * "Cerca" se mide en minutos REALES andando desde las paradas que el día ya tiene (matriz de
  * tiempos), no por centros de zona: con centros, Villa Farnesina (Trastevere) contaba como vecina
  * del Centro Histórico y acababa a 27 minutos de la Fontana de Trevi.
@@ -51,6 +59,22 @@ const MAX_FILL_ADDED_MINUTES = 30
 const CHEAP_FILL_ADDED_MINUTES = 10
 
 /**
+ * Tope de seguridad de paradas por encima del máximo del ritmo. La tarde se llena por MINUTOS, no
+ * por número de paradas (decisión de la ronda del relleno por presupuesto de tiempo): diez paradas de
+ * veinte minutos acababan a las 17:30. El máximo del ritmo deja de ser un techo mientras quede más
+ * tiempo libre antes de cenar que la tolerancia; esto solo evita un día de quince plazas.
+ */
+const EXTRA_STOPS_WHILE_AFTERNOON_EMPTY = 2
+
+/**
+ * Paseo que el relleno puede AÑADIR al día. "Hacia la cena" es de camino, no alrededor: con el
+ * barrio de la cena contando como cercano, la tarde del Vaticano bajaba al Aventino y volvía al
+ * Castillo, y la del centro subía a la Galería Borghese y bajaba otra vez, porque llenar la tarde
+ * compensaba cualquier desvío.
+ */
+const MAX_FILL_ADDED_WALK_MINUTES = 15
+
+/**
  * Los lugares de una unidad, listos para el programador: con la hora fija del Free Tour y la marca
  * de par inseparable leída de `groups.<id>.inseparable` del JSON del destino. Se marca en el dato,
  * no se deduce por distancia: Plaza de San Pedro y la Basílica son el mismo sitio aunque las
@@ -59,11 +83,15 @@ const CHEAP_FILL_ADDED_MINUTES = 10
 export function placesForScheduler(unit, destData, freeTourTime) {
   const pairs = destData.groups?.[unit.id]?.inseparable ?? []
   const joined = (a, b) => pairs.some((pair) => pair.includes(a) && pair.includes(b))
+  // El Free Tour acaba en el último sitio de su recorrido, no en el punto de encuentro: lo siguiente
+  // del día se mide desde allí.
+  const tourEnd = destData.places?.find((p) => p.name === (destData.default_free_tour?.covers ?? []).at(-1))?.coordinates ?? null
   return unit.places.map((place, index) => {
     const next = unit.places[index + 1]
     return {
       ...place,
       ...(place.isFreeTour && freeTourTime ? { fixed_start: freeTourTime } : {}),
+      ...(place.isFreeTour && tourEnd ? { end_coordinates: tourEnd } : {}),
       ...(next && joined(place.name, next.name) ? { inseparableWithNext: true } : {}),
     }
   })
@@ -141,6 +169,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     cityDays.push({
       ...day,
       curatedNames,
+      curatedMorning: day.curated?.morning?.places ?? [],
+      dinnerZone: null,
+      dinnerCoords: null,
       seedCoords: Array.isArray(seedCenter) ? seedCenter : null,
       revisits: 0,
       open: openDay({
@@ -155,6 +186,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   const placedDay = new Map() // unit.id -> dayNumber
   const revisited = new Set()
+  const unplacedPool = []
+  const unplacedEssentials = []
+  // Días que se quedan sin su tema, y por qué. Nunca en silencio (ver paso 5).
+  const quotaMisses = []
 
   // ── Utilidades ─────────────────────────────────────────────────────────────────────────────
   const dayUnits = (day) => day.open.units()
@@ -164,10 +199,26 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     return index.length > 0 ? Math.min(...index) : null
   }
 
-  /** Minutos andando desde lo más cercano que el día ya tiene (o su zona semilla si está vacío). */
+  /**
+   * La unidad tal como va en ESTE día: su posición en el curado del día y sus preferencias de hora
+   * (lo curado de mañana, antes de comer; lo de "primera hora", cuanto antes).
+   */
+  const forDay = (day, unit) => ({
+    ...unit,
+    curatedIndex: curatedIndexIn(day, unit),
+    preferMorning: unit.places.some((place) => day.curatedMorning.includes(place.name)),
+    preferEarly: unit.places.some((place) => /primera hora/i.test(place.best_time ?? '')),
+  })
+
+  /**
+   * Minutos andando desde lo más cercano que el día ya tiene (o su zona semilla si está vacío). El
+   * sitio de la cena cuenta como algo que el día ya tiene: lo que queda de camino hacia la cena está
+   * "cerca" aunque el día todavía no haya llegado hasta allí.
+   */
   function walkFromDay(day, unit) {
     const anchors = dayUnits(day).flatMap((u) => u.places.map((p) => p.coordinates))
     if (anchors.length === 0 && day.seedCoords) anchors.push(day.seedCoords)
+    if (day.dinnerCoords) anchors.push(day.dinnerCoords)
     if (anchors.length === 0) return 0
     let best = Infinity
     for (const anchor of anchors) {
@@ -189,11 +240,15 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     return true
   }
 
-  /** Mete la unidad en el día si el programador dice que cabe (con plan B si es imprescindible). */
-  function placeOnDay(day, unit) {
+  /**
+   * Mete la unidad en el día si el programador dice que cabe. Un imprescindible tiene plan B (el día
+   * pasa al horario normal), salvo que se pida sin él: una visita OPCIONAL de un imprescindible —Trevi
+   * antes del Free Tour, que el tour ya enseña— no justifica madrugar.
+   */
+  function placeOnDay(day, unit, { allowFallback = true } = {}) {
     if (!eligible(day, unit)) return false
-    const withIndex = { ...unit, curatedIndex: curatedIndexIn(day, unit) }
-    if (day.open.add(withIndex) || (unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
+    const withIndex = forDay(day, unit)
+    if (day.open.add(withIndex) || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
       placedDay.set(unit.id, day.dayNumber)
       return true
     }
@@ -212,10 +267,34 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       .map((item) => item.day)
   }
 
-  const unplacedPool = []
-  const unplacedEssentials = []
-  // Días que se quedan sin su tema, y por qué. Nunca en silencio (ver paso 5).
-  const quotaMisses = []
+
+  // ── Paso 1b: el Free Tour, y lo que su recorrido ya enseña ────────────────────────────────
+  const tour = destData.default_free_tour ?? null
+  const tourUnit = units.find((unit) => unit.isFreeTour)
+  const coveredByFreeTour = []
+  if (tourUnit) {
+    // Su día es el del reparto curado; sin curado, el primero donde quepa.
+    const curatedDay = cityDays.find((day) => curatedIndexIn(day, tourUnit) !== null)
+    const tourDay = [curatedDay, ...cityDays.filter((day) => day !== curatedDay)].filter(Boolean).find((day) => placeOnDay(day, tourUnit))
+    if (!tourDay) {
+      unplacedPool.push({ unitId: tourUnit.id, name: tourUnit.places[0].name, reason: 'no_room', closedOn: [] })
+    } else {
+      const covers = tour.covers ?? []
+      const earlyOk = tour.early_visit_ok ?? []
+      for (const unit of units) {
+        if (unit.isFreeTour || placedDay.has(unit.id) || !unit.places.every((place) => covers.includes(place.name))) continue
+        // Lo que tiene sentido ver aparte ANTES del tour (Trevi a las 08:00, sin gente) se intenta
+        // ese mismo día, acabando antes de que empiece. Si no cabe, el tour ya lo enseña.
+        if (unit.places.every((place) => earlyOk.includes(place.name))) {
+          const early = { ...unit, places: unit.places.map((place) => ({ ...place, latest_end: tour.default_time })) }
+          if (placeOnDay(tourDay, early, { allowFallback: false })) continue
+        }
+        // Visto con el tour: cuenta como visitado y no se repite suelto.
+        placedDay.set(unit.id, tourDay.dayNumber)
+        coveredByFreeTour.push({ unitId: unit.id, names: unit.places.map((place) => place.name), dayNumber: tourDay.dayNumber })
+      }
+    }
+  }
 
   // ── Paso 2: imprescindibles fijados por el reparto curado ─────────────────────────────────
   for (const day of cityDays) {
@@ -256,6 +335,45 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         placedDay.set(victim.id, day.dayNumber)
       }
     }
+
+    // Viaje de UN día: no hay otro día al que mover nada, y ahí manda el pool (decisión firme del
+    // Prompt 9, Parte 3). Se van quitando nivel 1 —antes imprescindibles que joyas— hasta que lo
+    // elegido quepa; lo que salga va a "No te dio tiempo".
+    if (!placed && cityDays.length === 1 && eligible(cityDays[0], unit)) {
+      const day = cityDays[0]
+      const before = day.open.snapshot()
+      const removed = []
+      const victims = dayUnits(day)
+        .filter((u) => u.priority > PRIORITY.POOL && u.priority <= PRIORITY.ESSENTIAL)
+        .sort((a, b) => b.priority - a.priority || b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))
+      for (const victim of victims) {
+        day.open.remove(victim.id)
+        placedDay.delete(victim.id)
+        removed.push(victim)
+        if (placeOnDay(day, unit)) {
+          placed = true
+          break
+        }
+      }
+      if (placed) {
+        // Lo quitado intenta volver al hueco que quede; lo que no, fuera con su motivo.
+        for (const victim of removed) {
+          if (placeOnDay(day, victim, { allowFallback: !victim.places.some((place) => place.latest_end) })) continue
+          // Lo que iba antes del Free Tour (Trevi a las 08:00) y se queda sin su hueco lo sigue
+          // enseñando el tour: cuenta como visto, no como perdido — y no vuelve suelto a mediodía.
+          if (victim.places.some((place) => place.latest_end)) {
+            placedDay.set(victim.id, day.dayNumber)
+            coveredByFreeTour.push({ unitId: victim.id, names: victim.places.map((place) => place.name), dayNumber: day.dayNumber })
+          } else {
+            unplacedEssentials.push({ unitId: victim.id, name: victim.places[0].name, reason: 'displaced_by_pool' })
+            placedDay.set(victim.id, null) // fuera por decisión del viajero: el paso 4 no lo recoloca
+          }
+        }
+      } else {
+        day.open.restore(before)
+        for (const victim of removed) placedDay.set(victim.id, day.dayNumber)
+      }
+    }
     if (!placed) {
       const closedEveryDay = cityDays.every((day) => day.weekday && unit.closedOn.includes(day.weekday))
       unplacedPool.push({ unitId: unit.id, name: unit.places[0].name, reason: closedEveryDay ? 'closed_every_day' : unit.isLong ? 'no_room_long_visit' : 'no_room', closedOn: unit.closedOn })
@@ -269,6 +387,30 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (!daysByProximity(unit).some((day) => placeOnDay(day, unit))) {
       unplacedEssentials.push({ unitId: unit.id, name: unit.places[0].name, reason: 'no_room' })
     }
+  }
+
+  // ── Paso 4b: dónde se cena cada día — la tarde irá hacia allí ─────────────────────────────
+  // El barrio bueno para cenar más cercano a donde acaba la tarde, sin repetir barrio de una noche a
+  // otra mientras queden (cenar tres noches en Campo de' Fiori no es conocer Roma). Se elige ya, con
+  // lo gordo colocado y antes del relleno, para que el relleno llene la tarde EN ESA DIRECCIÓN.
+  const dinnerOptions = (destData.destination_config?.dinner_zones ?? [])
+    .map((zone) => ({ zone, coordinates: destData.meal_zones?.[zone]?.cena?.coordinates }))
+    .filter((option) => Array.isArray(option.coordinates))
+  let usedDinnerZones = new Set()
+  for (const day of cityDays) {
+    if (dinnerOptions.length === 0) break
+    if (usedDinnerZones.size >= dinnerOptions.length) usedDinnerZones = new Set()
+    const from = day.open.endCoordinates() ?? day.seedCoords
+    const chosen = dinnerOptions
+      .filter((option) => !usedDinnerZones.has(option.zone))
+      .map((option) => ({ ...option, walk: from ? (travel.leg(from, option.coordinates)?.minutes ?? Infinity) : 0 }))
+      .sort((a, b) => a.walk - b.walk || a.zone.localeCompare(b.zone, 'es'))
+      // Si con el paseo hasta allí el día deja de caber, el siguiente barrio.
+      .find((option) => day.open.setDinnerPoint(option.coordinates))
+    if (!chosen) continue
+    day.dinnerZone = chosen.zone
+    day.dinnerCoords = chosen.coordinates
+    usedDinnerZones.add(chosen.zone)
   }
 
   // ── Paso 5: cuota de experiencias — al menos una del tema por día, si hay algo cerca ─────
@@ -307,13 +449,17 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   while (progress) {
     progress = false
     for (const day of cityDays) {
-      if (stopCount(day) >= maxTargetOf(day)) continue
+      // Se sigue mientras falte el mínimo del ritmo, o mientras la tarde siga vacía antes de cenar.
+      const afternoonEmpty = (day.open.idleBeforeDinner() ?? 0) > mode.gapTolerance
+      const cap = maxTargetOf(day) + (afternoonEmpty ? EXTRA_STOPS_WHILE_AFTERNOON_EMPTY : 0)
+      if (stopCount(day) >= cap) continue
+      if (stopCount(day) >= minTargetOf(day) && !afternoonEmpty) continue
       const aboveMinimum = stopCount(day) >= minTargetOf(day)
       const fresh = units.filter((unit) => !placedDay.has(unit.id))
       // Revisitas: solo en días de repetición, de algo visto en un día ANTERIOR, una vez por viaje.
       const revisits = day.allowsRepetition && day.revisits < MAX_REVISITS_PER_DAY
         ? units
-            .filter((unit) => placedDay.has(unit.id) && placedDay.get(unit.id) < day.dayNumber && !revisited.has(unit.id) && canRevisit(unit))
+            .filter((unit) => placedDay.get(unit.id) != null && placedDay.get(unit.id) < day.dayNumber && !revisited.has(unit.id) && canRevisit(unit))
             .map((unit) => ({ ...unit, id: `${unit.id} (revisita)`, originalId: unit.id, isRevisit: true, revisitReason: revisitReasonFor(unit), priority: PRIORITY.FILLER }))
         : []
 
@@ -323,7 +469,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
         if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level)) continue
         if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligible(day, unit)) continue
-        const attempt = day.open.tryAdd({ ...unit, curatedIndex: curatedIndexIn(day, unit) })
+        const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: MAX_FILL_ADDED_WALK_MINUTES })
         if (!attempt) continue
         if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
         const score =
@@ -331,7 +477,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
           (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +
           (curatedIndexIn(day, unit) !== null ? FILL_SCORE.curatedForDay : 0) +
           (unit.isRevisit ? FILL_SCORE.revisit : 0) -
-          attempt.addedCost * FILL_SCORE.perAddedMinute
+          attempt.addedCost * FILL_SCORE.perAddedMinute -
+          // El paseo añadido cuenta además de en el coste: a igualdad, lo que está más a mano.
+          attempt.addedWalk * FILL_SCORE.perAddedMinute
         if (!best || score > best.score || (score === best.score && unit.id.localeCompare(best.unit.id, 'es') < 0)) best = { unit, attempt, score }
       }
       if (!best) continue
@@ -356,7 +504,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   // ── Resultado ─────────────────────────────────────────────────────────────────────────────
-  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish() }]))
+  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone }]))
   return {
     mode,
     days: skeleton.map((day) => ({ ...day, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
@@ -364,5 +512,6 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     unplacedPool,
     unplacedEssentials,
     quotaMisses,
+    coveredByFreeTour,
   }
 }

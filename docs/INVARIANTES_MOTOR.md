@@ -10,10 +10,13 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 
 ## A. Lo que nunca puede salir mal en pantalla
 
-1. **El Free Tour es siempre la PRIMERA parada de su día.**
+1. **El Free Tour empieza a SU hora (`default_free_tour.default_time`, Roma 10:00) y nada lo retrasa.**
    *Se probó sin red y Claude lo colocaba a media mañana, detrás de un museo que abría antes: un
-   free tour al que llegas tarde no existe.* Hoy: la regla en el prompt + `enforceFreeTourFirst`
-   como red de seguridad que reordena si aun así se cuela algo antes.
+   free tour al que llegas tarde no existe.* Motor v3 (decisión del 2026-09-23): en ritmo completo
+   puede ir antes una visita rápida que acabe antes del tour (Trevi a las 08:00, vacía, es otra
+   experiencia — `early_visit_ok`); en tranquilo el tour es la primera parada. Lo que el tour
+   recorre (`covers`) no vuelve a salir suelto ese día. Motores anteriores: la regla en el prompt +
+   `enforceFreeTourFirst` como red de seguridad.
 
 2. **Ninguna parada empieza antes de que el sitio abra.**
    *El Coliseo programado a las 07:30 (abre 08:30) y anunciado como "Acceso libre" — una entrada de
@@ -86,8 +89,11 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 16. **`contained_in` (2 lugares)**: un lugar que está DENTRO de otro no se programa como parada
     suelta a otra hora del día.
 
-17. **`related_to` (8 lugares)**: pareja natural (Castillo ↔ Puente Sant'Angelo). Se usa para
-    sustituir una elección del pool por su pareja cuando encaja mejor con los intereses.
+17. **`related_to` (10 lugares)**: pareja natural (Castillo ↔ Puente Sant'Angelo, Basílica ↔ Cúpula,
+    Mercados ↔ Columna de Trajano...). Se usa para sustituir una elección del pool por su pareja
+    cuando encaja mejor con los intereses, y en el motor v3 para que la pareja vaya SEGUIDA si cae
+    el mismo día (preferencia, no regla: a diferencia de un grupo, se puede separar). Castillo ↔
+    Puente se citaba aquí de ejemplo pero no estaba en el JSON hasta el 2026-09-23.
 
 18. **`search_aliases`**: la tabla de equivalencias que hace que un viaje guardado con nombres
     antiguos siga resolviendo. Si el motor nuevo cambia nombres, los alias se actualizan **en el

@@ -36,10 +36,13 @@ export function travelTimesFor(destinationKey) {
   return travelByDestination.get(destinationKey)
 }
 
-/** La zona donde acaba el día: la de su última visita. Ahí se cena y de ahí sale el paseo nocturno. */
+/**
+ * Dónde se cena ese día: el barrio que eligió el repartidor (la tarde va hacia allí). Si el destino
+ * no tiene barrios de cena, la zona de la última visita. De ahí sale también el paseo nocturno.
+ */
 export function dinnerZoneOf(tripDay) {
   const visits = tripDay.schedule?.visits ?? []
-  return visits[visits.length - 1]?.place.zone ?? tripDay.curated?.afternoon?.zone ?? tripDay.curated?.morning?.zone ?? null
+  return tripDay.dinnerZone ?? visits[visits.length - 1]?.place.zone ?? tripDay.curated?.afternoon?.zone ?? tripDay.curated?.morning?.zone ?? null
 }
 
 /**
@@ -75,7 +78,12 @@ function zoneFields(destData, zoneKey, mealType) {
 export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisitedNames = new Set() }) {
   const { schedule } = tripDay
   const unitById = new Map(tripDay.units.map((unit) => [unit.id, unit]))
-  const stops = schedule.visits.map((visit) => buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null))
+  const stops = schedule.visits.map((visit) => {
+    const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
+    // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
+    if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
+    return stop
+  })
 
   // Se come donde se está: la zona de la última visita antes de cada comida.
   const zoneBefore = (minutes) => [...schedule.visits].reverse().find((visit) => visit.end <= minutes)?.place.zone ?? null
@@ -84,7 +92,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     time: meal.type,
     suggested_time: toHHMM(meal.start),
     options: [],
-    ...zoneFields(destData, zoneBefore(meal.start) ?? dinnerZone, meal.type === 'lunch' ? 'comida' : 'cena'),
+    // La comida, donde se está; la cena, en el barrio hacia el que va la tarde.
+    ...(meal.type === 'lunch' ? zoneFields(destData, zoneBefore(meal.start) ?? dinnerZone, 'comida') : zoneFields(destData, dinnerZone, 'cena')),
   }))
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un

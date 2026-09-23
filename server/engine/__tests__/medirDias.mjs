@@ -222,10 +222,22 @@ function measureTrip(trip, pace, exps) {
       }
     })
   })
+  // Lo que recorre el Free Tour se ve con el tour (motor v3): cuenta como visto para nivel 1, pero
+  // no como parada, así que no entra en la comprobación de grupos.
+  const seenWithTour = new Set()
+  trip.days.forEach((day, index) => {
+    for (const stop of day?.stops ?? []) {
+      for (const name of stop.free_tour_covers ?? []) {
+        if (dayOf.has(name)) continue
+        seenWithTour.add(name)
+        dayOf.set(name, index + 1)
+      }
+    }
+  })
 
   const brokenGroups = []
   for (const [group, members] of GROUPS) {
-    const present = members.filter((member) => dayOf.has(member.name))
+    const present = members.filter((member) => dayOf.has(member.name) && !seenWithTour.has(member.name))
     if (present.length === 0) continue
     if (present.length < members.length) {
       brokenGroups.push(`${group}: solo ${present.map((m) => m.name).join(' + ')} (faltan ${members.filter((m) => !dayOf.has(m.name)).map((m) => m.name).join(', ')})`)

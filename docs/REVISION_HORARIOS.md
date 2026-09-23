@@ -27,6 +27,6 @@ gratis, y sin ese campo el cambio de tipo los habría metido en el filtro "Entra
 
 - **Domus Aurea**: sin horario legible ("Solo Vie-Sáb-Dom, visita guiada con reserva"). El motor v3
   le aplica el horario por defecto de interiores (09:00-17:00) hasta tener el real.
-- **Parques (Villa Borghese, Jardín de los Naranjos)**: cierran al anochecer. Pendiente de decidir.
-- **`groups.roma_antigua_core`**: `order` dice Arco → Coliseo → Foro, pero el `group_order` de cada
-  lugar dice Coliseo → Foro → Arco (el que usan los motores). Decidir cuál vale y dejar uno.
+- ~~`groups.roma_antigua_core`: dos órdenes distintos~~ — resuelto el 2026-09-23: manda
+  `groups.<id>.order` (Arco → Coliseo → Foro) y el `group_order` de cada lugar se ha igualado.
+- **Parques**: la instrucción sobre Villa Borghese y el Jardín de los Naranjos llegó cortada; pendiente.

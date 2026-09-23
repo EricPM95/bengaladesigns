@@ -85,6 +85,10 @@ function collectPoints(destData) {
     entries.push({ kind: 'free_tour', name: destData.default_free_tour.name, coordinates: destData.default_free_tour.coordinates })
   }
   for (const [zoneId, zone] of Object.entries(destData.zones ?? {})) entries.push({ kind: 'zone_center', name: zoneId, coordinates: zone.center })
+  // Dónde se cena en cada barrio: el motor planifica la tarde hacia ahí y cuenta el paseo hasta la cena.
+  for (const [zoneId, meals] of Object.entries(destData.meal_zones ?? {})) {
+    if (meals?.cena?.coordinates) entries.push({ kind: 'dinner', name: zoneId, coordinates: meals.cena.coordinates })
+  }
 
   const byKey = new Map()
   for (const entry of entries) {

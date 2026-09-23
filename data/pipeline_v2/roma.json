@@ -13,7 +13,16 @@
     "duration_minutes": 150,
     "default_time": "10:00",
     "zone": "centro_historico",
-    "tip": "Reserva con antelación en Civitatis. Lleva agua y gorra en verano."
+    "tip": "Reserva con antelación en Civitatis. Lleva agua y gorra en verano.",
+    "covers": [
+      "Plaza de España",
+      "Fontana de Trevi",
+      "Panteón",
+      "Piazza Navona"
+    ],
+    "early_visit_ok": [
+      "Fontana de Trevi"
+    ]
   },
   "joyas": [
     "Coliseo",
@@ -143,6 +152,10 @@
         "options": [
           "Monti",
           "Celio"
+        ],
+        "coordinates": [
+          41.8948,
+          12.4928
         ]
       }
     },
@@ -159,6 +172,10 @@
         "options": [
           "Campo de' Fiori",
           "Piazza Navona zona"
+        ],
+        "coordinates": [
+          41.8955,
+          12.4723
         ]
       }
     },
@@ -189,6 +206,10 @@
         "display": "en Trastevere",
         "options": [
           "Trastevere"
+        ],
+        "coordinates": [
+          41.889,
+          12.469
         ]
       }
     },
@@ -235,6 +256,10 @@
         "options": [
           "Testaccio",
           "Via Galvani"
+        ],
+        "coordinates": [
+          41.8779,
+          12.4762
         ]
       }
     },
@@ -522,7 +547,7 @@
       "duration_minutes": 90,
       "type": "interior",
       "group": "roma_antigua_core",
-      "group_order": 1,
+      "group_order": 2,
       "group_order_evening": 3,
       "night_experience": true,
       "tip": "Compra entrada combinada Coliseo + Foro + Palatino online. La arena superior tiene la mejor vista — merece la pena el suplemento.",
@@ -559,7 +584,7 @@
       "duration_minutes": 105,
       "type": "interior",
       "group": "roma_antigua_core",
-      "group_order": 2,
+      "group_order": 3,
       "group_order_evening": 2,
       "tip": "Entra por la entrada del Palatino (menos cola). El Foro se ve desde arriba del Palatino — esa perspectiva es mejor que caminar por abajo.",
       "photo_tip": "Desde la terraza del Palatino, el Foro se extiende a tus pies con el Coliseo al fondo.",
@@ -594,7 +619,7 @@
       "duration_minutes": 15,
       "type": "exterior",
       "group": "roma_antigua_core",
-      "group_order": 3,
+      "group_order": 1,
       "group_order_evening": 1,
       "tip": "Está justo al lado del Coliseo. No tiene entrada — es una parada rápida para foto.",
       "photo_tip": "Con el Coliseo detrás del arco — la composición perfecta. Mejor luz por la mañana.",
@@ -1040,7 +1065,8 @@
       "search_en_keywords": [
         "castel",
         "angelo"
-      ]
+      ],
+      "related_to": "Puente Sant'Angelo"
     },
     {
       "name": "Mirador del Janículo",
@@ -1257,7 +1283,8 @@
         "ponte",
         "bridge",
         "angelo"
-      ]
+      ],
+      "related_to": "Castillo de Sant'Angelo"
     },
     {
       "name": "Isla Tiberina",
@@ -4651,6 +4678,12 @@
     "max_auto_days": 7,
     "category_cap_selected": 4,
     "category_cap_default": 2,
-    "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya"
+    "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya",
+    "dinner_zones": [
+      "centro_historico",
+      "roma_antigua",
+      "trastevere",
+      "testaccio"
+    ]
   }
 }

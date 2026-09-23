@@ -14,6 +14,9 @@
  *   - cuota: con un tema elegido, cada día lo lleva o dice por qué no (nada a 20 min, o no cabe);
  *     y si dice "nada cerca", es verdad
  *   - determinismo: dos llamadas iguales, el mismo viaje
+ *   - Free Tour: entra (o se avisa), y lo que recorre no sale suelto ese día, salvo lo de
+ *     `early_visit_ok` acabando antes de que empiece el tour
+ *   - la cena de cada día cae en un barrio de `dinner_zones`, sin repetir mientras queden
  */
 
 import { readFileSync } from 'node:fs'
@@ -91,6 +94,30 @@ for (const pace of ['nonstop', 'tranquilo']) {
               if (near) fail(`${tag} d${miss.dayNumber}: dice que no hay nada de ${miss.theme} cerca y ${near.name} está a menos de 20 min`)
             }
 
+            // Free Tour y lo que recorre.
+            const TOUR = D.default_free_tour
+            if (ft) {
+              const tourDay = city.find((day) => day.schedule.visits.some((v) => v.place.isFreeTour))
+              if (!tourDay && !trip.unplacedPool.some((item) => item.name === TOUR.name)) fail(`${tag}: el Free Tour ni está ni se avisa`)
+              if (tourDay) {
+                const tourStart = tourDay.schedule.visits.find((v) => v.place.isFreeTour).start
+                for (const visit of tourDay.schedule.visits) {
+                  if (!TOUR.covers.includes(visit.place.name)) continue
+                  const early = TOUR.early_visit_ok.includes(visit.place.name) && visit.end <= tourStart
+                  if (!early) fail(`${tag}: ${visit.place.name} suelto el día del Free Tour, que ya pasa por allí`)
+                }
+                for (const item of trip.coveredByFreeTour) for (const name of item.names) seen.set(name, item.dayNumber)
+              }
+            }
+            // Cenas: en barrios de cena y sin repetir mientras queden.
+            const dinnerZones = D.destination_config.dinner_zones
+            const dinners = city.map((day) => day.dinnerZone)
+            if (dinners.some((zone) => zone && !dinnerZones.includes(zone))) fail(`${tag}: cena fuera de los barrios de cena (${dinners.join(', ')})`)
+            for (let i = 0; i < dinners.length; i += dinnerZones.length) {
+              const chunk = dinners.slice(i, i + dinnerZones.length).filter(Boolean)
+              if (new Set(chunk).size !== chunk.length && !date) fail(`${tag}: se repite barrio de cena antes de agotarlos (${dinners.join(', ')})`)
+            }
+
             if (contentDays >= 3) {
               const missing = LEVEL1.filter((name) => !seen.has(name))
               if (missing.length) fail(`${tag}: faltan imprescindibles: ${missing.join(', ')}`)
@@ -108,11 +135,16 @@ for (const pace of ['nonstop', 'tranquilo']) {
               const reported = trip.unplacedPool.some((item) => item.name === name || D.places.find((p) => p.name === name)?.group === item.unitId)
               if (!inTrip && !reported) fail(`${tag}: pool "${name}" ni está ni se avisa`)
             }
-            // Un día con pool que no cabe: lo elegido ANTES entra antes.
+            // Un día con pool que no cabe: lo elegido ANTES entra antes. Si algo elegido se queda
+            // fuera, tampoco debe entrar quitando lo que se eligió después (si entrara, lo de después
+            // le ha quitado el sitio).
             if (contentDays === 1 && pool.length > 1) {
-              const indices = pool.map((name, index) => (seen.has(name) ? null : index)).filter((i) => i !== null)
-              const placedLater = pool.some((name, index) => seen.has(name) && indices.some((lost) => lost < index))
-              if (placedLater) fail(`${tag}: entra un lugar del pool elegido después de otro que se queda fuera`)
+              for (const [index, name] of pool.entries()) {
+                if (seen.has(name) || !pool.slice(index + 1).some((later) => seen.has(later))) continue
+                const alone = planTrip({ ...args, poolNames: pool.slice(0, index + 1) })
+                const fitsAlone = alone.days.some((d) => d.schedule?.visits.some((v) => v.place.name === name))
+                if (fitsAlone) fail(`${tag}: "${name}" se queda fuera y cabría sin lo elegido después`)
+              }
             }
           }
         }

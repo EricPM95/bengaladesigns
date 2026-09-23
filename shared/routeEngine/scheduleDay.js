@@ -31,6 +31,19 @@
  *   - El Free Tour tiene hora fija (la de su JSON): lo que va antes tiene que llegar a tiempo.
  *   - Las visitas largas (>= 180 min) empiezan por la mañana, salvo en viajes de un día.
  *   - Comida y cena en su ventana; el día acaba con la cena.
+ *
+ * La tarde va HACIA la cena (paso 4): la cena tiene un sitio (`dinnerPoint`, el barrio donde se
+ * cena) y el paseo hasta ella cuenta, así que el orden termina cerca del restaurante. La tarde vacía
+ * antes de cenar (`tailPenalty`) es otra cosa y va APARTE del coste de ordenar: sirve para que el
+ * repartidor sepa que añadir una parada al final abarata el día, pero no puede mover el orden. Si
+ * contara al ordenar, el motor "llenaba" la tarde retrasando paradas —volviendo al Borgo Pio después
+ * del Puente Sant'Angelo— en vez de añadiendo algo.
+ *
+ * Preferencias de hora (cuestan, no prohíben):
+ *   - `preferMorning`: lo que el reparto curado pone de mañana, antes de comer.
+ *   - `preferEarly`: `best_time` "primera hora" (Coliseo, Vaticano, Trevi), cuanto antes mejor.
+ *   - `latest_end`: tiene que haber acabado a esa hora (Trevi a las 08:00, antes del Free Tour).
+ *   - `related_to`: las parejas naturales del JSON, seguidas si caen el mismo día.
  */
 
 import { roundUpToFive, roundUpToSlot, toMinutes } from './time.js'
@@ -51,6 +64,18 @@ export const PRIORITY = { POOL: 0, JOYA: 1, ESSENTIAL: 1.5, THEME: 2, FILLER: 3 
     Pequeña a propósito: el orden curado es buen punto de partida (medido), no una cárcel. */
 const CURATED_INVERSION_PENALTY = 10
 const MAX_IMPROVEMENT_PASSES = 30
+/** Lo curado de mañana que acaba después de comer. Alto: el Coliseo a las 15:30 es otro viaje. */
+const MORNING_AFTER_LUNCH_PENALTY = 90
+/** Cada minuto que una visita de "primera hora" se retrasa respecto al inicio del día. */
+const EARLY_DELAY_PENALTY_PER_MINUTE = 0.5
+/** Cada minuto muerto antes de cenar por encima de la tolerancia del ritmo. */
+const DINNER_IDLE_PENALTY_PER_MINUTE = 1
+/**
+ * Una pareja natural (`related_to` del JSON: Castillo ↔ Puente Sant'Angelo, Basílica ↔ Cúpula) que
+ * cae el mismo día pero con otra cosa en medio. Preferencia, no regla: a diferencia de un grupo, se
+ * puede separar si el día lo necesita.
+ */
+const RELATED_APART_PENALTY = 30
 
 const LUNCH = { kind: 'lunch' }
 
@@ -67,6 +92,8 @@ const LUNCH = { kind: 'lunch' }
  * @property {boolean} [inseparableWithNext]  este lugar y el siguiente del grupo son el mismo sitio
  *           físico: ni comida ni nada entre ellos
  * @property {string} [type]          'exterior' | 'interior' — decide el horario por defecto
+ * @property {string} [latest_end]    "HH:MM": la visita tiene que haber acabado a esta hora
+ * @property {[number, number]} [end_coordinates]  dónde se acaba (un recorrido a pie no acaba donde empieza)
  *
  * @typedef {object} ScheduleUnit
  * @property {string} id
@@ -76,6 +103,8 @@ const LUNCH = { kind: 'lunch' }
  * @property {boolean} [isLong]
  * @property {number|null} [poolIndex]  orden en que el viajero lo eligió: si no cabe todo, entra
  *           antes lo que eligió antes
+ * @property {boolean} [preferMorning]  el reparto curado lo pone de mañana: antes de comer
+ * @property {boolean} [preferEarly]    `best_time` "primera hora": cuanto antes mejor
  *
  * @param {object} input
  * @param {ScheduleUnit[]} input.units
@@ -87,6 +116,7 @@ const LUNCH = { kind: 'lunch' }
  *        segunda visita larga, así que puede ir por la tarde (Prompt 9, Parte 10)
  * @param {object} [input.fallbackMode]  el ritmo al que se pasa ESE día si un imprescindible no cabe
  *        con el suyo (tranquilo -> empieza antes y sin el extra de duración)
+ * @param {[number, number]|null} [input.dinnerPoint]  dónde se cena; null = cerca de la última visita
  */
 export function scheduleDay(input) {
   const first = runSchedule(input)
@@ -106,8 +136,8 @@ export function scheduleDay(input) {
   return { ...second, modeFallback: { recoveredUnitIds: recovered, startedAt: fallbackStart } }
 }
 
-function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerLatest: latestDinnerStart(mode) }
+function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false, dinnerPoint = null }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerPoint, dinnerLatest: latestDinnerStart(mode) }
 
   let sequence = pendingMeals.lunch ? [LUNCH] : []
   const unscheduled = []
@@ -173,7 +203,9 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
  * @param {object} input  lo mismo que scheduleDay, sin `units`
  */
 export function openDay(input) {
+  let dinnerPoint = input.dinnerPoint ?? null
   const makeCtx = (mode, start) => ({
+    dinnerPoint,
     mode,
     travel: input.travel,
     start,
@@ -194,11 +226,30 @@ export function openDay(input) {
       return modeFallback
     },
 
-    /** Dónde entraría la unidad y cuánto tiempo muerto + paseo añade. null si no cabe. */
-    tryAdd(unit) {
-      const candidate = bestInsertion(sequence, unit, ctx)
-      if (!candidate) return null
-      return { sequence: candidate, addedCost: simulate(candidate, ctx).cost - currentCost }
+    /**
+     * Dónde entraría la unidad, cuánto cambia el coste del día y cuántos minutos de paseo AÑADE.
+     * null si no cabe (o si solo cabe añadiendo más paseo que `maxAddedWalk`).
+     *
+     * Cada posición se juzga con el criterio del repartidor —coste del día CONTANDO la tarde vacía
+     * antes de cenar— y dentro del tope de paseo. Con el criterio de ordenar (menos espera), la
+     * Plaza Colonna se metía en un hueco de la mañana a 33 minutos de desvío y se descartaba por
+     * desvío, cuando al final de la tarde, de camino a la cena, añadía 4.
+     */
+    tryAdd(unit, { maxAddedWalk = Infinity } = {}) {
+      const before = simulate(sequence, ctx)
+      const baseCost = before.cost + (before.tailPenalty ?? 0)
+      let best = null
+      for (let i = 0; i <= sequence.length; i++) {
+        const candidate = [...sequence.slice(0, i), unit, ...sequence.slice(i)]
+        const result = simulate(candidate, ctx)
+        if (!result.ok) continue
+        const addedWalk = result.walk - (before.walk ?? 0)
+        if (addedWalk > maxAddedWalk) continue
+        // Para el repartidor, una parada que llena la tarde vacía antes de cenar abarata el día.
+        const addedCost = result.cost + result.tailPenalty - baseCost
+        if (!best || addedCost < best.addedCost) best = { sequence: candidate, addedCost, addedWalk }
+      }
+      return best
     },
 
     /** Mete la unidad (lo que devolvió `tryAdd`, o la unidad a secas). false si no cabe. */
@@ -238,12 +289,41 @@ export function openDay(input) {
       return true
     },
 
+    /**
+     * Dónde se cena. false (y no cambia nada) si con ese paseo hasta la cena el día deja de caber.
+     */
+    setDinnerPoint(coordinates) {
+      const previous = dinnerPoint
+      dinnerPoint = coordinates
+      const next = { ...ctx, dinnerPoint }
+      const result = simulate(sequence, next)
+      if (!result.ok) {
+        dinnerPoint = previous
+        return false
+      }
+      ctx = next
+      currentCost = result.cost
+      return true
+    },
+
+    /** Minutos libres antes de cenar, ya descontado el paseo hasta la cena (null sin cena). */
+    idleBeforeDinner() {
+      return simulate(sequence, ctx).idleBeforeDinner ?? null
+    },
+
+    /** Dónde acaba ahora mismo la última visita del día (null si aún no tiene ninguna). */
+    endCoordinates() {
+      const visits = simulate(sequence, ctx).visits ?? []
+      const last = visits[visits.length - 1]
+      return last ? (last.place.end_coordinates ?? last.place.coordinates) : null
+    },
+
     /** Foto exacta del día, para deshacer un intento sin depender de volver a encajarlo igual. */
     snapshot() {
-      return { ctx, sequence, currentCost, modeFallback }
+      return { ctx, sequence, currentCost, modeFallback, dinnerPoint }
     },
     restore(snap) {
-      ;({ ctx, sequence, currentCost, modeFallback } = snap)
+      ;({ ctx, sequence, currentCost, modeFallback, dinnerPoint } = snap)
     },
 
     /** El día terminado: orden mejorado y horas puestas. */
@@ -274,7 +354,7 @@ function unitMinutes(unit) {
  * es imposible — es lo que permite a la búsqueda descartar órdenes sin reglas aparte.
  */
 function simulate(sequence, ctx) {
-  const { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerLatest } = ctx
+  const { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerLatest, dinnerPoint } = ctx
   const [lunchOpen, lunchClose] = mode.lunchWindow
   const visitLimit = pendingMeals.dinner ? dinnerLatest : mode.dayEndWithDinner
 
@@ -285,6 +365,7 @@ function simulate(sequence, ctx) {
   let seenVisit = false
   let walk = 0
   let idle = 0
+  let preference = 0 // penalizaciones de hora (ver preferMorning / preferEarly)
   const visits = []
   const meals = []
 
@@ -309,6 +390,7 @@ function simulate(sequence, ctx) {
 
     const unit = element
     if (unit.isLong && !longVisitsAnytime && pendingMeals.lunch && lunchDone) return { ok: false, reason: 'long_visit_after_lunch', unitId: unit.id }
+    const unitStartsAt = visits.length
     // La comida puede meterse dentro de este grupo solo si es lo que viene justo después de él.
     const lunchComesNext = !lunchDone && sequence[elementIndex + 1] === LUNCH
 
@@ -346,29 +428,46 @@ function simulate(sequence, ctx) {
       if (place.fixed_start && fitAt !== at) return { ok: false, reason: 'fixed_start_missed', unitId: unit.id }
       at = fitAt
       if (place.last_entry && at > toMinutes(place.last_entry)) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
+      if (place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
 
       walk += walkMinutes
       idle += at - arrive
       visits.push({ unitId: unit.id, place, start: at, end: at + duration, chained, walkMinutes, walkSource: leg?.source ?? null })
       cursor = at + duration
-      position = place.coordinates
+      // Un recorrido a pie (el Free Tour) acaba donde acaba su recorrido, no donde se quedó.
+      position = place.end_coordinates ?? place.coordinates
       seenVisit = true
       afterMeal = false
+    }
+
+    // Preferencias de hora de la unidad, medidas sobre su primera visita.
+    const first = visits[unitStartsAt]
+    if (first) {
+      const lunch = meals.find((meal) => meal.type === 'lunch')
+      if (unit.preferMorning && pendingMeals.lunch && lunch && lunch.start < visits[visits.length - 1].end) preference += MORNING_AFTER_LUNCH_PENALTY
+      if (unit.preferEarly) preference += Math.max(0, first.start - start.minutes) * EARLY_DELAY_PENALTY_PER_MINUTE
     }
   }
 
   if (!lunchDone) return { ok: false, reason: 'lunch_missing' }
 
   let idleBeforeDinner = null
+  let dinnerIdlePenalty = 0
   if (pendingMeals.dinner) {
-    const at = Math.max(roundUpToSlot(cursor), mode.dinnerWindow[0])
+    // Se va andando hasta el barrio donde se cena: ese paseo es parte del día.
+    const walkToDinner = position && dinnerPoint ? (travel.leg(position, dinnerPoint)?.minutes ?? 0) : 0
+    const at = Math.max(roundUpToSlot(cursor + walkToDinner), mode.dinnerWindow[0])
     if (at > dinnerLatest) return { ok: false, reason: 'dinner_out_of_window' }
-    idleBeforeDinner = at - cursor
-    meals.push({ type: 'dinner', start: at, end: at + mode.mealMinutes, coordinates: position })
+    walk += walkToDinner
+    idleBeforeDinner = at - cursor - walkToDinner
+    // Hasta la tolerancia del ritmo es caminar tranquilo, un helado; por encima, una tarde vacía.
+    dinnerIdlePenalty = Math.max(0, idleBeforeDinner - mode.gapTolerance) * DINNER_IDLE_PENALTY_PER_MINUTE
+    meals.push({ type: 'dinner', start: at, end: at + mode.mealMinutes, coordinates: dinnerPoint ?? position, walkMinutes: walkToDinner })
   }
 
-  return { ok: true, visits, meals, walk, idle, idleBeforeDinner, cost: walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY }
+  const cost = walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY + preference + relatedApart(visits) * RELATED_APART_PENALTY
+  return { ok: true, visits, meals, walk, idle, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
 }
 
 /**
@@ -395,6 +494,19 @@ function segmentEnd(unit, fromIndex, cursor, position, travel, mode) {
     if (!place.inseparableWithNext) break
   }
   return time
+}
+
+/** Cuántas parejas naturales (`related_to`) van el mismo día con otra visita en medio. */
+function relatedApart(visits) {
+  const position = new Map(visits.map((visit, index) => [visit.place.name, index]))
+  let apart = 0
+  for (const [index, visit] of visits.entries()) {
+    const partner = visit.place.related_to
+    // Cada pareja se cuenta una vez: desde el lugar que va primero.
+    if (!partner || !position.has(partner) || position.get(partner) < index) continue
+    if (position.get(partner) - index !== 1) apart++
+  }
+  return apart
 }
 
 function curatedInversions(sequence) {
