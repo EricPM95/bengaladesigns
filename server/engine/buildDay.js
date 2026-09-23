@@ -171,7 +171,7 @@ async function schedulePlaces(places, startMinutes, mapboxToken, mode, cutoff = 
   return { stops, cursor }
 }
 
-function buildStop(place, startMinutes, durationMinutes, revisitReason) {
+export function buildStop(place, startMinutes, durationMinutes, revisitReason) {
   return {
     name: place.name,
     suggested_time: minutesToTime(startMinutes),

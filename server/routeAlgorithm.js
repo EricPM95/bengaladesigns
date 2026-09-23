@@ -13,6 +13,7 @@
 // cambio, sin ninguna diferencia de comportamiento.
 
 import { readFileSync, readdirSync } from 'node:fs'
+import { nextOpenMinutes, parseClosingMinutes, parseHoursSessions } from '../shared/routeEngine/openingHours.js'
 // Una sola tabla de experiencias->tags para los dos motores (ver engine/experienceTags.js).
 import { TAG_INTEREST_MAP, interestTagsFor } from './engine/experienceTags.js'
 import { fullDayExcursions } from './engine/excursions.js'
@@ -163,48 +164,10 @@ function roundUpToQuarter(minutes) {
 // escrito empezando por el lunes daba la hora del lunes como apertura general. Ver la copia
 // compartida de esta misma lógica en src/lib/stopHoursTag.ts (el backend Node no comparte bundle
 // con el cliente Vite, así que se reimplementa a propósito, igual que los helpers de tiempo).
-export function parseHoursSessions(schedule) {
-  if (typeof schedule !== 'string') return []
-  const sessions = []
-  for (const match of schedule.matchAll(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/g)) {
-    const open = Number(match[1]) * 60 + Number(match[2])
-    const close = Number(match[3]) * 60 + Number(match[4])
-    if (close > open) sessions.push({ open, close })
-  }
-  return sessions
-}
-
-/**
- * La hora a la que se puede entrar de verdad, partiendo de `minutes`: la misma si ya está abierto, o
- * la apertura del siguiente tramo si cae en un cierre (el del mediodía, sobre todo). `null` si ya no
- * queda ningún tramo por delante — el lugar ya no abre hoy a esa hora.
- *
- * Sustituye al clamp anterior, que solo sabía "no antes de que abra" y usaba la apertura general:
- * con eso, una parada que cayera a las 13:00 en una iglesia cerrada de 12:30 a 16:00 se programaba
- * igual a las 13:00, porque 13:00 ya es posterior a las 10:00 de apertura.
- */
-export function nextOpenMinutes(schedule, minutes) {
-  const sessions = parseHoursSessions(schedule)
-  if (sessions.length === 0) return minutes
-  if (sessions.some((session) => minutes >= session.open && minutes <= session.close)) return minutes
-  const upcoming = sessions.filter((session) => session.open > minutes).map((session) => session.open)
-  return upcoming.length > 0 ? Math.min(...upcoming) : null
-}
-
-// Ronda 8D: la pareja de parseOpeningMinutes — el SEGUNDO "HH:MM" del texto libre (p.ej. "09:00-19:00"
-// → cierra a las 19:00). Encontrado de verdad: sin esto, nada impedía programar Galería Borghese
-// (cierra 19:00) empezando a las 18:55, forzada por must_include_places en un bloque ya casi lleno —
-// el clamp de apertura (Issue B) evita empezar ANTES de que abra, pero no evita empezar tan tarde que
-// ni le da tiempo a cerrar. null si el texto no trae un segundo rango (mismo criterio que
-// parseOpeningMinutes: mejor no bloquear nada que adivinar mal).
-export function parseClosingMinutes(schedule) {
-  const sessions = parseHoursSessions(schedule)
-  if (sessions.length > 0) return Math.max(...sessions.map((session) => session.close))
-  const matches = typeof schedule === 'string' ? [...schedule.matchAll(/(\d{1,2}):(\d{2})/g)] : []
-  if (matches.length < 2) return null
-  const [, h, m] = matches[1]
-  return Number(h) * 60 + Number(m)
-}
+// El parser vive ahora en shared/routeEngine/openingHours.js: el motor v3 tiene que poder correr sin
+// Node (Modo Hoy) y no puede importar este archivo, que lee el disco al cargarse. Se reexporta para
+// que todo lo que ya lo importaba de aquí siga igual, y así hay UNA sola copia en el servidor.
+export { parseHoursSessions, nextOpenMinutes, parseClosingMinutes }
 
 // Ronda 8 (issue H): dos paradas realmente pegadas (p.ej. Plaza de San Pedro → Basílica de San
 // Pedro, 232m con las coordenadas reales del JSON; Piazza Venezia → Altar de la Patria, 130m) no

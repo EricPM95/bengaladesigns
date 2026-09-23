@@ -2560,6 +2560,12 @@
         "Museos Vaticanos y Capilla Sixtina"
       ],
       "note": "Museos siempre primero. Mañana corta (pasa siempre, Museos solo ya son 3h) → Plaza y Basílica se mueven juntas a la mañana (par inseparable, 0m de distancia) — Plaza primero, luego se entra a la Basílica. La tarde queda libre para relleno real de zona vaticano/Prati camino a Trastevere.",
+      "inseparable": [
+        [
+          "Basílica de San Pedro",
+          "Plaza de San Pedro"
+        ]
+      ],
       "breakable_if_short": true,
       "break_after": "Museos Vaticanos y Capilla Sixtina",
       "preferred_split": {
@@ -2605,6 +2611,12 @@
         "Altar de la Patria"
       ],
       "note": "A 0m de distancia — Plaza Venecia es la rotonda con el Vittoriano (Altar de la Patria) encima. Se visitan siempre juntas, nunca por separado.",
+      "inseparable": [
+        [
+          "Plaza Venecia",
+          "Altar de la Patria"
+        ]
+      ],
       "breakable_if_short": false,
       "combined_duration_minutes": 70
     },

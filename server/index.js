@@ -4530,7 +4530,7 @@ app.post('/api/generate-day-block', async (req, res) => {
   // Con el motor NUEVO este bloque no corre: el tipo de cada día (excursión, libre, revisitas)
   // lo decide el propio motor a partir de `core_days`/`max_auto_days` del destino, no del
   // `day_pattern` del JSON. Dejar los dos decidiendo daba resultados distintos según quién mirara.
-  if (pipelineV2Data && blockDayNumbers.length === 1 && engineFor(engine) !== "nuevo") {
+  if (pipelineV2Data && blockDayNumbers.length === 1 && engineFor(engine) === 'viejo') {
     const dayNumber = blockDayNumbers[0]
     const totalDaysForConfig = Array.isArray(all_days) && all_days.length > 0 ? all_days.length : dayNumber
     const dayConfig = getDayConfig(dayNumber, pipelineV2Data)
@@ -4570,7 +4570,7 @@ app.post('/api/generate-day-block', async (req, res) => {
     // motores en la misma ruta sin reiniciar nada. Por defecto sigue mandando el viejo.
     const chosenEngine = engineFor(engine)
     try {
-      const dayBlockV2 = chosenEngine === 'nuevo'
+      const dayBlockV2 = chosenEngine !== 'viejo'
         ? await buildDayBlockV3(
             pipelineV2Data,
             totalDaysV2,
@@ -4581,7 +4581,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

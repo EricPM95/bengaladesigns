@@ -3,6 +3,7 @@
  *
  *   node server/engine/__tests__/medirDias.mjs                       # motor nuevo, todas las variantes
  *   node server/engine/__tests__/medirDias.mjs --motor ambos          # viejo y nuevo lado a lado
+ *   node server/engine/__tests__/medirDias.mjs --motor todos          # viejo, nuevo y v3
  *   node server/engine/__tests__/medirDias.mjs --salida docs/metricas/motor-actual.json
  *   node server/engine/__tests__/medirDias.mjs --caso 3 nonstop arte_museos,free_tour
  *
@@ -25,6 +26,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
+import { effectiveSchedule } from '../../../shared/routeEngine/openingHours.js'
 import { buildDayBlockV3 } from '../index.js'
 import { preplanTrip } from '../preplan.js'
 import { interestTagsFor, TAG_INTEREST_MAP } from '../experienceTags.js'
@@ -42,7 +44,7 @@ const flag = (name) => {
   const index = args.indexOf(name)
   return index >= 0 ? args[index + 1] : null
 }
-const MOTORES = { nuevo: ['nuevo'], viejo: ['viejo'], ambos: ['viejo', 'nuevo'] }[flag('--motor') ?? 'nuevo']
+const MOTORES = { nuevo: ['nuevo'], viejo: ['viejo'], v3: ['v3'], ambos: ['viejo', 'nuevo'], todos: ['viejo', 'nuevo', 'v3'] }[flag('--motor') ?? 'nuevo']
 const SALIDA = flag('--salida')
 const FECHA = flag('--fecha') // sin fecha, closed_on no se aplica (igual que en la app)
 const casoIndex = args.indexOf('--caso')
@@ -101,10 +103,12 @@ function outOfHours(stop) {
   const start = t2m(stop.suggested_time)
   const end = start + stop.duration_minutes
   if (place.last_entry && start > t2m(place.last_entry)) return `empieza ${stop.suggested_time}, última entrada ${place.last_entry}`
-  const sessions = parseHoursSessions(place.schedule)
+  // Mismo horario efectivo que usa el motor v3 (interiores sin horario: 09:00-17:00), para todos.
+  const schedule = effectiveSchedule(place)
+  const sessions = parseHoursSessions(schedule)
   if (sessions.length === 0) return null
   const inside = sessions.some((session) => start >= session.open && end <= session.close)
-  return inside ? null : `${stop.suggested_time}-${m2t(end)} fuera de "${place.schedule}"`
+  return inside ? null : `${stop.suggested_time}-${m2t(end)} fuera de "${schedule}"`
 }
 
 // ── Construcción de un viaje con un motor ───────────────────────────────────────────────────
@@ -116,12 +120,12 @@ async function buildTrip(motor, contentDays, pace, exps) {
   const days = []
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     const day =
-      motor === 'nuevo'
-        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: 'Roma' })
+      motor !== 'viejo'
+        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: 'Roma', scheduler: motor === 'v3' ? 'v3' : undefined })
         : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }
-  const plan = motor === 'nuevo' ? preplanTrip({ destData: D, totalDays, pace, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
+  const plan = motor !== 'viejo' ? preplanTrip({ destData: D, totalDays, pace, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
   return { days, plan, totalDays, hasFreeTour, experiencesPositive }
 }
 
@@ -187,6 +191,7 @@ function measureDay(day, pace, interestTags, plannedNames) {
     timeline: dayStops.map((stop) => `${stop.suggested_time} ${stop.name} (${stop.duration_minutes}m)`),
     meals: { lunch: lunch?.suggested_time ?? null, dinner: dinner?.suggested_time ?? null },
     gaps,
+    unscheduled: day.unscheduled ?? null,
   }
 }
 
@@ -319,7 +324,7 @@ function printCase() {
       console.log(`   comida ${day.meals.lunch ?? '—'} · cena ${day.meals.dinner ?? '—'}`)
       for (const gap of day.gaps.filter((g) => g.idle > 0)) console.log(`   · ${gap.idle} min parado entre ${gap.from} → ${gap.to} (${gap.walk} min a pie)`)
       console.log(`   muerto entre paradas ${day.idleBetweenStops} min · antes de comer ${day.waitBeforeLunch ?? '—'} · tras comer ${day.idleAfterLunch ?? '—'} · antes de cenar ${day.deadBeforeDinner ?? '—'} · ${day.walkKm.toFixed(1)} km`)
-      if (day.dropped.length) console.log(`   PERDIDAS por el constructor: ${day.dropped.join(', ')}`)
+      if (day.dropped.length) console.log(`   NO PROGRAMADAS: ${day.dropped.map((name) => { const u = day.unscheduled?.find((item) => item.places.includes(name)); return u ? `${name} (${u.reason})` : name }).join(', ')}`)
       if (day.outOfHours.length) console.log(`   FUERA DE HORARIO: ${day.outOfHours.map((o) => `${o.name} (${o.why})`).join('; ')}`)
     }
     if (row.brokenGroups.length) console.log(`\nGrupos rotos: ${row.brokenGroups.join(' | ')}`)

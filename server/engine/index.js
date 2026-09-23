@@ -19,6 +19,9 @@ import { preselectedExcursionId } from './excursions.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
+import { buildDayV3 } from './buildDayV3.js'
+import { interestTagsFor } from './experienceTags.js'
+import { findPipelineV2Key } from '../routeAlgorithm.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -30,7 +33,11 @@ import { planNightWalks } from './nightWalk.js'
  */
 export function engineFor(requestEngine) {
   const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
-  return choice === 'viejo' || choice === 'v2' || choice === 'old' ? 'viejo' : 'nuevo'
+  if (choice === 'viejo' || choice === 'v2' || choice === 'old') return 'viejo'
+  // Motor v3 en construcción (reparto actual + programador nuevo con reloj real). Solo bajo
+  // petición: el defecto sigue siendo 'nuevo' hasta que las métricas digan que gana.
+  if (choice === 'v3') return 'v3'
+  return 'nuevo'
 }
 
 /**
@@ -109,26 +116,44 @@ export async function buildDayBlockV3(
     }
   }
 
-  const day = await buildDayFromPlan({
-    destData,
-    dayPlan,
-    mode: plan.mode,
-    mapboxToken,
-    city: destData.destination ?? options.city ?? '',
-    nightChain: nights.get(dayNumber) ?? [],
-    dayVisitedNames,
-  })
+  const day =
+    options.scheduler === 'v3'
+      ? buildDayV3({
+          destData,
+          destinationKey: findPipelineV2Key(destData.destination ?? options.city ?? ''),
+          dayPlan,
+          modeId: plan.mode.id,
+          tiers: plan.tiers,
+          interestTags: interestTagsFor(experiencesPositive),
+          city: destData.destination ?? options.city ?? '',
+          nightChain: nights.get(dayNumber) ?? [],
+          dayVisitedNames,
+          contentDays: plan.days.length,
+          poolNames: mustIncludePlaces ?? [],
+        })
+      : await buildDayFromPlan({
+          destData,
+          dayPlan,
+          mode: plan.mode,
+          mapboxToken,
+          city: destData.destination ?? options.city ?? '',
+          nightChain: nights.get(dayNumber) ?? [],
+          dayVisitedNames,
+        })
 
   // Lo que el viajero eligió y no cupo viaja con el día, con su motivo. Mejor avisar que dejarlo
   // fuera en silencio: decide él si mueve algo de día, alarga el viaje o cambia de ritmo.
-  day.not_included = plan.unplacedPool.map((item) => ({
+  const notScheduled = (day.unscheduled ?? [])
+    .filter((item) => item.priority <= 1)
+    .map((item) => ({ name: item.places[0], reason: item.reason_text, suggestion: 'Muévelo a otro día desde el menú de la parada' }))
+  day.not_included = [...notScheduled, ...plan.unplacedPool.map((item) => ({
     name: item.name,
     reason:
       item.reason === 'closed_every_day'
         ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
         : 'No cabía en ningún día del viaje',
     suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
-  }))
+  }))]
 
   return day
 }
