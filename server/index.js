@@ -3720,6 +3720,8 @@ app.post('/api/destination-places', (req, res) => {
       // del JSON porque solo 4 de los 67 lugares de Roma lo traen escrito: filtrar por el campo a
       // secas no devolvería nada.
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
+      // Días limitados y reserva obligatoria (la Domus Aurea): la ficha y la parada lo dicen.
+      booking_note: place.booking_note ?? null,
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son

@@ -273,6 +273,7 @@ function measureDay(day, pace, interestTags, plannedNames) {
     dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= REF.dinnerWindow[1],
     dayEndWithDinner: dinnerAt !== null ? dinnerAt + meal : lastEnd,
     walkKm: walkMeters / 1000,
+    revisits: dayStops.filter((stop) => stop.is_revisit && !stop.is_pass_by).length,
     afternoonKm: tarde ? tarde.real / 1000 : null,
     afternoonMinKm: tarde ? tarde.min / 1000 : null,
     outOfHours: dayStops.map((stop) => ({ name: stop.name, why: outOfHours(stop) })).filter((item) => item.why),
@@ -483,6 +484,12 @@ function printThemeSupply() {
 
 const sum = (list, fn) => list.reduce((total, item) => total + fn(item), 0)
 const LATEST_FIRST_AFTERNOON_END = 16 * 60
+// Los días por encima de core_days (repaso, excursión de medio día) tienen sus propias reglas
+// (decisión del 2026-09-23): son días más cortos a propósito y no se miden con "acaba antes de las 16:00".
+const CORE_DAYS = D.destination_config?.core_days ?? 4
+const isCoreDay = (day) => day.dayNumber <= CORE_DAYS
+/** Como mucho 3 revisitas por día de repaso: más nuevos que repetidos (revisits.js). */
+const MAX_REVISITS_PER_DAY = 3
 const SEMAFORO_CRITERIOS = [
   { id: 'horario', label: 'Paradas fuera de horario', limite: '0', value: (rows, days) => sum(days, (d) => d.outOfHours.length), ok: (v) => v === 0 },
   { id: 'grupos', label: 'Grupos del JSON rotos (separados o incompletos)', limite: '0', value: (rows) => sum(rows, (r) => r.brokenGroups.length), ok: (v) => v === 0 },
@@ -521,7 +528,15 @@ const SEMAFORO_CRITERIOS = [
     ok: (v) => v <= 2,
     fmt: (v) => `${v.toFixed(1)}%`,
   },
-  { id: 'sinTarde', label: 'Días de ciudad que acaban antes de las 16:00', limite: '0', value: (rows, days) => days.filter((d) => d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
+  { id: 'sinTarde', label: `Días de ciudad hasta core_days (${CORE_DAYS}) que acaban antes de las 16:00`, limite: '0', value: (rows, days) => days.filter((d) => isCoreDay(d) && d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
+  {
+    id: 'repaso',
+    label: `Días de repaso (más allá de core_days) con más de ${MAX_REVISITS_PER_DAY} revisitas`,
+    limite: '0',
+    applies: (n) => n > CORE_DAYS,
+    value: (rows, days) => days.filter((d) => !isCoreDay(d) && d.revisits > MAX_REVISITS_PER_DAY).length,
+    ok: (v) => v === 0,
+  },
   {
     id: 'ritmo',
     label: 'Días con menos paradas que el mínimo del ritmo (8 completo / 5 tranquilo), hasta core_days',

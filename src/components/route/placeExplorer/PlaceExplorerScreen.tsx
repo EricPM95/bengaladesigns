@@ -88,17 +88,23 @@ function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
     // timeForStopAfter en useRouteStore.ts). Desde aquí no sabemos dónde va a caer.
     time: '12:00',
     name: place.name,
-    description: 'Añadido por ti',
+    description: place.booking_note ?? 'Añadido por ti',
     categoryLabel: chip?.label ?? place.type ?? 'Lugar',
     durationMinutes: place.duration_min ?? 60,
     coordinates: place.coordinates,
     photoUrl,
-    hours: place.schedule,
-    scheduleText: place.schedule,
+    hours: withBookingNote(place),
+    scheduleText: withBookingNote(place),
     tags: place.tags,
   }
 }
 
+
+/** El horario con la nota de reserva delante si la tiene: "Solo vie-dom, visita guiada con reserva · 09:00-16:30". */
+function withBookingNote(place: DestinationPlace): string | null {
+  if (!place.booking_note) return place.schedule
+  return place.schedule ? `${place.booking_note} · ${place.schedule}` : place.booking_note
+}
 /**
  * Prompt 3 (bug 3): el buscador mira SOLO el catálogo curado del destino, nunca la búsqueda de POIs
  * de Mapbox — que devuelve los nombres en inglés ("Colosseum"), busca en todo el mundo y encuentra
@@ -918,7 +924,7 @@ export function PlaceExplorerScreen({
               id: `pool-${selected.name}`,
               name: selected.name,
               category: selectedChip?.label ?? selected.type ?? 'Lugar',
-              hours: selected.schedule,
+              hours: withBookingNote(selected),
               durationMinutes: selected.duration_min ?? 60,
               photoUrl: selectedPhoto ?? placeholderPhoto(selected.name),
               description: '',

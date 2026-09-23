@@ -1212,8 +1212,8 @@
       "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
-        41.9188,
-        12.4801
+        41.9175,
+        12.4853
       ],
       "duration_minutes": 120,
       "type": "exterior",
@@ -1236,15 +1236,16 @@
         "bioparco",
         "zoo"
       ],
-      "is_free_access": false
+      "is_free_access": false,
+      "coordinates_checked": true
     },
     {
       "name": "Galería Nacional de Arte Moderno",
       "level": 3,
       "zone": "villa_borghese",
       "coordinates": [
-        41.9147,
-        12.4823
+        41.917,
+        12.4821
       ],
       "duration_minutes": 90,
       "type": "interior",
@@ -1264,7 +1265,8 @@
       "search_en_keywords": [
         "galleria nazionale",
         "arte moderna"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Altar de la Patria",
@@ -1589,8 +1591,8 @@
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
-        41.8931,
-        12.4715
+        41.8997,
+        12.4747
       ],
       "level": 2,
       "type": "exterior",
@@ -1611,7 +1613,8 @@
       "search_en_keywords": [
         "san luigi",
         "francesi"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Ara Pacis",
@@ -1828,8 +1831,8 @@
       "duration_minutes": 15,
       "zone": "centro_historico",
       "coordinates": [
-        41.9005,
-        12.4746
+        41.9011,
+        12.4799
       ],
       "level": 3,
       "type": "exterior",
@@ -1847,7 +1850,8 @@
       "search_en": "Piazza Colonna Rome",
       "search_en_keywords": [
         "colonna"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Via Condotti",
@@ -2051,7 +2055,7 @@
         "miércoles",
         "jueves"
       ],
-      "schedule": "Solo Vie-Sáb-Dom, visita guiada con reserva",
+      "schedule": "09:00-16:30",
       "tags": [
         "museo",
         "ruinas"
@@ -2067,7 +2071,10 @@
       "search_en": "Domus Aurea Rome",
       "search_en_keywords": [
         "domus aurea"
-      ]
+      ],
+      "last_entry": "15:30",
+      "booking_required": true,
+      "booking_note": "Solo vie-dom, visita guiada con reserva"
     },
     {
       "name": "Termas de Caracalla",
@@ -2256,8 +2263,8 @@
       "duration_minutes": 10,
       "zone": "testaccio",
       "coordinates": [
-        41.8725,
-        12.4752
+        41.8764,
+        12.4808
       ],
       "level": 3,
       "type": "exterior",
@@ -2277,7 +2284,8 @@
         "pyramid",
         "piramide",
         "cestius"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Iglesia de Santa Maria della Vittoria",
@@ -2314,8 +2322,8 @@
       "duration_minutes": 20,
       "zone": "trastevere",
       "coordinates": [
-        41.887,
-        12.4685
+        41.8894,
+        12.4697
       ],
       "level": 2,
       "type": "exterior",
@@ -2334,7 +2342,8 @@
       "search_en": "Santa Maria in Trastevere Rome",
       "search_en_keywords": [
         "trastevere"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Villa Farnesina",
@@ -2391,7 +2400,8 @@
       "search_en_keywords": [
         "trilussa",
         "ponte sisto"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Terraza del Pincio",
@@ -2454,7 +2464,8 @@
       "search_en_keywords": [
         "laterano",
         "lateran"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Quartiere Coppedè",
@@ -2483,7 +2494,8 @@
       "search_en": "Quartiere Coppede Rome",
       "search_en_keywords": [
         "coppede"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Mercado de Testaccio",
@@ -2586,8 +2598,8 @@
       "level": 3,
       "zone": "appia",
       "coordinates": [
-        41.857,
-        12.512
+        41.8589,
+        12.5108
       ],
       "duration_minutes": 45,
       "type": "interior",
@@ -2608,7 +2620,8 @@
         "catacomb",
         "catacombe",
         "callisto"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Cementerio Protestante",
@@ -3981,15 +3994,10 @@
   },
   "afternoon_flow": {
     "vaticano": [
-      "Plaza de San Pedro",
       "Via della Conciliazione",
       "Borgo Pio",
       "Puente Sant'Angelo",
-      "Castillo de Sant'Angelo",
-      "Via del Corso",
-      "Piazza del Popolo",
-      "Largo di Torre Argentina",
-      "Plaza de España"
+      "Castillo de Sant'Angelo"
     ]
   },
   "restaurants": [

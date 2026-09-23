@@ -35,6 +35,9 @@ export interface DestinationPlace {
    * leer un campo a secas. Siempre false en un restaurante — ahí se paga la cuenta, no la entrada.
    */
   requires_ticket: boolean
+  /** Días limitados y reserva obligatoria ("Solo vie-dom, visita guiada con reserva"): no entra sola
+      en la ruta sin fechas, así que quien la añade a mano tiene que verlo. Null en el resto. */
+  booking_note?: string | null
   /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en
       italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
       `search_aliases` en el JSON del destino. Vacío para los restaurantes. */

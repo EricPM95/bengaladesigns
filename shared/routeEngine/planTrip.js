@@ -23,8 +23,9 @@
  *     lugares no vuelven a salir sueltos ese día —el Día 1 pasaba dos veces por los mismos sitios—,
  *     salvo los de `early_visit_ok` antes del tour (Trevi a las 08:00, vacía, es otra experiencia).
  *   - Cada día elige dónde se cena: el barrio bueno para cenar (`destination_config.dinner_zones`)
- *     más cercano a donde acaba su tarde, sin repetir barrio de una noche a otra mientras queden. El
- *     relleno llena entonces la tarde hacia allí, y el programador cuenta el paseo hasta la cena.
+ *     más cercano a donde acaba su tarde, sin repetir barrio de una noche a otra mientras queden
+ *     (salvo a 15 min o menos). Se elige DESPUÉS del relleno: la tarde va primero adonde queda
+ *     contenido sin ver; luego se rellena otra vuelta hacia la cena y el programador cuenta el paseo.
  *
  * "Cerca" se mide en minutos REALES andando desde las paradas que el día ya tiene (matriz de
  * tiempos), no por centros de zona: con centros, Villa Farnesina (Trastevere) contaba como vecina
@@ -274,9 +275,15 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
    * viaje, SOLO el día de él (lo de dentro no vuelve a salir otro día; el vecino que no cabe ese día
    * se queda fuera). null = sin restricción.
    */
+  const mandatory = (unit) => unit.priority <= PRIORITY.ESSENTIAL
   const relationDays = (unit) => {
     if (unit.isRevisit || unit.places.some((place) => place.passBy)) return null
-    const days = partnersOf(unit).map((id) => placedDay.get(id)).filter((day) => day != null)
+    // Lo que pidió el viajero o es nivel 1 no se mueve ni se quita por una relación: es el otro
+    // el que va con él (la Galería Borghese del pool, dentro del Parque: el Parque va su día).
+    if (mandatory(unit)) return null
+    const forward = partnersOf(unit).map((id) => placedDay.get(id))
+    const reverse = units.filter((other) => mandatory(other) && partnersOf(other).includes(unit.id)).map((other) => placedDay.get(other.id))
+    const days = [...forward, ...reverse].filter((day) => day != null)
     return days.length > 0 ? days : null
   }
   const revisited = new Set()
@@ -333,6 +340,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   /** Cierres y visita larga: lo que ni yendo de camino se puede saltar. */
   function eligibleIgnoringCap(day, unit) {
+    // Días limitados y reserva obligatoria (`booking_required`, la Domus Aurea): no entra sola en la
+    // ruta sin fechas — podría caer un martes, que está cerrada. Desde el pool sí (el viajero sabe lo
+    // que pide); con fechas, como cualquier otro, solo los días que abre.
+    if (!dateRangeStartIso && unit.poolIndex == null && unit.places.some((place) => place.booking_required)) return false
     if (bannedOnDay.has(`${day.dayNumber}|${unit.id}`)) return false
     const allowedDays = relationDays(unit)
     if (allowedDays && !allowedDays.includes(day.dayNumber)) return false
@@ -560,40 +571,63 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     return neededForTheme(day, unit) || onTheWay(day, unit, attempt)
   }
 
-  // ── Paso 4b: dónde se cena cada día — la tarde irá hacia allí ─────────────────────────────
+  // ── Paso 6a (se llama después del relleno): dónde se cena cada día ────────────────────────
+  // DESPUÉS del relleno (decisión del 2026-09-23): la tarde va primero adonde queda contenido sin
+  // ver, y se cena donde acaba. Elegido antes, con solo lo gordo colocado, el barrio mandaba la
+  // tarde hacia una zona ya agotada (3 días: el día del centro acababa a las 13:00 y cenaba en Roma
+  // Antigua, vista el día 2) y la tarde se quedaba vacía.
   // El barrio bueno para cenar más cercano a donde acaba la tarde. Sin repetir barrio de una noche a
-  // otra mientras queden, SALVO que en ese momento se esté a 15 min o menos andando (decisión del
-  // 2026-09-23): "no repetir" mandaba la tarde de un día de centro a cenar a Monti, a una zona ya
-  // agotada, y la tarde se quedaba vacía. Se elige ya, con lo gordo colocado y antes del relleno,
-  // para que el relleno llene la tarde EN ESA DIRECCIÓN.
+  // otra mientras queden, SALVO que en ese momento se esté a 15 min o menos andando.
   const dinnerOptions = (destData.destination_config?.dinner_zones ?? [])
     .map((zone) => ({ zone, coordinates: destData.meal_zones?.[zone]?.cena?.coordinates }))
     .filter((option) => Array.isArray(option.coordinates))
-  let usedDinnerZones = new Set()
-  for (const day of cityDays) {
-    if (dinnerOptions.length === 0) break
-    if (usedDinnerZones.size >= dinnerOptions.length) usedDinnerZones = new Set()
-    const from = day.open.endCoordinates() ?? day.seedCoords
-    // Orden de preferencia: un barrio nuevo a mano; si no hay, repetir uno que esté a mano; si
-    // tampoco, el barrio nuevo más cercano. Repetir es la excepción, no el atajo: eligiendo siempre
-    // el más cercano, el día del Vaticano volvía a cenar a Campo de' Fiori (a 14 min del Castillo).
-    const rank = (option) => {
-      const near = option.walk <= DINNER_REPEAT_MAX_WALK_MINUTES
-      const fresh = !usedDinnerZones.has(option.zone)
-      return fresh && near ? 0 : near ? 1 : fresh ? 2 : 3
+  function chooseDinners() {
+    let usedDinnerZones = new Set()
+    for (const day of cityDays) {
+      if (dinnerOptions.length === 0) break
+      if (usedDinnerZones.size >= dinnerOptions.length) usedDinnerZones = new Set()
+      const pick = () => {
+        const from = day.open.endCoordinates() ?? day.seedCoords
+        // Orden de preferencia: un barrio nuevo a mano; si no hay, repetir uno que esté a mano; si
+        // tampoco, el barrio nuevo más cercano. Repetir es la excepción, no el atajo: eligiendo siempre
+        // el más cercano, el día del Vaticano volvía a cenar a Campo de' Fiori (a 14 min del Castillo).
+        const rank = (option) => {
+          const near = option.walk <= DINNER_REPEAT_MAX_WALK_MINUTES
+          const fresh = !usedDinnerZones.has(option.zone)
+          return fresh && near ? 0 : near ? 1 : fresh ? 2 : 3
+        }
+        const chosen = dinnerOptions
+          .map((option) => ({ ...option, walk: from ? (travel.leg(from, option.coordinates)?.minutes ?? Infinity) : 0 }))
+          .filter((option) => rank(option) < 3)
+          .sort((a, b) => rank(a) - rank(b) || a.walk - b.walk || a.zone.localeCompare(b.zone, 'es'))
+          // Si con el paseo hasta allí el día deja de caber, el siguiente barrio.
+          .find((option) => day.open.setDinnerPoint(option.coordinates))
+        return chosen
+      }
+      let chosen = pick()
+      // Una tarde llena hasta la hora de cenar no deja tiempo para ir andando a ningún barrio: se
+      // quita el último relleno (no vuelve a ese día) y se vuelve a probar.
+      for (let tries = 0; !chosen && tries < 3; tries++) {
+        const lastFiller = [...day.open.visits()]
+          .reverse()
+          .map((visit) => dayUnits(day).find((unit) => unit.id === visit.unitId))
+          .find((unit) => unit && unit.priority >= PRIORITY.THEME && unit.curatedIndex == null && !unit.places.some((place) => place.passBy))
+        if (!lastFiller) break
+        day.open.remove(lastFiller.id)
+        bannedOnDay.add(`${day.dayNumber}|${lastFiller.id}`)
+        if (lastFiller.isRevisit) {
+          revisited.delete(lastFiller.originalId)
+          day.revisits--
+        } else placedDay.delete(lastFiller.id)
+        chosen = pick()
+      }
+      if (!chosen) continue
+      day.dinnerZone = chosen.zone
+      day.dinnerCoords = chosen.coordinates
+      // Para poder comprobarlo: si se repite barrio, a cuánto estaba al elegirlo.
+      day.dinnerRepeatWalk = usedDinnerZones.has(chosen.zone) ? chosen.walk : null
+      usedDinnerZones.add(chosen.zone)
     }
-    const chosen = dinnerOptions
-      .map((option) => ({ ...option, walk: from ? (travel.leg(from, option.coordinates)?.minutes ?? Infinity) : 0 }))
-      .filter((option) => rank(option) < 3)
-      .sort((a, b) => rank(a) - rank(b) || a.walk - b.walk || a.zone.localeCompare(b.zone, 'es'))
-      // Si con el paseo hasta allí el día deja de caber, el siguiente barrio.
-      .find((option) => day.open.setDinnerPoint(option.coordinates))
-    if (!chosen) continue
-    day.dinnerZone = chosen.zone
-    day.dinnerCoords = chosen.coordinates
-    // Para poder comprobarlo: si se repite barrio, a cuánto estaba al elegirlo.
-    day.dinnerRepeatWalk = usedDinnerZones.has(chosen.zone) ? chosen.walk : null
-    usedDinnerZones.add(chosen.zone)
   }
 
   // ── Paso 5: cuota de experiencias — al menos una del tema por día, si hay algo cerca ─────
@@ -727,6 +761,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   fillRounds()
   enforceRelations()
   fillRounds()
+  // Con la tarde ya llena, dónde se cena; y otra vuelta de relleno, ya en esa dirección.
+  chooseDinners()
+  fillRounds()
+  enforceRelations()
 
   // Segundo repaso de la cuota con los días ya completos: en el paso 5 el día solo tenía sus
   // imprescindibles, y "no hay nada del tema cerca" era verdad entonces pero puede dejar de serlo

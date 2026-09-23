@@ -247,7 +247,10 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 **La tarde y la cena**
 
 41. **Cada día cena en un barrio de `dinner_zones`**: uno nuevo a 15 min o menos; si no, repetir uno
-    a 15 min o menos; si no, el nuevo más cercano. La tarde va HACIA la cena y el paseo cuenta.
+    a 15 min o menos; si no, el nuevo más cercano. El barrio se elige DESPUÉS del relleno, donde
+    acaba la tarde (la tarde va primero adonde queda contenido sin ver); luego se rellena otra vuelta
+    ya hacia la cena, y el paseo cuenta. *Elegido antes, mandaba la tarde a una zona ya agotada y el
+    día acababa a las 13:00.* En 1 día el barrio lo dice el bloque (`dinner_zone_if_afternoon`).
 42. **El recorrido de tarde (`afternoon_flow`) impone su orden** y está exento de la regla de tema y
     del tope de categoría: es el destino hablando.
 43. **"De paso"**: un nivel 1 con `pass_by`, visto un día anterior, se repasa por fuera camino de la
@@ -265,6 +268,11 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 46. **Relaciones entre lugares, en el dato y nunca deducidas por distancia**: grupos e inseparables
     (14, 17b), `contained_in` y `neighbor_of` (16), `approach_to` (17b), `related_to` (17). La
     distancia solo sirve para PROPONER (el validador lista los pares a menos de 300 m).
+
+48. **Días limitados + reserva obligatoria** (`booking_required`, con `booking_note` y `closed_on`):
+    sin fechas no entran solos en la ruta (podrían caer un día que cierra); sí desde el pool o
+    "Añadir parada", y allí se enseña la nota ("Solo vie-dom, visita guiada con reserva"). Con
+    fechas, como cualquier otro, solo los días que abre.
 
 **Tiempos a pie y pureza**
 
@@ -285,7 +293,9 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
    revisan a mano y se copian al JSON; no se usan tal cual.
 3. **Matriz** — `node scripts/buildTravelMatrix.mjs <destino>`.
 4. **Semáforo** — `node server/engine/__tests__/medirDias.mjs --destino <destino> --motor v3
-   --semaforo`: las 112 variantes contra límites que salen de estas reglas. **Destino listo = datos
+   --semaforo`: las 112 variantes contra límites que salen de estas reglas. Los días por encima de
+   `core_days` (repaso, excursión de medio día) tienen sus propias reglas: no se les pide acabar
+   después de las 16:00, sí como mucho 3 revisitas. **Destino listo = datos
    sin rojos + semáforo todo en verde.** Los límites no se aflojan para que un destino pase: si algo
    sale en rojo, o el dato está mal o el motor tiene un fallo.
 
