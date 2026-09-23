@@ -148,6 +148,8 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   // ── Pool: lo que pida y no esté sustituye a la parada de menor prioridad (primero extras, luego
   //    core que no sea joya), en el bloque más cercano a ese lugar. Si no hay a quién sustituir, va a
   //    "No te dio tiempo". El orden de selección decide.
+  const substitutions = []
+  const isInseparablePair = (a, b) => Object.values(destData.groups ?? {}).some((group) => (group.inseparable ?? []).some((pair) => pair.includes(a) && pair.includes(b)))
   const inRoute = (name) => [...stopsByBlock.values()].some((stops) => stops.some((stop) => stop.name === name))
   for (const name of poolNames) {
     if (inRoute(name) || combination.if_pool_contains?.[name]) continue
@@ -156,6 +158,7 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
     const candidates = []
     for (const [blockId, stops] of stopsByBlock) {
       stops.forEach((stop, index) => {
+        if (stop.removedBySubstitution) return
         const isJoya = placeByName.get(stop.name)?.tier === 'joya'
         const rank = stop.role === 'extra' ? 0 : stop.role === 'core' && !isJoya && !stop.freeTour ? 1 : null
         if (rank === null) return
@@ -171,8 +174,14 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
       continue
     }
     const stops = stopsByBlock.get(target.blockId)
-    notIncluded.push({ name: stops[target.index].name, reason: `Sustituido por ${name}, que elegiste` })
+    // Un par inseparable (Plaza Venecia + Altar) se sustituye entero: quitar solo la plaza dejaba el
+    // Altar suelto y sin sitio.
+    const original = stops[target.index]
+    const partnerIndex = stops.findIndex((stop, i) => i !== target.index && !stop.removedBySubstitution && isInseparablePair(original.name, stop.name))
+    const partner = partnerIndex >= 0 ? stops[partnerIndex] : null
+    substitutions.push({ poolName: name, blockId: target.blockId, index: target.index, original, partnerIndex, partner })
     stops[target.index] = { name, role: 'pool', poolIndex: poolNames.indexOf(name) }
+    if (partner) stops[partnerIndex] = { ...partner, removedBySubstitution: true }
   }
 
   // ── Unidades en orden. Lugares seguidos del mismo grupo del JSON van en una sola unidad (para
@@ -182,6 +191,7 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   function unitsForBlock(blockId, slot) {
     const units = []
     for (const stop of stopsByBlock.get(blockId)) {
+      if (stop.removedBySubstitution) continue
       const place = stop.freeTour ? { ...destData.default_free_tour, isFreeTour: true, duration_minutes: destData.default_free_tour.duration_minutes ?? 150 } : placeByName.get(stop.name)
       if (!place) continue
       const group = groupOf.get(stop.name) ?? null
@@ -248,12 +258,32 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
       .flatMap((day) => day.schedule.dropped)
       .flatMap(({ unit }) => unit.places.map((place) => (place.tier === 'joya' ? LOSS_WEIGHT.joya : LOSS_WEIGHT[unit.role] ?? LOSS_WEIGHT.core)))
       .reduce((sum, weight) => sum + weight, 0)
-  let best = null
-  for (const assignment of assignments) {
-    const days = buildDays(assignment)
-    const loss = lossOf(days)
-    if (!best || loss < best.loss) best = { assignment, days, loss }
-    if (loss === 0) break
+  const chooseBest = () => {
+    let best = null
+    for (const assignment of assignments) {
+      const days = buildDays(assignment)
+      const loss = lossOf(days)
+      if (!best || loss < best.loss) best = { assignment, days, loss }
+      if (loss === 0) break
+    }
+    return best
+  }
+  let best = chooseBest()
+  // Lo que el pool pidió y no ha cabido devuelve su sitio a lo que sustituyó: si no, se perdían los
+  // dos (la Galería Borghese no cabía y la Plaza Venecia ya se había quitado para hacerle hueco).
+  const droppedNames = () => new Set(best.days.flatMap((day) => day.schedule.dropped.flatMap(({ unit }) => unit.places.map((place) => place.name))))
+  const undone = substitutions.filter((sub) => droppedNames().has(sub.poolName))
+  if (undone.length > 0) {
+    for (const sub of undone) {
+      stopsByBlock.get(sub.blockId)[sub.index] = sub.original
+      if (sub.partner) stopsByBlock.get(sub.blockId)[sub.partnerIndex] = sub.partner
+      notIncluded.push({ name: sub.poolName, reason: 'No te dio tiempo' })
+    }
+    best = chooseBest()
+  }
+  for (const sub of substitutions) {
+    if (undone.includes(sub)) continue
+    for (const replaced of [sub.original, sub.partner].filter(Boolean)) notIncluded.push({ name: replaced.name, reason: `Sustituido por ${sub.poolName}, que elegiste` })
   }
   const { assignment, days } = best
   for (const day of days) {
