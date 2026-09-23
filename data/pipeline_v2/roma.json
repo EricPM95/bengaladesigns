@@ -2287,7 +2287,10 @@
         "piramide",
         "cestius"
       ],
-      "coordinates_checked": true
+      "coordinates_checked": true,
+      "neighbor_of": [
+        "Cementerio Protestante"
+      ]
     },
     {
       "name": "Iglesia de Santa Maria della Vittoria",
@@ -2719,6 +2722,9 @@
       "search_en_keywords": [
         "fontanone",
         "acqua paola"
+      ],
+      "neighbor_of": [
+        "San Pietro in Montorio y Tempietto de Bramante"
       ]
     },
     {
@@ -4707,7 +4713,7 @@
     {
       "name": "200 Gradi",
       "sub_category": "street_food",
-      "meal": "ambos",
+      "meal": "comida",
       "address": "Piazza del Risorgimento 3, 00192 Roma",
       "coordinates": {
         "lat": 41.90645,
@@ -5107,6 +5113,23 @@
       "tip": "No aceptan reservas y hay solo unas 15 plazas: llega antes de las 12:30 o pide la pasta para llevar.",
       "hours": "Lun-Sáb desde ~11:45 hasta 21:00-22:00 según el día. Domingo cerrado.",
       "best_for": "Pasta fresca casera, comida rápida sentado"
+    },
+    {
+      "name": "Trattoria Valentino",
+      "sub_category": "trattoria",
+      "meal": "ambos",
+      "address": "Via del Boschetto 37, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89823,
+        "lng": 12.49011
+      },
+      "zone": "Monti",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Scamorza a la parrilla (con jamón, radicchio o gorgonzola), carciofi alla romana, cacio e pepe",
+      "tip": "Se llena de romanos y no tiene reserva online: reserva por teléfono o llega antes de las 20:00.",
+      "hours": "Lun-Sáb 12:30-15:00 y 20:00-23:00. Domingo cerrado.",
+      "best_for": "Cena auténtica de barrio entre locales, en Monti"
     }
   ],
   "excursions": {

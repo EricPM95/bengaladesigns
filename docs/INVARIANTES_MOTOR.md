@@ -99,6 +99,9 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
       Excepción de dirección: si el "principal" es un museo de pago y la plaza es su acceso
       (`approach_to`), manda el museo — la plaza va al día del museo, delante; sin el museo en el
       viaje, la plaza va en su día normal.
+    - Si uno de los vecinos es el mirador del atardecer de un día (41), manda el mirador: va su día, y
+      el otro va justo antes si ese día cabe y está abierto; si no, puede ir otro día (decisión del
+      2026-09-24: Tempietto y Fontana dell'Acqua Paola; Popolo y Pincio).
     - Un grupo del JSON ya es inseparable: no hace falta marcar sus miembros como vecinos.
     - Programador: `relationBroken` (scheduleDay.js). Repartidor: `relationDays` +
       `enforceRelations` (planTrip.js). Lo vigila verifyPlanTrip.
@@ -287,7 +290,7 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 
 49. **Restaurantes curados = barrios de cena y ficha de comida.** Cada sitio de comer lleva `meal`:
     "comida" | "cena" | "ambos" (cafés, heladerías y bares de aperitivo no). Una zona (`zone` del
-    restaurante) es barrio de cena si tiene 3 o más restaurantes con `meal` "cena" o "ambos"; su punto
+    restaurante, por su parte principal: "Monti / Fori Imperiali" y "Monti" son Monti) es barrio de cena si tiene 3 o más restaurantes con `meal` "cena" o "ambos"; su punto
     es el centro de esos restaurantes (shared/routeEngine/dinnerZones.js). Se calcula solo, en
     cualquier destino: nada de `dinner_zones` a mano. Cada zona de imprescindibles necesita
     restaurantes curados cerca (el validador avisa). La ficha de comida/cena de un destino curado enseña los

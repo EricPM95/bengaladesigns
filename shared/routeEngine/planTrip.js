@@ -288,12 +288,19 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
    * se queda fuera). null = sin restricción.
    */
   const mandatory = (unit) => unit.priority <= PRIORITY.ESSENTIAL
+  // Miradores del atardecer por los que se eligió un barrio de cena (se llena en chooseDinners).
+  const sunsetUnitIds = new Set()
   const relationDays = (unit) => {
     if (unit.isRevisit || unit.places.some((place) => place.passBy)) return null
     // Lo que pidió el viajero o es nivel 1 no se mueve ni se quita por una relación: es el otro
     // el que va con él (la Galería Borghese del pool, dentro del Parque: el Parque va su día).
     if (mandatory(unit)) return null
-    const forward = partnersOf(unit).map((id) => placedDay.get(id))
+    // El mirador del atardecer manda sobre su vecino (decisión del 2026-09-24): el mirador va su
+    // día; el vecino, justo antes si ese día cabe y está abierto, y si no, otro día.
+    if (sunsetUnitIds.has(unit.id)) return null
+    const forward = partnersOf(unit)
+      .filter((id) => !sunsetUnitIds.has(id))
+      .map((id) => placedDay.get(id))
     const reverse = units.filter((other) => mandatory(other) && partnersOf(other).includes(unit.id)).map((other) => placedDay.get(other.id))
     const days = [...forward, ...reverse].filter((day) => day != null)
     return days.length > 0 ? days : null
@@ -684,6 +691,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       day.dinnerDisplay = option.display
       // Si el barrio ganó por el atardecer, ese mirador entra el primero (ver más abajo).
       day.sunsetUnit = pick.sunsetUnit ?? null
+      if (day.sunsetUnit) sunsetUnitIds.add(day.sunsetUnit.id)
       // Para poder comprobarlo: si comparte barrio con otro día, a cuánto estaba (solo el que no
       // repite puede estar a más de 15 min).
       day.dinnerRepeatWalk = shared && walk <= DINNER_REPEAT_MAX_WALK_MINUTES ? walk : null
@@ -941,7 +949,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   // ── Resultado ─────────────────────────────────────────────────────────────────────────────
-  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null }]))
+  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
   return {
     mode,
     days: skeleton.map((day) => ({ ...day, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),

@@ -3,8 +3,9 @@
  *
  * Nada de listas a mano: una zona es barrio de cena si tiene MIN_DINNER_RESTAURANTS o más
  * restaurantes curados que sirven cenas (`meal` "cena" o "ambos"). La zona es la que el propio
- * restaurante dice (`zone` del JSON: "Trastevere", "Tridente / Spagna"...), y el punto de la cena es
- * el centro de esos restaurantes. Sirve igual para cualquier destino con `restaurants`.
+ * restaurante dice (`zone` del JSON), por su parte PRINCIPAL: "Monti / Fori Imperiali" y "Monti" son
+ * Monti; "Tridente / Spagna", Tridente. El punto de la cena es el centro de esos restaurantes y el
+ * nombre que se enseña, la etiqueta completa más repetida. Sirve igual para cualquier destino.
  *
  * Módulo puro (lo usan el motor, el servidor y los scripts).
  */
@@ -21,6 +22,11 @@ export function zoneIdOf(label) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_|_$/g, '')
+}
+
+/** "Monti / Fori Imperiali" -> "Monti": la zona principal de la etiqueta de un restaurante. */
+export function mainZoneOf(label) {
+  return String(label).split('/')[0].trim()
 }
 
 /** ¿Sirve cenas? `meal` del JSON: "comida" | "cena" | "ambos". */
@@ -51,17 +57,21 @@ export function dinnerZones(destData) {
   for (const restaurant of destData?.restaurants ?? []) {
     const coordinates = restaurantCoordinates(restaurant)
     if (!servesDinner(restaurant) || !restaurant.zone || !coordinates) continue
-    if (!byLabel.has(restaurant.zone)) byLabel.set(restaurant.zone, [])
-    byLabel.get(restaurant.zone).push({ name: restaurant.name, coordinates })
+    const main = mainZoneOf(restaurant.zone)
+    if (!byLabel.has(main)) byLabel.set(main, [])
+    byLabel.get(main).push({ name: restaurant.name, coordinates, label: restaurant.zone })
   }
   const zones = Object.entries(destData?.zones ?? {}).filter(([, zone]) => Array.isArray(zone.center))
   return [...byLabel.entries()]
     .filter(([, list]) => list.length >= MIN_DINNER_RESTAURANTS)
-    .map(([label, list]) => {
+    .map(([main, list]) => {
+      // El nombre que se enseña: la etiqueta completa más repetida ("Tridente / Spagna").
+      const labels = list.map((r) => r.label)
+      const label = labels.sort((a, b) => labels.filter((l) => l === b).length - labels.filter((l) => l === a).length || a.localeCompare(b, 'es'))[0] ?? main
       const coordinates = [average(list.map((r) => r.coordinates[0])), average(list.map((r) => r.coordinates[1]))]
       const nearest = zones.map(([id, zone]) => ({ id, meters: straightLineMeters(coordinates, zone.center) })).sort((a, b) => a.meters - b.meters)[0]
       return {
-        id: zoneIdOf(label),
+        id: zoneIdOf(main),
         label,
         display: `en ${label.replace(/\s*\/\s*/g, ' y ')}`,
         coordinates,

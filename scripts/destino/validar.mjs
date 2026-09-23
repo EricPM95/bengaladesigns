@@ -37,7 +37,7 @@ import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
-import { MIN_DINNER_RESTAURANTS, dinnerZones, servesDinner } from '../../shared/routeEngine/dinnerZones.js'
+import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZoneOf, servesDinner } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? '').toLowerCase()
@@ -240,7 +240,7 @@ const section = (title) => {
   if (zones.length === 0) s.red.push(`ningún barrio de cena: hacen falta ${MIN_DINNER_RESTAURANTS}+ restaurantes que sirvan cenas en una misma zona`)
   for (const zone of zones) s.info.push(`barrio de cena ${zone.label}: ${zone.restaurants.length} restaurantes (${zone.restaurants.join(', ')})`)
   const counts = new Map()
-  for (const restaurant of D.restaurants ?? []) if (servesDinner(restaurant) && restaurant.zone) counts.set(restaurant.zone, (counts.get(restaurant.zone) ?? 0) + 1)
+  for (const restaurant of D.restaurants ?? []) if (servesDinner(restaurant) && restaurant.zone) counts.set(mainZoneOf(restaurant.zone), (counts.get(mainZoneOf(restaurant.zone)) ?? 0) + 1)
   for (const [label, count] of counts) if (count === MIN_DINNER_RESTAURANTS - 1) s.warn.push(`${label}: ${count} restaurantes de cena — con uno más sería barrio de cena`)
   // Cada imprescindible con un barrio de cena a mano (~15 min andando, 1.100 m en línea recta).
   for (const place of places.filter((p) => p.level === 1)) {

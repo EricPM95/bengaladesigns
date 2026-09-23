@@ -19,7 +19,7 @@
  *   - la cena de cada día cae en un barrio de `dinner_zones`; solo repite barrio si al elegirlo
  *     estaba a 15 min o menos andando
  *   - lo que está dentro de otro (contained_in) y los vecinos (neighbor_of) van el día de su pareja y
- *     seguidos
+ *     seguidos, salvo que uno de los vecinos sea el mirador del atardecer de un día (entonces manda él)
  *   - "de paso": solo nivel 1 con `pass_by`, visto un día anterior, nunca la nocturna de esa noche,
  *     siempre al final del día y con su mensaje
  */
@@ -168,8 +168,11 @@ for (const pace of ['nonstop', 'tranquilo']) {
             // Dentro de otro (contained_in) y vecinos (neighbor_of): solo el día de su pareja, y seguidos.
             for (const place of D.places.filter((p) => p.contained_in || p.neighbor_of)) {
               if (!seen.has(place.name)) continue
+              // El mirador del atardecer de un día manda sobre su vecino: el vecino puede ir otro día.
+              const sunsets = new Set(city.map((day) => day.sunsetUnitId).filter(Boolean))
               for (const partner of [place.contained_in, ...(place.neighbor_of ?? [])].filter(Boolean)) {
                 if (!seen.has(partner)) continue
+                if (place.neighbor_of?.includes(partner) && (sunsets.has(place.name) || sunsets.has(partner))) continue
                 const days = [...new Set([...(place.neighbor_of ?? [])].map((n) => seen.get(n)).filter(Boolean))]
                 const ok = place.contained_in === partner ? seen.get(partner) === seen.get(place.name) : days.includes(seen.get(place.name))
                 if (!ok) fail(`${tag}: ${place.name} el día ${seen.get(place.name)} y ${partner} el ${seen.get(partner)}`)
