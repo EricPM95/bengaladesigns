@@ -230,14 +230,15 @@ export function openDay(input) {
      * Dónde entraría la unidad, cuánto cambia el coste del día y cuántos minutos de paseo AÑADE.
      * null si no cabe (o si solo cabe añadiendo más paseo que `maxAddedWalk`).
      *
-     * Cada posición se juzga con el criterio del repartidor —coste del día CONTANDO la tarde vacía
-     * antes de cenar— y dentro del tope de paseo. Con el criterio de ordenar (menos espera), la
-     * Plaza Colonna se metía en un hueco de la mañana a 33 minutos de desvío y se descartaba por
-     * desvío, cuando al final de la tarde, de camino a la cena, añadía 4.
+     * La posición se elige como al ordenar (menos paseo y espera) pero SOLO entre las que no pasan
+     * del tope de paseo: sin el tope, la Plaza Colonna se metía en un hueco de la mañana a 33 minutos
+     * de desvío y se descartaba por desvío, cuando al final de la tarde añadía 4. La tarde vacía
+     * antes de cenar NO elige la posición —si la eligiera, el motor colocaba la parada tarde abriendo
+     * un hueco de 80 minutos a media tarde: movía el tiempo muerto de sitio en vez de quitarlo—, solo
+     * entra en \`addedCost\`, que es lo que el repartidor usa para decidir si la parada compensa.
      */
     tryAdd(unit, { maxAddedWalk = Infinity } = {}) {
       const before = simulate(sequence, ctx)
-      const baseCost = before.cost + (before.tailPenalty ?? 0)
       let best = null
       for (let i = 0; i <= sequence.length; i++) {
         const candidate = [...sequence.slice(0, i), unit, ...sequence.slice(i)]
@@ -245,11 +246,12 @@ export function openDay(input) {
         if (!result.ok) continue
         const addedWalk = result.walk - (before.walk ?? 0)
         if (addedWalk > maxAddedWalk) continue
-        // Para el repartidor, una parada que llena la tarde vacía antes de cenar abarata el día.
-        const addedCost = result.cost + result.tailPenalty - baseCost
-        if (!best || addedCost < best.addedCost) best = { sequence: candidate, addedCost, addedWalk }
+        if (!best || result.cost < best.result.cost) best = { sequence: candidate, result, addedWalk }
       }
-      return best
+      if (!best) return null
+      // Para el repartidor, una parada que llena la tarde vacía antes de cenar abarata el día.
+      const addedCost = best.result.cost + best.result.tailPenalty - (before.cost + (before.tailPenalty ?? 0))
+      return { sequence: best.sequence, addedCost, addedWalk: best.addedWalk }
     },
 
     /** Mete la unidad (lo que devolvió `tryAdd`, o la unidad a secas). false si no cabe. */
