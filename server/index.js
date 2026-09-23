@@ -828,10 +828,73 @@ function sanitizeCuratedRestaurants(parsed) {
     })
 }
 
+/** Hasta dónde se va andando a comer o cenar desde donde acaba la parada (o el barrio de la cena). */
+const CURATED_MEAL_MAX_WALK_MINUTES = 12
+/** Lo que es sitio de comer o cenar; heladerías y cafés son un capricho, no la comida. */
+const MEAL_SUB_CATEGORIES = { comida: ['trattoria', 'pizza', 'street_food', 'aperitivo'], cena: ['trattoria', 'pizza', 'aperitivo'] }
+/** Una hora que tiene que caer dentro del horario del restaurante para servir esa comida. */
+const MEAL_PROBE_MINUTES = { comida: 13 * 60 + 30, cena: 20 * 60 + 30 }
+
+/**
+ * Destinos curados: los restaurantes del JSON del destino (`restaurants`) que están a
+ * CURATED_MEAL_MAX_WALK_MINUTES o menos andando, abiertos a esa hora, del más cercano al más lejano.
+ * Para la cena se mide desde el barrio donde el motor ha puesto la cena (`meal_zones.<x>.cena`), no
+ * desde la última parada. Vacío si el destino no tiene restaurantes curados cerca: entonces se
+ * busca en la web como en cualquier destino.
+ */
+function curatedRestaurantsNear(destino, zona, franja, coordinates) {
+  const data = findPipelineV2Data(destino)
+  if (!Array.isArray(data?.restaurants) || data.restaurants.length === 0) return []
+  const dinnerZone = franja === 'cena' ? Object.values(data.meal_zones ?? {}).find((zone) => zone?.cena?.options?.includes(zona) && Array.isArray(zone.cena.coordinates)) : null
+  const center = dinnerZone ? { lat: dinnerZone.cena.coordinates[0], lng: dinnerZone.cena.coordinates[1] } : coordinates
+  if (!Number.isFinite(center?.lat) || !Number.isFinite(center?.lng) || (center.lat === 0 && center.lng === 0)) return []
+  const walkMinutes = (place) => (haversineMeters(center, place.coordinates) * 1.32) / 83
+  const opensAt = (hours, minutes) => {
+    if (!hours) return true
+    const ranges = [...String(hours).matchAll(/(\d{1,2})[:.](\d{2})\s*-\s*(\d{1,2})[:.](\d{2})/g)].map((m) => [Number(m[1]) * 60 + Number(m[2]), (Number(m[3]) || 24) * 60 + Number(m[4])])
+    return ranges.length === 0 || ranges.some(([open, close]) => open <= minutes && (close <= open ? close + 24 * 60 : close) >= minutes)
+  }
+  return data.restaurants
+    .filter((place) => MEAL_SUB_CATEGORIES[franja].includes(place.sub_category) && Number.isFinite(place.coordinates?.lat))
+    .filter((place) => opensAt(place.hours, MEAL_PROBE_MINUTES[franja]))
+    .map((place) => ({ place, minutes: walkMinutes(place) }))
+    .filter((item) => item.minutes <= CURATED_MEAL_MAX_WALK_MINUTES)
+    .sort((a, b) => a.minutes - b.minutes)
+    .slice(0, 4)
+    .map(({ place, minutes }) => ({
+      nombre: place.name,
+      motivo: [place.best_for, place.what_to_order ? `Pide: ${place.what_to_order}` : null, `A ${Math.max(1, Math.round(minutes))} min andando`].filter(Boolean).join(' · '),
+      presupuesto: ['€', '€€', '€€€'].includes(place.price_range) ? place.price_range : '€€',
+      foto: `https://picsum.photos/seed/${encodeURIComponent(place.name)}/400/280`,
+      latitude: place.coordinates.lat,
+      longitude: place.coordinates.lng,
+    }))
+}
+
+function haversineMeters(a, b) {
+  const rad = Math.PI / 180
+  const dLat = (b.lat - a.lat) * rad
+  const dLng = (b.lng - a.lng) * rad
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2
+  return 2 * 6371000 * Math.asin(Math.sqrt(h))
+}
+
 app.post('/api/meal-recommendations', async (req, res) => {
-  const { destino, zona, franja } = req.body ?? {}
+  const { destino, zona, franja, coordinates } = req.body ?? {}
   if (!destino || !zona || (franja !== 'comida' && franja !== 'cena')) {
     res.status(400).json({ error: 'Se requiere destino, zona y franja ("comida" o "cena").' })
+    return
+  }
+
+  // Destino curado con restaurantes cerca: los nuestros, sin búsqueda web (ni coste).
+  let curated = []
+  try {
+    curated = curatedRestaurantsNear(destino, zona, franja, coordinates)
+  } catch (error) {
+    console.error('[meal-recommendations] restaurantes curados:', error)
+  }
+  if (curated.length > 0) {
+    res.json({ seleccion: curated, curated: true })
     return
   }
 

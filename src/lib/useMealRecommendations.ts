@@ -41,7 +41,7 @@ export function useMealRecommendations(
   const [loading, setLoading] = useState(false)
   const fetchedKeyRef = useRef<string | null>(null)
 
-  const key = `${destino.toLowerCase()}|${zonaBusqueda.toLowerCase()}|${franja}`
+  const key = `${destino.toLowerCase()}|${zonaBusqueda.toLowerCase()}|${franja}|${coordinates.lat.toFixed(3)},${coordinates.lng.toFixed(3)}`
 
   useEffect(() => {
     if (!enabled || fetchedKeyRef.current === key) return
@@ -51,7 +51,7 @@ export function useMealRecommendations(
     setNearby(null)
     setLoading(true)
     Promise.all([
-      fetchCuratedRestaurants(destino, zonaBusqueda, franja),
+      fetchCuratedRestaurants(destino, zonaBusqueda, franja, hasRealCoordinates(coordinates) ? coordinates : undefined),
       hasRealCoordinates(coordinates)
         ? searchNearbyPlaces(['restaurant'], coordinates, 'Restaurante cercano', undefined, NEARBY_RESTAURANT_RADIUS_METERS)
         : Promise.resolve([]),

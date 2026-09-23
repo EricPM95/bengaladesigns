@@ -112,7 +112,9 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     Puente se citaba aquí de ejemplo pero no estaba en el JSON hasta el 2026-09-23.
 
 17b. **Acceso + monumento (`approach_to`)**: la plaza, el puente o el parque va SIEMPRE antes del
-    monumento al que da acceso (regla del programador; se acepta un rodeo de 10-50 m). Y son un
+    monumento al que da acceso, y si caen el mismo día, JUSTO antes: es el camino de llegada (con
+    dos monumentos, justo antes del primero). Cada uno puede ir solo o en días distintos si no son
+    inseparables (el Parque de Villa Borghese sin la Galería). Se acepta un rodeo de 10-50 m. Y son un
     grupo INSEPARABLE cuando el monumento se visita gratis (Basílica de San Pedro, Altar de la
     Patria: lo de pago es la cúpula o la terraza) o se disfruta también desde fuera
     (`visible_from_outside`: Castillo de Sant'Angelo, como el Coliseo). Si hay que entrar sí o sí
@@ -183,8 +185,11 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
     los órdenes de lo que va después de comer (hasta 8 piezas) con salida fija (donde se come) y
     llegada fija (el barrio de la cena), y se queda el de menos metros que respete horarios y
     reglas. Lo curado y el recorrido de tarde (`afternoon_flow`) no se mueven entre sí; solo se
-    intercala lo demás. Si el mejor orden CON un relleno camina más de 5 min que el mejor orden SIN
-    él, el relleno se quita (y no vuelve a ese día): un relleno nunca justifica un zigzag. Lo único
+    intercala lo demás. Si los HORARIOS obligan a andar más de 5 min de más (mejor orden real frente
+    al mejor orden con las mismas paradas y todo abierto), se quita el relleno responsable (y no
+    vuelve a ese día): un relleno nunca justifica un zigzag. *La primera versión ("con el relleno
+    frente a sin él") vaciaba las tardes en bucle en cuanto hubo barrios de cena cerca de donde se
+    come: Ara Pacis → Pincio → Popolo → cena en Plaza de España contaba como zigzag.* Lo único
     del tema elegido en el día no se quita: el mínimo de experiencias no se baja. Métrica: tarde+%
     y zigzag en medirDias (km andados frente al mínimo con las mismas paradas).
     *Por qué: Castillo → Tortugas → Minerva → Elefantino → Trastevere bajaba, subía y volvía a bajar
@@ -273,6 +278,13 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
     sin fechas no entran solos en la ruta (podrían caer un día que cierra); sí desde el pool o
     "Añadir parada", y allí se enseña la nota ("Solo vie-dom, visita guiada con reserva"). Con
     fechas, como cualquier otro, solo los días que abre.
+
+49. **Restaurantes curados = barrios de cena y ficha de comida.** Cada zona de imprescindibles
+    necesita restaurantes curados cerca; con ellos se define su barrio de cena (`meal_zones.<x>.cena`
+    con coordenadas, en `dinner_zones`). La ficha de comida/cena de un destino curado enseña los
+    restaurantes del JSON a 12 min o menos andando (desde la parada, o desde el barrio de la cena),
+    abiertos a esa hora, en lista y en el mapa; solo si no hay ninguno se busca en la web.
+    *Sin barrio de cena en el norte, la tarde de Plaza de España/Popolo se podaba entera.*
 
 **Tiempos a pie y pureza**
 

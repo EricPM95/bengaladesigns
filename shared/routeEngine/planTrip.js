@@ -104,9 +104,9 @@ const THEME_ON_THE_WAY_MINUTES = 10
 const AWAY_FROM_DINNER_TOLERANCE_MINUTES = 2
 
 /**
- * Relleno de tarde que obliga a volver atrás (decisión del 2026-09-23): si el mejor orden de la tarde
- * con él camina más que esto por encima del mejor orden sin él, se quita. Un relleno nunca
- * justifica un zigzag.
+ * Relleno de tarde que un HORARIO obliga a hacer volver atrás (decisión del 2026-09-23): si por los
+ * horarios la tarde anda más que esto por encima del mejor orden con todo abierto, se quita el
+ * relleno responsable. Un relleno nunca justifica un zigzag.
  */
 const MAX_BACKTRACK_WALK_MINUTES = 5
 

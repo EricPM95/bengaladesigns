@@ -188,10 +188,14 @@
         ]
       },
       "cena": {
-        "display": "cerca del Vaticano",
+        "display": "en Borgo Pio",
         "options": [
-          "Prati",
-          "Borgo Pio"
+          "Borgo Pio",
+          "Prati"
+        ],
+        "coordinates": [
+          41.9038,
+          12.4607
         ]
       }
     },
@@ -319,6 +323,60 @@
         "display": "en el Nomentano",
         "options": [
           "Quartiere Trieste"
+        ]
+      }
+    },
+    "spagna": {
+      "comida": {
+        "display": "cerca de Plaza de España",
+        "options": [
+          "Plaza de España"
+        ]
+      },
+      "cena": {
+        "display": "cerca de Plaza de España",
+        "options": [
+          "Plaza de España"
+        ],
+        "coordinates": [
+          41.9072,
+          12.4794
+        ]
+      }
+    },
+    "trevi": {
+      "comida": {
+        "display": "junto a la Fontana de Trevi",
+        "options": [
+          "Fontana de Trevi"
+        ]
+      },
+      "cena": {
+        "display": "junto a la Fontana de Trevi",
+        "options": [
+          "Fontana de Trevi"
+        ],
+        "coordinates": [
+          41.9018,
+          12.4856
+        ]
+      }
+    },
+    "coliseo": {
+      "comida": {
+        "display": "junto al Coliseo",
+        "options": [
+          "Celio"
+        ]
+      },
+      "cena": {
+        "display": "junto al Coliseo",
+        "options": [
+          "Celio"
+        ],
+        "coordinates": [
+          41.8891,
+          12.4957
         ]
       }
     }
@@ -1163,7 +1221,6 @@
       "filter_category": "museos_arte",
       "related_to": "Parque de Villa Borghese",
       "schedule": "Mar-Dom 09:00-19:00. Cerrado lunes. Solo con reserva (turnos de 2h)",
-      "contained_in": "Parque de Villa Borghese",
       "search_aliases": [
         "borghese gallery",
         "galeria borghese (museo)",
@@ -3738,7 +3795,7 @@
         ],
         "extras_completo": [],
         "lunch_zone_if_morning": "centro_historico",
-        "dinner_zone_if_afternoon": "centro_historico",
+        "dinner_zone_if_afternoon": "spagna",
         "swaps": {
           "naturaleza_vistas": {
             "insert_before": "Plaza de España",
@@ -4290,6 +4347,38 @@
       "best_for": "Gelato experimental y vanguardista"
     },
     {
+      "name": "Gelateria Valentino",
+      "sub_category": "gelato",
+      "address": "Via del Lavatore 96, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90145,
+        "lng": 12.4847
+      },
+      "zone": "Trevi",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Pistacho, stracciatella, caramelo salado",
+      "tip": "Parada rápida a cualquier hora, lejos de los helados turísticos de la plaza; tienen opciones sin lactosa y veganas.",
+      "hours": "Todos los días 11:00-24:00 (solo confirmado en TripAdvisor)",
+      "best_for": "Helado artesano junto a Trevi"
+    },
+    {
+      "name": "Fatamorgana (Via Laurina)",
+      "sub_category": "gelato",
+      "address": "Via Laurina 10, 00187 Roma",
+      "coordinates": {
+        "lat": 41.9088,
+        "lng": 12.478
+      },
+      "zone": "Popolo / Tridente",
+      "price_range": "€",
+      "avg_price_person": "3-6€",
+      "what_to_order": "Kentucky (chocolate y tabaco), albahaca con nueces y miel, pistacho de Bronte",
+      "tip": "Parada rápida después de comer; todos los sabores y conos son sin gluten.",
+      "hours": null,
+      "best_for": "Helado artesano de sabores originales"
+    },
+    {
       "name": "Roscioli Caffè Pasticceria",
       "sub_category": "cafe",
       "address": "Piazza Benedetto Cairoli, 16, 00186 Roma",
@@ -4562,6 +4651,22 @@
       "best_for": "Tablas de embutidos y quesos para compartir"
     },
     {
+      "name": "200 Gradi",
+      "sub_category": "street_food",
+      "address": "Piazza del Risorgimento 3, 00192 Roma",
+      "coordinates": {
+        "lat": 41.90645,
+        "lng": 12.45654
+      },
+      "zone": "Vaticano / Borgo",
+      "price_range": "€",
+      "avg_price_person": "8-15€",
+      "what_to_order": "Panino Verbano (anchoas y búfala), panino de pato, panino de porchetta",
+      "tip": "Ideal si vais justos de tiempo: está entre la salida de los Museos y la plaza, y el bocadillo se puede llevar.",
+      "hours": "Todos los días, comida y cena (horario exacto sin confirmar)",
+      "best_for": "Bocadillo gourmet rápido"
+    },
+    {
       "name": "Pizzeria Da Baffetto",
       "sub_category": "pizza",
       "address": "Via del Governo Vecchio, 114, 00186 Roma",
@@ -4576,6 +4681,86 @@
       "tip": "Pizzería clásica romana desde 1960. Cola en la puerta garantizada. Pizza fina, crujiente y enorme. Sitio minúsculo, mesas compartidas.",
       "hours": "Todos los días 18:30-01:00. Solo cenas.",
       "best_for": "Pizza clásica romana nocturna con ambiente vintage"
+    },
+    {
+      "name": "Coming Out",
+      "sub_category": "pizza",
+      "address": "Via di S. Giovanni in Laterano 8, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89006,
+        "lng": 12.49444
+      },
+      "zone": "Coliseo / Celio",
+      "price_range": "€",
+      "avg_price_person": null,
+      "what_to_order": "Pizza",
+      "tip": "Probado por nosotros: muy buenas pizzas a un paso del Coliseo.",
+      "hours": null,
+      "best_for": "Pizza rápida y buena junto al Coliseo"
+    },
+    {
+      "name": "Li Rioni",
+      "sub_category": "pizza",
+      "address": "Via dei Santi Quattro 24, 00184 Roma",
+      "coordinates": {
+        "lat": 41.88869,
+        "lng": 12.49783
+      },
+      "zone": "Coliseo / Celio",
+      "price_range": "€",
+      "avg_price_person": "15-25€",
+      "what_to_order": "Pizza romana fina al horno de leña, supplì",
+      "tip": "Solo abre para cenar: llega antes de las 20:00 o toca hacer cola. Ruidosa y muy romana.",
+      "hours": "Mié-Lun 18:30-24:00 (solo cena). Martes cerrado. Cierra unas 2 semanas en agosto.",
+      "best_for": "Pizza romana auténtica para cenar"
+    },
+    {
+      "name": "La Prezzemolina",
+      "sub_category": "pizza",
+      "address": "Via del Colosseo 1/E-F, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89318,
+        "lng": 12.48895
+      },
+      "zone": "Coliseo / Monti",
+      "price_range": "€",
+      "avg_price_person": "8-12€",
+      "what_to_order": "Pizza al taglio de mortadela, pizza carbonara, supplì",
+      "tip": "Ideal para un almuerzo rápido para llevar entre el Coliseo y el Foro; ve antes de las 13:00 para tener más variedad.",
+      "hours": "Todos los días 11:00-17:00 (solo confirmado en TripAdvisor)",
+      "best_for": "Almuerzo rápido y barato"
+    },
+    {
+      "name": "La Boccaccia",
+      "sub_category": "pizza",
+      "address": "Via Leonina 73, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89471,
+        "lng": 12.4917
+      },
+      "zone": "Monti / Fori Imperiali",
+      "price_range": "€",
+      "avg_price_person": "5-10€",
+      "what_to_order": "Pizza al taglio de berenjena y tomate, patata y champiñones",
+      "tip": "Solo tiene 5-6 taburetes: pide para llevar y cómetela en la fuente de Piazza della Madonna dei Monti, a 2 minutos.",
+      "hours": "Todos los días 9:00-23:00",
+      "best_for": "Almuerzo rápido y barato en Monti"
+    },
+    {
+      "name": "Piccolo Buco",
+      "sub_category": "pizza",
+      "address": "Via del Lavatore 91, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90132,
+        "lng": 12.48464
+      },
+      "zone": "Trevi",
+      "price_range": "€€",
+      "avg_price_person": "20-35€",
+      "what_to_order": "Margherita con burrata, cuatro quesos, napolitana",
+      "tip": "No aceptan reservas: llega a la apertura o a media tarde para evitar colas de hasta 50 minutos.",
+      "hours": "Mar-Dom 12:00-23:00 (o hasta agotar masa). Lunes cerrado.",
+      "best_for": "Pizza napolitana de masa alta"
     },
     {
       "name": "Ai Tre Scalini",
@@ -4594,6 +4779,22 @@
       "best_for": "Aperitivo de barrio en el corazón de Monti"
     },
     {
+      "name": "Buccone Vini e Olii",
+      "sub_category": "aperitivo",
+      "address": "Via di Ripetta 19/20, 00186 Roma",
+      "coordinates": {
+        "lat": 41.90904,
+        "lng": 12.47615
+      },
+      "zone": "Popolo / Tridente",
+      "price_range": "€€",
+      "avg_price_person": "20-35€",
+      "what_to_order": "Carpaccio de Chianina, albóndigas, tabla de embutidos y quesos con vino por copas",
+      "tip": "Ideal para un almuerzo ligero o un aperitivo al atardecer; cierra a las 22:00.",
+      "hours": "Lun-Sáb 10:00-22:00, Dom 11:00-22:00",
+      "best_for": "Vino por copas en una enoteca histórica"
+    },
+    {
       "name": "Panella - L'Arte del Pane",
       "sub_category": "cafe",
       "address": "Via Merulana, 54, 00185 Roma",
@@ -4608,6 +4809,22 @@
       "tip": "Panadería-pastelería con fachada espectacular. El mostrador de focaccias y pizzas al taglio es tentador. Terraza para sentarse cerca de Basílica de Santa María la Mayor.",
       "hours": "Lun-Jue 8:00-23:00. Vie-Dom 8:00-00:00.",
       "best_for": "Panadería gourmet con terraza y focaccias irresistibles"
+    },
+    {
+      "name": "Pompi",
+      "sub_category": "cafe",
+      "address": "Via della Croce 88, 00187 Roma",
+      "coordinates": {
+        "lat": 41.9065,
+        "lng": 12.48086
+      },
+      "zone": "Tridente / Spagna",
+      "price_range": "€",
+      "avg_price_person": "5€",
+      "what_to_order": "Tiramisú clásico, de fresa o de caramelo salado",
+      "tip": "El tiramisú más famoso de Roma, desde 1960: se pide para llevar y se come en la Escalinata.",
+      "hours": "Dom-Vie 10:00-22:30, Sáb 10:30-22:30 (web oficial)",
+      "best_for": "Postre dulce tras la Escalinata"
     },
     {
       "name": "Osteria Fernanda",
@@ -4640,6 +4857,182 @@
       "tip": "Cocina de mercado fresca. Cada día el menú cambia según lo que llega. Cerca del Vaticano pero sin turistas. Recomendada por Katie Parla.",
       "hours": "Mar-Dom 12:30-15:00, 19:00-23:00. Lunes cerrado.",
       "best_for": "Cocina de mercado fresca cerca del Vaticano"
+    },
+    {
+      "name": "Il Bocconcino",
+      "sub_category": "trattoria",
+      "address": "Via Ostilia 23, 00184 Roma",
+      "coordinates": {
+        "lat": 41.88861,
+        "lng": 12.49498
+      },
+      "zone": "Coliseo / Celio",
+      "price_range": "€€",
+      "avg_price_person": "20-30€",
+      "what_to_order": "Tagliolini con ragú de pato, carbonara",
+      "tip": "Buena opción para comer justo después del Coliseo; reserva online, a mediodía el servicio puede ir lento.",
+      "hours": "Jue-Mar 8:30-23:30, cocina todo el día. Miércoles cerrado.",
+      "best_for": "Osteria romana a dos pasos del Coliseo"
+    },
+    {
+      "name": "La Taverna dei Fori Imperiali",
+      "sub_category": "trattoria",
+      "address": "Via della Madonna dei Monti 9, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89397,
+        "lng": 12.48838
+      },
+      "zone": "Monti / Fori Imperiali",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Cacio e pepe, carbonara, ñoquis con ragú de ternera",
+      "tip": "Reserva con antelación, sobre todo para cenar: es pequeña y se llena cada noche.",
+      "hours": "Mié-Lun 12:30-15:00 (Vie-Sáb hasta 15:30) y 19:30-22:30. Martes cerrado.",
+      "best_for": "Cocina romana familiar entre el Foro y Monti"
+    },
+    {
+      "name": "Enoteca Corsi",
+      "sub_category": "trattoria",
+      "address": "Via del Gesù 87/88, 00186 Roma",
+      "coordinates": {
+        "lat": 41.89693,
+        "lng": 12.47872
+      },
+      "zone": "Piazza Venezia",
+      "price_range": "€€",
+      "avg_price_person": "20-35€",
+      "what_to_order": "Carbonara, carciofi alla giudia, abbacchio",
+      "tip": "Ve pronto, sobre las 12:30: a mediodía se llena de gente de oficina y no siempre hay mesa sin reserva.",
+      "hours": "Lun-Vie 12:00-15:30 y 19:30-22:30. Sáb solo 12:00-15:30. Domingo cerrado.",
+      "best_for": "Comida romana auténtica a buen precio junto a Piazza Venezia"
+    },
+    {
+      "name": "Il Gabriello",
+      "sub_category": "trattoria",
+      "address": "Via Vittoria 51, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90693,
+        "lng": 12.48001
+      },
+      "zone": "Tridente / Spagna",
+      "price_range": "€€€",
+      "avg_price_person": "40-55€",
+      "what_to_order": "Tonnarelli con gambas, amatriciana, cacio e pepe",
+      "tip": "Solo abre para cenar y es pequeño: reserva por teléfono para las 19:30-20:00.",
+      "hours": "Lun-Sáb 19:00-23:00 (solo cena). Domingo cerrado.",
+      "best_for": "Cena especial tras el atardecer en la Escalinata"
+    },
+    {
+      "name": "Edy",
+      "sub_category": "trattoria",
+      "address": "Vicolo del Babuino 4, 00187 Roma",
+      "coordinates": {
+        "lat": 41.9089,
+        "lng": 12.47903
+      },
+      "zone": "Tridente / Spagna",
+      "price_range": "€€",
+      "avg_price_person": "35-45€",
+      "what_to_order": "Spaghetti al cartoccio (con marisco), cacio e pepe, saltimbocca",
+      "tip": "Reserva para cenar, sobre todo de jueves a sábado; pide mesa en el callejón si hace buen tiempo.",
+      "hours": "Lun-Sáb 12:00-15:00 y 18:30-23:00. Domingo cerrado.",
+      "best_for": "Trattoria familiar a dos pasos de Via Margutta"
+    },
+    {
+      "name": "Sgarro Bistrot",
+      "sub_category": "trattoria",
+      "address": "Via Belsiana 14, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90589,
+        "lng": 12.47929
+      },
+      "zone": "Tridente / Spagna",
+      "price_range": "€€",
+      "avg_price_person": "20-30€",
+      "what_to_order": "Amatriciana, carbonara, cacio e pepe, saltimbocca",
+      "tip": "Bistró familiar pequeño y de lo mejor en calidad-precio junto a la Escalinata; ojo, las bebidas no son baratas.",
+      "hours": "Todos los días 11:30-22:30 (mar y sáb hasta 23:45), según TripAdvisor",
+      "best_for": "Cena romana sencilla y buena al pie de la Escalinata"
+    },
+    {
+      "name": "Poldo e Gianna Osteria",
+      "sub_category": "trattoria",
+      "address": "Vicolo Rosini 6/7, 00186 Roma",
+      "coordinates": {
+        "lat": 41.90223,
+        "lng": 12.47727
+      },
+      "zone": "Tridente / Spagna",
+      "price_range": "€€",
+      "avg_price_person": "~30€",
+      "what_to_order": "Tonnarelli cacio e pepe, rigatoni a la carbonara, rigatoni all'amatriciana",
+      "tip": "Reserva con antelación y pide mesa en la terraza del callejón, a dos pasos del Parlamento.",
+      "hours": "Mar-Dom 12:30-15:00 y 19:30-23:00. Lunes cerrado.",
+      "best_for": "Cocina romana clásica bien hecha, camino del centro"
+    },
+    {
+      "name": "Piccolo Arancio",
+      "sub_category": "trattoria",
+      "address": "Vicolo Scanderbeg 112, 00187 Roma",
+      "coordinates": {
+        "lat": 41.901,
+        "lng": 12.48475
+      },
+      "zone": "Trevi",
+      "price_range": "€€",
+      "avg_price_person": "25-40€",
+      "what_to_order": "Ravioli a la naranja, carbonara, fettuccine con ragú de cordero",
+      "tip": "Pequeño y siempre lleno: reserva por TheFork o por teléfono, sobre todo para cenar.",
+      "hours": "Mar-Dom 12:00-15:30 y 18:30-24:00. Lunes cerrado.",
+      "best_for": "Cocina romana clásica a dos pasos de Trevi"
+    },
+    {
+      "name": "Colline Emiliane",
+      "sub_category": "trattoria",
+      "address": "Via degli Avignonesi 22, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90298,
+        "lng": 12.48739
+      },
+      "zone": "Trevi",
+      "price_range": "€€€",
+      "avg_price_person": "40-55€",
+      "what_to_order": "Tagliatelle a la boloñesa, tortellini en caldo, lasaña verde",
+      "tip": "Reserva siempre (teléfono o WhatsApp): sin reserva suelen no tener mesa.",
+      "hours": "Mar-Sáb 12:45-14:45 y 19:30-22:45. Domingo y lunes cerrado.",
+      "best_for": "Pasta fresca emiliana hecha a mano"
+    },
+    {
+      "name": "Ristorante Arlù",
+      "sub_category": "trattoria",
+      "address": "Borgo Pio 135, 00193 Roma",
+      "coordinates": {
+        "lat": 41.90389,
+        "lng": 12.45933
+      },
+      "zone": "Vaticano / Borgo",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Carbonara, cacio e pepe, costillas de cordero",
+      "tip": "Reserva en su web en temporada alta; es de los pocos locales familiares de Borgo Pio (desde 1959) que no es trampa para turistas.",
+      "hours": "Lun-Sáb 11:30-16:00 y 18:30-22:00 (web oficial). Domingo sin confirmar.",
+      "best_for": "Comida romana clásica a dos pasos de San Pedro"
+    },
+    {
+      "name": "Borghiciana Pastificio Artigianale",
+      "sub_category": "trattoria",
+      "address": "Borgo Pio 186, 00193 Roma",
+      "coordinates": {
+        "lat": 41.90374,
+        "lng": 12.46213
+      },
+      "zone": "Vaticano / Borgo",
+      "price_range": "€",
+      "avg_price_person": "15-25€",
+      "what_to_order": "Carbonara de pasta fresca, lasaña, tiramisú de pistacho",
+      "tip": "No aceptan reservas y hay solo unas 15 plazas: llega antes de las 12:30 o pide la pasta para llevar.",
+      "hours": "Lun-Sáb desde ~11:45 hasta 21:00-22:00 según el día. Domingo cerrado.",
+      "best_for": "Pasta fresca casera, comida rápida sentado"
     }
   ],
   "excursions": {
@@ -4956,7 +5349,11 @@
       "centro_historico",
       "roma_antigua",
       "trastevere",
-      "testaccio"
+      "testaccio",
+      "spagna",
+      "trevi",
+      "coliseo",
+      "vaticano"
     ],
     "unrelated_pairs": [
       [

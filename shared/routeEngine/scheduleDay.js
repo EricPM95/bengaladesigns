@@ -56,7 +56,7 @@
  * cada uno lo decide el repartidor.
  *
  * La tarde se ordena al final por lo que MENOS CAMINA (`bestAfternoon`), probando todos los órdenes;
- * el relleno que obliga a volver atrás se quita (`pruneAfternoon`).
+ * el relleno que un horario obliga a hacer volver atrás se quita (`pruneAfternoon`).
  *
  * Las paradas "de paso" (`passBy`: repasar por fuera un imprescindible ya visto otro día, camino de
  * la cena) van SIEMPRE al final del día, detrás de todo lo nuevo. Es una regla del orden, no una
@@ -436,27 +436,39 @@ export function openDay(input) {
     },
 
     /**
-     * Quita el relleno de tarde que obliga a volver atrás (decisión del 2026-09-23): si el mejor orden
-     * CON él camina más de `maxExtraWalk` minutos que el mejor orden SIN él, fuera. Un relleno nunca
-     * justifica un zigzag. De uno en uno, el peor primero, hasta que no quede ninguno así.
+     * Quita el relleno de tarde que obliga a volver atrás POR UN HORARIO (decisión del 2026-09-23:
+     * "si un horario obliga a volver atrás para meter un relleno, se quita el relleno"). Se compara el
+     * mejor orden de verdad con el mejor orden de las mismas paradas si todo estuviera siempre
+     * abierto: lo que se anda de más es culpa de los horarios. Si pasa de `maxExtraWalk`, fuera el
+     * relleno cuya salida más lo reduce, y así hasta que no pase.
+     *
+     * No se mide "con el relleno frente a sin él": con la cena cerca de donde se come, cualquier
+     * tarde en bucle (Ara Pacis → Pincio → Popolo → cena en Plaza de España) contaba como zigzag y el
+     * día se quedaba sin tarde.
      * @param {(unit: object) => boolean} isRemovable  qué es relleno (lo decide el repartidor)
      * @returns {object[]} las unidades quitadas
      */
     pruneAfternoon(isRemovable, maxExtraWalk) {
       const removed = []
       let base = bestAfternoon(improve(sequence, ctx), ctx)
-      for (;;) {
+      const hoursDetour = (candidate) => {
+        const real = bestAfternoon(candidate, ctx)
+        if (!real.result.ok) return null
+        const open = bestAfternoon(candidate, { ...ctx, ignoreHours: true })
+        return { real, extra: real.result.walk - (open.result.ok ? open.result.walk : real.result.walk) }
+      }
+      let current = hoursDetour(base.sequence)
+      while (current && current.extra > maxExtraWalk) {
         const afternoon = base.sequence.slice(base.sequence.indexOf(LUNCH) + 1)
-        let worst = null
+        let best = null
         for (const unit of afternoon.filter((element) => element !== LUNCH && isRemovable(element))) {
-          const without = bestAfternoon(base.sequence.filter((element) => element !== unit), ctx)
-          if (!without.result.ok) continue
-          const extra = base.result.walk - without.result.walk
-          if (extra > maxExtraWalk && (!worst || extra > worst.extra)) worst = { unit, extra, without }
+          const attempt = hoursDetour(base.sequence.filter((element) => element !== unit))
+          if (attempt && attempt.extra < current.extra && (!best || attempt.extra < best.attempt.extra)) best = { unit, attempt }
         }
-        if (!worst) break
-        removed.push(worst.unit)
-        base = worst.without
+        if (!best) break
+        removed.push(best.unit)
+        base = best.attempt.real
+        current = best.attempt
       }
       sequence = base.sequence
       currentCost = base.result.cost
@@ -583,14 +595,15 @@ function simulate(sequence, ctx) {
       // Abierto de principio a fin, en el primer tramo donde quepa entera (con cierre de mediodía,
       // se espera a la tarde en vez de descartarla).
       const schedule = effectiveSchedule(place)
-      const fitAt = earliestVisitStart(schedule, at, duration, roundSlot)
+      // Sin horarios (solo para medir cuánto hacen andar los horarios, ver pruneAfternoon).
+      const fitAt = ctx.ignoreHours && !place.fixed_start ? at : earliestVisitStart(schedule, at, duration, roundSlot)
       if (fitAt === null) {
         return { ok: false, reason: nextOpenMinutes(schedule, at) === null ? 'closed' : 'closes_during_visit', unitId: unit.id }
       }
       if (place.fixed_start && fitAt !== at) return { ok: false, reason: 'fixed_start_missed', unitId: unit.id }
       at = fitAt
-      if (place.last_entry && at > toMinutes(place.last_entry)) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
-      if (place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
+      if (!ctx.ignoreHours && place.last_entry && at > toMinutes(place.last_entry)) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
+      if (!ctx.ignoreHours && place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
 
       const pendingApproach = (approachesOf.get(place.name) ?? []).find((name) => !visits.some((visit) => visit.place.name === name))
@@ -671,6 +684,14 @@ function relationBroken(visits, lunchBeforeVisit) {
       if (container > index || between.some((other) => other.place.contained_in !== place.contained_in) || lunchBetween(container, index)) {
         return { reason: 'contained_apart', unitId: visit.unitId }
       }
+    }
+    // El acceso (plaza, puente, parque) va JUSTO antes de su monumento si caen el mismo día: es el
+    // camino de llegada (decisión del 2026-09-23). Con dos monumentos (el Parque da a la Galería y al
+    // Bioparque), justo antes del primero.
+    const monuments = (place.approach_to ?? []).map((name) => indexOf.get(name)).filter((i) => i !== undefined && i > index)
+    if (monuments.length > 0) {
+      const first = Math.min(...monuments)
+      if (blockEnd(index) + 1 !== first || lunchBetween(index, first)) return { reason: 'approach_apart', unitId: visit.unitId }
     }
     for (const partner of place.neighbor_of ?? []) {
       const other = indexOf.get(partner)

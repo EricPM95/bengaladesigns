@@ -6,6 +6,8 @@
  * cierra y reabre el mismo acordeón.
  */
 
+import type { Coordinates } from './types'
+
 export interface CuratedRestaurant {
   nombre: string
   foto: string
@@ -21,12 +23,15 @@ type Franja = 'comida' | 'cena'
 const cache = new Map<string, CuratedRestaurant[]>()
 const inFlight = new Map<string, Promise<CuratedRestaurant[]>>()
 
-function cacheKey(destino: string, zona: string, franja: Franja): string {
-  return `${franja}|${destino.toLowerCase()}|${zona.toLowerCase()}`
+// Con coordenadas: en un destino curado la selección son los restaurantes del JSON cercanos a ESE
+// punto, así que dos paradas de la misma zona pueden dar listas distintas.
+function cacheKey(destino: string, zona: string, franja: Franja, coordinates?: Coordinates): string {
+  const where = coordinates ? `|${coordinates.lat.toFixed(3)},${coordinates.lng.toFixed(3)}` : ''
+  return `${franja}|${destino.toLowerCase()}|${zona.toLowerCase()}${where}`
 }
 
-export async function fetchCuratedRestaurants(destino: string, zona: string, franja: Franja): Promise<CuratedRestaurant[]> {
-  const key = cacheKey(destino, zona, franja)
+export async function fetchCuratedRestaurants(destino: string, zona: string, franja: Franja, coordinates?: Coordinates): Promise<CuratedRestaurant[]> {
+  const key = cacheKey(destino, zona, franja, coordinates)
   const cached = cache.get(key)
   if (cached) return cached
 
@@ -38,7 +43,7 @@ export async function fetchCuratedRestaurants(destino: string, zona: string, fra
       const response = await fetch('/api/meal-recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ destino, zona, franja }),
+        body: JSON.stringify({ destino, zona, franja, coordinates }),
       })
       if (!response.ok) return []
       const data = await response.json()
