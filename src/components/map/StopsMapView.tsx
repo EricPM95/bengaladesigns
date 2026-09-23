@@ -78,6 +78,8 @@ interface StopsMapViewProps {
    * filtrar dentro de la misma ciudad NO se usa: ahí mover la cámara es justo lo que molesta.
    */
   fitToMarkerIds?: string[] | null
+  /** Arrancar centrado en este punto, a escala de barrio, en vez de encuadrar todos los marcadores. */
+  focusCenter?: Coordinates | null
 }
 
 /**
@@ -87,7 +89,7 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -103,7 +105,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}:${marker.small ? 's' : 'n'}`,
     )
     .join('|')
-  const centerKey = center ? `${center.lat.toFixed(4)},${center.lng.toFixed(4)}` : ''
+  const centerKey = [center, focusCenter].map((point) => (point ? `${point.lat.toFixed(4)},${point.lng.toFixed(4)}` : '')).join('|')
   const linesKey = lines
     .map((line) => `${line.id}:${line.color}:${line.opacity ?? 1}:${line.width ?? 3}:${line.coordinates.map((c) => `${c.lat.toFixed(5)},${c.lng.toFixed(5)}`).join(',')}`)
     .join('|')
@@ -225,7 +227,9 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       // abriría el mapa a vista de ciudad entera en vez de sobre lo que el viajero está mirando.
       const visible = markers.filter((marker) => !hidden.has(marker.id))
       const toFit = visible.length > 1 ? visible : markers
-      if (toFit.length > 1) {
+      if (focusCenter) {
+        map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: 15 })
+      } else if (toFit.length > 1) {
         map.fitBounds(computeBounds(toFit), { padding: 56, maxZoom: 15 })
       }
     })

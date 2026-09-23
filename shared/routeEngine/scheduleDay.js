@@ -386,6 +386,12 @@ export function openDay(input) {
       return true
     },
 
+    /** Cómo quedaría el día con esta secuencia (visitas y comidas), sin aplicarla. */
+    preview(candidateSequence) {
+      const result = simulate(candidateSequence, ctx)
+      return { visits: result.visits ?? [], meals: result.meals ?? [] }
+    },
+
     /** Las visitas tal como están ahora (sin mejorar el orden). */
     visits() {
       return simulate(sequence, ctx).visits ?? []

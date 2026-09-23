@@ -88,6 +88,20 @@ const DINNER_REPEAT_MAX_WALK_MINUTES = 15
 /** Por debajo de este hueco antes de cenar no se repite nada de paso: es caminar tranquilo. */
 const PASS_BY_MIN_GAP_MINUTES = 45
 
+/**
+ * Regla de experiencias (decisión del 2026-09-23): un lugar de una experiencia solo se DESVÍA para
+ * entrar si hace falta para la cuota del día o para el mínimo del viaje. Si no, solo entra de
+ * camino: sin alejarse de la cena y sin añadir más que esto andando. Es lo que saca al Ara Pacis
+ * del día del Vaticano (el día ya tiene arte con los Museos Vaticanos, y cruzar el río aleja de
+ * Trastevere) sin bajar el desvío general del relleno.
+ */
+const THEME_ON_THE_WAY_MINUTES = 10
+/**
+ * "Alejarse de la cena" (decisión del 2026-09-23): la parada nueva queda más lejos ANDANDO del sitio
+ * de la cena que la anterior, con este margen para no descartar por ruido de la matriz.
+ */
+const AWAY_FROM_DINNER_TOLERANCE_MINUTES = 2
+
 /** Desvío máximo de una parada "de paso": tiene que pillar de camino a la cena. */
 const PASS_BY_MAX_ADDED_WALK_MINUTES = 10
 
@@ -242,7 +256,12 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   // ── Utilidades ─────────────────────────────────────────────────────────────────────────────
   const dayUnits = (day) => day.open.units()
-  const stopCount = (day) => dayUnits(day).reduce((sum, unit) => sum + unit.places.length, 0)
+  /**
+   * Cuántas VISITAS tiene el día: lo encadenado (un grupo, o sitios a <= 3 min, como Plaza Venecia +
+   * Altar) cuenta como una. Es la medida del objetivo del ritmo (8-10 completo, 5-7 tranquilo); la
+   * app sigue enseñando lugares, igual que el mapa y la lista.
+   */
+  const visitCount = (day) => day.open.visits().filter((visit) => !visit.chained).length
   const curatedIndexIn = (day, unit) => {
     const index = unit.places.map((place) => day.curatedNames.indexOf(place.name)).filter((i) => i >= 0)
     return index.length > 0 ? Math.min(...index) : null
@@ -288,9 +307,13 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     return withinCategoryCap(day, unit)
   }
 
-  /** ¿Cabe en el tope de su categoría? Lo que entró "de camino, sin desvío" no cuenta. */
+  /**
+   * ¿Cabe en el tope de su categoría? Lo que entró "de camino, sin desvío" no cuenta, y lo que el
+   * destino escribió para ese día (curado, recorrido de tarde) tampoco: el Borgo Pio del recorrido
+   * del Vaticano no es "otra calle más" que compite con la Via della Conciliazione.
+   */
   function withinCategoryCap(day, unit) {
-    if (unit.priority <= PRIORITY.ESSENTIAL || unit.capExempt) return true
+    if (unit.priority <= PRIORITY.ESSENTIAL || unit.capExempt || curatedIndexIn(day, unit) !== null) return true
     const category = categoryOfTags(unit.tags)
     if (!category) return true
     const sameCategory = dayUnits(day).filter((u) => u.priority > PRIORITY.ESSENTIAL && !u.capExempt && categoryOfTags(u.tags) === category).length
@@ -446,6 +469,62 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
   }
 
+  // ── Paso 4a: recorrido de tarde del destino (afternoon_flow) ──────────────────────────────
+  // Misma preferencia que el reparto curado: el día que tiene lo gordo de una zona con recorrido de
+  // tarde escrito a mano (Roma: salir del Vaticano por la Conciliazione y el Borgo Pio hacia el
+  // Castillo) prefiere esos lugares y en ese orden.
+  // El recorrido manda sobre el ORDEN de lo que comparte con el curado: se inserta entero donde
+  // aparece su primer lugar. Añadido al final, el curado del día 3 ("... Plaza de San Pedro,
+  // Castillo") ponía el Castillo antes que la Conciliazione y el día salía al revés.
+  for (const day of cityDays) {
+    const zonesOfDay = new Set(dayUnits(day).flatMap((unit) => unit.places.map((place) => place.zone)))
+    for (const zone of zonesOfDay) {
+      const flow = destData.afternoon_flow?.[zone] ?? []
+      if (flow.length === 0) continue
+      const firstShared = day.curatedNames.findIndex((name) => flow.includes(name))
+      const rest = day.curatedNames.filter((name) => !flow.includes(name))
+      const at = firstShared < 0 ? rest.length : rest.length - day.curatedNames.slice(firstShared).filter((name) => !flow.includes(name)).length
+      day.curatedNames = [...rest.slice(0, at), ...flow, ...rest.slice(at)]
+    }
+  }
+
+  // ── Regla de experiencias: solo se desvía lo que hace falta ────────────────────────────────
+  const unitHasTheme = (unit, theme) => unit.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag))
+  /** ¿Hace falta este lugar para la cuota del día o para el mínimo del viaje (uno por día)? */
+  function neededForTheme(day, unit) {
+    return selectedThemes.some((theme) => {
+      if (!unitHasTheme(unit, theme)) return false
+      const dayHasIt = dayUnits(day).some((u) => unitHasTheme(u, theme))
+      const tripCount = cityDays.reduce((sum, d) => sum + dayUnits(d).filter((u) => unitHasTheme(u, theme)).length, 0)
+      return !dayHasIt && tripCount < cityDays.length
+    })
+  }
+  /** ¿Va de camino? Sin alejarse de la cena (por la tarde) y sin añadir más de 10 min andando. */
+  function onTheWay(day, unit, attempt) {
+    if (attempt.addedWalk > THEME_ON_THE_WAY_MINUTES) return false
+    if (!day.dinnerCoords) return true
+    const { visits, meals } = day.open.preview(attempt.sequence)
+    const index = visits.findIndex((visit) => visit.unitId === unit.id)
+    const lunch = meals.find((meal) => meal.type === 'lunch')
+    if (index < 0 || (lunch && visits[index].start < lunch.start)) return true // por la mañana la cena no marca rumbo
+    const previous = visits[index - 1]
+    if (!previous) return true
+    const from = previous.place.end_coordinates ?? previous.place.coordinates
+    const toDinnerBefore = travel.leg(from, day.dinnerCoords)?.minutes ?? 0
+    const toDinnerAfter = travel.leg(visits[index].place.coordinates, day.dinnerCoords)?.minutes ?? 0
+    return toDinnerAfter <= toDinnerBefore + AWAY_FROM_DINNER_TOLERANCE_MINUTES
+  }
+  /**
+   * Un lugar de experiencia (no nivel 1 ni pool) entra si hace falta o si va de camino. Lo que el
+   * destino ya escribió para ESE día (reparto curado, recorrido de tarde) no es relleno: entra como
+   * cualquier otra parada. El Castillo de Sant'Angelo es "museo", pero el día del Vaticano está en
+   * su recorrido de tarde y no puede caerse porque los Museos Vaticanos ya cuenten como arte.
+   */
+  function themeMayEnter(day, unit, attempt) {
+    if (unit.priority !== PRIORITY.THEME || curatedIndexIn(day, unit) !== null) return true
+    return neededForTheme(day, unit) || onTheWay(day, unit, attempt)
+  }
+
   // ── Paso 4b: dónde se cena cada día — la tarde irá hacia allí ─────────────────────────────
   // El barrio bueno para cenar más cercano a donde acaba la tarde. Sin repetir barrio de una noche a
   // otra mientras queden, SALVO que en ese momento se esté a 15 min o menos andando (decisión del
@@ -495,8 +574,18 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       .filter((item) => item.walk <= NEAR_WALK_MINUTES)
       .sort((a, b) => a.unit.level - b.unit.level || a.walk - b.walk || a.unit.id.localeCompare(b.unit.id, 'es'))
     // La cuota SÍ puede usar nivel 3 en tranquilo: es lo que el viajero pidió, no relleno genérico
-    // (casi todo "Naturaleza y vistas" de Roma son fuentes de nivel 3).
-    if (candidates.some((item) => placeOnDay(day, item.unit))) return null
+    // (casi todo "Naturaleza y vistas" de Roma son fuentes de nivel 3). Si el mínimo del viaje ya lo
+    // cubren otros días, no se desvía para cumplirla: solo entra lo que va de camino.
+    const placedFor = candidates.find((item) => {
+      if (neededForTheme(day, item.unit) || item.unit.priority !== PRIORITY.THEME) return placeOnDay(day, item.unit)
+      if (!eligible(day, item.unit)) return false
+      const attempt = day.open.tryAdd(forDay(day, item.unit), { maxAddedWalk: THEME_ON_THE_WAY_MINUTES })
+      if (!attempt || !onTheWay(day, item.unit, attempt)) return false
+      day.open.add(attempt)
+      placedDay.set(item.unit.id, day.dayNumber)
+      return true
+    })
+    if (placedFor) return null
     return candidates.length === 0 ? 'none_near' : 'no_room'
   }
   for (const theme of selectedThemes) {
@@ -521,9 +610,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       // Se sigue mientras falte el mínimo del ritmo, o mientras la tarde siga vacía antes de cenar.
       const afternoonEmpty = (day.open.idleBeforeDinner() ?? 0) > mode.gapTolerance
       const cap = maxTargetOf(day) + (afternoonEmpty ? EXTRA_STOPS_WHILE_AFTERNOON_EMPTY : 0)
-      if (stopCount(day) >= cap) continue
-      if (stopCount(day) >= minTargetOf(day) && !afternoonEmpty) continue
-      const aboveMinimum = stopCount(day) >= minTargetOf(day)
+      if (visitCount(day) >= cap) continue
+      if (visitCount(day) >= minTargetOf(day) && !afternoonEmpty) continue
+      const aboveMinimum = visitCount(day) >= minTargetOf(day)
       const fresh = units.filter((unit) => !placedDay.has(unit.id))
       // Revisitas: solo en días de repetición, de algo visto en un día ANTERIOR, una vez por viaje.
       const revisits = day.allowsRepetition && day.revisits < MAX_REVISITS_PER_DAY
@@ -548,6 +637,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         const attempt = day.open.tryAdd(candidate, { maxAddedWalk: walkCap })
         if (!attempt) continue
         if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
+        if (!themeMayEnter(day, unit, attempt)) continue
         const score =
           (matchesTheme(unit) ? FILL_SCORE.theme : 0) +
           (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +

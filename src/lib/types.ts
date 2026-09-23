@@ -525,6 +525,8 @@ export interface DayPlan {
    * el motor pasó ese día al horario normal. Null en el resto.
    */
   paceNotice?: string | null
+  /** Minutos andando desde la última visita hasta el sitio de la cena (motor v3). Sirve para saber cuánto tiempo LIBRE queda antes de cenar, ver FreeTimeBlock. */
+  dinnerWalkMinutes?: number | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
   halfDayExcursion?: HalfDayExcursionSlot | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */

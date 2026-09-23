@@ -25,6 +25,10 @@ gratis, y sin ese campo el cambio de tipo los habría metido en el filtro "Entra
 
 ## Otros pendientes
 
+- **Ara Pacis — coordenadas corregidas el 2026-09-23**: estaba en [41.9038, 12.472] (junto al río,
+  a 350 m del Castillo de Sant'Angelo). Pasa a [41.9061, 12.4754], el museo del Lungotevere in Augusta.
+  Confirmar. Con la coordenada vieja parecía "de camino" del Castillo a Trastevere.
+
 - **Domus Aurea**: sin horario legible ("Solo Vie-Sáb-Dom, visita guiada con reserva"). El motor v3
   le aplica el horario por defecto de interiores (09:00-17:00) hasta tener el real.
 - ~~`groups.roma_antigua_core`: dos órdenes distintos~~ — resuelto el 2026-09-23: manda

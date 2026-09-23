@@ -100,6 +100,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
         }
       : null,
     pace_notice: paceNotice,
+    // Para el bloque de tiempo libre antes de cenar (la app lo recalcula si el viajero edita el día).
+    dinner_walk_minutes: schedule.meals.find((meal) => meal.type === 'dinner')?.walkMinutes ?? null,
     engine_stats: { walk_minutes: schedule.walkMinutes, idle_minutes: schedule.idleMinutes, idle_before_dinner: schedule.idleBeforeDinner },
   }
 }

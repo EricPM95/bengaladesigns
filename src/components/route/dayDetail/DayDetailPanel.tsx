@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import type { DayPlan, Stop } from '../../../lib/types'
+import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
@@ -56,6 +56,10 @@ import { StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
+import { FreeTimeBlock } from './FreeTimeBlock'
+
+/** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
+const FREE_TIME_MIN_MINUTES = 45
 
 interface DayDetailPanelProps {
   day: DayPlan
@@ -292,6 +296,8 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  /** Dónde centrar "Añadir parada" cuando se abre desde el bloque de tiempo libre: donde está el viajero. */
+  const [addStopFocus, setAddStopFocus] = useState<Coordinates | null>(null)
   /** Precarga del buscador de AddStopScreen cuando se abre desde el botón "Añadir como parada" de una tarjeta de segunda visita recomendada (ver day.recommendedRevisits) — undefined = buscador vacío, comportamiento normal del "+". */
   const [addStopInitialQuery, setAddStopInitialQuery] = useState<string | undefined>(undefined)
   const [dismissedRevisits, setDismissedRevisits] = useState<Set<string>>(new Set())
@@ -479,11 +485,13 @@ export function DayDetailPanel({
     if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
     setInsertAt(null)
     setAddStopInitialQuery(undefined)
+    setAddStopFocus(null)
   }
 
   const closeAddStop = () => {
     setInsertAt(null)
     setAddStopInitialQuery(undefined)
+    setAddStopFocus(null)
   }
   const routeDayLines = showAllDaysOnMap ? buildCombinedDaysLines(route?.days ?? [day], day.id) : buildSingleDayLine(day, dayIndex)
 
@@ -991,6 +999,29 @@ export function DayDetailPanel({
                 {showDinnerAccordion && (
                   <>
                     {renderMealGap(index + 1)}
+                    {(() => {
+                      // Tiempo libre antes de cenar, recalculado con las horas de ahora (si el viajero
+                      // añade o quita paradas, cambia). El paseo hasta la cena lo sabe el motor.
+                      const dinnerAt = parseTimeToMinutes(day.meals.find((meal) => meal.mealTime === 'dinner')?.time ?? '')
+                      const lastEnd = schedule[index]?.endMinutes
+                      const firstStart = schedule[0]?.startMinutes
+                      if (Number.isNaN(dinnerAt) || lastEnd == null || firstStart == null) return null
+                      const free = dinnerAt - lastEnd - (day.dinnerWalkMinutes ?? 0)
+                      if (free < FREE_TIME_MIN_MINUTES) return null
+                      return (
+                        <div className="pt-2">
+                          <FreeTimeBlock
+                            hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
+                            city={day.city}
+                            onOpenMap={() => {
+                              const here = realStops[index]?.coordinates
+                              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+                              setInsertAt(index + 1)
+                            }}
+                          />
+                        </div>
+                      )
+                    })()}
                     <div className="pt-2">
                       <MealTimeAccordion
                         destino={destino}
@@ -1100,6 +1131,7 @@ export function DayDetailPanel({
               dayNumber={day.dayNumber}
               dateIso={dateIso}
               initialQuery={addStopInitialQuery}
+              focusCoordinates={addStopFocus}
               onPick={addPickedStop}
               onClose={closeAddStop}
             />

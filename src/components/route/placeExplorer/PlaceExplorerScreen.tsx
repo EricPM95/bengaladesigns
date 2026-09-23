@@ -55,6 +55,8 @@ interface PlaceExplorerScreenProps {
   excursions?: Excursion[]
   /** Precarga el buscador con este texto al abrir — lo usa el botón "Añadir como parada" de una tarjeta de segunda visita recomendada, para que el lugar ya salga sin tener que escribirlo. */
   initialQuery?: string
+  /** Abrir el mapa centrado aquí (a escala de barrio) en vez de encuadrar toda la ciudad — lo usa el bloque de tiempo libre antes de cenar: "todo lo que hay cerca" de donde está el viajero. */
+  focusCoordinates?: Coordinates | null
   /** Presente = modo "añadir": la ficha del lugar muestra el CTA "Añadir a mi ruta". Ausente = solo explorar. */
   onPick?: (stop: Stop) => void
   onClose: () => void
@@ -318,6 +320,7 @@ export function PlaceExplorerScreen({
   initialFilters = [],
   excursions = [],
   initialQuery,
+  focusCoordinates = null,
   onPick,
   onClose,
 }: PlaceExplorerScreenProps) {
@@ -678,6 +681,7 @@ export function PlaceExplorerScreen({
               // que abrir el mapa para verlos. Con cualquier filtro de lugares activo la cámara se
               // queda donde el viajero la dejó, como siempre.
               fitToMarkerIds={excursionsActive && !placeFiltersActive ? excursionMarkers.map((marker) => marker.id) : null}
+              focusCenter={focusCoordinates}
               activeStopId={selected ? `poi-${selected.name}` : null}
               onSelectStop={(id) => {
                 const place = places.find((candidate) => `poi-${candidate.name}` === id)

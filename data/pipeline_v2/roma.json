@@ -1596,8 +1596,8 @@
       "duration_minutes": 45,
       "zone": "centro_historico",
       "coordinates": [
-        41.9038,
-        12.472
+        41.9061,
+        12.4754
       ],
       "level": 2,
       "type": "interior",
@@ -3915,6 +3915,7 @@
     "vaticano": [
       "Plaza de San Pedro",
       "Via della Conciliazione",
+      "Borgo Pio",
       "Castillo de Sant'Angelo",
       "Via del Corso",
       "Piazza del Popolo",
