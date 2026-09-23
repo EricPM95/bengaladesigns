@@ -198,6 +198,80 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
 }
 
 /**
+ * Horas para un orden FIJO: las rutas curadas a mano de 1 y 1,5 días (short_trips del destino).
+ * Ahí el destino ya decidió qué se ve y en qué orden; el programador no reordena nada, solo pone
+ * horas y comprueba horarios, últimas entradas y cierres con las mismas reglas que siempre.
+ *
+ * Si algo no cabe, se cae lo de menos prioridad (\`dropRank\` más alto) y vuelve con su motivo — lo
+ * que no entra va a "No te dio tiempo", nunca desaparece en silencio.
+ *
+ * @param {object} input
+ * @param {(ScheduleUnit & {slot: 'manana'|'tarde', dropRank: number})[]} input.units  en su orden
+ * @param {object} input.mode
+ * @param {{leg: Function}} input.travel
+ * @param {{minutes: number, coordinates?: [number, number]|null}} input.start
+ * @param {{lunch: boolean, dinner: boolean}} [input.pendingMeals]
+ * @param {[number, number]|null} [input.dinnerPoint]
+ * @param {boolean} [input.visitsEndByLunch]  día con solo mañana (el de la salida): nada después de comer
+ */
+export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode) }
+  let kept = [...units]
+  const dropped = []
+  // La comida va detrás de lo último de la mañana (o al principio si la mañana se ha quedado vacía).
+  const sequenceOf = (list) => {
+    if (!pendingMeals.lunch) return [...list]
+    const lastMorning = list.map((unit) => unit.slot).lastIndexOf('manana')
+    return [...list.slice(0, lastMorning + 1), LUNCH, ...list.slice(lastMorning + 1)]
+  }
+  for (;;) {
+    const result = simulate(sequenceOf(kept), ctx)
+    if (result.ok || kept.length === 0) {
+      return {
+        visits: result.visits ?? [],
+        meals: result.meals ?? [],
+        dropped,
+        walkMinutes: result.walk ?? 0,
+        idleMinutes: result.idle ?? 0,
+        idleBeforeDinner: result.idleBeforeDinner ?? null,
+      }
+    }
+    // Se cae lo que falla si no es lo más importante de su franja; si no, lo menos importante de la
+    // franja donde está el problema (la comida es de la mañana, la cena de la tarde).
+    const failing = kept.find((unit) => unit.id === result.unitId)
+    const slot = failing?.slot ?? (result.reason === 'lunch_out_of_window' ? 'manana' : 'tarde')
+    const inSlot = kept.filter((unit) => unit.slot === slot)
+    const pool = inSlot.length > 0 ? inSlot : kept
+    const leastImportant = pool.reduce((worst, unit) => (unit.dropRank > worst.dropRank ? unit : worst), pool[0])
+    const victim = failing && failing.dropRank >= leastImportant.dropRank ? failing : leastImportant
+    // Un grupo que no cabe entero pierde su final, no el grupo: si no da tiempo a la Basílica y la
+    // Plaza, caen ellas, no los Museos Vaticanos. Lo que se recorta es lo que no es joya, y nunca
+    // se separa un par inseparable (si el último lo es del anterior, caen los dos).
+    const tail = trimmableTail(victim)
+    if (tail > 0) {
+      const removed = victim.places.slice(victim.places.length - tail)
+      const trimmed = { ...victim, places: victim.places.slice(0, victim.places.length - tail) }
+      dropped.push({ unit: { ...victim, places: removed }, reason: result.reason })
+      kept = kept.map((unit) => (unit === victim ? trimmed : unit))
+      continue
+    }
+    dropped.push({ unit: victim, reason: result.reason })
+    kept = kept.filter((unit) => unit !== victim)
+  }
+}
+
+/** Cuántos lugares del final de un grupo se pueden quitar dejando el resto: 0 si ninguno. */
+function trimmableTail(unit) {
+  if (unit.places.length < 2) return 0
+  let tail = 1
+  // Un par inseparable se va entero.
+  while (tail < unit.places.length && unit.places[unit.places.length - tail - 1].inseparableWithNext) tail++
+  const removed = unit.places.slice(unit.places.length - tail)
+  if (tail >= unit.places.length || removed.some((place) => place.tier === 'joya')) return 0
+  return tail
+}
+
+/**
  * Un día ABIERTO, para el repartidor: se le prueban unidades de una en una sobre el orden que ya
  * tiene, sin reprogramar todo en cada pregunta (el repartidor pregunta cientos de veces por viaje).
  *
@@ -408,12 +482,14 @@ function simulate(sequence, ctx) {
     const lunchComesNext = !lunchDone && sequence[elementIndex + 1] === LUNCH
 
     for (const [index, place] of unit.places.entries()) {
+      if (ctx.visitsEndByLunch && lunchDone) return { ok: false, reason: 'after_lunch_on_departure', unitId: unit.id }
       // ¿Seguir con el grupo hasta el próximo punto de corte deja la comida fuera de su ventana?
       // Entonces se come aquí, en el último corte que aún llega. Nunca entre un par inseparable.
       if (index > 0 && lunchComesNext && !lunchDone && !unit.places[index - 1].inseparableWithNext) {
         if (roundUpToSlot(segmentEnd(unit, index, cursor, position, travel, mode)) > lunchClose && !takeLunch()) {
           return { ok: false, reason: 'lunch_out_of_window' }
         }
+        if (ctx.visitsEndByLunch && lunchDone) return { ok: false, reason: 'after_lunch_on_departure', unitId: unit.id }
       }
 
       const leg = position ? travel.leg(position, place.coordinates) : null

@@ -21,6 +21,7 @@ import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { planTrip } from '../../shared/routeEngine/planTrip.js'
+import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 
 /**
@@ -63,6 +64,29 @@ export async function buildDayBlockV3(
   // milisegundos, y es lo que permite que un día construido aislado sepa qué hacen los demás
   // (invariante 20).
   const isV3 = options.scheduler === 'v3'
+
+  // Viaje de UN día (dos franjas) con rutas curadas en el destino: la ruta es la de short_trips, no
+  // la del reparto (decisión del 2026-09-23: los viajes cortos se curan a mano; el motor solo pone
+  // horas). 1,5 días llegará con los vuelos, que son los que dicen cuántas franjas quedan.
+  if (isV3 && destData.short_trips?.blocks && Math.max(1, totalDays - 1) === 1) {
+    const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
+    const trip = planShortTrip({
+      destData,
+      slots: shortTripSlots('1_dia'),
+      pace,
+      hasFreeTour,
+      poolNames: mustIncludePlaces ?? [],
+      experiencesPositive: experiencesPositive ?? [],
+      travel,
+    })
+    const tripDay = trip.days.find((day) => day.dayNumber === dayNumber)
+    if (!tripDay) return null
+    const day = buildCityDayV3(destData, trip, tripDay, options)
+    day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
+    day.night_hint = tripDay.nightHint ?? null
+    return day
+  }
+
   const tripArgs = {
     destData,
     totalDays,
@@ -162,12 +186,12 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Lo elegido a mano y los imprescindibles que no han cabido en ningún día, con su motivo. Nunca en
   // silencio: en un viaje de un día es el "No te dio tiempo".
   day.not_included = [
-    ...trip.unplacedPool.map((item) => ({
+    ...(trip.unplacedPool ?? []).map((item) => ({
       name: item.name,
       reason: item.reason === 'closed_every_day' ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})` : 'No cabía en ningún día del viaje',
       suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
-    ...trip.unplacedEssentials.map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+    ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
   ]
   return day
 }

@@ -3592,6 +3592,157 @@
     }
   },
   "short_trips": {
+    "_nota": "Rutas curadas a mano para viajes de 1 día (2 franjas) y 1,5 días (3 franjas). Fijan QUÉ se ve y EN QUÉ ORDEN. El motor calcula las horas y comprueba horarios, últimas entradas y cierres. Nombres ya mapeados a los de este JSON (2026-09-23): Piazza Venezia → Plaza Venecia, Altar de la Patria (Vittoriano) → Altar de la Patria, Ghetto Ebraico → Barrio Judío, Fontana di Trevi → Fontana de Trevi, Plaza España y Escalinata → Plaza de España, Castel/Ponte Sant'Angelo → Castillo/Puente Sant'Angelo; zona \"monti\" → roma_antigua (su cena es Monti).",
+    "_nota_1_day": "\"1_day\" es el formato ANTERIOR, que sigue leyendo el motor viejo (routeAlgorithm.js, buildShortTripDay). El motor v3 usa franjas + blocks + combinations. Borrar \"1_day\" cuando el v3 sea el motor por defecto.",
+    "franjas": {
+      "_nota": "1 franja = una mañana o una tarde libre. 2 franjas = 1 día (mañana+tarde, o tarde + mañana siguiente). 3 franjas = 1,5 días.",
+      "manana": "hasta la comida",
+      "tarde": "desde la comida hasta la cena, con cena y nocturna al final"
+    },
+    "blocks": {
+      "A": {
+        "label": "Roma Antigua",
+        "preferred_slot": "manana",
+        "allowed_slots": [
+          "manana",
+          "tarde"
+        ],
+        "_nota_slots": "Solo va de tarde si el Free Tour ocupa la mañana. El motor comprueba la última entrada del Coliseo según la época.",
+        "core": [
+          "Arco de Constantino",
+          "Coliseo",
+          "Foro Romano y Palatino"
+        ],
+        "extras_completo": [
+          "Plaza Venecia",
+          "Altar de la Patria"
+        ],
+        "lunch_zone_if_morning": "roma_antigua",
+        "dinner_zone_if_afternoon": "roma_antigua",
+        "swaps": {
+          "arte_museos": {
+            "replace": [
+              "Plaza Venecia",
+              "Altar de la Patria"
+            ],
+            "with": [
+              "Museos Capitolinos"
+            ]
+          },
+          "barrios_sabores": {
+            "replace": [
+              "Plaza Venecia",
+              "Altar de la Patria"
+            ],
+            "with": [
+              "Barrio Judío",
+              "Campo de' Fiori"
+            ]
+          }
+        }
+      },
+      "B": {
+        "label": "Centro",
+        "preferred_slot": "tarde",
+        "allowed_slots": [
+          "tarde",
+          "manana"
+        ],
+        "_nota_orden": "Orden pensado para acabar en Trevi y Plaza de España al oscurecer, cuando más impresionan.",
+        "core": [
+          "Piazza Navona",
+          "Panteón",
+          "Fontana de Trevi",
+          "Plaza de España"
+        ],
+        "extras_completo": [],
+        "lunch_zone_if_morning": "centro_historico",
+        "dinner_zone_if_afternoon": "centro_historico",
+        "swaps": {
+          "naturaleza_vistas": {
+            "insert_before": "Plaza de España",
+            "add": [
+              "Terraza del Pincio"
+            ],
+            "_nota": "Pincio al atardecer y se baja por la Escalinata ya iluminada."
+          }
+        },
+        "free_tour": {
+          "replaces_block": true,
+          "_nota": "Si el viajero elige Free Tour, el tour sustituye al bloque B entero (recorre Plaza de España, Trevi, Panteón y Navona). Va a su hora del JSON (10:00), así que B pasa a la franja de mañana."
+        }
+      },
+      "C": {
+        "label": "Vaticano",
+        "preferred_slot": "manana",
+        "allowed_slots": [
+          "manana",
+          "tarde"
+        ],
+        "afternoon_start": "14:30",
+        "core": [
+          "Museos Vaticanos y Capilla Sixtina",
+          "Basílica de San Pedro",
+          "Plaza de San Pedro"
+        ],
+        "extras_completo": [
+          "Castillo de Sant'Angelo",
+          "Puente Sant'Angelo"
+        ],
+        "lunch_zone_if_morning": "vaticano",
+        "dinner_zone_if_afternoon": "trastevere",
+        "swaps": {
+          "naturaleza_vistas": {
+            "add_at_end": [
+              "Mirador del Janículo"
+            ],
+            "_nota": "Al atardecer antes de cenar en Trastevere. Si el atardecer cae después del inicio de la cena (verano), pasa a nocturna."
+          }
+        }
+      }
+    },
+    "combinations": {
+      "1_dia": {
+        "default": [
+          "A",
+          "B"
+        ],
+        "if_pool_contains": {
+          "Museos Vaticanos y Capilla Sixtina": {
+            "blocks": [
+              "C",
+              "B"
+            ],
+            "night_hint": "Coliseo iluminado por fuera después de cenar."
+          }
+        },
+        "not_included": {
+          "C": "Con medio día más podrías ver el Vaticano."
+        }
+      },
+      "1_5_dias": {
+        "default": [
+          "A",
+          "B",
+          "C"
+        ],
+        "slot_rules": [
+          "B va en una tarde.",
+          "A va en una mañana.",
+          "C ocupa la franja que quede (le vale mañana o tarde desde las 14:30)."
+        ],
+        "_nota": "Sirve igual para tarde-mañana-tarde (llegada por la tarde) y mañana-tarde-mañana (salida a mediodía)."
+      }
+    },
+    "reglas": {
+      "ritmo": {
+        "completo": "core + extras_completo de cada bloque.",
+        "tranquilo": "solo core. Lo que no quepa va a 'No te dio tiempo'."
+      },
+      "experiencias": "Los swaps se aplican según las experiencias elegidas. Si hay varias que tocan el mismo bloque, se aplican todas las que no choquen; si dos sustituyen lo mismo, gana la que el viajero eligió primero.",
+      "pool": "Si el pool pide algo que no está en los bloques elegidos, sustituye a la parada de menor prioridad (primero extras, luego core que no sea joya). Si no cabe, va a 'No te dio tiempo'. El orden de selección del pool decide.",
+      "nocturnas": "En viajes de 1-2 días se puede repetir de noche un lugar visto de día (regla ya existente)."
+    },
     "1_day": {
       "completo": {
         "start_time": "08:00",

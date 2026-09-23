@@ -73,7 +73,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     suggested_time: toHHMM(meal.start),
     options: [],
     // La comida, donde se está; la cena, en el barrio hacia el que va la tarde.
-    ...(meal.type === 'lunch' ? zoneFields(destData, zoneBefore(meal.start) ?? dinnerZone, 'comida') : zoneFields(destData, dinnerZone, 'cena')),
+    ...(meal.type === 'lunch' ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida') : zoneFields(destData, dinnerZone, 'cena')),
   }))
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un
