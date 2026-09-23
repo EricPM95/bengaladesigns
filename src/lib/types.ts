@@ -519,6 +519,12 @@ export interface DayPlan {
   excursionSocialProof?: string | null
   /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
   excursionDeclined?: boolean
+  /**
+   * Por qué este día empieza antes de lo que dice el ritmo ("Hoy empezamos a las 08:00 para que te
+   * dé tiempo a ver X"). Solo cuando un imprescindible no cabía con el horario del ritmo tranquilo y
+   * el motor pasó ese día al horario normal. Null en el resto.
+   */
+  paceNotice?: string | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
   halfDayExcursion?: HalfDayExcursionSlot | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */

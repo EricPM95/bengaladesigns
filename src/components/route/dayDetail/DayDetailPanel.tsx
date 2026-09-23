@@ -738,6 +738,9 @@ export function DayDetailPanel({
             {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
           </p>
           <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
+          {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
+              decisión que haya que tomar. */}
+          {showsRoute && day.paceNotice && <p className="mt-0.5 text-small text-text-muted">{day.paceNotice}</p>}
           <div className={`mt-2.5 mb-4 items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft ${showsRoute && stops.length > 0 ? 'flex' : 'hidden'}`}>
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
               <SummaryPinIcon className="text-accent-hover" />

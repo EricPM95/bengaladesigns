@@ -118,6 +118,8 @@ export interface GeneratedDay {
   excursion_social_proof?: string | null
   beyond_auto_days?: boolean
   max_auto_days?: number | null
+  /** Motor v3: el día pasó al horario normal para no perder un imprescindible — ver DayPlan.paceNotice. */
+  pace_notice?: string | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
@@ -532,6 +534,7 @@ function mapDay(
           routeStartsAt: generated.half_day_excursion.route_starts_at,
         }
       : null,
+    paceNotice: generated.pace_notice ?? null,
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,
