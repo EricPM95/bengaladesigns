@@ -197,7 +197,9 @@ const section = (title) => {
       continue
     }
     if (parseHoursSessions(place.schedule).length === 0 && !/24\s*h|siempre|abierto/i.test(place.schedule)) s.red.push(`${place.name}: el horario "${place.schedule}" no se lee`)
-    if (place.last_entry && !/^\d{1,2}:\d{2}$/.test(place.last_entry)) s.red.push(`${place.name}: last_entry "${place.last_entry}" no es HH:MM`)
+    // last_entry: "HH:MM", o un objeto por época / por franja con "HH:MM" en cada valor.
+    const entries = place.last_entry == null ? [] : typeof place.last_entry === 'object' ? Object.values(place.last_entry) : [place.last_entry]
+    if (entries.some((value) => !/^\d{1,2}:\d{2}$/.test(String(value)))) s.red.push(`${place.name}: last_entry ${JSON.stringify(place.last_entry)} no es HH:MM`)
   }
 }
 

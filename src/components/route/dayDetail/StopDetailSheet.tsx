@@ -291,7 +291,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // Dos fuentes, las dos ya disponibles aquí sin pedir nada extra: el enlace de reserva de la ficha
   // ampliada (Coliseo, Galería Borghese, Museos Vaticanos, Castel Sant'Angelo…) y el propio texto de
   // horario del JSON del destino, que lo dice cuando es obligatoria (Panteón, Domus Aurea).
-  const requiresBooking = Boolean(curated?.extras?.booking_url) || /reserva\s+(online\s+)?obligatoria/i.test(stop?.hours ?? '')
+  const requiresBooking =
+    stop?.reservation === 'obligatoria' || Boolean(curated?.extras?.booking_url) || /reserva\s+(online\s+)?obligatoria/i.test(stop?.hours ?? '')
+  // El horario auditado (texto largo con días, épocas y festivos) manda sobre el de la ficha curada.
+  const hoursDetail = stop?.hoursCard || description?.hoursDetail || null
   // Solo los lugares con afiliación de tours (ver mockDayDetail.ts) tienen sentido con
   // Civitatis/GetYourGuide — un mercado local con solo entrada libre (afiliacion_disponible:false)
   // no debe mostrar tarjetas de tours inventadas. En real, esto será "la API de afiliación devolvió
@@ -542,7 +545,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
                       de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
                       nunca redactado por Claude, para garantizar que aparece siempre igual. */}
-                  {(description?.hoursDetail || hoursTag) && (
+                  {(hoursDetail || hoursTag) && (
                     <div className="space-y-1 border-t border-border pt-3">
                       <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
                         <ClockIcon />
@@ -550,7 +553,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       </h3>
                       {/* `whitespace-pre-line`: la ficha curada monta el horario en varias líneas
                           (temporadas, días de cierre, días gratis, notas) — ver formatScheduleDetail. */}
-                      {description?.hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{description.hoursDetail}</p>}
+                      {hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{hoursDetail}</p>}
                       <p className="text-caption text-text-muted">
                         Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
                         {description?.officialWebsite ? ' (enlace más abajo).' : '.'}

@@ -28,7 +28,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
-import { earliestVisitStart, effectiveSchedule } from '../../../shared/routeEngine/openingHours.js'
+import { earliestVisitStart, effectiveSchedule, lastEntryMinutes } from '../../../shared/routeEngine/openingHours.js'
 import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
 import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { buildDayBlockV3 } from '../index.js'
@@ -119,7 +119,8 @@ function outOfHours(stop) {
   if (!place || stop.is_pass_by) return null
   const start = t2m(stop.suggested_time)
   const end = start + stop.duration_minutes
-  if (place.last_entry && start > t2m(place.last_entry)) return `empieza ${stop.suggested_time}, última entrada ${place.last_entry}`
+  const lastEntry = lastEntryMinutes(place, start)
+  if (lastEntry !== null && start > lastEntry) return `empieza ${stop.suggested_time}, última entrada ${m2t(lastEntry)}`
   // Mismo horario efectivo que usa el motor v3 (interiores sin horario: 09:00-17:00), para todos.
   const schedule = effectiveSchedule(place)
   const sessions = parseHoursSessions(schedule)

@@ -64,7 +64,7 @@
  */
 
 import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './time.js'
-import { earliestVisitStart, effectiveSchedule, nextOpenMinutes } from './openingHours.js'
+import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
 
 /**
@@ -342,6 +342,9 @@ export function openDay(input) {
         if (!result.ok) continue
         const addedWalk = result.walk - (before.walk ?? 0)
         if (addedWalk > maxAddedWalk) continue
+        // Un relleno nunca obliga a esperar más que la tolerancia del ritmo a que abra algo (revisión
+        // del 2026-09-24: con el horario auditado del Gesù, 17:00, salían esperas de 56 y 90 min).
+        if (unit.priority >= PRIORITY.THEME && result.longestWait > ctx.mode.gapTolerance && result.longestWait > (before.longestWait ?? 0)) continue
         if (!best || result.cost < best.result.cost) best = { sequence: candidate, result, addedWalk }
       }
       if (!best) return null
@@ -520,6 +523,9 @@ function simulate(sequence, ctx) {
   let walk = 0
   let meters = 0
   let idle = 0
+  // La espera más larga entre dos visitas (a que abra un sitio), sin contar la primera del día ni
+  // lo que tiene hora fija: es lo que un relleno no puede provocar (ver tryAdd y bestAfternoon).
+  let longestWait = 0
   let preference = 0 // penalizaciones de hora (ver preferMorning / preferEarly)
   const visits = []
   // Monumento -> accesos (plaza, puente, parque) que van en este mismo día y tienen que ir antes.
@@ -607,7 +613,8 @@ function simulate(sequence, ctx) {
       }
       if (place.fixed_start && fitAt !== at) return { ok: false, reason: 'fixed_start_missed', unitId: unit.id }
       at = fitAt
-      if (!ctx.ignoreHours && place.last_entry && at > toMinutes(place.last_entry)) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
+      const lastEntry = ctx.ignoreHours ? null : lastEntryMinutes(place, at)
+      if (lastEntry !== null && at > lastEntry) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
       if (!ctx.ignoreHours && place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
 
@@ -617,6 +624,7 @@ function simulate(sequence, ctx) {
       walk += walkMinutes
       meters += leg?.meters ?? 0
       idle += at - arrive
+      if (seenVisit && !place.fixed_start) longestWait = Math.max(longestWait, at - arrive)
       visits.push({ unitId: unit.id, place, start: at, end: at + duration, chained, walkMinutes, walkSource: leg?.source ?? null })
       cursor = at + duration
       // Un recorrido a pie (el Free Tour) acaba donde acaba su recorrido, no donde se quedó.
@@ -654,7 +662,7 @@ function simulate(sequence, ctx) {
   }
 
   const cost = walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY + preference + relatedApart(visits) * RELATED_APART_PENALTY
-  return { ok: true, visits, meals, walk, meters, idle, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
+  return { ok: true, visits, meals, walk, meters, idle, longestWait, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
 }
 
 /**
@@ -850,7 +858,9 @@ function bestAfternoon(sequence, ctx) {
   if (movable.length === 0 || pieces.length > MAX_AFTERNOON_PIECES) return current
 
   let best = current.result.ok ? current : null
-  const better = (a, b) => !b || a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)
+  // Primero, sin esperas por encima de la tolerancia del ritmo; luego, lo que menos camina.
+  const overWait = (r) => (r.longestWait > ctx.mode.gapTolerance ? r.longestWait : 0)
+  const better = (a, b) => !b || overWait(a) < overWait(b) || (overWait(a) === overWait(b) && (a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)))
   const order = []
   const used = new Array(movable.length).fill(false)
   const walkOrders = (nextFixed) => {

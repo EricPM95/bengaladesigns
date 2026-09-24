@@ -38,6 +38,10 @@ export interface DestinationPlace {
   /** Días limitados y reserva obligatoria ("Solo vie-dom, visita guiada con reserva"): no entra sola
       en la ruta sin fechas, así que quien la añade a mano tiene que verlo. Null en el resto. */
   booking_note?: string | null
+  /** Horario auditado en texto largo para la ficha (card_text del JSON). */
+  hours_card?: string | null
+  /** "obligatoria" | "recomendada" | "no". */
+  reservation?: string | null
   /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en
       italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
       `search_aliases` en el JSON del destino. Vacío para los restaurantes. */

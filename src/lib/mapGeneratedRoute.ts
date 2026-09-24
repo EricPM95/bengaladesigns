@@ -72,6 +72,10 @@ interface GeneratedStop {
   tags?: string[]
   /** Solo pipeline v2, algunos lugares — Stop.scheduleText en types.ts. */
   schedule?: string | null
+  /** Horario auditado en texto largo para la ficha — Stop.hoursCard. */
+  hours_card?: string | null
+  /** "obligatoria" | "recomendada" | "no" — Stop.reservation. */
+  reservation?: string | null
 }
 
 interface GeneratedMealOption {
@@ -326,6 +330,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
+    ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),
+    ...(generated.reservation ? { reservation: generated.reservation } : {}),
   }
 }
 

@@ -170,16 +170,19 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
   return { id: unit.id, places: placesForScheduler(unit, D, null), priority, isLong: unit.minutes >= 180 }
 }
 
-// 5. Tranquilo, día del Coliseo: 10:00 + 225 min no deja comer en ventana si el grupo va seguido.
-//    La comida entra DENTRO del grupo y el grupo sigue entero y en orden.
+// 5. Tranquilo, día del Coliseo. Con el horario prudente auditado (el Foro cierra a las 16:30, sin
+//    fechas), el grupo NO cabe desde las 10:00 con la comida dentro: el Foro acabaría después de
+//    cerrar. Un imprescindible no se cae por el ritmo: el plan B (horario normal, desde las 08:00)
+//    lo mete entero y en orden, y lo dice.
 {
-  const input = { units: [unitFor('roma_antigua_core')], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
+  const base = { units: [unitFor('roma_antigua_core')], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
+  const normal = { ...MODES_V3.tranquilo, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
+  const input = { ...base, fallbackMode: normal }
   const result = scheduleDay(input)
-  check('tranquilo coliseo', input, result)
+  check('tranquilo coliseo', { ...input, mode: result.modeFallback ? normal : input.mode, start: { ...input.start, minutes: result.modeFallback?.startedAt ?? input.start.minutes } }, result)
   if (result.visits.length !== 3) fail(`tranquilo coliseo: ${result.visits.length}/3 lugares del grupo (${result.unscheduled.map((u) => u.reason).join(', ')})`)
-  const lunch = result.meals.find((m) => m.type === 'lunch')
-  const inside = lunch && result.visits.some((v) => v.start > lunch.start)
-  if (!inside) fail('tranquilo coliseo: la comida debería caer dentro del grupo')
+  const order = result.visits.map((v) => v.place.name).join(' → ')
+  if (order !== 'Arco de Constantino → Coliseo → Foro Romano y Palatino') fail(`tranquilo coliseo: orden ${order}`)
 }
 
 // 6a. Tranquilo, día del Vaticano: cabe a las 10:00 con la comida DENTRO del grupo (entre los
@@ -214,12 +217,14 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
   if (result.visits[0] && result.visits[0].end > 17 * 60) fail('sin horario: Domus Aurea acaba después de las 17:00')
 }
 
-// 8. Viaje de un día con pool que no cabe entero: entra lo que el viajero eligió ANTES.
+// 8. Viaje de un día con pool que no cabe entero: entra lo que el viajero eligió ANTES. En completo:
+//    en tranquilo, con el Foro cerrando a las 16:30, el grupo del Coliseo no cabe ni solo desde las
+//    10:00 (ver el caso 5), y el caso dejaría de probar el orden del pool.
 {
   const vaticano = { ...unitFor('vaticano_core', PRIORITY.POOL), poolIndex: 1 }
   const coliseo = { ...unitFor('roma_antigua_core', PRIORITY.POOL), poolIndex: 0 }
   const borghese = { ...unitFor('Galería Borghese', PRIORITY.POOL), poolIndex: 2 }
-  const input = { units: [vaticano, borghese, coliseo], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null }, longVisitsAnytime: true }
+  const input = { units: [vaticano, borghese, coliseo], mode: MODES_V3.completo, travel, start: { minutes: MODES_V3.completo.dayStart, coordinates: null }, longVisitsAnytime: true }
   const result = scheduleDay(input)
   check('pool un día', input, result)
   const lost = result.unscheduled.map((u) => u.unitId)

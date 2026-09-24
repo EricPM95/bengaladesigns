@@ -333,6 +333,19 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     + trayecto + andar desde la parada (5). Si no ahorra al menos 5 min frente a ir andando, el tramo
     va a pie y la opción de transporte no se enseña.
 
+**Horarios auditados**
+
+55. **Horarios por lugar** (`scripts/destino/importarHorarios.mjs`): `windows` = franjas válidas TODOS
+    los días que abre, todo el año (valor prudente) — es lo que usa el motor sin fecha ni época (`schedule`
+    pasa a ser las windows unidas; "00:00-24:00" = acceso libre). `by_season` y `by_day` se guardan
+    para cuando el motor sepa la época y las fechas. `last_entry` puede ser "HH:MM", un objeto por
+    época (sin época, la más PRUDENTE) o por franja (manana/tarde, la de la franja de la visita); ninguna
+    visita empieza después (`lastEntryMinutes`). `card_text` es la sección "Horario" de la ficha y
+    manda sobre la de la ficha curada; `reservation: obligatoria` pone "Requiere reserva".
+56. **Un relleno nunca obliga a esperar más que la tolerancia del ritmo** (45 completo / 60 tranquilo)
+    a que abra algo, y al reordenar la tarde un orden sin esperas largas gana siempre a uno que las
+    tiene. *Con el Gesù abriendo a las 17:00 salían esperas de 56 y 90 min.*
+
 ---
 
 ## I. Kit de nuevo destino: cuándo un destino está listo

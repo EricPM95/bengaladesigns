@@ -95,6 +95,8 @@ function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
     photoUrl,
     hours: withBookingNote(place),
     scheduleText: withBookingNote(place),
+    hoursCard: place.hours_card ?? null,
+    reservation: place.reservation ?? null,
     tags: place.tags,
   }
 }
@@ -925,6 +927,8 @@ export function PlaceExplorerScreen({
               name: selected.name,
               category: selectedChip?.label ?? selected.type ?? 'Lugar',
               hours: withBookingNote(selected),
+              hoursCard: selected.hours_card ?? null,
+              reservation: selected.reservation ?? null,
               durationMinutes: selected.duration_min ?? 60,
               photoUrl: selectedPhoto ?? placeholderPhoto(selected.name),
               description: '',

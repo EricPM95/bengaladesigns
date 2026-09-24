@@ -262,6 +262,11 @@ export interface Stop {
   tags?: string[]
   /** Ronda 5: horario de apertura tal cual lo trae el JSON curado (p.ej. "Lun-Sáb 09:00-19:00, Dom 09:00-18:00") — distinto de `hours` (rango calculado para ESTA visita); es informativo, general del lugar, y siempre se muestra con el disclaimer "orientativo" (ver StopDetailSheet). Solo el pipeline v2 lo trae hoy. */
   scheduleText?: string | null
+  /** Horario auditado del lugar en texto largo (días, épocas, festivos, última entrada): la sección
+      "Horario" de la ficha. Solo destinos curados con horarios auditados. */
+  hoursCard?: string | null
+  /** Reserva: "obligatoria" | "recomendada" | "no" (horarios auditados). */
+  reservation?: string | null
 }
 
 /**

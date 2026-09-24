@@ -3789,6 +3789,8 @@ app.post('/api/destination-places', (req, res) => {
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
       // Días limitados y reserva obligatoria (la Domus Aurea): la ficha y la parada lo dicen.
       booking_note: place.booking_note ?? null,
+      hours_card: place.card_text ?? null,
+      reservation: place.reservation ?? null,
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son

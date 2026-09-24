@@ -184,6 +184,9 @@ export function buildStop(place, startMinutes, durationMinutes, revisitReason) {
     wikipedia_title: place.wikipedia_title ?? null,
     tags: Array.isArray(place.tags) ? place.tags : [],
     schedule: place.schedule ?? null,
+    // Horarios auditados (2026-09-24): el texto largo para la ficha y si hay que reservar.
+    ...(place.card_text ? { hours_card: place.card_text } : {}),
+    ...(place.reservation ? { reservation: place.reservation } : {}),
     ...(place.isFreeTour ? { is_free_tour: true, free_tour_meeting_point: place.meeting_point ?? null } : {}),
     // Volver a un sitio a otra hora no es un duplicado por descuido: la ficha lo dice y explica por
     // qué merece la pena (ver revisits.js).

@@ -90,3 +90,33 @@ export function effectiveSchedule(place) {
   if (place?.type === 'exterior' || place?.isFreeTour) return place?.schedule ?? null
   return DEFAULT_INDOOR_SCHEDULE
 }
+
+const hhmmToMinutes = (value) => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(String(value ?? '').trim())
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null
+}
+
+/**
+ * Última hora a la que se puede EMPEZAR la visita (`last_entry` del JSON), en minutos, o null si no
+ * hay. Formatos (horarios auditados, 2026-09-24):
+ *   - "HH:MM".
+ *   - Por franja: { manana, tarde } — la de la franja en la que empieza la visita (Catacumbas:
+ *     11:45 por la mañana, 16:45 por la tarde).
+ *   - Por época: { invierno, primavera, verano, otono } — mientras el motor no sepa la época, la más
+ *     PRUDENTE (la más temprana); con `season`, la de esa época.
+ */
+export function lastEntryMinutes(place, visitStart, season = null) {
+  const raw = place?.last_entry
+  if (raw == null) return null
+  if (typeof raw === 'string') return hhmmToMinutes(raw)
+  if (typeof raw !== 'object') return null
+  if ('manana' in raw || 'tarde' in raw) {
+    const sessions = parseHoursSessions(effectiveSchedule(place)).sort((a, b) => a.open - b.open)
+    const index = sessions.findIndex((session) => visitStart >= session.open && visitStart <= session.close)
+    const key = index > 0 ? 'tarde' : 'manana'
+    return hhmmToMinutes(raw[key]) ?? hhmmToMinutes(raw.tarde) ?? hhmmToMinutes(raw.manana)
+  }
+  if (season && raw[season] != null) return hhmmToMinutes(raw[season])
+  const values = Object.values(raw).map(hhmmToMinutes).filter((v) => v !== null)
+  return values.length > 0 ? Math.min(...values) : null
+}
