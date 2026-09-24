@@ -44,6 +44,7 @@ import { PRIORITY, openDay } from './scheduleDay.js'
 import { nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
 import { seasonKey } from './openingHours.js'
+import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
@@ -55,7 +56,7 @@ const NEAR_WALK_MINUTES = 20
  * de camino — el día 2 de Roma acababa con cuatro iglesias cruzando la ciudad. Cada minuto de
  * paseo o espera que añade el candidato resta el doble.
  */
-const FILL_SCORE = { theme: 20, level1: 50, level2: 30, curatedForDay: 25, revisit: -40, perAddedMinute: 2 }
+const FILL_SCORE = { theme: 20, level1: 50, level2: 30, curatedForDay: 25, fixedFlow: 500, revisit: -40, perAddedMinute: 2 }
 
 /** Relleno que añade más que esto en paseo + espera no compensa: no es "de camino", es un desvío. */
 const MAX_FILL_ADDED_MINUTES = 30
@@ -620,15 +621,23 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // El recorrido manda sobre el ORDEN de lo que comparte con el curado: se inserta entero donde
   // aparece su primer lugar. Añadido al final, el curado del día 3 ("... Plaza de San Pedro,
   // Castillo") ponía el Castillo antes que la Conciliazione y el día salía al revés.
+  // Un mirador del recorrido con versión de noche (el Janículo) va al atardecer SI el sol se pone antes
+  // de cenar en la época del viaje; si no, se queda de noche, como experiencia nocturna (decisión del
+  // 2026-09-24). Sin época, se supone que sí da tiempo.
+  const sunsetText = seasonOfTrip ? destData.destination_config?.sunset_by_season?.[seasonOfTrip] : null
+  const sunsetAfterDinner = sunsetText ? toMinutes(sunsetText) >= mode.dinnerWindow[0] : false
+  const toNightInThisSeason = new Set(sunsetAfterDinner ? (destData.night_experiences ?? []).flatMap((entry) => entry.conflicts_with ?? []) : [])
   for (const day of cityDays) {
     const zonesOfDay = new Set(dayUnits(day).flatMap((unit) => unit.places.map((place) => place.zone)))
     for (const zone of zonesOfDay) {
-      const flow = destData.afternoon_flow?.[zone] ?? []
+      const flow = (destData.afternoon_flow?.[zone] ?? []).filter((name) => !toNightInThisSeason.has(name))
       if (flow.length === 0) continue
       const firstShared = day.curatedNames.findIndex((name) => flow.includes(name))
       const rest = day.curatedNames.filter((name) => !flow.includes(name))
       const at = firstShared < 0 ? rest.length : rest.length - day.curatedNames.slice(firstShared).filter((name) => !flow.includes(name)).length
       day.curatedNames = [...rest.slice(0, at), ...flow, ...rest.slice(at)]
+      // El recorrido fijado para la tarde de ese día: va por delante del relleno y sin sus topes.
+      day.flowNames = new Set([...(day.flowNames ?? []), ...flow])
     }
   }
 
@@ -889,22 +898,27 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
           // Lo que el destino escribió para ESE día (el Borgo Pio del recorrido de tarde del Vaticano) no
           // es relleno: entra aunque sea de nivel 3.
           if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level) && curatedIndexIn(day, unit) === null) continue
-          if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligibleIgnoringCap(day, unit)) continue
+          // Lo que el destino fijó para ese día (su recorrido de tarde) no tiene que estar "cerca": es el camino.
+          if ((!unit.places.some((place) => day.flowNames?.has(place.name)) && walkFromDay(day, unit) > NEAR_WALK_MINUTES) || !eligibleIgnoringCap(day, unit)) continue
           // Fuera de su tope de categoría solo entra si va de camino, sin desvío — y entonces no cuenta.
           const overCap = !withinCategoryCap(day, unit)
           const candidate = overCap ? { ...forDay(day, unit), capExempt: true } : forDay(day, unit)
           // Con la tarde todavía vacía se admite un desvío corto; con la tarde ya llena, solo lo que
           // cae de camino. Por minutos, no por número de paradas: con "a partir de 8 paradas, solo de
           // camino", el día del Free Tour (una "parada" de 2h30) se cerraba a las 16:10.
-          const walkCap = overCap || !afternoonEmpty ? ON_THE_WAY_MINUTES : MAX_FILL_ADDED_WALK_MINUTES
+          // El recorrido que el destino fijó para ese día es el camino, no un desvío: sin topes de relleno
+          // (Castillo → Mirador del Janículo → Fontana dell'Acqua Paola → Trastevere).
+          const fixedForDay = unit.places.some((place) => day.flowNames?.has(place.name))
+          const walkCap = fixedForDay ? Infinity : overCap || !afternoonEmpty ? ON_THE_WAY_MINUTES : MAX_FILL_ADDED_WALK_MINUTES
           const attempt = day.open.tryAdd(candidate, { maxAddedWalk: walkCap })
           if (!attempt) continue
-          if (attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
+          if (!fixedForDay && attempt.addedCost > (aboveMinimum ? CHEAP_FILL_ADDED_MINUTES : MAX_FILL_ADDED_MINUTES)) continue
           if (!themeMayEnter(day, unit, attempt)) continue
           const score =
             (matchesTheme(unit) ? FILL_SCORE.theme : 0) +
             (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +
             (curatedIndexIn(day, unit) !== null ? FILL_SCORE.curatedForDay : 0) +
+            (fixedForDay ? FILL_SCORE.fixedFlow : 0) +
             (unit.isRevisit ? FILL_SCORE.revisit : 0) -
             attempt.addedCost * FILL_SCORE.perAddedMinute -
             // El paseo añadido cuenta además de en el coste: a igualdad, lo que está más a mano.

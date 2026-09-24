@@ -568,5 +568,13 @@
    41.89628445,
    12.49032919
   ]
+ },
+ "Santa Maria del Popolo": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": [
+   41.911499,
+   12.476653
+  ]
  }
 }

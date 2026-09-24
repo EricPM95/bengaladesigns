@@ -245,6 +245,8 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
         priority: PRIORITY.ESSENTIAL,
         // Entró por una experiencia elegida (cambio del bloque o extra de pago): la app lo etiqueta.
         ...(stop.swappedBy ? { experienceTheme: stop.swappedBy } : {}),
+        // El orden del bloque está escrito a mano: la métrica de zigzag lo respeta como curado.
+        curatedIndex: units.length,
       })
     }
     return units.map((unit) => {
@@ -334,13 +336,22 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
       passByUnits.sort((a, b) => a.groupOrder - b.groupOrder)
       // Cada paso por fuera va pegado a su grupo (justo después de lo que queda de él, o donde
       // estaba), no al final del día: el grupo no se parte con otras paradas en medio.
-      const keptById = new Map(schedule.kept.map((unit) => [unit.id, unit]))
+      // En el orden en que quedaron (lo que pasó a la tarde, en su sitio); un grupo que se cayó
+      // entero deja su paso por fuera donde estaba.
+      const keptIds = new Set(schedule.kept.map((unit) => unit.id))
       const sequence = []
-      for (const unit of units) {
-        if (keptById.has(unit.id)) sequence.push(keptById.get(unit.id))
+      const pushPassBys = (unit) => {
         const groups = new Set(unit.places.map((place) => place.group).filter(Boolean))
         sequence.push(...passByUnits.filter((passBy) => groups.has(passBy.group) && !sequence.includes(passBy)))
       }
+      for (const unit of schedule.kept) {
+        sequence.push(unit)
+        const original = units.find((candidate) => candidate.id === unit.id)
+        pushPassBys(original ?? unit)
+        // Los grupos que se cayeron enteros justo detrás de este en el orden original.
+        for (let index = units.indexOf(original) + 1; index < units.length && !keptIds.has(units[index].id); index++) pushPassBys(units[index])
+      }
+      for (const unit of units) pushPassBys(unit)
       const withPassBy = run(modeFallback ? normalMode : mode, sequence)
       if (withPassBy.dropped.length === 0) schedule = { ...withPassBy, dropped: [...schedule.dropped] }
     }

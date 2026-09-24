@@ -1766,7 +1766,7 @@
       ],
       "level": 2,
       "type": "exterior",
-      "schedule": "09:45-10:30, 17:00-18:30",
+      "schedule": "07:30-12:30, 16:00-19:30",
       "tags": [
         "iglesia",
         "arte"
@@ -1783,30 +1783,22 @@
         "gesu"
       ],
       "windows": [
-        "09:45-10:30",
-        "17:00-18:30"
+        "07:30-12:30",
+        "16:00-19:30"
       ],
-      "by_season": {
-        "invierno": [
-          "09:45-10:30",
-          "16:30-18:30"
-        ],
-        "primavera": [
-          "09:45-10:30",
-          "16:30-18:30"
-        ],
-        "verano": [
-          "09:45-10:30",
-          "17:00-18:30"
-        ],
-        "otono": [
-          "09:45-10:30",
-          "17:00-18:30"
-        ]
-      },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Abierta 07:30-12:30 y 16:30-19:30 (sábado hasta las 20:00); domingo 08:30-13:30 y 16:30-20:00. En verano (30 jun-finales de sep) la mañana acaba a las 12:00 y la tarde empieza a las 17:00. No se hacen visitas durante la misa; se deja de entrar 30 min antes de cada una."
+      "card_text": "Lunes a sábado de 07:30 a 12:30 y de 16:00 a 19:30; domingos y festivos de 07:45 a 13:30 y de 16:00 a 20:00 (horario oficial, chiesadelgesu.org). Durante las misas no se hacen visitas.",
+      "by_day": {
+        "lun-sab": [
+          "07:30-12:30",
+          "16:00-19:30"
+        ],
+        "dom": [
+          "07:45-13:30",
+          "16:00-20:00"
+        ]
+      }
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
@@ -3312,7 +3304,6 @@
       "search_en_keywords": [
         "trastevere"
       ],
-      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones",
       "not_before": "11:00"
     },
     {
@@ -3344,8 +3335,59 @@
         "monti",
         "rione monti"
       ],
-      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones",
       "not_before": "11:00"
+    },
+    {
+      "name": "Santa Maria del Popolo",
+      "duration_minutes": 30,
+      "zone": "villa_borghese",
+      "coordinates": [
+        41.9115,
+        12.4764
+      ],
+      "level": 2,
+      "type": "interior",
+      "is_free_access": true,
+      "tags": [
+        "iglesia",
+        "arte"
+      ],
+      "filter_category": "iglesias",
+      "description": "La iglesia de la Piazza del Popolo es un museo escondido: dos Caravaggio en la capilla Cerasi y la capilla Chigi diseñada por Rafael",
+      "tip": "Lleva monedas para iluminar la capilla Cerasi (los dos Caravaggio, a la izquierda del altar mayor). Cierra a mediodía y no se visita durante las misas",
+      "schedule": "08:30-09:45, 10:30-12:00, 16:00-18:00",
+      "windows": [
+        "16:30-18:00"
+      ],
+      "by_day": {
+        "lun-sab": [
+          "08:30-09:45",
+          "10:30-12:00",
+          "16:00-18:00"
+        ],
+        "dom": [
+          "16:30-18:00"
+        ]
+      },
+      "reservation": "no",
+      "card_text": "Laborables de 08:30 a 09:45, de 10:30 a 12:00 y de 16:00 a 18:00; festivos de 16:30 a 18:00 (horario oficial, santamariadelpopoloroma.it). No se hacen visitas durante las misas. Entrada gratuita.",
+      "neighbor_of": [
+        "Piazza del Popolo"
+      ],
+      "search_aliases": [
+        "santa maria del popolo",
+        "basilica de santa maria del popolo",
+        "iglesia del popolo",
+        "caravaggio popolo"
+      ],
+      "wikipedia_title": "Basílica de Santa María del Popolo",
+      "search_en": "Santa Maria del Popolo Rome",
+      "search_en_keywords": [
+        "santa maria del popolo",
+        "cerasi chapel",
+        "chigi chapel"
+      ],
+      "_borrador": "BORRADOR 2026-09-24: horario de santamariadelpopoloroma.it (sección Visite). Revisar."
     }
   ],
   "groups": {
@@ -4686,7 +4728,10 @@
       "Via della Conciliazione",
       "Borgo Pio",
       "Puente Sant'Angelo",
-      "Castillo de Sant'Angelo"
+      "Castillo de Sant'Angelo",
+      "Mirador del Janículo",
+      "Fontana dell'Acqua Paola",
+      "Trastevere"
     ]
   },
   "restaurants": [
@@ -6037,6 +6082,10 @@
       [
         "Coliseo",
         "Domus Aurea"
+      ],
+      [
+        "Terraza del Pincio",
+        "Santa Maria del Popolo"
       ]
     ],
     "experience_highlights": {
@@ -6044,11 +6093,14 @@
       "arte_museos": [
         "Galería Borghese",
         "Museos Capitolinos",
-        "Villa Farnesina",
-        "Palazzo Doria Pamphilj",
         "Iglesia de San Luigi dei Francesi",
-        "Castillo de Sant'Angelo",
-        "Ara Pacis"
+        "Iglesia de Santa Maria della Vittoria",
+        "Iglesia de San Pietro in Vincoli",
+        "Villa Farnesina",
+        "Santa Maria del Popolo",
+        "Palazzo Doria Pamphilj",
+        "Ara Pacis",
+        "Castillo de Sant'Angelo"
       ],
       "barrios_sabores": [
         "Trastevere",
@@ -6061,9 +6113,17 @@
       "naturaleza_vistas": [
         "Mirador del Janículo",
         "Terraza del Pincio",
+        "Cúpula de San Pedro",
         "Jardín de los Naranjos",
         "Parque de Villa Borghese"
       ]
+    },
+    "sunset_by_season": {
+      "_borrador": "BORRADOR 2026-09-24: puesta de sol aproximada en Roma por época (mitad de temporada). Revisar.",
+      "invierno": "17:00",
+      "primavera": "19:45",
+      "verano": "20:40",
+      "otono": "18:15"
     }
   }
 }

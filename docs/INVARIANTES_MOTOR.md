@@ -460,6 +460,23 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     la tarde, y su versión de noche ya no sale esa noche. Se mira al elegir la cena y otra vez con la
     tarde definitiva. Las cadenas de varias nocturnas (Panteón → Trevi → España) no se tocan.
 
+84. **El recorrido de tarde fijado por el destino (`afternoon_flow`) va por delante del relleno y sin sus
+    topes de desvío**: es el camino del día, no un rodeo (Vaticano: … Castillo → Mirador del Janículo →
+    Fontana dell'Acqua Paola → Trastevere). Un mirador del recorrido con versión de noche va al
+    atardecer solo si el sol se pone antes de cenar en la época del viaje
+    (`destination_config.sunset_by_season`); si no, se queda como nocturna. Sin época, al atardecer.
+85. **Entre dos visitas por dentro, primero la que cierra antes.** Lo que no cabe antes de comer va por la
+    tarde detrás de los interiores que cierran antes y delante de los que cierran después (1 día con
+    Free Tour: Coliseo 16:30 → Foro visto desde fuera → Panteón 19:00 → Altar de la Patria 19:30).
+86. **Si antes del Free Tour no hay nada que merezca la pena, el día empieza con el tour**: un relleno
+    (`filler_before_tour`) no justifica madrugar y esperar. Solo imprescindibles, pool, experiencia o lo
+    fijado por el destino.
+87. **Si lo que falla es el horario de un sitio, se recorta ese sitio**, no lo menos importante de la
+    franja (el Foro que ya ha cerrado no se arregla quitando el Altar de detrás).
+88. **Un barrio como parada y un bloque de tarde del mismo barrio no coinciden el mismo día** (sería
+    pasear el barrio dos veces). Hoy el motor v3 no usa `evening_blocks` ni `zone_walks` (solo el motor
+    viejo), así que no puede pasar; si se vuelven a usar, esta regla va con ellos.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

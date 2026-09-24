@@ -64,7 +64,7 @@
  */
 
 import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './time.js'
-import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes } from './openingHours.js'
+import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes, parseHoursSessions } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
 import { chooseLunchSpot } from './lunchSpots.js'
 
@@ -98,7 +98,7 @@ const DINNER_IDLE_PENALTY_PER_MINUTE = 1
 const RELATED_APART_PENALTY = 30
 
 /** Fallos por el horario de un sitio (no por la comida ni la cena). */
-const HOURS_FAILURES = new Set(['closes_during_visit', 'after_last_entry'])
+const HOURS_FAILURES = new Set(['closes_during_visit', 'after_last_entry', 'closed'])
 
 const LUNCH = { kind: 'lunch' }
 
@@ -270,6 +270,17 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
     // Lo de la mañana que no acaba a las 13:00 no se pierde: se come primero y abre la tarde (con lo
     // que venía detrás). En la mañana de la salida no hay tarde: eso sí se cae.
     if (failing && result.reason === 'new_visit_past_lunch' && failing.slot === 'manana' && !visitsEndByLunch) {
+      // Una visita por dentro que no cabe antes de comer va por la tarde, detrás de las visitas por
+      // dentro que cierran antes que ella y delante de las que cierran después (entre dos visitas por
+      // dentro, primero la que cierra antes: Coliseo 16:30 → Panteón 19:00 → Altar de la Patria 19:30).
+      const closing = interiorClosing(failing, hours)
+      if (closing !== null) {
+        const rest = kept.filter((unit) => unit !== failing)
+        const firstLaterPaid = rest.findIndex((unit) => unit.slot === 'tarde' && (interiorClosing(unit, hours) ?? -Infinity) > closing)
+        const at = firstLaterPaid >= 0 ? firstLaterPaid : rest.length
+        kept = [...rest.slice(0, at), { ...failing, slot: 'tarde' }, ...rest.slice(at)]
+        continue
+      }
       const from = kept.indexOf(failing)
       kept = kept.map((unit, index) => (index >= from && unit.slot === 'manana' ? { ...unit, slot: 'tarde' } : unit))
       continue
@@ -278,7 +289,9 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
     const inSlot = kept.filter((unit) => unit.slot === slot)
     const pool = inSlot.length > 0 ? inSlot : kept
     const leastImportant = pool.reduce((worst, unit) => (unit.dropRank > worst.dropRank ? unit : worst), pool[0])
-    const victim = failing && failing.dropRank >= leastImportant.dropRank ? failing : leastImportant
+    // Si lo que falla es el HORARIO de un sitio (el Foro, que ya ha cerrado), quitar otra cosa de detrás
+    // no lo arregla: se recorta él. Antes se iba el Altar de la Patria de rebote.
+    const victim = failing && (HOURS_FAILURES.has(result.reason) || failing.dropRank >= leastImportant.dropRank) ? failing : leastImportant
     // Un grupo que no cabe entero pierde su final, no el grupo: si no da tiempo a la Basílica y la
     // Plaza, caen ellas, no los Museos Vaticanos. Lo que se recorta es lo que no es joya, y nunca
     // se separa un par inseparable (si el último lo es del anterior, caen los dos).
@@ -304,6 +317,15 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
     dropped.push({ unit: victim, reason: result.reason })
     kept = kept.filter((unit) => unit !== victim)
   }
+}
+
+/** A qué hora cierra lo que se visita por dentro en una unidad (el cierre más temprano); null si no tiene. */
+function interiorClosing(unit, hours) {
+  const closings = unit.places
+    .filter((place) => !place.isFreeTour && place.type === 'interior')
+    .map((place) => Math.max(...parseHoursSessions(effectiveSchedule(place, hours)).map((session) => session.close), -Infinity))
+    .filter(Number.isFinite)
+  return closings.length > 0 ? Math.min(...closings) : null
 }
 
 /** Cuántos lugares del final de un grupo se pueden quitar dejando el resto: 0 si ninguno. */
@@ -637,7 +659,9 @@ function simulate(sequence, ctx) {
     const unit = element
     if (unit.isLong && !longVisitsAnytime && pendingMeals.lunch && lunchDone) return { ok: false, reason: 'long_visit_after_lunch', unitId: unit.id }
     // Nada nuevo después de una parada "de paso": esas van camino de la cena, al final.
-    if (!unit.places.some((place) => place.passBy) && visits.some((visit) => visit.place.passBy)) return { ok: false, reason: 'pass_by_not_last', unitId: unit.id }
+    // (Solo las revisitas: el paso por fuera EN LUGAR de una visita —el Foro desde la Via dei Fori
+    // Imperiali— va pegado a su grupo, y la tarde sigue.)
+    if (!unit.places.some((place) => place.passBy) && visits.some((visit) => visit.place.passBy && visit.place.passBy.seenOnDay != null)) return { ok: false, reason: 'pass_by_not_last', unitId: unit.id }
     const unitStartsAt = visits.length
     // La comida puede meterse dentro de este grupo solo si es lo que viene justo después de él.
     const lunchComesNext = !lunchDone && sequence[elementIndex + 1] === LUNCH
@@ -661,6 +685,11 @@ function simulate(sequence, ctx) {
       const afterLunch = pendingLunch ? resolveLunch(place.coordinates) : null
       if (tourPoint && elementIndex < tourIndex && !place.isFreeTour && (travel.leg(place.coordinates, tourPoint)?.minutes ?? Infinity) > BEFORE_TOUR_MAX_WALK_MINUTES) {
         return { ok: false, reason: 'far_before_tour', unitId: unit.id }
+      }
+      // Si antes del tour no hay nada que merezca la pena, el día empieza con el tour: un relleno
+      // (la Fuente del Tritón a las 08:00 y dos horas de espera) no justifica madrugar.
+      if (tourPoint && elementIndex < tourIndex && !place.isFreeTour && unit.priority >= PRIORITY.FILLER && unit.curatedIndex == null) {
+        return { ok: false, reason: 'filler_before_tour', unitId: unit.id }
       }
       const leg = afterLunch ? { minutes: afterLunch.walkMinutes, meters: afterLunch.meters, source: afterLunch.source } : position ? travel.leg(position, place.coordinates) : null
       const walkMinutes = leg?.minutes ?? 0
@@ -1011,7 +1040,9 @@ function bestAfternoon(sequence, ctx) {
   const isPassBy = (unit) => unit.places.some((place) => place.passBy)
   const tail = afternoon.filter(isPassBy)
   const pieces = afternoon.filter((unit) => !isPassBy(unit))
-  const fixed = pieces.filter((unit) => unit.curatedIndex != null)
+  // Lo curado va en SU orden (el escrito a mano), no en el que traiga la secuencia: si un paso
+  // anterior lo desordenó (Plaza de España antes que Popolo → Pincio), aquí se recoloca.
+  const fixed = pieces.filter((unit) => unit.curatedIndex != null).sort((a, b) => a.curatedIndex - b.curatedIndex)
   const movable = pieces.filter((unit) => unit.curatedIndex == null)
   if (movable.length === 0 || pieces.length > MAX_AFTERNOON_PIECES) return current
 

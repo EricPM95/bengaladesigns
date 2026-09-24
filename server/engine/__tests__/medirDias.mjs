@@ -185,7 +185,8 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
       const place = placeByName.get(stop.name)
       let at = roundUpToQuarter(cursor + leg.minutes)
       if (checkHours && place && !stop.is_pass_by) {
-        at = earliestVisitStart(effectiveSchedule(place), at, stop.duration_minutes, roundUpToQuarter)
+        // El horario del DÍA que trae la parada (el del día de la semana o la época), como el motor.
+        at = earliestVisitStart(stop.hours ?? effectiveSchedule(place, HOURS), at, stop.duration_minutes, roundUpToQuarter)
         if (at === null) return null
       }
       cursor = at + stop.duration_minutes
