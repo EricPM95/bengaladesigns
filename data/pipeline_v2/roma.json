@@ -378,7 +378,8 @@
         "Domus Aurea",
         "Columna de Trajano",
         "Teatro de Marcelo",
-        "Iglesia de Santa Maria della Vittoria"
+        "Iglesia de Santa Maria della Vittoria",
+        "Monti"
       ],
       "zone_priority": 1
     },
@@ -444,7 +445,8 @@
         "Plaza Trilussa",
         "San Pietro in Montorio y Tempietto de Bramante",
         "Fontana dell'Acqua Paola",
-        "Basílica de Santa Cecilia in Trastevere"
+        "Basílica de Santa Cecilia in Trastevere",
+        "Trastevere"
       ],
       "zone_priority": 3
     },
@@ -2354,7 +2356,10 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días 08:00-12:30 y 15:00-18:00; de abril a septiembre la tarde se alarga hasta las 19:00. Cerrada a mediodía."
+      "card_text": "Todos los días 08:00-12:30 y 15:00-18:00; de abril a septiembre la tarde se alarga hasta las 19:00. Cerrada a mediodía.",
+      "neighbor_of": [
+        "Monti"
+      ]
     },
     {
       "name": "Domus Aurea",
@@ -2762,7 +2767,8 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Abierta a diario, aproximadamente de 09:00 a 20:00. En agosto cierra a mediodía. No se visita durante la misa."
+      "card_text": "Abierta a diario, aproximadamente de 09:00 a 20:00. En agosto cierra a mediodía. No se visita durante la misa.",
+      "contained_in": "Trastevere"
     },
     {
       "name": "Villa Farnesina",
@@ -2826,7 +2832,8 @@
         "trilussa",
         "ponte sisto"
       ],
-      "coordinates_checked": true
+      "coordinates_checked": true,
+      "contained_in": "Trastevere"
     },
     {
       "name": "Terraza del Pincio",
@@ -3267,7 +3274,70 @@
       "closed_on": [],
       "reservation": "no",
       "card_text": "Lunes a sábado 10:00-12:30 y 16:30-18:30; domingos y festivos 11:30-12:30 y 16:30-18:00. La basílica es gratuita; la cripta y el fresco de Cavallini son de pago (el fresco solo por la mañana).",
-      "is_free_access": true
+      "is_free_access": true,
+      "neighbor_of": [
+        "Trastevere"
+      ]
+    },
+    {
+      "name": "Trastevere",
+      "duration_minutes": 45,
+      "zone": "trastevere",
+      "coordinates": [
+        41.8893,
+        12.47
+      ],
+      "level": 2,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "barrio",
+        "gastronomia"
+      ],
+      "filter_category": "monumentos",
+      "description": "El barrio más romano de Roma: callejuelas empedradas, fachadas con hiedra, ropa tendida entre balcones y trattorias a cada paso, al otro lado del Tíber",
+      "tip": "Piérdete sin mapa entre Via della Lungaretta y Via della Scala; al atardecer se llena de romanos y de ambiente",
+      "search_aliases": [
+        "trastevere",
+        "barrio de trastevere"
+      ],
+      "wikipedia_title": "Trastevere",
+      "search_en": "Trastevere Rome",
+      "search_en_keywords": [
+        "trastevere"
+      ],
+      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones"
+    },
+    {
+      "name": "Monti",
+      "duration_minutes": 40,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8953,
+        12.4929
+      ],
+      "level": 2,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "barrio",
+        "gastronomia"
+      ],
+      "filter_category": "monumentos",
+      "description": "El barrio más antiguo de Roma, a dos pasos del Coliseo: cuestas empedradas, tiendas de diseño, vinotecas y la fuente de la Piazza della Madonna dei Monti como punto de encuentro",
+      "tip": "Siéntate un rato en la fuente de la Piazza della Madonna dei Monti con un helado: es donde se juntan los del barrio",
+      "search_aliases": [
+        "monti",
+        "rione monti",
+        "barrio de monti"
+      ],
+      "wikipedia_title": "Monti (rione de Roma)",
+      "search_en": "Monti Rome",
+      "search_en_keywords": [
+        "monti",
+        "rione monti"
+      ],
+      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones"
     }
   ],
   "groups": {
@@ -5960,6 +6030,32 @@
         "Coliseo",
         "Domus Aurea"
       ]
-    ]
+    ],
+    "experience_highlights": {
+      "_borrador": "BORRADOR 2026-09-24: lo más representativo de cada experiencia, en orden. Revisar.",
+      "arte_museos": [
+        "Galería Borghese",
+        "Museos Capitolinos",
+        "Villa Farnesina",
+        "Palazzo Doria Pamphilj",
+        "Iglesia de San Luigi dei Francesi",
+        "Castillo de Sant'Angelo",
+        "Ara Pacis"
+      ],
+      "barrios_sabores": [
+        "Trastevere",
+        "Monti",
+        "Barrio Judío",
+        "Mercado de Testaccio",
+        "Borgo Pio",
+        "Campo de' Fiori"
+      ],
+      "naturaleza_vistas": [
+        "Mirador del Janículo",
+        "Terraza del Pincio",
+        "Jardín de los Naranjos",
+        "Parque de Villa Borghese"
+      ]
+    }
   }
 }

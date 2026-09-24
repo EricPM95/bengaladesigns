@@ -428,6 +428,18 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     contenedor gratis; lo del pool o de una experiencia lo arrastra aunque sea de pago (`draggedBy`), y
     los dos cuentan como 1 en la experiencia. Si el contenedor no puede entrar, lo de dentro se quita.
 
+78. **Dentro de una experiencia gana lo más representativo; la geografía decide el día, no si entra.**
+    Orden: la lista editorial del destino (`destination_config.experience_highlights`, opcional) y si no,
+    más etiquetas del tema, la más característica y el nivel. El día, el más cercano entre los que menos
+    llevan del tema, sin descartar por distancia. Lo que entró por una experiencia no es relleno
+    provisional: no se aparta al elegir la cena. *La Galería Borghese perdía contra los Mercados de
+    Trajano por estar lejos, y cuando entraba, se perdía al elegir la cena.*
+79. **El tiempo que sobra no es un error: es una "Tarde libre", y va al FINAL del viaje.** El relleno
+    llena primero los primeros días; si el destino no da para más, la tarde libre cae en los últimos,
+    nunca en el día 2. Con 90 min o más libres antes de cenar, el día lleva `free_afternoon` con 2-3
+    sugerencias cerca de donde acaba (pueden ser de pago; primero las de sus experiencias). En el
+    semáforo, una tarde libre es amarillo, no rojo.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

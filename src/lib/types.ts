@@ -545,6 +545,9 @@ export interface DayPlan {
   dinnerWalkMinutes?: number | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
   halfDayExcursion?: HalfDayExcursionSlot | null
+  /** Motor v3: tarde libre (el destino ya no daba para más ese día), con 2-3 sugerencias cerca de
+      donde acaba el día — pueden ser de pago, el viajero decide si las añade. */
+  freeAfternoon?: { minutes: number; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo

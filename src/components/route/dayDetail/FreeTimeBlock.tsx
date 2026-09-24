@@ -11,9 +11,39 @@ interface FreeTimeBlockProps {
   hours: number
   city: string
   onOpenMap: () => void
+  /** Tarde libre (motor v3): el destino ya no daba para más ese día. Sugerencias cerca, que el viajero
+      añade si quiere (pueden ser de pago). */
+  suggestions?: { name: string; walkMinutes: number; requiresTicket: boolean }[]
+  onPickSuggestion?: (name: string) => void
 }
 
-export function FreeTimeBlock({ hours, city, onOpenMap }: FreeTimeBlockProps) {
+export function FreeTimeBlock({ hours, city, onOpenMap, suggestions, onPickSuggestion }: FreeTimeBlockProps) {
+  if (suggestions && suggestions.length > 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-border px-3 py-2.5 text-small text-text-soft">
+        <p className="font-semibold text-text">Tarde libre</p>
+        <p className="mt-0.5">
+          Llevas {hours} {hours === 1 ? 'hora' : 'horas'} descubriendo {city}. El resto de la tarde es tuya. Si te quedan ganas, también te puede
+          interesar, cerca de aquí:
+        </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {suggestions.map((item) => (
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => onPickSuggestion?.(item.name)}
+              className="rounded-full border border-border px-2.5 py-1 text-caption font-medium text-text transition-colors hover:bg-bg-hover"
+            >
+              {item.name} · {item.walkMinutes} min{item.requiresTicket ? ' · entrada' : ''}
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={onOpenMap} className="mt-2 font-semibold text-accent-hover underline transition-opacity hover:opacity-80">
+          Ver todo en el mapa
+        </button>
+      </div>
+    )
+  }
   return (
     <div className="rounded-xl border border-dashed border-border px-3 py-2.5 text-small text-text-soft">
       Llevas {hours} {hours === 1 ? 'hora' : 'horas'} descubriendo {city}. Tienes tiempo libre hasta la cena: tómate un helado, un

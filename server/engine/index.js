@@ -23,6 +23,7 @@ import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
+import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -135,7 +136,7 @@ export async function buildDayBlockV3(
     return day
   }
 
-  if (isV3) return buildCityDayV3(destData, plan, dayPlan, options)
+  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [] })
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
@@ -195,5 +196,38 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     })),
     ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
   ]
+  const freeAfternoon = freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
+  if (freeAfternoon) day.free_afternoon = freeAfternoon
   return day
+}
+
+/** Tiempo libre antes de cenar a partir del cual la tarde se dice "Tarde libre", con sugerencias. */
+const FREE_AFTERNOON_MIN_MINUTES = 90
+/** Sugerencias de la tarde libre: a esta distancia a pie, como mucho, de donde acaba el día. */
+const FREE_AFTERNOON_MAX_WALK_MINUTES = 20
+const FREE_AFTERNOON_SUGGESTIONS = 3
+
+/**
+ * Tarde libre (decisión del 2026-09-24): cuando el destino ya no da para llenar la tarde, no es un
+ * error: se dice, con 2-3 sugerencias de "También te puede interesar" cerca de donde acaba el día.
+ * Pueden ser de pago —las añade el viajero si quiere—. Primero lo de sus experiencias; luego el nivel;
+ * luego lo más cerca. Nunca algo ya visto en el viaje.
+ */
+function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
+  const idle = tripDay.schedule?.idleBeforeDinner ?? 0
+  const visits = tripDay.schedule?.visits ?? []
+  const last = visits[visits.length - 1]
+  if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
+  const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
+  const from = last.place.end_coordinates ?? last.place.coordinates
+  const seen = new Set([...dayVisitedNames, ...(trip.coveredByFreeTour ?? []).flatMap((item) => item.names)])
+  const chosenTags = new Set((options.experiencesPositive ?? []).flatMap((theme) => (theme in TAG_INTEREST_MAP && theme !== 'free_tour' ? TAG_INTEREST_MAP[theme] : [])))
+  const suggestions = (destData.places ?? [])
+    .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates))
+    .map((place) => ({ place, walk: travel.leg(from, place.coordinates)?.minutes ?? Infinity, ofExperience: (place.tags ?? []).some((tag) => chosenTags.has(tag)) }))
+    .filter((item) => item.walk <= FREE_AFTERNOON_MAX_WALK_MINUTES)
+    .sort((a, b) => Number(b.ofExperience) - Number(a.ofExperience) || (a.place.level ?? 9) - (b.place.level ?? 9) || a.walk - b.walk || a.place.name.localeCompare(b.place.name, 'es'))
+    .slice(0, FREE_AFTERNOON_SUGGESTIONS)
+    .map(({ place, walk }) => ({ name: place.name, walk_minutes: Math.round(walk), requires_ticket: !(place.is_free_access ?? place.type === 'exterior') }))
+  return { minutes: idle, suggestions }
 }

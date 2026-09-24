@@ -207,7 +207,12 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
     const indices = order.map(curatedOf).filter((index) => index !== null)
     return indices.every((index, i) => i === 0 || index >= indices[i - 1])
   }
+  // Un grupo que la comida parte en dos (Panteón → comida → Navona) sigue justo al volver: su parte
+  // de la tarde va fija delante.
+  const lastMorningGroup = before.length ? placeByName.get(before[before.length - 1].name)?.group : null
+  const pinned = lastMorningGroup ? pieces.find((piece) => placeByName.get(piece[0].name)?.group === lastMorningGroup) : null
   const permute = (rest, order) => {
+    if (pinned && order.length > 0 && order[0] !== pinned) return
     if (!keepsCurated(order)) return
     if (rest.length === 0) {
       const meters = measure(order, true)
@@ -296,6 +301,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
     // Contra la comida de REFERENCIA del ritmo: en tranquilo sale negativo si la tarde pisa la sobremesa.
     idleAfterLunch: lunchAt !== null && afternoon.length > 0 && t2m(afternoon[0].suggested_time) >= lunchAt ? t2m(afternoon[0].suggested_time) - (lunchAt + meal) : null,
     deadBeforeDinner: dinnerAt !== null ? dinnerAt - lastEnd : null,
+    // Tarde libre: el destino ya no daba para más ese día (decisión del 2026-09-24). Amarillo, no rojo.
+    freeAfternoon: Boolean(day.free_afternoon),
     lunchInWindow: lunchAt === null ? null : lunchAt >= REF.lunchWindow[0] && lunchAt <= REF.lunchWindow[1],
     dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= REF.dinnerWindow[1],
     dayEndWithDinner: dinnerAt !== null ? dinnerAt + meal : lastEnd,
@@ -560,7 +567,10 @@ const SEMAFORO_CRITERIOS = [
     ok: (v) => v <= 2,
     fmt: (v) => `${v.toFixed(1)}%`,
   },
-  { id: 'sinTarde', label: `Días de ciudad hasta core_days (${CORE_DAYS}) que acaban antes de las 16:00`, limite: '0', value: (rows, days) => days.filter((d) => isCoreDay(d) && d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
+  { id: 'sinTarde', label: `Días de ciudad hasta core_days (${CORE_DAYS}) que acaban antes de las 16:00 (sin contar las tardes libres)`, limite: '0', value: (rows, days) => days.filter((d) => isCoreDay(d) && !d.freeAfternoon && d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
+  // Amarillo (se mira, no bloquea): tardes libres, y la que caiga en el día 2 de un viaje de 3+ días,
+  // que debería estar al final.
+  { id: 'libre', warnOnly: true, label: 'Tardes libres (el destino no da para más ese día)', limite: '—', value: (rows, days) => days.filter((d) => d.freeAfternoon).length, ok: (v) => v === 0 },
   {
     id: 'repaso',
     label: `Días de repaso (más allá de core_days) con más de ${MAX_REVISITS_PER_DAY} revisitas`,
@@ -571,10 +581,12 @@ const SEMAFORO_CRITERIOS = [
   },
   {
     id: 'ritmo',
-    label: 'Días con menos lugares que el mínimo del ritmo (8 completo / 5 tranquilo; el Free Tour cuenta lo que recorre), hasta core_days',
+    label: 'Días con menos lugares que el mínimo del ritmo (8 completo / 5 tranquilo; el Free Tour cuenta lo que recorre) y tarde sin llenar, hasta core_days',
     limite: '0',
     applies: (n) => n >= 2 && n <= (D.destination_config?.core_days ?? 4),
-    value: (rows, days, pace) => days.filter((d) => d.placesSeen < (pace === 'tranquilo' ? 5 : 8)).length,
+    // Un día con pocos lugares pero LLENO (grandes museos hasta la cena) no es un día corto: solo
+    // cuenta si además le sobra tarde antes de cenar.
+    value: (rows, days, pace) => days.filter((d) => d.placesSeen < (pace === 'tranquilo' ? 5 : 8) && (d.deadBeforeDinner ?? Infinity) > REF.gapTolerance[pace]).length,
     ok: (v) => v === 0,
   },
 ]
@@ -594,7 +606,7 @@ function printSemaforo(motor) {
         const value = c.value(group, days, pace)
         const ok = c.ok(value)
         cells.push({ criterio: c, ok, pace, n, value })
-        return `${ok ? '🟢' : '🔴'}${(c.fmt ?? String)(value)}`.padStart(8)
+        return `${ok ? '🟢' : c.warnOnly ? '🟡' : '🔴'}${(c.fmt ?? String)(value)}`.padStart(8)
       })
       const idle = avg(days.map((d) => d.deadBeforeDinner).filter((v) => v !== null))
       console.log(`${pace.padEnd(10)} ${String(n).padStart(4)}  ${line.join(' ')}   ${fmt(idle)} min`)
@@ -603,10 +615,12 @@ function printSemaforo(motor) {
   console.log('\nLímites (verde si se cumple):')
   for (const c of SEMAFORO_CRITERIOS) {
     const reds = cells.filter((cell) => cell.criterio === c && !cell.ok)
-    console.log(`  ${reds.length ? '🔴' : '🟢'} ${c.id.padEnd(9)} ${c.limite.padEnd(5)} ${c.label}${reds.length ? ` — en rojo: ${reds.map((r) => `${r.pace} ${r.n}d`).join(', ')}` : ''}`)
+    const mark = reds.length ? (c.warnOnly ? '🟡' : '🔴') : '🟢'
+    console.log(`  ${mark} ${c.id.padEnd(9)} ${c.limite.padEnd(5)} ${c.label}${reds.length ? ` — en ${c.warnOnly ? 'amarillo' : 'rojo'}: ${reds.map((r) => `${r.pace} ${r.n}d`).join(', ')}` : ''}`)
   }
-  const ready = cells.every((cell) => cell.ok)
-  console.log(`\n${ready ? '✅ DESTINO LISTO: todo en verde' : `❌ DESTINO NO LISTO: ${cells.filter((c) => !c.ok).length} casillas en rojo`}`)
+  const blocking = cells.filter((cell) => !cell.ok && !cell.criterio.warnOnly)
+  const ready = blocking.length === 0
+  console.log(`\n${ready ? '✅ DESTINO LISTO: todo en verde (amarillos: se miran, no bloquean)' : `❌ DESTINO NO LISTO: ${blocking.length} casillas en rojo`}`)
   return ready
 }
 

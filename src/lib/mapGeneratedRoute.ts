@@ -139,6 +139,8 @@ export interface GeneratedDay {
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
+  /** Motor v3: tarde libre con sugerencias cerca — DayPlan.freeAfternoon. */
+  free_afternoon?: { minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -549,6 +551,14 @@ function mapDay(
     excursionSocialProof: generated.excursion_social_proof ?? null,
     beyondAutoDays: generated.beyond_auto_days ?? false,
     maxAutoDays: generated.max_auto_days ?? null,
+    ...(generated.free_afternoon
+      ? {
+          freeAfternoon: {
+            minutes: generated.free_afternoon.minutes,
+            suggestions: generated.free_afternoon.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
+          },
+        }
+      : {}),
     halfDayExcursion: generated.half_day_excursion
       ? {
           id: generated.half_day_excursion.id,

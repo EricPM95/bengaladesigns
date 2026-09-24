@@ -156,7 +156,8 @@ export function placesForScheduler(unit, destData, freeTourTime) {
  * mira desde la Via dei Fori Imperiali) y con el mensaje que explica por qué vuelve a salir.
  */
 function passByUnit(place, passBy, minutes, seenOnDay, dinnerDisplay) {
-  const message = `Ya visitaste ${passBy.label ?? place.name} el Día ${seenOnDay}. De camino a cenar ${dinnerDisplay} pasas por delante: dedícale ${minutes} minutos y hazte fotos nuevas con la luz de la tarde.`
+  const toDinner = dinnerDisplay ? `De camino a cenar ${dinnerDisplay}` : 'De camino a cenar'
+  const message = `Ya visitaste ${passBy.label ?? place.name} el Día ${seenOnDay}. ${toDinner} pasas por delante: dedícale ${minutes} minutos y hazte fotos nuevas con la luz de la tarde.`
   return {
     id: `${place.name} (de paso)`,
     places: [
@@ -649,7 +650,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
    * su recorrido de tarde y no puede caerse porque los Museos Vaticanos ya cuenten como arte.
    */
   function themeMayEnter(day, unit, attempt) {
-    if (unit.priority !== PRIORITY.THEME || curatedIndexIn(day, unit) !== null) return true
+    // Lo gratis del tema es relleno normal (Paso 3, decisión A): entra como cualquier otro, con su
+    // ventaja en la puntuación. Solo lo que entra POR la experiencia (lo de pago) va si hace falta o
+    // si cae de camino.
+    if (unit.priority !== PRIORITY.THEME || curatedIndexIn(day, unit) !== null || !entersByExperience(unit)) return true
     return neededForTheme(day, unit) || onTheWay(day, unit, attempt)
   }
 
@@ -675,7 +679,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     for (const day of cityDays) {
       const provisional = day.open
         .afternoonUnits()
-        .filter((unit) => unit.priority >= PRIORITY.THEME && unit.curatedIndex == null && !unit.isRevisit && !unit.places.some((place) => place.passBy))
+        // Lo que entró por una experiencia no es relleno provisional: se queda (la Galería Borghese
+        // del mínimo de Arte se perdía aquí y no volvía).
+        .filter((unit) => unit.priority >= PRIORITY.THEME && unit.curatedIndex == null && !unit.isRevisit && !experienceEntries.has(unit.id) && !unit.places.some((place) => place.passBy))
       before.set(day, { snapshot: day.open.snapshot(), provisional })
       for (const unit of provisional) {
         day.open.remove(unit.id)
@@ -773,6 +779,24 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   /** Lo característico del tema va primero: la posición de su mejor etiqueta en la lista del tema
       (museo antes que iglesia en Arte, barrio antes que plaza en Barrios, mirador antes que fuente). */
   const coreness = (unit, theme) => Math.min(...unit.tags.map((tag) => TAG_INTEREST_MAP[theme].indexOf(tag)).filter((index) => index >= 0))
+  /**
+   * Lo más representativo del tema va primero (decisión del 2026-09-24): la lista editorial del
+   * destino si la tiene (`destination_config.experience_highlights`), y si no, el que tiene más
+   * etiquetas del tema, luego la más característica y luego el nivel. La geografía decide el DÍA, no
+   * si entra: la Galería Borghese no puede perder contra los Mercados de Trajano por estar lejos.
+   */
+  const highlightIndex = (unit, theme) => {
+    const list = destData.destination_config?.experience_highlights?.[theme] ?? []
+    const indices = unit.places.map((place) => list.indexOf(place.name)).filter((index) => index >= 0)
+    return indices.length > 0 ? Math.min(...indices) : Infinity
+  }
+  const themeTagCount = (unit, theme) => unit.tags.filter((tag) => TAG_INTEREST_MAP[theme].includes(tag)).length
+  const byRepresentativeness = (theme) => (a, b) =>
+    highlightIndex(a, theme) - highlightIndex(b, theme) ||
+    themeTagCount(b, theme) - themeTagCount(a, theme) ||
+    coreness(a, theme) - coreness(b, theme) ||
+    a.level - b.level ||
+    a.id.localeCompare(b.id, 'es')
   /** null si la experiencia llega a su mínimo; si no, el motivo. */
   function fulfilMinimum(theme) {
     const ofTheme = (unit) => unit.priority === PRIORITY.THEME && themesOf(unit).includes(theme)
@@ -784,22 +808,25 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
     let candidates = []
     while (experienceCount(theme) < EXPERIENCE_RANGE.min) {
-      candidates = units.filter((unit) => (!placedDay.has(unit.id) || droppedByRelation.has(unit.id)) && ofTheme(unit))
-      const pairs = cityDays
-        .flatMap((day) => candidates.map((unit) => ({ day, unit, walk: walkFromDay(day, unit), dayCount: experienceCount(theme, day) })))
-        .filter((item) => item.walk <= NEAR_WALK_MINUTES)
-        .sort(
-          (a, b) =>
-            a.dayCount - b.dayCount ||
-            coreness(a.unit, theme) - coreness(b.unit, theme) ||
-            a.unit.level - b.unit.level ||
-            a.walk - b.walk ||
-            a.day.dayNumber - b.day.dayNumber ||
-            a.unit.id.localeCompare(b.unit.id, 'es'),
-        )
-      const placed = pairs.find((item) => placeOnDay(item.day, item.unit))
+      candidates = units.filter((unit) => (!placedDay.has(unit.id) || droppedByRelation.has(unit.id)) && ofTheme(unit)).sort(byRepresentativeness(theme))
+      // Repartidas: a cada día de los que menos llevan del tema, lo más representativo que tenga cerca.
+      // Si ninguno tiene nada cerca, lo más representativo en el día que le pille más cerca: la
+      // geografía decide el día, no si entra.
+      let placed = null
+      const fewest = Math.min(...cityDays.map((day) => experienceCount(theme, day)))
+      for (const day of cityDays.filter((d) => experienceCount(theme, d) === fewest)) {
+        placed = candidates.find((unit) => walkFromDay(day, unit) <= NEAR_WALK_MINUTES && placeOnDay(day, unit)) ?? null
+        if (placed) break
+      }
+      for (const unit of placed ? [] : candidates) {
+        const days = cityDays.map((day) => ({ day, walk: walkFromDay(day, unit) })).sort((a, b) => a.walk - b.walk || a.day.dayNumber - b.day.dayNumber)
+        if (days.some(({ day }) => placeOnDay(day, unit))) {
+          placed = unit
+          break
+        }
+      }
       if (!placed) return candidates.length === 0 ? 'none_near' : 'no_room'
-      experienceEntries.add(placed.unit.id)
+      experienceEntries.add(placed.id)
     }
     return null
   }
@@ -812,19 +839,25 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
   refreshMinimums()
 
-  // ── Paso 6: relleno, por turnos entre días ─────────────────────────────────────────────────
-  // Por turnos y no día a día: llenando el día 1 del todo primero, se quedaba con lo mejor de la
-  // zona que comparte con el día 3.
+  // ── Paso 6: relleno, primero los primeros días ────────────────────────────────────────────
+  // Cada parada nueva va al PRIMER día que todavía la necesita (decisión del 2026-09-24): si el
+  // destino no da para llenar todas las tardes, el tiempo libre cae al final del viaje, nunca en el
+  // día 2. Antes iba por turnos (una a cada día) y la tarde libre salía en cualquier día.
   // El objetivo es el MÍNIMO del ritmo (8 completo, 5 tranquilo); hasta el máximo solo se sube con
   // paradas que caen de camino. Rellenar hasta 10 a cualquier precio es el "relleno obsesivo" que
   // se quería quitar.
   const minTargetOf = (day) => (day.allowsRepetition ? RELAXED_DAY_TARGET_STOPS : mode.targetStops[0])
   const maxTargetOf = (day) => (day.allowsRepetition ? RELAXED_DAY_TARGET_STOPS : mode.targetStops[1])
   function fillRounds() {
+    // Dos fases: por turnos hasta que todos los días lleguen al mínimo de su ritmo (si no, el día 1 se
+    // queda lo cercano y el día 2 se queda corto); después, lo que sobra, primero en los primeros días.
+    const stuck = new Set() // días que no llegan al mínimo con nada: no bloquean la segunda fase
     let progress = true
     while (progress) {
       progress = false
-      for (const day of cityDays) {
+      const needy = cityDays.filter((day) => !stuck.has(day) && visitCount(day) < minTargetOf(day))
+      const firstPhase = needy.length > 0
+      for (const day of firstPhase ? needy : cityDays) {
         // Se sigue mientras falte el mínimo del ritmo, o mientras la tarde siga vacía antes de cenar.
         const afternoonEmpty = (day.open.idleBeforeDinner() ?? 0) > mode.gapTolerance
         const cap = maxTargetOf(day) + (afternoonEmpty ? EXTRA_STOPS_WHILE_AFTERNOON_EMPTY : 0)
@@ -843,7 +876,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         for (const unit of [...fresh, ...revisits]) {
           // En tranquilo el nivel 3 no entra como relleno: 5-7 paradas gastadas en tercera fila es lo
           // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
-          if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level)) continue
+          // Lo que el destino escribió para ESE día (el Borgo Pio del recorrido de tarde del Vaticano) no
+          // es relleno: entra aunque sea de nivel 3.
+          if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level) && curatedIndexIn(day, unit) === null) continue
           if (walkFromDay(day, unit) > NEAR_WALK_MINUTES || !eligibleIgnoringCap(day, unit)) continue
           // Fuera de su tope de categoría solo entra si va de camino, sin desvío — y entonces no cuenta.
           const overCap = !withinCategoryCap(day, unit)
@@ -866,7 +901,13 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
             attempt.addedWalk * FILL_SCORE.perAddedMinute
           if (!best || score > best.score || (score === best.score && unit.id.localeCompare(best.unit.id, 'es') < 0)) best = { unit, attempt, score }
         }
-        if (!best) continue
+        if (!best) {
+          if (firstPhase) {
+            stuck.add(day)
+            progress = true // se vuelve a mirar sin él
+          }
+          continue
+        }
         day.open.add(best.attempt)
         if (best.unit.isRevisit) {
           revisited.add(best.unit.originalId)
@@ -876,6 +917,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
           recordEntry(best.unit)
         }
         progress = true
+        if (!firstPhase) break // segunda fase: se vuelve a empezar por el día 1
       }
     }
   }

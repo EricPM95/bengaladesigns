@@ -552,5 +552,21 @@
    12.47589167
   ],
   "mapbox": null
+ },
+ "Trastevere": {
+  "version": 2,
+  "wikipedia": [
+   41.88722222,
+   12.46555556
+  ],
+  "mapbox": null
+ },
+ "Monti": {
+  "version": 2,
+  "wikipedia": null,
+  "mapbox": [
+   41.89628445,
+   12.49032919
+  ]
  }
 }
