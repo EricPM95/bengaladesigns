@@ -26,6 +26,7 @@ import {
 import { useRouteStore } from '../../../store/useRouteStore'
 import { StopsMapView } from '../../map/StopsMapView'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
+import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
 import {
   CuratedAlternativeBanner,
@@ -292,6 +293,20 @@ export function DayDetailPanel({
   // parada tras la que cae esa franja (ancla geográfica), mismo dato que antes recibía
   // MealTimeAccordion directamente. null = cerrado.
   const [mealSheet, setMealSheet] = useState<{ franja: 'comida' | 'cena'; stopIndex: number; coordinates?: Coordinates } | null>(null)
+  // Día con excursión de medio día y sin paradas de tarde: los restaurantes de la vuelta se
+  // ofrecen en el centro de la ciudad del día (mismo geocodificado que "Añadir parada").
+  const [cityCenter, setCityCenter] = useState<Coordinates | null>(null)
+  const needsCityCenter = Boolean(day.halfDayExcursion && !day.halfDayExcursionDeclined) && !day.stops.some((stop) => hasRealCoordinates(stop.coordinates))
+  useEffect(() => {
+    if (!needsCityCenter) return
+    let cancelled = false
+    searchPlaces(day.city).then((places) => {
+      if (!cancelled) setCityCenter(places[0]?.coordinates ?? null)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [needsCityCenter, day.city])
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
@@ -664,7 +679,7 @@ export function DayDetailPanel({
   /** Media jornada a mano y todavía sin paradas por la tarde: hay que ofrecerle montarla. */
   const tardeLibreEnBlanco = esDiaEnBlanco && halfDayExcursion !== null && stops.length === 0
   // Dónde se ofrecen restaurantes al volver de la excursión: donde empieza la tarde.
-  const halfDayLunchCoordinates = realStops.find((realStop) => hasRealCoordinates(realStop.coordinates))?.coordinates ?? null
+  const halfDayLunchCoordinates = realStops.find((realStop) => hasRealCoordinates(realStop.coordinates))?.coordinates ?? cityCenter
   /** ¿Está el día enseñando su lista de paradas? Lo comparten la lista y el hueco de fin de día. */
   const muestraParadas = showsRoute || (dayType === 'manual' && stops.length > 0)
   const excursionTarget =
@@ -899,7 +914,7 @@ export function DayDetailPanel({
           {/* La excursión de medio día ocupa la mañana de este día y las paradas de abajo empiezan
               a las 16:00. Entre las dos va SIEMPRE la comida (Paso 2, 2026-09-24): no se sabe si la
               excursión la incluye, así que se pregunta y se ofrecen restaurantes donde empieza la
-              tarde (o, si no hay tarde, en el centro de la ciudad del día). */}
+              tarde o, si no hay paradas de tarde, en el centro de la ciudad del día. */}
           {halfDayExcursion && (
             <HalfDayExcursionBlock
               excursion={halfDayExcursion}

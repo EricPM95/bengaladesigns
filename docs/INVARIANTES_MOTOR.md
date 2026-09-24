@@ -389,7 +389,7 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 68. **Día con excursión de medio día**: sin franja fija (excursión 08:00-14:00, tarde desde las
     16:00), pero entre las dos va SIEMPRE un bloque de comida: "¿Tu excursión incluye comida? Si no,
     cuando vuelvas a {destino} aquí tienes restaurantes perfectos para ti", con el mapa de
-    restaurantes centrado donde empieza la tarde.
+    restaurantes centrado donde empieza la tarde (sin paradas de tarde, en el centro de la ciudad).
 69. **En la app, la tarjeta de comida va en su posición real** (detrás de la última parada que empieza
     antes de la franja) y enseña la franja ("13:00 – 14:30").
 
