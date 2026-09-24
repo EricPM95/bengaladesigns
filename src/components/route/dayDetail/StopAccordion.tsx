@@ -110,6 +110,9 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
             )}
           </div>
 
+          {/* Viaje sin fechas: los días que a esta hora está cerrado (misas, fines de semana). */}
+          {stop.hoursWarning && <p className="text-caption text-accent-red">{stop.hoursWarning}</p>}
+
           {stop.tags && stop.tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1">
               {stop.tags.map((tag) => {

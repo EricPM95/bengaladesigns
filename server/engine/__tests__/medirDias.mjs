@@ -28,7 +28,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
-import { earliestVisitStart, effectiveSchedule, lastEntryMinutes } from '../../../shared/routeEngine/openingHours.js'
+import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, seasonKey } from '../../../shared/routeEngine/openingHours.js'
 import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
 import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { buildDayBlockV3 } from '../index.js'
@@ -62,6 +62,10 @@ const MOTORES = { nuevo: ['nuevo'], viejo: ['viejo'], v3: ['v3'], ambos: ['viejo
 const SALIDA = flag('--salida')
 const SEMAFORO = args.includes('--semaforo')
 const FECHA = flag('--fecha') // sin fecha, closed_on no se aplica (igual que en la app)
+// Época del formulario (winter | spring | summer | autumn): horarios por temporada. Sin ella, los
+// prudentes. Con --fecha, la época sale de la fecha y el horario es el del día de la semana.
+const TEMPORADA = flag('--temporada')
+const HOURS = { season: seasonKey(TEMPORADA, FECHA) }
 const casoIndex = args.indexOf('--caso')
 const CASO = casoIndex >= 0 ? { days: Number(args[casoIndex + 1]), pace: args[casoIndex + 2], exps: (args[casoIndex + 3] ?? '').split(',').filter(Boolean) } : null
 
@@ -119,10 +123,11 @@ function outOfHours(stop) {
   if (!place || stop.is_pass_by) return null
   const start = t2m(stop.suggested_time)
   const end = start + stop.duration_minutes
-  const lastEntry = lastEntryMinutes(place, start)
+  const lastEntry = lastEntryMinutes(place, start, HOURS)
   if (lastEntry !== null && start > lastEntry) return `empieza ${stop.suggested_time}, última entrada ${m2t(lastEntry)}`
-  // Mismo horario efectivo que usa el motor v3 (interiores sin horario: 09:00-17:00), para todos.
-  const schedule = effectiveSchedule(place)
+  // El horario de la parada tal como lo manda el motor (el del día: fecha, época o lunes a viernes);
+  // si no lo trae, el efectivo del motor v3 (interiores sin horario: 09:00-17:00).
+  const schedule = stop.hours ?? effectiveSchedule(place, HOURS)
   const sessions = parseHoursSessions(schedule)
   if (sessions.length === 0) return null
   const inside = sessions.some((session) => start >= session.open && end <= session.close)
@@ -216,7 +221,7 @@ async function buildTrip(motor, contentDays, pace, exps) {
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     const day =
       motor !== 'viejo'
-        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined })
+        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined, season: TEMPORADA })
         : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }
@@ -318,10 +323,14 @@ function measureTrip(trip, pace, exps) {
   const dayOf = new Map()
   const positionOf = new Map()
   trip.days.forEach((day, index) => {
-    ;(day?.stops ?? []).filter((stop) => !stop.is_night_experience && !stop.is_revisit).forEach((stop, position) => {
-      if (!dayOf.has(stop.name)) {
-        dayOf.set(stop.name, index + 1)
-        positionOf.set(stop.name, position)
+    // Lo visto "de paso" por un imprescindible que no llega a su cierre (el Foro desde la Via dei Fori
+    // Imperiali, decisión del 2026-09-24) cuenta como visto para su grupo.
+    ;(day?.stops ?? []).filter((stop) => !stop.is_night_experience && (!stop.is_revisit || stop.instead_of_visit)).forEach((stop, position) => {
+      for (const name of [stop.place_name ?? stop.name, ...(stop.instead_of_visit ? stop.pass_by_includes ?? [] : [])]) {
+        if (!dayOf.has(name)) {
+          dayOf.set(name, index + 1)
+          positionOf.set(name, position)
+        }
       }
     })
   })
@@ -349,7 +358,8 @@ function measureTrip(trip, pace, exps) {
     const days = new Set(present.map((member) => dayOf.get(member.name)))
     if (days.size > 1) brokenGroups.push(`${group}: repartido en días ${[...days].join(', ')}`)
     else {
-      const positions = present.map((member) => positionOf.get(member.name))
+      // Lo visto desde un paso por fuera comparte parada con él: se cuentan paradas distintas.
+      const positions = [...new Set(present.map((member) => positionOf.get(member.name)))]
       if (Math.max(...positions) - Math.min(...positions) !== positions.length - 1) brokenGroups.push(`${group}: con otras paradas en medio`)
     }
   }

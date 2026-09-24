@@ -77,11 +77,14 @@ for (const kind of ['1_dia', '1_5_dias_salida_mediodia', '1_5_dias_llegada_tarde
                 }
               }
             }
-            // Orden curado: dentro de cada bloque, lo que sale va en el orden del JSON.
+            // Orden curado: dentro de cada bloque, lo que sale va en el orden del JSON. Excepción (regla
+            // general): si el cierre de un sitio con horario lo exige, lo de acceso libre de su grupo pasa
+            // detrás (el Arco al salir del Coliseo); y los pasos por fuera van al final.
             for (const block of day.blocks) {
               if (block.label === 'Free Tour') continue
               const order = blockOrder(block.id)
-              const shown = visits.map((v) => v.place.name).filter((name) => order.includes(name))
+              const withHours = (name) => effectiveSchedule(D.places.find((p) => p.name === name)) !== null
+              const shown = visits.filter((v) => !v.place.passBy).map((v) => v.place.name).filter((name) => order.includes(name) && withHours(name))
               const positions = shown.map((name) => order.indexOf(name))
               if (positions.some((p, i) => i > 0 && p < positions[i - 1]) && !exps.length) fail(`${tag}: ${block.label} fuera de su orden (${shown.join(' → ')})`)
             }

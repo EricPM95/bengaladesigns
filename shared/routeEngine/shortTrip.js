@@ -20,8 +20,10 @@ import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
-import { modeV3For } from './modes.js'
+import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
+import { seasonKey } from './openingHours.js'
+import { weekdayForDay } from './tripSkeleton.js'
 
 /** Hora por defecto a la que empieza una tarde que no viene de una mañana (llegada, o C de tarde). */
 const DEFAULT_AFTERNOON_START = '14:30'
@@ -114,11 +116,19 @@ function blockStops(block, pace, experiencesPositive) {
  * @param {string[]} [args.poolNames]           en el orden en que se eligió
  * @param {string[]} [args.experiencesPositive] en el orden en que se eligió
  * @param {{leg: Function}} args.travel
+ * @param {string|null} [args.season]            época del formulario ("winter"...), para los horarios
+ * @param {string|null} [args.dateRangeStartIso]  con fechas, el horario exacto de cada día
  */
-export function planShortTrip({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel }) {
+export function planShortTrip({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, season = null, dateRangeStartIso = null }) {
   const config = destData.short_trips
   const { blocks } = config
   const mode = modeV3For(pace)
+  // Plan B (decisión del 2026-09-24, también en viajes de un día): si un imprescindible no cabe con
+  // el ritmo, el día empieza a las 08:00 y sin el extra de duración, con aviso (pace_notice).
+  const normalMode = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
+  const hasPlanB = normalMode.dayStart !== mode.dayStart || normalMode.visitDurationBonus !== mode.visitDurationBonus
+  const seasonOfTrip = seasonKey(season, dateRangeStartIso)
+  const hoursFor = (dayNumber) => ({ weekday: weekdayForDay(dateRangeStartIso, dayNumber), season: seasonOfTrip })
   const notIncluded = []
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
 
@@ -235,22 +245,79 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
       : null
     const dinnerZone = nearestDinner?.id ?? (afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon ?? null : null)
     const dinnerCoords = nearestDinner?.coordinates ?? (dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null)
-    const startMinutes = morning ? mode.dayStart : toMinutes(blocks[afternoon.id]?.afternoon_start ?? DEFAULT_AFTERNOON_START)
-    const schedule = scheduleFixedOrder({
-      units,
-      mode,
-      travel,
-      start: { minutes: startMinutes, coordinates: null },
-      pendingMeals: { lunch: Boolean(morning), dinner: Boolean(afternoon) },
-      dinnerPoint: dinnerCoords,
-      // Una mañana sin tarde (la de la salida) acaba en la comida.
-      visitsEndByLunch: Boolean(morning) && !afternoon,
-    })
-    const kept = units.filter((unit) => !schedule.dropped.some((d) => d.unit === unit))
+    const hours = hoursFor(dayNumber)
+    const run = (dayMode, dayUnits) =>
+      scheduleFixedOrder({
+        units: dayUnits,
+        mode: dayMode,
+        travel,
+        start: { minutes: morning ? dayMode.dayStart : toMinutes(blocks[afternoon.id]?.afternoon_start ?? DEFAULT_AFTERNOON_START), coordinates: null },
+        pendingMeals: { lunch: Boolean(morning), dinner: Boolean(afternoon) },
+        dinnerPoint: dinnerCoords,
+        // Una mañana sin tarde (la de la salida) acaba en la comida.
+        visitsEndByLunch: Boolean(morning) && !afternoon,
+        hours,
+      })
+    const essentialLoss = (result) => result.dropped.flatMap(({ unit }) => unit.places).filter((place) => place.level === 1).length
+    let schedule = run(mode, units)
+    let modeFallback = null
+    if (hasPlanB && morning && essentialLoss(schedule) > 0) {
+      const alt = run(normalMode, units)
+      if (essentialLoss(alt) < essentialLoss(schedule)) {
+        const recovered = schedule.dropped.filter(({ unit }) => !alt.dropped.some((d) => d.unit === unit)).map(({ unit }) => unit.id)
+        schedule = alt
+        modeFallback = { recoveredUnitIds: recovered, startedAt: normalMode.dayStart }
+      }
+    }
+    // Un imprescindible con `pass_by` que no llega a su cierre (el Foro, con Roma Antigua por la
+    // tarde) se ve POR FUERA: paso gratis al final del día, con su mensaje (decisión del 2026-09-24).
+    // Si el grupo entero se cae (ritmo tranquilo con horario de invierno: el Coliseo no llega), se ven
+    // por fuera todos los suyos que tengan paso, antes que dejar la tarde vacía.
+    const passByUnits = []
+    for (const { unit } of schedule.dropped) {
+      for (const place of unit.places) {
+        if (place.level !== 1 || !place.pass_by || !place.group) continue
+        const label = place.pass_by.label ?? place.name
+        const capitalized = `${label.charAt(0).toUpperCase()}${label.slice(1)}`
+        // Visto desde un sitio (el Foro desde la Via dei Fori Imperiali): "a tus pies"; si no, por fuera.
+        const reason = place.pass_by.from
+          ? `${capitalized} por dentro no da tiempo hoy, pero desde aquí lo tienes entero a tus pies.`
+          : `${capitalized} por dentro no da tiempo hoy, pero por fuera lo tienes entero.`
+        passByUnits.push({
+          group: place.group,
+          groupOrder: place.group_order ?? 0,
+          id: `${place.name} (de paso)`,
+          places: [{ name: place.name, coordinates: place.pass_by.coordinates ?? place.coordinates, duration_minutes: place.pass_by.minutes ?? 15, type: 'exterior', tags: place.tags ?? [], wikipedia_title: place.wikipedia_title, zone: place.zone, level: 1, passBy: { seenOnDay: null, includes: place.pass_by.includes ?? [], from: place.pass_by.from ?? null } }],
+          dropRank: DROP_RANK.extra,
+          slot: 'tarde',
+          role: 'extra',
+          priority: PRIORITY.FILLER,
+          isRevisit: true,
+          revisitReason: reason,
+        })
+      }
+    }
+    if (passByUnits.length > 0) {
+      passByUnits.sort((a, b) => a.groupOrder - b.groupOrder)
+      // Cada paso por fuera va pegado a su grupo (justo después de lo que queda de él, o donde
+      // estaba), no al final del día: el grupo no se parte con otras paradas en medio.
+      const keptById = new Map(schedule.kept.map((unit) => [unit.id, unit]))
+      const sequence = []
+      for (const unit of units) {
+        if (keptById.has(unit.id)) sequence.push(keptById.get(unit.id))
+        const groups = new Set(unit.places.map((place) => place.group).filter(Boolean))
+        sequence.push(...passByUnits.filter((passBy) => groups.has(passBy.group) && !sequence.includes(passBy)))
+      }
+      const withPassBy = run(modeFallback ? normalMode : mode, sequence)
+      if (withPassBy.dropped.length === 0) schedule = { ...withPassBy, dropped: [...schedule.dropped] }
+    }
+    const kept = schedule.kept
     return {
       dayNumber,
+      weekday: hours.weekday,
+      hours,
       units: kept,
-      schedule: { ...schedule, modeFallback: null },
+      schedule: { ...schedule, modeFallback },
       lunchZone,
       dinnerZone,
       blocks: daySlots.map((a) => ({ id: a.id, slot: a.slot, label: a.id === freeTourBlock ? 'Free Tour' : blocks[a.id].label })),

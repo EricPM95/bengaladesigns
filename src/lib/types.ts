@@ -267,6 +267,10 @@ export interface Stop {
   hoursCard?: string | null
   /** Reserva: "obligatoria" | "recomendada" | "no" (horarios auditados). */
   reservation?: string | null
+  /** Viaje SIN fechas: aviso de los días de la semana en que, a la hora de la visita, está cerrado
+      (misas, cierres de fin de semana) o que cierra entero. Con fechas no hay: el horario ya es el
+      real de ese día. */
+  hoursWarning?: string | null
 }
 
 /**

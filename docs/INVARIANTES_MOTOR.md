@@ -337,14 +337,34 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 
 55. **Horarios por lugar** (`scripts/destino/importarHorarios.mjs`): `windows` = franjas válidas TODOS
     los días que abre, todo el año (valor prudente) — es lo que usa el motor sin fecha ni época (`schedule`
-    pasa a ser las windows unidas; "00:00-24:00" = acceso libre). `by_season` y `by_day` se guardan
-    para cuando el motor sepa la época y las fechas. `last_entry` puede ser "HH:MM", un objeto por
+    pasa a ser las windows unidas; "00:00-24:00" = acceso libre). `by_season` y `by_day` se usan
+    según la época y las fechas (ver 57). `last_entry` puede ser "HH:MM", un objeto por
     época (sin época, la más PRUDENTE) o por franja (manana/tarde, la de la franja de la visita); ninguna
     visita empieza después (`lastEntryMinutes`). `card_text` es la sección "Horario" de la ficha y
     manda sobre la de la ficha curada; `reservation: obligatoria` pone "Requiere reserva".
 56. **Un relleno nunca obliga a esperar más que la tolerancia del ritmo** (45 completo / 60 tranquilo)
     a que abra algo, y al reordenar la tarde un orden sin esperas largas gana siempre a uno que las
     tiene. *Con el Gesù abriendo a las 17:00 salían esperas de 56 y 90 min.*
+57. **Qué horario manda cada día** (`effectiveSchedule(place, {weekday, season})`), de más a menos
+    preciso: con FECHAS, el `by_day` del día de la semana (sin avisos: ese es el real); con ÉPOCA del
+    formulario, el `by_season`; sin nada, el de LUNES A VIERNES (`by_day`; si no hay, `windows`).
+    La `last_entry` sigue la misma época (sin época, la más prudente).
+58. **Sin fechas, la parada avisa** (`hours_warning`) de los días de la semana en que a esa hora está
+    cerrado: "Ojo: el sábado de 16:00 a 16:30 no se puede visitar." Los `closed_on` también se avisan
+    ("Cierra los miércoles."). Con fechas no hay aviso.
+59. **Plan B también en viajes cortos**: si un imprescindible no cabe con el ritmo, el día empieza a
+    las 08:00 y sin el extra de duración, con `pace_notice`.
+60. **Antes de perder un grupo por el cierre de un sitio con horario, lo de acceso libre del grupo
+    pasa detrás** (el Arco de Constantino se ve al salir del Coliseo). Solo cuando si no se perdería
+    el grupo entero.
+61. **Un imprescindible con `pass_by` que no llega a su cierre se ve POR FUERA, gratis y pegado a su
+    grupo** (`instead_of_visit`): con `from`, la parada se llama "Foro Romano visto desde Via dei Fori
+    Imperiali" y dice "…por dentro no da tiempo hoy, pero desde aquí lo tienes entero a tus pies."; sin
+    `from`, "…pero por fuera lo tienes entero.". Lo de su `includes` cuenta como visto.
+62. **La mañana empieza más tarde en vez de esperar**: si todo lo anterior es de acceso libre y hay que
+    esperar ≥30 min a que abra lo siguiente, lo anterior se corre hacia la apertura (en medias horas).
+    Nunca lo que va a primera hora a propósito (`best_time` primera hora, `latest_end`: la Fontana de
+    Trevi a las 08:00). *La Fontana dell'Acqua Paola a las 08:00 esperaba 100 min al Tempietto.*
 
 ---
 

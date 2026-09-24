@@ -17,6 +17,7 @@ import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START 
 import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
+import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
@@ -73,6 +74,31 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
     if (visit.place.passBy) stop.is_pass_by = true
+    // Paso por fuera EN LUGAR de la visita (no ya visto otro día): el Foro que no llega a su cierre.
+    if (visit.place.passBy && visit.place.passBy.seenOnDay == null) {
+      stop.instead_of_visit = true
+      // Lo que se ve desde ese mismo paso (el Arco, desde el Coliseo por fuera): cuenta como visto.
+      if (visit.place.passBy.includes?.length) stop.pass_by_includes = visit.place.passBy.includes
+      // Se nombra por lo que se hace: "Foro Romano visto desde Via dei Fori Imperiali". El nombre
+      // del lugar se guarda aparte (place_name) para la ficha y las comprobaciones.
+      const place = destData.places?.find((candidate) => candidate.name === visit.place.name)
+      const from = visit.place.passBy.from ?? place?.pass_by?.from ?? null
+      if (from) {
+        const label = (place?.pass_by?.label ?? visit.place.name).replace(/^(el|la|los|las)\s+/i, '')
+        stop.place_name = visit.place.name
+        stop.name = `${label.charAt(0).toUpperCase()}${label.slice(1)} visto desde ${from}`
+      }
+    }
+    // El horario de ESE día (fechas: el del día de la semana; época: el de la época; si no, el de
+    // lunes a viernes), y sin fechas, el aviso de los días que a esa hora está cerrado.
+    if (!visit.place.passBy && !visit.place.isFreeTour && (visit.place.windows || visit.place.by_day || visit.place.by_season)) {
+      const hours = tripDay.hours ?? {}
+      const daySchedule = scheduleForDay(visit.place, hours)
+      stop.hours = daySchedule
+      stop.schedule = daySchedule
+      const warning = hoursWarning(visit.place, visit.start, visit.end, hours)
+      if (warning) stop.hours_warning = warning
+    }
     return stop
   })
 

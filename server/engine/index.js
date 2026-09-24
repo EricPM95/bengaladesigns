@@ -78,6 +78,8 @@ export async function buildDayBlockV3(
       poolNames: mustIncludePlaces ?? [],
       experiencesPositive: experiencesPositive ?? [],
       travel,
+      season: options.season ?? null,
+      dateRangeStartIso,
     })
     const tripDay = trip.days.find((day) => day.dayNumber === dayNumber)
     if (!tripDay) return null
@@ -96,7 +98,7 @@ export async function buildDayBlockV3(
     experiencesPositive: experiencesPositive ?? [],
     dateRangeStartIso,
   }
-  const plan = isV3 ? planTrip({ ...tripArgs, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
+  const plan = isV3 ? planTrip({ ...tripArgs, season: options.season ?? null, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
   if (!dayPlan) return null

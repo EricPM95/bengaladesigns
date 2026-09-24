@@ -43,6 +43,7 @@ import { MODES_V3, modeV3For } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
 import { nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
+import { seasonKey } from './openingHours.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
@@ -198,7 +199,10 @@ function zonesByPriority(destData) {
  * @param {string|null} [args.dateRangeStartIso]
  * @param {{leg: Function}} args.travel    createTravelTimes(matriz)
  */
-export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, travel }) {
+export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, season = null, travel }) {
+  // Época del viaje para los horarios por temporada: la de las fechas si las hay; si no, la del
+  // formulario ("winter"...). Día de la semana: el de cada día, solo con fechas.
+  const seasonOfTrip = seasonKey(season, dateRangeStartIso)
   const mode = modeV3For(pace)
   // Plan B de un imprescindible: el horario normal (el del completo, sin el extra de duración).
   const normal = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
@@ -263,6 +267,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         start: { minutes: day.halfDayExcursion ? mode.halfDayRouteStart : mode.dayStart, coordinates: null },
         pendingMeals: { lunch: !day.halfDayExcursion, dinner: true },
         longVisitsAnytime: skeleton.filter((d) => !d.isBlank && !d.isExcursion).length === 1,
+        hours: { weekday: day.weekday ?? null, season: seasonOfTrip },
       }),
     })
   }
@@ -952,7 +957,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
   return {
     mode,
-    days: skeleton.map((day) => ({ ...day, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
+    days: skeleton.map((day) => ({ ...day, hours: { weekday: day.weekday ?? null, season: seasonOfTrip }, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
     placedDay,
     unplacedPool,
     unplacedEssentials,

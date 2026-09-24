@@ -4652,7 +4652,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, season: answers.season ?? null },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

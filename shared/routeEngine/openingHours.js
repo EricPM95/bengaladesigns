@@ -85,9 +85,17 @@ export function earliestVisitStart(schedule, from, duration, round = (minutes) =
  */
 export const DEFAULT_INDOOR_SCHEDULE = '09:00-17:00'
 
-export function effectiveSchedule(place) {
-  if (parseHoursSessions(place?.schedule).length > 0) return place.schedule
-  if (place?.type === 'exterior' || place?.isFreeTour) return place?.schedule ?? null
+/**
+ * @param {{ weekday?: string|null, season?: string|null }} [hours]  el día del viaje (ver
+ *   `scheduleForDay`): con horario estructurado (`windows`/`by_day`/`by_season`) se usa el de ese
+ *   día; si no, el `schedule` de siempre.
+ */
+export function effectiveSchedule(place, hours = {}) {
+  const structured = Boolean(place?.windows || place?.by_day || place?.by_season)
+  const text = structured ? scheduleForDay(place, hours ?? {}) : place?.schedule
+  if (parseHoursSessions(text).length > 0) return text
+  if (structured && text == null) return null // abierto siempre ("00:00-24:00")
+  if (place?.type === 'exterior' || place?.isFreeTour) return text ?? null
   return DEFAULT_INDOOR_SCHEDULE
 }
 
@@ -105,13 +113,15 @@ const hhmmToMinutes = (value) => {
  *   - Por época: { invierno, primavera, verano, otono } — mientras el motor no sepa la época, la más
  *     PRUDENTE (la más temprana); con `season`, la de esa época.
  */
-export function lastEntryMinutes(place, visitStart, season = null) {
+export function lastEntryMinutes(place, visitStart, seasonOrHours = null) {
+  const hours = typeof seasonOrHours === 'object' && seasonOrHours !== null ? seasonOrHours : { season: seasonOrHours }
+  const season = hours.season ?? null
   const raw = place?.last_entry
   if (raw == null) return null
   if (typeof raw === 'string') return hhmmToMinutes(raw)
   if (typeof raw !== 'object') return null
   if ('manana' in raw || 'tarde' in raw) {
-    const sessions = parseHoursSessions(effectiveSchedule(place)).sort((a, b) => a.open - b.open)
+    const sessions = parseHoursSessions(effectiveSchedule(place, hours)).sort((a, b) => a.open - b.open)
     const index = sessions.findIndex((session) => visitStart >= session.open && visitStart <= session.close)
     const key = index > 0 ? 'tarde' : 'manana'
     return hhmmToMinutes(raw[key]) ?? hhmmToMinutes(raw.tarde) ?? hhmmToMinutes(raw.manana)
@@ -119,4 +129,133 @@ export function lastEntryMinutes(place, visitStart, season = null) {
   if (season && raw[season] != null) return hhmmToMinutes(raw[season])
   const values = Object.values(raw).map(hhmmToMinutes).filter((v) => v !== null)
   return values.length > 0 ? Math.min(...values) : null
+}
+
+// ── Horario del día: by_day (con fechas), by_season (con época) o lunes a viernes ─────────────
+//
+// Decisión del 2026-09-24 (horarios auditados):
+//   - Con fechas de viaje: el horario EXACTO de ese día de la semana (`by_day`), sin avisos.
+//   - Con época (el formulario la pregunta siempre): `by_season` de esa época.
+//   - Sin fechas: el horario de LUNES A VIERNES (`by_day`), no la intersección prudente de todos los
+//     días (`windows`), que dejaba el Panteón cerrado todas las tardes a partir de las 16:00 por el
+//     sábado. Lo que algún otro día esté cerrado a esa hora se avisa en la parada (`hoursWarning`).
+//   - Si el lugar no trae nada de eso, `windows` y, si tampoco, el `schedule` de siempre.
+
+const DAY_ABBR = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab']
+const DAY_NAME = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+const stripAccents = (text) => String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+/** Índice 0-6 (0 = domingo) de un día escrito ("lunes", "sábado", "mie"). -1 si no se reconoce. */
+function dayIndex(text) {
+  const abbr = stripAccents(text).slice(0, 3)
+  return DAY_ABBR.indexOf(abbr)
+}
+
+/** Días (0-6) que cubre una clave de `by_day`: "lun-vie", "sab", "lun,mar,jue", "vie-dom". */
+function daysOfKey(key) {
+  const days = new Set()
+  for (const part of String(key).split(',')) {
+    const [from, to] = part.split('-').map((p) => dayIndex(p.trim()))
+    if (from < 0) continue
+    if (to === undefined || to < 0) {
+      days.add(from)
+      continue
+    }
+    // Rango en orden de semana empezando en lunes ("vie-dom" = viernes, sábado, domingo).
+    const order = [1, 2, 3, 4, 5, 6, 0]
+    const i = order.indexOf(from)
+    const j = order.indexOf(to)
+    for (let k = i; k <= j; k++) days.add(order[k])
+  }
+  return days
+}
+
+/** Temporada del JSON ("invierno"...) desde la del formulario ("winter"...) o una fecha ISO. */
+export function seasonKey(season, dateIso = null) {
+  const map = { winter: 'invierno', spring: 'primavera', summer: 'verano', autumn: 'otono', invierno: 'invierno', primavera: 'primavera', verano: 'verano', otono: 'otono', 'otoño': 'otono' }
+  if (dateIso) {
+    const month = Number(String(dateIso).slice(5, 7))
+    if (month >= 1 && month <= 12) return month === 12 || month <= 2 ? 'invierno' : month <= 5 ? 'primavera' : month <= 8 ? 'verano' : 'otono'
+  }
+  return map[season] ?? null
+}
+
+/** La entrada de `by_day` que se usa sin fechas: la que cubre más días de lunes a viernes. */
+function weekdayEntry(byDay) {
+  let best = null
+  for (const [key, windows] of Object.entries(byDay ?? {})) {
+    const covered = [...daysOfKey(key)].filter((d) => d >= 1 && d <= 5).length
+    if (covered > 0 && (!best || covered > best.covered)) best = { key, windows, covered }
+  }
+  return best
+}
+
+/**
+ * Las franjas de un lugar para un día concreto del viaje.
+ * @param {object} place
+ * @param {{ weekday?: string|null, season?: string|null }} [hours]  weekday: "lunes"... (con fechas)
+ * @returns {string[]|null}  null = el lugar no trae horario estructurado (usar `schedule`)
+ */
+export function placeWindows(place, hours = {}) {
+  const byDay = place?.by_day
+  if (hours.weekday && byDay) {
+    const day = dayIndex(hours.weekday)
+    const entry = Object.entries(byDay).find(([key]) => daysOfKey(key).has(day))
+    if (entry) return entry[1]
+  }
+  if (hours.season && place?.by_season?.[hours.season]) return place.by_season[hours.season]
+  if (byDay) {
+    const entry = weekdayEntry(byDay)
+    if (entry) return entry.windows
+  }
+  return Array.isArray(place?.windows) && place.windows.length > 0 ? place.windows : null
+}
+
+/** El horario de ese día como texto que leen el programador y la app ("09:00-12:30, 15:00-18:00"). */
+export function scheduleForDay(place, hours = {}) {
+  const windows = placeWindows(place, hours)
+  if (!windows) return place?.schedule ?? null
+  if (windows.every((w) => /^00:00\s*-\s*24:00$/.test(w))) return null
+  return windows.join(', ')
+}
+
+const fmt = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+
+function labelOfKey(key) {
+  const days = [...daysOfKey(key)]
+  if (days.length === 1) return `el ${DAY_NAME[days[0]]}`
+  const parts = String(key).split(',')
+  if (parts.length === 1 && key.includes('-')) {
+    const [from, to] = key.split('-').map((p) => DAY_NAME[dayIndex(p)])
+    return `de ${from} a ${to}`
+  }
+  const names = days.map((d) => DAY_NAME[d])
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names.at(-1)}` : names[0]
+}
+
+/**
+ * Aviso para una visita SIN fechas: los días de la semana en que, a esa hora, el lugar está cerrado
+ * (misas, cierres de fin de semana) y los días que cierra entero. null si no hay nada que avisar o si
+ * el viaje tiene fechas (entonces el horario ya es el real de ese día).
+ * Ej.: "Ojo: el domingo de 09:30 a 11:45 no se puede visitar. Cierra los lunes."
+ */
+export function hoursWarning(place, start, end, hours = {}) {
+  if (hours.weekday) return null
+  const notes = []
+  for (const [key, windows] of Object.entries(place?.by_day ?? {})) {
+    const sessions = parseHoursSessions(windows.join(', ')).sort((a, b) => a.open - b.open)
+    if (sessions.some((s) => start >= s.open && end <= s.close)) continue
+    // El primer tramo cerrado dentro de la visita.
+    let from = start
+    const openAtStart = sessions.find((s) => start >= s.open && start < s.close)
+    if (openAtStart) from = openAtStart.close
+    const reopen = sessions.find((s) => s.open > from)
+    const to = Math.min(end, reopen ? reopen.open : end)
+    notes.push(`${labelOfKey(key)} de ${fmt(from)} a ${fmt(Math.max(to, from))} no se puede visitar`)
+  }
+  const closed = (Array.isArray(place?.closed_on) ? place.closed_on : []).map((d) => DAY_NAME[dayIndex(d)]).filter(Boolean)
+  const parts = []
+  if (notes.length > 0) parts.push(`Ojo: ${notes.join('; ')}.`)
+  if (closed.length > 0) parts.push(`${parts.length ? 'Cierra' : 'Ojo: cierra'} los ${closed.length > 1 ? `${closed.slice(0, -1).join(', ')} y ${closed.at(-1)}` : closed[0]}.`)
+  return parts.length > 0 ? parts.join(' ') : null
 }

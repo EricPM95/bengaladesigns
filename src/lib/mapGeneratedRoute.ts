@@ -76,6 +76,8 @@ interface GeneratedStop {
   hours_card?: string | null
   /** "obligatoria" | "recomendada" | "no" — Stop.reservation. */
   reservation?: string | null
+  /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
+  hours_warning?: string | null
 }
 
 interface GeneratedMealOption {
@@ -332,6 +334,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
+    ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
   }
 }
 

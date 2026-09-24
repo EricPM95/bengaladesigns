@@ -96,6 +96,9 @@ const DINNER_IDLE_PENALTY_PER_MINUTE = 1
  */
 const RELATED_APART_PENALTY = 30
 
+/** Fallos por el horario de un sitio (no por la comida ni la cena). */
+const HOURS_FAILURES = new Set(['closes_during_visit', 'after_last_entry'])
+
 const LUNCH = { kind: 'lunch' }
 
 /**
@@ -157,8 +160,8 @@ export function scheduleDay(input) {
   return { ...second, modeFallback: { recoveredUnitIds: recovered, startedAt: fallbackStart } }
 }
 
-function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false, dinnerPoint = null }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerPoint, dinnerLatest: latestDinnerStart(mode) }
+function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false, dinnerPoint = null, hours = {} }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerPoint, dinnerLatest: latestDinnerStart(mode), hours }
 
   let sequence = pendingMeals.lunch ? [LUNCH] : []
   const unscheduled = []
@@ -232,10 +235,11 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
  * @param {[number, number]|null} [input.dinnerPoint]
  * @param {boolean} [input.visitsEndByLunch]  día con solo mañana (el de la salida): nada después de comer
  */
-export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode) }
+export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false, hours = {} }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode), hours }
   let kept = [...units]
   const dropped = []
+  const reorderedForHours = new Set()
   // La comida va detrás de lo último de la mañana (o al principio si la mañana se ha quedado vacía).
   const sequenceOf = (list) => {
     if (!pendingMeals.lunch) return [...list]
@@ -248,6 +252,8 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
       return {
         visits: result.visits ?? [],
         meals: result.meals ?? [],
+        // Las unidades que se quedan, ya recortadas (un grupo que pierde su final es otra unidad).
+        kept,
         dropped,
         walkMinutes: result.walk ?? 0,
         idleMinutes: result.idle ?? 0,
@@ -272,6 +278,17 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
       dropped.push({ unit: { ...victim, places: removed }, reason: result.reason })
       kept = kept.map((unit) => (unit === victim ? trimmed : unit))
       continue
+    }
+    // Antes de perder el grupo entero por el cierre de un sitio con horario, lo de acceso libre del
+    // grupo pasa detrás (el Arco de Constantino se ve al salir del Coliseo).
+    if (victim === failing && HOURS_FAILURES.has(result.reason) && !reorderedForHours.has(victim.id)) {
+      reorderedForHours.add(victim.id)
+      const hasHours = (place) => Boolean(place.fixed_start) || effectiveSchedule(place, hours) !== null
+      const reordered = [...victim.places.filter(hasHours), ...victim.places.filter((place) => !hasHours(place))]
+      if (reordered.some((place, index) => place !== victim.places[index])) {
+        kept = kept.map((unit) => (unit === victim ? { ...victim, places: reordered } : unit))
+        continue
+      }
     }
     dropped.push({ unit: victim, reason: result.reason })
     kept = kept.filter((unit) => unit !== victim)
@@ -308,6 +325,8 @@ export function openDay(input) {
     pendingMeals: input.pendingMeals ?? { lunch: true, dinner: true },
     longVisitsAnytime: input.longVisitsAnytime ?? false,
     dinnerLatest: latestDinnerStart(mode),
+    // El día del viaje para los horarios: día de la semana (con fechas) y época (ver scheduleForDay).
+    hours: input.hours ?? {},
   })
   let ctx = makeCtx(input.mode, input.start)
   let sequence = ctx.pendingMeals.lunch ? [LUNCH] : []
@@ -540,6 +559,7 @@ function simulate(sequence, ctx) {
     }
   }
   const meals = []
+  const earlyUnitIds = new Set(sequence.filter((element) => element !== LUNCH && element.preferEarly).map((unit) => unit.id))
   /** Índice de la primera visita después de comer (la comida va entre esa y la anterior). */
   let lunchBeforeVisit = null
 
@@ -605,7 +625,7 @@ function simulate(sequence, ctx) {
       const duration = visitMinutes(unit, index, mode)
       // Abierto de principio a fin, en el primer tramo donde quepa entera (con cierre de mediodía,
       // se espera a la tarde en vez de descartarla).
-      const schedule = effectiveSchedule(place)
+      const schedule = effectiveSchedule(place, ctx.hours)
       // Sin horarios (solo para medir cuánto hacen andar los horarios, ver pruneAfternoon).
       const fitAt = ctx.ignoreHours && !place.fixed_start ? at : earliestVisitStart(schedule, at, duration, roundSlot)
       if (fitAt === null) {
@@ -613,7 +633,7 @@ function simulate(sequence, ctx) {
       }
       if (place.fixed_start && fitAt !== at) return { ok: false, reason: 'fixed_start_missed', unitId: unit.id }
       at = fitAt
-      const lastEntry = ctx.ignoreHours ? null : lastEntryMinutes(place, at)
+      const lastEntry = ctx.ignoreHours ? null : lastEntryMinutes(place, at, ctx.hours)
       if (lastEntry !== null && at > lastEntry) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
       if (!ctx.ignoreHours && place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
@@ -621,10 +641,25 @@ function simulate(sequence, ctx) {
       const pendingApproach = (approachesOf.get(place.name) ?? []).find((name) => !visits.some((visit) => visit.place.name === name))
       if (pendingApproach) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
 
+      // La mañana empieza más tarde en vez de esperar: si lo hecho hasta ahora es todo de acceso libre
+      // (la Fontana dell'Acqua Paola a las 08:00) y aquí hay que esperar a que abra (el Tempietto, a
+      // las 10:00), lo anterior se corre hacia la apertura, en medias horas para no romper el :00/:30.
+      // Nunca lo que va a primera hora a propósito (la Fontana de Trevi a las 08:00, vacía).
+      let waitFrom = arrive
+      const movable = (visit) => !visit.place.fixed_start && !visit.place.latest_end && !earlyUnitIds.has(visit.unitId) && effectiveSchedule(visit.place, ctx.hours) === null
+      if (seenVisit && meals.length === 0 && !place.fixed_start && at - arrive >= 30 && visits.every(movable)) {
+        const shift = Math.floor((at - arrive) / 30) * 30
+        for (const visit of visits) {
+          visit.start += shift
+          visit.end += shift
+        }
+        waitFrom = arrive + shift
+      }
+
       walk += walkMinutes
       meters += leg?.meters ?? 0
-      idle += at - arrive
-      if (seenVisit && !place.fixed_start) longestWait = Math.max(longestWait, at - arrive)
+      idle += at - waitFrom
+      if (seenVisit && !place.fixed_start) longestWait = Math.max(longestWait, at - waitFrom)
       visits.push({ unitId: unit.id, place, start: at, end: at + duration, chained, walkMinutes, walkSource: leg?.source ?? null })
       cursor = at + duration
       // Un recorrido a pie (el Free Tour) acaba donde acaba su recorrido, no donde se quedó.
