@@ -146,12 +146,13 @@ const MAX_PIEZAS_TARDE = 8
  * diferencia en v3 es lo que cuesta mantener el orden escrito a mano.
  * @returns {{real: number, min: number} | null}  metros; null si la tarde no se puede medir
  */
-function afternoonMeters(dayStops, lunchAt, pace, dinnerStop) {
+function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null) {
   if (lunchAt === null) return null
   const before = dayStops.filter((stop) => t2m(stop.suggested_time) < lunchAt)
   const after = dayStops.filter((stop) => t2m(stop.suggested_time) >= lunchAt)
   if (after.length < 2) return null
-  const start = before.length ? coordsOfStop(before[before.length - 1]) : null
+  // La tarde sale del restaurante de la comida (Paso 2), si el motor lo dice.
+  const start = lunchCoords ?? (before.length ? coordsOfStop(before[before.length - 1]) : null)
   const end = dinnerStop?.coordinates ?? null
 
   // Piezas: un grupo del JSON o un contenedor con lo suyo van juntos; lo de paso, fijo al final.
@@ -199,7 +200,15 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop) {
   }
   const real = measure(pieces, false)
   let min = real
+  // El orden curado del día (fijado a mano) no se invierte: el mínimo es el de las mismas paradas
+  // respetándolo, así que el coste de ese orden no cuenta como zigzag (decisión del 2026-09-24).
+  const curatedOf = (piece) => piece.find((stop) => stop.curated_index != null)?.curated_index ?? null
+  const keepsCurated = (order) => {
+    const indices = order.map(curatedOf).filter((index) => index !== null)
+    return indices.every((index, i) => i === 0 || index >= indices[i - 1])
+  }
   const permute = (rest, order) => {
+    if (!keepsCurated(order)) return
     if (rest.length === 0) {
       const meters = measure(order, true)
       if (meters !== null && meters < min) min = meters
@@ -269,7 +278,9 @@ function measureDay(day, pace, interestTags, plannedNames) {
 
   const freeTour = dayStops.find((stop) => stop.is_free_tour)
   const dinnerCoords = day.dinner_zone ? (DINNER_ZONES.find((zone) => zone.id === day.dinner_zone)?.coordinates ?? D.meal_zones?.[day.dinner_zone]?.cena?.coordinates ?? null) : null
-  const tarde = afternoonMeters(dayStops, lunchAt, pace, dinnerCoords ? { coordinates: dinnerCoords, at: dinnerAt } : null)
+  const lunchMeal = (day.meals ?? []).find((meal) => meal.time === 'lunch')
+  const lunchCoords = typeof lunchMeal?.latitude === 'number' ? [lunchMeal.latitude, lunchMeal.longitude] : null
+  const tarde = afternoonMeters(dayStops, lunchAt, pace, dinnerCoords ? { coordinates: dinnerCoords, at: dinnerAt } : null, lunchCoords)
 
   return {
     kind: 'ciudad',
@@ -298,7 +309,7 @@ function measureDay(day, pace, interestTags, plannedNames) {
     zones: new Set(dayStops.map((stop) => placeByName.get(stop.name)?.zone).filter(Boolean)).size,
     freeTourStart: freeTour ? freeTour.suggested_time : null,
     timeline: dayStops.map((stop) => `${stop.suggested_time} ${stop.name} (${stop.duration_minutes}m)`),
-    meals: { lunch: lunch?.suggested_time ?? null, dinner: dinner?.suggested_time ?? null },
+    meals: { lunch: lunch?.suggested_time ?? null, lunchEnd: lunch?.window_end ?? null, lunchAt: lunch?.restaurant ?? lunch?.zone ?? null, dinner: dinner?.suggested_time ?? null },
     gaps,
     unscheduled: day.unscheduled ?? null,
   }
@@ -458,7 +469,7 @@ function printCase() {
       console.log(`\nDía ${day.dayNumber} (${day.kind})`)
       if (day.kind !== 'ciudad') continue
       for (const line of day.timeline) console.log(`   ${line}`)
-      console.log(`   comida ${day.meals.lunch ?? '—'} · cena ${day.meals.dinner ?? '—'}`)
+      console.log(`   comida ${day.meals.lunch ?? '—'}${day.meals.lunchEnd ? `-${day.meals.lunchEnd}` : ''}${day.meals.lunchAt ? ` (${day.meals.lunchAt})` : ''} · cena ${day.meals.dinner ?? '—'}`)
       for (const gap of day.gaps.filter((g) => g.idle > 0)) console.log(`   · ${gap.idle} min parado entre ${gap.from} → ${gap.to} (${gap.walk} min a pie)`)
       console.log(`   muerto entre paradas ${day.idleBetweenStops} min · antes de comer ${day.waitBeforeLunch ?? '—'} · tras comer ${day.idleAfterLunch ?? '—'} · antes de cenar ${day.deadBeforeDinner ?? '—'} · ${day.walkKm.toFixed(1)} km${day.afternoonKm !== null ? ` (tarde ${day.afternoonKm.toFixed(2)} km, mínimo ${day.afternoonMinKm.toFixed(2)})` : ''}`)
       if (day.dropped.length) console.log(`   NO PROGRAMADAS: ${day.dropped.map((name) => { const u = day.unscheduled?.find((item) => item.places.includes(name)); return u ? `${name} (${u.reason})` : name }).join(', ')}`)

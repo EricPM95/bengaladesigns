@@ -66,6 +66,7 @@
 import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './time.js'
 import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
+import { chooseLunchSpot } from './lunchSpots.js'
 
 /**
  * Prioridades: cuanto más bajo, más manda. Solo pool y nivel 1 pueden desplazar a otros.
@@ -160,8 +161,8 @@ export function scheduleDay(input) {
   return { ...second, modeFallback: { recoveredUnitIds: recovered, startedAt: fallbackStart } }
 }
 
-function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false, dinnerPoint = null, hours = {} }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerPoint, dinnerLatest: latestDinnerStart(mode), hours }
+function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, longVisitsAnytime = false, dinnerPoint = null, hours = {}, lunchSpots = [] }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerPoint, dinnerLatest: latestDinnerStart(mode), hours, lunchSpots }
 
   let sequence = pendingMeals.lunch ? [LUNCH] : []
   const unscheduled = []
@@ -235,8 +236,8 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
  * @param {[number, number]|null} [input.dinnerPoint]
  * @param {boolean} [input.visitsEndByLunch]  día con solo mañana (el de la salida): nada después de comer
  */
-export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false, hours = {} }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode), hours }
+export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false, hours = {}, lunchSpots = [] }) {
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode), hours, lunchSpots }
   let kept = [...units]
   const dropped = []
   const reorderedForHours = new Set()
@@ -263,6 +264,13 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
     // Se cae lo que falla si no es lo más importante de su franja; si no, lo menos importante de la
     // franja donde está el problema (la comida es de la mañana, la cena de la tarde).
     const failing = kept.find((unit) => unit.id === result.unitId)
+    // Lo de la mañana que no acaba a las 13:00 no se pierde: se come primero y abre la tarde (con lo
+    // que venía detrás). En la mañana de la salida no hay tarde: eso sí se cae.
+    if (failing && result.reason === 'new_visit_past_lunch' && failing.slot === 'manana' && !visitsEndByLunch) {
+      const from = kept.indexOf(failing)
+      kept = kept.map((unit, index) => (index >= from && unit.slot === 'manana' ? { ...unit, slot: 'tarde' } : unit))
+      continue
+    }
     const slot = failing?.slot ?? (result.reason === 'lunch_out_of_window' ? 'manana' : 'tarde')
     const inSlot = kept.filter((unit) => unit.slot === slot)
     const pool = inSlot.length > 0 ? inSlot : kept
@@ -327,6 +335,8 @@ export function openDay(input) {
     dinnerLatest: latestDinnerStart(mode),
     // El día del viaje para los horarios: día de la semana (con fechas) y época (ver scheduleForDay).
     hours: input.hours ?? {},
+    // Los restaurantes para comer del destino (lunchSpots.js): dónde cae la comida.
+    lunchSpots: input.lunchSpots ?? [],
   })
   let ctx = makeCtx(input.mode, input.start)
   let sequence = ctx.pendingMeals.lunch ? [LUNCH] : []
@@ -504,7 +514,7 @@ export function openDay(input) {
 
     /** El día terminado: orden mejorado y horas puestas. */
     finish() {
-      sequence = bestAfternoon(improve(sequence, ctx), ctx).sequence
+      sequence = reseeded(sequence, ctx)
       const result = simulate(sequence, ctx)
       return {
         visits: result.visits,
@@ -563,17 +573,47 @@ function simulate(sequence, ctx) {
   /** Índice de la primera visita después de comer (la comida va entre esa y la anterior). */
   let lunchBeforeVisit = null
 
+  // La franja de comida (Paso 2): empieza a las 13:00 (13:30 como mucho, si un grupo en marcha
+  // acaba tarde) y dura `lunchBlockMinutes`: llegar al restaurante, comer y andar a la siguiente
+  // parada. El restaurante se elige al saber cuál es esa parada (ver lunchSpots.js).
+  const lunchBlock = mode.lunchBlockMinutes ?? mode.mealMinutes
+  let pendingLunch = null // { meal, from } hasta saber la primera parada de después
+
   /** Come ahora. false si ya no entra en la ventana. */
   const takeLunch = () => {
-    const at = Math.max(roundUpToSlot(cursor), lunchOpen)
+    const at = Math.max(roundUpToQuarter(cursor), lunchOpen)
     if (at > lunchClose) return false
     idle += at - cursor
-    meals.push({ type: 'lunch', start: at, end: at + mode.mealMinutes, coordinates: position })
+    const meal = { type: 'lunch', start: at, end: at + lunchBlock, eatMinutes: mode.mealMinutes, coordinates: position, spot: null }
+    meals.push(meal)
+    pendingLunch = { meal, from: position }
     lunchBeforeVisit = visits.length
-    cursor = at + mode.mealMinutes
+    cursor = at
     lunchDone = true
     afterMeal = true
     return true
+  }
+
+  /** Dónde se come y cuánto se anda: de donde acabó la mañana al restaurante y de ahí a `next`. */
+  const resolveLunch = (next) => {
+    const { meal, from } = pendingLunch
+    pendingLunch = null
+    const choice = ctx.lunchSpots?.length ? chooseLunchSpot(from, next, ctx.lunchSpots, travel) : null
+    const direct = !choice && from && next ? travel.leg(from, next) : null
+    const toMinutes = choice?.toMinutes ?? 0
+    const fromMinutes = choice ? choice.fromMinutes : (direct?.minutes ?? 0)
+    if (choice) {
+      meal.coordinates = choice.spot.coordinates
+      meal.spot = { name: choice.spot.name, zone: choice.spot.zone }
+    }
+    meal.eatStart = meal.start + toMinutes
+    return {
+      walkMinutes: toMinutes + fromMinutes,
+      meters: choice ? choice.toMeters + choice.fromMeters : (direct?.meters ?? 0),
+      // Lo que se tarda en llegar a `next` desde que empieza la franja.
+      arriveAfter: toMinutes + mode.mealMinutes + fromMinutes,
+      source: direct?.source ?? 'matrix',
+    }
   }
 
   for (const [elementIndex, element] of sequence.entries()) {
@@ -595,16 +635,23 @@ function simulate(sequence, ctx) {
       if (ctx.visitsEndByLunch && lunchDone) return { ok: false, reason: 'after_lunch_on_departure', unitId: unit.id }
       // ¿Seguir con el grupo hasta el próximo punto de corte deja la comida fuera de su ventana?
       // Entonces se come aquí, en el último corte que aún llega. Nunca entre un par inseparable.
+      // Solo un GRUPO real del JSON (el Vaticano) puede alargar la mañana hasta las 13:30; lo demás
+      // de la unidad es una visita nueva y tiene que acabar a las 13:00 (Navona, detrás del Panteón).
+      const continuesGroup = index > 0 && Boolean(place.group) && place.group === unit.places[index - 1].group
       if (index > 0 && lunchComesNext && !lunchDone && !unit.places[index - 1].inseparableWithNext) {
-        if (roundUpToSlot(segmentEnd(unit, index, cursor, position, travel, mode)) > lunchClose && !takeLunch()) {
+        if (roundUpToSlot(segmentEnd(unit, index, cursor, position, travel, mode)) > (continuesGroup ? lunchClose : lunchOpen) && !takeLunch()) {
           return { ok: false, reason: 'lunch_out_of_window' }
         }
         if (ctx.visitsEndByLunch && lunchDone) return { ok: false, reason: 'after_lunch_on_departure', unitId: unit.id }
       }
 
-      const leg = position ? travel.leg(position, place.coordinates) : null
+      // Primera parada después de comer: se llega desde el restaurante y nunca antes de que acabe la
+      // franja; el rato que sobre dentro de la franja es parte de ella, no una espera.
+      const afterLunch = pendingLunch ? resolveLunch(place.coordinates) : null
+      const leg = afterLunch ? { minutes: afterLunch.walkMinutes, meters: afterLunch.meters, source: afterLunch.source } : position ? travel.leg(position, place.coordinates) : null
       const walkMinutes = leg?.minutes ?? 0
-      const arrive = cursor + walkMinutes
+      const lunchMeal = afterLunch ? meals.find((meal) => meal.type === 'lunch') : null
+      const arrive = afterLunch ? Math.max(cursor + afterLunch.arriveAfter, lunchMeal.end) : cursor + walkMinutes
       // Encadenado: el siguiente miembro de un grupo, o un sitio a <= 3 min; nunca al volver de comer.
       // Lo que está DENTRO de otro (`contained_in`: el Elefantino en la plaza de la Minerva) va con su
       // contenedor como una sola visita, aunque haya 4 minutos andando.
@@ -637,6 +684,15 @@ function simulate(sequence, ctx) {
       if (lastEntry !== null && at > lastEntry) return { ok: false, reason: 'after_last_entry', unitId: unit.id }
       if (!ctx.ignoreHours && place.latest_end && at + duration > toMinutes(place.latest_end)) return { ok: false, reason: 'after_latest_end', unitId: unit.id }
       if (at + duration > visitLimit) return { ok: false, reason: 'past_dinner', unitId: unit.id }
+      // Antes de comer, una visita NUEVA tiene que acabar a las 13:00; lo que ya está en marcha (el
+      // resto de un grupo, lo que va dentro de su contenedor, o una visita larga como el Vaticano),
+      // a las 13:30. Si no, se come primero y la visita abre la tarde.
+      if (!lunchDone && pendingMeals.lunch && !place.fixed_start) {
+        const inProgress = continuesGroup || withContainer || (unit.isLong && Boolean(place.group))
+        if (at + duration > (inProgress ? lunchClose : lunchOpen) && !(inProgress && lunchComesNext)) {
+          return { ok: false, reason: 'new_visit_past_lunch', unitId: unit.id }
+        }
+      }
 
       const pendingApproach = (approachesOf.get(place.name) ?? []).find((name) => !visits.some((visit) => visit.place.name === name))
       if (pendingApproach) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
@@ -678,6 +734,15 @@ function simulate(sequence, ctx) {
   }
 
   if (!lunchDone) return { ok: false, reason: 'lunch_missing' }
+  // Nada después de comer (la mañana de la salida): el restaurante, cerca de donde se acabó.
+  if (pendingLunch) {
+    const lunchMeal = pendingLunch.meal
+    const afterLunch = resolveLunch(null)
+    walk += afterLunch.walkMinutes
+    meters += afterLunch.meters
+    cursor = Math.max(cursor + afterLunch.arriveAfter, lunchMeal.end)
+    position = lunchMeal.coordinates ?? position
+  }
   const apart = relationBroken(visits, lunchBeforeVisit)
   if (apart) return { ok: false, reason: apart.reason, unitId: apart.unitId }
 
@@ -801,10 +866,54 @@ function curatedInversions(sequence) {
 
 // ── Búsqueda ────────────────────────────────────────────────────────────────────────────────
 
+/**
+ * El orden final del día, probando DOS puntos de partida: el que dejó el reparto y uno con lo de
+ * primera hora y lo largo delante de la comida. La mejora es local (mueve piezas de una en una) y
+ * desde el orden del reparto podía quedarse atascada: el día de Roma Antigua empezaba en el Barrio
+ * Judío y dejaba el Coliseo para las 11:20 (coste 321) cuando con el Coliseo a las 08:30 costaba 156.
+ */
+function reseeded(sequence, ctx) {
+  const polish = (seed) => bestAfternoon(improve(seed, ctx), ctx).sequence
+  let best = polish(sequence)
+  let bestResult = simulate(best, ctx)
+  const units = sequence.filter((element) => element !== LUNCH)
+  const early = units.filter((unit) => unit.preferEarly || unit.isLong)
+  if (ctx.pendingMeals.lunch && early.length > 0 && early.length < units.length) {
+    // Se construye como el reparto, pero empezando por lo de primera hora: el resto entra de uno en
+    // uno donde menos cueste. Si algo no entra, este punto de partida no vale.
+    // Lo que aún no entra (lo de dentro de un contenedor que no está) se reintenta en otra vuelta.
+    let seed = [...early, LUNCH]
+    // Lo que va dentro de algo de primera hora (la Via dei Fori Imperiali, del Foro) entra antes que
+    // nada: su sitio es justo detrás y el resto no puede quitárselo.
+    const earlyNames = new Set(early.flatMap((unit) => unit.places.map((place) => place.name)))
+    const insideEarly = (unit) => unit.places.some((place) => earlyNames.has(place.contained_in))
+    let pending = units.filter((candidate) => !early.includes(candidate)).sort((a, b) => Number(insideEarly(b)) - Number(insideEarly(a)))
+    while (pending.length > 0) {
+      const left = []
+      for (const unit of pending) {
+        // Nunca delante de lo de primera hora: ese es el punto de este arranque.
+        const inserted = bestInsertion(seed, unit, ctx, early.length)
+        if (inserted) seed = inserted
+        else left.push(unit)
+      }
+      if (left.length === pending.length) break
+      pending = left
+    }
+    if (pending.length > 0) seed = null
+    const candidate = seed ? polish(seed) : best
+    const result = simulate(candidate, ctx)
+    if (result.ok && (!bestResult.ok || result.cost < bestResult.cost)) {
+      best = candidate
+      bestResult = result
+    }
+  }
+  return best
+}
+
 /** La unidad en la posición donde menos tiempo pierde el día. null si no cabe en ninguna. */
-function bestInsertion(sequence, unit, ctx) {
+function bestInsertion(sequence, unit, ctx, fromIndex = 0) {
   let best = null
-  for (let i = 0; i <= sequence.length; i++) {
+  for (let i = fromIndex; i <= sequence.length; i++) {
     const candidate = [...sequence.slice(0, i), unit, ...sequence.slice(i)]
     const result = simulate(candidate, ctx)
     if (result.ok && (!best || result.cost < best.cost)) best = { sequence: candidate, cost: result.cost }

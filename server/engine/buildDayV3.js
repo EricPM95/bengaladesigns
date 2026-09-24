@@ -72,6 +72,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
+    // Posición en el orden curado del día (fijado a mano: Popolo → Pincio → España): el programador
+    // no lo invierte y la métrica de zigzag tampoco lo cuenta como paseo de más.
+    const curatedIndex = unitById.get(visit.unitId)?.curatedIndex
+    if (curatedIndex != null) stop.curated_index = curatedIndex
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
     if (visit.place.passBy) stop.is_pass_by = true
     // Paso por fuera EN LUGAR de la visita (no ya visto otro día): el Foro que no llega a su cierre.
@@ -109,8 +113,14 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     time: meal.type,
     suggested_time: toHHMM(meal.start),
     options: [],
-    // La comida, donde se está; la cena, en el barrio hacia el que va la tarde.
-    ...(meal.type === 'lunch' ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida') : dinnerFields(destData, tripDay.dinnerZone, dinnerZone)),
+    // La comida es una FRANJA (Paso 2): llegar, comer y andar a la siguiente parada.
+    ...(meal.type === 'lunch' ? { window_end: toHHMM(meal.end) } : {}),
+    // Dónde se come: el restaurante que eligió el programador (lunchSpots.js), con su zona.
+    ...(meal.type === 'lunch' && meal.spot
+      ? { zone: meal.spot.zone, zone_display: `en ${String(meal.spot.zone).replace(/\s*\/\s*/g, ' y ')}`, restaurant: meal.spot.name, latitude: meal.coordinates[0], longitude: meal.coordinates[1] }
+      : meal.type === 'lunch'
+        ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida')
+        : dinnerFields(destData, tripDay.dinnerZone, dinnerZone)),
   }))
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un

@@ -16,6 +16,10 @@ interface MealTimeAccordionProps {
   /** Texto legible curado a mano para el TÍTULO (ver MealSlot.curatedZoneDisplay, Regla E — "en el Centro Histórico") — solo para mostrar, nunca para buscar. */
   curatedZoneDisplay?: string | null
   franja: 'comida' | 'cena'
+  /** Franja de la comida ("13:00 – 14:30"): llegar, comer y andar a la siguiente parada. */
+  timeRange?: string | null
+  /** Texto propio en lugar de "Recomendaciones de restaurantes cerca" (día con excursión de medio día). */
+  subtitle?: string | null
   /** Abre MealDetailSheet (pantalla completa) — gestionado por DayDetailPanel.tsx, igual que StopDetailSheet/ArrivalDetailSheet, para poder desmontar el mapa de este panel mientras esa pantalla está abierta encima (ver mapHiddenBySheet). */
   onOpen: () => void
 }
@@ -31,7 +35,7 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
   // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
@@ -50,7 +54,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-body font-semibold text-text">{zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}</p>
-        <p className="text-caption text-text-soft">Recomendaciones de restaurantes cerca</p>
+        <p className="text-caption text-text-soft">{subtitle ?? (timeRange ? `${timeRange} · Restaurantes cerca` : 'Recomendaciones de restaurantes cerca')}</p>
       </div>
     </button>
   )

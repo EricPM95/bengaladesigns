@@ -99,6 +99,12 @@ interface GeneratedMeal {
   zone?: string | null
   /** Solo pipeline v2 — texto legible para el título ("en el Centro Histórico", Regla E), ver MealSlot.curatedZoneDisplay. Nunca se usa para buscar. */
   zone_display?: string | null
+  /** Motor v3, comida: fin de la franja (llegar, comer y andar a la siguiente parada) — MealSlot.windowEnd. */
+  window_end?: string | null
+  /** Motor v3, comida: el restaurante elegido y dónde está — MealSlot.coordinates. */
+  restaurant?: string | null
+  latitude?: number
+  longitude?: number
 }
 
 export interface GeneratedDay {
@@ -363,6 +369,8 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     mealTime: generated.time,
     curatedZone: generated.zone ?? null,
     curatedZoneDisplay: generated.zone_display ?? null,
+    ...(generated.window_end ? { windowEnd: generated.window_end } : {}),
+    ...(typeof generated.latitude === 'number' && typeof generated.longitude === 'number' ? { coordinates: { lat: generated.latitude, lng: generated.longitude } } : {}),
   }
 }
 

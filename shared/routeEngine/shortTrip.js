@@ -23,6 +23,7 @@ import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { seasonKey } from './openingHours.js'
+import { lunchSpots } from './lunchSpots.js'
 import { weekdayForDay } from './tripSkeleton.js'
 
 /** Hora por defecto a la que empieza una tarde que no viene de una mañana (llegada, o C de tarde). */
@@ -128,6 +129,7 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   const normalMode = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
   const hasPlanB = normalMode.dayStart !== mode.dayStart || normalMode.visitDurationBonus !== mode.visitDurationBonus
   const seasonOfTrip = seasonKey(season, dateRangeStartIso)
+  const lunchSpotList = lunchSpots(destData)
   const hoursFor = (dayNumber) => ({ weekday: weekdayForDay(dateRangeStartIso, dayNumber), season: seasonOfTrip })
   const notIncluded = []
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
@@ -257,6 +259,7 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
         // Una mañana sin tarde (la de la salida) acaba en la comida.
         visitsEndByLunch: Boolean(morning) && !afternoon,
         hours,
+        lunchSpots: lunchSpotList,
       })
     const essentialLoss = (result) => result.dropped.flatMap(({ unit }) => unit.places).filter((place) => place.level === 1).length
     let schedule = run(mode, units)

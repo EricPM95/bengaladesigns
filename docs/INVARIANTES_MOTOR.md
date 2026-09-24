@@ -366,6 +366,33 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     Nunca lo que va a primera hora a propósito (`best_time` primera hora, `latest_end`: la Fontana de
     Trevi a las 08:00). *La Fontana dell'Acqua Paola a las 08:00 esperaba 100 min al Tempietto.*
 
+**Paso 2 — Comida**
+
+63. **La comida es una FRANJA fija**: 13:00-14:30 en completo, 13:00-15:00 en tranquilo
+    (`lunchBlockMinutes` 90/120). Incluye llegar al restaurante, comer (60/90) y andar a la siguiente
+    parada; la tarde empieza al acabar la franja. El rato entre el fin de la mañana y la franja no es
+    un hueco.
+64. **Antes de comer, una visita NUEVA acaba a las 13:00.** Si no, se come primero y la visita abre la
+    tarde (en rutas de orden fijo pasa a la tarde con lo que venía detrás). Única excepción: el resto
+    de un GRUPO REAL del JSON ya en marcha (Vaticano; Panteón → Navona) puede acabar hasta las 13:30 y
+    la franja empieza al acabar (la tarde se retrasa lo mismo). Un bloque curado de varias paradas NO
+    es un grupo.
+65. **Dónde se come** (`lunchSpots.js`, regla general): en la zona donde acaba la mañana si hay ≥2
+    restaurantes curados para comer (`meal` comida|ambos; cafés, helados y aperitivos no cuentan) a
+    ≤10 min; si no, el de menos rodeo EN DIRECCIÓN A LA TARDE (nunca más lejos de la siguiente parada
+    que donde se estaba), mejor con otro restaurante al lado. La tarde sale del restaurante.
+66. **El orden del día se prueba desde dos arranques**: el que deja el reparto y otro con lo de primera
+    hora y lo largo delante de la comida; se queda el más barato. *Desde el del reparto la mejora
+    local se atascaba: Roma Antigua empezaba en el Barrio Judío y el Coliseo iba a las 11:20.*
+67. **El orden curado fijado a mano no cuenta como zigzag**: la métrica mide el mínimo respetándolo
+    (Popolo → Pincio → España es para acabar en la Escalinata al atardecer).
+68. **Día con excursión de medio día**: sin franja fija (excursión 08:00-14:00, tarde desde las
+    16:00), pero entre las dos va SIEMPRE un bloque de comida: "¿Tu excursión incluye comida? Si no,
+    cuando vuelvas a {destino} aquí tienes restaurantes perfectos para ti", con el mapa de
+    restaurantes centrado donde empieza la tarde.
+69. **En la app, la tarjeta de comida va en su posición real** (detrás de la última parada que empieza
+    antes de la franja) y enseña la franja ("13:00 – 14:30").
+
 ---
 
 ## I. Kit de nuevo destino: cuándo un destino está listo

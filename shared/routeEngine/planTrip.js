@@ -44,6 +44,7 @@ import { PRIORITY, openDay } from './scheduleDay.js'
 import { nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
 import { seasonKey } from './openingHours.js'
+import { lunchSpots } from './lunchSpots.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
@@ -203,6 +204,8 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Época del viaje para los horarios por temporada: la de las fechas si las hay; si no, la del
   // formulario ("winter"...). Día de la semana: el de cada día, solo con fechas.
   const seasonOfTrip = seasonKey(season, dateRangeStartIso)
+  // Dónde se puede comer (restaurantes curados para comer): el programador elige en cada día.
+  const lunchSpotList = lunchSpots(destData)
   const mode = modeV3For(pace)
   // Plan B de un imprescindible: el horario normal (el del completo, sin el extra de duración).
   const normal = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
@@ -268,6 +271,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         pendingMeals: { lunch: !day.halfDayExcursion, dinner: true },
         longVisitsAnytime: skeleton.filter((d) => !d.isBlank && !d.isExcursion).length === 1,
         hours: { weekday: day.weekday ?? null, season: seasonOfTrip },
+        lunchSpots: lunchSpotList,
       }),
     })
   }

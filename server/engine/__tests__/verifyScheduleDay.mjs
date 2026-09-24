@@ -195,10 +195,11 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
   if (result.modeFallback) fail('tranquilo vaticano: ha tenido que pasar al horario normal, y con la comida dentro no hacía falta')
 }
 
-// 6b. Plan B: una visita larga SIN puntos de corte que a las 10:00 no deja comer en ventana. Sin
+// 6b. Plan B: una visita larga SIN puntos de corte que a las 10:00 no deja comer en ventana (una
+//     visita suelta, no un grupo: tiene que acabar a las 13:00, invariante 64). Sin
 //     plan B se pierde; con el horario normal entra, y el resultado lo dice.
 {
-  const larga = { id: 'larga', priority: PRIORITY.ESSENTIAL, isLong: true, places: [{ name: 'Visita larga de prueba', coordinates: [41.9, 12.48], duration_minutes: 270, schedule: '09:00-19:00', type: 'interior' }] }
+  const larga = { id: 'larga', priority: PRIORITY.ESSENTIAL, isLong: true, places: [{ name: 'Visita larga de prueba', coordinates: [41.9, 12.48], duration_minutes: 240, schedule: '09:00-19:00', type: 'interior' }] }
   const base = { units: [larga], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
   if (scheduleDay(base).visits.length > 0) fail('plan B: sin horario normal no debería caber (si cabe, el caso ya no prueba nada)')
   const normal = { ...MODES_V3.tranquilo, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }

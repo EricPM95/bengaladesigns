@@ -388,6 +388,11 @@ export interface MealSlot {
   curatedZone?: string | null
   /** Texto legible curado a mano para el TÍTULO del bloque ("en el Centro Histórico", ver `meal_zones[...].display`, Regla E) — nunca se usa para buscar restaurantes, solo para componer "Hora de comer/cenar {esto}". null/undefined = el título cae al formato genérico con `curatedZone`/zona geocodificada. */
   curatedZoneDisplay?: string | null
+  /** Motor v3, comida: fin de la franja ("14:30"); `time` es su inicio. La franja incluye llegar al
+      restaurante, comer y andar a la siguiente parada. */
+  windowEnd?: string
+  /** Motor v3: dónde está el restaurante elegido para esta comida (ancla de la búsqueda). */
+  coordinates?: Coordinates
 }
 
 // ── Excursions ────────────────────────────────────────────

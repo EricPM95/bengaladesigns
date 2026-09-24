@@ -20,7 +20,10 @@ const HHMM = (hhmm) => {
 }
 
 const SHARED = {
-  lunchWindow: [HHMM('13:00'), HHMM('14:00')],
+  // Franja de comida (Paso 2, 2026-09-24): empieza a las 13:00 —como muy tarde a las 13:30 si hay un
+  // grupo en marcha— y dura `lunchBlockMinutes`: llegar, comer y andar hasta la siguiente parada.
+  // Una visita NUEVA solo empieza antes de comer si acaba a las 13:00 (lunchWindow[0]).
+  lunchWindow: [HHMM('13:00'), HHMM('13:30')],
   dinnerWindow: [HHMM('20:00'), HHMM('21:00')],
   dayEndWithDinner: HHMM('21:30'),
   chainMaxWalkMinutes: 3,
@@ -36,6 +39,7 @@ export const MODES_V3 = {
     id: 'completo',
     dayStart: HHMM('08:00'),
     mealMinutes: 60,
+    lunchBlockMinutes: 90,
     visitDurationBonus: 0,
     gapTolerance: 45,
     targetStops: [8, 10],
@@ -46,6 +50,7 @@ export const MODES_V3 = {
     id: 'tranquilo',
     dayStart: HHMM('10:00'),
     mealMinutes: 90,
+    lunchBlockMinutes: 120,
     visitDurationBonus: 15,
     gapTolerance: 60,
     targetStops: [5, 7],

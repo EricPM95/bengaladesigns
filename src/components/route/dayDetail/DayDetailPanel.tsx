@@ -291,7 +291,7 @@ export function DayDetailPanel({
   // Qué bloque de comida/cena está abierto a pantalla completa (MealDetailSheet) — `stopIndex` es la
   // parada tras la que cae esa franja (ancla geográfica), mismo dato que antes recibía
   // MealTimeAccordion directamente. null = cerrado.
-  const [mealSheet, setMealSheet] = useState<{ franja: 'comida' | 'cena'; stopIndex: number } | null>(null)
+  const [mealSheet, setMealSheet] = useState<{ franja: 'comida' | 'cena'; stopIndex: number; coordinates?: Coordinates } | null>(null)
   const [modeOverrides, setModeOverrides] = useState<Record<string, TransportMode>>({})
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
@@ -538,7 +538,14 @@ export function DayDetailPanel({
   const dinnerCuratedZone = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZone ?? null
   const lunchCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZoneDisplay ?? null
   const dinnerCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZoneDisplay ?? null
-  const lunchInsertionIndex = findMealInsertionIndex(schedule, LUNCH_WINDOW)
+  // Con la franja del motor (v3), la comida va en su posición REAL: detrás de la última parada que
+  // empieza antes de la franja. Sin franja (rutas antiguas), por la ventana de siempre.
+  const lunchMeal = day.meals.find((meal) => meal.mealTime === 'lunch')
+  const lunchStart = lunchMeal?.windowEnd ? parseTimeToMinutes(lunchMeal.time) : NaN
+  const lastBeforeLunch = Number.isNaN(lunchStart) ? -1 : schedule.filter((item) => item.startMinutes < lunchStart).length - 1
+  const lunchInsertionIndex = lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW)
+  const lunchTimeRange = lunchMeal?.windowEnd ? `${lunchMeal.time} – ${lunchMeal.windowEnd}` : null
+  const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
   const dinnerInsertionIndex = findMealInsertionIndex(schedule, dinnerWindowFor(day))
   const destino = route?.destination ?? day.city
@@ -656,6 +663,8 @@ export function DayDetailPanel({
   const excursionEnteraEnBlanco = excursionElegidaEnBlanco?.length === 'full-day' ? excursionElegidaEnBlanco : null
   /** Media jornada a mano y todavía sin paradas por la tarde: hay que ofrecerle montarla. */
   const tardeLibreEnBlanco = esDiaEnBlanco && halfDayExcursion !== null && stops.length === 0
+  // Dónde se ofrecen restaurantes al volver de la excursión: donde empieza la tarde.
+  const halfDayLunchCoordinates = realStops.find((realStop) => hasRealCoordinates(realStop.coordinates))?.coordinates ?? null
   /** ¿Está el día enseñando su lista de paradas? Lo comparten la lista y el hueco de fin de día. */
   const muestraParadas = showsRoute || (dayType === 'manual' && stops.length > 0)
   const excursionTarget =
@@ -888,9 +897,9 @@ export function DayDetailPanel({
           )}
 
           {/* La excursión de medio día ocupa la mañana de este día y las paradas de abajo empiezan
-              a las 16:00. La franja 14:00-16:00 no se pinta a propósito: es el hueco de volver,
-              comer y dejar la mochila, y dibujarlo sería llenar de UI un rato que el viajero no
-              tiene que planificar. */}
+              a las 16:00. Entre las dos va SIEMPRE la comida (Paso 2, 2026-09-24): no se sabe si la
+              excursión la incluye, así que se pregunta y se ofrecen restaurantes donde empieza la
+              tarde (o, si no hay tarde, en el centro de la ciudad del día). */}
           {halfDayExcursion && (
             <HalfDayExcursionBlock
               excursion={halfDayExcursion}
@@ -899,6 +908,18 @@ export function DayDetailPanel({
               onDismiss={() => declineHalfDayExcursion(day.id)}
               dismissLabel={esDiaEnBlanco ? 'Quitar esta excursión' : undefined}
             />
+          )}
+          {halfDayExcursion && halfDayLunchCoordinates && (
+            <div className="pt-2">
+              <MealTimeAccordion
+                destino={destino}
+                city={day.city}
+                coordinates={halfDayLunchCoordinates}
+                franja="comida"
+                subtitle={`¿Tu excursión incluye comida? Si no, cuando vuelvas a ${day.city} aquí tienes restaurantes perfectos para ti`}
+                onOpen={() => setMealSheet({ franja: 'comida', stopIndex: 0, coordinates: halfDayLunchCoordinates })}
+              />
+            </div>
           )}
 
           {/* Media jornada en un día en blanco: la tarde queda suya y hay que decírselo, con la
@@ -989,10 +1010,11 @@ export function DayDetailPanel({
                       <MealTimeAccordion
                         destino={destino}
                         city={day.city}
-                        coordinates={realStops[index].coordinates}
+                        coordinates={lunchCoordinates ?? realStops[index].coordinates}
                         curatedZone={lunchCuratedZone}
                         curatedZoneDisplay={lunchCuratedZoneDisplay}
                         franja="comida"
+                        timeRange={lunchTimeRange}
                         onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
                       />
                     </div>
@@ -1198,7 +1220,7 @@ export function DayDetailPanel({
         open={mealSheet !== null}
         destino={destino}
         city={day.city}
-        coordinates={mealSheet ? realStops[mealSheet.stopIndex].coordinates : { lat: 0, lng: 0 }}
+        coordinates={mealSheet ? (mealSheet.coordinates ?? (mealSheet.franja === 'comida' ? lunchCoordinates : null) ?? realStops[mealSheet.stopIndex].coordinates) : { lat: 0, lng: 0 }}
         curatedZone={mealSheet?.franja === 'cena' ? dinnerCuratedZone : lunchCuratedZone}
         curatedZoneDisplay={mealSheet?.franja === 'cena' ? dinnerCuratedZoneDisplay : lunchCuratedZoneDisplay}
         franja={mealSheet?.franja ?? 'comida'}
