@@ -160,9 +160,21 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   const assignments = assignSlots(blockIds, slots, blocks, freeTourBlock)
   if (assignments.length === 0) throw new Error(`short_trips: no hay forma de repartir ${blockIds.join('+')} en ${slots.map((s) => s.slot).join('-')}`)
 
+  /** El bloque del Free Tour: el tour y, detrás, los imprescindibles de su recorrido con interior de
+      pago (el Panteón por dentro, Paso 4): el tour los enseña por fuera, no por dentro. Si no acaban
+      antes de las 13:00, pasan a después de comer (regla del Paso 2). */
+  function freeTourStops() {
+    const tour = destData.default_free_tour
+    const paidInteriors = (tour.covers ?? []).filter((name) => {
+      const place = placeByName.get(name)
+      return place && place.level === 1 && !(place.is_free_access ?? place.type === 'exterior')
+    })
+    return [{ name: tour.name, role: 'core', freeTour: true }, ...paidInteriors.map((name) => ({ name, role: 'core' }))]
+  }
+
   // ── Qué se ve en cada bloque.
   const stopsByBlock = new Map(
-    blockIds.map((id) => [id, id === freeTourBlock ? [{ name: destData.default_free_tour.name, role: 'core', freeTour: true }] : blockStops(blocks[id], pace, experiencesPositive, destData)]),
+    blockIds.map((id) => [id, id === freeTourBlock ? freeTourStops() : blockStops(blocks[id], pace, experiencesPositive, destData)]),
   )
 
   // ── Pool: lo que pida y no esté sustituye a la parada de menor prioridad (primero extras, luego

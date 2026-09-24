@@ -102,6 +102,9 @@ const HOURS_FAILURES = new Set(['closes_during_visit', 'after_last_entry'])
 
 const LUNCH = { kind: 'lunch' }
 
+/** Antes del Free Tour solo entra lo que está a esta distancia a pie, o menos, del punto de encuentro (Paso 4). */
+const BEFORE_TOUR_MAX_WALK_MINUTES = 10
+
 /**
  * @typedef {object} SchedulePlace
  * @property {string} name
@@ -452,6 +455,11 @@ export function openDay(input) {
       return simulate(sequence, ctx).visits ?? []
     },
 
+    /** Las comidas tal como están ahora (para saber dónde empieza la tarde). */
+    meals() {
+      return simulate(sequence, ctx).meals ?? []
+    },
+
     /** Minutos libres antes de cenar, ya descontado el paseo hasta la cena (null sin cena). */
     idleBeforeDinner() {
       return simulate(sequence, ctx).idleBeforeDinner ?? null
@@ -570,6 +578,9 @@ function simulate(sequence, ctx) {
   }
   const meals = []
   const earlyUnitIds = new Set(sequence.filter((element) => element !== LUNCH && element.preferEarly).map((unit) => unit.id))
+  // El Free Tour del día, si lo hay: lo que va antes tiene que estar cerca del punto de encuentro.
+  const tourIndex = sequence.findIndex((element) => element !== LUNCH && element.places.some((place) => place.isFreeTour))
+  const tourPoint = tourIndex >= 0 ? sequence[tourIndex].places.find((place) => place.isFreeTour).coordinates : null
   /** Índice de la primera visita después de comer (la comida va entre esa y la anterior). */
   let lunchBeforeVisit = null
 
@@ -648,6 +659,9 @@ function simulate(sequence, ctx) {
       // Primera parada después de comer: se llega desde el restaurante y nunca antes de que acabe la
       // franja; el rato que sobre dentro de la franja es parte de ella, no una espera.
       const afterLunch = pendingLunch ? resolveLunch(place.coordinates) : null
+      if (tourPoint && elementIndex < tourIndex && !place.isFreeTour && (travel.leg(place.coordinates, tourPoint)?.minutes ?? Infinity) > BEFORE_TOUR_MAX_WALK_MINUTES) {
+        return { ok: false, reason: 'far_before_tour', unitId: unit.id }
+      }
       const leg = afterLunch ? { minutes: afterLunch.walkMinutes, meters: afterLunch.meters, source: afterLunch.source } : position ? travel.leg(position, place.coordinates) : null
       const walkMinutes = leg?.minutes ?? 0
       const lunchMeal = afterLunch ? meals.find((meal) => meal.type === 'lunch') : null

@@ -16,12 +16,11 @@
     "tip": "Reserva con antelación en Civitatis. Lleva agua y gorra en verano.",
     "covers": [
       "Plaza de España",
+      "Via Condotti",
       "Fontana de Trevi",
+      "Iglesia de San Ignacio de Loyola",
       "Panteón",
       "Piazza Navona"
-    ],
-    "early_visit_ok": [
-      "Fontana de Trevi"
     ]
   },
   "joyas": [
@@ -960,6 +959,9 @@
       "search_en": "Piazza del Popolo Rome",
       "search_en_keywords": [
         "popolo"
+      ],
+      "approach_to": [
+        "Terraza del Pincio"
       ]
     },
     {
@@ -2863,14 +2865,18 @@
         "pincian"
       ],
       "neighbor_of": [
-        "Piazza del Popolo"
+        "Piazza del Popolo",
+        "Parque de Villa Borghese"
       ],
       "windows": [
         "00:00-24:00"
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Siempre abierta y gratis; se sube a pie desde Piazza del Popolo. De noche el paso desde el interior del parque puede estar cerrado, pero la terraza sigue accesible."
+      "card_text": "Siempre abierta y gratis; se sube a pie desde Piazza del Popolo. De noche el paso desde el interior del parque puede estar cerrado, pero la terraza sigue accesible.",
+      "approach_to": [
+        "Parque de Villa Borghese"
+      ]
     },
     {
       "name": "Basílica de San Juan de Letrán",
@@ -3306,7 +3312,8 @@
       "search_en_keywords": [
         "trastevere"
       ],
-      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones"
+      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones",
+      "not_before": "11:00"
     },
     {
       "name": "Monti",
@@ -3337,7 +3344,8 @@
         "monti",
         "rione monti"
       ],
-      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones"
+      "_borrador": "BORRADOR 2026-09-24: revisar datos, coordenadas y relaciones",
+      "not_before": "11:00"
     }
   ],
   "groups": {

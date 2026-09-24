@@ -369,8 +369,10 @@ function measureTrip(trip, pace, exps) {
   for (const [group, members] of GROUPS) {
     const present = members.filter((member) => dayOf.has(member.name) && !seenWithTour.has(member.name))
     if (present.length === 0) continue
-    if (present.length < members.length) {
-      brokenGroups.push(`${group}: solo ${present.map((m) => m.name).join(' + ')} (faltan ${members.filter((m) => !dayOf.has(m.name)).map((m) => m.name).join(', ')})`)
+    // Lo que se ve con el Free Tour (Navona, del grupo Panteón + Navona) cuenta como visto: no falta.
+    const missing = members.filter((member) => !dayOf.has(member.name) && !seenWithTour.has(member.name))
+    if (missing.length > 0) {
+      brokenGroups.push(`${group}: solo ${present.map((m) => m.name).join(' + ')} (faltan ${missing.map((m) => m.name).join(', ')})`)
       continue
     }
     const days = new Set(present.map((member) => dayOf.get(member.name)))

@@ -220,7 +220,18 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
   if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
   const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
   const from = last.place.end_coordinates ?? last.place.coordinates
-  const seen = new Set([...dayVisitedNames, ...(trip.coveredByFreeTour ?? []).flatMap((item) => item.names)])
+  // Lo que enseña el Free Tour por fuera ya está visto (lo de interior de pago, como el Panteón, no).
+  const tour = destData.default_free_tour
+  const hasTour = trip.days.some((d) => (d.schedule?.visits ?? []).some((visit) => visit.place.isFreeTour))
+  const tourSeen = hasTour
+    ? (tour?.covers ?? []).filter((name) => {
+        const place = (destData.places ?? []).find((candidate) => candidate.name === name)
+        return place && (place.is_free_access ?? place.type === 'exterior')
+      })
+    : []
+  // Lo que se ve desde un paso por fuera (el Arco, desde el Coliseo) también está visto.
+  const passBySeen = trip.days.flatMap((d) => (d.schedule?.visits ?? []).flatMap((visit) => visit.place.passBy?.includes ?? []))
+  const seen = new Set([...dayVisitedNames, ...(trip.coveredByFreeTour ?? []).flatMap((item) => item.names), ...tourSeen, ...passBySeen])
   const chosenTags = new Set((options.experiencesPositive ?? []).flatMap((theme) => (theme in TAG_INTEREST_MAP && theme !== 'free_tour' ? TAG_INTEREST_MAP[theme] : [])))
   const suggestions = (destData.places ?? [])
     .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates))

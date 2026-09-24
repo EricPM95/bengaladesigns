@@ -440,6 +440,26 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     sugerencias cerca de donde acaba (pueden ser de pago; primero las de sus experiencias). En el
     semáforo, una tarde libre es amarillo, no rojo.
 
+**Paso 4 — Free Tour**
+
+80. **El tour cubre lo que se ve por fuera y las iglesias gratis por las que entra** (`covers`, en el orden
+    del recorrido: el último es donde acaba y desde donde se va a comer). Lo cubierto no vuelve a salir
+    suelto ese día, tampoco antes del tour. Un imprescindible con interior de pago (el Panteón) NO se
+    quita: se visita por dentro aparte; de un grupo (Panteón + Navona), el tour cubre lo de fuera y en la
+    ruta queda el interior. En viajes de 1 día va detrás del tour y, si no acaba antes de las 13:00,
+    después de comer.
+81. **Antes del tour solo entra lo que está a 10 min o menos del punto de encuentro** (`far_before_tour`).
+    *Salía Trevi → Popolo → Plaza de España: más de 30 min andando antes del tour.*
+
+**Paso 5 — Orden y geografía**
+
+82. **Popolo → Pincio → Villa Borghese** con `approach_to` (el acceso va justo antes): Popolo da acceso al
+    Pincio y el Pincio al Parque. La norma de datos "acceso + monumento gratis = grupo inseparable" no se
+    aplica a pares que además son vecinos: pueden ir en días distintos por decisión.
+83. **Una experiencia nocturna SUELTA a 10 min o menos de una parada de la tarde se ve al atardecer**, en
+    la tarde, y su versión de noche ya no sale esa noche. Se mira al elegir la cena y otra vez con la
+    tarde definitiva. Las cadenas de varias nocturnas (Panteón → Trevi → España) no se tocan.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

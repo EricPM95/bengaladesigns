@@ -146,6 +146,8 @@ const section = (title) => {
       if (!monument) continue
       const free = monument.is_free_access ?? monument.type === 'exterior'
       if (!free && !monument.visible_from_outside) continue
+      // Vecinos (`neighbor_of`): pueden ir en días distintos por decisión (Popolo y Pincio), no son un grupo.
+      if ((access.neighbor_of ?? []).includes(monument.name) || (monument.neighbor_of ?? []).includes(access.name)) continue
       const group = access.group && access.group === monument.group ? D.groups[access.group] : null
       if (!group?.inseparable?.some((pair) => pair.includes(access.name) && pair.includes(monument.name))) {
         s.red.push(`${access.name} + ${monument.name}: deberían ser un grupo inseparable (${free ? 'se visita gratis' : 'se ve desde fuera'})`)

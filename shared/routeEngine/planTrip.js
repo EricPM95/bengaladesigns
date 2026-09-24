@@ -111,6 +111,10 @@ const PASS_BY_MIN_GAP_MINUTES = 45
  * Trastevere) sin bajar el desvío general del relleno.
  */
 const THEME_ON_THE_WAY_MINUTES = 10
+/** Una experiencia nocturna a esta distancia (o menos) de una parada de la tarde se ve al atardecer. */
+const NIGHT_TO_AFTERNOON_MINUTES = 10
+/** Lo que puede alargar el paseo de la tarde subir a ver esa nocturna al atardecer (el Janículo y bajar). */
+const NIGHT_TO_SUNSET_MAX_ADDED_WALK_MINUTES = 20
 /**
  * "Alejarse de la cena" (decisión del 2026-09-23): la parada nueva queda más lejos ANDANDO del sitio
  * de la cena que la anterior, con este margen para no descartar por ruido de la matriz.
@@ -494,16 +498,22 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       unplacedPool.push({ unitId: tourUnit.id, name: tourUnit.places[0].name, reason: 'no_room', closedOn: [] })
     } else {
       const covers = tour.covers ?? []
-      const earlyOk = tour.early_visit_ok ?? []
       for (const unit of units) {
         if (unit.isFreeTour || placedDay.has(unit.id) || !unit.places.every((place) => covers.includes(place.name))) continue
-        // Lo que tiene sentido ver aparte ANTES del tour (Trevi a las 08:00, sin gente) se intenta
-        // ese mismo día, acabando antes de que empiece. Si no cabe, el tour ya lo enseña.
-        if (unit.places.every((place) => earlyOk.includes(place.name))) {
-          const early = { ...unit, places: unit.places.map((place) => ({ ...place, latest_end: tour.default_time })) }
-          if (placeOnDay(tourDay, early, { allowFallback: false })) continue
+        // El tour cubre lo que se ve por fuera y las iglesias gratis por las que entra (Paso 4). Un
+        // imprescindible con interior de pago (el Panteón) NO se quita: se visita por dentro aparte
+        // —antes del tour si el punto de encuentro está a 10 min o menos, si no después de comer—.
+        if (unit.requiresTicket) {
+          // Un grupo (Panteón + Navona): el tour cubre lo de fuera y en la ruta queda solo el interior.
+          const paidInterior = (place) => !(place.is_free_access ?? place.type === 'exterior')
+          const outside = unit.places.filter((place) => !paidInterior(place))
+          if (outside.length > 0) {
+            unit.places = unit.places.filter(paidInterior)
+            coveredByFreeTour.push({ unitId: unit.id, names: outside.map((place) => place.name), dayNumber: tourDay.dayNumber })
+          }
+          continue
         }
-        // Visto con el tour: cuenta como visitado y no se repite suelto.
+        // Visto con el tour: cuenta como visitado y no se repite suelto, tampoco antes del tour.
         placedDay.set(unit.id, tourDay.dayNumber)
         coveredByFreeTour.push({ unitId: unit.id, names: unit.places.map((place) => place.name), dayNumber: tourDay.dayNumber })
       }
@@ -979,6 +989,36 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   fillRounds()
   // Con la tarde ya llena, dónde se cena; y otra vuelta de relleno, ya en esa dirección.
   chooseDinners()
+  // ── Paso 6c: la nocturna que pilla al lado de la tarde, al atardecer (Paso 5, 2026-09-24) ────
+  // Si la experiencia nocturna de una noche está a 10 min o menos de una parada de esa tarde, se ve
+  // en la tarde, al atardecer, y no bajando a cenar para volver a subir a las 21:30 (la Fontana
+  // dell'Acqua Paola → el Mirador del Janículo → cena en Trastevere). Visto de día, su versión de
+  // noche ya no sale esa noche. Las cadenas de varias nocturnas (Panteón → Trevi → España) no se tocan.
+  function nightToSunset() {
+    const nightsNow = planNightWalks(destData, nightWalkPlan({
+      days: skeleton.map((day) => {
+        const city = cityDays.find((d) => d.dayNumber === day.dayNumber)
+        return city ? { ...day, dinnerZone: city.dinnerZone, dinnerPlaceZone: city.dinnerPlaceZone, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
+      }),
+    }))
+    for (const day of cityDays) {
+      const chain = nightsNow.get(day.dayNumber) ?? []
+      if (chain.length !== 1) continue
+      const entry = chain[0]
+      const unit = units.find((candidate) => candidate.places.some((place) => (entry.conflicts_with ?? []).includes(place.name)))
+      if (!unit || placedDay.get(unit.id) != null || !eligibleIgnoringCap(day, unit)) continue
+      const lunchEnd = day.open.meals().find((meal) => meal.type === 'lunch')?.end ?? 0
+      const nearAfternoon = day.open.visits().some((visit) => visit.start >= lunchEnd && (travel.leg(visit.place.coordinates, entry.coordinates)?.minutes ?? Infinity) <= NIGHT_TO_AFTERNOON_MINUTES)
+      if (!nearAfternoon) continue
+      const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: NIGHT_TO_SUNSET_MAX_ADDED_WALK_MINUTES })
+      if (!attempt) continue
+      day.open.add(attempt)
+      placedDay.set(unit.id, day.dayNumber)
+      recordEntry(unit)
+    }
+  }
+
+  nightToSunset()
   // El mirador del atardecer por el que se eligió el barrio va antes que el resto del relleno: si no,
   // otras paradas de camino se quedan su hueco y el día cena en Trastevere sin haber subido.
   for (const day of cityDays) {
@@ -1029,6 +1069,16 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   // La cuota, otra vez con la tarde ya definitiva: quitar relleno o mover vecinos puede haber dejado
   // un día sin su tema, y el mínimo de experiencias no se baja.
+  refreshMinimums()
+  // Lo que entra en este último repaso puede dejar un vecino en otro día (el Parque de Villa Borghese
+  // el día 5 con el Pincio el día 1): se aplican otra vez las relaciones y, si algo se cae, el mínimo.
+  enforceRelations()
+  refreshMinimums()
+
+  // Otra vez con la tarde ya definitiva: la parada de al lado (la Fontana dell'Acqua Paola) puede haber
+  // entrado después de elegir la cena.
+  nightToSunset()
+  enforceRelations()
   refreshMinimums()
 
   // ── Paso 7: de paso hacia la cena ─────────────────────────────────────────────────────────

@@ -54,6 +54,8 @@ for (const access of D.places.filter((p) => p.approach_to)) {
     const monument = D.places.find((p) => p.name === name)
     const free = monument.is_free_access ?? monument.type === 'exterior'
     if (!free && !monument.visible_from_outside) continue
+    // Vecinos (`neighbor_of`): pueden ir en días distintos por decisión (Popolo y Pincio), no son un grupo.
+    if ((access.neighbor_of ?? []).includes(monument.name) || (monument.neighbor_of ?? []).includes(access.name)) continue
     const group = access.group && access.group === monument.group ? D.groups[access.group] : null
     const inseparable = group?.inseparable?.some((pair) => pair.includes(access.name) && pair.includes(monument.name))
     if (!inseparable) fail(`datos: ${access.name} + ${monument.name} deberían ser un grupo inseparable (${free ? 'visita gratis' : 'se ve desde fuera'})`)
@@ -144,9 +146,13 @@ for (const pace of ['nonstop', 'tranquilo']) {
               if (tourDay) {
                 const tourStart = tourDay.schedule.visits.find((v) => v.place.isFreeTour).start
                 for (const visit of tourDay.schedule.visits) {
+                  // Antes del tour, solo lo que está a 10 min o menos del punto de encuentro.
+                  if (visit.end <= tourStart && !visit.place.isFreeTour && travel.leg(visit.place.coordinates, TOUR.coordinates).minutes > 10) fail(`${tag}: ${visit.place.name} antes del Free Tour, a más de 10 min del punto de encuentro`)
                   if (!TOUR.covers.includes(visit.place.name)) continue
-                  const early = TOUR.early_visit_ok.includes(visit.place.name) && visit.end <= tourStart
-                  if (!early) fail(`${tag}: ${visit.place.name} suelto el día del Free Tour, que ya pasa por allí`)
+                  // Lo que el tour enseña no se repite suelto, salvo un interior de pago (el Panteón por dentro).
+                  const source = D.places.find((p) => p.name === visit.place.name)
+                  const paidInterior = source && !(source.is_free_access ?? source.type === 'exterior')
+                  if (!paidInterior) fail(`${tag}: ${visit.place.name} suelto el día del Free Tour, que ya pasa por allí`)
                 }
                 for (const item of trip.coveredByFreeTour) for (const name of item.names) seen.set(name, item.dayNumber)
               }
