@@ -176,7 +176,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
                 if (!source?.pass_by || source.level !== 1) fail(`${tag} d${day.dayNumber}: de paso ${visit.place.name} sin pass_by o sin nivel 1`)
                 if (!(visit.place.passBy.seenOnDay < day.dayNumber)) fail(`${tag} d${day.dayNumber}: de paso ${visit.place.name} sin haberlo visto antes`)
                 const unit = day.units.find((u) => u.id === visit.unitId)
-                if (!/^Ya visitaste .+ el Día \d+\. De camino a cenar (?:.+ )?pasas por delante: dedícale \d+ minutos y hazte fotos nuevas con la luz de la tarde\.$/.test(unit?.revisitReason ?? '')) fail(`${tag} d${day.dayNumber}: mensaje de paso mal formado: ${unit?.revisitReason}`)
+                if (!/^Ya visitaste .+ el Día \d+, pero creemos que verlo a esta hora te va a gustar: dedícale \d+ minutos y hazte fotos nuevas\.$/.test(unit?.revisitReason ?? '')) fail(`${tag} d${day.dayNumber}: mensaje de paso mal formado: ${unit?.revisitReason}`)
               })
             }
 

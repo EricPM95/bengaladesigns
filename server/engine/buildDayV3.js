@@ -11,13 +11,14 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../shared/routeEngine/travelTimes.js'
-import { toHHMM } from '../../shared/routeEngine/time.js'
+import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
 import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
@@ -56,6 +57,37 @@ function zoneFields(destData, zoneKey, mealType) {
 }
 
 /**
+ * El "por qué" de una parada (Paso 6, ver whyTexts.js): el motivo más fuerte por el que la puso el
+ * motor. pool > imprescindible > experiencia > mirador / nocturna > de camino.
+ */
+function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats }) {
+  const place = destData.places?.find((candidate) => candidate.name === visit.place.name) ?? visit.place
+  if (visit.place.isFreeTour) {
+    const essentials = (tour?.covers ?? [])
+      .map((name) => destData.places?.find((candidate) => candidate.name === name))
+      .filter((candidate) => candidate?.level === 1)
+      .map(placeWithArticle)
+    return whyTexts.freeTour({ area: tour?.area_del ?? null, places: joinSpanish(essentials), repeats: tourRepeats })
+  }
+  // Revisitas y pasos por fuera ya traen su texto (revisitReason).
+  if (visit.place.passBy || unit?.isRevisit) return null
+  if (unit?.poolIndex != null) return whyTexts.pool()
+  if (place.level === 1) {
+    const paidInterior = !(place.is_free_access ?? place.type === 'exterior')
+    if (tourToday && paidInterior && (tour?.covers ?? []).includes(place.name)) return whyTexts.insideAfterTour(placeWithArticle(place), city)
+    return whyTexts.essential(city)
+  }
+  if (unit?.experienceTheme) return whyTexts.experience(unit.experienceTheme)
+  const hasNightVersion = (destData.night_experiences ?? []).some((entry) => (entry.conflicts_with ?? []).includes(place.name))
+  // "Atardecer" solo cerca de la puesta de sol: con época, en la hora antes (sunset_by_season); sin
+  // época, a partir de las 17:30.
+  const sunsetText = destData.destination_config?.sunset_by_season?.[tripDay.hours?.season]
+  const nearSunset = typeof sunsetText === 'string' ? Math.abs(visit.end - toMinutes(sunsetText)) <= 60 : visit.start >= 17 * 60 + 30
+  if (nearSunset && (unit?.id === tripDay.sunsetUnitId || ((place.tags ?? []).includes('mirador') && hasNightVersion))) return whyTexts.sunset(city)
+  return visit.start >= lunchEnd ? whyTexts.onTheWay() : whyTexts.onTheWayMorning()
+}
+
+/**
  * Un día de ciudad del motor v3, en el formato de la app.
  *
  * @param {object} args
@@ -65,11 +97,15 @@ function zoneFields(destData, zoneKey, mealType) {
  * @param {object[]} [args.nightChain]
  * @param {Set<string>} [args.dayVisitedNames]
  */
-export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisitedNames = new Set() }) {
+export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisitedNames = new Set(), tourRepeats = false }) {
   const { schedule } = tripDay
   const unitById = new Map(tripDay.units.map((unit) => [unit.id, unit]))
+  const lunchEnd = schedule.meals.find((meal) => meal.type === 'lunch')?.end ?? 0
+  const tour = destData.default_free_tour ?? null
+  const tourToday = schedule.visits.some((visit) => visit.place.isFreeTour)
   const stops = schedule.visits.map((visit) => {
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
+    stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // Posición en el orden curado del día (fijado a mano: Popolo → Pincio → España): el programador

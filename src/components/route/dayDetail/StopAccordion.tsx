@@ -49,6 +49,7 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
             </p>
             <p className="text-body font-semibold text-white">{displayStopName(stop.name)}</p>
             <span className="inline-block rounded-full bg-[#2d3561] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">Experiencia nocturna</span>
+            {stop.why && <p className="text-caption italic text-[#C5CEF5]">{stop.why}</p>}
           </div>
 
           <img src={stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover opacity-90" />
@@ -115,9 +116,12 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
           {/* Viaje sin fechas: los días que a esta hora está cerrado (misas, fines de semana). */}
           {stop.hoursWarning && <p className="text-caption text-accent-red">{stop.hoursWarning}</p>}
 
-          {/* Entró por una experiencia que eligió el viajero: se dice con su nombre. */}
-          {experienceTitle && (
-            <p className="text-caption font-medium text-accent">Por tu experiencia · {experienceTitle}</p>
+          {/* Por qué está en la ruta (Paso 6). Si entró por una experiencia, ya lo dice con su nombre;
+              sin texto del motor, la etiqueta de la experiencia de siempre. */}
+          {!stop.isRevisit && stop.why ? (
+            <p className={`text-caption ${stop.experience ? 'font-medium text-accent' : 'italic text-text-soft'}`}>{stop.why}</p>
+          ) : (
+            experienceTitle && <p className="text-caption font-medium text-accent">Por tu experiencia · {experienceTitle}</p>
           )}
 
           {stop.tags && stop.tags.length > 0 && (

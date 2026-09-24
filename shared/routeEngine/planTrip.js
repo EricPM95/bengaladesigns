@@ -37,7 +37,8 @@
 
 import { buildUnits } from './units.js'
 import { TAG_INTEREST_MAP, categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
-import { MAX_REVISITS_PER_DAY, RELAXED_DAY_TARGET_STOPS, canRevisit, revisitReasonFor } from './revisits.js'
+import { MAX_REVISITS_PER_DAY, RELAXED_DAY_TARGET_STOPS, canRevisit } from './revisits.js'
+import { placeWithArticle, whyTexts } from './whyTexts.js'
 import { tripDays } from './tripSkeleton.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
@@ -161,8 +162,7 @@ export function placesForScheduler(unit, destData, freeTourTime) {
  * mira desde la Via dei Fori Imperiali) y con el mensaje que explica por qué vuelve a salir.
  */
 function passByUnit(place, passBy, minutes, seenOnDay, dinnerDisplay) {
-  const toDinner = dinnerDisplay ? `De camino a cenar ${dinnerDisplay}` : 'De camino a cenar'
-  const message = `Ya visitaste ${passBy.label ?? place.name} el Día ${seenOnDay}. ${toDinner} pasas por delante: dedícale ${minutes} minutos y hazte fotos nuevas con la luz de la tarde.`
+  const message = whyTexts.revisit(passBy.label ?? place.name, seenOnDay, minutes)
   return {
     id: `${place.name} (de paso)`,
     places: [
@@ -888,7 +888,14 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         const revisits = day.allowsRepetition && day.revisits < MAX_REVISITS_PER_DAY
           ? units
               .filter((unit) => placedDay.get(unit.id) != null && placedDay.get(unit.id) < day.dayNumber && !revisited.has(unit.id) && canRevisit(unit))
-              .map((unit) => ({ ...unit, id: `${unit.id} (revisita)`, originalId: unit.id, isRevisit: true, revisitReason: revisitReasonFor(unit), priority: PRIORITY.FILLER }))
+              .map((unit) => ({
+                ...unit,
+                id: `${unit.id} (revisita)`,
+                originalId: unit.id,
+                isRevisit: true,
+                revisitReason: whyTexts.revisit(placeWithArticle(destData.places?.find((place) => place.name === unit.places[0]?.name) ?? unit.places[0]), placedDay.get(unit.id), unit.minutes ?? unit.places[0]?.duration_minutes ?? 30),
+                priority: PRIORITY.FILLER,
+              }))
           : []
   
         let best = null

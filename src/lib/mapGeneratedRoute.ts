@@ -79,6 +79,8 @@ interface GeneratedStop {
   reservation?: string | null
   /** Experiencia por la que entró la parada — Stop.experience. */
   experience?: string | null
+  /** Por qué está en la ruta — Stop.why. */
+  why?: string | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
   hours_warning?: string | null
 }
@@ -347,6 +349,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
+    ...(generated.why ? { why: generated.why } : {}),
   }
 }
 

@@ -13,6 +13,7 @@
  */
 
 import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
+import { whyTexts } from './whyTexts.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
 function metersBetween(a, b) {
@@ -149,6 +150,7 @@ export function nightStopsFor(chain, dayVisitedNames) {
       tags: [],
       schedule: null,
       is_night_experience: true,
+      why: whyTexts.night(),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',
       category_label: 'De noche',

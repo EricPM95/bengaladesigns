@@ -230,6 +230,8 @@ export interface MockStopDetail {
   hoursWarning?: string | null
   /** Ver Stop.experience en types.ts. */
   experience?: ExperienceCategoryId | null
+  /** Ver Stop.why en types.ts. */
+  why?: string | null
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
   revisitReason?: string
@@ -443,6 +445,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     reservation: stop.reservation ?? null,
     hoursWarning: stop.hoursWarning ?? null,
     experience: stop.experience ?? null,
+    why: stop.why ?? null,
     isRevisit: stop.isRevisit,
     revisitReason: stop.revisitReason,
   }
@@ -516,6 +519,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       reservation: detail.reservation ?? null,
       hoursWarning: detail.hoursWarning ?? null,
       experience: detail.experience ?? null,
+      why: detail.why ?? null,
       tags: detail.tags,
       isRevisit: detail.isRevisit,
       revisitReason: detail.revisitReason,

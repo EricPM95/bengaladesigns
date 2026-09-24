@@ -179,12 +179,18 @@ export async function buildDayBlockV3(
 function buildCityDayV3(destData, trip, tripDay, options) {
   const nights = planNightWalks(destData, nightWalkPlan(trip))
   const dayVisitedNames = new Set(trip.days.flatMap((day) => (day.schedule?.visits ?? []).map((visit) => visit.place.name)))
+  // ¿Vuelve el viaje a pasar por lo que enseña el Free Tour (de noche o de paso)? Cambia su texto.
+  const covers = new Set(destData.default_free_tour?.covers ?? [])
+  const tourRepeats =
+    [...nights.values()].some((chain) => chain.some((entry) => (entry.conflicts_with ?? []).some((name) => covers.has(name)))) ||
+    trip.days.some((day) => (day.schedule?.visits ?? []).some((visit) => visit.place.passBy && covers.has(visit.place.name)))
   const day = formatDayV3({
     destData,
     tripDay,
     city: destData.destination ?? options.city ?? '',
     nightChain: nights.get(tripDay.dayNumber) ?? [],
     dayVisitedNames,
+    tourRepeats,
   })
   // Lo elegido a mano y los imprescindibles que no han cabido en ningún día, con su motivo. Nunca en
   // silencio: en un viaje de un día es el "No te dio tiempo".

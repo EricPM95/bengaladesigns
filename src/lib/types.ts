@@ -273,6 +273,9 @@ export interface Stop {
   hoursWarning?: string | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
   experience?: ExperienceCategoryId | null
+  /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los
+      imprescindibles de Roma.", "Elegido según tus gustos: Arte y Museos."… */
+  why?: string | null
 }
 
 /**

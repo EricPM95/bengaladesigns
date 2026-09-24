@@ -477,6 +477,17 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     pasear el barrio dos veces). Hoy el motor v3 no usa `evening_blocks` ni `zone_walks` (solo el motor
     viejo), así que no puede pasar; si se vuelven a usar, esta regla va con ellos.
 
+**Paso 6 — El "por qué" de cada parada**
+
+89. **Cada parada lleva una línea fija (`why`, `whyTexts.js`) según el motivo por el que la puso el
+    motor**, sin IA: pool > imprescindible > experiencia > mirador / nocturna > de camino. Textos sin
+    concordar en género con el lugar; {lugar} con su artículo (la etiqueta de su `pass_by`). "Atardecer"
+    solo cerca de la puesta de sol (con época, `sunset_by_season`; sin época, desde las 17:30); "de
+    camino a la cena" solo por la tarde (por la mañana, "Te pilla de camino"). El Free Tour dice
+    {del zona} (`default_free_tour.area_del`) y sus imprescindibles, y cambia la última frase si el
+    viaje vuelve a pasar por ellos (de noche o de paso). Revisitas y pasos por fuera llevan su propio
+    texto ("Ya visitaste {lugar} el Día {n}, pero creemos que verlo a esta hora te va a gustar…").
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.
