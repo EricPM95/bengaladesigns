@@ -1569,7 +1569,9 @@
         "fori imperiali",
         "imperial forum"
       ],
-      "contained_in": "Foro Romano y Palatino"
+      "neighbor_of": [
+        "Foro Romano y Palatino"
+      ]
     },
     {
       "name": "Campo de' Fiori",
@@ -2034,7 +2036,10 @@
         "elefante",
         "obelisk"
       ],
-      "contained_in": "Iglesia de Santa Maria sopra Minerva"
+      "neighbor_of": [
+        "Iglesia de Santa Maria sopra Minerva",
+        "Panteón"
+      ]
     },
     {
       "name": "Fuente de las Tortugas",
@@ -2592,7 +2597,9 @@
         "marcellus",
         "marcello"
       ],
-      "contained_in": "Barrio Judío"
+      "neighbor_of": [
+        "Barrio Judío"
+      ]
     },
     {
       "name": "Ojo de la Cerradura del Aventino",

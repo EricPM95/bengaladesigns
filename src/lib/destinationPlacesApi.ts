@@ -35,6 +35,8 @@ export interface DestinationPlace {
    * leer un campo a secas. Siempre false en un restaurante — ahí se paga la cuenta, no la entrada.
    */
   requires_ticket: boolean
+  /** Experiencias a las que pertenece ("arte_museos"…), con la misma tabla que el motor. Vacío en restaurantes. */
+  themes?: string[]
   /** Días limitados y reserva obligatoria ("Solo vie-dom, visita guiada con reserva"): no entra sola
       en la ruta sin fechas, así que quien la añade a mano tiene que verlo. Null en el resto. */
   booking_note?: string | null

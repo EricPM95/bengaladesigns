@@ -76,6 +76,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // no lo invierte y la métrica de zigzag tampoco lo cuenta como paseo de más.
     const curatedIndex = unitById.get(visit.unitId)?.curatedIndex
     if (curatedIndex != null) stop.curated_index = curatedIndex
+    // Entró por una experiencia elegida (Paso 3): la app le pone una etiqueta con su nombre.
+    const experienceTheme = unitById.get(visit.unitId)?.experienceTheme
+    if (experienceTheme) stop.experience = experienceTheme
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
     if (visit.place.passBy) stop.is_pass_by = true
     // Paso por fuera EN LUGAR de la visita (no ya visto otro día): el Foro que no llega a su cierre.

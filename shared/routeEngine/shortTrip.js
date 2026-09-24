@@ -23,6 +23,7 @@ import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { seasonKey } from './openingHours.js'
+import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
 import { weekdayForDay } from './tripSkeleton.js'
 
@@ -79,11 +80,17 @@ const LOSS_WEIGHT = { joya: 100, core: 10, pool: 5, extra: 1 }
  * cambios por experiencia aplicados. Si dos experiencias sustituyen lo mismo, gana la que el
  * viajero eligió primero; las que añaden se aplican todas.
  */
-function blockStops(block, pace, experiencesPositive) {
-  const stops = [
-    ...block.core.map((name) => ({ name, role: 'core' })),
-    ...(pace === 'tranquilo' ? [] : (block.extras_completo ?? []).map((name) => ({ name, role: 'extra' }))),
-  ]
+function blockStops(block, pace, experiencesPositive, destData) {
+  // Un extra de pago no es relleno (Paso 3): solo va si una experiencia elegida lo cubre, y entonces
+  // entra por ella (el Castillo de Sant'Angelo del bloque del Vaticano, solo con Arte).
+  const placeOf = (name) => destData.places?.find((place) => place.name === name)
+  const paid = (place) => Boolean(place) && !(place.is_free_access ?? place.type === 'exterior')
+  const themeOf = (place) => (experiencesPositive ?? []).find((theme) => theme in TAG_INTEREST_MAP && theme !== 'free_tour' && (place?.tags ?? []).some((tag) => TAG_INTEREST_MAP[theme].includes(tag))) ?? null
+  const extras = (pace === 'tranquilo' ? [] : (block.extras_completo ?? []))
+    .map((name) => ({ name, place: placeOf(name) }))
+    .filter(({ place }) => !paid(place) || themeOf(place))
+    .map(({ name, place }) => (paid(place) ? { name, role: 'extra', swappedBy: themeOf(place) } : { name, role: 'extra' }))
+  const stops = [...block.core.map((name) => ({ name, role: 'core' })), ...extras]
   const replaced = new Set()
   for (const experience of experiencesPositive) {
     const swap = block.swaps?.[experience]
@@ -155,7 +162,7 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
 
   // ── Qué se ve en cada bloque.
   const stopsByBlock = new Map(
-    blockIds.map((id) => [id, id === freeTourBlock ? [{ name: destData.default_free_tour.name, role: 'core', freeTour: true }] : blockStops(blocks[id], pace, experiencesPositive)]),
+    blockIds.map((id) => [id, id === freeTourBlock ? [{ name: destData.default_free_tour.name, role: 'core', freeTour: true }] : blockStops(blocks[id], pace, experiencesPositive, destData)]),
   )
 
   // ── Pool: lo que pida y no esté sustituye a la parada de menor prioridad (primero extras, luego
@@ -215,7 +222,18 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
         last.dropRank = Math.min(last.dropRank, rank)
         continue
       }
-      units.push({ id: group ? `${group}:${blockId}` : stop.name, group, places: [place], dropRank: rank, slot, blockId, role: stop.role, priority: PRIORITY.ESSENTIAL })
+      units.push({
+        id: group ? `${group}:${blockId}` : stop.name,
+        group,
+        places: [place],
+        dropRank: rank,
+        slot,
+        blockId,
+        role: stop.role,
+        priority: PRIORITY.ESSENTIAL,
+        // Entró por una experiencia elegida (cambio del bloque o extra de pago): la app lo etiqueta.
+        ...(stop.swappedBy ? { experienceTheme: stop.swappedBy } : {}),
+      })
     }
     return units.map((unit) => {
       const places = placesForScheduler({ id: unit.group ?? unit.id, places: unit.places }, destData, freeTourTime)

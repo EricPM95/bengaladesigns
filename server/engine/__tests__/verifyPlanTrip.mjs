@@ -29,6 +29,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { planTrip } from '../../../shared/routeEngine/planTrip.js'
+import { PRIORITY } from '../../../shared/routeEngine/scheduleDay.js'
 import { TAG_INTEREST_MAP } from '../../../shared/routeEngine/experienceTags.js'
 import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
@@ -114,22 +115,25 @@ for (const pace of ['nonstop', 'tranquilo']) {
                   }
                 }
               }
-              // Cuota: el día lleva el tema, o el reparto dice por qué no.
-              for (const theme of themes) {
-                const tags = new Set(TAG_INTEREST_MAP[theme])
-                if (day.units.some((u) => u.tags.some((t) => tags.has(t)))) continue
-                const miss = trip.quotaMisses.find((m) => m.dayNumber === day.dayNumber && m.theme === theme)
-                if (!miss) fail(`${tag} d${day.dayNumber}: sin nada de ${theme} y sin motivo`)
+              // Un relleno nunca es de pago, ni arrastra un contenedor de pago (Paso 3).
+              for (const unit of day.units) {
+                if (unit.priority !== PRIORITY.FILLER || unit.isRevisit) continue
+                if (unit.requiresTicket && !unit.draggedBy) fail(`${tag} d${day.dayNumber}: ${unit.id} es de pago y entró de relleno`)
+                if (unit.requiresTicket && unit.draggedBy) {
+                  const by = day.units.find((u) => u.id === unit.draggedBy)
+                  if (!by || by.priority === PRIORITY.FILLER) fail(`${tag} d${day.dayNumber}: un relleno arrastra el contenedor de pago ${unit.id}`)
+                }
               }
             }
 
-            for (const miss of trip.quotaMisses.filter((m) => m.reason === 'none_near')) {
-              const day = trip.days.find((d) => d.dayNumber === miss.dayNumber)
-              const tags = new Set(TAG_INTEREST_MAP[miss.theme])
-              const coords = day.schedule.visits.map((v) => v.place.coordinates)
-              const coveredByTour = new Set(trip.coveredByFreeTour.flatMap((item) => item.names))
-              const near = D.places.find((p) => (p.tags ?? []).some((t) => tags.has(t)) && !seen.has(p.name) && !coveredByTour.has(p.name) && coords.some((c) => travel.leg(c, p.coordinates).minutes <= 20))
-              if (near) fail(`${tag} d${miss.dayNumber}: dice que no hay nada de ${miss.theme} cerca y ${near.name} está a menos de 20 min`)
+            // Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles
+            // (o el reparto dice por qué no llega al mínimo).
+            for (const theme of themes) {
+              const count = trip.experienceCounts[theme] ?? 0
+              if (count > trip.experienceRange.max) fail(`${tag}: ${theme} añade ${count}, más que el máximo ${trip.experienceRange.max}`)
+              if (count < trip.experienceRange.min && !trip.quotaMisses.some((m) => m.theme === theme)) fail(`${tag}: ${theme} añade ${count} (mínimo ${trip.experienceRange.min}) y no dice por qué`)
+              const labelled = city.flatMap((day) => day.units.filter((u) => u.experienceTheme === theme))
+              if (labelled.some((u) => u.priority <= PRIORITY.ESSENTIAL)) fail(`${tag}: un imprescindible cuenta como ${theme}`)
             }
 
             // Free Tour y lo que recorre.

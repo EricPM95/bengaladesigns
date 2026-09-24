@@ -514,6 +514,19 @@ export function PlaceExplorerScreen({
   // Más pequeños que los números de las paradas del día, para que la ruta siga destacando.
   const poiPlaces = useMemo(() => places.filter((place) => hasRealCoordinates(place.coordinates)), [places])
 
+  // "También te puede interesar" (Paso 3): lo de las experiencias que eligió el viajero que no está en
+  // la ruta —lo que se quedó fuera por el máximo de la experiencia o porque no cabía—. Solo al añadir
+  // una parada y sin búsqueda ni filtros, arriba de la lista.
+  const chosenThemes = useMemo(() => new Set<string>(route?.answers?.experiencesPositive ?? []), [route])
+  const alsoInteresting = useMemo(() => {
+    if (!onPick || chosenThemes.size === 0) return []
+    return places
+      .filter((place) => place.kind === 'place' && (place.themes ?? []).some((theme) => chosenThemes.has(theme)) && !isNameAlreadyInRoute(place.name, stopEntries))
+      .sort((a, b) => (a.level ?? 9) - (b.level ?? 9) || a.name.localeCompare(b.name, 'es'))
+      .slice(0, 8)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [places, chosenThemes, onPick, stopEntries])
+
   /** A dónde se va en cada excursión — Pompeya, Tívoli… Fuera de la ciudad, así que el mapa se abre
       mucho cuando se encienden: es justo la información ("esto es un día entero de viaje"). */
   const excursionMarkers: StopsMapMarker[] = useMemo(
@@ -809,6 +822,28 @@ export function PlaceExplorerScreen({
                     onToggle={() => setSelectedExcursion((prev) => (prev?.id === excursion.id ? null : excursion))}
                   />
                 ))}
+              </div>
+            )}
+
+            {onPick && !trimmedQuery && activeFilters.length === 0 && alsoInteresting.length > 0 && (
+              <div className="mb-3">
+                <p className="mb-1.5 text-caption font-semibold uppercase tracking-wide text-text-soft">También te puede interesar</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {alsoInteresting.map((place) => {
+                    const chip = findPlaceCategoryChip(place.filter_category)
+                    return (
+                      <button
+                        key={place.name}
+                        type="button"
+                        onClick={() => setSelected(place)}
+                        className="rounded-full border border-border px-2.5 py-1 text-caption font-medium text-text transition-colors hover:bg-bg-hover"
+                      >
+                        {chip?.icon ? `${chip.icon} ` : ''}
+                        {place.name}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
             )}
 

@@ -1,6 +1,7 @@
 import express from 'express'
 import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
+import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -3810,6 +3811,10 @@ app.post('/api/destination-places', (req, res) => {
       // del JSON porque solo 4 de los 67 lugares de Roma lo traen escrito: filtrar por el campo a
       // secas no devolvería nada.
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
+      // Experiencias a las que pertenece (misma tabla que el motor): "También te puede interesar".
+      themes: Object.entries(TAG_INTEREST_MAP)
+        .filter(([theme, tags]) => theme !== 'free_tour' && (place.tags ?? []).some((tag) => tags.includes(tag)))
+        .map(([theme]) => theme),
       // Días limitados y reserva obligatoria (la Domus Aurea): la ficha y la parada lo dicen.
       booking_note: place.booking_note ?? null,
       hours_card: place.card_text ?? null,

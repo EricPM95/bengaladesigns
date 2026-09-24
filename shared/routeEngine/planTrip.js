@@ -291,6 +291,50 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       .filter(Boolean)
       .map((name) => unitIdOfPlace.get(name))
       .filter((id) => id && id !== unit.id)
+
+  // ── Experiencias: mínimo-máximo por viaje (Paso 3, decisión A del 2026-09-24) ─────────────────
+  // Cuenta SOLO lo que entra por la experiencia: lo de pago del tema (o lo que está dentro de algo de
+  // pago) y lo que se añade para llegar al mínimo. Los imprescindibles no cuentan aunque lleven la
+  // etiqueta del tema, y lo gratis del tema que cae de camino es relleno normal que tampoco cuenta.
+  const unitById = new Map(units.map((unit) => [unit.id, unit]))
+  const EXPERIENCE_RANGE = cityDays.length <= 1 ? { min: 1, max: 1 } : cityDays.length <= 3 ? { min: 2, max: 3 } : { min: 3, max: 4 }
+  const experienceEntries = new Set() // unit.id de lo que entró por una experiencia
+  function themesOf(unit) {
+    return selectedThemes.filter((theme) => unit.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag)))
+  }
+  /** Entradas de experiencia de un tema en el viaje (o en un día). */
+  function experienceCount(theme, day = null) {
+    let count = 0
+    for (const id of experienceEntries) {
+      const placed = placedDay.get(id)
+      if (placed == null || (day && placed !== day.dayNumber)) continue
+      if (themesOf(unitById.get(id)).includes(theme)) count++
+    }
+    return count
+  }
+  /** Contenedores de pago de una unidad (`contained_in` en algo con entrada). Solo para decidir
+      rellenos: el campo "de pago" del lugar no cambia. */
+  function paidContainerIdsOf(unit) {
+    return unit.places
+      .map((place) => place.contained_in)
+      .filter(Boolean)
+      .map((name) => unitIdOfPlace.get(name))
+      .filter((id) => id && id !== unit.id && unitById.get(id)?.requiresTicket)
+  }
+  /** Lo del tema que solo puede entrar por la experiencia: lo de pago, o lo que está dentro de algo de pago. */
+  const entersByExperience = (unit) => unit.priority === PRIORITY.THEME && (unit.requiresTicket || paidContainerIdsOf(unit).length > 0)
+  /** ¿Cabe otra entrada de su experiencia? Sin pasar del máximo y repartidas entre días, no amontonadas. */
+  function experienceRoom(day, unit) {
+    return themesOf(unit).every(
+      (theme) => experienceCount(theme) < EXPERIENCE_RANGE.max && experienceCount(theme, day) <= Math.min(...cityDays.map((other) => experienceCount(theme, other))),
+    )
+  }
+  /** Tras colocar una unidad: si entró por su experiencia, cuenta; si volvió a entrar como relleno
+      gratis (se quitó al podar la tarde y otro día la recogió de camino), ya no cuenta. */
+  function recordEntry(unit) {
+    if (entersByExperience(unit)) experienceEntries.add(unit.id)
+    else experienceEntries.delete(unit.id)
+  }
   /**
    * Días en los que puede ir por sus relaciones: si su contenedor o su vecino principal está en el
    * viaje, SOLO el día de él (lo de dentro no vuelve a salir otro día; el vecino que no cabe ese día
@@ -371,6 +415,17 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   /** Cierres y visita larga: lo que ni yendo de camino se puede saltar. */
   function eligibleIgnoringCap(day, unit) {
+    // Un relleno nunca es de pago (Paso 3, 2026-09-24): lo que pide entrada solo entra si es nivel 1,
+    // del pool o de una experiencia elegida. Sin Arte, fuera el Ara Pacis o los Capitolinos. Lo que
+    // está DENTRO de algo de pago tampoco es relleno salvo que su contenedor ya esté en la ruta (y
+    // entonces va justo detrás). Un contenedor arrastrado por lo del pool o de una experiencia
+    // (`draggedBy`) sí entra aunque sea de pago.
+    if (!unit.draggedBy && !unit.isRevisit) {
+      if (unit.priority === PRIORITY.FILLER) {
+        if (unit.requiresTicket) return false
+        if (paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null)) return false
+      } else if (entersByExperience(unit) && !experienceRoom(day, unit)) return false
+    }
     // Días limitados y reserva obligatoria (`booking_required`, la Domus Aurea): no entra sola en la
     // ruta sin fechas — podría caer un martes, que está cerrada. Desde el pool sí (el viajero sabe lo
     // que pide); con fechas, como cualquier otro, solo los días que abre.
@@ -407,6 +462,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (day.open.add(withIndex) || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
       placedDay.set(unit.id, day.dayNumber)
       droppedByRelation.delete(unit.id)
+      recordEntry(unit)
       return true
     }
     return false
@@ -567,14 +623,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   // ── Regla de experiencias: solo se desvía lo que hace falta ────────────────────────────────
   const unitHasTheme = (unit, theme) => unit.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag))
-  /** ¿Hace falta este lugar para la cuota del día o para el mínimo del viaje (uno por día)? */
+  /** ¿Hace falta este lugar para el mínimo de su experiencia en el viaje? */
   function neededForTheme(day, unit) {
-    return selectedThemes.some((theme) => {
-      if (!unitHasTheme(unit, theme)) return false
-      const dayHasIt = dayUnits(day).some((u) => unitHasTheme(u, theme))
-      const tripCount = cityDays.reduce((sum, d) => sum + dayUnits(d).filter((u) => unitHasTheme(u, theme)).length, 0)
-      return !dayHasIt && tripCount < cityDays.length
-    })
+    return themesOf(unit).some((theme) => experienceCount(theme) < EXPERIENCE_RANGE.min)
   }
   /** ¿Va de camino? Sin alejarse de la cena (por la tarde) y sin añadir más de 10 min andando. */
   function onTheWay(day, unit, attempt) {
@@ -715,39 +766,51 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
   }
 
-  // ── Paso 5: cuota de experiencias — al menos una del tema por día, si hay algo cerca ─────
-  /** Intenta dejar el día con algo del tema. null si lo lleva; si no, el motivo. */
-  function fulfilQuota(day, theme) {
-    const tags = new Set(TAG_INTEREST_MAP[theme])
-    const ofTheme = (unit) => unit.tags.some((tag) => tags.has(tag))
-    if (dayUnits(day).some(ofTheme)) return null
-    const candidates = units
-      .filter((unit) => (!placedDay.has(unit.id) || droppedByRelation.has(unit.id)) && ofTheme(unit))
-      .map((unit) => ({ unit, walk: walkFromDay(day, unit) }))
-      // Nunca cruzar la ciudad para cumplir la cuota: si no hay nada cerca, el día se queda sin.
-      .filter((item) => item.walk <= NEAR_WALK_MINUTES)
-      .sort((a, b) => a.unit.level - b.unit.level || a.walk - b.walk || a.unit.id.localeCompare(b.unit.id, 'es'))
-    // La cuota SÍ puede usar nivel 3 en tranquilo: es lo que el viajero pidió, no relleno genérico
-    // (casi todo "Naturaleza y vistas" de Roma son fuentes de nivel 3). Si el mínimo del viaje ya lo
-    // cubren otros días, no se desvía para cumplirla: solo entra lo que va de camino.
-    const placedFor = candidates.find((item) => {
-      if (neededForTheme(day, item.unit) || item.unit.priority !== PRIORITY.THEME) return placeOnDay(day, item.unit)
-      if (!eligible(day, item.unit)) return false
-      const attempt = day.open.tryAdd(forDay(day, item.unit), { maxAddedWalk: THEME_ON_THE_WAY_MINUTES })
-      if (!attempt || !onTheWay(day, item.unit, attempt)) return false
-      day.open.add(attempt)
-      placedDay.set(item.unit.id, day.dayNumber)
-      return true
-    })
-    if (placedFor) return null
-    return candidates.length === 0 ? 'none_near' : 'no_room'
-  }
-  for (const theme of selectedThemes) {
+  // ── Paso 5: mínimo de cada experiencia en el VIAJE (sustituye a la cuota por día) ────────────
+  // 1 día: 1 · 2-3 días: 2-3 · más de 3: 3-4, sin contar imprescindibles. Primero se da por buena lo
+  // del tema que ya está en la ruta como relleno; si falta, se añade, repartido entre días (el que
+  // menos lleva del tema primero) y nivel 2 antes que nivel 3. Nunca cruzando la ciudad.
+  /** Lo característico del tema va primero: la posición de su mejor etiqueta en la lista del tema
+      (museo antes que iglesia en Arte, barrio antes que plaza en Barrios, mirador antes que fuente). */
+  const coreness = (unit, theme) => Math.min(...unit.tags.map((tag) => TAG_INTEREST_MAP[theme].indexOf(tag)).filter((index) => index >= 0))
+  /** null si la experiencia llega a su mínimo; si no, el motivo. */
+  function fulfilMinimum(theme) {
+    const ofTheme = (unit) => unit.priority === PRIORITY.THEME && themesOf(unit).includes(theme)
     for (const day of cityDays) {
-      const reason = fulfilQuota(day, theme)
-      if (reason) quotaMisses.push({ dayNumber: day.dayNumber, theme, reason })
+      for (const unit of dayUnits(day)) {
+        if (experienceCount(theme) >= EXPERIENCE_RANGE.min) return null
+        if (ofTheme(unit) && !experienceEntries.has(unit.id) && unit.curatedIndex == null) experienceEntries.add(unit.id)
+      }
+    }
+    let candidates = []
+    while (experienceCount(theme) < EXPERIENCE_RANGE.min) {
+      candidates = units.filter((unit) => (!placedDay.has(unit.id) || droppedByRelation.has(unit.id)) && ofTheme(unit))
+      const pairs = cityDays
+        .flatMap((day) => candidates.map((unit) => ({ day, unit, walk: walkFromDay(day, unit), dayCount: experienceCount(theme, day) })))
+        .filter((item) => item.walk <= NEAR_WALK_MINUTES)
+        .sort(
+          (a, b) =>
+            a.dayCount - b.dayCount ||
+            coreness(a.unit, theme) - coreness(b.unit, theme) ||
+            a.unit.level - b.unit.level ||
+            a.walk - b.walk ||
+            a.day.dayNumber - b.day.dayNumber ||
+            a.unit.id.localeCompare(b.unit.id, 'es'),
+        )
+      const placed = pairs.find((item) => placeOnDay(item.day, item.unit))
+      if (!placed) return candidates.length === 0 ? 'none_near' : 'no_room'
+      experienceEntries.add(placed.unit.id)
+    }
+    return null
+  }
+  const refreshMinimums = () => {
+    quotaMisses.length = 0
+    for (const theme of selectedThemes) {
+      const reason = fulfilMinimum(theme)
+      if (reason) quotaMisses.push({ dayNumber: null, theme, reason })
     }
   }
+  refreshMinimums()
 
   // ── Paso 6: relleno, por turnos entre días ─────────────────────────────────────────────────
   // Por turnos y no día a día: llenando el día 1 del todo primero, se quedaba con lo mejor de la
@@ -810,6 +873,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
           day.revisits++
         } else {
           placedDay.set(best.unit.id, day.dayNumber)
+          recordEntry(best.unit)
         }
         progress = true
       }
@@ -840,6 +904,31 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
           changed = true
         }
       }
+      // Lo de dentro no va sin su contenedor (Paso 3): si entra la Fuente de las Tortugas, entra el
+      // Barrio Judío ese día, justo delante. Si el contenedor no cabe o no puede entrar, fuera lo de
+      // dentro.
+      for (const day of cityDays) {
+        for (const unit of dayUnits(day)) {
+          if (unit.isRevisit || unit.places.some((place) => place.passBy)) continue
+          const containerIds = [...new Set(unit.places.map((place) => place.contained_in).filter(Boolean).map((name) => unitIdOfPlace.get(name)).filter((id) => id && id !== unit.id))]
+          for (const containerId of containerIds) {
+            if (placedDay.get(containerId) != null) continue
+            const container = units.find((candidate) => candidate.id === containerId)
+            // Lo del pool o de una experiencia arrastra su contenedor aunque sea de pago (cuentan como 1).
+            const drags = mandatory(unit) || experienceEntries.has(unit.id)
+            if (container && placeOnDay(day, drags ? { ...container, draggedBy: unit.id } : container)) {
+              changed = true
+              continue
+            }
+            if (mandatory(unit)) continue // lo que pidió el viajero o es nivel 1 se queda igualmente
+            day.open.remove(unit.id)
+            placedDay.set(unit.id, null)
+            droppedByRelation.add(unit.id)
+            changed = true
+            break
+          }
+        }
+      }
     }
   }
 
@@ -857,6 +946,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (attempt) {
       day.open.add(attempt)
       placedDay.set(unit.id, day.dayNumber)
+      recordEntry(unit)
     }
   }
   fillRounds()
@@ -865,23 +955,18 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Segundo repaso de la cuota con los días ya completos: en el paso 5 el día solo tenía sus
   // imprescindibles, y "no hay nada del tema cerca" era verdad entonces pero puede dejar de serlo
   // cuando el relleno lo acerca a otra zona.
-  for (const miss of [...quotaMisses]) {
-    const reason = fulfilQuota(cityDays.find((day) => day.dayNumber === miss.dayNumber), miss.theme)
-    if (reason) miss.reason = reason
-    else quotaMisses.splice(quotaMisses.indexOf(miss), 1)
-  }
+  refreshMinimums()
 
   // ── Paso 6b: la tarde sin zigzag ──────────────────────────────────────────────────────────
   // Con la tarde ya llena, se prueba su orden entero (el que menos camina) y se quita el relleno que
   // obliga a volver atrás. Lo quitado no vuelve a ese día; se rellena otra vez con lo que sí cae de
   // camino, y así hasta que no quede nada que quitar.
-  const themeUnitsInDay = (day, theme) => dayUnits(day).filter((u) => u.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag)))
-  const isRemovableIn = (day) => (unit) =>
+  const isRemovableIn = () => (unit) =>
     unit.priority >= PRIORITY.THEME &&
     unit.curatedIndex == null &&
     !unit.places.some((place) => place.passBy) &&
-    // El mínimo de experiencias no se baja: lo único del tema en el día se queda.
-    !selectedThemes.some((theme) => themeUnitsInDay(day, theme).length === 1 && themeUnitsInDay(day, theme)[0].id === unit.id)
+    // El mínimo de experiencias no se baja.
+    !(experienceEntries.has(unit.id) && themesOf(unit).some((theme) => experienceCount(theme) <= EXPERIENCE_RANGE.min))
   for (let round = 0; round < 5; round++) {
     let removedAny = false
     for (const day of cityDays) {
@@ -902,15 +987,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   // La cuota, otra vez con la tarde ya definitiva: quitar relleno o mover vecinos puede haber dejado
   // un día sin su tema, y el mínimo de experiencias no se baja.
-  for (const theme of selectedThemes) {
-    for (const day of cityDays) {
-      const reason = fulfilQuota(day, theme)
-      const existing = quotaMisses.findIndex((miss) => miss.dayNumber === day.dayNumber && miss.theme === theme)
-      if (existing >= 0) quotaMisses.splice(existing, 1)
-      if (reason) quotaMisses.push({ dayNumber: day.dayNumber, theme, reason })
-    }
-  }
-  quotaMisses.sort((a, b) => a.dayNumber - b.dayNumber || selectedThemes.indexOf(a.theme) - selectedThemes.indexOf(b.theme))
+  refreshMinimums()
 
   // ── Paso 7: de paso hacia la cena ─────────────────────────────────────────────────────────
   // Si después de todo lo anterior la tarde sigue con 45 min o más libres, se repasa POR FUERA un
@@ -958,7 +1035,8 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   // ── Resultado ─────────────────────────────────────────────────────────────────────────────
-  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
+  const labelled = (unit) => (experienceEntries.has(unit.id) ? { ...unit, experienceTheme: themesOf(unit)[0] ?? null } : unit)
+  const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day).map(labelled), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
   return {
     mode,
     days: skeleton.map((day) => ({ ...day, hours: { weekday: day.weekday ?? null, season: seasonOfTrip }, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
@@ -966,6 +1044,8 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     unplacedPool,
     unplacedEssentials,
     quotaMisses,
+    experienceRange: EXPERIENCE_RANGE,
+    experienceCounts: Object.fromEntries(selectedThemes.map((theme) => [theme, experienceCount(theme)])),
     coveredByFreeTour,
   }
 }

@@ -1,4 +1,4 @@
-import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop } from './types'
+import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 import { minutesToTime } from './time'
@@ -228,6 +228,8 @@ export interface MockStopDetail {
   reservation?: string | null
   /** Ver Stop.hoursWarning en types.ts. */
   hoursWarning?: string | null
+  /** Ver Stop.experience en types.ts. */
+  experience?: ExperienceCategoryId | null
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
   revisitReason?: string
@@ -440,6 +442,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     hoursCard: stop.hoursCard ?? null,
     reservation: stop.reservation ?? null,
     hoursWarning: stop.hoursWarning ?? null,
+    experience: stop.experience ?? null,
     isRevisit: stop.isRevisit,
     revisitReason: stop.revisitReason,
   }
@@ -512,6 +515,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       hoursCard: detail.hoursCard ?? null,
       reservation: detail.reservation ?? null,
       hoursWarning: detail.hoursWarning ?? null,
+      experience: detail.experience ?? null,
       tags: detail.tags,
       isRevisit: detail.isRevisit,
       revisitReason: detail.revisitReason,

@@ -271,6 +271,8 @@ export interface Stop {
       (misas, cierres de fin de semana) o que cierra entero. Con fechas no hay: el horario ya es el
       real de ese día. */
   hoursWarning?: string | null
+  /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
+  experience?: ExperienceCategoryId | null
 }
 
 /**

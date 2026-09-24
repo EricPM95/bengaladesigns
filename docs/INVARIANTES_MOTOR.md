@@ -88,8 +88,9 @@ Formato: **qué** debe cumplirse · *por qué* (el fallo real que lo motivó) ·
 
 16. **`contained_in` y `neighbor_of`: sitios dentro de otro o pegados a otro** (decisión del
     2026-09-23). Se deciden a mano, par a par, sobre la lista de lugares a menos de 300 m.
-    - `contained_in` (lo de dentro → su contenedor: una fuente en su plaza, un monumento en su
-      barrio, la cúpula en su basílica). Si el contenedor está en el viaje, lo de dentro solo sale
+    - `contained_in` (lo de dentro → su contenedor: solo lo que está físicamente dentro y no se ve
+      sin entrar, como la cúpula en su basílica o una fuente dentro del gueto; lo que está al lado
+      o en su plaza es `neighbor_of`, ver 76). Si el contenedor está en el viaje, lo de dentro solo sale
       SU día, justo detrás de él y como una sola visita (encadenado aunque haya 4-5 min). Si el
       contenedor no está en el viaje, sale con normalidad.
     - `neighbor_of` (secundario → principal; el secundario es el de menor nivel, y a igualdad, el
@@ -390,6 +391,9 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     16:00), pero entre las dos va SIEMPRE un bloque de comida: "¿Tu excursión incluye comida? Si no,
     cuando vuelvas a {destino} aquí tienes restaurantes perfectos para ti", con el mapa de
     restaurantes centrado donde empieza la tarde (sin paradas de tarde, en el centro de la ciudad).
+69. **En la app, la tarjeta de comida va en su posición real** (detrás de la última parada que empieza
+    antes de la franja) y enseña la franja ("13:00 – 14:30").
+
 **Caché y respaldo (2026-09-24)**
 
 70. **Un destino curado nunca usa `route_cache`** (ni lee ni guarda): el motor es gratis, instantáneo y
@@ -401,8 +405,33 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     error), sale como día libre (`engine_empty`) y se registra `[motor v3] día vacío` en el log.
     *Completar una ruta cacheada pedía el día de la vuelta, el motor lo daba vacío y se pagaba a Claude.*
 
-69. **En la app, la tarjeta de comida va en su posición real** (detrás de la última parada que empieza
-    antes de la franja) y enseña la franja ("13:00 – 14:30").
+**Paso 3 — Rellenos y experiencias**
+
+73. **Un relleno nunca es de pago.** Lo que pide entrada (`requiresTicket`: por dentro y sin
+    `is_free_access`) solo entra si es nivel 1, del pool o de una experiencia elegida. Lo que está
+    DENTRO de algo de pago (`contained_in` en un contenedor de pago) tampoco es relleno salvo que su
+    contenedor ya esté en la ruta; esto solo cuenta para decidir rellenos, el campo "de pago" no cambia.
+74. **Mínimo-máximo de cada experiencia, por viaje** (1 día: 1 · 2-3 días: 2-3 · más de 3: 3-4). Cuenta
+    solo lo que entra POR la experiencia (lo de pago del tema y lo que se añade para llegar al mínimo);
+    los imprescindibles no cuentan aunque lleven la etiqueta. Se reparte entre días (el que menos lleva,
+    primero), con lo más característico del tema delante (la primera etiqueta de su lista: museo en Arte,
+    barrio en Barrios, mirador en Naturaleza) y nivel 2 antes que nivel 3. Al máximo, no entra nada más de
+    pago del tema. Lo gratis del tema que cae de camino es relleno normal, no cuenta, y gana a otro relleno
+    gratis que no sea de ninguna experiencia elegida.
+75. **Lo que entra por una experiencia lleva su etiqueta** en la app ("Por tu experiencia · Arte y
+    Museos"), y lo que se queda fuera sale en "Añadir parada" como **"También te puede interesar"**.
+76. **`contained_in` es solo para lo que está físicamente dentro y no se ve sin entrar al contenedor**
+    (la Cúpula en la Basílica, las Tortugas en el gueto, el Bioparque en Villa Borghese). Lo que está al
+    lado o en su plaza es `neighbor_of` (Via dei Fori Imperiali y el Foro, el Elefantino y la Minerva, el
+    Teatro de Marcelo y el Barrio Judío).
+77. **Si entra lo de dentro, entra su contenedor** ese día y justo delante. Un relleno solo arrastra un
+    contenedor gratis; lo del pool o de una experiencia lo arrastra aunque sea de pago (`draggedBy`), y
+    los dos cuentan como 1 en la experiencia. Si el contenedor no puede entrar, lo de dentro se quita.
+
+**Checklist del Paso 7 (añadidos)**
+- Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
+- Ningún relleno arrastra un contenedor de pago.
+
 
 ---
 

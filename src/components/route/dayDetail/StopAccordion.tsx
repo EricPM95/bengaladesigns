@@ -3,6 +3,7 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagColor, tagLabel } from '../../../lib/tagColors'
+import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { ClockIcon, FreeTourIcon, HourglassIcon, MoonIcon } from '../../ui/TimeIcons'
 
 const NIGHT_GRADIENT = 'linear-gradient(135deg, #1a1a2e, #16213e)'
@@ -28,6 +29,7 @@ interface StopAccordionProps {
  * completa (StopDetailSheet), ya no expande contenido inline debajo de la tarjeta como antes.
  */
 export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText, startTime }: StopAccordionProps) {
+  const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
   if (stop.isNightExperience) {
     const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
     return (
@@ -112,6 +114,11 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
 
           {/* Viaje sin fechas: los días que a esta hora está cerrado (misas, fines de semana). */}
           {stop.hoursWarning && <p className="text-caption text-accent-red">{stop.hoursWarning}</p>}
+
+          {/* Entró por una experiencia que eligió el viajero: se dice con su nombre. */}
+          {experienceTitle && (
+            <p className="text-caption font-medium text-accent">Por tu experiencia · {experienceTitle}</p>
+          )}
 
           {stop.tags && stop.tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1">
