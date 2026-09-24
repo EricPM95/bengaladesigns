@@ -27,7 +27,7 @@ import type {
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
 import { triggerBudgetFly } from '../lib/budgetFlyBus'
-import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour } from '../lib/time'
+import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
 import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
@@ -68,6 +68,34 @@ function timeForStopAfter(previous: Stop | undefined, fallback: string): string 
   const previousStart = parseTimeToMinutes(previous.time)
   if (Number.isNaN(previousStart)) return fallback
   return minutesToTime(roundToNearestQuarterHour(previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 15)))
+}
+
+/**
+ * Ninguna hora se pisa (revisión del 2026-09-24): si una parada empieza antes de que acabe la
+ * anterior (más su paseo, si se conoce), se EMPUJA hacia delante al cuarto de hora siguiente; nunca
+ * se adelanta nada. Añadir o mover una parada solo ponía hora a la que cambiaba, y la de detrás se
+ * quedaba donde estaba: un Ara Pacis de 45 min a las 15:00 con Via Condotti a las 15:15. Empujar
+ * hacia delante no reabre el bug antiguo (quitar una parada adelantaba la tarde entera): aquí nada
+ * vuelve hacia atrás. Las experiencias nocturnas no empujan ni se empujan: van después de cenar.
+ */
+function pushOverlapsForward(stops: Stop[]): Stop[] {
+  const result: Stop[] = []
+  for (const stop of stops) {
+    const previous = [...result].reverse().find((candidate) => !candidate.isNightExperience)
+    if (!previous || stop.isNightExperience) {
+      result.push(stop)
+      continue
+    }
+    const previousStart = parseTimeToMinutes(previous.time)
+    const start = parseTimeToMinutes(stop.time)
+    if (Number.isNaN(previousStart) || Number.isNaN(start)) {
+      result.push(stop)
+      continue
+    }
+    const earliest = previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 0)
+    result.push(start >= earliest ? stop : { ...stop, time: minutesToTime(roundUpToQuarterHour(earliest)) })
+  }
+  return result
 }
 
 /**
@@ -709,7 +737,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           const reordered = orderedStopIds
             .map((id) => stopsById.get(id))
             .filter((stop): stop is Stop => Boolean(stop))
-          return { ...day, stops: reassignTimesByPosition(day.stops, reordered) }
+          return { ...day, stops: pushOverlapsForward(reassignTimesByPosition(day.stops, reordered)) }
         }),
       }
     }),
@@ -771,7 +799,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             // que traía era la de otro día — pero sin tocar las que ya estaban.
             if (day.id === fromDayId) return { ...day, stops: day.stops.filter((s) => s.id !== stopId) }
             if (day.id === toDayId) {
-              return { ...day, stops: [...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }] }
+              return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }]) }
             }
             return day
           }),
@@ -785,7 +813,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return {
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, time: newTime } : stop)),
+          stops: pushOverlapsForward(day.stops.map((stop) => (stop.id === stopId ? { ...stop, time: newTime } : stop))),
         })),
       }
     }),
@@ -797,7 +825,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: [...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }],
+          stops: pushOverlapsForward([...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }]),
         })),
       }
     }),
@@ -818,11 +846,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return state
       return {
         route: updateDay(state.route, dayId, (day) => {
-          // Igual que addStop pero en una posición concreta: hora solo para la que entra, calculada
-          // desde la parada que le queda justo delante. Las de detrás se quedan como estaban.
+          // Igual que addStop pero en una posición concreta: hora para la que entra, calculada desde la
+          // parada que le queda justo delante; las de detrás solo se mueven si se pisan (hacia delante).
           const stops = [...day.stops]
           stops.splice(index, 0, { ...stop, time: timeForStopAfter(day.stops[index - 1], stop.time) })
-          return { ...day, stops }
+          return { ...day, stops: pushOverlapsForward(stops) }
         }),
       }
     }),

@@ -96,6 +96,11 @@ for (const pace of ['nonstop', 'tranquilo']) {
                 seen.set(visit.place.name, day.dayNumber)
                 if (date && unit?.closedOn.includes(day.weekday)) fail(`${tag}: ${visit.place.name} el ${day.weekday}, que cierra`)
               }
+              // Ninguna hora se pisa: ni dos visitas, ni una visita con una comida.
+              {
+                const blocks = [...day.schedule.visits.map((v) => ({ name: v.place.name, start: v.start, end: v.end })), ...(day.schedule.meals ?? []).map((m) => ({ name: m.type, start: m.start, end: m.end }))].sort((x, y) => x.start - y.start)
+                for (let i = 1; i < blocks.length; i++) if (blocks[i].start < blocks[i - 1].end) fail(`${tag} d${day.dayNumber}: ${blocks[i].name} empieza antes de que acabe ${blocks[i - 1].name}`)
+              }
               if (city.length > 1 && day.units.filter((u) => u.isLong).length > 1) fail(`${tag} d${day.dayNumber}: dos visitas largas`)
 
               // Plaza, puente o parque por delante del monumento que da acceso (approach_to).

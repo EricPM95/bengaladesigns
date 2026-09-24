@@ -57,7 +57,9 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
   const [modeSheetOpen, setModeSheetOpen] = useState(false)
   const [mapsSheetOpen, setMapsSheetOpen] = useState(false)
 
-  const selectedOption = connector?.modeOptions?.find((option) => option.mode === mode) ?? connector?.modeOptions?.[0] ?? null
+  // Si el modo pedido no está (el transporte que no ahorra tiempo no se ofrece), a pie.
+  const selectedOption =
+    connector?.modeOptions?.find((option) => option.mode === mode) ?? connector?.modeOptions?.find((option) => option.mode === 'walking') ?? connector?.modeOptions?.[0] ?? null
   // Solo cuando lo que se enseña NO es ir andando: entonces el tiempo a pie es la alternativa, y va
   // debajo en pequeño. Si ya se enseña andando, repetirlo no aporta nada.
   const walkingAlternative =

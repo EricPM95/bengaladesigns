@@ -36,7 +36,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
-import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
+import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZoneOf, servesDinner } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
@@ -123,6 +123,19 @@ const section = (title) => {
       for (let j = i + 1; j < members.length; j++) {
         const meters = straightLineMeters(members[i].coordinates, members[j].coordinates)
         if (meters > GRUPO_MAX_METROS) s.warn.push(`${id}: ${members[i].name} y ${members[j].name} a ${Math.round(meters)} m — ¿de verdad es una visita?`)
+      }
+    }
+  }
+  // Un par inseparable es el mismo sitio: si andando hay más de 5 min, una coordenada está mal (la
+  // Basílica de San Pedro apuntaba al centro del edificio y Mapbox la rodeaba: 642 m desde la plaza).
+  const matrixPath = join(ROOT, `data/pipeline_v2/travel/${destino}.json`)
+  if (existsSync(matrixPath)) {
+    const travel = createTravelTimes(JSON.parse(readFileSync(matrixPath, 'utf8')))
+    for (const [id, group] of Object.entries(D.groups ?? {})) {
+      for (const [a, b] of group.inseparable ?? []) {
+        if (!byName.has(a) || !byName.has(b)) continue
+        const leg = travel.leg(byName.get(a).coordinates, byName.get(b).coordinates)
+        if (leg && leg.minutes > 5) s.red.push(`${id}: ${a} y ${b} son inseparables y andando hay ${leg.minutes} min (${leg.meters} m) — revisar coordenadas (la entrada, no el centro del edificio)`)
       }
     }
   }

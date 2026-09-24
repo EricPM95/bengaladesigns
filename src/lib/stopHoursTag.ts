@@ -82,18 +82,47 @@ export function nextOpenMinutes(hours: string | null | undefined, minutes: numbe
   return upcoming.length > 0 ? Math.min(...upcoming) : null
 }
 
-export function computeStopHoursTag(hours: string | null, nowMinutes: number): StopHoursTag {
+/**
+ * Los tramos de UN día, en texto: "07:30–12:30 / 16:00–19:30". Del horario escrito se toma el primer
+ * grupo de días ("Lun-Sáb 07:30-12:30, 16:00-19:30. Dom ...") y, de cada rango seguido de un
+ * paréntesis de temporada ("07:00-18:00 (Abr-Sep), 07:30-17:00 (Oct-Mar)"), solo el primero: son
+ * alternativas, no tramos del mismo día. null sin rangos.
+ */
+export function formatDaySessions(hours: string | null | undefined): string | null {
+  if (!hours) return null
+  // Un grupo de días nuevo empieza tras punto o punto y coma, o tras una coma si lo que sigue es un
+  // día ("Lun-Sáb 09:00-19:00, Dom 09:00-18:00").
+  const firstGroup = hours.split(/[.;]\s+(?=[A-ZÁÉÍÓÚ])|,\s+(?=(?:Lun|Mar|Mi[eé]|Jue|Vie|S[aá]b|Dom)[a-záéíóú]*\b)/)[0]
+  const ranges: string[] = []
+  for (const match of firstGroup.matchAll(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})(\s*\()?/g)) {
+    ranges.push(`${match[1].padStart(2, '0')}:${match[2]}–${match[3].padStart(2, '0')}:${match[4]}`)
+    if (match[5]) break // temporada: el resto son alternativas
+  }
+  return ranges.length > 0 ? ranges.join(' / ') : null
+}
+
+/**
+ * @param minutes  la hora a la que se mira: la de la VISITA si se sabe (la ficha de una parada de la
+ *   ruta), la actual si no (EXPLORAR). Con la del móvil, una iglesia que se visita a las 17:45 salía
+ *   "Abierto · 10:00–12:30" si se miraba la ruta por la mañana (revisión del 2026-09-24).
+ * @param atVisit  true si `minutes` es la hora de la visita: el texto dice "a esa hora".
+ */
+export function computeStopHoursTag(hours: string | null, minutes: number, atVisit = false): StopHoursTag {
   const sessions = parseHoursSessions(hours)
   if (sessions.length === 0) return { label: 'Acceso libre', variant: 'always' }
+  const nowMinutes = minutes
 
   const current = sessions.find((session) => nowMinutes >= session.open && nowMinutes <= session.close)
-  if (current) return { label: `Abierto · ${formatMinutes(current.open)}–${formatMinutes(current.close)}`, variant: 'open' }
+  const allSessions = formatDaySessions(hours)
+  if (current) {
+    return { label: `${atVisit ? 'Abierto a esa hora' : 'Abierto'} · ${allSessions ?? `${formatMinutes(current.open)}–${formatMinutes(current.close)}`}`, variant: 'open' }
+  }
 
   // Cerrado: interesa cuándo vuelve a abrir HOY (el siguiente tramo por delante), y si ya no queda
   // ninguno, la hora de apertura general.
   const next = sessions.filter((session) => session.open > nowMinutes).sort((a, b) => a.open - b.open)[0]
   const reopen = next ? next.open : Math.min(...sessions.map((session) => session.open))
-  return { label: `Cerrado · abre a las ${formatMinutes(reopen)}`, variant: 'closed' }
+  return { label: `${atVisit ? 'Cerrado a esa hora' : 'Cerrado'} · abre a las ${formatMinutes(reopen)}`, variant: 'closed' }
 }
 
 // ── Días de cierre ────────────────────────────────────────────

@@ -554,7 +554,9 @@ export function DayDetailPanel({
   const defaultModeFor = (connector: ConnectorInfo | null): TransportMode => {
     const walkMinutes = connector?.walkMinutes
     if (walkMinutes === undefined || walkMinutes <= LONG_WALK_MINUTES) return DEFAULT_MODE
-    return (route?.defaultTransport ?? 'public') === 'car' ? 'driving' : 'transit'
+    if ((route?.defaultTransport ?? 'public') === 'car') return 'driving'
+    // Transporte público solo si ahorra tiempo real puerta a puerta; si no, a pie.
+    return connector?.transitSavesTime ? 'transit' : DEFAULT_MODE
   }
 
   const renderGap = (
@@ -1157,6 +1159,7 @@ export function DayDetailPanel({
 
       <StopDetailSheet
         stop={detailIndex !== null ? stops[detailIndex] : null}
+        visitTime={detailIndex !== null && schedule[detailIndex] ? minutesToTime(schedule[detailIndex].startMinutes) : null}
         city={day.city}
         dayNumber={day.dayNumber}
         dateIso={dateIso}

@@ -43,6 +43,9 @@ type Tab = 'resumen' | 'tickets' | 'tips'
 interface StopDetailSheetProps {
   /** null = cerrado. */
   stop: MockStopDetail | null
+  /** Hora de la visita ("HH:MM") si la ficha se abre desde una parada de la ruta: el "abierto /
+      cerrado" se calcula a esa hora, no a la del móvil. */
+  visitTime?: string | null
   city: string
   /** null = la ficha no se abre desde un día de la ruta (EXPLORAR) — se oculta la píldora "Día X". */
   dayNumber: number | null
@@ -114,7 +117,7 @@ function BusIcon() {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache); "Tickets &
  * Entradas" sigue siendo mock (mockStopTickets.ts) hasta conectar Civitatis/GetYourGuide reales.
  */
-export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
@@ -281,7 +284,10 @@ export function StopDetailSheet({ stop, city, dayNumber, dateIso, dayStops, isAn
     }
   })
 
-  const hoursTag = stop ? computeStopHoursTag(stop.hours, new Date().getHours() * 60 + new Date().getMinutes()) : null
+  const visitMinutes = visitTime && /^\d{1,2}:\d{2}$/.test(visitTime) ? Number(visitTime.split(':')[0]) * 60 + Number(visitTime.split(':')[1]) : null
+  const hoursTag = stop
+    ? computeStopHoursTag(stop.hours, visitMinutes ?? new Date().getHours() * 60 + new Date().getMinutes(), visitMinutes !== null)
+    : null
   // Dos fuentes, las dos ya disponibles aquí sin pedir nada extra: el enlace de reserva de la ficha
   // ampliada (Coliseo, Galería Borghese, Museos Vaticanos, Castel Sant'Angelo…) y el propio texto de
   // horario del JSON del destino, que lo dice cuando es obligatoria (Panteón, Domus Aurea).

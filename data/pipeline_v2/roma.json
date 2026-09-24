@@ -986,8 +986,8 @@
       "tier": "imprescindible",
       "zone": "vaticano",
       "coordinates": [
-        41.9022,
-        12.4539
+        41.9021,
+        12.4555
       ],
       "duration_minutes": 75,
       "type": "interior",
@@ -1014,7 +1014,8 @@
         "basilica",
         "san pietro",
         "st peter"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Plaza de San Pedro",
@@ -1023,7 +1024,7 @@
       "zone": "vaticano",
       "coordinates": [
         41.9022,
-        12.4567
+        12.4573
       ],
       "duration_minutes": 30,
       "type": "exterior",
@@ -1054,7 +1055,8 @@
       },
       "approach_to": [
         "Basílica de San Pedro"
-      ]
+      ],
+      "coordinates_checked": true
     },
     {
       "name": "Via della Conciliazione",
@@ -1535,8 +1537,8 @@
       "duration_minutes": 30,
       "zone": "vaticano",
       "coordinates": [
-        41.9022,
-        12.4539
+        41.9021,
+        12.4555
       ],
       "level": 2,
       "type": "interior",
@@ -1559,7 +1561,8 @@
         "cupola",
         "st peter"
       ],
-      "contained_in": "Basílica de San Pedro"
+      "contained_in": "Basílica de San Pedro",
+      "coordinates_checked": true
     },
     {
       "name": "Iglesia del Gesù",

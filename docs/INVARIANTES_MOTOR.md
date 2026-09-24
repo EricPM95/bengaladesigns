@@ -310,6 +310,31 @@ motor: necesita su JSON, su matriz de tiempos y pasar el kit (sección I).
 
 ---
 
+## J. Revisión de rutas (2026-09-24, PROMPT_REVISION_RUTAS_ROMA.md)
+
+Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con el motor v3.
+
+**Paso 1 — Datos y cálculo**
+
+51. **Un horario puede tener varios tramos por día** ("07:30-12:30, 16:00-19:30" o con "/"). El motor
+    los comprueba TODOS (`parseHoursSessions`). En pantalla se enseñan todos los tramos del día
+    ("07:30–12:30 / 16:00–19:30", `formatDaySessions`), nunca solo el primero, y el "abierto /
+    cerrado" de la ficha se calcula a la HORA DE LA VISITA, no a la del móvil. *Una iglesia visitada a
+    las 17:45 salía "10:00–12:30": era la tarjeta enseñando el primer tramo y la ficha mirando la hora
+    a la que se revisaba la ruta.*
+52. **La coordenada de un monumento es su ENTRADA, no el centro del edificio**, sobre todo en pares
+    inseparables: el validador da rojo si un par inseparable está a más de 5 min andando. *La Basílica
+    de San Pedro apuntaba al centro de la nave: Mapbox la rodeaba y salían 642 m desde la plaza.*
+53. **Ninguna hora se pisa, tampoco al editar.** El motor no solapa (lo vigila verifyPlanTrip); en la
+    app, al añadir, mover, reordenar o cambiar la hora de una parada, lo que se pisa se EMPUJA hacia
+    delante al cuarto de hora siguiente y nunca se adelanta nada (`pushOverlapsForward`). Las
+    experiencias nocturnas ni empujan ni se empujan.
+54. **Transporte público solo si ahorra tiempo puerta a puerta**: andar a la parada (5) + esperar (6)
+    + trayecto + andar desde la parada (5). Si no ahorra al menos 5 min frente a ir andando, el tramo
+    va a pie y la opción de transporte no se enseña.
+
+---
+
 ## I. Kit de nuevo destino: cuándo un destino está listo
 
 1. **Datos** — `node scripts/destino/validar.mjs <destino>`: referencias, grupos, nivel 1 (4-5

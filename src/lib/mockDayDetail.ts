@@ -525,8 +525,27 @@ export interface TransportModeOption {
   distanceLabel: string
 }
 
+/**
+ * Transporte público PUERTA A PUERTA (revisión del 2026-09-24): andar hasta la parada, esperar, el
+ * trayecto y andar desde la parada de bajada. Sin API de transporte real, el trayecto se estima del
+ * tiempo en coche (el bus va más lento y para); lo demás son tiempos fijos típicos de ciudad.
+ */
+const TRANSIT_WALK_TO_STOP_MINUTES = 5
+const TRANSIT_WAIT_MINUTES = 6
+const TRANSIT_WALK_FROM_STOP_MINUTES = 5
+const TRANSIT_RIDE_FACTOR = 1.4
+/** El transporte solo se enseña si ahorra de verdad: al menos esto frente a ir andando. */
+export const TRANSIT_MIN_SAVING_MINUTES = 5
+
+export function transitDoorToDoorMinutes(drivingMinutes: number): number {
+  return TRANSIT_WALK_TO_STOP_MINUTES + TRANSIT_WAIT_MINUTES + Math.round(drivingMinutes * TRANSIT_RIDE_FACTOR) + TRANSIT_WALK_FROM_STOP_MINUTES
+}
+
 export interface ConnectorInfo {
   hasRealDisplacement: boolean
+  /** true si el transporte público ahorra tiempo real puerta a puerta (ver TRANSIT_MIN_SAVING_MINUTES):
+      si no, el tramo va a pie y la opción de transporte no se enseña. */
+  transitSavesTime?: boolean
   /** Solo cuando NO hay desplazamiento real — texto simple, sin icono ni selector de modo. */
   label: string
   /** Presente solo cuando hasRealDisplacement=true — una opción por modo, mismo orden siempre (driving, transit, walking). */
@@ -548,16 +567,18 @@ function buildRealDisplacement(seed: string): ConnectorInfo {
   const walkMinutes = 3 + Math.floor(rand() * 12)
   const meters = walkMinutes * (60 + Math.floor(rand() * 40))
   const driveMinutes = Math.max(2, Math.round(walkMinutes / 3.5))
-  const transitMinutes = Math.max(3, Math.round(walkMinutes * 0.6) + 4) // incluye espera media
+  const transitMinutes = transitDoorToDoorMinutes(driveMinutes)
+  const transitSavesTime = walkMinutes - transitMinutes >= TRANSIT_MIN_SAVING_MINUTES
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driveMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` },
-    { mode: 'transit', durationLabel: `${transitMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` },
+    ...(transitSavesTime ? [{ mode: 'transit' as const, durationLabel: `${transitMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` }] : []),
     { mode: 'walking', durationLabel: `${walkMinutes} min`, distanceLabel: `${meters} m` },
   ]
 
   return {
     hasRealDisplacement: true,
+    transitSavesTime,
     label: `${walkMinutes} min a pie · ${meters} m`,
     modeOptions,
     meters,
@@ -600,16 +621,18 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
   ])
   if (!walking || !driving) return null
 
-  const transitMinutes = Math.max(3, Math.round(driving.minutes * 1.4) + 6)
+  const transitMinutes = transitDoorToDoorMinutes(driving.minutes)
+  const transitSavesTime = walking.minutes - transitMinutes >= TRANSIT_MIN_SAVING_MINUTES
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driving.minutes} min`, distanceLabel: formatMeters(driving.meters) },
-    { mode: 'transit', durationLabel: `${transitMinutes} min`, distanceLabel: formatMeters(driving.meters) },
+    ...(transitSavesTime ? [{ mode: 'transit' as const, durationLabel: `${transitMinutes} min`, distanceLabel: formatMeters(driving.meters) }] : []),
     { mode: 'walking', durationLabel: `${walking.minutes} min`, distanceLabel: formatMeters(walking.meters) },
   ]
 
   return {
     hasRealDisplacement: true,
+    transitSavesTime,
     label: `${walking.minutes} min a pie · ${formatMeters(walking.meters)}`,
     modeOptions,
     meters: walking.meters,
