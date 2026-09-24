@@ -191,7 +191,10 @@ async function applyHighMatchReuse(
         answers,
         block_days: [blockDay],
         places_for_block: placesResult.days,
-        all_days: days.map((day) => ({ day_number: day.day_number, city: day.city })),
+        // El viaje ENTERO que se está pidiendo (answers.days), no solo lo que ya hay: con solo lo
+        // cacheado, el servidor creía el viaje un día más corto y tomaba el día pedido por el de la
+        // vuelta (encontrado el 2026-09-24: el motor lo daba vacío y caía en Claude).
+        all_days: Array.from({ length: answers.days }, (_, index) => ({ day_number: index + 1, city: days[index]?.city ?? lastDay?.city ?? destination })),
         is_first_block_of_trip: false,
         ...transportContext,
       })

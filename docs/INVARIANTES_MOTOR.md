@@ -390,6 +390,17 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     16:00), pero entre las dos va SIEMPRE un bloque de comida: "¿Tu excursión incluye comida? Si no,
     cuando vuelvas a {destino} aquí tienes restaurantes perfectos para ti", con el mapa de
     restaurantes centrado donde empieza la tarde (sin paradas de tarde, en el centro de la ciudad).
+**Caché y respaldo (2026-09-24)**
+
+70. **Un destino curado nunca usa `route_cache`** (ni lee ni guarda): el motor es gratis, instantáneo y
+    más nuevo que cualquier ruta guardada. *Roma de 6+ días servía rutas de motores anteriores.*
+71. **En la caché que queda (destinos no curados) cada fila lleva `engine_version`** (hash del modelo y
+    los prompts de generación, `routeCacheVersion`) y solo se sirven las de la versión actual: al
+    cambiar el motor, lo viejo deja de usarse solo.
+72. **En un destino curado NUNCA se llama a Claude de respaldo.** Si el motor no da un día (vacío o
+    error), sale como día libre (`engine_empty`) y se registra `[motor v3] día vacío` en el log.
+    *Completar una ruta cacheada pedía el día de la vuelta, el motor lo daba vacío y se pagaba a Claude.*
+
 69. **En la app, la tarjeta de comida va en su posición real** (detrás de la última parada que empieza
     antes de la franja) y enseña la franja ("13:00 – 14:30").
 

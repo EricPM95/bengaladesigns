@@ -7,6 +7,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
+import { createHash } from 'node:crypto'
 import {
   findPipelineV2Data,
   findPipelineV2Key,
@@ -2353,6 +2354,22 @@ function routeCacheLevel(matchPct) {
 // siempre hasta el próximo borrado manual de caché.
 const MIN_INTOCABLES_COVERAGE = 0.8
 
+/**
+ * Versión del "motor" que genera las rutas que se cachean (destinos NO curados: las hace Claude):
+ * el modelo y los prompts de generación. Se calcula sola —cualquier cambio en un prompt o de modelo
+ * da otra versión— y cada fila de route_cache guarda la suya: una fila de otra versión nunca se
+ * sirve, así que al cambiar el motor no hay que borrar nada a mano (decisión del 2026-09-24).
+ * Perezosa porque los prompts se declaran más abajo en este archivo.
+ */
+let routeCacheVersionMemo = null
+function routeCacheVersion() {
+  if (!routeCacheVersionMemo) {
+    const source = [MODEL, SKELETON_SYSTEM_PROMPT, DAY_PLACES_SYSTEM_PROMPT, DAY_BLOCK_SYSTEM_PROMPT, ROUTE_CACHE_EXPERIENCES_SYSTEM_PROMPT, ROUTE_CACHE_REDISTRIBUTE_SYSTEM_PROMPT].join('\n---\n')
+    routeCacheVersionMemo = `claude-${createHash('sha1').update(source).digest('hex').slice(0, 12)}`
+  }
+  return routeCacheVersionMemo
+}
+
 /** Sin `intocables` definidos para el destino (no está en el JSON curado, o el campo está vacío) no hay nada que validar — devuelve 1 (cobertura completa) para no bloquear esos casos, mismo criterio de "mejor pasarse de contenido que bloquear" que el resto del pipeline curado. */
 function intocablesCoverageRatio(routeData, destData) {
   if (!Array.isArray(destData?.intocables) || destData.intocables.length === 0) return 1
@@ -2367,11 +2384,10 @@ app.post('/api/route-cache/lookup', async (req, res) => {
     res.status(400).json({ error: 'Se requiere destination, days, experiences y pace.' })
     return
   }
-  // Pipeline v2 (algoritmo JS puro, gratis e instantáneo, ver routeAlgorithm.js) no necesita
-  // caché — generar de cero cuesta lo mismo que reutilizar. Además, esta misma sesión encontró
-  // dos veces bugs reales de contenido obsoleto servido desde route_cache; mejor no reabrir esa
-  // superficie aquí. `days > 5` sigue consultando caché normal — cae al pipeline curado antiguo.
-  if (days <= 5 && findPipelineV2Data(destination)) {
+  // Destino curado (motor v3, gratis e instantáneo): NUNCA caché, sea cual sea la duración. El
+  // motor siempre es más nuevo que cualquier ruta guardada; con caché, Roma de 6+ días servía rutas
+  // de motores anteriores (encontrado el 2026-09-24: el Coliseo a las 11:45 y categorías viejas).
+  if (findPipelineV2Data(destination)) {
     res.json({ level: 'none', entry: null, match_pct: 0 })
     return
   }
@@ -2385,6 +2401,8 @@ app.post('/api/route-cache/lookup', async (req, res) => {
       .from('route_cache')
       .select('id, destination, days, experiences, pace, route_data, hit_count')
       .ilike('destination', destination)
+      // Solo rutas hechas con el motor de ahora (ver routeCacheVersion).
+      .eq('engine_version', routeCacheVersion())
       .limit(50)
     if (error) throw error
 
@@ -2447,12 +2465,17 @@ app.post('/api/route-cache/save', async (req, res) => {
     res.json({ ok: false })
     return
   }
+  // Un destino curado no se cachea (ver /api/route-cache/lookup).
+  if (findPipelineV2Data(destination)) {
+    res.json({ ok: false, skipped: 'curated' })
+    return
+  }
   try {
     // SIEMPRE inserta una fila nueva — nunca actualiza/sobreescribe una existente, ver el
     // comentario grande al principio de esta sección. El cliente Supabase NO lanza en un error de
     // Postgrest (a diferencia de un fetch normal) — hay que comprobar `error` explícitamente, o un
     // insert fallido (ej. la tabla no existe todavía) se reporta como éxito por error.
-    const { error } = await supabaseAdmin.from('route_cache').insert({ destination, days, experiences, pace, route_data: routeData })
+    const { error } = await supabaseAdmin.from('route_cache').insert({ destination, days, experiences, pace, route_data: routeData, engine_version: routeCacheVersion() })
     if (error) throw error
     res.json({ ok: true })
   } catch (error) {
@@ -4702,11 +4725,18 @@ app.post('/api/generate-day-block', async (req, res) => {
         return
       }
     } catch (error) {
-      // Nunca debe poder bloquear la generación — si el algoritmo v2 falla por lo que sea
-      // (Mapbox caído, dato inesperado), se cae al camino de Claude de toda la vida, igual que
-      // cualquier otro fallo best-effort de este pipeline.
-      console.error(`[pipeline-v2] fallo construyendo el día ${blockDayNumbers[0]} con el algoritmo JS, cae a Claude:`, error)
+      console.error(`[motor v3] ERROR construyendo el día ${blockDayNumbers[0]} de "${destination}":`, error)
     }
+  }
+
+  // Destino curado: NUNCA se llama a Claude de respaldo (decisión del 2026-09-24). Si el motor no
+  // ha dado el día (vacío o con error), sale como día LIBRE y queda registrado para revisarlo.
+  if (pipelineV2Data) {
+    console.error(
+      `[motor v3] día vacío — "${destination}" días ${blockDayNumbers.join(',')} (all_days=${Array.isArray(all_days) ? all_days.length : '—'}, ritmo ${answers?.pace ?? '—'}): se devuelve como día libre, sin Claude`,
+    )
+    res.json({ days: blockDayNumbers.map((dayNumber) => ({ ...buildManualDayV2(dayNumber), engine_empty: true })), not_included: [], excursions_available: [] })
+    return
   }
 
   const t0 = Date.now()
