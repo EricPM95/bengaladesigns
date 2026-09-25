@@ -161,9 +161,6 @@ export interface QuestionnaireAnswers {
   experiencesPositive: ExperienceCategoryId[]
   /** Categorías en "No me lo recomiendes" (máx. 2, nunca incluye 'imprescindibles'). */
   experiencesNegative: ExperienceCategoryId[]
-  /** Experiencias de temporada en un MES FRONTERA a las que el viajero dijo "Sí, viajo en esas fechas"
-      (Estaciones, Parte 4): solo esas entran en la ruta. */
-  seasonalConfirmed?: ExperienceCategoryId[]
   pace: TripPace
   chronotype: Chronotype
   budgetLevel: BudgetLevel
@@ -278,6 +275,9 @@ export interface Stop {
       (misas, cierres de fin de semana) o que cierra entero. Con fechas no hay: el horario ya es el
       real de ese día. */
   hoursWarning?: string | null
+  /** De temporada con fechas aproximadas, en el margen de 15 días: "Es probable que algunos mercadillos
+      aún no hayan abierto." (Estaciones, Parte 4). */
+  seasonNotice?: string | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
   experience?: ExperienceCategoryId | null
   /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los

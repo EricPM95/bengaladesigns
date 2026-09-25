@@ -48,7 +48,7 @@ import { straightLineMeters } from './travelTimes.js'
 import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
 import { sunsetFor } from './sunset.js'
-import { closedOnDate } from './openingHours.js'
+import { closedOnDay } from './openingHours.js'
 import { availableForTrip } from './availability.js'
 import { tripCalendar } from './tripCalendar.js'
 
@@ -231,13 +231,15 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const seasonOfTrip = calendar.season
   /** ¿Cierra la unidad ese día? Por día de la semana (con fechas) o por fecha (`closed_dates`, Parte 2). */
+  // Lugar a lugar (closedOnDay): el último domingo del mes el Vaticano abre aunque cierre los domingos.
   const closedThatDay = (unit, day) =>
-    (unit.closedOn.length > 0 && Boolean(day.weekday) && unit.closedOn.includes(day.weekday)) ||
-    (calendar.hasDates && (unit.closedDates ?? []).length > 0 && closedOnDate({ closed_dates: unit.closedDates }, calendar.dateOfDay(day.dayNumber)))
+    unit.places.some((place) => closedOnDay(place, day.weekday ?? null, calendar.hasDates ? calendar.dateOfDay(day.dayNumber) : null))
   /**
    * ¿Está fuera de temporada ese día (`available`, Parte 4)? Con fechas, la del día; con solo el mes,
    * el mes frontera solo vale si el viajero lo eligió (pool): lo de temporada no entra solo.
    */
+  // Con `aprox` (mercadillos) el margen de 15 días entra solo, con aviso; sin `aprox`, en el mes
+  // frontera solo entra lo que el viajero puso en su pool.
   const outOfSeason = (unit, day) =>
     (unit.availableWindows ?? []).some((window) => !availableForTrip(window, calendar, calendar.dateOfDay(day.dayNumber), unit.poolIndex != null))
   // Dónde se puede comer (restaurantes curados para comer): el programador elige en cada día.
@@ -292,14 +294,18 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const closedIn = (day, target) => namesOf(day).some((name) => {
       const place = placeOf(name)
       if (place?.level !== 1) return false
-      if ((place.closed_on ?? []).map((d) => String(d).toLowerCase()).includes(String(target.weekday).toLowerCase())) return true
-      return calendar.hasDates && closedOnDate(place, calendar.dateOfDay(target.dayNumber))
+      return closedOnDay(place, target.weekday ?? null, calendar.hasDates ? calendar.dateOfDay(target.dayNumber) : null)
     })
     const swappable = skeleton.filter((day) => !day.isBlank && !day.isExcursion && !day.halfDayExcursion && day.weekday)
     for (const day of swappable) {
       if (!day.curated || !closedIn(day, day)) continue
       const other = swappable.find((candidate) => candidate !== day && !closedIn(day, candidate) && !closedIn(candidate, day))
       if (other) [day.curated, other.curated] = [other.curated, day.curated]
+    }
+    // Sin nadie con quien cambiarlo (viaje de 2 días desde el domingo de Pascua: el Vaticano cierra los
+    // dos), el día deja de ser "el del Vaticano sin Vaticano": se reparte como un día sin curado.
+    for (const day of swappable) {
+      if (day.curated && closedIn(day, day)) day.curated = null
     }
   }
   const zones = zonesByPriority(destData)
@@ -951,6 +957,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       for (const unit of [...dayUnits(day)]) {
         // Solo el barrio de verdad, nunca su revisita ni un paso por fuera.
         if (!(unit.tags ?? []).includes('barrio') || unit.curatedIndex != null || unit.isRevisit || unit.places.some((place) => place.passBy)) continue
+        // Lo que va DENTRO del barrio ese día (la Plaza Trilussa, en Trastevere) no se queda sin él: si
+        // lo hay, el barrio no se mueve solo.
+        const names = new Set(unit.places.map((place) => place.name))
+        if (dayUnits(day).some((other) => other !== unit && other.places.some((place) => names.has(place.contained_in)))) continue
         const zone = unit.places[0]?.zone
         const target = cityDays.find((other) => {
           // Ese otro día se cena en el barrio: se llega a él bajando a cenar.
@@ -1316,6 +1326,15 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         .map((unit) => (unit.requiresTicket ? outsideVariant(unit) : unit))
         .filter((unit) => unit && !closedThatDay(unit, day) && !outOfSeason(unit, day))
         .filter((unit) => !paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null))
+        // Las relaciones mandan también aquí (este paso va después de enforceRelations): lo de dentro de
+        // otro, solo el día de su contenedor (la Plaza Trilussa, el día de Trastevere); los vecinos, el
+        // de su pareja.
+        .filter((unit) => {
+          const allowed = relationDays(unit.outsideOfUnitId ? units.find((u) => u.id === unit.outsideOfUnitId) ?? unit : unit)
+          if (allowed && !allowed.includes(day.dayNumber)) return false
+          const containers = unit.places.map((place) => place.contained_in).filter(Boolean).map((name) => unitIdOfPlace.get(name)).filter((id) => id && id !== unit.id)
+          return containers.every((id) => placedDay.get(id) === day.dayNumber)
+        })
       let best = null
       for (const unit of candidates) {
         const attempt = day.open.tryAdd({ ...forDay(day, unit), gapFillerBefore: gap.before, capExempt: true }, { maxAddedWalk: MAX_FILL_ADDED_WALK_MINUTES })

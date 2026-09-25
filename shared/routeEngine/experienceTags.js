@@ -19,6 +19,9 @@ export const TAG_INTEREST_MAP = {
   barrios_sabores: ['barrio', 'gastronomia', 'calle', 'plaza', 'mercado'],
   naturaleza_vistas: ['mirador', 'parque', 'fuente'],
   free_tour: ['free_tour'],
+  // Los mercadillos son lugares con `available` (su temporada) y esta etiqueta propia (decisión del
+  // 2026-09-25). Los datos los cura el usuario: mientras no haya, la experiencia no añade nada.
+  mercadillos_navidenos: ['mercadillo_navideno'],
 }
 
 /**

@@ -1,6 +1,6 @@
 // Disponibilidad por fechas (Estaciones, Parte 4). Los datos de temporada de Roma los cura el usuario:
 // aquí se usan un lugar, una nocturna, una excursión y una experiencia de PRUEBA sobre una copia de Roma.
-import { availabilityLabel, availableForTrip, monthAvailability } from '../../../shared/routeEngine/availability.js'
+import { availabilityLabel, availableForTrip, monthAvailability, seasonFit } from '../../../shared/routeEngine/availability.js'
 import { buildDayBlockV3, experiencesInSeason } from '../index.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
 
@@ -40,6 +40,30 @@ check('junio: elegido → avisa', (await stopsOf({ month: 5 }, ['Mercadillo de p
 check('enero sin elegir: no entra solo', (await stopsOf({ month: 0 })).includes('Mercadillo de prueba'), false)
 check('enero elegido: entra', (await stopsOf({ month: 0 }, ['Mercadillo de prueba'])).includes('Mercadillo de prueba'), true)
 check('con fechas del 8 de enero: no', (await stopsOf({ fecha: '2027-01-08' }, ['Mercadillo de prueba'])).includes('Mercadillo de prueba'), false)
+
+// Fechas aproximadas (`aprox`): margen de 15 días con aviso, sin preguntar.
+const MERCADILLO = { from: '12-01', to: '01-06', aprox: true, notice_before: 'Es probable que algunos mercadillos aún no hayan abierto.', notice_after: 'Es probable que algunos mercadillos ya hayan cerrado.' }
+const conFechas = { hasDates: true, month: null }
+check('aprox: 20 nov, antes', seasonFit(MERCADILLO, conFechas, '2026-11-20'), { enters: true, notice: MERCADILLO.notice_before })
+check('aprox: 15 nov, a 16 días: no', seasonFit(MERCADILLO, conFechas, '2026-11-15').enters, false)
+check('aprox: 10 dic, dentro', seasonFit(MERCADILLO, conFechas, '2026-12-10'), { enters: true, notice: null })
+check('aprox: 15 ene, después', seasonFit(MERCADILLO, conFechas, '2027-01-15'), { enters: true, notice: MERCADILLO.notice_after })
+check('aprox: 25 ene, fuera', seasonFit(MERCADILLO, conFechas, '2027-01-25').enters, false)
+check('aprox: noviembre (mes), antes', seasonFit(MERCADILLO, { hasDates: false, month: 10 }, null), { enters: true, notice: MERCADILLO.notice_before })
+check('aprox: enero (mes), después', seasonFit(MERCADILLO, { hasDates: false, month: 0 }, null), { enters: true, notice: MERCADILLO.notice_after })
+check('aprox: febrero (mes), fuera', seasonFit(MERCADILLO, { hasDates: false, month: 1 }, null).enters, false)
+check('sin aprox: enero no entra solo', seasonFit(XMAS, { hasDates: false, month: 0 }, null).enters, false)
+
+// Un mercadillo de prueba con su etiqueta: en noviembre entra con la experiencia y lleva el aviso.
+const M = structuredClone(D)
+M.places.push({ ...navona, name: 'Mercadillo navideño de prueba', level: 3, type: 'exterior', group: undefined, group_order: undefined, tags: ['mercadillo_navideno'], available: MERCADILLO, pass_by: undefined, tier: undefined, coordinates: [navona.coordinates[0] - 0.0003, navona.coordinates[1]] })
+const conMercadillo = []
+for (let n = 1; n <= 3; n++) {
+  const day = await buildDayBlockV3(M, 4, false, n, 'nonstop', null, null, [], ['imprescindibles', 'mercadillos_navidenos'], { city: 'Roma', scheduler: 'v3', month: 10 })
+  conMercadillo.push(...(day?.stops ?? []).filter((stop) => stop.name === 'Mercadillo navideño de prueba'))
+}
+check('noviembre: el mercadillo entra', conMercadillo.length, 1)
+check('noviembre: con su aviso', conMercadillo[0]?.season_notice, MERCADILLO.notice_before)
 
 // Experiencia de temporada (ventana de prueba para Naturaleza y Vistas: verano).
 check('experiencia fuera (enero)', experiencesInSeason(D, ['imprescindibles', 'naturaleza_vistas'], { month: 0 }), ['imprescindibles'])

@@ -1195,12 +1195,45 @@
       ],
       "last_entry": "18:00",
       "reservation": "recomendada",
-      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic).",
+      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, lunes de Pascua, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic).",
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
         "Gratis el último domingo de mes, de 09:00 a 14:00 (última entrada 12:30)."
-      ]
+      ],
+      "closed_dates": [
+        "01-01",
+        "01-06",
+        "02-11",
+        "03-19",
+        "easter+1",
+        "05-01",
+        "06-29",
+        "08-14",
+        "08-15",
+        "12-08",
+        "12-25",
+        "12-26"
+      ],
+      "last_sunday": {
+        "windows": [
+          "09:00-14:00"
+        ],
+        "last_entry": "12:30",
+        "except": [
+          "easter",
+          "06-29",
+          "12-25",
+          "12-26",
+          "12-31"
+        ]
+      },
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://www.museivaticani.va/content/museivaticani/it/info/orari-musei-vaticani.html",
+        "nota": "La web publica \"6 aprile\" (lunes de Pascua de 2026): se guarda como easter+1 para que valga cada año. El último domingo no abre si coincide con Pascua, 29 jun, 25, 26 o 31 dic.",
+        "fecha": "2026-09-25"
+      }
     },
     {
       "name": "Basílica de San Pedro",
@@ -3676,9 +3709,6 @@
       "search_en_keywords": [
         "fontanone",
         "acqua paola"
-      ],
-      "neighbor_of": [
-        "San Pietro in Montorio y Tempietto de Bramante"
       ],
       "ticket_info": [
         "Gratis."
@@ -6551,6 +6581,10 @@
       [
         "Terraza del Pincio",
         "Santa Maria del Popolo"
+      ],
+      [
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola"
       ]
     ],
     "experience_highlights": {

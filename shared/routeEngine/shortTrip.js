@@ -23,6 +23,7 @@ import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { tripCalendar } from './tripCalendar.js'
+import { closedOnDay } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
@@ -31,6 +32,8 @@ import { weekdayForDay } from './tripSkeleton.js'
 /** Hora por defecto a la que empieza una tarde que no viene de una mañana (llegada, o C de tarde). */
 const DEFAULT_AFTERNOON_START = '14:30'
 
+/** Una visita por dentro que deja el día con esta cantidad de paradas menos (o más) se ve por fuera (decisión del 2026-09-25). */
+const INSIDE_MAX_STOPS_LOST = 2
 /** Prioridad para caerse cuando algo no cabe: cuanto más alta, antes se cae. */
 const DROP_RANK = { extra: 4, core: 3, pool: 2, joya: 1 }
 
@@ -129,7 +132,29 @@ function blockStops(block, pace, experiencesPositive, destData) {
  * @param {string|null} [args.season]            solo viajes antiguos: pasa a su mes central
  * @param {string|null} [args.dateRangeStartIso]  con fechas, el horario exacto de cada día
  */
-export function planShortTrip({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, month = null, season = null, dateRangeStartIso = null }) {
+export function planShortTrip(args) {
+  const trip = planShortTripOnce(args)
+  // Un bloque cuyo imprescindible NO se puede visitar ese día por su horario cuenta como cerrado: el
+  // último domingo del mes el Vaticano abre de 09:00 a 14:00 y el grupo no cabe antes de comer ni
+  // después (ya ha cerrado). Se prueba otra combinación una vez, y se dice por qué.
+  const HOURS_REASONS = new Set(['closed', 'closes_during_visit', 'after_last_entry'])
+  const blocks = args.destData.short_trips?.blocks ?? {}
+  const unavailable = { ...(args.unavailableBlocks ?? {}) }
+  for (const day of trip.days) {
+    for (const { unit, reason } of day.schedule.dropped) {
+      if (!HOURS_REASONS.has(reason)) continue
+      const essential = unit.places.find((place) => place.level === 1 && place.tier === 'joya')
+      const blockId = essential && Object.keys(blocks).find((id) => (blocks[id].core ?? []).includes(essential.name))
+      if (blockId && !unavailable[blockId]) unavailable[blockId] = `Ese día no da tiempo con su horario: ${essential.name}`
+    }
+  }
+  if (Object.keys(unavailable).length === Object.keys(args.unavailableBlocks ?? {}).length) return trip
+  const retry = planShortTripOnce({ ...args, unavailableBlocks: unavailable })
+  const lost = (candidate) => candidate.days.reduce((sum, day) => sum + day.schedule.dropped.length, 0)
+  return lost(retry) < lost(trip) ? retry : trip
+}
+
+function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, month = null, season = null, dateRangeStartIso = null, unavailableBlocks = {} }) {
   const config = destData.short_trips
   const { blocks } = config
   const mode = modeV3For(pace)
@@ -160,8 +185,29 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
     nightHint = rule.night_hint ?? null
     break
   }
+  // Cierres (decisión del 2026-09-25): si el imprescindible de un bloque cierra ese día (`closed_on`,
+  // `closed_dates`: el Vaticano un domingo), el bloque se cambia por otro que abra (domingo con el
+  // Vaticano en el pool → Roma Antigua + Centro en vez de Vaticano + Centro), y se dice por qué.
+  const tripDates = [...new Set(slots.map((s) => s.dayNumber))].map((dayNumber) => ({
+    weekday: weekdayForDay(dateRangeStartIso, dayNumber),
+    dateIso: calendar.hasDates ? calendar.dateOfDay(dayNumber) : null,
+  }))
+  const closedEssentials = (blockId) =>
+    (blocks[blockId]?.core ?? []).filter((name) => {
+      const place = placeByName.get(name)
+      return place?.level === 1 && tripDates.every((date) => closedOnDay(place, date.weekday, date.dateIso))
+    })
+  const unusable = (id) => closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id])
+  const closedBlocks = blockIds.filter(unusable)
+  if (closedBlocks.length > 0) {
+    const spare = Object.keys(blocks).filter((id) => !blockIds.includes(id) && !unusable(id))
+    blockIds = blockIds.map((id) => (closedBlocks.includes(id) ? spare.shift() ?? null : id)).filter(Boolean)
+    // La pista de la noche era para la combinación que ya no va.
+    nightHint = null
+    for (const id of closedBlocks) notIncluded.push({ name: blocks[id].label, reason: unavailableBlocks[id] ?? `Ese día cierra: ${closedEssentials(id).join(', ')}` })
+  }
   for (const [blockId, text] of Object.entries(combination.not_included ?? {})) {
-    if (!blockIds.includes(blockId)) notIncluded.push({ name: blocks[blockId].label, reason: text })
+    if (!blockIds.includes(blockId) && !closedBlocks.includes(blockId)) notIncluded.push({ name: blocks[blockId].label, reason: text })
   }
 
   const freeTourBlock = hasFreeTour && blocks.B?.free_tour?.replaces_block && blockIds.includes('B') ? 'B' : null
@@ -310,6 +356,28 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
         const recovered = schedule.dropped.filter(({ unit }) => !alt.dropped.some((d) => d.unit === unit)).map(({ unit }) => unit.id)
         schedule = alt
         modeFallback = { recoveredUnitIds: recovered, startedAt: normalMode.dayStart }
+      }
+    }
+    // Una visita por dentro nunca desplaza el interior de una joya ni deja el día con menos paradas
+    // (decisión del 2026-09-25). Si el Foro por dentro cabe (octubre: cierra a las 18:30) pero a costa
+    // del Panteón por dentro, de Plaza Venecia y del Altar, se ve por fuera y vuelven los tres.
+    {
+      const dayMode = modeFallback ? normalMode : mode
+      const paidInterior = (place) => !(place.is_free_access ?? place.type === 'exterior')
+      const joyaInteriorLost = (result) => result.dropped.some(({ unit }) => unit.places.some((place) => place.tier === 'joya' && paidInterior(place)))
+      const stopsOf = (result) => result.kept.reduce((sum, unit) => sum + unit.places.length, 0)
+      const insideWithPassBy = schedule.dropped.length > 0
+        ? schedule.kept.flatMap((unit) => unit.places).filter((place) => place.level === 1 && place.pass_by && place.group && place.tier !== 'joya' && paidInterior(place))
+        : []
+      for (const place of insideWithPassBy) {
+        const without = units.map((unit) => ({ ...unit, places: unit.places.filter((p) => p.name !== place.name) })).filter((unit) => unit.places.length > 0)
+        const alt = run(dayMode, without)
+        // +1: el paso por fuera que sustituye a la visita. "Menos paradas" = dos o más: por una sola
+        // (Plaza Venecia) no se pierde el Foro por dentro de la mañana de Roma Antigua.
+        if ((joyaInteriorLost(schedule) && !joyaInteriorLost(alt)) || stopsOf(alt) + 1 - stopsOf(schedule) >= INSIDE_MAX_STOPS_LOST) {
+          const original = units.find((unit) => unit.places.some((p) => p.name === place.name))
+          schedule = { ...alt, dropped: [...alt.dropped, { unit: { ...original, id: `${place.name} (por dentro)`, places: [place] }, reason: 'inside_displaces' }] }
+        }
       }
     }
     // Un imprescindible con `pass_by` que no llega a su cierre (el Foro, con Roma Antigua por la

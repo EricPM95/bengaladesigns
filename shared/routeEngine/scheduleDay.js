@@ -82,6 +82,8 @@ export const PRIORITY = { POOL: 0, JOYA: 1, ESSENTIAL: 1.5, THEME: 2, FILLER: 3 
 /** Penalización por cada pareja de unidades curadas que se visita al revés que el reparto a mano.
     Pequeña a propósito: el orden curado es buen punto de partida (medido), no una cárcel. */
 const CURATED_INVERSION_PENALTY = 10
+/** A partir de aquí, el rato parado antes de comer es un hueco y cuenta como tiempo perdido (regla 102). */
+const PRE_LUNCH_GAP_MINUTES = 60
 const MAX_IMPROVEMENT_PASSES = 30
 /** Piezas de tarde hasta las que se prueban TODOS los órdenes (8! = 40.320 simulaciones). Medido: ninguna tarde pasa de 8. */
 const MAX_AFTERNOON_PIECES = 8
@@ -545,7 +547,21 @@ export function openDay(input) {
 
     /** El día terminado: orden mejorado y horas puestas. */
     finish() {
-      sequence = reseeded(sequence, ctx)
+      // El orden final: aquí el mirador del atardecer va obligado en su sitio del recorrido (en el
+      // reparto no, para no cambiar qué entra cada día).
+      const finalCtx = { ...ctx, sunsetInRoute: true }
+      const reordered = reseeded(sequence, finalCtx)
+      if (simulate(reordered, finalCtx).ok) sequence = reordered
+      else {
+        // Si con el mirador en su sitio no cabe lo que le sigue en el recorrido (un 30 de marzo el sol se
+        // pone a las 19:33 y detrás van Acqua Paola y Trastevere), manda el recorrido: ese día el mirador
+        // se visita en su sitio, sin esperar al atardecer. Nunca un zigzag para llegar a la hora.
+        const noSunset = sequence.map((element) =>
+          element !== LUNCH && element.places.some((place) => place.sunset != null) ? { ...element, places: element.places.map((place) => ({ ...place, sunset: null })) } : element,
+        )
+        const inRoute = reseeded(noSunset, finalCtx)
+        sequence = simulate(inRoute, finalCtx).ok ? inRoute : reseeded(sequence, ctx)
+      }
       const result = simulate(sequence, ctx)
       return {
         visits: result.visits,
@@ -617,9 +633,11 @@ function simulate(sequence, ctx) {
   const takeLunch = () => {
     const at = Math.max(roundUpToQuarter(cursor), lunchOpen)
     if (at > lunchClose) return false
-    // El rato antes de comer NO es un hueco (Paso 2): no cuenta como coste. Contarlo empujaba a
-    // meter una visita antes de comer aunque rompiera la bajada natural (el Barrio Judío a las
-    // 12:30, antes del Campidoglio desde el que se baja directo).
+    // El rato antes de comer NO es un hueco (Paso 2) si es corto: no cuenta como coste. Contarlo
+    // empujaba a meter una visita antes de comer aunque rompiera la bajada natural (el Barrio Judío a
+    // las 12:30, antes del Campidoglio desde el que se baja directo). Pero lo que pase de 60 min sí es un
+    // hueco (regla 102) y cuenta: sin contarlo, la mañana del lunes de Pascua acababa en Navona a las 10:25.
+    idle += Math.max(0, at - cursor - PRE_LUNCH_GAP_MINUTES)
     const meal = { type: 'lunch', start: at, end: at + lunchBlock, eatMinutes: mode.mealMinutes, coordinates: position, spot: null }
     meals.push(meal)
     pendingLunch = { meal, from: position }
@@ -769,7 +787,11 @@ function simulate(sequence, ctx) {
       walk += walkMinutes
       meters += leg?.meters ?? 0
       idle += at - waitFrom
-      if (seenVisit && !place.fixed_start) longestWait = Math.max(longestWait, at - waitFrom)
+      // La espera al mirador del atardecer tampoco cuenta (decisión del 2026-09-25): es una hora fija,
+      // como el Free Tour, y su hueco lo cubre la regla de huecos a mitad de día (lo gratis de camino y
+      // luego "Tiempo libre"). Contarla hacía cruzar el río dos veces para no esperar (Conciliazione →
+      // Campo de' Fiori → Barrio Judío → vuelta al Borgo Pio, un 30 de marzo).
+      if (seenVisit && !place.fixed_start && place.sunset == null) longestWait = Math.max(longestWait, at - waitFrom)
       visits.push({ unitId: unit.id, place, start: at, end: at + duration, chained, walkMinutes, walkSource: leg?.source ?? null })
       cursor = at + duration
       // Un recorrido a pie (el Free Tour) acaba donde acaba su recorrido, no donde se quedó.
@@ -813,6 +835,16 @@ function simulate(sequence, ctx) {
     // Hasta la tolerancia del ritmo es caminar tranquilo, un helado; por encima, una tarde vacía.
     dinnerIdlePenalty = Math.max(0, idleBeforeDinner - mode.gapTolerance) * DINNER_IDLE_PENALTY_PER_MINUTE
     meals.push({ type: 'dinner', start: at, end: at + mode.mealMinutes, coordinates: dinnerPoint ?? position, walkMinutes: walkToDinner })
+  }
+
+  // El mirador del atardecer va SIEMPRE en su sitio del recorrido (decisión del 2026-09-25): nada del
+  // recorrido que le toca después va antes, ni al revés (Janículo → Acqua Paola → Trastevere). Sin
+  // esto, al no contar la espera al atardecer, el Janículo acababa detrás de Trastevere.
+  const units = sequence.filter((element) => element !== LUNCH)
+  for (const [index, unit] of units.entries()) {
+    if (!ctx.sunsetInRoute || unit.curatedIndex == null || !unit.places.some((place) => place.sunset != null)) continue
+    const outOfPlace = units.some((other, otherIndex) => other.curatedIndex != null && other !== unit && (otherIndex < index ? other.curatedIndex > unit.curatedIndex : other.curatedIndex < unit.curatedIndex))
+    if (outOfPlace) return { ok: false, reason: 'sunset_out_of_route', unitId: unit.id }
   }
 
   const broken = leadsBroken(visits)

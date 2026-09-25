@@ -118,6 +118,8 @@ export function lastEntryMinutes(place, visitStart, seasonOrHours = null) {
   const season = hours.season ?? null
   // Con horario por periodo (Estaciones, Parte 2), la última entrada es la de ese periodo (null = no
   // hay), por encima de la de la época.
+  const lastSunday = hours.weekday ? lastSundayOpening(place, hours.dateIso) : null
+  if (lastSunday) return lastSunday.last_entry == null ? null : hhmmToMinutes(lastSunday.last_entry)
   const period = periodFor(place, hours.dateIso)
   if (period) return period.last_entry == null ? null : hhmmToMinutes(period.last_entry)
   const raw = place?.last_entry
@@ -211,14 +213,88 @@ export function periodFor(place, dateIso) {
   return place.by_period.find((period) => withinMonthDays(md, period.from, period.to)) ?? null
 }
 
+// ── Fechas móviles y último domingo (Estaciones, revisión del 2026-09-25) ─────────────────────
+
 /**
- * ¿Cierra el lugar ese día por fecha (`closed_dates`, MM-DD: el 25 de diciembre)? Solo con fechas
+ * Domingo de Pascua de un año (calendario gregoriano, algoritmo anónimo de Meeus/Jones/Butcher), como
+ * "AAAA-MM-DD". Pascua cambia cada año y no se puede escribir como MM-DD: en los datos va como
+ * `easter` o `easter+N` / `easter-N` (el lunes de Pascua es `easter+1`).
+ */
+export function easterIso(year) {
+  const a = year % 19
+  const b = Math.floor(year / 100)
+  const c = year % 100
+  const d = Math.floor(b / 4)
+  const e = b % 4
+  const f = Math.floor((b + 8) / 25)
+  const g = Math.floor((b - f + 1) / 3)
+  const h = (19 * a + b - d - g + 15) % 30
+  const i = Math.floor(c / 4)
+  const k = c % 4
+  const l = (32 + 2 * e + 2 * i - h - k) % 7
+  const m = Math.floor((a + 11 * h + 22 * l) / 451)
+  const month = Math.floor((h + l - 7 * m + 114) / 31)
+  const day = ((h + l - 7 * m + 114) % 31) + 1
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+/**
+ * ¿Es `dateIso` la fecha que dice `token`? MM-DD fija ("12-25") o móvil ("easter", "easter+1").
+ */
+export function matchesDateToken(token, dateIso) {
+  if (!dateIso) return false
+  const movable = /^easter([+-]\d+)?$/.exec(String(token).trim())
+  if (movable) {
+    const year = Number(String(dateIso).slice(0, 4))
+    const offset = Number(movable[1] ?? 0)
+    const target = new Date(Date.parse(`${easterIso(year)}T12:00:00Z`) + offset * 86400000).toISOString().slice(0, 10)
+    return target === String(dateIso).slice(0, 10)
+  }
+  return monthDayOf(token) !== null && monthDayOf(token) === monthDayOf(dateIso)
+}
+
+/**
+ * ¿Cierra el lugar ese día por fecha (`closed_dates`: "12-25", "easter+1")? Solo con fechas
  * reales: sin ellas el día 15 del mes es una referencia, no un día del viaje.
  */
 export function closedOnDate(place, dateIso) {
   if (!dateIso || !Array.isArray(place?.closed_dates)) return false
-  const md = monthDayOf(dateIso)
-  return place.closed_dates.some((date) => monthDayOf(date) === md)
+  return place.closed_dates.some((token) => matchesDateToken(token, dateIso))
+}
+
+/** ¿Es el último domingo de su mes? */
+function isLastSundayOfMonth(dateIso) {
+  const t = Date.parse(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
+  if (!Number.isFinite(t)) return false
+  const date = new Date(t)
+  return date.getUTCDay() === 0 && new Date(t + 7 * 86400000).getUTCMonth() !== date.getUTCMonth()
+}
+
+/**
+ * `last_sunday`: el lugar cierra los domingos (`closed_on`) pero abre el último domingo del mes con
+ * este horario ({ windows, last_entry, except: [fechas en las que esa excepción no vale] }). Los
+ * Museos Vaticanos: 09:00-14:00, salvo si ese domingo es Pascua, 29 jun, 25, 26 o 31 dic.
+ * Devuelve el horario de ese día si aplica, o null.
+ */
+export function lastSundayOpening(place, dateIso) {
+  const rule = place?.last_sunday
+  if (!rule || !dateIso || !isLastSundayOfMonth(dateIso)) return null
+  if ((rule.except ?? []).some((token) => matchesDateToken(token, dateIso))) return null
+  return rule
+}
+
+/**
+ * ¿Cierra el lugar ese día? Por día de la semana (`closed_on`, solo con fechas: `weekday`), salvo el
+ * último domingo si trae `last_sunday`, o por fecha (`closed_dates`).
+ * @param {string|null} weekday  "domingo"... (null sin fechas: no se aplica)
+ * @param {string|null} dateIso  la fecha real (null sin fechas)
+ */
+export function closedOnDay(place, weekday, dateIso) {
+  if (closedOnDate(place, dateIso)) return true
+  if (!weekday) return false
+  const closedOn = (Array.isArray(place?.closed_on) ? place.closed_on : typeof place?.closed_on === 'string' ? place.closed_on.split(',') : []).map((d) => stripAccents(String(d).trim()))
+  if (!closedOn.includes(stripAccents(weekday))) return false
+  return !lastSundayOpening(place, dateIso)
 }
 
 /**
@@ -260,6 +336,9 @@ export function placeWindows(place, hours = {}) {
  * fechas → `windows`. Los cierres (`closed_on`, `closed_dates`) van antes, en el reparto.
  */
 function rawWindows(place, hours) {
+  // El último domingo del mes con su horario propio (`last_sunday`), solo con fechas.
+  const lastSunday = hours.weekday ? lastSundayOpening(place, hours.dateIso) : null
+  if (lastSunday && Array.isArray(lastSunday.windows)) return lastSunday.windows
   const byDay = place?.by_day
   if (hours.weekday && byDay) {
     const day = dayIndex(hours.weekday)

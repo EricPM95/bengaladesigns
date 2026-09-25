@@ -1,13 +1,20 @@
 {
   "_formato": {
-    "available": "Disponibilidad por fechas, OPCIONAL: { from: 'MM-DD', to: 'MM-DD' }, ambos incluidos; puede cruzar el año (12-01 → 01-06). Fuera de esa ventana no entra en la ruta. Con fechas se aplica día a día; con solo el mes: mes entero dentro → entra, entero fuera → no entra, mes frontera → solo si el viajero lo eligió y confirmó las fechas. Nunca se inventan fechas: si no hay fuente, no se pone.",
+    "available": "Disponibilidad por fechas, OPCIONAL: { from: 'MM-DD', to: 'MM-DD' }, ambos incluidos; puede cruzar el año (12-01 → 01-06). Sin 'aprox', estricta: con fechas, día a día; con solo el mes, solo si el mes entero cae dentro. Con 'aprox': true (mercadillos, fiestas, eventos con fechas que cambian cada año): hasta 15 días antes o después entra con el aviso del propio dato (notice_before / notice_after, adaptado a lo que sea: 'algunos mercadillos', 'la fiesta'...). Nunca se inventan fechas: si no hay fuente, no se pone.",
     "donde": "En places[] (un lugar de temporada), night_experiences[] (una nocturna de temporada), excursions.options.<id> (una excursión de temporada) y, para las experiencias, destination_config.experience_availability.<id de experiencia>.",
-    "puesta_de_sol": "No se cura: sale de la fórmula astronómica con el punto del destino (el centro de su primera zona) y su `timezone` (\"Europe/Rome\"). validar.mjs marca en rojo un destino sin ellos. `destination_config.sunset_by_season` solo hace falta si el destino no tiene coordenadas."
+    "puesta_de_sol": "No se cura: sale de la fórmula astronómica con el punto del destino (el centro de su primera zona) y su `timezone` (\"Europe/Rome\"). validar.mjs marca en rojo un destino sin ellos. `destination_config.sunset_by_season` solo hace falta si el destino no tiene coordenadas.",
+    "mercadillos": "Los mercadillos son lugares con available (aprox) y la etiqueta 'mercadillo_navideno', que casa con la experiencia Mercadillos Navideños."
   },
   "timezone": "Europe/Rome",
   "destination_config": {
     "experience_availability": {
-      "mercadillos_navidenos": { "from": "12-01", "to": "01-06" }
+      "mercadillos_navidenos": {
+        "from": "12-01",
+        "to": "01-06",
+        "aprox": true,
+        "notice_before": "Es probable que algunos mercadillos aún no hayan abierto.",
+        "notice_after": "Es probable que algunos mercadillos ya hayan cerrado."
+      }
     }
   },
   "places": [
@@ -16,25 +23,57 @@
       "level": 2,
       "type": "exterior",
       "zone": "zona_del_destino",
-      "coordinates": [0, 0],
+      "coordinates": [
+        0,
+        0
+      ],
       "duration_minutes": 45,
-      "tags": ["mercado"],
-      "available": { "from": "12-01", "to": "01-06" },
-      "hours_audit": { "confianza": "alta", "fuente": "https://web-oficial.example", "nota": "", "fecha": "AAAA-MM-DD" }
+      "tags": [
+        "mercadillo_navideno"
+      ],
+      "available": {
+        "from": "12-01",
+        "to": "01-06",
+        "aprox": true,
+        "notice_before": "Es probable que algunos mercadillos aún no hayan abierto.",
+        "notice_after": "Es probable que algunos mercadillos ya hayan cerrado."
+      },
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://web-oficial.example",
+        "nota": "",
+        "fecha": "AAAA-MM-DD"
+      }
     }
   ],
   "night_experiences": [
     {
       "name": "Iluminación de ejemplo (noche)",
-      "coordinates": [0, 0],
+      "coordinates": [
+        0,
+        0
+      ],
       "duration": 30,
-      "conflicts_with": ["Lugar del que es la versión de noche"],
-      "available": { "from": "12-08", "to": "01-06" }
+      "conflicts_with": [
+        "Lugar del que es la versión de noche"
+      ],
+      "available": {
+        "from": "12-08",
+        "to": "01-06",
+        "aprox": true,
+        "notice_before": "Es probable que la iluminación aún no esté puesta.",
+        "notice_after": "Es probable que ya hayan quitado la iluminación."
+      }
     }
   ],
   "excursions": {
     "options": {
-      "excursion_de_ejemplo": { "available": { "from": "04-01", "to": "10-31" } }
+      "excursion_de_ejemplo": {
+        "available": {
+          "from": "04-01",
+          "to": "10-31"
+        }
+      }
     }
   }
 }

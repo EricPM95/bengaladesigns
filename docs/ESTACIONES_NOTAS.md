@@ -249,3 +249,52 @@ sin ellos.
 
 Ninguna en estas seis partes: el mes (`answers.month`) y `seasonalConfirmed` van dentro del jsonb
 `route` del viaje.
+
+## Revisión (respuestas del 2026-09-25)
+
+- **Tempietto**: fuera la obligación de ir pegado a la Acqua Paola (queda como par decidido "sin
+  relación" en `unrelated_pairs`, que es donde el validador guarda los pares ya decididos). En la
+  Ruta B, día 3: Puente Sant'Angelo 16:00 → **Tempietto 16:45** → Janículo 17:45 → Acqua Paola →
+  Trastevere.
+- **1 `hours_audit`, 2 Pincio, 5 `experience_availability`**: sin cambios.
+- **3 Vaticano**: `closed_dates` de la web oficial (1 y 6 ene, 11 feb, 19 mar, lunes de Pascua, 1 may,
+  29 jun, 14 y 15 ago, 8, 25 y 26 dic), `closed_on: domingo` y `last_sunday` (09:00-14:00, última
+  entrada 12:30, salvo Pascua, 29 jun, 25, 26 y 31 dic). **Pascua**: fecha móvil escrita como
+  `easter` / `easter+1`; el motor la calcula cada año con el algoritmo gregoriano (5 abr 2026,
+  28 mar 2027). El 28 de marzo de 2027 es a la vez Pascua y último domingo: cierra.
+- **4 Viajes de 1 día**: miran `closed_on` y `closed_dates`; si el imprescindible de un bloque cierra,
+  otra combinación. También cuando abre pero su horario no da (el último domingo el Vaticano abre
+  09:00-14:00 y el grupo no cabe antes de comer): domingo con el Vaticano en el pool → Roma Antigua +
+  Centro, con "Ese día cierra: Museos Vaticanos…" / "Ese día no da tiempo con su horario: …".
+- **6 Mercadillos**: etiqueta `mercadillo_navideno` en la experiencia "Mercadillos Navideños".
+- **7**: sustituida por el cambio de disponibilidad de abajo (ya no hay confirmación).
+- **8 Zigzag de marzo**: la espera al atardecer no cuenta como espera que evitar; el mirador va
+  obligado en su sitio del recorrido al ordenar el día (no al repartir, que cambiaba qué entraba cada
+  día). Si con el mirador en su sitio no cabe lo que le sigue (30 mar 2027, sol a las 19:33, detrás
+  Acqua Paola y Trastevere), manda el recorrido: Borgo Pio → Janículo 16:15 → Tempietto → Acqua Paola →
+  Trastevere, sin esperar al atardecer y sin volver atrás.
+- **9 Octubre, 1 día**: Free Tour → Arco → Coliseo → Foro visto desde fuera → Panteón → Plaza Venecia →
+  Altar. **Interpretación a confirmar**: "reduce el día a menos paradas" lo aplico con 2 o más paradas
+  menos. Con 1 sola, el Foro por dentro de la mañana de Roma Antigua (1 día, completo, Arte) se quedaba
+  fuera por ganar solo la Plaza Venecia. Aun así, en 1 día completo sin experiencias el Foro sale ahora
+  por fuera por la mañana (por dentro costaba Plaza Venecia + Altar, 2 paradas).
+- **Disponibilidad `aprox`** (el añadido): con `aprox: true` entra dentro del rango, y hasta 15 días
+  antes o después con el aviso del propio dato (`notice_before` / `notice_after`) en la parada y en la
+  tarjeta de la experiencia; más lejos, no. Fuera la pregunta "¿Viajas en esas fechas?". Sin `aprox`,
+  estricta: con solo el mes, solo el mes entero dentro. **Interpretación**: el mes frontera sin `aprox`
+  ya no se ofrece (no hay pregunta con la que confirmarlo), salvo un lugar que el viajero puso en su
+  pool.
+- INVARIANTES: 104 ampliada (fechas móviles, último domingo), 106 reescrita, 107-110 nuevas.
+- **Arreglado al pasar el semáforo**: el 29 de marzo de 2027 (lunes de Pascua, el Vaticano cierra y el
+  día del centro pasa ahí) la mañana acababa en Navona a las 10:25 y quedaban 155 min vacíos hasta comer.
+  Venía del ajuste de antes del push ("el rato antes de comer no es coste"). Ahora lo que pase de 60 min
+  cuenta como hueco. Las rutas A y B no cambian.
+- **Arreglado también**: el paso de huecos a mitad de día (regla 102, de antes del push) no miraba las
+  relaciones: podía meter la Plaza Trilussa en un hueco del día 1 con Trastevere el día 3. Ahora lo de
+  dentro de otro solo entra el día de su contenedor, y los vecinos el de su pareja. De paso, un barrio
+  ya no se muda al día de su cena dejando atrás lo que tiene dentro.
+- **Y uno más, al volver a pasar el semáforo**: con los cierres del Vaticano ya correctos, un viaje de
+  2 días desde el domingo de Pascua de 2027 (28 mar: Pascua + lunes de Pascua, cerrado los dos) dejaba
+  el día 2 como "día del Vaticano sin Vaticano" (Farnese, Puente Sant'Angelo, Conciliazione, Borgo Pio…)
+  con esperas largas. Ahora, si el día curado no tiene con quién cambiarse, se reparte como un día sin
+  curado: día 2 = Trevi, Panteón, Navona, Campidoglio, Plaza de España… (INVARIANTES 107).

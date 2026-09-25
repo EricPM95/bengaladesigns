@@ -16,6 +16,7 @@ export const EXPERIENCE_TITLES = {
   barrios_sabores: 'Barrios y Sabores',
   naturaleza_vistas: 'Naturaleza y Vistas',
   free_tour: 'Free Tour',
+  mercadillos_navidenos: 'Mercadillos Navideños',
 }
 
 export const whyTexts = {

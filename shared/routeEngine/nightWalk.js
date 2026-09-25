@@ -16,7 +16,7 @@ import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
 import { dinnerZones } from './dinnerZones.js'
 import { effectiveSchedule, parseClosingMinutes } from './openingHours.js'
-import { availableForTrip } from './availability.js'
+import { seasonFit } from './availability.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
 function metersBetween(a, b) {
@@ -126,7 +126,8 @@ export function planNightWalks(destData, plan) {
     // entero dentro (una nocturna nunca la elige el viajero, así que el mes frontera no vale).
     const hasDates = Boolean(day.hours?.weekday)
     const monthOfDay = day.hours?.dateIso ? Number(String(day.hours.dateIso).slice(5, 7)) - 1 : null
-    const inSeason = (entry) => availableForTrip(entry.available, { hasDates, month: monthOfDay }, day.hours?.dateIso ?? null, false)
+    const fitOf = (entry) => seasonFit(entry.available, { hasDates, month: monthOfDay }, day.hours?.dateIso ?? null, false)
+    const inSeason = (entry) => fitOf(entry).enters
 
     const available = catalogue.filter((entry) => {
       if (used.has(entry.name)) return false
@@ -172,7 +173,8 @@ export function planNightWalks(destData, plan) {
     }
 
     for (const entry of chain) used.add(entry.name)
-    if (chain.length > 0) byDay.set(day.dayNumber, chain)
+    // Con `aprox`, en el margen de 15 días: sale con su aviso ("Es probable que … aún no hayan abierto").
+    if (chain.length > 0) byDay.set(day.dayNumber, chain.map((entry) => (fitOf(entry).notice ? { ...entry, season_notice: fitOf(entry).notice } : entry)))
   }
   return byDay
 }
@@ -237,6 +239,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       schedule: null,
       is_night_experience: true,
       ...(plan.beforeDinner ? { before_dinner: true } : {}),
+      ...(entry.season_notice ? { season_notice: entry.season_notice } : {}),
       why: plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night(),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',

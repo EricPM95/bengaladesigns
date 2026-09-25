@@ -24,7 +24,7 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { availabilityLabel, availableForTrip, availableOn } from '../../shared/routeEngine/availability.js'
+import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 
 /**
@@ -68,7 +68,6 @@ export async function buildDayBlockV3(
     month: options.month ?? null,
     season: options.season ?? null,
     contentDays: Math.max(1, totalDays - 1),
-    confirmed: options.seasonalConfirmed ?? [],
   })
 
   // El reparto del viaje ENTERO se recalcula en cada llamada: es una función pura y cuesta
@@ -140,7 +139,10 @@ export async function buildDayBlockV3(
     // mes, el mes frontera tampoco (no la ha elegido el viajero).
     const calendar = tripCalendar({ dateRangeStartIso, month: options.month ?? null, season: options.season ?? null })
     const sourceOf = (id) => destData.excursions?.options?.[id] ?? null
-    day.excursion_options = day.excursion_options.filter((option) => availableForTrip(sourceOf(option.id)?.available ?? option.available, calendar, calendar.dateOfDay(dayNumber), false))
+    day.excursion_options = day.excursion_options
+      .map((option) => ({ option, fit: seasonFit(sourceOf(option.id)?.available ?? option.available, calendar, calendar.dateOfDay(dayNumber), false) }))
+      .filter(({ fit }) => fit.enters)
+      .map(({ option, fit }) => (fit.notice ? { ...option, season_notice: fit.notice } : option))
     const preferida =day.excursion_options.find((option) => option.id === preselectedExcursionId(destData))
     if (preferida) {
       // La preseleccionada va la primera: es la que la ficha enseña en grande y el resto quedan
@@ -234,18 +236,18 @@ function buildCityDayV3(destData, trip, tripDay, options) {
 
 /**
  * Las experiencias elegidas que el viaje puede ofrecer (Estaciones, Parte 4). Su ventana vive en
- * `destination_config.experience_availability[id]` ({ from, to } MM-DD). Con fechas, entra si algún día
- * del viaje cae dentro; con solo el mes, si el mes entero cae dentro, o si es mes frontera y el viajero
- * confirmó que viaja en esas fechas (`confirmed`). Sin ventana, siempre.
+ * `destination_config.experience_availability[id]` ({ from, to, aprox? } MM-DD). Con fechas, entra si
+ * algún día del viaje entra (con `aprox`, también en el margen de 15 días); con solo el mes, como
+ * seasonFit (availability.js). Sin ventana, siempre.
  */
-export function experiencesInSeason(destData, experiencesPositive, { dateRangeStartIso = null, month = null, season = null, contentDays = 1, confirmed = [] } = {}) {
+export function experiencesInSeason(destData, experiencesPositive, { dateRangeStartIso = null, month = null, season = null, contentDays = 1 } = {}) {
   const windows = destData?.destination_config?.experience_availability ?? {}
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   return experiencesPositive.filter((id) => {
     const window = windows[id]
     if (!window) return true
-    if (calendar.hasDates) return Array.from({ length: contentDays }, (_, i) => calendar.dateOfDay(i + 1)).some((date) => availableOn(window, date))
-    return availableForTrip(window, calendar, null, confirmed.includes(id))
+    if (calendar.hasDates) return Array.from({ length: contentDays }, (_, i) => calendar.dateOfDay(i + 1)).some((date) => availableForTrip(window, calendar, date))
+    return availableForTrip(window, calendar, null)
   })
 }
 

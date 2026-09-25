@@ -3,17 +3,26 @@
  * en lugares, experiencias, nocturnas y excursiones (ambos días incluidos; puede cruzar el año: el
  * mercadillo de Navidad, 12-01 → 01-06). Fuera de esa ventana, no entra en la ruta.
  *
- *   - Con fechas: se aplica directamente, día a día.
- *   - Con solo el mes: el mes entero dentro → entra; entero fuera → no entra (y la experiencia no se
- *     ofrece en el formulario); MES FRONTERA (solo una parte dentro) → entra solo si el viajero lo
- *     eligió y confirmó que viaja en esas fechas. Un lugar de temporada que no eligió no entra solo en
- *     un mes frontera: sigue en "Añadir parada" con la nota de cuándo abre.
+ * Sin `aprox`, estricta:
+ *   - con fechas, día a día;
+ *   - con solo el mes, entra si el mes cae ENTERO dentro. En un mes frontera no entra, salvo un lugar
+ *     que el viajero puso en su pool (`chosen`).
  *
- * Módulo puro: lo usan el servidor, el motor y el cliente.
+ * Con `aprox: true` (mercadillos, fiestas, eventos con fechas que cambian cada año), con aviso en vez
+ * de pregunta (revisión del 2026-09-25):
+ *   - dentro del rango entra normal;
+ *   - hasta 15 días antes o después, entra con el aviso del propio dato (`notice_before`:
+ *     "Es probable que algunos mercadillos aún no hayan abierto.", `notice_after`: "…ya hayan cerrado.");
+ *   - más lejos, no se ofrece.
+ *   Con solo el mes: el mes entero dentro → normal; si toca el rango o está a 15 días o menos → con aviso.
+ *
+ * Módulo puro: lo usan el servidor, el motor y el cliente (copia en src/lib/seasonalAvailability.ts).
  */
 
 import { withinMonthDays } from './openingHours.js'
 
+/** Días de margen de una ventana aproximada, antes y después. */
+export const APROX_MARGIN_DAYS = 15
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 const monthDayOf = (text) => {
   const match = /(\d{2})-(\d{2})$/.exec(String(text ?? '').slice(0, 10))
@@ -21,14 +30,35 @@ const monthDayOf = (text) => {
 }
 const isWindow = (available) => Boolean(available && typeof available.from === 'string' && typeof available.to === 'string')
 
-/** ¿Está disponible ESE día (fecha ISO)? Sin ventana, siempre. */
+/** Día del año (0-365, año bisiesto) de un MMDD. */
+const dayOfYear = (md) => {
+  const month = Math.floor(md / 100) - 1
+  return DAYS_IN_MONTH.slice(0, month).reduce((sum, days) => sum + days, 0) + (md % 100) - 1
+}
+/** Días que faltan (hacia delante, dando la vuelta al año) de `a` a `b`. */
+const daysForward = (a, b) => (dayOfYear(b) - dayOfYear(a) + 366) % 366
+
+/**
+ * Cómo cae un día (MMDD) respecto a la ventana: 'in', 'before' (a 15 días o menos de que empiece),
+ * 'after' (a 15 días o menos de que acabe) u 'out'.
+ */
+function dayStatus(md, available) {
+  if (withinMonthDays(md, available.from, available.to)) return 'in'
+  const toStart = daysForward(md, monthDayOf(available.from))
+  const sinceEnd = daysForward(monthDayOf(available.to), md)
+  if (toStart <= APROX_MARGIN_DAYS && toStart <= sinceEnd) return 'before'
+  if (sinceEnd <= APROX_MARGIN_DAYS) return 'after'
+  return 'out'
+}
+
+/** ¿Está disponible ESE día (fecha ISO), sin margen? Sin ventana, siempre. */
 export function availableOn(available, dateIso) {
   if (!isWindow(available)) return true
   return withinMonthDays(monthDayOf(dateIso), available.from, available.to)
 }
 
 /**
- * Cómo cae un mes (0-11) respecto a la ventana: 'in' (entero dentro), 'out' (entero fuera) o
+ * Cómo cae un mes (0-11) respecto a la ventana, sin margen: 'in' (entero dentro), 'out' (entero fuera) o
  * 'border' (una parte). Sin ventana, 'in'. Febrero cuenta con 29 días: la ventana es de calendario.
  */
 export function monthAvailability(available, month) {
@@ -42,17 +72,38 @@ export function monthAvailability(available, month) {
 }
 
 /**
- * ¿Entra en la ruta ese día del viaje?
- * @param {{from:string,to:string}|null|undefined} available
+ * ¿Entra en la ruta, y con qué aviso?
+ * @param {{from:string,to:string,aprox?:boolean,notice_before?:string,notice_after?:string}|null|undefined} available
  * @param {{ hasDates: boolean, month: number|null }} calendar   (tripCalendar.js)
  * @param {string|null} dateIso   la fecha de ese día (con fechas)
- * @param {boolean} [chosen]      el viajero lo eligió y, en mes frontera, confirmó las fechas
+ * @param {boolean} [chosen]      el viajero lo puso en su pool (solo cuenta sin `aprox`, en mes frontera)
+ * @returns {{ enters: boolean, notice: string|null }}
  */
+export function seasonFit(available, calendar, dateIso, chosen = false) {
+  if (!isWindow(available)) return { enters: true, notice: null }
+  const noticeFor = (side) => (side === 'before' ? available.notice_before : available.notice_after) ?? null
+  if (calendar?.hasDates) {
+    const status = dayStatus(monthDayOf(dateIso), available)
+    if (status === 'in') return { enters: true, notice: null }
+    if (available.aprox && status !== 'out') return { enters: true, notice: noticeFor(status) }
+    return { enters: false, notice: null }
+  }
+  const month = calendar?.month
+  const whole = monthAvailability(available, month)
+  if (whole === 'in') return { enters: true, notice: null }
+  if (available.aprox) {
+    // Algún día del mes dentro del rango o a 15 días o menos: entra con aviso (del lado que toque).
+    const statuses = Array.from({ length: DAYS_IN_MONTH[month] ?? 0 }, (_, i) => dayStatus((month + 1) * 100 + i + 1, available))
+    if (statuses.every((status) => status === 'out')) return { enters: false, notice: null }
+    const side = statuses.find((status) => status === 'before' || status === 'after') ?? (statuses[0] === 'in' ? 'after' : 'before')
+    return { enters: true, notice: noticeFor(side) }
+  }
+  return { enters: whole === 'border' && chosen, notice: null }
+}
+
+/** ¿Entra en la ruta ese día del viaje? (seasonFit sin el aviso) */
 export function availableForTrip(available, calendar, dateIso, chosen = false) {
-  if (!isWindow(available)) return true
-  if (calendar?.hasDates) return availableOn(available, dateIso)
-  const status = monthAvailability(available, calendar?.month)
-  return status === 'in' || (status === 'border' && chosen)
+  return seasonFit(available, calendar, dateIso, chosen).enters
 }
 
 const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -63,8 +114,8 @@ export function monthDayLabel(text) {
   return `${md % 100} de ${MONTH_NAMES[Math.floor(md / 100) - 1]}`
 }
 
-/** "Del 1 de diciembre al 6 de enero" — para la nota de "Añadir parada" y la pregunta del formulario. */
+/** "del 1 de diciembre al 6 de enero" — para la nota de "Añadir parada". */
 export function availabilityLabel(available) {
   if (!isWindow(available)) return null
-  return `del ${monthDayLabel(available.from)} al ${monthDayLabel(available.to)}`
+  return `del ${monthDayLabel(available.from)} al ${monthDayLabel(available.to)}${available.aprox ? ' (aproximadamente)' : ''}`
 }

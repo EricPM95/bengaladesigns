@@ -1,28 +1,56 @@
 {
   "_formato": {
     "by_period": "Lista de periodos que cubre el AÑO ENTERO (366 días, contando el 29 de febrero). Cada periodo: from/to en MM-DD (ambos incluidos; puede cruzar el año, ej. 10-25 → 02-29), windows (franjas del día) y last_entry (última entrada, o null si no hay o no se publica: no se inventa).",
-    "closed_dates": "Días del año que cierra entero, en MM-DD (25 de diciembre, 1 de enero...). Solo se aplican con fechas de viaje.",
+    "closed_dates": "Días del año que cierra entero, en MM-DD (25 de diciembre, 1 de enero...), o fechas móviles: 'easter' (domingo de Pascua), 'easter+1' (lunes de Pascua), 'easter-2'... Pascua se calcula cada año: nunca se escribe con su día. Solo se aplican con fechas de viaje.",
     "closed_on": "Días de la semana que cierra (\"lunes\"...). Opcional; si no viene, se deja el que ya tenga el lugar.",
     "sunset": "En windows se puede usar 'sunset' como hora de cierre ('07:00-sunset'): parques y jardines que cierran al anochecer. El motor pone la puesta de sol de ese día.",
     "fechas_moviles": "Los cambios de finales de marzo y octubre suelen seguir el cambio de hora (último domingo del mes): se escriben con las fechas del año auditado y se revisan cada año (validar.mjs avisa con --anio).",
     "confianza": "alta = web oficial del lugar o de quien lo gestiona; media = fuente secundaria coherente con la oficial; baja = sin fuente oficial accesible (se deja by_period a null y no se toca el lugar).",
     "fuente": "URL de donde sale el horario.",
     "_nota": "Lo que haya que saber para revisarlo (erratas de la web, criterio usado...).",
-    "fecha_auditoria": "AAAA-MM-DD de la auditoría. Importar: node scripts/destino/importarPeriodos.mjs <destino> <este fichero>"
+    "fecha_auditoria": "AAAA-MM-DD de la auditoría. Importar: node scripts/destino/importarPeriodos.mjs <destino> <este fichero>",
+    "last_sunday": "Opcional: { windows, last_entry, except } para un lugar que cierra los domingos (closed_on) pero abre el último domingo del mes con otro horario; except = fechas en las que esa excepción no vale (MM-DD o 'easter')."
   },
   "places": {
     "Nombre exacto del lugar (como en places[].name)": {
       "by_period": [
-        { "from": "10-25", "to": "03-28", "windows": ["09:00-16:30"], "last_entry": "15:30" },
-        { "from": "03-29", "to": "10-24", "windows": ["09:00-19:15"], "last_entry": "18:15" }
+        {
+          "from": "10-25",
+          "to": "03-28",
+          "windows": [
+            "09:00-16:30"
+          ],
+          "last_entry": "15:30"
+        },
+        {
+          "from": "03-29",
+          "to": "10-24",
+          "windows": [
+            "09:00-19:15"
+          ],
+          "last_entry": "18:15"
+        }
       ],
-      "closed_dates": ["12-25", "01-01"],
+      "closed_dates": [
+        "12-25",
+        "01-01",
+        "easter+1"
+      ],
       "confianza": "alta",
       "fuente": "https://web-oficial.example/horarios",
       "_nota": ""
     },
     "Parque que cierra al anochecer": {
-      "by_period": [{ "from": "01-01", "to": "12-31", "windows": ["07:00-sunset"], "last_entry": null }],
+      "by_period": [
+        {
+          "from": "01-01",
+          "to": "12-31",
+          "windows": [
+            "07:00-sunset"
+          ],
+          "last_entry": null
+        }
+      ],
       "confianza": "media",
       "fuente": "https://turismo.example/parque",
       "_nota": "La web dice 'del amanecer al anochecer'."

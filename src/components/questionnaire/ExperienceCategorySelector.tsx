@@ -15,9 +15,6 @@ interface ExperienceCategorySelectorProps {
   destination?: string
   month?: number
   dateRange?: DateRange
-  /** Las de mes frontera a las que el viajero dijo "Sí, viajo en esas fechas". */
-  seasonalConfirmed?: ExperienceCategoryId[]
-  onSeasonalConfirmedChange?: (confirmed: ExperienceCategoryId[]) => void
 }
 
 /**
@@ -43,15 +40,13 @@ export function ExperienceCategorySelector({
   destination,
   month,
   dateRange,
-  seasonalConfirmed = [],
-  onSeasonalConfirmedChange,
 }: ExperienceCategorySelectorProps) {
   const winter = isWinterTrip(season, tripStartIso)
   // Ventanas de temporada del destino (Estaciones, Parte 4). Una experiencia con ventana: fuera del mes
-  // (o de las fechas) no se ofrece; en mes frontera se pregunta si se viaja en esas fechas. Sin ventana,
-  // manda la regla de siempre (winterOnly).
+  // (o de las fechas) no se ofrece; con fechas aproximadas (`aprox`) y a 15 días o menos, se ofrece con
+  // su aviso ("Es probable que algunos mercadillos aún no hayan abierto."). Sin ventana, manda la regla
+  // de siempre (winterOnly).
   const [windows, setWindows] = useState<Record<string, SeasonalWindow>>({})
-  const [notice, setNotice] = useState<string | null>(null)
   useEffect(() => {
     if (!destination) return
     let alive = true
@@ -64,25 +59,14 @@ export function ExperienceCategorySelector({
   }, [destination])
   const statusOf = (id: ExperienceCategoryId) => seasonStatus(windows[id], month, dateRange)
   const visibleCategories = EXPERIENCE_CATEGORY_BANK.filter((category) =>
-    windows[category.id] ? statusOf(category.id) !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
+    windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
   // Si cambia el mes y una elegida queda fuera, deja de estar elegida.
   useEffect(() => {
-    const outside = selected.filter((id) => windows[id] && statusOf(id) === 'out')
+    const outside = selected.filter((id) => windows[id] && statusOf(id).status === 'out')
     if (outside.length > 0) onChange(selected.filter((id) => !outside.includes(id)))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windows, month, dateRange?.start, dateRange?.end])
-  // Elegidas en mes frontera que aún no tienen respuesta: hasta responder, no se continúa.
-  const pendingBorder = selected.filter((id) => windows[id] && statusOf(id) === 'border' && !seasonalConfirmed.includes(id))
-  const answerBorder = (id: ExperienceCategoryId, yes: boolean) => {
-    const category = EXPERIENCE_CATEGORY_BANK.find((item) => item.id === id)
-    if (yes) {
-      onSeasonalConfirmedChange?.([...seasonalConfirmed, id])
-      return
-    }
-    onChange(selected.filter((existing) => existing !== id))
-    setNotice(`Hemos quitado ${category?.title ?? id}: en ${destination} solo están ${windows[id]?.label ?? "en otras fechas"}.`)
-  }
   const complete = selected.length === MAX_POSITIVE_CATEGORIES
 
   const toggle = (id: ExperienceCategoryId) => {
@@ -139,36 +123,19 @@ export function ExperienceCategorySelector({
                 {category.title}
               </span>
               <span className="font-dmsans text-caption leading-tight text-onb-text-muted">{category.description}</span>
+              {windows[category.id] && statusOf(category.id).notice && (
+                <span className="font-dmsans text-caption leading-tight text-accent-red">{statusOf(category.id).notice}</span>
+              )}
             </motion.button>
           )
         })}
       </div>
 
-      {pendingBorder.map((id) => {
-        const category = EXPERIENCE_CATEGORY_BANK.find((item) => item.id === id)
-        const name = category?.seasonalName ?? `"${category?.title ?? id}"`
-        return (
-          <div key={id} className="rounded-onb-md border border-onb-accent/40 bg-onb-accent-light px-3 py-2.5 font-dmsans text-small text-onb-text">
-            <p>
-              En {destination}, {name} suelen estar {windows[id]?.label}. ¿Viajas en esas fechas?
-            </p>
-            <div className="mt-2 flex gap-2">
-              <button type="button" onClick={() => answerBorder(id, true)} className="rounded-onb-full border border-onb-accent px-3 py-1 font-medium text-onb-accent-hover">
-                Sí
-              </button>
-              <button type="button" onClick={() => answerBorder(id, false)} className="rounded-onb-full border border-onb-border px-3 py-1 font-medium text-onb-text">
-                No
-              </button>
-            </div>
-          </div>
-        )
-      })}
-      {notice && <p className="font-dmsans text-caption text-onb-text-soft">{notice}</p>}
 
       <button
         type="button"
         onClick={onConfirm}
-        disabled={!complete || pendingBorder.length > 0}
+        disabled={!complete}
         className="w-full rounded-onb-full bg-onb-accent py-3.5 font-dmsans text-body font-semibold text-white transition-colors hover:bg-onb-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
       >
         {complete ? 'Continuar →' : `Elige ${MAX_POSITIVE_CATEGORIES - selected.length} más`}

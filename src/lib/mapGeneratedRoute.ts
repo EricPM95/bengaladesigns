@@ -85,6 +85,8 @@ interface GeneratedStop {
   ticket_info?: string[] | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
   hours_warning?: string | null
+  /** Temporada aproximada, en el margen: Stop.seasonNotice. */
+  season_notice?: string | null
 }
 
 interface GeneratedMealOption {
@@ -352,6 +354,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
+    ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
     ...(generated.ticket_info?.length ? { ticketInfo: generated.ticket_info } : {}),

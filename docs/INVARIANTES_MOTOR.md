@@ -536,7 +536,8 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     baja al Barrio Judío). Si los dos van el mismo día, B justo después de A; en la tarde manda sobre los
     metros (solo por detrás de las esperas largas). Lo que va obligatoriamente seguido (lo de dentro con
     su contenedor, la bajada natural) se ordena como una sola pieza. El rato antes de comer no es un
-    hueco y no cuenta como coste: no se mete una visita antes de comer para taparlo.
+    hueco y no cuenta como coste: no se mete una visita antes de comer para taparlo. Lo que pase de 60
+    min sí es un hueco y cuenta (la mañana del lunes de Pascua no puede acabar a las 10:25).
 102. **Hueco a mitad de día**: si entre dos visitas quedan 60 min o más de espera (a la hora del atardecer,
     a que abra algo), primero entra lo GRATIS que quede de camino (sin topes de categoría, desvío máximo
     del relleno), también la parte gratis de un grupo de pago que no está en la ruta con lo de pago visto
@@ -561,6 +562,11 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     franja ("07:00-sunset") es la puesta de sol de ese día (sin ella, las 17:00). `validar.mjs` avisa si
     los periodos dejan días sin cubrir o se solapan (366 días) y si la auditoría (`hours_audit.fecha`) es
     de un año anterior al del viaje (`--anio`). Import: `scripts/destino/importarPeriodos.mjs`.
+    **Fechas móviles**: en `closed_dates` (y en cualquier lista de fechas) `easter`, `easter+N`,
+    `easter-N`: Pascua se calcula cada año (algoritmo gregoriano), nunca se escribe con su día (el lunes
+    de Pascua es `easter+1`). **Último domingo**: `last_sunday: { windows, last_entry, except }` abre el
+    último domingo del mes un lugar que cierra los domingos (Museos Vaticanos: 09:00-14:00), salvo las
+    fechas de `except`. Un día "cierra" lugar a lugar (`closedOnDay`), no con listas de la unidad.
 105. **El sol decide qué es tarde y qué es noche**: la puesta de sol se calcula (fecha real o día 15 del
     mes; `sunset_by_season` solo sin coordenadas) y **la noche empieza 30 min después**. Si eso es antes
     de la cena y el paseo cabe entre la última visita y la cena, las nocturnas van ANTES de cenar,
@@ -570,13 +576,33 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     día (lo que cierra en `sunset`, nunca); lo de interior se ve de noche desde fuera y no cuenta. La
     cena no cambia de franja.
 106. **Disponibilidad por fechas** (`available: { from, to }` MM-DD, puede cruzar el año; en lugares,
-    nocturnas, excursiones y, para experiencias, `destination_config.experience_availability[id]`):
-    fuera de la ventana no entra. Con fechas, día a día (una experiencia, si algún día del viaje cae
-    dentro). Con solo el mes: entero dentro → entra; entero fuera → no entra y el formulario no la
-    ofrece; **mes frontera** → solo si el viajero la eligió y respondió "Sí" a "En {destino}, … suelen
-    estar del X al Y. ¿Viajas en esas fechas?" (`seasonalConfirmed`); "No" la quita con un aviso de una
-    línea. Lo de temporada que no eligió no entra solo en un mes frontera (un lugar solo entra si está
-    en su pool); sigue en "Añadir parada" con "De temporada: solo del X al Y." Nunca se inventan fechas.
+    nocturnas, excursiones y, para experiencias, `destination_config.experience_availability[id]`).
+    **Sin `aprox`, estricta**: con fechas, día a día (una experiencia, si algún día del viaje cae
+    dentro); con solo el mes, solo si el mes cae entero dentro (en un mes frontera únicamente entra un
+    lugar que el viajero puso en su pool). **Con `aprox: true`** (mercadillos, fiestas, eventos con
+    fechas que cambian cada año): dentro del rango entra normal; hasta 15 días antes o después entra
+    igual, con el aviso que trae el propio dato (`notice_before`: "Es probable que algunos mercadillos
+    aún no hayan abierto.", `notice_after`: "…ya hayan cerrado.") en la parada y en la tarjeta de la
+    experiencia; más lejos, no se ofrece. Con solo el mes: si toca el rango o está a 15 días o menos,
+    entra con el aviso. No se pregunta nada en el formulario. Lo de temporada sigue en "Añadir parada"
+    con "De temporada: solo del X al Y." Nunca se inventan fechas.
+107. **Viajes de 1 día y cierres**: si el imprescindible de un bloque cierra esa fecha (`closed_on`,
+    `closed_dates`) o no se puede visitar con su horario de ese día (el Vaticano el último domingo:
+    09:00-14:00 no da para el grupo antes de comer), se usa otra combinación de bloques (domingo →
+    Roma Antigua + Centro en vez de Vaticano + Centro) y se dice por qué.
+    En viajes más largos, el día curado cuyo imprescindible cierra se cambia con otro día; si no hay con
+    quién (2 días desde el domingo de Pascua: el Vaticano cierra los dos), el día se reparte como uno sin
+    curado, nunca "el día del Vaticano sin Vaticano".
+108. **En viajes cortos, una visita por dentro nunca desplaza el interior de una joya ni reduce el día
+    a menos paradas** (dos o más): entonces se ve por fuera (el Foro, desde la Via dei Fori Imperiali) y
+    vuelve lo desplazado (octubre, 1 día con Free Tour: Panteón por dentro + Plaza Venecia + Altar).
+109. **El mirador del atardecer va siempre en su sitio del recorrido**, y la espera hasta el atardecer
+    no es una espera que evitar: la cubre la regla de huecos (102). **Nunca se cruza el río ni se vuelve
+    sobre los propios pasos dos veces para evitar una espera.** Si con el mirador en su sitio no cabe lo
+    que le sigue en el recorrido (puesta de sol tardía), ese día manda el recorrido: el mirador se visita
+    en su sitio sin esperar al atardecer.
+110. **Mercadillos**: son lugares con `available` (normalmente `aprox`) y la etiqueta
+    `mercadillo_navideno`, que casa con la experiencia "Mercadillos Navideños".
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

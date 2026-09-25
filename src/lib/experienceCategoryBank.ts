@@ -8,8 +8,6 @@ export interface ExperienceCategoryDefinition {
   /** Solo se muestra cuando `answers.season === 'winter'` — ver isCategoryVisible. Es la reserva: si el
       destino trae la ventana de la experiencia (`experience_availability`), manda la ventana. */
   winterOnly?: boolean
-  /** Cómo se nombra en la pregunta del mes frontera ("los mercadillos navideños suelen estar…"). */
-  seasonalName?: string
   /** 'imprescindibles': siempre empieza en "Me interesa" y no se puede arrastrar a "No me lo recomiendes" — ver ExperienceCategorySelector.tsx. */
   lockedPositive?: boolean
 }
@@ -27,7 +25,7 @@ export const EXPERIENCE_CATEGORY_BANK: ExperienceCategoryDefinition[] = [
   { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos, iglesias y arte' },
   { id: 'naturaleza_vistas', icon: '📸', title: 'Naturaleza y Vistas', description: 'Parques, miradores y puntos fotogénicos' },
   { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
-  { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true, seasonalName: 'los mercadillos navideños' },
+  { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
 ]
 
 export const MAX_POSITIVE_CATEGORIES = 3

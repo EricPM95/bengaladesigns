@@ -18,6 +18,7 @@ import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
@@ -121,6 +122,13 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Entró por una experiencia elegida (Paso 3): la app le pone una etiqueta con su nombre.
     const experienceTheme = unitById.get(visit.unitId)?.experienceTheme
     if (experienceTheme) stop.experience = experienceTheme
+    // De temporada con `aprox`, en el margen de 15 días: la parada lleva el aviso del propio dato.
+    const source = destData.places?.find((candidate) => candidate.name === visit.place.name)
+    if (source?.available) {
+      const hours = tripDay.hours ?? {}
+      const fit = seasonFit(source.available, { hasDates: Boolean(hours.weekday), month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) - 1 : null }, hours.dateIso ?? null, true)
+      if (fit.notice) stop.season_notice = fit.notice
+    }
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).

@@ -115,6 +115,8 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
 
           {/* Viaje sin fechas: los días que a esta hora está cerrado (misas, fines de semana). */}
           {stop.hoursWarning && <p className="text-caption text-accent-red">{stop.hoursWarning}</p>}
+          {/* De temporada con fechas aproximadas, en el margen: puede que aún no haya abierto o ya haya cerrado. */}
+          {stop.seasonNotice && <p className="text-caption text-accent-red">{stop.seasonNotice}</p>}
 
           {/* Por qué está en la ruta (Paso 6). Si entró por una experiencia, ya lo dice con su nombre;
               sin texto del motor, la etiqueta de la experiencia de siempre. */}

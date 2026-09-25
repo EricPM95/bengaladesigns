@@ -387,8 +387,6 @@ export function Questionnaire() {
                   destination={destination}
                   month={answers.month}
                   dateRange={answers.dateRange}
-                  seasonalConfirmed={answers.seasonalConfirmed ?? []}
-                  onSeasonalConfirmedChange={(seasonalConfirmed) => updateAnswers({ seasonalConfirmed })}
                   selected={answers.experiencesPositive ?? []}
                   onChange={(experiencesPositive) =>
                     updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })

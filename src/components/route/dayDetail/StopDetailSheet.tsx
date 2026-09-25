@@ -547,7 +547,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
                       de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
                       nunca redactado por Claude, para garantizar que aparece siempre igual. */}
-                  {(hoursDetail || hoursTag || stop.hoursWarning) && (
+                  {(hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice) && (
                     <div className="space-y-1 border-t border-border pt-3">
                       <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
                         <ClockIcon />
@@ -556,6 +556,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       {/* `whitespace-pre-line`: la ficha curada monta el horario en varias líneas
                           (temporadas, días de cierre, días gratis, notas) — ver formatScheduleDetail. */}
                       {stop.hoursWarning && <p className="text-small font-medium text-accent-red">{stop.hoursWarning}</p>}
+                      {stop.seasonNotice && <p className="text-small font-medium text-accent-red">{stop.seasonNotice}</p>}
                       {hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{hoursDetail}</p>}
                       <p className="text-caption text-text-muted">
                         Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
