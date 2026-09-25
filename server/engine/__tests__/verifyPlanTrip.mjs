@@ -117,6 +117,10 @@ for (const pace of ['nonstop', 'tranquilo']) {
                   }
                 }
               }
+              // Solo se repite el nivel 1 (revisitas); un nivel 2-3 nunca vuelve (2026-09-25).
+              for (const unit of day.units) {
+                if (unit.isRevisit && !unit.places.some((place) => place.passBy) && unit.level !== 1) fail(`${tag} d${day.dayNumber}: revisita de nivel ${unit.level}: ${unit.id}`)
+              }
               // Un relleno nunca es de pago, ni arrastra un contenedor de pago (Paso 3).
               for (const unit of day.units) {
                 if (unit.priority !== PRIORITY.FILLER || unit.isRevisit) continue

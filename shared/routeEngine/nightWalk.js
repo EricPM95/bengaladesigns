@@ -73,6 +73,7 @@ export function planNightWalks(destData, plan) {
     }
   }
 
+  const levelOf = new Map((destData?.places ?? []).map((place) => [place.name, place.level]))
   const used = new Set()
   const byDay = new Map()
 
@@ -88,6 +89,9 @@ export function planNightWalks(destData, plan) {
 
     const available = catalogue.filter((entry) => {
       if (used.has(entry.name)) return false
+      // En un viaje no se repite un lugar de nivel 2 o 3, tampoco de noche (decisión del 2026-09-25):
+      // si el Janículo se ve al atardecer otro día, su nocturna no sale. Solo el nivel 1 se repite.
+      if ((entry.conflicts_with ?? []).some((name) => dayVisited.has(name) && (levelOf.get(name) ?? 1) >= 2)) return false
       // A distancia de paseo desde la cena. La zona exacta no vale como criterio: es justo la zona
       // donde ese lugar ya se ha visitado de día, así que en viajes largos se excluían todas.
       if (!dinnerCoords) return false

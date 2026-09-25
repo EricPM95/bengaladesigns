@@ -509,6 +509,17 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     Sant'Angelo la tiene y se le obligaba a la hora de la puesta de sol, y el Castillo ya no cabía). Lo
     del recorrido fijado entra además en el orden del recorrido.
 
+95. **Precio y condiciones de entrada, solo en la pestaña Tickets** (`ticket_info` del lugar, tarjeta
+    "Entrada"): ni en el consejo (`tip`) ni en el horario. Al limpiar un texto, el dato se lleva allí,
+    nunca se pierde.
+96. **En un viaje no se repite un lugar de nivel 2 o 3**, ni como nocturna ni como mirador: si se ve de
+    día, su nocturna no sale ninguna noche del viaje. Solo el nivel 1 se repite (de noche, de paso o
+    como revisita en los días de repetición: `canRevisit` exige nivel 1).
+97. **El barrio va el día que se cena en él**: si un barrio es el barrio de cena de otro día (está a 20 min
+    o menos de donde se cena), va ese día, bajando a cenar; el día de donde sale se rellena con lo suyo.
+98. **El orden fijado de la tarde es obligatorio**: la mejora de la tarde nunca se queda con un orden que
+    lo rompa, aunque ahorre una espera (Janículo → Acqua Paola → Trastevere, bajando del mirador a cenar).
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

@@ -1059,7 +1059,11 @@ function bestAfternoon(sequence, ctx) {
     return result.ok ? { sequence: ordered, result } : current
   }
 
-  let best = current.result.ok ? current : null
+  // El orden fijado (curado / recorrido de tarde) es obligatorio: el orden de partida solo cuenta si lo
+  // respeta (Janículo → Acqua Paola → Trastevere, bajando del mirador a cenar).
+  const curatedIndices = pieces.map((unit) => unit.curatedIndex).filter((index) => index != null)
+  const respectsCurated = curatedIndices.every((index, i) => i === 0 || index >= curatedIndices[i - 1])
+  let best = current.result.ok && respectsCurated ? current : null
   // Primero, sin esperas por encima de la tolerancia del ritmo; luego, lo que menos camina.
   const overWait = (r) => (r.longestWait > ctx.mode.gapTolerance ? r.longestWait : 0)
   const better = (a, b) => !b || overWait(a) < overWait(b) || (overWait(a) === overWait(b) && (a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)))

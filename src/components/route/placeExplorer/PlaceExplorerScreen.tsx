@@ -97,6 +97,7 @@ function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
     scheduleText: withBookingNote(place),
     hoursCard: place.hours_card ?? null,
     reservation: place.reservation ?? null,
+    ticketInfo: place.ticket_info ?? null,
     tags: place.tags,
   }
 }
@@ -964,6 +965,7 @@ export function PlaceExplorerScreen({
               hours: withBookingNote(selected),
               hoursCard: selected.hours_card ?? null,
               reservation: selected.reservation ?? null,
+              ticketInfo: selected.ticket_info ?? null,
               durationMinutes: selected.duration_min ?? 60,
               photoUrl: selectedPhoto ?? placeholderPhoto(selected.name),
               description: '',

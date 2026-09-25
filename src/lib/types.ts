@@ -276,6 +276,8 @@ export interface Stop {
   /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los
       imprescindibles de Roma.", "Elegido según tus gustos: Arte y Museos."… */
   why?: string | null
+  /** Precio y condiciones de entrada ("Entrada ~15€.") — solo se enseñan en la pestaña Tickets. */
+  ticketInfo?: string[] | null
 }
 
 /**

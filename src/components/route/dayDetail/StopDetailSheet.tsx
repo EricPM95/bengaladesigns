@@ -300,7 +300,9 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // no debe mostrar tarjetas de tours inventadas. En real, esto será "la API de afiliación devolvió
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   const tickets = stop?.purchase?.afiliacion_disponible ? buildMockStopTickets(stop.id, stop.name) : []
-  const hasTickets = tickets.length > 0
+  // La entrada oficial (precio y condiciones del lugar) va siempre en Tickets, haya o no proveedores.
+  const ticketInfo = stop?.ticketInfo ?? []
+  const hasTickets = tickets.length > 0 || ticketInfo.length > 0
   // Free Tour: 3 tips nativos del pipeline (persuasivo/propina/práctico), nunca bajo demanda.
   // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada
   // normal: 0-3 tips de describeStopApi.ts (entradas combinadas, acceso gratuito parcial, horarios
@@ -615,6 +617,18 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'tickets' && (
                 <div className="space-y-3">
+                  {ticketInfo.length > 0 && (
+                    <div className="rounded-xl border border-border p-3">
+                      <p className="text-small font-semibold text-text">Entrada</p>
+                      <ul className="mt-1 space-y-0.5">
+                        {ticketInfo.map((line) => (
+                          <li key={line} className="text-small text-text-soft">
+                            {line}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   {tickets.map((ticket, index) => (
                     <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
                   ))}

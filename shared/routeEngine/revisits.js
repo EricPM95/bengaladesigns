@@ -56,6 +56,9 @@ function revisitReasonFor(unit) {
  */
 function canRevisit(unit) {
   if (unit.isFreeTour || unit.isLong) return false
+  // En un viaje solo se repite el nivel 1 (decisión del 2026-09-25): un nivel 2 o 3 no vuelve ni como
+  // revisita, ni de noche ni como mirador.
+  if (unit.level !== 1) return false
   if (unit.places.length > 1) return false
   if (unit.requiresTicket) return false
   return true

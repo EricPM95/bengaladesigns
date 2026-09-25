@@ -116,6 +116,8 @@ const PASS_BY_MIN_GAP_MINUTES = 45
 const THEME_ON_THE_WAY_MINUTES = 10
 /** Una experiencia nocturna a esta distancia (o menos) de una parada de la tarde se ve al atardecer. */
 const NIGHT_TO_AFTERNOON_MINUTES = 10
+/** Un barrio "es" el de la cena de otro día si está a esta distancia (o menos) de donde se cena. */
+const BARRIO_TO_DINNER_MAX_WALK_MINUTES = 20
 /** Lo que puede alargar el paseo de la tarde subir a ver esa nocturna al atardecer (el Janículo y bajar). */
 const NIGHT_TO_SUNSET_MAX_ADDED_WALK_MINUTES = 20
 /**
@@ -892,6 +894,39 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
   refreshMinimums()
 
+  // ── Paso 6d: el barrio, el día que se cena en él (decisión del 2026-09-25) ──────────────────
+  // Si un barrio (Trastevere) es el barrio de cena de OTRO día y le queda de camino al final de ese
+  // día, el barrio va ese día, bajando del mirador a cenar; el día de donde sale se rellena con lo
+  // que tiene cerca. Lo de dentro del barrio se va con él (enforceRelations).
+  function moveBarriosToDinnerDay() {
+    for (const day of cityDays) {
+      for (const unit of [...dayUnits(day)]) {
+        // Solo el barrio de verdad, nunca su revisita ni un paso por fuera.
+        if (!(unit.tags ?? []).includes('barrio') || unit.curatedIndex != null || unit.isRevisit || unit.places.some((place) => place.passBy)) continue
+        const zone = unit.places[0]?.zone
+        const target = cityDays.find((other) => {
+          // Ese otro día se cena en el barrio: se llega a él bajando a cenar.
+          if (other === day || other.dinnerPlaceZone !== zone || !other.dinnerCoords) return false
+          return (travel.leg(other.dinnerCoords, unit.places[0].coordinates)?.minutes ?? Infinity) <= BARRIO_TO_DINNER_MAX_WALK_MINUTES
+        })
+        if (!target) continue
+        const wasEntry = experienceEntries.has(unit.id)
+        const before = day.open.snapshot()
+        const beforeTarget = target.open.snapshot()
+        day.open.remove(unit.id)
+        placedDay.delete(unit.id)
+        if (placeOnDay(target, unit)) {
+          if (wasEntry) experienceEntries.add(unit.id)
+          continue
+        }
+        day.open.restore(before)
+        target.open.restore(beforeTarget)
+        placedDay.set(unit.id, day.dayNumber)
+        if (wasEntry) experienceEntries.add(unit.id)
+      }
+    }
+  }
+
   // ── Paso 6: relleno, primero los primeros días ────────────────────────────────────────────
   // Cada parada nueva va al PRIMER día que todavía la necesita (decisión del 2026-09-24): si el
   // destino no da para llenar todas las tardes, el tiempo libre cae al final del viaje, nunca en el
@@ -1077,6 +1112,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   }
 
   nightToSunset()
+  moveBarriosToDinnerDay()
   // El mirador del atardecer por el que se eligió el barrio va antes que el resto del relleno: si no,
   // otras paradas de camino se quedan su hueco y el día cena en Trastevere sin haber subido.
   for (const day of cityDays) {

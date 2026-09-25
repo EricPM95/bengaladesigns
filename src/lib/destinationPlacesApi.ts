@@ -44,6 +44,8 @@ export interface DestinationPlace {
   hours_card?: string | null
   /** "obligatoria" | "recomendada" | "no". */
   reservation?: string | null
+  /** Precio y condiciones de entrada (pestaña Tickets). */
+  ticket_info?: string[] | null
   /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en
       italiano, inglés, formas cortas), ya normalizados en minúsculas y sin acentos — ver
       `search_aliases` en el JSON del destino. Vacío para los restaurantes. */

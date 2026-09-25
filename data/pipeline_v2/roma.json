@@ -128,6 +128,21 @@
         "Puente Sant'Angelo"
       ],
       "allow_same_day": true
+    },
+    {
+      "name": "Foro Romano desde el Campidoglio (noche)",
+      "duration": 30,
+      "description": "Desde la terraza de detrás del Campidoglio, el Foro entero iluminado a tus pies: columnas, arcos y templos en silencio, con el Coliseo al fondo.",
+      "coordinates": [
+        41.8928,
+        12.4838
+      ],
+      "zone": "roma_antigua",
+      "conflicts_with": [
+        "Foro Romano y Palatino"
+      ],
+      "allow_same_day": true,
+      "_borrador": "BORRADOR 2026-09-25: nocturna nueva (vista del Foro desde el Campidoglio). Revisar texto y coordenadas."
     }
   ],
   "closed_on": {
@@ -820,7 +835,7 @@
       "group": "centro_historico_walk",
       "group_order": 1,
       "group_order_evening": 2,
-      "tip": "Entrada gratuita con reserva online obligatoria. Si llueve, el agua entra por el óculo y se drena por el suelo — un espectáculo único. Reserva con días de antelación.",
+      "tip": "Si llueve, el agua entra por el óculo y se drena por el suelo — un espectáculo único. Reserva con días de antelación.",
       "photo_tip": "Mira hacia arriba al óculo — el rayo de luz que entra es la foto. Si llueve, el efecto de la lluvia cayendo dentro es mágico.",
       "tags": [
         "monumento",
@@ -860,7 +875,10 @@
       "last_entry": "18:30",
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Taquilla hasta las 18:00. Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene."
+      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Taquilla hasta las 18:00. Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene.",
+      "ticket_info": [
+        "Entrada de pago; se compra online o en taquilla (taquilla hasta las 18:00)."
+      ]
     },
     {
       "name": "Piazza Navona",
@@ -909,7 +927,7 @@
       "duration_minutes": 30,
       "type": "exterior",
       "night_experience": true,
-      "tip": "Prohibido sentarse en los escalones (multa de 250€). Sube hasta Trinità dei Monti para la vista. En primavera los escalones se cubren de azaleas.",
+      "tip": "Prohibido sentarse en los escalones: te pueden multar. Sube hasta Trinità dei Monti para la vista. En primavera los escalones se cubren de azaleas.",
       "photo_tip": "Desde arriba (Trinità dei Monti) miras hacia abajo con Via Condotti y los tejados de Roma — la foto más bonita.",
       "tags": [
         "monumento",
@@ -1060,7 +1078,10 @@
       ],
       "last_entry": "18:00",
       "reservation": "recomendada",
-      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic)."
+      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic).",
+      "ticket_info": [
+        "El último domingo del mes, de 09:00 a 14:00, la entrada es gratis (última entrada 12:30)."
+      ]
     },
     {
       "name": "Basílica de San Pedro",
@@ -1077,7 +1098,7 @@
       "group": "vaticano_core",
       "group_order": 3,
       "group_order_evening": 2,
-      "tip": "Gratis la entrada a la basílica. La cúpula (subida) cuesta 8€ con ascensor + escaleras — MERECE LA PENA, la mejor vista de Roma. Código de vestimenta: hombros y rodillas cubiertas.",
+      "tip": "La subida a la cúpula merece la pena: la mejor vista de Roma. Código de vestimenta: hombros y rodillas cubiertas.",
       "photo_tip": "Desde la cúpula miras hacia abajo a la Plaza de San Pedro — la perspectiva que ves en todas las postales. Dentro, la Pietà de Miguel Ángel está nada más entrar a la derecha.",
       "tags": [
         "iglesia"
@@ -1104,7 +1125,11 @@
       "last_entry": "19:15",
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones."
+      "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones.",
+      "ticket_info": [
+        "La basílica es gratis.",
+        "La subida a la cúpula se paga aparte (ver Cúpula de San Pedro)."
+      ]
     },
     {
       "name": "Plaza de San Pedro",
@@ -1430,7 +1455,10 @@
         "lunes"
       ],
       "reservation": "no",
-      "card_text": "Martes a domingo de 09:00 a 19:00 (última entrada 18:15). Algunas noches abre de 19:00 a 23:00 (del 10 sep al 17 dic). Cerrado lunes y 25 dic."
+      "card_text": "Martes a domingo de 09:00 a 19:00 (última entrada 18:15). Algunas noches abre de 19:00 a 23:00 (del 10 sep al 17 dic). Cerrado lunes y 25 dic.",
+      "ticket_info": [
+        "El primer domingo del mes, gratis con reserva."
+      ]
     },
     {
       "name": "Altar de la Patria",
@@ -1445,7 +1473,7 @@
       "last_entry": "18:45",
       "is_free_access": true,
       "type": "interior",
-      "tip": "Conocido también como Monumento a Vittorio Emanuele II. El ascensor a la terraza cuesta 7€ y merece cada céntimo. Las vistas son 360° sobre Roma.",
+      "tip": "Conocido también como Monumento a Vittorio Emanuele II. El ascensor a la terraza merece la pena: las vistas son 360° sobre Roma.",
       "photo_tip": "Desde la terraza, panorámica de 360° sobre Roma — el Foro y el Coliseo se ven perfectamente desde aquí arriba.",
       "tier": "imprescindible",
       "tags": [
@@ -1483,7 +1511,11 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00."
+      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00.",
+      "ticket_info": [
+        "El monumento es gratis.",
+        "Terraza panorámica con ascensor ('Roma dal cielo'): ~7€, de 09:30 a 19:30 (última subida 19:00)."
+      ]
     },
     {
       "name": "Puente Sant'Angelo",
@@ -1685,7 +1717,7 @@
       "related_to": "Columna de Trajano",
       "closed_on": [],
       "schedule": "09:30-19:30",
-      "tip": "Entrada ~15€. El edificio semicircular de ladrillo es impresionante. Desde la terraza superior se ve la Columna de Trajano desde arriba",
+      "tip": "El edificio semicircular de ladrillo es impresionante. Desde la terraza superior se ve la Columna de Trajano desde arriba",
       "description": "El primer centro comercial de la historia — un complejo de 150 tiendas romanas excavadas en la colina, hoy museo con exposiciones sobre la Roma imperial",
       "search_aliases": [
         "mercado de trajano",
@@ -1702,7 +1734,10 @@
       ],
       "last_entry": "18:30",
       "reservation": "no",
-      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic."
+      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
+      "ticket_info": [
+        "Entrada ~15€."
+      ]
     },
     {
       "name": "Cúpula de San Pedro",
@@ -1720,7 +1755,7 @@
       "filter_category": "miradores",
       "related_to": "Basílica de San Pedro",
       "schedule": "07:30-17:00",
-      "tip": "Entrada ~10€ (ascensor) o ~8€ (solo escaleras). Madruga para evitar colas. El pasillo interior entre las dos paredes de la cúpula es claustrofóbico pero merece",
+      "tip": "Madruga para evitar colas. El pasillo interior entre las dos paredes de la cúpula es claustrofóbico pero merece",
       "description": "551 escalones (o ascensor + 320 escalones) hasta la cima de la cúpula de Miguel Ángel — las vistas sobre Roma desde 136 metros de altura son inolvidables",
       "search_aliases": [
         "cupola di san pietro",
@@ -1754,7 +1789,10 @@
       },
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Horario de verano 07:00-18:00 (del cambio de hora de finales de marzo al de finales de octubre); horario de invierno 07:30-17:00. La última subida suele ser 1 h antes del cierre. Puede cerrar por celebraciones o mal tiempo."
+      "card_text": "Horario de verano 07:00-18:00 (del cambio de hora de finales de marzo al de finales de octubre); horario de invierno 07:30-17:00. La última subida suele ser 1 h antes del cierre. Puede cerrar por celebraciones o mal tiempo.",
+      "ticket_info": [
+        "~10€ con ascensor o ~8€ solo por escaleras."
+      ]
     },
     {
       "name": "Iglesia del Gesù",
@@ -1773,7 +1811,7 @@
       ],
       "filter_category": "iglesias",
       "description": "La iglesia madre de los jesuitas — un interior barroco que te deja sin palabras, especialmente el techo pintado por Baciccia",
-      "tip": "Gratis. Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio",
+      "tip": "Entra y mira hacia arriba: el techo parece que se abre al cielo. No te pierdas la Capilla de San Ignacio",
       "search_aliases": [
         "chiesa del gesu",
         "il gesu"
@@ -1798,7 +1836,10 @@
           "07:45-13:30",
           "16:00-20:00"
         ]
-      }
+      },
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
@@ -1817,7 +1858,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Tres obras maestras de Caravaggio en una capilla lateral — La vocación de San Mateo es hipnótica",
-      "tip": "Gratis. Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas de 1€ para encender la luz",
+      "tip": "Los Caravaggios están en la Capilla Contarelli (izquierda del altar). Lleva monedas para encender la luz",
       "search_aliases": [
         "caravaggio san mateo",
         "san luigi dei francesi",
@@ -1849,7 +1890,11 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Lunes a viernes 09:30-12:45 y 14:30-18:15; sábado 09:30-12:00 y 14:30-18:30; domingo 12:00-12:45 y 14:30-18:30. El primer miércoles de cada mes cierra por la mañana. Horario sujeto a celebraciones."
+      "card_text": "Lunes a viernes 09:30-12:45 y 14:30-18:15; sábado 09:30-12:00 y 14:30-18:30; domingo 12:00-12:45 y 14:30-18:30. El primer miércoles de cada mes cierra por la mañana. Horario sujeto a celebraciones.",
+      "ticket_info": [
+        "Gratis.",
+        "La luz de los Caravaggio funciona con monedas de 1€."
+      ]
     },
     {
       "name": "Ara Pacis",
@@ -1869,7 +1914,7 @@
       ],
       "filter_category": "museos_arte",
       "description": "El Altar de la Paz de Augusto, protegido en un museo moderno diseñado por Richard Meier junto al Tíber",
-      "tip": "Entrada ~10€. El museo es pequeño pero el altar es impresionante. Está junto al Mausoleo de Augusto",
+      "tip": "El museo es pequeño pero el altar es impresionante. Está junto al Mausoleo de Augusto",
       "search_aliases": [
         "altar de la paz",
         "museo dell ara pacis"
@@ -1883,7 +1928,10 @@
       ],
       "last_entry": "18:30",
       "reservation": "no",
-      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic."
+      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
+      "ticket_info": [
+        "Entrada ~10€."
+      ]
     },
     {
       "name": "Barrio Judío",
@@ -1933,7 +1981,7 @@
       ],
       "filter_category": "iglesias",
       "description": "La única iglesia gótica de Roma, con un Cristo Redentor esculpido por Miguel Ángel",
-      "tip": "Gratis. No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido",
+      "tip": "No te pierdas la escultura del Cristo a la izquierda del altar — es un Miguel Ángel poco conocido",
       "search_aliases": [
         "elefante de bernini iglesia",
         "minerva",
@@ -1964,7 +2012,10 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Entre semana abierta todo el día; sábado y domingo cierra a mediodía (12:30-15:30). Misa diaria a las 18:00 y el domingo también a las 11:00."
+      "card_text": "Entre semana abierta todo el día; sábado y domingo cierra a mediodía (12:30-15:30). Misa diaria a las 18:00 y el domingo también a las 11:00.",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Iglesia de San Ignacio de Loyola",
@@ -1983,7 +2034,7 @@
       ],
       "filter_category": "iglesias",
       "description": "El techo de Andrea Pozzo es un trampantojo que engaña al ojo — parece que la iglesia tiene una cúpula pero es pintura plana",
-      "tip": "Gratis. Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta",
+      "tip": "Busca el disco dorado en el suelo de la nave: es el punto exacto donde la ilusión óptica del techo es perfecta",
       "search_aliases": [
         "falsa cupula",
         "san ignacio de loyola",
@@ -2001,7 +2052,10 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días; misa diaria a las 18:30 y el domingo también a las 11:30."
+      "card_text": "Todos los días; misa diaria a las 18:30 y el domingo también a las 11:30.",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Elefantino de Bernini",
@@ -2234,7 +2288,7 @@
       "filter_category": "museos_arte",
       "related_to": "Plaza del Campidoglio",
       "description": "El museo público más antiguo del mundo — la Loba Capitolina, el Marco Aurelio original y el Gálata moribundo te esperan",
-      "tip": "Entrada ~15€. El pasaje subterráneo entre los dos edificios tiene vistas directas al Foro. Reserva 2 horas mínimo",
+      "tip": "El pasaje subterráneo entre los dos edificios tiene vistas directas al Foro. Reserva 2 horas mínimo",
       "search_aliases": [
         "capitoline museums",
         "musei capitolini",
@@ -2250,7 +2304,10 @@
       ],
       "last_entry": "18:30",
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic."
+      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
+      "ticket_info": [
+        "Entrada ~15€."
+      ]
     },
     {
       "name": "Basílica de San Clemente",
@@ -2269,7 +2326,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Tres niveles de historia bajo tus pies — iglesia medieval arriba, iglesia del siglo IV en medio, templo romano de Mitra abajo",
-      "tip": "Entrada a los niveles inferiores ~10€. Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma",
+      "tip": "Baja hasta el tercer nivel: oirás el agua de un río subterráneo bajo Roma",
       "search_aliases": [
         "basilica di san clemente",
         "san clemente"
@@ -2294,7 +2351,11 @@
       "last_entry": "17:30",
       "closed_on": [],
       "reservation": "obligatoria",
-      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde."
+      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde.",
+      "ticket_info": [
+        "La basílica es gratis.",
+        "Excavaciones (niveles inferiores): ~10€, con reserva online (plazas limitadas)."
+      ]
     },
     {
       "name": "Iglesia de San Pietro in Vincoli",
@@ -2314,7 +2375,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Aquí está el Moisés de Miguel Ángel — una escultura tan poderosa que dicen que Miguel Ángel le golpeó la rodilla y le dijo \"¡Habla!\"",
-      "tip": "Gratis. El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente",
+      "tip": "El Moisés está al fondo a la derecha. Fíjate en los cuernos — es una traducción errónea del hebreo que Miguel Ángel tomó literalmente",
       "search_aliases": [
         "moises",
         "moises de miguel angel",
@@ -2353,6 +2414,9 @@
       "card_text": "Todos los días 08:00-12:30 y 15:00-18:00; de abril a septiembre la tarde se alarga hasta las 19:00. Cerrada a mediodía.",
       "neighbor_of": [
         "Monti"
+      ],
+      "ticket_info": [
+        "Gratis."
       ]
     },
     {
@@ -2378,7 +2442,7 @@
       ],
       "filter_category": "museos_arte",
       "description": "El palacio subterráneo de Nerón — una visita guiada con realidad virtual que te muestra los salones dorados como eran hace 2.000 años",
-      "tip": "Solo con visita guiada (reservar online, ~16€). Incluye gafas de realidad virtual. Abre solo viernes, sábado y domingo",
+      "tip": "Solo con visita guiada (se reserva online). Incluye gafas de realidad virtual. Abre solo viernes, sábado y domingo",
       "search_aliases": [
         "casa dorada de neron",
         "domus aurea de neron",
@@ -2395,7 +2459,10 @@
         "09:15-16:30"
       ],
       "reservation": "obligatoria",
-      "card_text": "Solo viernes, sábado y domingo, con visita guiada en turnos cada 15 min y reserva previa. Última entrada 15:30. Cerrada el primer domingo de cada mes."
+      "card_text": "Solo viernes, sábado y domingo, con visita guiada en turnos cada 15 min y reserva previa. Última entrada 15:30. Cerrada el primer domingo de cada mes.",
+      "ticket_info": [
+        "~16€, solo con visita guiada reservada online."
+      ]
     },
     {
       "name": "Termas de Caracalla",
@@ -2416,7 +2483,7 @@
       ],
       "filter_category": "monumentos",
       "description": "Los baños públicos más grandes de la antigua Roma — las ruinas son tan enormes que en verano montan ópera dentro",
-      "tip": "Entrada ~8€. Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente para 1.600 romanos a la vez",
+      "tip": "Imagina que estas salas tenían suelos de mármol, mosaicos y agua caliente para 1.600 romanos a la vez",
       "search_aliases": [
         "baths of caracalla",
         "terme di caracalla"
@@ -2449,7 +2516,10 @@
         "otono": "15:30"
       },
       "reservation": "recomendada",
-      "card_text": "Martes a domingo. 1-28 mar 09:00-17:30; 29 mar-31 ago 09:00-19:15; sep 09:00-19:00; 1-24 oct 09:00-18:30; 25 oct-28 feb 09:00-16:30. Última entrada 1 h antes aprox. Cerrado los lunes."
+      "card_text": "Martes a domingo. 1-28 mar 09:00-17:30; 29 mar-31 ago 09:00-19:15; sep 09:00-19:00; 1-24 oct 09:00-18:30; 25 oct-28 feb 09:00-16:30. Última entrada 1 h antes aprox. Cerrado los lunes.",
+      "ticket_info": [
+        "Entrada ~8€."
+      ]
     },
     {
       "name": "Jardín de los Naranjos",
@@ -2466,7 +2536,7 @@
       ],
       "filter_category": "miradores",
       "description": "Un jardín de naranjos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde San Pedro hasta el Coliseo",
-      "tip": "Gratis. Mejor al atardecer. Después baja a la Cerradura del Aventino, que está a 3 minutos",
+      "tip": "Mejor al atardecer. Después baja a la Cerradura del Aventino, que está a 3 minutos",
       "group": "aventino_clasico",
       "group_order": 2,
       "group_order_evening": 2,
@@ -2502,7 +2572,10 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días. Oct-feb 07:00-18:00; marzo y septiembre 07:00-20:00; abr-ago 07:00-21:00."
+      "card_text": "Todos los días. Oct-feb 07:00-18:00; marzo y septiembre 07:00-20:00; abr-ago 07:00-21:00.",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Basílica de Santa María la Mayor",
@@ -2523,7 +2596,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Una de las cuatro basílicas papales de Roma — los mosaicos del siglo V brillan con oro y el artesonado del techo se hizo con el primer oro traído de América",
-      "tip": "Gratis (la basílica). El museo y la loggia con los mosaicos cuestan ~5€. El techo dorado es cortesía de Isabel la Católica",
+      "tip": "El techo dorado es cortesía de Isabel la Católica. No te pierdas el museo y la loggia con los mosaicos",
       "search_aliases": [
         "basilica di santa maria maggiore",
         "santa maria la mayor",
@@ -2538,7 +2611,11 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 07:00 a 19:00 (última entrada 18:30). Se puede visitar durante las misas, con respeto. El museo tiene horario aparte. Puede haber cola para visitar la tumba del papa Francisco."
+      "card_text": "Todos los días de 07:00 a 19:00 (última entrada 18:30). Se puede visitar durante las misas, con respeto. El museo tiene horario aparte. Puede haber cola para visitar la tumba del papa Francisco.",
+      "ticket_info": [
+        "La basílica es gratis.",
+        "Museo y loggia de los mosaicos: ~5€."
+      ]
     },
     {
       "name": "Columna de Trajano",
@@ -2683,7 +2760,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo",
-      "tip": "Gratis. El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales",
+      "tip": "El Éxtasis está en la Capilla Cornaro (izquierda). Fíjate en los \"espectadores\" esculpidos en los palcos laterales",
       "search_aliases": [
         "bernini santa teresa",
         "extasis de santa teresa",
@@ -2711,7 +2788,10 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Visitas de lunes a sábado 08:00-12:00 y 16:00-18:00. El domingo, misa a las 10:30. No se visita durante las celebraciones."
+      "card_text": "Visitas de lunes a sábado 08:00-12:00 y 16:00-18:00. El domingo, misa a las 10:30. No se visita durante las celebraciones.",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Iglesia de Santa Maria in Trastevere",
@@ -2730,7 +2810,7 @@
       ],
       "filter_category": "iglesias",
       "description": "Una de las iglesias más antiguas de Roma — los mosaicos dorados del ábside brillan como el primer día, y la plaza es el corazón de Trastevere",
-      "tip": "Gratis. Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio",
+      "tip": "Los mosaicos del siglo XII son espectaculares. La plaza es perfecta para sentarse y ver pasar la vida del barrio",
       "search_aliases": [
         "basilica de santa maria in trastevere",
         "santa maria in trastevere"
@@ -2761,7 +2841,10 @@
       "closed_on": [],
       "reservation": "no",
       "card_text": "Abierta a diario, aproximadamente de 09:00 a 20:00. En agosto cierra a mediodía. No se visita durante la misa.",
-      "contained_in": "Trastevere"
+      "contained_in": "Trastevere",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Villa Farnesina",
@@ -2783,7 +2866,7 @@
       ],
       "filter_category": "museos_arte",
       "description": "Una villa renacentista con frescos de Rafael que quitan el aliento — el Triunfo de Galatea y la Loggia de Psique son de otro mundo",
-      "tip": "Entrada ~10€. Mucho menos turistas que los Museos Vaticanos pero con frescos de Rafael igual de impresionantes. Abre por las mañanas",
+      "tip": "Mucho menos turistas que los Museos Vaticanos pero con frescos de Rafael igual de impresionantes. Abre por las mañanas",
       "search_aliases": [
         "farnesina",
         "rafael farnesina"
@@ -2797,7 +2880,10 @@
       ],
       "last_entry": "13:15",
       "reservation": "recomendada",
-      "card_text": "Lunes a sábado de 09:00 a 14:00 (última entrada 13:15). El segundo domingo de cada mes abre de 09:00 a 17:00. Cierra en algunos festivos."
+      "card_text": "Lunes a sábado de 09:00 a 14:00 (última entrada 13:15). El segundo domingo de cada mes abre de 09:00 a 17:00. Cierra en algunos festivos.",
+      "ticket_info": [
+        "Entrada ~10€."
+      ]
     },
     {
       "name": "Plaza Trilussa",
@@ -2868,6 +2954,9 @@
       "approach_to": [
         "Parque de Villa Borghese",
         "Galería Borghese"
+      ],
+      "ticket_info": [
+        "Gratis."
       ]
     },
     {
@@ -2907,7 +2996,10 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 07:00 a 18:30. Claustro de lunes a sábado 09:00-17:00; baptisterio 09:00-19:00."
+      "card_text": "Todos los días de 07:00 a 18:30. Claustro de lunes a sábado 09:00-17:00; baptisterio 09:00-19:00.",
+      "ticket_info": [
+        "Gratis."
+      ]
     },
     {
       "name": "Quartiere Coppedè",
@@ -3170,7 +3262,7 @@
       ],
       "filter_category": "iglesias",
       "description": "El Tempietto de Bramante, en el patio de San Pietro in Montorio: el templete redondo que inventó el Renacimiento romano, en lo alto del Janículo",
-      "tip": "Entrada al patio gratuita. Los fines de semana abre también por la mañana (10:00-18:00); entre semana, por la tarde. Queda de camino entre el mirador del Janículo y Trastevere",
+      "tip": "Los fines de semana abre también por la mañana (10:00-18:00); entre semana, por la tarde. Queda de camino entre el mirador del Janículo y Trastevere",
       "search_aliases": [
         "tempietto",
         "tempietto de bramante",
@@ -3192,7 +3284,10 @@
       ],
       "reservation": "no",
       "card_text": "Tempietto de Bramante: martes a domingo de 10:00 a 18:00 (última entrada 17:30). Cerrado los lunes.",
-      "is_free_access": true
+      "is_free_access": true,
+      "ticket_info": [
+        "Entrada al patio del Tempietto: gratis."
+      ]
     },
     {
       "name": "Fontana dell'Acqua Paola",
@@ -3210,7 +3305,7 @@
       ],
       "filter_category": "miradores",
       "description": "El Fontanone del Janículo: una fuente monumental de 1612 con vistas sobre los tejados de Roma",
-      "tip": "Gratis. Desde la barandilla de enfrente se ve media Roma; bajando por las escaleras de Via Garibaldi llegas a Trastevere en 10 minutos",
+      "tip": "Desde la barandilla de enfrente se ve media Roma; bajando por las escaleras de Via Garibaldi llegas a Trastevere en 10 minutos",
       "search_aliases": [
         "fontanone",
         "fontana acqua paola",
@@ -3225,6 +3320,9 @@
       ],
       "neighbor_of": [
         "San Pietro in Montorio y Tempietto de Bramante"
+      ],
+      "ticket_info": [
+        "Gratis."
       ]
     },
     {
@@ -3244,7 +3342,7 @@
       ],
       "filter_category": "iglesias",
       "description": "La basílica de la patrona de la música, con la escultura de Santa Cecilia de Maderno, la cripta sobre una casa romana y el Juicio Final de Cavallini",
-      "tip": "La iglesia es gratis; la cripta y el fresco de Cavallini (solo por la mañana, 10:00-12:30) tienen entrada aparte",
+      "tip": "La cripta y el fresco de Cavallini (solo por la mañana, 10:00-12:30) se visitan aparte",
       "search_aliases": [
         "santa cecilia",
         "santa cecilia in trastevere",
@@ -3275,6 +3373,10 @@
       "is_free_access": true,
       "neighbor_of": [
         "Trastevere"
+      ],
+      "ticket_info": [
+        "La iglesia es gratis.",
+        "La cripta y el fresco de Cavallini tienen entrada aparte (el fresco, solo por la mañana)."
       ]
     },
     {
@@ -3388,6 +3490,9 @@
         "santa maria del popolo",
         "cerasi chapel",
         "chigi chapel"
+      ],
+      "ticket_info": [
+        "Gratis."
       ]
     }
   ],

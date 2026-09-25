@@ -187,6 +187,8 @@ export function buildStop(place, startMinutes, durationMinutes, revisitReason) {
     // Horarios auditados (2026-09-24): el texto largo para la ficha y si hay que reservar.
     ...(place.card_text ? { hours_card: place.card_text } : {}),
     ...(place.reservation ? { reservation: place.reservation } : {}),
+    // Precio y condiciones de entrada: solo en la pestaña Tickets (ningún precio fuera de ahí).
+    ...(Array.isArray(place.ticket_info) && place.ticket_info.length ? { ticket_info: place.ticket_info } : {}),
     ...(place.isFreeTour ? { is_free_tour: true, free_tour_meeting_point: place.meeting_point ?? null } : {}),
     // Volver a un sitio a otra hora no es un duplicado por descuido: la ficha lo dice y explica por
     // qué merece la pena (ver revisits.js).

@@ -3819,6 +3819,7 @@ app.post('/api/destination-places', (req, res) => {
       booking_note: place.booking_note ?? null,
       hours_card: place.card_text ?? null,
       reservation: place.reservation ?? null,
+      ticket_info: Array.isArray(place.ticket_info) ? place.ticket_info : null,
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son
