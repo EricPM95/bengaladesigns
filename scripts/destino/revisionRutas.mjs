@@ -46,11 +46,17 @@ const fechaLarga = (iso) => {
 }
 const cell = (text) => String(text ?? '').replace(/\|/g, '/').replace(/\s+/g, ' ').trim()
 
+const head = []
 const out = []
-out.push('# Revisión de rutas de Roma — 16 viajes')
-out.push('')
-out.push(`Motor v3, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revisionRutas.mjs\`. Sin fechas, cada día usa el 15 del mes (horarios y puesta de sol) y el horario de laborables. "Andando" = minutos desde la parada anterior (matriz del destino; en la primera, desde el punto de partida no se cuenta).`)
-out.push('')
+// Resumen (Parte C): qué mañana y qué tarde tipo lleva cada día, y cuántos medios días sin tipo quedan.
+const resumen = []
+let sinTipo = 0
+const nombreBloque = (id) => [...(D.morning_flows ?? []), ...(D.afternoon_flows ?? [])].find((b) => b.id === id)?.nombre ?? id
+const nombre = (b) => (b ? (b.id ? `${nombreBloque(b.id)} (${b.id})` : '**medio día sin tipo**') : '—')
+head.push('# Revisión de rutas de Roma — 16 viajes')
+head.push('')
+head.push(`Motor v3, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revisionRutas.mjs\`. Sin fechas, cada día usa el 15 del mes (horarios y puesta de sol) y el horario de laborables. "Andando" = minutos desde la parada anterior (matriz del destino; en la primera, desde el punto de partida no se cuenta).`)
+head.push('')
 
 for (const [index, viaje] of VIAJES.entries()) {
   const exps = viaje.exps.length ? viaje.exps.map((e) => EXP[e]).join(' + ') : 'sin experiencias'
@@ -68,6 +74,23 @@ for (const [index, viaje] of VIAJES.entries()) {
     const fecha = viaje.fecha ? ` — ${fechaLarga(addDays(viaje.fecha, n - 1))}` : ''
     out.push(`### Día ${n}${fecha}`)
     out.push('')
+    const fila = (manana, tarde) => resumen.push(`| ${index + 1} | ${n} | ${manana} | ${tarde} |`)
+    if (day?.blocks && viaje.dias === 1) {
+      // 1 día: las rutas curadas de short_trips (bloques A, B, C), no las mañanas y tardes tipo.
+      const [manana, tarde] = [day.blocks.find((b) => b.slot === 'manana') ?? day.blocks[0], day.blocks.find((b) => b.slot === 'tarde') ?? day.blocks[1]]
+      fila(`ruta de 1 día, bloque ${manana?.id ?? '—'} (short_trips)`, `bloque ${tarde?.id ?? '—'} (short_trips)`)
+      out.push(`**Bloques**: ruta de 1 día de \`short_trips\` — mañana ${manana?.id ?? '—'} · tarde ${tarde?.id ?? '—'}`)
+      out.push('')
+    } else if (day?.blocks) {
+      const manana = day.blocks.find((b) => b.slot === 'manana')
+      const tarde = day.blocks.find((b) => b.slot === 'tarde')
+      sinTipo += day.untyped_halves ?? 0
+      const primera = day.half_day_excursion ? `excursión de medio día (${day.half_day_excursion.id})` : nombre(manana)
+      fila(primera, nombre(tarde))
+      out.push(`**Bloques**: mañana: ${primera} · tarde: ${nombre(tarde)}`)
+      out.push('')
+    } else if (day?.stops?.length) fila('ruta de 1 día (short_trips)', '—')
+    else if (day) fila(day.excursion_options?.length ? 'excursión de día completo' : 'día en blanco', '—')
     if (!day) {
       out.push('_(sin día)_')
       out.push('')
@@ -103,7 +126,7 @@ for (const [index, viaje] of VIAJES.entries()) {
       const walk = previous && previous.latitude != null && stop.latitude != null ? travel.leg([previous.latitude, previous.longitude], [stop.latitude, stop.longitude])?.minutes ?? null : null
       const avisos = [stop.hours_warning, stop.season_notice].filter(Boolean).map((t) => ` ⚠️ ${cell(t)}`).join('')
       const why = stop.why ?? stop.revisit_reason ?? (stop.is_revisit ? stop.tip : null)
-      out.push(`| ${stop.suggested_time} | ${cell(stop.name)}${stop.sunset_minutes != null ? ' 🌅' : ''} | ${stop.duration_minutes} min | ${walk == null ? '—' : `${walk} min`} | ${cell(why ?? '')}${avisos} |`)
+      out.push(`| ${stop.suggested_time} | ${stop.pass_through ? 'Pasas por ' : ''}${cell(stop.name)}${stop.sunset_minutes != null ? ' 🌅' : ''} | ${stop.duration_minutes} min | ${walk == null ? '—' : `${walk} min`} | ${cell(why ?? '')}${avisos} |`)
       previous = stop
     }
     if (lunch && !lunchShown) out.push(`| ${lunch.suggested_time}–${lunch.window_end ?? ''} | 🍝 **Comida**${lunch.restaurant ? `: ${cell(lunch.restaurant)}` : ''} ${cell(lunch.zone_display ?? '')} | | | |`)
@@ -120,5 +143,13 @@ for (const [index, viaje] of VIAJES.entries()) {
 }
 
 const path = process.argv[2] ?? 'docs/REVISION_RUTAS_ROMA_16.md'
-writeFileSync(path, out.join('\n') + '\n')
+head.push('## Resumen: mañanas y tardes tipo')
+head.push('')
+head.push(`Medios días sin tipo (ningún bloque encaja y el motor improvisa): **${sinTipo}**. Los viajes de 1 día siguen con las rutas curadas de \`short_trips\` (con bloques salían peor).`)
+head.push('')
+head.push('| Viaje | Día | Mañana | Tarde |')
+head.push('|---|---|---|---|')
+head.push(...resumen)
+head.push('')
+writeFileSync(path, [...head, ...out].join('\n') + '\n')
 console.log(`${VIAJES.length} viajes → ${path}`)
