@@ -46,7 +46,12 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   // lleva ruta (invariante 21), así que un viaje de 5 días tiene 4 de contenido y la excursión cae
   // en el último de ellos. Un viaje que no llega a `core_days` de contenido no lleva excursión:
   // con tres días en Roma nadie se va a Pompeya.
-  const excursionDay = contentDays >= coreDays ? coreDays : null
+  //
+  // Nunca el ÚLTIMO día del viaje (revisión del 2026-09-25): suele ser el de la vuelta. Si `core_days`
+  // cae ahí (4 días en Roma), la excursión se adelanta un día y ese día curado pasa al último.
+  const excursionAtCore = contentDays >= coreDays ? coreDays : null
+  const excursionDay = excursionAtCore !== null && excursionAtCore === contentDays && contentDays > 2 ? excursionAtCore - 1 : excursionAtCore
+  const excursionMoved = excursionDay !== excursionAtCore
 
   // Las de MEDIO DÍA van en los días de revisitas y en ningún otro: son la mañana de un día en el
   // que ya no queda ciudad nueva que enseñar, no una alternativa a un día de ruta. Una por día y sin
@@ -78,7 +83,7 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
       isExcursion: esExcursion,
       // La mañana se la lleva la excursión y la ciudad arranca a las 16:00.
       halfDayExcursion: mediaJornadaDelDia,
-      curated: curatedFranja(destData, totalDays, hasFreeTour, dayNumber),
+      curated: esExcursion ? null : curatedFranja(destData, totalDays, hasFreeTour, excursionMoved && dayNumber > excursionDay ? dayNumber - 1 : dayNumber),
     })
   }
   return days
