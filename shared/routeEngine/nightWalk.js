@@ -12,7 +12,7 @@
  * se construye en su propia llamada y, sin esto, dos noches distintas elegirían la misma Fontana.
  */
 
-import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
+import { roundUpToFive, roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
 import { dinnerZones } from './dinnerZones.js'
 import { effectiveSchedule, parseClosingMinutes } from './openingHours.js'
@@ -199,30 +199,46 @@ export function nightTiming(chain, timing = {}) {
     let entries = [...chain].reverse()
     while (entries.length > 0) {
       const first = coordsOf(entries[0])
-      let cursor = Math.max(nightStart, roundUpToSlot(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
-      const start = cursor
-      for (const [index, entry] of entries.entries()) {
-        const at = index === 0 ? cursor : roundUpToSlot(cursor + WALK_MINUTES_BETWEEN)
-        cursor = at + durationOf(entry, index)
-      }
-      const toDinner = dinnerCoords ? walkMinutes(coordsOf(entries.at(-1)), dinnerCoords) : 0
-      if (cursor + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
+      const start = Math.max(nightStart, roundUpToSlot(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
+      const timed = timeChain(entries, start)
+      const last = timed.at(-1)
+      const toDinner = dinnerCoords ? walkMinutes(coordsOf(last.entry), dinnerCoords) : 0
+      if (timed.length === entries.length && last.start + last.duration + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
       entries = entries.slice(1)
     }
   }
   return { entries: chain, start: Math.max(NIGHT_START, nightStart ?? 0), beforeDinner: false }
 }
 
-const durationOf = (entry, index) => (index === 0 ? FIRST_MINUTES : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES))
+const durationOf = (entry, index) => (index === 0 ? Math.min(FIRST_MINUTES, entry.duration ?? FIRST_MINUTES) : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES))
+
+/** Ninguna nocturna empieza más tarde (revisión del 2026-09-25). */
+export const NIGHT_LAST_START = 23 * 60
+
+/**
+ * Las horas de un paseo nocturno encadenado, con su tiempo real: la duración de cada una más lo que se
+ * anda hasta la siguiente, en tramos de 5 min (no un bloque de una hora por nocturna: la tercera salía a
+ * las 23:30). Lo que empezaría después de las 23:00 se queda fuera.
+ * @returns {{ entry: object, start: number, duration: number }[]}
+ */
+export function timeChain(entries, start) {
+  const timed = []
+  let cursor = start
+  for (const [index, entry] of entries.entries()) {
+    const at = index === 0 ? cursor : roundUpToFive(cursor + walkMinutes(coordsOf(entries[index - 1]), coordsOf(entry)))
+    if (at > NIGHT_LAST_START) break
+    const duration = durationOf(entry, index)
+    timed.push({ entry, start: at, duration })
+    cursor = at + duration
+  }
+  return timed
+}
 
 /** Las paradas nocturnas de un día, ya con hora (ver nightTiming: antes o después de cenar). */
 export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   const stops = []
   const plan = nightTiming(chain, timing)
-  let cursor = plan.start
-  for (const [index, entry] of plan.entries.entries()) {
-    const duration = index === 0 ? FIRST_MINUTES : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES)
-    const start = index === 0 ? cursor : roundUpToSlot(cursor + WALK_MINUTES_BETWEEN)
+  for (const { entry, start, duration } of timeChain(plan.entries, plan.start)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
     const isRevisit = (entry.conflicts_with ?? []).some((name) => dayVisitedNames.has(name))
@@ -245,7 +261,6 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       category: 'landmark',
       category_label: 'De noche',
     })
-    cursor = start + duration
   }
   return stops
 }

@@ -104,7 +104,10 @@ for (const pace of ['nonstop', 'tranquilo']) {
           // hora que se llega precisamente para no esperar en la puerta.
           const minute = start % 60
           const isChained = prevEnd !== null && start - prevEnd <= 3 && start !== prevEnd + 0
-          if (minute !== 0 && minute !== 30) {
+          // Las nocturnas encadenadas van con su tiempo real (duración + paseo), en tramos de 5 min.
+          if (stop.is_night_experience && minute % 5 === 0) {
+            // bien
+          } else if (minute !== 0 && minute !== 30) {
             if (prevEnd !== null && start <= prevEnd + 3) chained++
             else fail(`${tag} d${day.day_number}: "${stop.name}" a las ${stop.suggested_time} (ni :00 ni :30)`)
           }
