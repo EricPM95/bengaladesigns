@@ -681,7 +681,9 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     en ninguna tarde (lo demás del pool se rescata por la tarde); luego
     las que van con el viaje (imprescindibles o una experiencia elegida) por `prioridad`. Las experiencias
     ordenan, no dejan un día sin mañana. Nunca una mañana con su ancla cerrada ese día ni una que pida
-    más días (`minimo_dias_viaje`) que el viaje, salvo por el pool. Un bloque con `transporte` (la Via
+    más días (`minimo_dias_viaje`) que el viaje, salvo por el pool. Las mañanas se eligen mientras todas
+    quepan en algún día con su ancla abierta y luego cada una va al primer día que deja sitio a las demás
+    (si el Vaticano solo abre el sábado, el sábado es suyo aunque el Coliseo vaya antes en prioridad). Un bloque con `transporte` (la Via
     Appia) no es mañana de ciudad: va como excursión de medio día mientras no haya saltos de transporte.
 133. **Tardes por encaje**: la que encaja después de dónde acaba la mañana (`encaja_despues_de`); si
     ninguna lo dice, la que empieza a 20 min andando (a 30 si no hay ninguna a 20). El Free Tour acaba en

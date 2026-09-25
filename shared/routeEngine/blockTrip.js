@@ -117,7 +117,7 @@ export function planBlockTrip(args) {
     for (const day of dead) {
       // Sin esa tarde ese día; y si la tarde no tiene bloque, sin esa mañana (la del Aventino no tiene
       // ninguna tarde que encaje).
-      const candidates = day.blocks.filter((block) => block.id).map((block) => `${day.dayNumber}:${block.id}`)
+      const candidates = day.blocks.filter((block) => block.id).flatMap((block) => [`${day.dayNumber}:${block.id}`, `todos:${block.id}`])
       for (const ban of candidates) {
         if (bans.has(ban)) continue
         const trial = planBlockTripOnce(args, new Set([...bans, ban]))
@@ -216,10 +216,38 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   const cityDays = skeleton.filter((day) => !day.isBlank && !day.isExcursion)
   const morningOf = new Map()
   const usedMornings = new Set()
-  for (const day of cityDays) {
-    if (day.halfDayExcursion) continue
-    const block = morningOrder.find((candidate) => !usedMornings.has(candidate.id) && !closedThatDay(anchorOf(candidate), day) && !bans.has(`${day.dayNumber}:${candidate.id}`))
-    if (!block) continue
+  // Cada mañana elegida va a un día en que su ancla está abierta: primero se eligen las mañanas por
+  // prioridad mientras todas quepan en algún día (el Vaticano, que solo abre el sábado de un viaje que
+  // cae en domingo, lunes de excursión y 8 de diciembre, no se queda fuera porque el Coliseo se quedó el
+  // sábado); después, por prioridad, cada una al primer día que deja sitio a las demás.
+  const morningDays = cityDays.filter((day) => !day.halfDayExcursion)
+  // Una mañana prohibida ese día (o en todo el viaje) por la reparación no va.
+  const opensOn = (block, day) => !closedThatDay(anchorOf(block), day) && !bans.has(`${day.dayNumber}:${block.id}`) && !bans.has(`todos:${block.id}`)
+  const matchable = (blocks, taken = new Map()) => {
+    const owner = new Map(taken)
+    const tryPlace = (block, seenDays) => {
+      for (const day of morningDays) {
+        if (seenDays.has(day.dayNumber) || !opensOn(block, day)) continue
+        seenDays.add(day.dayNumber)
+        const current = owner.get(day.dayNumber)
+        if (!current || (!taken.has(day.dayNumber) && tryPlace(current, seenDays))) {
+          owner.set(day.dayNumber, block)
+          return true
+        }
+      }
+      return false
+    }
+    return blocks.every((block) => tryPlace(block, new Set()))
+  }
+  const selectedMornings = []
+  for (const block of morningOrder) {
+    if (selectedMornings.length >= morningDays.length) break
+    if (matchable([...selectedMornings, block])) selectedMornings.push(block)
+  }
+  for (const block of selectedMornings) {
+    const rest = selectedMornings.filter((other) => other !== block && !usedMornings.has(other.id))
+    const day = morningDays.find((candidate) => !morningOf.has(candidate.dayNumber) && opensOn(block, candidate) && matchable(rest, new Map([...morningOf.entries(), [candidate.dayNumber, block]])))
+    if (!day) continue
     morningOf.set(day.dayNumber, block)
     usedMornings.add(block.id)
   }
