@@ -333,7 +333,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
       day.free_afternoon?.minutes ?? 0,
     ),
     lunchInWindow: lunchAt === null ? null : lunchAt >= REF.lunchWindow[0] && lunchAt <= REF.lunchWindow[1],
-    dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= REF.dinnerWindow[1],
+    // Cena de verano (regla 130): con un mirador al atardecer a las 20:15 o más tarde, hasta las 21:30 (bajar del mirador).
+    dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= (dayStops.some((stop) => (stop.sunset_minutes ?? 0) >= 20 * 60 + 15) ? 21 * 60 + 30 : REF.dinnerWindow[1]),
     dayEndWithDinner: dinnerAt !== null ? dinnerAt + meal : lastEnd,
     walkKm: walkMeters / 1000,
     revisits: dayStops.filter((stop) => stop.is_revisit && !stop.is_pass_by).length,

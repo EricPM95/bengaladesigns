@@ -1,4 +1,8 @@
 /**
+ * LEGACY (2026-09-26): solo para destinos SIN mañanas y tardes tipo (`morning_flows`). Los que las
+ * tienen (Roma) usan `blockTrip.js` en viajes de 2+ días. No se arregla más: se retira cuando todos los
+ * destinos tengan bloques. Su test (verifyPlanTrip) no cuenta para el verde.
+ *
  * El REPARTIDOR del motor v3: qué va en cada día del viaje.
  *
  * El fallo raíz del motor anterior (diagnóstico del 2026-09-23) era que el repartidor decidía con

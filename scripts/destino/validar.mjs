@@ -37,7 +37,7 @@ import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
-import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZoneOf, servesDinner } from '../../shared/routeEngine/dinnerZones.js'
+import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZonesOf, restaurantZonesNamedIn, servesDinner, zonesOfLabel } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? '').toLowerCase()
@@ -307,7 +307,11 @@ const section = (title) => {
   if (zones.length === 0) s.red.push(`ningún barrio de cena: hacen falta ${MIN_DINNER_RESTAURANTS}+ restaurantes que sirvan cenas en una misma zona`)
   for (const zone of zones) s.info.push(`barrio de cena ${zone.label}: ${zone.restaurants.length} restaurantes (${zone.restaurants.join(', ')})`)
   const counts = new Map()
-  for (const restaurant of D.restaurants ?? []) if (servesDinner(restaurant) && restaurant.zone) counts.set(mainZoneOf(restaurant.zone), (counts.get(mainZoneOf(restaurant.zone)) ?? 0) + 1)
+  const mains = mainZonesOf(D)
+  for (const restaurant of D.restaurants ?? []) {
+    if (!servesDinner(restaurant) || !restaurant.zone) continue
+    for (const zone of zonesOfLabel(restaurant.zone, mains)) counts.set(zone, (counts.get(zone) ?? 0) + 1)
+  }
   for (const [label, count] of counts) if (count === MIN_DINNER_RESTAURANTS - 1) s.warn.push(`${label}: ${count} restaurantes de cena — con uno más sería barrio de cena`)
   // Cada imprescindible con un barrio de cena a mano (~15 min andando, 1.100 m en línea recta).
   for (const place of places.filter((p) => p.level === 1)) {
@@ -356,9 +360,14 @@ const section = (title) => {
     const coords = stops.map((stop) => (stop.lugar === tourName ? null : byName.get(stop.lugar)?.coordinates)).filter(Boolean)
     for (let i = 1; i < coords.length; i++) {
       const leg = travel.leg(coords[i - 1], coords[i])
-      if (leg && leg.minutes > MAX_ENTRE_PARADAS) s.red.push(`${block.id}: de "${stops[i - 1].lugar}" a "${stops[i].lugar}" hay ${leg.minutes} min andando (máximo ${MAX_ENTRE_PARADAS})`)
+      // `paseo: true`: se llega por un paseo agradable (junto al río) que puede pasar de 20 min.
+      if (leg && leg.minutes > MAX_ENTRE_PARADAS && !stops[i].paseo) s.red.push(`${block.id}: de "${stops[i - 1].lugar}" a "${stops[i].lugar}" hay ${leg.minutes} min andando (máximo ${MAX_ENTRE_PARADAS})`)
     }
   }
+  // El barrio de comida y de cena de cada bloque tiene que tener restaurantes con ese mismo nombre
+  // (si no, el motor cae al más cercano sin decirlo).
+  for (const block of mornings) if (block.comida && !block.transporte && restaurantZonesNamedIn(block.comida, D, 'comida').length === 0) s.warn.push(`${block.id}: la comida "${block.comida}" no nombra ningún barrio con restaurantes de comida`)
+  for (const block of afternoons) if (block.cena && restaurantZonesNamedIn(block.cena, D, 'cena').length === 0) s.warn.push(`${block.id}: la cena "${block.cena}" no nombra ningún barrio de cena (${MIN_DINNER_RESTAURANTS}+ restaurantes)`)
   // Mañanas cuyo final no tiene ninguna tarde: el motor improvisa por cercanía (amarillo).
   for (const block of mornings) {
     if (block.transporte || block.acaba_en === 'free_tour') continue

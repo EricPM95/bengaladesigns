@@ -1,5 +1,18 @@
 # Mañanas y tardes tipo — notas
 
+## Ajustes (PROMPT_AJUSTES_BLOQUES.md) — Parte A, respuestas aplicadas (2026-09-26)
+
+- Bloques reimportados de `docs/roma_mananas_tardes_tipo.json`: `vaticano_trastevere` rehecho (Puente → Trastevere por el río → … → Janículo), `centro_barroco` y `campidoglio_ghetto` reversibles, `monti_basilicas` solo tras Roma Antigua. Nuevos campos: `paseo`, `antes_del_atardecer`, `reversible`, `por_dentro`. `principios_local` actualizado.
+- Restaurantes de Prati importados (`docs/roma_restaurantes_prati.json`) e Il Sorpasso a `meal: "ambos"`. Lo que traía `_verificar`:
+  - **Dal Toscano**: martes a domingo 12:30-15:00 y 20:00-23:15; lunes cerrado (web oficial). Coordenada **aproximada** (el centro de Via Germanico; OpenStreetMap no tiene el número 58), marcada `coordinates_approx`. Revisar.
+  - **L'Arcangelo**: la web oficial solo publica el horario de verano, lunes a sábado 19:00-22:30, sin mediodía, y vacaciones del 10 al 31 de agosto. Queda como `cena` (el origen decía `ambos`). Coordenadas de OpenStreetMap.
+  - **Osteria dell'Angelo**: el Touring Club dice "siempre abierto", sin horas. Queda como `cena`. Coordenadas de OpenStreetMap.
+- Barrios de cena: Testaccio no salía porque Osteria Fernanda ("Trastevere / Testaccio") solo contaba para Trastevere y se quedaba en 2 restaurantes. Ahora cuenta para los dos. Vaticano sale con los de Prati. `validar.mjs` avisa si un bloque nombra un barrio sin restaurantes (hoy, ninguno).
+- El Castillo, por fuera desde el Puente, salvo pool.
+- `planTrip.js` y `verifyPlanTrip` marcados legacy. Sus 4 fallos, anotados en la pregunta 8 de abajo.
+
+**Pregunta nueva:** L'Arcangelo, ¿abre a mediodía en invierno? Si es así, pasa a `ambos`.
+
 Notas de `docs/PROMPT_MANANAS_Y_TARDES.md`. Reglas en `docs/INVARIANTES_MOTOR.md` (123-130 Parte A, 131-141 Parte B).
 
 ## Parte B — resumen

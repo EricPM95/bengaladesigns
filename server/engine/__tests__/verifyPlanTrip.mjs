@@ -1,4 +1,7 @@
 /**
+ * LEGACY (2026-09-26): no cuenta para el verde. El repartidor solo se usa en destinos sin bloques
+ * (`morning_flows`); sus fallos se anotan en docs/MANANAS_Y_TARDES_NOTAS.md y no se arreglan.
+ *
  * Contrato del REPARTIDOR del motor v3 (shared/routeEngine/planTrip.js).
  * Se corre a mano:  node server/engine/__tests__/verifyPlanTrip.mjs
  *

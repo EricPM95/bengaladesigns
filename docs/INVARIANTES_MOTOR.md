@@ -719,7 +719,29 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     Altar) en el día y el sitio donde menos se anda, pudiendo caer solo algo de paso o añadido.
 141. **Kit: cada destino se cura en bloques** (`destination_config.size`): grande 8 mañanas y 10 tardes,
     mediano 6 y 7, pequeño 4 y 4. `validar.mjs` en rojo si faltan, si un nombre no existe o si entre dos
-    paradas seguidas hay más de 20 min andando; en amarillo, la mañana sin ninguna tarde que encaje.
+    paradas seguidas hay más de 20 min andando (salvo la parada con `paseo: true`: un paseo junto al río);
+    en amarillo, la mañana sin ninguna tarde que encaje y el `comida`/`cena` de un bloque que no nombra
+    ningún barrio con restaurantes.
+
+**Ajustes a los bloques (PROMPT_AJUSTES_BLOQUES.md, Parte A, 2026-09-26)**
+
+142. **`antes_del_atardecer`**: esas paradas llenan el tiempo antes del mirador. Sin tiempo (invierno), se
+    saltan a la ida y se sube directo al mirador; lo que el bloque ponía entre ellas y el mirador se ve
+    bajando (del Puente al Janículo y bajada por el Tempietto y Acqua Paola). Si el ancla es de antes del
+    atardecer y se salta así, el bloque sigue valiendo.
+143. **`reversible`**: el bloque se hace al revés cuando se llega por el otro extremo (desde Trastevere o
+    Testaccio, el centro barroco empieza por el Ghetto y acaba en el Panteón).
+144. **Cerrado a esa hora, de paso**: una parada de la tarde que se cae por su horario (cerrada, cierra
+    durante la visita, pasada la última entrada) va como "Pasas por…": el bloque pasa por delante.
+145. **El barrio del bloque y el de los restaurantes, el mismo nombre**: un restaurante con etiqueta doble
+    ("Trastevere / Testaccio") cuenta también para el segundo barrio si ese barrio existe por sí solo en el
+    destino. El texto `comida`/`cena` del bloque se lee con esos nombres (`restaurantZonesNamedIn`).
+146. **Una visita grande al día, también en los bloques**: lo de pago de un grupo que no se visita en el
+    viaje se ve por fuera desde su compañero (el Castillo de Sant'Angelo desde el Puente), salvo pool.
+147. **Una experiencia elegida que ningún bloque trae** (mercadillos de Navidad) entra de camino una vez por
+    viaje: lo más cercano de esa experiencia, con 15 min de desvío como mucho y sin que se caiga nada.
+148. **El repartidor antiguo (`planTrip.js`) es legacy**: solo para destinos sin bloques; no se arregla y
+    `verifyPlanTrip` no cuenta para el verde. Se retira cuando todos los destinos tengan bloques.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

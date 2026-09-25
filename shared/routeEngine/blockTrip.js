@@ -27,7 +27,7 @@
 import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
-import { dinnerZones } from './dinnerZones.js'
+import { dinnerZones, restaurantZonesNamedIn } from './dinnerZones.js'
 import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay } from './openingHours.js'
@@ -72,6 +72,12 @@ const SUNSET_WAIT_MAX = 45
 /** Adelantar una parada por delante del mirador obliga a volver: cuesta más que verla de paso bajando. */
 const SUNSET_MOVE_COST = 80
 const SUNSET_PASS_COST = 40
+/** Saltarse lo de "antes del atardecer" por falta de tiempo: cuesta, pero menos que perder paradas. */
+const SUNSET_SKIP_COST = 120
+/** Motivos del programador que son de horario: esa parada, a esa hora, va de paso. */
+const HOURS_DROP_REASONS = new Set(['closed', 'closes_during_visit', 'after_last_entry', 'after_latest_end'])
+/** Bajar del mirador por lo que el bloque ponía antes (solo con lo de antes del atardecer saltado). */
+const SUNSET_DESCENT_COST = 20
 
 /** ¿Meter algo en la posición `at` deja en medio de un grupo del JSON (Panteón … Navona)? */
 function splitsGroup(units, at) {
@@ -264,6 +270,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   let paidMuseums = 0
   const museumQuota = paidMuseumQuota(destData, contentDays)
   const usedAfternoons = new Set()
+  // Experiencias sin bloque que ya han salido de camino en el viaje.
+  const shownExperiences = new Set()
   const blockSummary = []
   let untypedHalves = 0
   const unplacedPool = []
@@ -311,7 +319,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         if (place.visible_from_outside || place.pass_by || place.type === 'exterior') list.push({ name, role: 'de_paso', place })
         continue
       }
-      list.push({ name, role: chosen ? 'pool' : stop.rol, place })
+      list.push({ name, role: chosen ? 'pool' : stop.rol, place, beforeSunset: Boolean(stop.antes_del_atardecer) })
     }
     return list
   }
@@ -329,7 +337,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   /** Las unidades que el programador entiende, en orden, a partir de las paradas de un bloque. */
   function unitsOf(stops, block, slot, day) {
     const hours = hoursOf(day)
-    return stops.map(({ name, role, place }, index) => {
+    return stops.map(({ name, role, place, beforeSunset }, index) => {
       let ready = place
       if (role === 'de_paso') {
         ready = { ...place, passThrough: true, duration_minutes: Math.min(place.duration_minutes ?? PASS_THROUGH_MINUTES, PASS_THROUGH_MINUTES), windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior' }
@@ -340,6 +348,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       const theme = selected.find((id) => (place.tags ?? []).some((tag) => TAG_INTEREST_MAP[id].includes(tag))) ?? null
       return {
         id: `${block.id}:${name}`,
+        // `antes_del_atardecer`: llena el tiempo antes del mirador; sin tiempo (invierno), se salta a la ida.
+        ...(beforeSunset ? { beforeSunset: true } : {}),
         group: null,
         places: [scheduled],
         slot,
@@ -358,8 +368,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   /** El barrio de cena que dice la tarde ("Trastevere", "Tridente / Spagna"); si no hay, el más cercano. */
   function dinnerFor(block, lastCoords) {
     const options = dinnerZones(destData)
-    const text = norm(block?.cena)
-    const named = options.filter((option) => text && (text.includes(norm(option.label)) || text.includes(norm(option.id)) || text.includes(norm(String(option.label).split('/')[0].trim()))))
+    const named = restaurantZonesNamedIn(block?.cena, destData, 'cena')
     const pool = named.length > 0 ? named : options
     if (!lastCoords) return pool[0] ?? null
     return pool
@@ -411,7 +420,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
    * Tempietto, detrás del Janículo) pasa delante, en su orden, mientras siga habiendo espera.
    */
   function withSunsetFilled(day, morningUnits, afternoonUnits, dinner) {
-    const run = (list) => schedule(day, [...morningUnits, ...list], dinner, { morning: !day.halfDayExcursion })
+    const run = (list) => scheduleBlock(day, morningUnits, list, dinner)
     const at = afternoonUnits.findIndex((unit) => unit.places.some((place) => place.sunset != null))
     if (at < 0) return { units: [...morningUnits, ...afternoonUnits], result: run(afternoonUnits) }
     const waitBefore = (result) => {
@@ -443,11 +452,60 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       if (!result.visits.some((visit) => visit.place.sunset != null)) continue
       options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_PASS_COST * k })
     }
+    // Sin tiempo antes del atardecer (invierno), lo marcado `antes_del_atardecer` se salta a la ida y se
+    // sube directo al mirador: mejor que perder el atardecer.
+    // Lo que queda entre lo saltado y el mirador se ve bajando (la nota del bloque: del Puente se sube
+    // directo al Janículo y se baja por el Tempietto y Acqua Paola a cenar a Trastevere).
+    if (afternoonUnits.some((unit) => unit.beforeSunset)) {
+      const kept = afternoonUnits.filter((unit) => !unit.beforeSunset)
+      const sunsetAt = kept.findIndex((unit) => unit.places.some((place) => place.sunset != null))
+      const lastSkipped = afternoonUnits.map((unit) => unit.beforeSunset).lastIndexOf(true)
+      const between = kept.filter((unit, index) => index < sunsetAt && afternoonUnits.indexOf(unit) > lastSkipped)
+      const descending = [...kept.slice(0, sunsetAt).filter((unit) => !between.includes(unit)), kept[sunsetAt], ...between, ...kept.slice(sunsetAt + 1)]
+      const skipped = afternoonUnits.length - kept.length
+      for (const [list, extra] of [[kept, 0], [descending, SUNSET_DESCENT_COST]]) {
+        const result = run(list)
+        if (!result.visits.some((visit) => visit.place.sunset != null)) continue
+        options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_SKIP_COST * skipped + extra, descent: extra > 0 })
+      }
+    }
     const plain = afternoonUnits.map((unit, index) => (index === at ? { ...unit, places: unit.places.map(({ sunset, ...place }) => place) } : unit))
     const plainResult = run(plain)
     // Sin atardecer cuenta como perder media parada: solo si así se pierde menos.
     options.push({ units: [...morningUnits, ...plain], result: plainResult, cost: 300 * lossOf(plainResult) + 500 + plainResult.walkMinutes })
     return options.sort((a, b) => a.cost - b.cost)[0]
+  }
+
+  /**
+   * Un bloque `reversible` se hace al revés cuando se llega por el otro extremo: desde Trastevere o
+   * Testaccio, el centro barroco empieza por el Ghetto y acaba en el Panteón.
+   */
+  function oriented(block, from) {
+    if (!block.reversible || !from?.coordinates) return block
+    const first = placeByName.get(block.paradas[0]?.lugar)
+    const last = placeByName.get(block.paradas.at(-1)?.lugar)
+    if (!first?.coordinates || !last?.coordinates) return block
+    const origin = from.end_coordinates ?? from.coordinates
+    const toFirst = travel.leg(origin, first.coordinates)?.minutes ?? Infinity
+    const toLast = travel.leg(origin, last.coordinates)?.minutes ?? Infinity
+    return toLast < toFirst ? { ...block, paradas: [...block.paradas].reverse(), reversed: true } : block
+  }
+
+  /**
+   * Programa la tarde de un bloque. Lo que se cae por el horario (cerrado a esa hora, cierra durante la
+   * visita, pasada la última entrada) no se pierde: el bloque pasa por delante, así que va de paso
+   * ("Pasas por…"). El Tempietto a las 17:40 en abril, que cierra a las 18:00.
+   */
+  function scheduleBlock(day, morningUnits, list, dinner) {
+    let current = list
+    for (let round = 0; round < 3; round++) {
+      const result = schedule(day, [...morningUnits, ...current], dinner, { morning: !day.halfDayExcursion })
+      const byHours = new Set(result.dropped.filter(({ unit, reason }) => HOURS_DROP_REASONS.has(reason) && unit.slot === 'tarde' && unit.role !== 'de_paso' && unit.role !== 'ancla' && current.some((other) => other.id === unit.id)).map(({ unit }) => unit.id))
+      if (byHours.size === 0) return result
+      current = current.map((unit) => (byHours.has(unit.id) ? asPassThrough(unit) : unit))
+      if (round === 2) return schedule(day, [...morningUnits, ...current], dinner, { morning: !day.halfDayExcursion })
+    }
+    return schedule(day, [...morningUnits, ...current], dinner, { morning: !day.halfDayExcursion })
   }
 
   /** Una unidad que pasa a verse de paso (10 min, sin horario). */
@@ -502,7 +560,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     const anchorsLeft = new Set([...(destData.afternoon_flows ?? []).filter((block) => !usedAfternoons.has(block.id) && block.id !== chosen.block?.id), ...mornings.filter((block) => !usedMornings.has(block.id))].map(anchorOf).filter(Boolean))
     for (let added = 0; added < 3; added++) {
       const wait = longestWait(chosen.result)
-      if (wait <= WAIT_FILL_MINUTES) return
+      if (wait <= Math.min(WAIT_FILL_MINUTES, mode.gapTolerance)) return
       const visits = chosen.result.visits
       const index = visits.findIndex((visit, i) => {
         if (i === 0) return false
@@ -573,6 +631,43 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         }
       }
       if (!improved) return
+    }
+  }
+
+  /**
+   * Una experiencia elegida que ningún bloque del viaje trae (los mercadillos de Navidad) entra de
+   * camino: lo más cercano de esa experiencia, con 15 min de desvío como mucho, donde menos se ande y sin
+   * que se caiga nada. Una vez por viaje.
+   */
+  function experienceOnTheWay(day, chosen, morningBlock, otherMorningNames) {
+    const allBlocks = [...(destData.morning_flows ?? []), ...(destData.afternoon_flows ?? [])]
+    for (const id of selected) {
+      if (allBlocks.some((block) => (block.experiencias ?? []).includes(id)) || shownExperiences.has(id)) continue
+      const tags = TAG_INTEREST_MAP[id] ?? []
+      const today = new Set(chosen.result.visits.map((visit) => visit.place.name))
+      const candidates = (destData.places ?? []).filter((place) => (place.tags ?? []).some((tag) => tags.includes(tag)) && !seen.has(place.name) && !today.has(place.name) && !otherMorningNames.has(place.name) && !closedThatDay(place.name, day))
+      let best = null
+      for (const place of candidates) {
+        const [scheduled] = placesForScheduler({ id: place.name, places: [place] }, destData, freeTourTime)
+        const unit = { id: `experiencia:${place.name}`, group: null, places: [scheduled], slot: 'tarde', blockId: 'extra', role: 'extra', dropRank: DROP_RANK.extra, priority: PRIORITY.THEME, curatedIndex: null, poolIndex: null, experienceTheme: id }
+        const kept = chosen.result.kept
+        for (let at = 1; at <= kept.length; at++) {
+          if (splitsGroup(kept, at)) continue
+          const prev = kept[at - 1]?.places.at(-1)
+          const next = kept[at]?.places[0]
+          const leg = (x, y) => (x?.coordinates && y?.coordinates ? travel.leg(x.end_coordinates ?? x.coordinates, y.coordinates)?.minutes ?? Infinity : 0)
+          if (leg(prev, place) + leg(place, next) - leg(prev, next) > TAIL_MAX_WALK) continue
+          const units = [...kept.slice(0, at), { ...unit, slot: kept[at]?.slot ?? 'tarde' }, ...kept.slice(at)]
+          const result = schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
+          if (!result.kept.some((other) => other.id === unit.id) || result.dropped.length > 0) continue
+          if (!best || result.walkMinutes < best.result.walkMinutes) best = { units, result }
+        }
+      }
+      if (best) {
+        chosen.units = best.units
+        chosen.result = { ...best.result, dropped: chosen.result.dropped }
+        shownExperiences.add(id)
+      }
     }
   }
 
@@ -713,14 +808,17 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       .sort((a, b) => b.score - a.score || a.order - b.order)
 
     let chosen = null
-    for (const { block, score } of candidates) {
+    for (const { block: original, score } of candidates) {
+      const block = oriented(original, morningStops.at(-1)?.place ?? null)
       const afternoonStops = trimForPace(stopsOf(block, day, morningPlaces), morningStops)
       const anchor = anchorOf(block)
       if (anchor && !afternoonStops.some((stop) => stop.name === anchor)) continue
       const dinner = dinnerFor(block, afternoonStops.at(-1)?.place.coordinates ?? null)
       const { units, result } = withSunsetFilled(day, morningUnits, unitsOf(afternoonStops, block, 'tarde', day), dinner)
-      // El ancla tiene que caber; si no, otra tarde.
-      if (anchor && !result.kept.some((unit) => unit.places.some((place) => place.name === anchor))) continue
+      // El ancla tiene que caber; si no, otra tarde. Salvo que sea de "antes del atardecer" y se haya
+      // saltado para llegar al mirador a tiempo (Trastevere en invierno: se cena allí igualmente).
+      const anchorSkippedForSunset = afternoonStops.some((stop) => stop.name === anchor && stop.beforeSunset) && result.visits.some((visit) => visit.place.sunset != null)
+      if (anchor && !anchorSkippedForSunset && !result.kept.some((unit) => unit.places.some((place) => place.name === anchor))) continue
       // La mejor tarde es la que encaja, no se queda a medias y no deja horas muertas antes de cenar
       // (ya alargada de camino a la cena).
       const candidate = { block, units, dinner, result, afternoonStops }
@@ -814,6 +912,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       }
     }
 
+    experienceOnTheWay(day, chosen, morningBlock, otherMorningNames)
     polishExtras(day, chosen)
     if (!morningBlock && !day.halfDayExcursion) untypedHalves++
     if (chosen.block) {
@@ -919,6 +1018,17 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   }
 
   // Joyas e imprescindibles que no han salido en ningún día.
+  // Lo de un grupo que no se visita en todo el viaje se ve por fuera desde su compañero (el Castillo de
+  // Sant'Angelo desde el Puente: una visita grande al día, y ese día ya es el Vaticano).
+  for (const day of days.filter((d) => d.schedule)) {
+    for (const visit of day.schedule.visits) {
+      const group = visit.place.group
+      if (!group || visit.place.passBy) continue
+      const partners = (destData.places ?? []).filter((other) => other.group === group && other.name !== visit.place.name && !seen.has(other.name) && other.type === 'interior')
+      if (partners.length > 0) visit.place = { ...visit.place, outsideOf: [...new Set([...(visit.place.outsideOf ?? []), ...partners.map((other) => other.name)])] }
+    }
+  }
+
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name))
     .map((place) => ({ unitId: place.name, name: place.name, reason: 'no_room' }))
