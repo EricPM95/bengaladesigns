@@ -48,6 +48,7 @@ import { straightLineMeters } from './travelTimes.js'
 import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
 import { sunsetFor } from './sunset.js'
+import { closedOnDate } from './openingHours.js'
 import { tripCalendar } from './tripCalendar.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
@@ -228,6 +229,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // de ese mes. La época se deduce del mes (reserva `by_season`). Día de la semana, solo con fechas.
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const seasonOfTrip = calendar.season
+  /** ¿Cierra la unidad ese día? Por día de la semana (con fechas) o por fecha (`closed_dates`, Parte 2). */
+  const closedThatDay = (unit, day) =>
+    (unit.closedOn.length > 0 && Boolean(day.weekday) && unit.closedOn.includes(day.weekday)) ||
+    (calendar.hasDates && (unit.closedDates ?? []).length > 0 && closedOnDate({ closed_dates: unit.closedDates }, calendar.dateOfDay(day.dayNumber)))
   // Dónde se puede comer (restaurantes curados para comer): el programador elige en cada día.
   const lunchSpotList = lunchSpots(destData)
   const mode = modeV3For(pace)
@@ -275,14 +280,18 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   {
     const placeOf = (name) => destData.places?.find((place) => place.name === name)
     const namesOf = (day) => [...(day.curated?.morning?.places ?? []), ...(day.curated?.afternoon?.places ?? [])]
-    const closedIn = (day, weekday) => namesOf(day).some((name) => {
+    // ¿Cierra algún imprescindible del curado de \`day\` el día \`target\`? Por día de la semana o por
+    // fecha (\`closed_dates\`: el Coliseo el 25 de diciembre).
+    const closedIn = (day, target) => namesOf(day).some((name) => {
       const place = placeOf(name)
-      return place?.level === 1 && (place.closed_on ?? []).map((d) => String(d).toLowerCase()).includes(String(weekday).toLowerCase())
+      if (place?.level !== 1) return false
+      if ((place.closed_on ?? []).map((d) => String(d).toLowerCase()).includes(String(target.weekday).toLowerCase())) return true
+      return calendar.hasDates && closedOnDate(place, calendar.dateOfDay(target.dayNumber))
     })
     const swappable = skeleton.filter((day) => !day.isBlank && !day.isExcursion && !day.halfDayExcursion && day.weekday)
     for (const day of swappable) {
-      if (!day.curated || !closedIn(day, day.weekday)) continue
-      const other = swappable.find((candidate) => candidate !== day && !closedIn(day, candidate.weekday) && !closedIn(candidate, day.weekday))
+      if (!day.curated || !closedIn(day, day)) continue
+      const other = swappable.find((candidate) => candidate !== day && !closedIn(day, candidate) && !closedIn(candidate, day))
       if (other) [day.curated, other.curated] = [other.curated, day.curated]
     }
   }
@@ -299,9 +308,11 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const seedCenter = destData.zones?.[seedZone]?.center ?? null
     // La fecha de ese día para la puesta de sol y los horarios: la real (con fechas) o el 15 del mes.
     const dateIso = calendar.dateOfDay(day.dayNumber)
+    const sunsetMinutes = sunsetFor(destData, { dateIso, season: seasonOfTrip })
     cityDays.push({
       ...day,
-      sunsetMinutes: sunsetFor(destData, { dateIso, season: seasonOfTrip }),
+      dateIso,
+      sunsetMinutes,
       sunsetNames: new Set(),
       curatedNames,
       curatedMorning: day.curated?.morning?.places ?? [],
@@ -315,7 +326,8 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         start: { minutes: day.halfDayExcursion ? mode.halfDayRouteStart : mode.dayStart, coordinates: null },
         pendingMeals: { lunch: !day.halfDayExcursion, dinner: true },
         longVisitsAnytime: skeleton.filter((d) => !d.isBlank && !d.isExcursion).length === 1,
-        hours: { weekday: day.weekday ?? null, season: seasonOfTrip, dateIso },
+        // La puesta de sol entra en los horarios: "07:00-sunset" cierra a esa hora (Parte 2).
+        hours: { weekday: day.weekday ?? null, season: seasonOfTrip, dateIso, sunset: sunsetMinutes },
         lunchSpots: lunchSpotList,
       }),
     })
@@ -483,7 +495,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (bannedOnDay.has(`${day.dayNumber}|${unit.id}`)) return false
     const allowedDays = relationDays(unit)
     if (allowedDays && !allowedDays.includes(day.dayNumber)) return false
-    if (unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)) return false
+    if (closedThatDay(unit, day)) return false
     if (unit.isLong && cityDays.length > 1 && dayUnits(day).some((u) => u.isLong)) return false
     return withinCategoryCap(day, unit)
   }
@@ -644,7 +656,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       }
     }
     if (!placed) {
-      const closedEveryDay = cityDays.every((day) => day.weekday && unit.closedOn.includes(day.weekday))
+      const closedEveryDay = cityDays.every((day) => closedThatDay(unit, day))
       unplacedPool.push({ unitId: unit.id, name: unit.places[0].name, reason: closedEveryDay ? 'closed_every_day' : unit.isLong ? 'no_room_long_visit' : 'no_room', closedOn: unit.closedOn })
     }
   }
@@ -1288,7 +1300,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       const candidates = units
         .filter((unit) => !unit.isFreeTour && !placedDay.has(unit.id) && unit.places.every((place) => !onDay.has(place.name) && !tourNames.has(place.name)))
         .map((unit) => (unit.requiresTicket ? outsideVariant(unit) : unit))
-        .filter((unit) => unit && !(unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)))
+        .filter((unit) => unit && !closedThatDay(unit, day))
         .filter((unit) => !paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null))
       let best = null
       for (const unit of candidates) {
@@ -1314,7 +1326,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day).map(labelled), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
   return {
     mode,
-    days: skeleton.map((day) => ({ ...day, hours: { weekday: day.weekday ?? null, season: seasonOfTrip, dateIso: calendar.dateOfDay(day.dayNumber) }, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
+    days: skeleton.map((day) => ({ ...day, hours: { weekday: day.weekday ?? null, season: seasonOfTrip, dateIso: calendar.dateOfDay(day.dayNumber), sunset: sunsetFor(destData, { dateIso: calendar.dateOfDay(day.dayNumber), season: seasonOfTrip }) }, ...(finished.get(day.dayNumber) ?? { units: [], schedule: null }) })),
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
     placedDay,
     unplacedPool,

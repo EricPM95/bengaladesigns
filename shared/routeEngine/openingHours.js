@@ -91,7 +91,7 @@ export const DEFAULT_INDOOR_SCHEDULE = '09:00-17:00'
  *   día; si no, el `schedule` de siempre.
  */
 export function effectiveSchedule(place, hours = {}) {
-  const structured = Boolean(place?.windows || place?.by_day || place?.by_season)
+  const structured = Boolean(place?.windows || place?.by_day || place?.by_season || place?.by_period)
   const text = structured ? scheduleForDay(place, hours ?? {}) : place?.schedule
   if (parseHoursSessions(text).length > 0) return text
   if (structured && text == null) return null // abierto siempre ("00:00-24:00")
@@ -116,6 +116,10 @@ const hhmmToMinutes = (value) => {
 export function lastEntryMinutes(place, visitStart, seasonOrHours = null) {
   const hours = typeof seasonOrHours === 'object' && seasonOrHours !== null ? seasonOrHours : { season: seasonOrHours }
   const season = hours.season ?? null
+  // Con horario por periodo (Estaciones, Parte 2), la última entrada es la de ese periodo (null = no
+  // hay), por encima de la de la época.
+  const period = periodFor(place, hours.dateIso)
+  if (period) return period.last_entry == null ? null : hhmmToMinutes(period.last_entry)
   const raw = place?.last_entry
   if (raw == null) return null
   if (typeof raw === 'string') return hhmmToMinutes(raw)
@@ -180,6 +184,55 @@ export function seasonKey(season, dateIso = null) {
   return map[season] ?? null
 }
 
+// ── Horarios por periodo (Estaciones, Parte 2, 2026-09-25) ──────────────────────────────────
+//
+// `by_period`: lista de periodos que cubre el año entero, `from`/`to` en MM-DD (ambos incluidos; un
+// periodo puede cruzar el año: 10-25 → 02-29), con sus `windows` y su `last_entry` (o null). Se usa
+// con la fecha real del día o, sin fechas, el día 15 del mes (tripCalendar.js).
+
+/** "2026-10-30" o "10-30" → 1030, para comparar fechas del año. */
+const monthDayOf = (text) => {
+  const match = /(\d{2})-(\d{2})$/.exec(String(text ?? '').slice(0, 10))
+  return match ? Number(match[1]) * 100 + Number(match[2]) : null
+}
+
+/** ¿Cae el día del año `md` (MMDD) dentro de `from`-`to`, contando los que cruzan el año? */
+export function withinMonthDays(md, from, to) {
+  const a = monthDayOf(from)
+  const b = monthDayOf(to)
+  if (md === null || a === null || b === null) return false
+  return a <= b ? md >= a && md <= b : md >= a || md <= b
+}
+
+/** El periodo de `by_period` que toca en esa fecha (null si el lugar no trae periodos o no hay fecha). */
+export function periodFor(place, dateIso) {
+  if (!Array.isArray(place?.by_period) || !dateIso) return null
+  const md = monthDayOf(dateIso)
+  return place.by_period.find((period) => withinMonthDays(md, period.from, period.to)) ?? null
+}
+
+/**
+ * ¿Cierra el lugar ese día por fecha (`closed_dates`, MM-DD: el 25 de diciembre)? Solo con fechas
+ * reales: sin ellas el día 15 del mes es una referencia, no un día del viaje.
+ */
+export function closedOnDate(place, dateIso) {
+  if (!dateIso || !Array.isArray(place?.closed_dates)) return false
+  const md = monthDayOf(dateIso)
+  return place.closed_dates.some((date) => monthDayOf(date) === md)
+}
+
+/**
+ * La palabra `sunset` en una franja ("07:00-sunset": parques que cierran al anochecer) pasa a la hora
+ * de la puesta de sol de ese día. Sin puesta de sol conocida, las 17:00: lo prudente (la más temprana
+ * del año en Europa ronda las 16:30-17:00).
+ */
+function resolveSunsetWord(windows, sunsetMinutes) {
+  if (!windows.some((w) => /sunset/i.test(w))) return windows
+  const at = Number.isFinite(sunsetMinutes) ? sunsetMinutes : 17 * 60
+  const text = `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
+  return windows.map((w) => w.replace(/sunset/gi, text))
+}
+
 /** La entrada de `by_day` que se usa sin fechas: la que cubre más días de lunes a viernes. */
 function weekdayEntry(byDay) {
   let best = null
@@ -197,12 +250,24 @@ function weekdayEntry(byDay) {
  * @returns {string[]|null}  null = el lugar no trae horario estructurado (usar `schedule`)
  */
 export function placeWindows(place, hours = {}) {
+  const windows = rawWindows(place, hours)
+  return windows ? resolveSunsetWord(windows, hours.sunset) : null
+}
+
+/**
+ * Orden (Estaciones, Parte 2): `by_day` con fechas (el día de la semana real) → `by_period` (la fecha
+ * real o el 15 del mes) → `by_season` (reserva de destinos sin periodos) → `by_day` de laborables sin
+ * fechas → `windows`. Los cierres (`closed_on`, `closed_dates`) van antes, en el reparto.
+ */
+function rawWindows(place, hours) {
   const byDay = place?.by_day
   if (hours.weekday && byDay) {
     const day = dayIndex(hours.weekday)
     const entry = Object.entries(byDay).find(([key]) => daysOfKey(key).has(day))
     if (entry) return entry[1]
   }
+  const period = periodFor(place, hours.dateIso)
+  if (period && Array.isArray(period.windows)) return period.windows
   if (hours.season && place?.by_season?.[hours.season]) return place.by_season[hours.season]
   if (byDay) {
     const entry = weekdayEntry(byDay)

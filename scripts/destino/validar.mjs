@@ -167,6 +167,32 @@ const section = (title) => {
       if (PRICE.test(text)) s.red.push(`${place.name}.${field}: lleva un precio — los precios salen de los proveedores, no del JSON`)
     }
   }
+  // Horarios por periodo (Estaciones, Parte 2): el año entero, 366 días contando el 29 de febrero,
+  // sin huecos ni solapes.
+  const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  const yearDays = DAYS_IN_MONTH.flatMap((days, m) => Array.from({ length: days }, (_, d) => `${String(m + 1).padStart(2, '0')}-${String(d + 1).padStart(2, '0')}`))
+  for (const place of places.filter((p) => Array.isArray(p.by_period))) {
+    const count = new Map(yearDays.map((day) => [day, 0]))
+    for (const period of place.by_period) {
+      if (!count.has(period.from) || !count.has(period.to)) {
+        s.red.push(`${place.name}.by_period: fecha mal escrita (${period.from} → ${period.to}), va en MM-DD`)
+        continue
+      }
+      const from = yearDays.indexOf(period.from)
+      const to = yearDays.indexOf(period.to)
+      const span = from <= to ? yearDays.slice(from, to + 1) : [...yearDays.slice(from), ...yearDays.slice(0, to + 1)]
+      for (const day of span) count.set(day, count.get(day) + 1)
+    }
+    const missing = yearDays.filter((day) => count.get(day) === 0)
+    const overlap = yearDays.filter((day) => count.get(day) > 1)
+    if (missing.length) s.warn.push(`${place.name}.by_period: ${missing.length} días sin horario (${missing.slice(0, 4).join(', ')}${missing.length > 4 ? '…' : ''})`)
+    if (overlap.length) s.warn.push(`${place.name}.by_period: ${overlap.length} días en dos periodos (${overlap.slice(0, 4).join(', ')}${overlap.length > 4 ? '…' : ''})`)
+  }
+  // Los cambios de finales de marzo y octubre siguen el cambio de hora: la auditoría vale para su año.
+  // Sin --anio, el año en curso.
+  const tripYear = Number(process.argv[process.argv.indexOf('--anio') + 1]) || new Date().getFullYear()
+  const stale = places.filter((p) => p.hours_audit?.fecha && Number(String(p.hours_audit.fecha).slice(0, 4)) < tripYear)
+  if (stale.length) s.warn.push(`Horarios por periodo auditados antes de ${tripYear} (${stale.length} lugares: ${stale.slice(0, 3).map((p) => p.name).join(', ')}${stale.length > 3 ? '…' : ''}): revisa los cambios de marzo y octubre, siguen el cambio de hora`)
 }
 
 // ── 3. Nivel 1 ──────────────────────────────────────────────────────────────────────────────

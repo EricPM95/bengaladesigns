@@ -553,6 +553,14 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     deduce del mes (dic-feb invierno) y solo sirve para mostrarla y como reserva (`by_season`). Un viaje
     antiguo con solo temporada pasa a su mes central (abril, julio, octubre, enero). Sin fechas, el mes
     es obligatorio en el formulario; con fechas, sale de ellas.
+104. **Horario de un lugar un día concreto**, en este orden: cierres (`closed_on` por día de la semana
+    y `closed_dates` MM-DD, este solo con fechas, en el reparto: un día curado cuyo imprescindible cierra
+    esa fecha se cambia con otro) → `by_day` con fechas → `by_period` (la fecha real o el 15 del mes;
+    `from`/`to` MM-DD incluidos, pueden cruzar el año; su `last_entry` manda, null = no hay) →
+    `by_season` (reserva) → `by_day` de laborables sin fechas → `windows`. La palabra `sunset` en una
+    franja ("07:00-sunset") es la puesta de sol de ese día (sin ella, las 17:00). `validar.mjs` avisa si
+    los periodos dejan días sin cubrir o se solapan (366 días) y si la auditoría (`hours_audit.fecha`) es
+    de un año anterior al del viaje (`--anio`). Import: `scripts/destino/importarPeriodos.mjs`.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

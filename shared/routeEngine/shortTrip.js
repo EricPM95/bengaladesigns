@@ -23,6 +23,7 @@ import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { tripCalendar } from './tripCalendar.js'
+import { sunsetFor } from './sunset.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
 import { weekdayForDay } from './tripSkeleton.js'
@@ -139,7 +140,12 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const seasonOfTrip = calendar.season
   const lunchSpotList = lunchSpots(destData)
-  const hoursFor = (dayNumber) => ({ weekday: weekdayForDay(dateRangeStartIso, dayNumber), season: seasonOfTrip, dateIso: calendar.dateOfDay(dayNumber) })
+  const hoursFor = (dayNumber) => ({
+    weekday: weekdayForDay(dateRangeStartIso, dayNumber),
+    season: seasonOfTrip,
+    dateIso: calendar.dateOfDay(dayNumber),
+    sunset: sunsetFor(destData, { dateIso: calendar.dateOfDay(dayNumber), season: seasonOfTrip }),
+  })
   const notIncluded = []
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
 

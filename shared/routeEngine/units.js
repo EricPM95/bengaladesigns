@@ -71,6 +71,8 @@ function unitFromPlaces(id, places) {
     isLong: minutes > LONG_VISIT_MINUTES,
     level: Math.min(...places.map((place) => (Number.isFinite(place.level) ? place.level : 3))),
     closedOn: [...new Set(places.flatMap(closedDaysOf))],
+    // Cierres por fecha (MM-DD: el 25 de diciembre). Solo cuentan con fechas reales (Estaciones, Parte 2).
+    closedDates: [...new Set(places.flatMap((place) => (Array.isArray(place.closed_dates) ? place.closed_dates : [])))],
     isFreeTour: false,
     coords: { lat: first.coordinates?.[0], lng: first.coordinates?.[1] },
     tags: [...new Set(places.flatMap((place) => place.tags ?? []))],
