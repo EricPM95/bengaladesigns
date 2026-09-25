@@ -18,6 +18,15 @@ Sin push hasta que lo revises.
    próxima auditoría o lo pongo yo con una fuente?
 4. **Viajes de 1 día (`shortTrip`)**: no miran `closed_on` ni `closed_dates` (ya pasaba antes con el día
    de la semana). ¿Quieres que el bloque del día cambie si su imprescindible cierra esa fecha?
+5. **Dónde va el `available` de una experiencia** (Parte 4). Las experiencias no tienen objeto propio en
+   el JSON del destino (viven en el banco del formulario), y la ventana cambia por destino. La he puesto
+   en `destination_config.experience_availability: { mercadillos_navidenos: { from, to } }`. Si
+   prefieres otra forma, es mover la lectura (`experiencesInSeason` y `/api/destination-seasonal`).
+6. **"Mercadillos Navideños" y el motor v3**: esa experiencia no tiene lugares propios en el motor v3
+   (antes solo existía en el camino de Claude, con `season === 'winter'`). Cuando cures los mercadillos,
+   ¿van como lugares con `available` y tags que casen con esa experiencia, o como otra cosa?
+7. **Lugar de temporada en mes frontera "elegido"**: lo tomo como "está en su pool" (Elige lugares). Si
+   también debe entrar cuando es de una experiencia que el viajero eligió y confirmó, es una línea.
 
 ## Parte 1 — Lo que recibe el motor
 
@@ -78,3 +87,29 @@ Sin push hasta que lo revises.
 - Enero (puesta de sol ~17:05): día 1 … Campidoglio 17:15 → Columna de Trajano 17:45 → **Coliseo de
   noche 18:30**, antes de cenar en Monti.
 - Julio (~20:45): el Coliseo de noche va a las 21:30, después de cenar, como hasta ahora.
+
+## Parte 4 — Disponibilidad por fechas (`available`)
+
+**Qué ha cambiado**
+- `shared/routeEngine/availability.js`: ventana `{ from, to }` (MM-DD, cruza el año), estado del mes
+  (`in` / `out` / `border`) y si entra en el viaje.
+- Motor: un lugar fuera de temporada no entra ese día (con fechas) o ese mes (el mes frontera, solo si
+  está en su pool); si lo eligió y no cabe nunca, sale en "no incluido" con "Solo del X al Y".
+  Nocturnas y excursiones fuera de temporada no se ofrecen (mes frontera tampoco: no las elige él).
+- Experiencias: su ventana en `destination_config.experience_availability[id]`. El servidor quita de la
+  selección la que no toca (`experiencesInSeason`). El formulario pide las ventanas a
+  `/api/destination-seasonal`: fuera → la tarjeta no sale; mes frontera → pregunta "¿Viajas en esas
+  fechas?" (Sí → `answers.seasonalConfirmed`; No → se quita y se avisa en una línea). Sin ventana,
+  sigue la regla de siempre (`winterOnly`).
+- "Añadir parada": un lugar de temporada lleva "De temporada: solo del X al Y." delante del horario.
+- **Sin datos de Roma**: no he inventado ninguna fecha. Todo probado con datos de prueba en
+  `verifyAvailability.mjs` (lugar, experiencia) y en el navegador (selector con una ventana simulada).
+- INVARIANTES 106.
+
+**Dónde se nota** (con datos de prueba: un mercadillo del 1 de diciembre al 6 de enero)
+- Junio: la tarjeta "Mercadillos Navideños" no sale; un mercadillo elegido en el pool sale en "no
+  incluido: Solo del 1 de diciembre al 6 de enero".
+- Enero (frontera): pregunta "En Roma, los mercadillos navideños suelen estar del 1 de diciembre al 6 de
+  enero. ¿Viajas en esas fechas?"; con "No", "Hemos quitado Mercadillos Navideños: en Roma solo están
+  del 1 de diciembre al 6 de enero."
+- Con fechas del 8 de enero: no entra aunque esté elegido.

@@ -73,6 +73,8 @@ function unitFromPlaces(id, places) {
     closedOn: [...new Set(places.flatMap(closedDaysOf))],
     // Cierres por fecha (MM-DD: el 25 de diciembre). Solo cuentan con fechas reales (Estaciones, Parte 2).
     closedDates: [...new Set(places.flatMap((place) => (Array.isArray(place.closed_dates) ? place.closed_dates : [])))],
+    // Ventanas de temporada (`available`) de sus lugares: fuera de ellas no entra (Estaciones, Parte 4).
+    availableWindows: places.map((place) => place.available).filter(Boolean),
     isFreeTour: false,
     coords: { lat: first.coordinates?.[0], lng: first.coordinates?.[1] },
     tags: [...new Set(places.flatMap((place) => place.tags ?? []))],

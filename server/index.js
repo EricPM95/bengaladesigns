@@ -2,6 +2,7 @@ import express from 'express'
 import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
+import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -3777,6 +3778,19 @@ function buildCuratedPoolV2(destData) {
  * por la misma razón de siempre: ese pool influye en la GENERACIÓN y por eso es corto y curado;
  * este es edición manual sobre una ruta ya hecha, así que enseña el catálogo entero sin tope.
  */
+/**
+ * Ventanas de temporada de las experiencias de un destino (Estaciones, Parte 4): el formulario no
+ * ofrece la que cae entera fuera del mes del viaje y pregunta en el mes frontera. Sin datos, vacío.
+ */
+app.post('/api/destination-seasonal', (req, res) => {
+  const { destination } = req.body ?? {}
+  const data = destination ? findPipelineV2Data(destination) : null
+  const experiences = Object.fromEntries(
+    Object.entries(data?.destination_config?.experience_availability ?? {}).map(([id, window]) => [id, { ...window, label: availabilityLabel(window) }]),
+  )
+  res.json({ destination: data?.destination ?? destination ?? null, experiences })
+})
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {
@@ -3819,7 +3833,10 @@ app.post('/api/destination-places', (req, res) => {
         .map(([theme]) => theme),
       // Días limitados y reserva obligatoria (la Domus Aurea): la ficha y la parada lo dicen.
       booking_note: place.booking_note ?? null,
-      hours_card: place.card_text ?? null,
+      // Lo de temporada (`available`, Estaciones Parte 4) sigue en "Añadir parada", con la nota de
+      // cuándo abre delante del horario.
+      hours_card: [place.available ? `De temporada: solo ${availabilityLabel(place.available)}.` : null, place.card_text ?? null].filter(Boolean).join(' ') || null,
+      available: place.available ?? null,
       reservation: place.reservation ?? null,
       ticket_info: Array.isArray(place.ticket_info) ? place.ticket_info : null,
     }))
@@ -4683,7 +4700,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null, seasonalConfirmed: Array.isArray(answers.seasonalConfirmed) ? answers.seasonalConfirmed : [] },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

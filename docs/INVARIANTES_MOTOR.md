@@ -569,6 +569,14 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     exterior con horario (jardín, parque) que cierra antes de que sea de noche no puede ser nocturna ese
     día (lo que cierra en `sunset`, nunca); lo de interior se ve de noche desde fuera y no cuenta. La
     cena no cambia de franja.
+106. **Disponibilidad por fechas** (`available: { from, to }` MM-DD, puede cruzar el año; en lugares,
+    nocturnas, excursiones y, para experiencias, `destination_config.experience_availability[id]`):
+    fuera de la ventana no entra. Con fechas, día a día (una experiencia, si algún día del viaje cae
+    dentro). Con solo el mes: entero dentro → entra; entero fuera → no entra y el formulario no la
+    ofrece; **mes frontera** → solo si el viajero la eligió y respondió "Sí" a "En {destino}, … suelen
+    estar del X al Y. ¿Viajas en esas fechas?" (`seasonalConfirmed`); "No" la quita con un aviso de una
+    línea. Lo de temporada que no eligió no entra solo en un mes frontera (un lugar solo entra si está
+    en su pool); sigue en "Añadir parada" con "De temporada: solo del X al Y." Nunca se inventan fechas.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

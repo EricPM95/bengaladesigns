@@ -161,6 +161,9 @@ export interface QuestionnaireAnswers {
   experiencesPositive: ExperienceCategoryId[]
   /** Categorías en "No me lo recomiendes" (máx. 2, nunca incluye 'imprescindibles'). */
   experiencesNegative: ExperienceCategoryId[]
+  /** Experiencias de temporada en un MES FRONTERA a las que el viajero dijo "Sí, viajo en esas fechas"
+      (Estaciones, Parte 4): solo esas entran en la ruta. */
+  seasonalConfirmed?: ExperienceCategoryId[]
   pace: TripPace
   chronotype: Chronotype
   budgetLevel: BudgetLevel

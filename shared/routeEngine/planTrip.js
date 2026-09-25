@@ -49,6 +49,7 @@ import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
 import { sunsetFor } from './sunset.js'
 import { closedOnDate } from './openingHours.js'
+import { availableForTrip } from './availability.js'
 import { tripCalendar } from './tripCalendar.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
@@ -233,6 +234,12 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const closedThatDay = (unit, day) =>
     (unit.closedOn.length > 0 && Boolean(day.weekday) && unit.closedOn.includes(day.weekday)) ||
     (calendar.hasDates && (unit.closedDates ?? []).length > 0 && closedOnDate({ closed_dates: unit.closedDates }, calendar.dateOfDay(day.dayNumber)))
+  /**
+   * ¿Está fuera de temporada ese día (`available`, Parte 4)? Con fechas, la del día; con solo el mes,
+   * el mes frontera solo vale si el viajero lo eligió (pool): lo de temporada no entra solo.
+   */
+  const outOfSeason = (unit, day) =>
+    (unit.availableWindows ?? []).some((window) => !availableForTrip(window, calendar, calendar.dateOfDay(day.dayNumber), unit.poolIndex != null))
   // Dónde se puede comer (restaurantes curados para comer): el programador elige en cada día.
   const lunchSpotList = lunchSpots(destData)
   const mode = modeV3For(pace)
@@ -495,7 +502,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     if (bannedOnDay.has(`${day.dayNumber}|${unit.id}`)) return false
     const allowedDays = relationDays(unit)
     if (allowedDays && !allowedDays.includes(day.dayNumber)) return false
-    if (closedThatDay(unit, day)) return false
+    if (closedThatDay(unit, day) || outOfSeason(unit, day)) return false
     if (unit.isLong && cityDays.length > 1 && dayUnits(day).some((u) => u.isLong)) return false
     return withinCategoryCap(day, unit)
   }
@@ -657,7 +664,14 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
     if (!placed) {
       const closedEveryDay = cityDays.every((day) => closedThatDay(unit, day))
-      unplacedPool.push({ unitId: unit.id, name: unit.places[0].name, reason: closedEveryDay ? 'closed_every_day' : unit.isLong ? 'no_room_long_visit' : 'no_room', closedOn: unit.closedOn })
+      const seasonalEveryDay = cityDays.every((day) => outOfSeason(unit, day))
+      unplacedPool.push({
+        unitId: unit.id,
+        name: unit.places[0].name,
+        reason: seasonalEveryDay ? 'out_of_season' : closedEveryDay ? 'closed_every_day' : unit.isLong ? 'no_room_long_visit' : 'no_room',
+        closedOn: unit.closedOn,
+        ...(seasonalEveryDay ? { available: unit.availableWindows[0] } : {}),
+      })
     }
   }
 
@@ -1300,7 +1314,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       const candidates = units
         .filter((unit) => !unit.isFreeTour && !placedDay.has(unit.id) && unit.places.every((place) => !onDay.has(place.name) && !tourNames.has(place.name)))
         .map((unit) => (unit.requiresTicket ? outsideVariant(unit) : unit))
-        .filter((unit) => unit && !closedThatDay(unit, day))
+        .filter((unit) => unit && !closedThatDay(unit, day) && !outOfSeason(unit, day))
         .filter((unit) => !paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null))
       let best = null
       for (const unit of candidates) {

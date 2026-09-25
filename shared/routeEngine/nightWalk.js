@@ -16,6 +16,7 @@ import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
 import { dinnerZones } from './dinnerZones.js'
 import { effectiveSchedule, parseClosingMinutes } from './openingHours.js'
+import { availableForTrip } from './availability.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
 function metersBetween(a, b) {
@@ -121,9 +122,15 @@ export function planNightWalks(destData, plan) {
         return closing !== null && closing < 24 * 60 && closing <= nightStart
       })
 
+    // Fuera de temporada (`available`, Parte 4): con fechas, la del día; con solo el mes, el mes
+    // entero dentro (una nocturna nunca la elige el viajero, así que el mes frontera no vale).
+    const hasDates = Boolean(day.hours?.weekday)
+    const monthOfDay = day.hours?.dateIso ? Number(String(day.hours.dateIso).slice(5, 7)) - 1 : null
+    const inSeason = (entry) => availableForTrip(entry.available, { hasDates, month: monthOfDay }, day.hours?.dateIso ?? null, false)
+
     const available = catalogue.filter((entry) => {
       if (used.has(entry.name)) return false
-      if (closedAtNight(entry)) return false
+      if (closedAtNight(entry) || !inSeason(entry)) return false
       // En un viaje no se repite un lugar de nivel 2 o 3, tampoco de noche (decisión del 2026-09-25):
       // si el Janículo se ve al atardecer otro día, su nocturna no sale. Solo el nivel 1 se repite.
       if ((entry.conflicts_with ?? []).some((name) => dayVisited.has(name) && (levelOf.get(name) ?? 1) >= 2)) return false

@@ -384,6 +384,11 @@ export function Questionnaire() {
                 <ExperienceCategorySelector
                   season={answers.season}
                   tripStartIso={answers.dateRange?.start ?? null}
+                  destination={destination}
+                  month={answers.month}
+                  dateRange={answers.dateRange}
+                  seasonalConfirmed={answers.seasonalConfirmed ?? []}
+                  onSeasonalConfirmedChange={(seasonalConfirmed) => updateAnswers({ seasonalConfirmed })}
                   selected={answers.experiencesPositive ?? []}
                   onChange={(experiencesPositive) =>
                     updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })

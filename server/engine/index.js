@@ -24,6 +24,8 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
+import { availabilityLabel, availableForTrip, availableOn } from '../../shared/routeEngine/availability.js'
+import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -60,6 +62,14 @@ export async function buildDayBlockV3(
   options = {},
 ) {
   if (!destData) return null
+  // Experiencias de temporada fuera de su ventana: fuera de la selección (Estaciones, Parte 4).
+  experiencesPositive = experiencesInSeason(destData, experiencesPositive ?? [], {
+    dateRangeStartIso,
+    month: options.month ?? null,
+    season: options.season ?? null,
+    contentDays: Math.max(1, totalDays - 1),
+    confirmed: options.seasonalConfirmed ?? [],
+  })
 
   // El reparto del viaje ENTERO se recalcula en cada llamada: es una función pura y cuesta
   // milisegundos, y es lo que permite que un día construido aislado sepa qué hacen los demás
@@ -126,7 +136,12 @@ export async function buildDayBlockV3(
   if (dayPlan.isExcursion) {
     const config = destData.destination_config ?? {}
     const day = buildExcursionDayV2(destData, dayNumber, totalDays, pace)
-    const preferida = day.excursion_options.find((option) => option.id === preselectedExcursionId(destData))
+    // Fuera de temporada (`available` de la excursión, Estaciones Parte 4): no se ofrece. Con solo el
+    // mes, el mes frontera tampoco (no la ha elegido el viajero).
+    const calendar = tripCalendar({ dateRangeStartIso, month: options.month ?? null, season: options.season ?? null })
+    const sourceOf = (id) => destData.excursions?.options?.[id] ?? null
+    day.excursion_options = day.excursion_options.filter((option) => availableForTrip(sourceOf(option.id)?.available ?? option.available, calendar, calendar.dateOfDay(dayNumber), false))
+    const preferida =day.excursion_options.find((option) => option.id === preselectedExcursionId(destData))
     if (preferida) {
       // La preseleccionada va la primera: es la que la ficha enseña en grande y el resto quedan
       // como alternativas.
@@ -166,7 +181,9 @@ export async function buildDayBlockV3(
     reason:
       item.reason === 'closed_every_day'
         ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
-        : 'No cabía en ningún día del viaje',
+        : item.reason === 'out_of_season'
+          ? `Solo ${availabilityLabel(item.available)}`
+          : 'No cabía en ningún día del viaje',
     suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
   }))
 
@@ -198,8 +215,13 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   day.not_included = [
     ...(trip.unplacedPool ?? []).map((item) => ({
       name: item.name,
-      reason: item.reason === 'closed_every_day' ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})` : 'No cabía en ningún día del viaje',
-      suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
+      reason:
+        item.reason === 'closed_every_day'
+          ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
+          : item.reason === 'out_of_season'
+            ? `Solo ${availabilityLabel(item.available)}`
+            : 'No cabía en ningún día del viaje',
+      suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
   ]
@@ -208,6 +230,23 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
   return day
+}
+
+/**
+ * Las experiencias elegidas que el viaje puede ofrecer (Estaciones, Parte 4). Su ventana vive en
+ * `destination_config.experience_availability[id]` ({ from, to } MM-DD). Con fechas, entra si algún día
+ * del viaje cae dentro; con solo el mes, si el mes entero cae dentro, o si es mes frontera y el viajero
+ * confirmó que viaja en esas fechas (`confirmed`). Sin ventana, siempre.
+ */
+export function experiencesInSeason(destData, experiencesPositive, { dateRangeStartIso = null, month = null, season = null, contentDays = 1, confirmed = [] } = {}) {
+  const windows = destData?.destination_config?.experience_availability ?? {}
+  const calendar = tripCalendar({ dateRangeStartIso, month, season })
+  return experiencesPositive.filter((id) => {
+    const window = windows[id]
+    if (!window) return true
+    if (calendar.hasDates) return Array.from({ length: contentDays }, (_, i) => calendar.dateOfDay(i + 1)).some((date) => availableOn(window, date))
+    return availableForTrip(window, calendar, null, confirmed.includes(id))
+  })
 }
 
 /** Tiempo libre antes de cenar a partir del cual la tarde se dice "Tarde libre", con sugerencias. */
