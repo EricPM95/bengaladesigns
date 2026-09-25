@@ -241,21 +241,33 @@ function labelOfKey(key) {
  */
 export function hoursWarning(place, start, end, hours = {}) {
   if (hours.weekday) return null
+  // Los días de la semana en los que, a la hora de la visita, no se puede: con su horario de esos días
+  // ("Domingos y festivos, solo de 16:30 a 18:00"). Decisión del 2026-09-25.
   const notes = []
   for (const [key, windows] of Object.entries(place?.by_day ?? {})) {
     const sessions = parseHoursSessions(windows.join(', ')).sort((a, b) => a.open - b.open)
     if (sessions.some((s) => start >= s.open && end <= s.close)) continue
-    // El primer tramo cerrado dentro de la visita.
-    let from = start
-    const openAtStart = sessions.find((s) => start >= s.open && start < s.close)
-    if (openAtStart) from = openAtStart.close
-    const reopen = sessions.find((s) => s.open > from)
-    const to = Math.min(end, reopen ? reopen.open : end)
-    notes.push(`${labelOfKey(key)} de ${fmt(from)} a ${fmt(Math.max(to, from))} no se puede visitar`)
+    const spans = sessions.map((s) => `de ${fmt(s.open)} a ${fmt(s.close)}`)
+    notes.push(`${pluralLabelOfKey(key)}, solo ${spans.length > 1 ? `${spans.slice(0, -1).join(', ')} y ${spans.at(-1)}` : spans[0]}.`)
   }
   const closed = (Array.isArray(place?.closed_on) ? place.closed_on : []).map((d) => DAY_NAME[dayIndex(d)]).filter(Boolean)
-  const parts = []
-  if (notes.length > 0) parts.push(`Ojo: ${notes.join('; ')}.`)
-  if (closed.length > 0) parts.push(`${parts.length ? 'Cierra' : 'Ojo: cierra'} los ${closed.length > 1 ? `${closed.slice(0, -1).join(', ')} y ${closed.at(-1)}` : closed[0]}.`)
-  return parts.length > 0 ? parts.join(' ') : null
+  // En plural: "los lunes", "los domingos".
+  const plural = closed.map((day) => (day.endsWith('s') ? day : `${day}s`))
+  if (plural.length > 0) notes.push(`Cierra los ${plural.length > 1 ? `${plural.slice(0, -1).join(', ')} y ${plural.at(-1)}` : plural[0]}.`)
+  return notes.length > 0 ? notes.join(' ') : null
+}
+
+/** "dom" → "Domingos y festivos"; "sab" → "Sábados"; "lun-sab" → "De lunes a sábado"; "lun,mar,jue" → "Lunes, martes y jueves". */
+function pluralLabelOfKey(key) {
+  const plural = (index) => (index === 0 ? 'domingos y festivos' : index === 6 ? 'sábados' : DAY_NAME[index])
+  const capital = (text) => text.charAt(0).toUpperCase() + text.slice(1)
+  const days = [...daysOfKey(key)]
+  if (days.length === 1) return capital(plural(days[0]))
+  const parts = String(key).split(',')
+  if (parts.length === 1 && key.includes('-')) {
+    const [from, to] = key.split('-').map((p) => DAY_NAME[dayIndex(p)])
+    return `De ${from} a ${to}`
+  }
+  const names = days.map(plural)
+  return capital(`${names.slice(0, -1).join(', ')} y ${names.at(-1)}`)
 }

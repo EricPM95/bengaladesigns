@@ -47,6 +47,7 @@ import { dinnerZones } from './dinnerZones.js'
 import { seasonKey } from './openingHours.js'
 import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
+import { sunsetFor } from './sunset.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
@@ -57,7 +58,7 @@ const NEAR_WALK_MINUTES = 20
  * de camino — el día 2 de Roma acababa con cuatro iglesias cruzando la ciudad. Cada minuto de
  * paseo o espera que añade el candidato resta el doble.
  */
-const FILL_SCORE = { theme: 20, level1: 50, level2: 30, curatedForDay: 25, fixedFlow: 500, revisit: -40, perAddedMinute: 2 }
+const FILL_SCORE = { theme: 20, level1: 50, level2: 30, curatedForDay: 25, fixedFlow: 500, fixedFlowStep: 20, revisit: -40, perAddedMinute: 2 }
 
 /** Relleno que añade más que esto en paseo + espera no compensa: no es "de camino", es un desvío. */
 const MAX_FILL_ADDED_MINUTES = 30
@@ -251,6 +252,23 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   // ── Paso 1: esqueleto ──────────────────────────────────────────────────────────────────────
   const skeleton = tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso })
+  // Con fechas: si un imprescindible del día curado cierra ese día de la semana (el Vaticano en
+  // domingo), ese día se cambia con otro del viaje en el que abra y cuyo curado también abra en el
+  // primero. Si no, se perdía el grupo entero (Plaza y Basílica van con los Museos).
+  {
+    const placeOf = (name) => destData.places?.find((place) => place.name === name)
+    const namesOf = (day) => [...(day.curated?.morning?.places ?? []), ...(day.curated?.afternoon?.places ?? [])]
+    const closedIn = (day, weekday) => namesOf(day).some((name) => {
+      const place = placeOf(name)
+      return place?.level === 1 && (place.closed_on ?? []).map((d) => String(d).toLowerCase()).includes(String(weekday).toLowerCase())
+    })
+    const swappable = skeleton.filter((day) => !day.isBlank && !day.isExcursion && !day.halfDayExcursion && day.weekday)
+    for (const day of swappable) {
+      if (!day.curated || !closedIn(day, day.weekday)) continue
+      const other = swappable.find((candidate) => candidate !== day && !closedIn(day, candidate.weekday) && !closedIn(candidate, day.weekday))
+      if (other) [day.curated, other.curated] = [other.curated, day.curated]
+    }
+  }
   const zones = zonesByPriority(destData)
   const cityDays = []
   let nextZone = 0
@@ -262,8 +280,12 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     // vuelve a las tres mejores en vez de bajar hacia la periferia (Prompt 9, Parte 13).
     const seedZone = day.curated?.morning?.zone ?? (day.allowsRepetition ? zones[nextRepetitionZone++ % Math.min(3, zones.length)] : zones[nextZone++ % zones.length])?.id
     const seedCenter = destData.zones?.[seedZone]?.center ?? null
+    // La fecha de ese día (con fechas) para la puesta de sol exacta; sin fechas, la de su época.
+    const dateIso = dateRangeStartIso ? new Date(Date.parse(dateRangeStartIso.slice(0, 10) + 'T12:00:00Z') + (day.dayNumber - 1) * 86400000).toISOString().slice(0, 10) : null
     cityDays.push({
       ...day,
+      sunsetMinutes: sunsetFor(destData, { dateIso, season: seasonOfTrip }),
+      sunsetNames: new Set(),
       curatedNames,
       curatedMorning: day.curated?.morning?.places ?? [],
       dinnerZone: null,
@@ -392,6 +414,11 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
    */
   const forDay = (day, unit) => ({
     ...unit,
+    // El mirador del atardecer de ese día: se llega en la ventana del atardecer y no se sale antes
+    // de que se ponga el sol (ver simulate en scheduleDay.js).
+    ...(day.sunsetMinutes != null && unit.places.some((place) => day.sunsetNames.has(place.name))
+      ? { places: unit.places.map((place) => (day.sunsetNames.has(place.name) ? { ...place, sunset: day.sunsetMinutes } : place)) }
+      : {}),
     curatedIndex: curatedIndexIn(day, unit),
     preferMorning: unit.places.some((place) => day.curatedMorning.includes(place.name)),
     preferEarly: unit.places.some((place) => /primera hora/i.test(place.best_time ?? '')),
@@ -624,13 +651,17 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Un mirador del recorrido con versión de noche (el Janículo) va al atardecer SI el sol se pone antes
   // de cenar en la época del viaje; si no, se queda de noche, como experiencia nocturna (decisión del
   // 2026-09-24). Sin época, se supone que sí da tiempo.
-  const sunsetText = seasonOfTrip ? destData.destination_config?.sunset_by_season?.[seasonOfTrip] : null
-  const sunsetAfterDinner = sunsetText ? toMinutes(sunsetText) >= mode.dinnerWindow[0] : false
-  const toNightInThisSeason = new Set(sunsetAfterDinner ? (destData.night_experiences ?? []).flatMap((entry) => entry.conflicts_with ?? []) : [])
+  const withNightVersion = new Set((destData.night_experiences ?? []).flatMap((entry) => entry.conflicts_with ?? []))
+  // Del atardecer, solo los MIRADORES con versión de noche (el Janículo), no todo lo que la tenga (el
+  // Puente Sant'Angelo tiene nocturna y no es un mirador).
+  const isMirador = (name) => (destData.places?.find((place) => place.name === name)?.tags ?? []).includes('mirador')
   for (const day of cityDays) {
     const zonesOfDay = new Set(dayUnits(day).flatMap((unit) => unit.places.map((place) => place.zone)))
     for (const zone of zonesOfDay) {
-      const flow = (destData.afternoon_flow?.[zone] ?? []).filter((name) => !toNightInThisSeason.has(name))
+      // Ese día el sol se pone a la hora de cenar o después: su mirador con versión de noche, de noche.
+      const sunsetAfterDinner = day.sunsetMinutes != null && day.sunsetMinutes >= mode.dinnerWindow[0]
+      const flow = (destData.afternoon_flow?.[zone] ?? []).filter((name) => !(sunsetAfterDinner && withNightVersion.has(name) && isMirador(name)))
+      for (const name of flow) if (withNightVersion.has(name) && isMirador(name)) day.sunsetNames.add(name)
       if (flow.length === 0) continue
       const firstShared = day.curatedNames.findIndex((name) => flow.includes(name))
       const rest = day.curatedNames.filter((name) => !flow.includes(name))
@@ -776,7 +807,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       day.dinnerDisplay = option.display
       // Si el barrio ganó por el atardecer, ese mirador entra el primero (ver más abajo).
       day.sunsetUnit = pick.sunsetUnit ?? null
-      if (day.sunsetUnit) sunsetUnitIds.add(day.sunsetUnit.id)
+      if (day.sunsetUnit) {
+        sunsetUnitIds.add(day.sunsetUnit.id)
+        for (const place of day.sunsetUnit.places) if ((place.tags ?? []).includes('mirador')) day.sunsetNames.add(place.name)
+      }
       // Para poder comprobarlo: si comparte barrio con otro día, a cuánto estaba (solo el que no
       // repite puede estar a más de 15 min).
       day.dinnerRepeatWalk = shared && walk <= DINNER_REPEAT_MAX_WALK_MINUTES ? walk : null
@@ -925,7 +959,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
             (matchesTheme(unit) ? FILL_SCORE.theme : 0) +
             (unit.level === 1 ? FILL_SCORE.level1 : unit.level === 2 ? FILL_SCORE.level2 : 0) +
             (curatedIndexIn(day, unit) !== null ? FILL_SCORE.curatedForDay : 0) +
-            (fixedForDay ? FILL_SCORE.fixedFlow : 0) +
+            // Lo del recorrido fijado entra en su orden (el Castillo antes que Trastevere): si entra
+            // después lo de más adelante, ya no queda sitio para lo de antes sin perder el atardecer.
+            (fixedForDay ? FILL_SCORE.fixedFlow - (curatedIndexIn(day, unit) ?? 0) * FILL_SCORE.fixedFlowStep : 0) +
             (unit.isRevisit ? FILL_SCORE.revisit : 0) -
             attempt.addedCost * FILL_SCORE.perAddedMinute -
             // El paseo añadido cuenta además de en el coste: a igualdad, lo que está más a mano.
@@ -1031,6 +1067,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       const lunchEnd = day.open.meals().find((meal) => meal.type === 'lunch')?.end ?? 0
       const nearAfternoon = day.open.visits().some((visit) => visit.start >= lunchEnd && (travel.leg(visit.place.coordinates, entry.coordinates)?.minutes ?? Infinity) <= NIGHT_TO_AFTERNOON_MINUTES)
       if (!nearAfternoon) continue
+      for (const place of unit.places) day.sunsetNames.add(place.name)
       const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: NIGHT_TO_SUNSET_MAX_ADDED_WALK_MINUTES })
       if (!attempt) continue
       day.open.add(attempt)

@@ -26,6 +26,8 @@ export const whyTexts = {
   /** Por la mañana no se va hacia la cena. */
   onTheWayMorning: () => 'Te pilla de camino: merece la parada.',
   sunset: (city) => `Llegas justo a tiempo para ver el atardecer sobre ${city}.`,
+  /** Llegada de 60 a 30 min antes de la puesta de sol. */
+  sunsetEarly: (city) => `Llegas con tiempo para coger buen sitio antes del atardecer sobre ${city}.`,
   night: () => 'De noche es una experiencia completamente distinta: con sus luces y otro ambiente.',
   revisit: (place, dayNumber, minutes) =>
     `Ya visitaste ${place} el Día ${dayNumber}, pero creemos que verlo a esta hora te va a gustar: dedícale ${minutes} minutos y hazte fotos nuevas.`,

@@ -488,6 +488,27 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     viaje vuelve a pasar por ellos (de noche o de paso). Revisitas y pasos por fuera llevan su propio
     texto ("Ya visitaste {lugar} el Día {n}, pero creemos que verlo a esta hora te va a gustar…").
 
+**Revisión del 2026-09-25**
+
+90. **Puesta de sol**: con fechas, calculada (`sunset.js`, fórmula astronómica con las coordenadas y la
+    zona horaria del destino, sin API); sin fechas, `sunset_by_season`; sin nada, no se sabe y el motor
+    no promete atardecer. Un mirador cuenta como atardecer si se llega de 60 min antes a 15 después de
+    la puesta; el motor busca la hora dorada (no antes de 45 min antes) y la visita dura como mínimo
+    hasta que se pone el sol. Texto: de 60 a 30 min antes, "Llegas con tiempo para coger buen sitio
+    antes del atardecer sobre {ciudad}."; menos, "Llegas justo a tiempo…". Si ese día el sol se pone a la
+    hora de cenar o después, el mirador con versión de noche se queda de noche.
+91. **Ningún precio, ni "gratis", fuera de la pestaña Tickets** (el `card_text` del horario no los lleva).
+92. **Sin fechas manda el horario de laborables** (`windows` = la entrada de `by_day` que cubre más días de
+    lunes a viernes), con aviso en la parada de los días que a esa hora no se puede: "Domingos y
+    festivos, solo de 16:30 a 18:00." (y "Cierra los lunes." si cierra algún día).
+
+93. **Con fechas, un día curado cuyo imprescindible cierra ese día de la semana se cambia con otro día
+    del viaje** en el que abra (y cuyo curado abra también en el primero). *El día del Vaticano caía en
+    domingo y se perdía el grupo entero (Plaza y Basílica van con los Museos).*
+94. **Solo un MIRADOR con versión de noche es "del atardecer"**; tener nocturna no basta (el Puente
+    Sant'Angelo la tiene y se le obligaba a la hora de la puesta de sol, y el Castillo ya no cabía). Lo
+    del recorrido fijado entra además en el orden del recorrido.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

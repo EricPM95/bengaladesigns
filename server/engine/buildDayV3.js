@@ -78,12 +78,11 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
     return whyTexts.essential(city)
   }
   if (unit?.experienceTheme) return whyTexts.experience(unit.experienceTheme)
-  const hasNightVersion = (destData.night_experiences ?? []).some((entry) => (entry.conflicts_with ?? []).includes(place.name))
-  // "Atardecer" solo cerca de la puesta de sol: con época, en la hora antes (sunset_by_season); sin
-  // época, a partir de las 17:30.
-  const sunsetText = destData.destination_config?.sunset_by_season?.[tripDay.hours?.season]
-  const nearSunset = typeof sunsetText === 'string' ? Math.abs(visit.end - toMinutes(sunsetText)) <= 60 : visit.start >= 17 * 60 + 30
-  if (nearSunset && (unit?.id === tripDay.sunsetUnitId || ((place.tags ?? []).includes('mirador') && hasNightVersion))) return whyTexts.sunset(city)
+  // Atardecer: solo el mirador que el motor colocó para la puesta de sol (lleva su hora). Llegar de 60 a
+  // 30 min antes es "con tiempo"; menos de 30, "justo a tiempo".
+  if (visit.place.sunset != null && visit.start >= visit.place.sunset - 60 && visit.start <= visit.place.sunset + 15) {
+    return visit.place.sunset - visit.start > 30 ? whyTexts.sunsetEarly(city) : whyTexts.sunset(city)
+  }
   return visit.start >= lunchEnd ? whyTexts.onTheWay() : whyTexts.onTheWayMorning()
 }
 
@@ -106,6 +105,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const stops = schedule.visits.map((visit) => {
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
     stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
+    // Mirador del atardecer: la hora de la puesta de sol a la que se ajusta (para las comprobaciones).
+    if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // Posición en el orden curado del día (fijado a mano: Popolo → Pincio → España): el programador

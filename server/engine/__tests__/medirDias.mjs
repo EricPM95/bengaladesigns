@@ -174,21 +174,31 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
   if (pieces.length > MAX_PIEZAS_TARDE) return null
 
   const firstStart = t2m(after[0].suggested_time)
+  // Como el motor: primero los órdenes sin esperas por encima de la tolerancia del ritmo (no se
+  // espera dos horas al atardecer pudiendo aprovecharlas), y de esos el que menos camina.
+  let longWait = false
   const measure = (order, checkHours) => {
     let cursor = firstStart
     let position = start
     let meters = 0
+    longWait = false
     for (const stop of order.flat().concat(tail)) {
       const coords = coordsOfStop(stop)
       const leg = position ? travel.leg(position, coords) : { minutes: 0, meters: 0 }
       meters += leg.meters
       const place = placeByName.get(stop.name)
       let at = roundUpToQuarter(cursor + leg.minutes)
+      // El mirador del atardecer tiene su ventana (de 45 min antes a 15 min después de la puesta de sol).
+      if (checkHours && stop.sunset_minutes != null) {
+        at = Math.max(at, stop.sunset_minutes - 45)
+        if (at > stop.sunset_minutes + 15) return null
+      }
       if (checkHours && place && !stop.is_pass_by) {
         // El horario del DÍA que trae la parada (el del día de la semana o la época), como el motor.
         at = earliestVisitStart(stop.hours ?? effectiveSchedule(place, HOURS), at, stop.duration_minutes, roundUpToQuarter)
         if (at === null) return null
       }
+      if (checkHours && at - (cursor + leg.minutes) > REF.gapTolerance[pace]) longWait = true
       cursor = at + stop.duration_minutes
       position = coords
     }
@@ -201,6 +211,7 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
   }
   const real = measure(pieces, false)
   let min = real
+  let minWithoutLongWait = Infinity
   // El orden curado del día (fijado a mano) no se invierte: el mínimo es el de las mismas paradas
   // respetándolo, así que el coste de ese orden no cuenta como zigzag (decisión del 2026-09-24).
   const curatedOf = (piece) => piece.find((stop) => stop.curated_index != null)?.curated_index ?? null
@@ -218,11 +229,14 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
     if (rest.length === 0) {
       const meters = measure(order, true)
       if (meters !== null && meters < min) min = meters
+      if (meters !== null && !longWait && meters < minWithoutLongWait) minWithoutLongWait = meters
       return
     }
     for (let i = 0; i < rest.length; i++) permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...order, rest[i]])
   }
   permute(pieces, [])
+  // Si hay algún orden sin esperas largas, el mínimo es el de esos (y nunca por debajo del real si el real es uno de ellos).
+  if (Number.isFinite(minWithoutLongWait)) min = Math.min(real, minWithoutLongWait)
   return { real, min }
 }
 
@@ -271,7 +285,7 @@ function measureDay(day, pace, interestTags, plannedNames) {
     // Entre la mañana y la tarde está la comida: ese tramo se mide aparte.
     if (lunchAt !== null && prevEnd <= lunchAt && nextStart >= lunchAt) continue
     // toFixedTime: la espera antes de algo con hora fija (el Free Tour) es a propósito, no un hueco del motor.
-    gaps.push({ from: prev.name, to: next.name, idle: nextStart - prevEnd - (leg?.minutes ?? 0), walk: leg?.minutes ?? 0, toFixedTime: Boolean(next.is_free_tour) })
+    gaps.push({ from: prev.name, to: next.name, idle: nextStart - prevEnd - (leg?.minutes ?? 0), walk: leg?.minutes ?? 0, toFixedTime: Boolean(next.is_free_tour || next.sunset_minutes != null) })
   }
 
   const morning = lunchAt === null ? [] : dayStops.filter((stop) => t2m(stop.suggested_time) < lunchAt)
@@ -589,7 +603,8 @@ const SEMAFORO_CRITERIOS = [
     applies: (n) => n >= 2 && n <= (D.destination_config?.core_days ?? 4),
     // Un día con pocos lugares pero LLENO (grandes museos hasta la cena) no es un día corto: solo
     // cuenta si además le sobra tarde antes de cenar.
-    value: (rows, days, pace) => days.filter((d) => d.placesSeen < (pace === 'tranquilo' ? 5 : 8) && (d.deadBeforeDinner ?? Infinity) > REF.gapTolerance[pace]).length,
+    // Una tarde libre (el destino ya no da para más ese día) es amarillo, no rojo: se cuenta aparte.
+    value: (rows, days, pace) => days.filter((d) => !d.freeAfternoon && d.placesSeen < (pace === 'tranquilo' ? 5 : 8) && (d.deadBeforeDinner ?? Infinity) > REF.gapTolerance[pace]).length,
     ok: (v) => v === 0,
   },
 ]

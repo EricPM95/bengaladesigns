@@ -67,6 +67,7 @@ import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './tim
 import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes, parseHoursSessions } from './openingHours.js'
 import { latestDinnerStart } from './modes.js'
 import { chooseLunchSpot } from './lunchSpots.js'
+import { SUNSET_WINDOW } from './sunset.js'
 
 /**
  * Prioridades: cuanto más bajo, más manda. Solo pool y nivel 1 pueden desplazar a otros.
@@ -711,8 +712,14 @@ function simulate(sequence, ctx) {
         at = fixed
       }
       if (place.not_before) at = Math.max(at, roundSlot(toMinutes(place.not_before)))
+      // Mirador del atardecer: se llega en la hora dorada (no antes de 45 min antes de la puesta de
+      // sol), nunca más tarde de 15 min después, y no se sale antes de que se ponga el sol.
+      if (place.sunset != null) {
+        at = Math.max(at, roundUpToFive(place.sunset - SUNSET_WINDOW.idealFrom))
+        if (at > place.sunset + SUNSET_WINDOW.latestAfter) return { ok: false, reason: 'missed_sunset', unitId: unit.id }
+      }
 
-      const duration = visitMinutes(unit, index, mode)
+      const duration = place.sunset != null ? Math.max(visitMinutes(unit, index, mode), place.sunset - at) : visitMinutes(unit, index, mode)
       // Abierto de principio a fin, en el primer tramo donde quepa entera (con cierre de mediodía,
       // se espera a la tarde en vez de descartarla).
       const schedule = effectiveSchedule(place, ctx.hours)
@@ -1044,7 +1051,13 @@ function bestAfternoon(sequence, ctx) {
   // anterior lo desordenó (Plaza de España antes que Popolo → Pincio), aquí se recoloca.
   const fixed = pieces.filter((unit) => unit.curatedIndex != null).sort((a, b) => a.curatedIndex - b.curatedIndex)
   const movable = pieces.filter((unit) => unit.curatedIndex == null)
-  if (movable.length === 0 || pieces.length > MAX_AFTERNOON_PIECES) return current
+  if (pieces.length > MAX_AFTERNOON_PIECES) return current
+  // Solo lo curado: se deja en su orden (si cabe así).
+  if (movable.length === 0) {
+    const ordered = [...head, ...fixed, ...tail]
+    const result = simulate(ordered, ctx)
+    return result.ok ? { sequence: ordered, result } : current
+  }
 
   let best = current.result.ok ? current : null
   // Primero, sin esperas por encima de la tolerancia del ritmo; luego, lo que menos camina.

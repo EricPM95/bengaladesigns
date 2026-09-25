@@ -827,7 +827,7 @@
         "iglesia"
       ],
       "filter_category": "monumentos",
-      "schedule": "09:00-09:30, 11:45-16:00",
+      "schedule": "09:00-19:00",
       "search_aliases": [
         "panteon de agripa",
         "pantheon",
@@ -843,8 +843,7 @@
         "label": "el Panteón"
       },
       "windows": [
-        "09:00-09:30",
-        "11:45-16:00"
+        "09:00-19:00"
       ],
       "by_day": {
         "lun-vie": [
@@ -861,7 +860,7 @@
       "last_entry": "18:30",
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Entrada de pago; se puede comprar online o en taquilla (taquilla hasta las 18:00). Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene."
+      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Taquilla hasta las 18:00. Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene."
     },
     {
       "name": "Piazza Navona",
@@ -1061,7 +1060,7 @@
       ],
       "last_entry": "18:00",
       "reservation": "recomendada",
-      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00, gratis (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic)."
+      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic)."
     },
     {
       "name": "Basílica de San Pedro",
@@ -1105,7 +1104,7 @@
       "last_entry": "19:15",
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 07:00 a 20:00. Entrada gratuita. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones."
+      "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones."
     },
     {
       "name": "Plaza de San Pedro",
@@ -1431,7 +1430,7 @@
         "lunes"
       ],
       "reservation": "no",
-      "card_text": "Martes a domingo de 09:00 a 19:00 (última entrada 18:15). Algunas noches abre de 19:00 a 23:00 (del 10 sep al 17 dic). Primer domingo del mes gratis con reserva. Cerrado lunes y 25 dic."
+      "card_text": "Martes a domingo de 09:00 a 19:00 (última entrada 18:15). Algunas noches abre de 19:00 a 23:00 (del 10 sep al 17 dic). Cerrado lunes y 25 dic."
     },
     {
       "name": "Altar de la Patria",
@@ -1484,7 +1483,7 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). Entrada gratuita al monumento. La terraza panorámica con ascensor ('Roma dal cielo') es de pago, 09:30-19:30, última subida 19:00."
+      "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00."
     },
     {
       "name": "Puente Sant'Angelo",
@@ -1811,7 +1810,7 @@
       ],
       "level": 2,
       "type": "exterior",
-      "schedule": "14:30-18:15",
+      "schedule": "09:30-12:45, 14:30-18:15",
       "tags": [
         "iglesia",
         "arte"
@@ -1831,6 +1830,7 @@
       ],
       "coordinates_checked": true,
       "windows": [
+        "09:30-12:45",
         "14:30-18:15"
       ],
       "by_day": {
@@ -1926,7 +1926,7 @@
       ],
       "level": 3,
       "type": "exterior",
-      "schedule": "10:00-12:30, 15:30-18:00",
+      "schedule": "07:00-19:00",
       "tags": [
         "iglesia",
         "arte"
@@ -1947,8 +1947,7 @@
         "Panteón"
       ],
       "windows": [
-        "10:00-12:30",
-        "15:30-18:00"
+        "07:00-19:00"
       ],
       "by_day": {
         "lun-vie": [
@@ -2263,7 +2262,7 @@
       ],
       "level": 2,
       "type": "interior",
-      "schedule": "12:00-12:30, 14:00-18:00",
+      "schedule": "09:00-12:30, 14:00-18:00",
       "tags": [
         "iglesia",
         "ruinas"
@@ -2280,7 +2279,7 @@
         "clemente"
       ],
       "windows": [
-        "12:00-12:30",
+        "09:00-12:30",
         "14:00-18:00"
       ],
       "by_day": {
@@ -2295,7 +2294,7 @@
       "last_entry": "17:30",
       "closed_on": [],
       "reservation": "obligatoria",
-      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. La basílica es gratuita; las excavaciones son de pago y con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde."
+      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde."
     },
     {
       "name": "Iglesia de San Pietro in Vincoli",
@@ -2503,7 +2502,7 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días, gratis. Oct-feb 07:00-18:00; marzo y septiembre 07:00-20:00; abr-ago 07:00-21:00."
+      "card_text": "Todos los días. Oct-feb 07:00-18:00; marzo y septiembre 07:00-20:00; abr-ago 07:00-21:00."
     },
     {
       "name": "Basílica de Santa María la Mayor",
@@ -2669,7 +2668,7 @@
     {
       "name": "Iglesia de Santa Maria della Vittoria",
       "duration_minutes": 20,
-      "schedule": "09:00-10:15, 11:30-12:00, 16:00-18:00",
+      "schedule": "08:00-12:00, 16:00-18:00",
       "is_free_access": true,
       "zone": "roma_antigua",
       "coordinates": [
@@ -2696,8 +2695,7 @@
         "teresa"
       ],
       "windows": [
-        "09:00-10:15",
-        "11:30-12:00",
+        "08:00-12:00",
         "16:00-18:00"
       ],
       "by_day": {
@@ -2866,9 +2864,10 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Siempre abierta y gratis; se sube a pie desde Piazza del Popolo. De noche el paso desde el interior del parque puede estar cerrado, pero la terraza sigue accesible.",
+      "card_text": "Siempre abierta; se sube a pie desde Piazza del Popolo. De noche el paso desde el interior del parque puede estar cerrado, pero la terraza sigue accesible.",
       "approach_to": [
-        "Parque de Villa Borghese"
+        "Parque de Villa Borghese",
+        "Galería Borghese"
       ]
     },
     {
@@ -2908,7 +2907,7 @@
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Todos los días de 07:00 a 18:30. Entrada gratuita. Claustro de lunes a sábado 09:00-17:00; baptisterio 09:00-19:00."
+      "card_text": "Todos los días de 07:00 a 18:30. Claustro de lunes a sábado 09:00-17:00; baptisterio 09:00-19:00."
     },
     {
       "name": "Quartiere Coppedè",
@@ -2998,7 +2997,7 @@
         "secreto"
       ],
       "filter_category": "museos_arte",
-      "schedule": "10:00-19:00",
+      "schedule": "09:00-19:00",
       "search_aliases": [
         "doria pamphilj",
         "galeria doria pamphilj",
@@ -3012,7 +3011,7 @@
         "pamphili"
       ],
       "windows": [
-        "10:00-19:00"
+        "09:00-19:00"
       ],
       "by_day": {
         "lun,mar,jue": [
@@ -3124,7 +3123,7 @@
         "tranquilo"
       ],
       "filter_category": "monumentos",
-      "schedule": "09:00-13:00",
+      "schedule": "09:00-17:00",
       "search_aliases": [
         "cementerio acatolico",
         "cimitero acattolico",
@@ -3138,7 +3137,7 @@
         "acattolico"
       ],
       "windows": [
-        "09:00-13:00"
+        "09:00-17:00"
       ],
       "by_day": {
         "lun-sab": [
@@ -3192,7 +3191,7 @@
         "lunes"
       ],
       "reservation": "no",
-      "card_text": "Tempietto de Bramante: martes a domingo de 10:00 a 18:00 (última entrada 17:30). Cerrado los lunes. Entrada gratuita.",
+      "card_text": "Tempietto de Bramante: martes a domingo de 10:00 a 18:00 (última entrada 17:30). Cerrado los lunes.",
       "is_free_access": true
     },
     {
@@ -3238,7 +3237,7 @@
       ],
       "level": 3,
       "type": "interior",
-      "schedule": "11:30-12:30, 16:30-18:00",
+      "schedule": "10:00-12:30, 16:30-18:30",
       "tags": [
         "iglesia",
         "arte"
@@ -3257,8 +3256,8 @@
         "santa cecilia"
       ],
       "windows": [
-        "11:30-12:30",
-        "16:30-18:00"
+        "10:00-12:30",
+        "16:30-18:30"
       ],
       "by_day": {
         "lun-sab": [
@@ -3272,7 +3271,7 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Lunes a sábado 10:00-12:30 y 16:30-18:30; domingos y festivos 11:30-12:30 y 16:30-18:00. La basílica es gratuita; la cripta y el fresco de Cavallini son de pago (el fresco solo por la mañana).",
+      "card_text": "Lunes a sábado 10:00-12:30 y 16:30-18:30; domingos y festivos 11:30-12:30 y 16:30-18:00. La cripta y el fresco de Cavallini se visitan aparte (el fresco solo por la mañana).",
       "is_free_access": true,
       "neighbor_of": [
         "Trastevere"
@@ -3358,7 +3357,9 @@
       "tip": "Lleva monedas para iluminar la capilla Cerasi (los dos Caravaggio, a la izquierda del altar mayor). Cierra a mediodía y no se visita durante las misas",
       "schedule": "08:30-09:45, 10:30-12:00, 16:00-18:00",
       "windows": [
-        "16:30-18:00"
+        "08:30-09:45",
+        "10:30-12:00",
+        "16:00-18:00"
       ],
       "by_day": {
         "lun-sab": [
@@ -3371,7 +3372,7 @@
         ]
       },
       "reservation": "no",
-      "card_text": "Laborables de 08:30 a 09:45, de 10:30 a 12:00 y de 16:00 a 18:00; festivos de 16:30 a 18:00 (horario oficial, santamariadelpopoloroma.it). No se hacen visitas durante las misas. Entrada gratuita.",
+      "card_text": "Laborables de 08:30 a 09:45, de 10:30 a 12:00 y de 16:00 a 18:00; festivos de 16:30 a 18:00 (horario oficial, santamariadelpopoloroma.it). No se hacen visitas durante las misas.",
       "neighbor_of": [
         "Piazza del Popolo"
       ],
@@ -3387,8 +3388,7 @@
         "santa maria del popolo",
         "cerasi chapel",
         "chigi chapel"
-      ],
-      "_borrador": "BORRADOR 2026-09-24: horario de santamariadelpopoloroma.it (sección Visite). Revisar."
+      ]
     }
   ],
   "groups": {
@@ -6090,7 +6090,6 @@
       ]
     ],
     "experience_highlights": {
-      "_borrador": "BORRADOR 2026-09-24: lo más representativo de cada experiencia, en orden. Revisar.",
       "arte_museos": [
         "Galería Borghese",
         "Museos Capitolinos",
@@ -6120,7 +6119,6 @@
       ]
     },
     "sunset_by_season": {
-      "_borrador": "BORRADOR 2026-09-24: puesta de sol aproximada en Roma por época (mitad de temporada). Revisar.",
       "invierno": "17:00",
       "primavera": "19:45",
       "verano": "20:40",
