@@ -188,7 +188,9 @@ export function planNightWalks(destData, plan) {
  * @returns {{ entries: object[], start: number, beforeDinner: boolean }}
  */
 export function nightTiming(chain, timing = {}) {
-  const nightStart = nightStartsAt(timing.sunset)
+  // En punto o y media, como el resto de horas de la ruta (18:59 → 19:00).
+  const exactStart = nightStartsAt(timing.sunset)
+  const nightStart = exactStart === null ? null : roundUpToSlot(exactStart)
   const { lastEnd, lastCoords, dinnerStart, dinnerCoords } = timing
   if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart) {
     // Hacia la cena: al revés que después de cenar.

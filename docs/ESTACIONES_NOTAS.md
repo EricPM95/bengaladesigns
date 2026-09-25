@@ -27,6 +27,18 @@ Sin push hasta que lo revises.
    ¿van como lugares con `available` y tags que casen con esa experiencia, o como otra cosa?
 7. **Lugar de temporada en mes frontera "elegido"**: lo tomo como "está en su pool" (Elige lugares). Si
    también debe entrar cuando es de una experiencia que el viajero eligió y confirmó, es una línea.
+8. **Zigzag del 28-30 de marzo** (semáforo en rojo, ya pasaba antes de Estaciones). Viaje de 7 días,
+   completo, Barrios + Free Tour, día del Vaticano: Conciliazione → Campo de' Fiori → Barrio Judío →
+   vuelta al Borgo Pio → Janículo (puesta de sol 19:26). Causa: al ordenar la tarde, el motor evita
+   antes que nada las esperas de más de 30 min, y cuenta la espera al mirador del atardecer. Prefiere
+   cruzar el río dos veces a esperar. Probé a no contar esa espera, como ya se hace con el Free Tour:
+   el zigzag desaparece, pero el Janículo acaba el último (19:30, después de Acqua Paola y Trastevere),
+   contra el orden fijado del recorrido. **Lo he deshecho**. ¿Cómo lo quieres? Opciones: (a) no contar
+   la espera al atardecer y además obligar a que el mirador vaya en su sitio del recorrido; (b) dejar
+   que espere y que el bloque "Tiempo libre" cubra el hueco; (c) otra.
+9. **Octubre, 1 día con Free Tour**: ahora cabe el Foro por dentro, pero se pierden el Panteón por dentro,
+   Plaza Venecia y el Altar (7 paradas → 4 y tarde libre). ¿Prefieres el Foro por dentro, o el Foro por
+   fuera + Panteón + Altar como en el resto del año?
 
 ## Parte 1 — Lo que recibe el motor
 
@@ -113,3 +125,106 @@ Sin push hasta que lo revises.
   enero. ¿Viajas en esas fechas?"; con "No", "Hemos quitado Mercadillos Navideños: en Roma solo están
   del 1 de diciembre al 6 de enero."
 - Con fechas del 8 de enero: no entra aunque esté elegido.
+
+## Parte 5 — Semáforo por meses
+
+**Semáforo** (`medirDias.mjs --motor v3 --semaforo`, 112 viajes cada uno):
+
+| Escenario | Resultado |
+|---|---|
+| `--mes 1` (15 ene) | verde (solo el amarillo de siempre, "tarde libre") |
+| `--mes 4` (15 abr) | verde |
+| `--mes 7` (15 jul) | verde |
+| `--mes 10` (15 oct) | verde |
+| `--fecha 2027-03-28` | **rojo `zigzag`**: 7 días, completo, Barrios + Free Tour (ver pregunta 8) |
+| `--fecha 2027-03-30` | **rojo `zigzag`**: el mismo viaje |
+| `--fecha 2026-10-24` | verde |
+| `--fecha 2026-10-26` | verde |
+
+El rojo de marzo **ya estaba antes de Estaciones** (lo he pasado con el motor del commit cbf19cd:
+sale igual). Nunca se había medido con esa fecha.
+
+**Qué rutas cambian entre meses** — "antes" = el motor de cbf19cd con la temporada (horario más
+corto de la temporada y puesta de sol de tabla); "ahora" = el mes (día 15). Completo, sin fechas.
+
+### 1d Imprescindibles+FT
+
+| | antes ene | ahora ene | antes abr | ahora abr | antes jul | ahora jul | antes oct | ahora oct |
+|---|---|---|---|---|---|---|---|---|
+| Coliseo por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Foro por dentro | por fuera | por fuera | por fuera | por fuera | por fuera | por fuera | por fuera | sí |
+| Panteón por dentro | sí | sí | sí | sí | sí | sí | sí | no |
+| Janículo al atardecer | no | no | no | no | no | no | no | no |
+| Nocturnas antes de cenar | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| Nocturnas en total | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 1 |
+| Tardes libres | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| Paradas (sin noche) | 7 | 7 | 7 | 7 | 7 | 7 | 7 | 4 |
+
+### 2d Imprescindibles+FT
+
+| | antes ene | ahora ene | antes abr | ahora abr | antes jul | ahora jul | antes oct | ahora oct |
+|---|---|---|---|---|---|---|---|---|
+| Coliseo por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Foro por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Panteón por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Janículo al atardecer | no | no | no | no | no | no | no | no |
+| Nocturnas antes de cenar | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
+| Nocturnas en total | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
+| Tardes libres | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Paradas (sin noche) | 17 | 17 | 17 | 17 | 17 | 17 | 17 | 17 |
+
+### 3d Ruta A (Arte+FT)
+
+| | antes ene | ahora ene | antes abr | ahora abr | antes jul | ahora jul | antes oct | ahora oct |
+|---|---|---|---|---|---|---|---|---|
+| Coliseo por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Foro por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Panteón por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Janículo al atardecer | no | no | sí | sí | no | no | sí | sí |
+| Nocturnas antes de cenar | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Nocturnas en total | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
+| Tardes libres | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Paradas (sin noche) | 26 | 26 | 26 | 26 | 26 | 26 | 26 | 26 |
+
+### 3d Ruta B (FT+Barrios)
+
+| | antes ene | ahora ene | antes abr | ahora abr | antes jul | ahora jul | antes oct | ahora oct |
+|---|---|---|---|---|---|---|---|---|
+| Coliseo por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Foro por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Panteón por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Janículo al atardecer | sí | sí | sí | sí | no | no | sí | sí |
+| Nocturnas antes de cenar | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
+| Nocturnas en total | 4 | 3 | 4 | 4 | 4 | 4 | 4 | 3 |
+| Tardes libres | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
+| Paradas (sin noche) | 29 | 29 | 29 | 30 | 29 | 29 | 30 | 30 |
+
+### 4d Imprescindibles+Naturaleza
+
+| | antes ene | ahora ene | antes abr | ahora abr | antes jul | ahora jul | antes oct | ahora oct |
+|---|---|---|---|---|---|---|---|---|
+| Coliseo por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Foro por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Panteón por dentro | sí | sí | sí | sí | sí | sí | sí | sí |
+| Janículo al atardecer | sí | sí | sí | sí | no | no | sí | sí |
+| Nocturnas antes de cenar | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Nocturnas en total | 2 | 2 | 2 | 2 | 3 | 3 | 1 | 1 |
+| Tardes libres | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Paradas (sin noche) | 34 | 34 | 33 | 34 | 34 | 34 | 35 | 35 |
+
+Lo que se ve:
+- **Coliseo por dentro en 1 día con Free Tour: sí en todos los meses** (antes y ahora).
+- **Octubre, 1 día con Free Tour**: el Foro ya cabe por dentro (del 1 al 24 de octubre cierra a las
+  18:30; antes se usaba el horario de noviembre, 16:30). Pero a cambio se pierden el Panteón por dentro
+  y Plaza Venecia + Altar (de 7 paradas a 4) y queda tarde libre, con el Foro desde el Campidoglio a las
+  19:00 antes de cenar. No sé si eso es mejor (pregunta 9).
+- **Abril, 1 día**: el Panteón va justo después del tour y el Coliseo pasa a las 15:50 (cierra a las
+  19:15, no a las 17:00).
+- **Abril y octubre, 3 días Ruta B**: una parada más que antes (30 frente a 29) y en abril desaparece
+  una tarde libre.
+- **Enero y octubre**: nocturnas antes de cenar (Coliseo de noche o Foro desde el Campidoglio a las
+  18:30-19:00), y a veces una nocturna menos (la cadena después de cenar tenía dos).
+- **Julio**: igual que antes.
+
+**Arreglado aquí**: la hora de la nocturna antes de cenar salía sin redondear (18:59); ahora en punto o
+y media, como el resto.
