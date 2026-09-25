@@ -131,6 +131,8 @@ export function planNightWalks(destData, plan) {
 
     const available = catalogue.filter((entry) => {
       if (used.has(entry.name)) return false
+      // Con tarde tipo (Mañanas y tardes, Parte B), solo las nocturnas de su lista.
+      if (Array.isArray(day.nightNames) && !day.nightNames.includes(entry.name)) return false
       if (closedAtNight(entry) || !inSeason(entry)) return false
       // En un viaje no se repite un lugar de nivel 2 o 3, tampoco de noche (decisión del 2026-09-25):
       // si el Janículo se ve al atardecer otro día, su nocturna no sale. Solo el nivel 1 se repite.
@@ -287,7 +289,7 @@ export function nightWalkPlan(trip) {
     days: trip.days.map((day) => {
       const zone = dinnerZoneOf(day)
       const units = (day.schedule?.visits ?? []).filter((visit) => !visit.place.passBy).map((visit) => ({ places: [visit.place] }))
-      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
+      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, nightNames: day.nightNames ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
     }),
   }
 }

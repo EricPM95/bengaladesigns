@@ -798,6 +798,13 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Un mirador del recorrido con versión de noche (el Janículo) va al atardecer SI el sol se pone antes
   // de cenar en la época del viaje; si no, se queda de noche, como experiencia nocturna (decisión del
   // 2026-09-24). Sin época, se supone que sí da tiempo.
+  // El recorrido de tarde por zona: el de siempre (`afternoon_flow`) o, si el destino ya está en bloques,
+  // la tarde tipo que solo encaja después de esa zona (la del Vaticano), sin lo que es solo de una experiencia.
+  const legacyAfternoonFlow = destData.afternoon_flow ?? Object.fromEntries(
+    (destData.afternoon_flows ?? [])
+      .filter((block) => (block.encaja_despues_de ?? []).length === 1 && destData.zones?.[block.encaja_despues_de[0]])
+      .map((block) => [block.encaja_despues_de[0], block.paradas.filter((stop) => !stop.solo_con).map((stop) => stop.lugar)]),
+  )
   const withNightVersion = new Set((destData.night_experiences ?? []).flatMap((entry) => entry.conflicts_with ?? []))
   // Del atardecer, solo los MIRADORES con versión de noche (el Janículo), no todo lo que la tenga (el
   // Puente Sant'Angelo tiene nocturna y no es un mirador).
@@ -810,7 +817,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       const dinnerStart = day.sunsetMinutes != null && day.sunsetMinutes >= LATE_SUNSET_MINUTES ? LATE_DINNER_START : mode.dinnerWindow[0]
       // Si el sol se pone a la hora de cenar (la de verano, 21:00) o después, el mirador va de noche.
       const sunsetAfterDinner = day.sunsetMinutes != null && day.sunsetMinutes >= dinnerStart
-      const flow = (destData.afternoon_flow?.[zone] ?? []).filter((name) => !(sunsetAfterDinner && withNightVersion.has(name) && isMirador(name)))
+      const flow = (legacyAfternoonFlow[zone] ?? []).filter((name) => !(sunsetAfterDinner && withNightVersion.has(name) && isMirador(name)))
       for (const name of flow) if (withNightVersion.has(name) && isMirador(name)) day.sunsetNames.add(name)
       if (flow.length === 0) continue
       const firstShared = day.curatedNames.findIndex((name) => flow.includes(name))

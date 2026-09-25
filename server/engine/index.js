@@ -22,6 +22,7 @@ import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
+import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
@@ -110,7 +111,9 @@ export async function buildDayBlockV3(
     experiencesPositive: experiencesPositive ?? [],
     dateRangeStartIso,
   }
-  const plan = isV3 ? planTrip({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
+  // Mañanas y tardes tipo (Parte B): con bloques curados en el destino, el viaje se monta con ellos.
+  const planner = isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
+  const plan = isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
   if (!dayPlan) return null
@@ -228,6 +231,11 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     })),
     ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
   ]
+  // Mañanas y tardes tipo (Parte B): qué bloque lleva cada medio día; sin bloque, "medio día sin tipo".
+  if (Array.isArray(tripDay.blocks)) {
+    day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))
+    day.untyped_halves = tripDay.blocks.filter((block) => block.id == null).length
+  }
   const freeAfternoon = freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)

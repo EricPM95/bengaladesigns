@@ -667,6 +667,58 @@ destino (`principios_local`, `museos_de_pago`, `redundancias`); `shared/routeEng
     tarde, la cena pasa a las 21:00 (hasta las 21:30 si hay que bajar del mirador), y las nocturnas
     empiezan cuando acaba la cena.
 
+**Mañanas y tardes tipo (PROMPT_MANANAS_Y_TARDES.md, Parte B, 2026-09-25)** — `morning_flows`,
+`afternoon_flows` y `flows_formato` en el JSON del destino; `shared/routeEngine/blockTrip.js`. Solo en
+viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bloques salían peor en 28 de
+40 casos).
+
+131. **Cada día es una mañana tipo y una tarde tipo**: el destino se cura en bloques de medio día; el
+    motor los elige, los ordena y pone horas, cierres, atardecer, comida y cena. Solo improvisa un medio
+    día si ningún bloque encaja ("medio día sin tipo", amarillo en el semáforo: `sinTipo`).
+132. **Mañanas por prioridad**: primero el Free Tour (sustituye a la mañana que recorre lo mismo); luego la
+    que tiene una joya que no se visita en ninguna tarde (el Coliseo le gana el sitio al Vaticano, que
+    tiene "vaticano_por_la_tarde"; verlo de paso no cuenta); luego la que tiene algo del pool que no sale
+    en ninguna tarde (lo demás del pool se rescata por la tarde); luego
+    las que van con el viaje (imprescindibles o una experiencia elegida) por `prioridad`. Las experiencias
+    ordenan, no dejan un día sin mañana. Nunca una mañana con su ancla cerrada ese día ni una que pida
+    más días (`minimo_dias_viaje`) que el viaje, salvo por el pool. Un bloque con `transporte` (la Via
+    Appia) no es mañana de ciudad: va como excursión de medio día mientras no haya saltos de transporte.
+133. **Tardes por encaje**: la que encaja después de dónde acaba la mañana (`encaja_despues_de`); si
+    ninguna lo dice, la que empieza a 20 min andando (a 30 si no hay ninguna a 20). El Free Tour acaba en
+    el centro. Entre las que encajan, la que más aporta (pool, joya del ancla, imprescindibles nuevos,
+    experiencias, y mucho más si es la última oportunidad de un imprescindible: el Altar solo está en
+    "campidoglio_ghetto"), la que menos pierde y la que no deja horas muertas. La única tarde que encaja
+    detrás de la mañana de un día posterior se reserva: su ancla no se gasta antes. Nunca repetida, ni excluida por
+    otro bloque (`excluye`, `excluye_tardes_mismo_dia`, `excluye_tardes_mismo_viaje`), ni con su ancla ya
+    vista o en la mañana de otro día. Si con las elegidas un día (no el último) se queda con más de 90 min
+    parado, se replanifica el viaje sin esa tarde ese día y se queda el mejor.
+134. **Dentro del bloque manda su orden**: las relaciones entre lugares (vecinos, accesos) ya las decidió
+    quien curó el bloque. El ancla tiene que caber; si no, otro bloque. `solo_con`: solo con esa
+    experiencia o el pool. Lo cerrado se salta, o va de paso si se ve por fuera. Lo visto con el Free
+    Tour va de paso. Lo de pago que el bloque se salta (solo con Arte, cuota de museos) se ve por fuera
+    desde su compañero de grupo (el Castillo desde el Puente).
+135. **La mañana del bloque se hace entera**: puede alargarse hasta las 13:30 (y comer hasta las 14:00);
+    lo que no cabe antes de comer va detrás de la comida con lo que le sigue, nunca suelto en la tarde.
+    Si así un imprescindible de la mañana se va a la tarde, se madruga (plan B) y se dice por qué.
+136. **El atardecer, a su hora**: el tiempo que sobra va antes (en el propio mirador). Lo de detrás que no
+    cabe antes de cenar se ve de paso bajando (Piazza del Popolo, al bajar del Pincio); adelantar
+    paradas por delante del mirador solo si no hay otra, y nunca el ancla ni lo que va detrás de ella.
+    Si ni así, el mirador va como una parada más, en su sitio.
+137. **Comida y cena de su bloque**: se come donde acaba la mañana y se cena en el barrio que dice la tarde
+    (`cena`); si nombra varios, el más cercano a donde acaba. Las nocturnas, solo las de su lista.
+138. **Tranquilo es menos paradas**: la tarde se recorta hasta las paradas del ritmo (lo de paso no
+    cuenta), quitando primero nivel 3, luego 2; nunca el ancla, el atardecer ni el pool.
+139. **Nada de horas muertas con bloques**: si la tarde acaba y quedan más de 90 min hasta la cena (o el día
+    no llega a las paradas mínimas del ritmo y le sobra tarde), se sigue de camino al barrio de la cena (15 min de parada a parada, 15 de desvío); si hay más de 60 min
+    esperando a que algo abra, se mete algo entre medias. Nunca algo con grupo suelto, ni el ancla de
+    otro bloque, ni la mañana de otro día, ni una espera nueva por encima de la tolerancia. Al final, lo
+    añadido se recoloca donde menos se anda sin tocar el orden del bloque.
+140. **Imprescindibles y pool que ningún bloque trae**: entran con su grupo entero (la Plaza Venecia y el
+    Altar) en el día y el sitio donde menos se anda, pudiendo caer solo algo de paso o añadido.
+141. **Kit: cada destino se cura en bloques** (`destination_config.size`): grande 8 mañanas y 10 tardes,
+    mediano 6 y 7, pequeño 4 y 4. `validar.mjs` en rojo si faltan, si un nombre no existe o si entre dos
+    paradas seguidas hay más de 20 min andando; en amarillo, la mañana sin ninguna tarde que encaje.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

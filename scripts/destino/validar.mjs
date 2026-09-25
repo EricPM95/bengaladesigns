@@ -316,6 +316,56 @@ const section = (title) => {
   }
 }
 
+// ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────
+// Cada destino se cura en bloques de medio día (PROMPT_MANANAS_Y_TARDES, Parte B): el motor elige una
+// mañana y una tarde por día y solo improvisa si ningún bloque encaja. Mínimos según el tamaño
+// (`destination_config.size`): grande 8 mañanas y 10 tardes, mediano 6 y 7, pequeño 4 y 4.
+{
+  const s = section('Mañanas y tardes tipo')
+  const MINIMOS = { grande: [8, 10], mediano: [6, 7], pequeno: [4, 4] }
+  const size = String(D.destination_config?.size ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const mornings = D.morning_flows ?? []
+  const afternoons = D.afternoon_flows ?? []
+  const minimo = MINIMOS[size]
+  if (!minimo) s.red.push(`destination_config.size no está o no es grande | mediano | pequeño ("${D.destination_config?.size ?? ''}")`)
+  else {
+    ;(mornings.length >= minimo[0] ? s.info : s.red).push(`${mornings.length} mañanas tipo (mínimo ${minimo[0]} para un destino ${size})`)
+    ;(afternoons.length >= minimo[1] ? s.info : s.red).push(`${afternoons.length} tardes tipo (mínimo ${minimo[1]} para un destino ${size})`)
+  }
+  const tourName = D.default_free_tour?.name ?? null
+  const nights = new Set((D.night_experiences ?? []).map((entry) => entry.name))
+  const ends = new Set([...mornings.map((block) => block.acaba_en), 'free_tour'])
+  const matrixPath = join(ROOT, `data/pipeline_v2/travel/${destino}.json`)
+  const travel = existsSync(matrixPath) ? createTravelTimes(JSON.parse(readFileSync(matrixPath, 'utf8'))) : null
+  const MAX_ENTRE_PARADAS = 20
+  const ids = new Set()
+  for (const block of [...mornings, ...afternoons]) {
+    if (ids.has(block.id)) s.red.push(`${block.id}: id repetido`)
+    ids.add(block.id)
+    const stops = block.paradas ?? []
+    if (stops.length === 0) s.red.push(`${block.id}: sin paradas`)
+    if (!stops.some((stop) => stop.rol === 'ancla')) s.warn.push(`${block.id}: sin ancla`)
+    for (const stop of stops) if (stop.lugar !== tourName && !byName.has(stop.lugar)) s.red.push(`${block.id}: "${stop.lugar}" no existe en places`)
+    for (const name of block.nocturnas ?? []) if (!nights.has(name)) s.red.push(`${block.id}: la nocturna "${name}" no existe en night_experiences`)
+    for (const end of block.encaja_despues_de ?? []) if (!ends.has(end)) s.warn.push(`${block.id}: encaja después de "${end}", que no es el final de ninguna mañana`)
+    for (const id of [...(block.excluye ?? []), ...(block.excluye_tardes_mismo_dia ?? []), ...(block.excluye_tardes_mismo_viaje ?? [])]) {
+      if (!afternoons.some((other) => other.id === id)) s.red.push(`${block.id}: excluye "${id}", que no es ninguna tarde`)
+    }
+    // Entre dos paradas seguidas, como mucho 20 min andando: un bloque es un paseo, no un traslado.
+    if (!travel || block.transporte) continue
+    const coords = stops.map((stop) => (stop.lugar === tourName ? null : byName.get(stop.lugar)?.coordinates)).filter(Boolean)
+    for (let i = 1; i < coords.length; i++) {
+      const leg = travel.leg(coords[i - 1], coords[i])
+      if (leg && leg.minutes > MAX_ENTRE_PARADAS) s.red.push(`${block.id}: de "${stops[i - 1].lugar}" a "${stops[i].lugar}" hay ${leg.minutes} min andando (máximo ${MAX_ENTRE_PARADAS})`)
+    }
+  }
+  // Mañanas cuyo final no tiene ninguna tarde: el motor improvisa por cercanía (amarillo).
+  for (const block of mornings) {
+    if (block.transporte || block.acaba_en === 'free_tour') continue
+    if (!afternoons.some((other) => (other.encaja_despues_de ?? []).includes(block.acaba_en))) s.warn.push(`${block.id}: ninguna tarde encaja después de "${block.acaba_en}" — se elige por cercanía`)
+  }
+}
+
 // ── 7. Coordenadas contra Wikipedia y Mapbox ────────────────────────────────────────────────
 if (!SIN_RED) {
   const s = section(`Coordenadas (Wikipedia y Mapbox, más de ${COORD_MAX_METROS} m)`)

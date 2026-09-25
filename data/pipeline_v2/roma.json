@@ -1304,10 +1304,18 @@
         }
       ],
       "hours_audit": {
-        "confianza": "alta",
-        "fuente": "https://www.basilicasanpietro.va/it/news/nuovo-orario-di-apertura-della-basilica-di-san-pietro",
-        "nota": "Horario nuevo desde el 1 de junio de 2026, todo el año. Coincide con lo que ya hay en roma.json: no cambia nada.",
+        "confianza": "media",
+        "fuente": "https://stpetersbasilica-guide.com/plan-your-visit/st-peters-basilica-opening-hours/ + https://voxcity.com/en/post/314-st-peters-basilicas-opening-closing-hours-detailed-guide",
+        "nota": "Los miércoles con audiencia general del Papa, la Basílica cierra a los turistas por la mañana y abre hacia las 12:30. La audiencia se suspende algunas semanas (en julio suele no haberla): se deja el cierre todo el año, que es lo prudente.",
         "fecha": "2026-09-25"
+      },
+      "by_day": {
+        "lun,mar,jue-dom": [
+          "07:00-20:00"
+        ],
+        "mie": [
+          "12:30-20:00"
+        ]
       }
     },
     {
@@ -3463,7 +3471,13 @@
         "domingo"
       ],
       "reservation": "no",
-      "card_text": "Lunes a sábado de 07:00 a 15:30; muchos puestos de comida cierran antes. Cerrado los domingos."
+      "card_text": "Lunes a sábado de 07:00 a 15:30; muchos puestos de comida cierran antes. Cerrado los domingos.",
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://www.mercatoditestaccio.it/info/ (web oficial)",
+        "nota": "Lunes a sábado 07:00-15:30, cerrado el domingo. Algunos puestos abren más tarde o cierran antes; los viernes, parte de Via Aldo Manuzio abre hasta las 22:00 (no se modela).",
+        "fecha": "2026-09-25"
+      }
     },
     {
       "name": "Palazzo Doria Pamphilj",
@@ -3585,8 +3599,8 @@
         "14:00-17:00"
       ],
       "last_entry": {
-        "manana": "11:45",
-        "tarde": "16:45"
+        "manana": "12:00",
+        "tarde": "16:50"
       },
       "closed_on": [
         "miércoles"
@@ -3596,7 +3610,18 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada."
-      ]
+      ],
+      "closed_dates": [
+        "01-01",
+        "easter",
+        "12-25"
+      ],
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://www.catacombesancallisto.it/it/orari.php (web oficial)",
+        "nota": "Todos los días 09:00-12:00 y 14:00-17:00 salvo los miércoles (cerrado siempre). Última visita guiada a las 12:00 por la mañana; por la tarde la taquilla cierra a las 16:50. Cierra el 1 de enero, el domingo de Pascua y el 25 de diciembre, y un mes en invierno que cambia cada año (en 2025, del 15 de enero al 12 de febrero): ese cierre no se modela.",
+        "fecha": "2026-09-25"
+      }
     },
     {
       "name": "Cementerio Protestante",
@@ -5229,17 +5254,6 @@
       "centro_historico_to_nomentano": 40
     }
   },
-  "afternoon_flow": {
-    "vaticano": [
-      "Via della Conciliazione",
-      "Borgo Pio",
-      "Puente Sant'Angelo",
-      "Castillo de Sant'Angelo",
-      "Mirador del Janículo",
-      "Fontana dell'Acqua Paola",
-      "Trastevere"
-    ]
-  },
   "restaurants": [
     {
       "name": "Armando al Pantheon",
@@ -6581,6 +6595,7 @@
   "destination_config": {
     "core_days": 4,
     "max_auto_days": 7,
+    "size": "grande",
     "category_cap_selected": 4,
     "category_cap_default": 2,
     "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya",
@@ -6658,5 +6673,785 @@
     "Un lugar bonito que pilla de camino puede entrar aunque no sea de la experiencia elegida, pero no cuenta como tal ni lleva 'Elegido según tus gustos'.",
     "En mitad del viaje no puede haber horas muertas: un hueco de más de 90 min significa que falta un bloque, y el semáforo lo marca en rojo.",
     "En verano, si hay atardecer, se cena después (21:00)."
-  ]
+  ],
+  "morning_flows": [
+    {
+      "id": "roma_antigua",
+      "nombre": "Coliseo, Foro y Palatino",
+      "prioridad": 1,
+      "acaba_en": "roma_antigua",
+      "experiencias": [
+        "imprescindibles"
+      ],
+      "paradas": [
+        {
+          "lugar": "Arco de Constantino",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Coliseo",
+          "rol": "ancla",
+          "nota": "A la apertura (08:30): menos cola y menos calor."
+        },
+        {
+          "lugar": "Foro Romano y Palatino",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "rol": "de_paso"
+        }
+      ],
+      "comida": "Monti / Fori Imperiali"
+    },
+    {
+      "id": "vaticano",
+      "nombre": "Museos Vaticanos, San Pedro y la Cúpula",
+      "prioridad": 1,
+      "acaba_en": "vaticano",
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos",
+        "naturaleza_vistas"
+      ],
+      "paradas": [
+        {
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "rol": "ancla",
+          "nota": "A primera hora."
+        },
+        {
+          "lugar": "Plaza de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "rol": "parada",
+          "nota": "Los miércoles por la mañana hay audiencia papal en la plaza: comprueba en la fuente oficial si la Basílica cierra hasta mediodía y guárdalo en el dato."
+        },
+        {
+          "lugar": "Cúpula de San Pedro",
+          "rol": "parada",
+          "solo_con": "naturaleza_vistas"
+        }
+      ],
+      "comida": "Vaticano / Borgo"
+    },
+    {
+      "id": "centro_temprano",
+      "nombre": "Trevi y la Escalinata sin gente, Panteón y Navona",
+      "prioridad": 2,
+      "acaba_en": "centro",
+      "experiencias": [
+        "imprescindibles"
+      ],
+      "paradas": [
+        {
+          "lugar": "Fontana de Trevi",
+          "rol": "ancla",
+          "nota": "A las 08:00 está casi vacía: es la mejor hora del día."
+        },
+        {
+          "lugar": "Plaza de España",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Via Condotti",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Panteón",
+          "rol": "parada",
+          "por_dentro": true,
+          "nota": "Abre a las 09:00."
+        },
+        {
+          "lugar": "Piazza Navona",
+          "rol": "parada"
+        }
+      ],
+      "comida": "Centro Histórico",
+      "excluye_tardes_mismo_dia": [
+        "centro_barroco",
+        "tridente_pincio"
+      ]
+    },
+    {
+      "id": "free_tour",
+      "nombre": "Free Tour por el centro histórico",
+      "prioridad": 2,
+      "acaba_en": "free_tour",
+      "experiencias": [
+        "free_tour"
+      ],
+      "paradas": [
+        {
+          "lugar": "Free Tour Centro Histórico",
+          "rol": "ancla",
+          "nota": "Sale de su dato actual (hora y punto de encuentro)."
+        }
+      ],
+      "comida": "Centro Histórico",
+      "notas": "Sustituye a 'centro_temprano' cuando se elige Free Tour."
+    },
+    {
+      "id": "borghese",
+      "nombre": "Galería Borghese, el parque y el Popolo",
+      "prioridad": 3,
+      "acaba_en": "villa_borghese",
+      "experiencias": [
+        "arte_museos",
+        "naturaleza_vistas"
+      ],
+      "paradas": [
+        {
+          "lugar": "Galería Borghese",
+          "rol": "ancla",
+          "nota": "Primer turno (09:00). Reserva obligatoria."
+        },
+        {
+          "lugar": "Parque de Villa Borghese",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Terraza del Pincio",
+          "rol": "de_paso",
+          "nota": "Por la mañana también merece la pena: se baja por aquí al Popolo."
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Santa Maria del Popolo",
+          "rol": "parada",
+          "solo_con": "arte_museos"
+        }
+      ],
+      "comida": "Tridente / Spagna",
+      "evitar": {
+        "cerrado": "lunes (Galería Borghese)"
+      },
+      "excluye_tardes_mismo_viaje": [
+        "villa_borghese_pincio"
+      ],
+      "minimo_dias_viaje": 4,
+      "notas": "En viajes de 3 días o menos solo si la Galería Borghese está en el pool."
+    },
+    {
+      "id": "caracalla_aventino",
+      "nombre": "Termas de Caracalla, Aventino y mercado de Testaccio",
+      "prioridad": 4,
+      "acaba_en": "aventino",
+      "experiencias": [
+        "naturaleza_vistas",
+        "barrios_sabores"
+      ],
+      "minimo_dias_viaje": 4,
+      "paradas": [
+        {
+          "lugar": "Termas de Caracalla",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Circo Máximo",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Boca de la Verdad",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Jardín de los Naranjos",
+          "rol": "parada",
+          "nota": "Un mirador fuera del atardecer está bien si pilla de camino."
+        },
+        {
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Mercado de Testaccio",
+          "rol": "parada",
+          "nota": "Se come aquí, entre puestos (cierra a primera hora de la tarde)."
+        }
+      ],
+      "comida": "Testaccio (Mercado de Testaccio)",
+      "evitar": {
+        "cerrado": "lunes (Termas de Caracalla)"
+      },
+      "excluye_tardes_mismo_viaje": [
+        "aventino_testaccio"
+      ]
+    },
+    {
+      "id": "trastevere_manana",
+      "nombre": "Trastevere de mañana y la Villa Farnesina",
+      "prioridad": 4,
+      "acaba_en": "trastevere",
+      "experiencias": [
+        "barrios_sabores",
+        "arte_museos"
+      ],
+      "minimo_dias_viaje": 4,
+      "paradas": [
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Villa Farnesina",
+          "rol": "parada",
+          "solo_con": "arte_museos",
+          "nota": "Solo abre por la mañana: este es su sitio. Cuenta como museo de pago."
+        }
+      ],
+      "comida": "Trastevere",
+      "excluye_tardes_mismo_viaje": [
+        "trastevere_a_fondo"
+      ]
+    },
+    {
+      "id": "appia",
+      "nombre": "Via Appia Antica y las catacumbas",
+      "prioridad": 5,
+      "acaba_en": "appia",
+      "experiencias": [
+        "naturaleza_vistas"
+      ],
+      "minimo_dias_viaje": 5,
+      "paradas": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "rol": "parada",
+          "nota": "A pie o en bici por el tramo empedrado."
+        }
+      ],
+      "comida": "En la zona de la Via Appia o de vuelta en el centro",
+      "transporte": "Hace falta bus (118) o taxi: es el único bloque de Roma fuera del centro a pie.",
+      "evitar": {
+        "cerrado": "miércoles (Catacumbas de San Calixto)"
+      }
+    }
+  ],
+  "afternoon_flows": [
+    {
+      "id": "centro_barroco",
+      "nombre": "El centro barroco: Panteón, Caravaggio y el Ghetto",
+      "encaja_despues_de": [
+        "roma_antigua",
+        "centro"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos",
+        "barrios_sabores"
+      ],
+      "paradas": [
+        {
+          "lugar": "Panteón",
+          "rol": "ancla",
+          "por_dentro": true
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Piazza Navona",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Plaza Farnese",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Barrio Judío",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "rol": "de_paso"
+        }
+      ],
+      "cena": "Centro Histórico (Ghetto o Campo de' Fiori)",
+      "nocturnas": [
+        "Panteón (noche)",
+        "Fontana de Trevi (noche)"
+      ],
+      "notas": "Si la mañana fue el Free Tour, Piazza Navona pasa a de_paso (ya se vio). Todo es gratis salvo el Panteón, y el arte es de primera: Caravaggio en San Luigi."
+    },
+    {
+      "id": "tridente_pincio",
+      "nombre": "Del Popolo al Pincio al atardecer",
+      "encaja_despues_de": [
+        "centro",
+        "villa_borghese"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "naturaleza_vistas",
+        "arte_museos"
+      ],
+      "paradas": [
+        {
+          "lugar": "Plaza de España",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Santa Maria del Popolo",
+          "rol": "parada",
+          "nota": "Abre a las 16:00 (festivos 16:30): la tarde no empieza antes."
+        },
+        {
+          "lugar": "Terraza del Pincio",
+          "rol": "atardecer"
+        }
+      ],
+      "cena": "Tridente / Spagna",
+      "nocturnas": [
+        "Fontana de Trevi (noche)",
+        "Plaza de España (noche)"
+      ],
+      "excluye": [
+        "villa_borghese_pincio"
+      ],
+      "notas": "Tras el atardecer se baja por Trinità dei Monti a la Plaza de España ya iluminada, de camino a la cena. En verano (atardecer ~20:45) la cena pasa a las 21:00."
+    },
+    {
+      "id": "campidoglio_ghetto",
+      "nombre": "Campidoglio, el Altar y el Ghetto",
+      "encaja_despues_de": [
+        "roma_antigua"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos",
+        "barrios_sabores"
+      ],
+      "paradas": [
+        {
+          "lugar": "Plaza del Campidoglio",
+          "rol": "parada",
+          "nota": "15-20 min. La plaza de Miguel Ángel y, por detrás, la vista del Foro desde otra perspectiva. De aquí se sube directo al Altar por la escalera lateral."
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "rol": "parada",
+          "solo_con": "arte_museos",
+          "nota": "Solo si está en el pool, o en viajes de 5 días o más con Arte (ver redundancias y museos_de_pago)."
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Plaza Venecia",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "rol": "de_paso",
+          "nota": "Bajando por Via del Teatro di Marcello."
+        },
+        {
+          "lugar": "Barrio Judío",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada",
+          "nota": "Si sobra tarde: cruza hacia la cena en Trastevere."
+        }
+      ],
+      "cena": "Centro Histórico (Ghetto) o Trastevere si se cruzó a la Isla Tiberina",
+      "nocturnas": [
+        "Foro Romano desde el Campidoglio (noche)"
+      ],
+      "notas": "Se come junto a los Foros. Campidoglio (15-20 min) y de ahí directo al Altar; después se baja por Via del Teatro di Marcello hasta el Ghetto."
+    },
+    {
+      "id": "vaticano_trastevere",
+      "nombre": "Del Castillo al Janículo y a cenar a Trastevere",
+      "encaja_despues_de": [
+        "vaticano"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos",
+        "naturaleza_vistas",
+        "barrios_sabores"
+      ],
+      "paradas": [
+        {
+          "lugar": "Via della Conciliazione",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "rol": "parada",
+          "solo_con": "arte_museos",
+          "nota": "Por dentro solo si cabe en museos_de_pago (4 días o más con Arte) o está en el pool. Si no, se ve por fuera desde el puente."
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "rol": "atardecer"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "rol": "parada"
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "rol": "parada",
+          "nota": "Solo si aún está abierto; si no, de paso."
+        },
+        {
+          "lugar": "Trastevere",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "rol": "de_paso"
+        }
+      ],
+      "cena": "Trastevere",
+      "nocturnas": [],
+      "excluye_barrio_repetido": "Si en el mismo viaje hay 'trastevere_a_fondo', aquí Trastevere es solo la cena, sin paseo.",
+      "notas": "Es el recorrido que ya funciona. Todo cuesta abajo desde el Janículo. En verano la cena va a las 21:00, después del atardecer."
+    },
+    {
+      "id": "aventino_testaccio",
+      "nombre": "El Aventino al atardecer y cena en Testaccio",
+      "encaja_despues_de": [
+        "roma_antigua"
+      ],
+      "experiencias": [
+        "naturaleza_vistas",
+        "barrios_sabores"
+      ],
+      "paradas": [
+        {
+          "lugar": "Circo Máximo",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Boca de la Verdad",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Jardín de los Naranjos",
+          "rol": "atardecer",
+          "nota": "Cierra a las 18:00 de octubre a febrero: en invierno el atardecer (~17:00) cabe; nunca como nocturna."
+        },
+        {
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "rol": "ancla",
+          "nota": "A 4 min del jardín: la cola se mueve rápido."
+        },
+        {
+          "lugar": "Pirámide Cestia",
+          "rol": "de_paso"
+        }
+      ],
+      "cena": "Testaccio",
+      "nocturnas": [],
+      "notas": "La tarde más local de Roma: barrio residencial, vistas sin multitudes y cena donde comen los romanos. Se baja del Aventino a Testaccio andando."
+    },
+    {
+      "id": "monti_basilicas",
+      "nombre": "Santa María la Mayor, el Moisés y Monti",
+      "encaja_despues_de": [
+        "roma_antigua",
+        "villa_borghese"
+      ],
+      "experiencias": [
+        "arte_museos",
+        "barrios_sabores"
+      ],
+      "paradas": [
+        {
+          "lugar": "Iglesia de Santa Maria della Vittoria",
+          "rol": "parada",
+          "solo_con": "arte_museos",
+          "nota": "Solo si la mañana acabó al norte (Villa Borghese): queda de camino bajando."
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "rol": "parada",
+          "nota": "El Moisés de Miguel Ángel. Cierra a las 18:00 (19:00 de abril a septiembre)."
+        },
+        {
+          "lugar": "Monti",
+          "rol": "parada"
+        }
+      ],
+      "cena": "Monti",
+      "nocturnas": [
+        "Coliseo (noche)",
+        "Foro Romano desde el Campidoglio (noche)"
+      ],
+      "notas": "Tarde tranquila y muy buena en invierno: iglesias gratis y Monti con ambiente al anochecer."
+    },
+    {
+      "id": "villa_borghese_pincio",
+      "nombre": "Galería Borghese, el parque y el Pincio",
+      "encaja_despues_de": [
+        "centro",
+        "villa_borghese"
+      ],
+      "experiencias": [
+        "arte_museos",
+        "naturaleza_vistas"
+      ],
+      "paradas": [
+        {
+          "lugar": "Galería Borghese",
+          "rol": "ancla",
+          "nota": "Reserva obligatoria por turnos de 2 h: el último turno del día."
+        },
+        {
+          "lugar": "Parque de Villa Borghese",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Terraza del Pincio",
+          "rol": "atardecer"
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Santa Maria del Popolo",
+          "rol": "parada",
+          "solo_con": "arte_museos"
+        }
+      ],
+      "cena": "Tridente / Spagna",
+      "nocturnas": [
+        "Plaza de España (noche)",
+        "Fontana de Trevi (noche)"
+      ],
+      "excluye": [
+        "tridente_pincio"
+      ],
+      "evitar": {
+        "cerrado": "lunes (Galería Borghese)"
+      },
+      "notas": "Si la Galería Borghese ya se visitó por la mañana, esta tarde no se usa: va 'tridente_pincio'. En viajes de 3 días o menos solo si la Galería Borghese está en el pool.",
+      "minimo_dias_viaje": 4
+    },
+    {
+      "id": "trastevere_a_fondo",
+      "nombre": "Trastevere a fondo",
+      "encaja_despues_de": [
+        "centro",
+        "roma_antigua"
+      ],
+      "experiencias": [
+        "barrios_sabores"
+      ],
+      "minimo_dias_viaje": 3,
+      "paradas": [
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Trastevere",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Plaza Trilussa",
+          "rol": "parada",
+          "nota": "Al final de la tarde, a la hora del aperitivo."
+        }
+      ],
+      "cena": "Trastevere",
+      "nocturnas": [],
+      "notas": "Si en el viaje también está 'vaticano_trastevere', esta va otro día y aquella solo cena en Trastevere."
+    },
+    {
+      "id": "bernini_trevi",
+      "nombre": "Bernini, Trevi y la cúpula falsa de San Ignacio",
+      "encaja_despues_de": [
+        "villa_borghese",
+        "centro"
+      ],
+      "experiencias": [
+        "arte_museos"
+      ],
+      "minimo_dias_viaje": 4,
+      "paradas": [
+        {
+          "lugar": "Iglesia de Santa Maria della Vittoria",
+          "rol": "ancla",
+          "nota": "El Éxtasis de Santa Teresa. Por la tarde abre a las 15:30."
+        },
+        {
+          "lugar": "Fuente del Tritón",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Fontana de Trevi",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Iglesia de San Ignacio de Loyola",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "rol": "parada",
+          "solo_con": "arte_museos"
+        }
+      ],
+      "cena": "Centro Histórico o Trevi",
+      "nocturnas": [
+        "Panteón (noche)"
+      ],
+      "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte."
+    },
+    {
+      "id": "letran_celio",
+      "nombre": "San Juan de Letrán, San Clemente y el Coliseo al anochecer",
+      "encaja_despues_de": [
+        "roma_antigua",
+        "centro"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos"
+      ],
+      "minimo_dias_viaje": 5,
+      "paradas": [
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Basílica de San Clemente",
+          "rol": "parada",
+          "nota": "La iglesia es gratis; las excavaciones, aparte."
+        },
+        {
+          "lugar": "Coliseo",
+          "rol": "de_paso",
+          "nota": "Por fuera, con la luz del anochecer."
+        }
+      ],
+      "cena": "Monti o Coliseo / Celio",
+      "nocturnas": [
+        "Coliseo (noche)",
+        "Foro Romano desde el Campidoglio (noche)"
+      ],
+      "notas": "Para viajes de 5 días o más: da sentido a una tarde que hoy sale casi vacía."
+    },
+    {
+      "id": "vaticano_por_la_tarde",
+      "nombre": "El Vaticano por la tarde",
+      "encaja_despues_de": [
+        "free_tour",
+        "centro"
+      ],
+      "experiencias": [
+        "imprescindibles",
+        "arte_museos"
+      ],
+      "prioridad_si": "El viaje es corto y el Vaticano no cabe en ninguna mañana (ej. 2 días con Free Tour). A las 14:30 hay menos cola que a mediodía.",
+      "paradas": [
+        {
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "rol": "ancla"
+        },
+        {
+          "lugar": "Plaza de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "rol": "de_paso"
+        }
+      ],
+      "cena": "Vaticano / Borgo o Prati",
+      "nocturnas": [
+        "Puente Sant'Angelo (noche)"
+      ]
+    }
+  ],
+  "flows_formato": {
+    "que_es": "Mañanas y tardes curadas de Roma, como las haría alguien que vive en la ciudad. El motor elige una mañana y una tarde para cada día, las ordena y calcula horas, cierres, atardecer, comida y cena. Solo improvisa si ningún bloque encaja.",
+    "roles": {
+      "ancla": "Lo mejor de la tarde. La tarde se construye alrededor de ella; si no cabe, no se usa esta tarde.",
+      "parada": "Parada normal, en este orden.",
+      "de_paso": "Se ve caminando, sin parada propia (0-10 min). En la ruta sale como 'Pasas por…', no como parada numerada.",
+      "atardecer": "Mirador: va a la hora del atardecer (regla de la ventana del atardecer). El tiempo que sobre en la tarde se usa ANTES, nunca después.",
+      "solo_con": "La parada solo entra si el viajero eligió esa experiencia (o la puso en su pool). Si no, se salta sin romper el orden."
+    },
+    "encaja_despues_de": "(tardes) Dónde acaba la mañana: roma_antigua, vaticano, centro, free_tour, villa_borghese, aventino, trastevere.",
+    "nombres": "Todos los lugares usan el nombre exacto de roma.json.",
+    "fecha": "2026-09-25",
+    "prioridad": "1 = lo que harías si solo tuvieras un día. El motor coge las mañanas por prioridad y ajusta por pool y experiencias."
+  }
 }

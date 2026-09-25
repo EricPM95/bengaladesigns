@@ -125,7 +125,7 @@ const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) =
 function outOfHours(stop) {
   const place = placeByName.get(stop.name)
   // Una parada "de paso" se ve por fuera (el Foro, desde la Via dei Fori Imperiali): no tiene puerta.
-  if (!place || stop.is_pass_by) return null
+  if (!place || stop.is_pass_by || stop.pass_through) return null
   const start = t2m(stop.suggested_time)
   const end = start + stop.duration_minutes
   const lastEntry = lastEntryMinutes(place, start, HOURS)
@@ -363,12 +363,15 @@ function measureTrip(trip, pace, exps) {
     const measured = measureDay(day, pace, interestTags, planned)
     // v3: lo que no ha cabido en ningún día viaja en not_included, con su motivo.
     if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) measured.dropped = (day.not_included ?? []).map((item) => item.name)
-    return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, ...measured }
+    return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, untypedHalves: day?.untyped_halves ?? 0, ...measured }
   })
 
   // Dónde cae cada lugar en el viaje, para grupos y nivel 1.
   const dayOf = new Map()
   const positionOf = new Map()
+  // Lo que va entre dos del mismo grupo por orden de un bloque curado (mañanas y tardes tipo): el
+  // bloque manda (Panteón → Minerva → San Luigi → Navona).
+  const curatedAt = new Map()
   trip.days.forEach((day, index) => {
     // Lo visto "de paso" por un imprescindible que no llega a su cierre (el Foro desde la Via dei Fori
     // Imperiali, decisión del 2026-09-24) cuenta como visto para su grupo.
@@ -379,6 +382,7 @@ function measureTrip(trip, pace, exps) {
           dayOf.set(name, index + 1)
           positionOf.set(name, position)
         }
+        curatedAt.set(`${index + 1}:${position}`, stop.curated_index != null)
       }
     })
   })
@@ -410,7 +414,11 @@ function measureTrip(trip, pace, exps) {
     else {
       // Lo visto desde un paso por fuera comparte parada con él: se cuentan paradas distintas.
       const positions = [...new Set(present.map((member) => positionOf.get(member.name)))]
-      if (Math.max(...positions) - Math.min(...positions) !== positions.length - 1) brokenGroups.push(`${group}: con otras paradas en medio`)
+      const day = [...days][0]
+      const between = []
+      for (let p = Math.min(...positions) + 1; p < Math.max(...positions); p++) if (!positions.includes(p)) between.push(p)
+      const byBlock = between.every((p) => curatedAt.get(`${day}:${p}`)) && positions.every((p) => curatedAt.get(`${day}:${p}`))
+      if (between.length > 0 && !byBlock) brokenGroups.push(`${group}: con otras paradas en medio`)
     }
   }
 
@@ -607,6 +615,8 @@ const SEMAFORO_CRITERIOS = [
   // Nada de horas muertas en mitad del viaje (Parte A, regla 7): un hueco de más de 90 min que no sea el
   // último día significa que falta un bloque.
   { id: 'muertas', label: 'Huecos de más de 90 min en mitad del viaje (falta un bloque)', limite: '0', value: (rows, days) => days.filter((d) => d.kind === 'ciudad' && !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).length, ok: (v) => v === 0 },
+  // Mañanas y tardes tipo (Parte B): un medio día que ningún bloque cubre se improvisa. Se mira, no bloquea.
+  { id: 'sinTipo', warnOnly: true, label: 'Medios días sin tipo (ningún bloque encaja: se improvisan)', limite: '—', value: (rows, days) => days.reduce((sum, d) => sum + (d.untypedHalves ?? 0), 0), ok: (v) => v === 0 },
   { id: 'libre', warnOnly: true, label: 'Tardes libres del último día', limite: '—', value: (rows, days) => days.filter((d) => d.freeAfternoon && d.isLastDay).length, ok: (v) => v === 0 },
   {
     id: 'repaso',
@@ -657,6 +667,17 @@ function printSemaforo(motor) {
     console.log(`  ${mark} ${c.id.padEnd(9)} ${c.limite.padEnd(5)} ${c.label}${reds.length ? ` — en ${c.warnOnly ? 'amarillo' : 'rojo'}: ${reds.map((r) => `${r.pace} ${r.n}d`).join(', ')}` : ''}`)
   }
   const blocking = cells.filter((cell) => !cell.ok && !cell.criterio.warnOnly)
+  // --rojos: qué viaje pone cada casilla en rojo, con su detalle (para diagnosticar).
+  if (args.includes('--rojos')) {
+    for (const cell of blocking) {
+      for (const row of rows.filter((r) => r.pace === cell.pace && r.days.length === cell.n)) {
+        const days = row.days.filter((d) => d.kind === 'ciudad')
+        if (cell.criterio.ok(cell.criterio.value([row], days, cell.pace))) continue
+        const detail = cell.criterio.id === 'grupos' ? row.brokenGroups.join(' | ') : cell.criterio.id === 'nivel1' ? row.missingLevel1.join(', ') : cell.criterio.id === 'muertas' ? days.filter((d) => !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).map((d) => `D${d.dayNumber} ${d.deadMax} min`).join(', ') : cell.criterio.id === 'zigzag' || cell.criterio.id === 'tardeKm' ? days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.05).map((d) => `D${d.dayNumber} ${d.afternoonKm.toFixed(2)}/${d.afternoonMinKm.toFixed(2)} km`).join(', '): cell.criterio.id === 'fuera' ? days.flatMap((d) => d.dropped ?? []).join(', ') : ''
+        console.log(`  [${cell.criterio.id}] ${cell.pace} ${cell.n}d ${row.exps.join('+') || '—'}: ${detail}`)
+      }
+    }
+  }
   const ready = blocking.length === 0
   console.log(`\n${ready ? '✅ DESTINO LISTO: todo en verde (amarillos: se miran, no bloquean)' : `❌ DESTINO NO LISTO: ${blocking.length} casillas en rojo`}`)
   return ready

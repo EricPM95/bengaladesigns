@@ -136,7 +136,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       if (fit.notice) stop.season_notice = fit.notice
     }
     // Una calle no es una parada (Parte A, regla 4): sale como "Pasas por…", sin número.
-    if (isStreet(visit.place)) {
+    if (isStreet(visit.place) || visit.place.passThrough) {
       stop.pass_through = true
       stop.why = whyTexts.passThrough()
       delete stop.experience

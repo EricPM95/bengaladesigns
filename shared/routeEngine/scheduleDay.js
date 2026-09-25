@@ -244,8 +244,11 @@ function runSchedule({ units, mode, travel, start, pendingMeals = { lunch: true,
  * @param {[number, number]|null} [input.dinnerPoint]
  * @param {boolean} [input.visitsEndByLunch]  día con solo mañana (el de la salida): nada después de comer
  */
-export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false, hours = {}, lunchSpots = [] }) {
-  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode), hours, lunchSpots }
+export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = { lunch: true, dinner: true }, dinnerPoint = null, visitsEndByLunch = false, hours = {}, lunchSpots = [], keepOrder = false }) {
+  // keepOrder (mañanas y tardes tipo, Parte B): el orden es el del bloque curado. Las relaciones entre
+  // lugares (vecinos, accesos) ya las decidió quien curó el bloque, y lo que no cabe antes de comer no
+  // se cuela suelto en la tarde: pasa detrás de la comida con lo que le sigue.
+  const ctx = { mode, travel, start, pendingMeals, longVisitsAnytime: true, dinnerPoint, visitsEndByLunch, dinnerLatest: latestDinnerStart(mode), hours, lunchSpots, keepOrder }
   let kept = [...units]
   const dropped = []
   const reorderedForHours = new Set()
@@ -265,6 +268,7 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
         kept,
         dropped,
         walkMinutes: result.walk ?? 0,
+        meters: result.meters ?? 0,
         idleMinutes: result.idle ?? 0,
         idleBeforeDinner: result.idleBeforeDinner ?? null,
       }
@@ -278,7 +282,7 @@ export function scheduleFixedOrder({ units, mode, travel, start, pendingMeals = 
       // Una visita por dentro que no cabe antes de comer va por la tarde, detrás de las visitas por
       // dentro que cierran antes que ella y delante de las que cierran después (entre dos visitas por
       // dentro, primero la que cierra antes: Coliseo 16:30 → Panteón 19:00 → Altar de la Patria 19:30).
-      const closing = interiorClosing(failing, hours)
+      const closing = keepOrder ? null : interiorClosing(failing, hours)
       if (closing !== null) {
         const rest = kept.filter((unit) => unit !== failing)
         const firstLaterPaid = rest.findIndex((unit) => unit.slot === 'tarde' && (interiorClosing(unit, hours) ?? -Infinity) > closing)
@@ -685,7 +689,8 @@ function simulate(sequence, ctx) {
   /** Come ahora. false si ya no entra en la ventana. */
   const takeLunch = () => {
     const at = Math.max(roundUpToQuarter(cursor), lunchOpen)
-    if (at > lunchClose) return false
+    // En un bloque curado se puede comer hasta las 14:00 (la mañana del bloque se alarga).
+    if (at > lunchClose + (ctx.keepOrder ? 30 : 0)) return false
     // El rato antes de comer NO es un hueco (Paso 2) si es corto: no cuenta como coste. Contarlo
     // empujaba a meter una visita antes de comer aunque rompiera la bajada natural (el Barrio Judío a
     // las 12:30, antes del Campidoglio desde el que se baja directo). Pero lo que pase de 60 min sí es un
@@ -812,13 +817,15 @@ function simulate(sequence, ctx) {
       // a las 13:30. Si no, se come primero y la visita abre la tarde.
       if (!lunchDone && pendingMeals.lunch && !place.fixed_start) {
         const inProgress = continuesGroup || withContainer || (unit.isLong && Boolean(place.group))
-        if (at + duration > (inProgress ? lunchClose : lunchOpen) && !(inProgress && lunchComesNext)) {
+        // En un bloque curado, la mañana puede alargarse hasta las 13:30 (y lo que está en marcha, media hora más).
+        const limit = ctx.keepOrder ? (inProgress ? lunchClose + 30 : lunchClose) : inProgress ? lunchClose : lunchOpen
+        if (at + duration > limit && !(inProgress && lunchComesNext)) {
           return { ok: false, reason: 'new_visit_past_lunch', unitId: unit.id }
         }
       }
 
       const pendingApproach = (approachesOf.get(place.name) ?? []).find((name) => !visits.some((visit) => visit.place.name === name))
-      if (pendingApproach) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
+      if (pendingApproach && !ctx.keepOrder) return { ok: false, reason: 'approach_after_monument', unitId: unit.id }
 
       // La mañana empieza más tarde en vez de esperar: si lo hecho hasta ahora es todo de acceso libre
       // (la Fontana dell'Acqua Paola a las 08:00) y aquí hay que esperar a que abra (el Tempietto, a
@@ -872,7 +879,7 @@ function simulate(sequence, ctx) {
     cursor = Math.max(cursor + afterLunch.arriveAfter, lunchMeal.end)
     position = lunchMeal.coordinates ?? position
   }
-  const apart = relationBroken(visits, lunchBeforeVisit)
+  const apart = ctx.keepOrder ? null : relationBroken(visits, lunchBeforeVisit)
   if (apart) return { ok: false, reason: apart.reason, unitId: apart.unitId }
 
   let idleBeforeDinner = null
