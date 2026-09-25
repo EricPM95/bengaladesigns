@@ -1124,7 +1124,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const nightsNow = planNightWalks(destData, nightWalkPlan({
       days: skeleton.map((day) => {
         const city = cityDays.find((d) => d.dayNumber === day.dayNumber)
-        return city ? { ...day, dinnerZone: city.dinnerZone, dinnerPlaceZone: city.dinnerPlaceZone, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
+        return city ? { ...day, dinnerZone: city.dinnerZone, dinnerPlaceZone: city.dinnerPlaceZone, hours: { weekday: city.weekday ?? null, season: seasonOfTrip, dateIso: city.dateIso, sunset: city.sunsetMinutes }, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
       }),
     }))
     for (const day of cityDays) {
@@ -1220,7 +1220,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const nightsBeforePassBy = planNightWalks(destData, nightWalkPlan({
     days: skeleton.map((day) => {
       const city = cityDays.find((d) => d.dayNumber === day.dayNumber)
-      return city ? { ...day, dinnerZone: city.dinnerZone, dinnerPlaceZone: city.dinnerPlaceZone, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
+      return city ? { ...day, dinnerZone: city.dinnerZone, dinnerPlaceZone: city.dinnerPlaceZone, hours: { weekday: city.weekday ?? null, season: seasonOfTrip, dateIso: city.dateIso, sunset: city.sunsetMinutes }, schedule: { visits: city.open.visits() } } : { ...day, schedule: null }
     }),
   }))
   const firstSeenDay = new Map()

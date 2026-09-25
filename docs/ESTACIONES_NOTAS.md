@@ -58,3 +58,23 @@ Sin push hasta que lo revises.
   Foro cierran el 25) y el Vaticano va el 25 (ver pregunta 3).
 - Viaje de 1 día con Free Tour: en marzo (Coliseo hasta las 17:00) va Coliseo 14:50 y el Panteón a las
   17:15; en abril (hasta las 19:15) el Panteón va justo después del tour (14:30) y el Coliseo a las 15:50.
+
+## Parte 3 — El sol decide qué es tarde y qué es noche
+
+**Qué ha cambiado**
+- La puesta de sol ya salía de la fórmula astronómica; ahora con solo el mes se calcula el día 15
+  (Parte 1) y entra en los horarios de cada día (`hours.sunset`).
+- `nightWalk.js`: la noche empieza 30 min después de la puesta de sol (`nightStartsAt`). `nightTiming`
+  decide: si es de noche antes de la cena y el paseo cabe entre la última visita y la cena, va antes
+  de cenar, recorrido hacia el barrio de la cena (con su "por qué": "Ya es de noche y te pilla de
+  camino a la cena…"); si no, después de cenar, desde las 21:30.
+- Un exterior con horario que cierra antes de la noche no es nocturna ese día (lo que cierra en
+  `sunset`, nunca). Hoy ninguna nocturna de Roma está en ese caso (el Jardín de los Naranjos no tiene
+  nocturna); la regla está probada con datos de prueba.
+- Miradores al atardecer: sin cambios, ya usan esta puesta de sol. La cena no cambia.
+- INVARIANTES 105. Prueba nueva: `verifyNight.mjs`. Semáforo de enero (`--mes 1`) en verde.
+
+**Dónde se nota** — Imprescindibles + Free Tour, 3 días:
+- Enero (puesta de sol ~17:05): día 1 … Campidoglio 17:15 → Columna de Trajano 17:45 → **Coliseo de
+  noche 18:30**, antes de cenar en Monti.
+- Julio (~20:45): el Coliseo de noche va a las 21:30, después de cenar, como hasta ahora.

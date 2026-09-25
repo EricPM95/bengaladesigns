@@ -176,11 +176,22 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const paceNotice = recovered.length > 0 ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${recovered.join(' y ')}` : null
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
+  // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).
+  const lastVisit = schedule.visits.at(-1)
+  const dinnerMeal = schedule.meals.find((meal) => meal.type === 'dinner')
+  const asPoint = (coords) => (Array.isArray(coords) ? { lat: coords[0], lng: coords[1] } : null)
+  const nightTimingInput = {
+    sunset: tripDay.hours?.sunset ?? null,
+    lastEnd: lastVisit?.end ?? null,
+    lastCoords: asPoint(lastVisit?.place.end_coordinates ?? lastVisit?.place.coordinates),
+    dinnerStart: dinnerMeal?.start ?? null,
+    dinnerCoords: asPoint(dinnerMeal?.coordinates),
+  }
   return {
     day_number: tripDay.dayNumber,
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
-    stops: [...stops, ...(nightChain.length > 0 ? nightStopsFor(nightChain, dayVisitedNames) : [])],
+    stops: [...stops, ...(nightChain.length > 0 ? nightStopsFor(nightChain, dayVisitedNames, nightTimingInput) : [])],
     meals,
     not_included: [],
     times_are_final: true,

@@ -561,6 +561,14 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     franja ("07:00-sunset") es la puesta de sol de ese día (sin ella, las 17:00). `validar.mjs` avisa si
     los periodos dejan días sin cubrir o se solapan (366 días) y si la auditoría (`hours_audit.fecha`) es
     de un año anterior al del viaje (`--anio`). Import: `scripts/destino/importarPeriodos.mjs`.
+105. **El sol decide qué es tarde y qué es noche**: la puesta de sol se calcula (fecha real o día 15 del
+    mes; `sunset_by_season` solo sin coordenadas) y **la noche empieza 30 min después**. Si eso es antes
+    de la cena y el paseo cabe entre la última visita y la cena, las nocturnas van ANTES de cenar,
+    recorridas hacia el barrio de la cena (si no cabe entero, sin lo más lejano); si no, después, desde
+    las 21:30 o cuando ya sea de noche. No es una regla de invierno: sale de la hora del sol. Un
+    exterior con horario (jardín, parque) que cierra antes de que sea de noche no puede ser nocturna ese
+    día (lo que cierra en `sunset`, nunca); lo de interior se ve de noche desde fuera y no cuenta. La
+    cena no cambia de franja.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

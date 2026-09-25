@@ -15,6 +15,7 @@
 import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
 import { dinnerZones } from './dinnerZones.js'
+import { effectiveSchedule, parseClosingMinutes } from './openingHours.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
 function metersBetween(a, b) {
@@ -44,9 +45,22 @@ const MAX_PER_NIGHT = 3
 /** La primera se mira con calma; las encadenadas son de paso. */
 const FIRST_MINUTES = 45
 const CHAINED_MINUTES = 25
-/** Se sale después de cenar, no antes. */
+/** Después de cenar se sale a esta hora (o cuando ya sea de noche, si es más tarde). */
 const NIGHT_START = 21 * 60 + 30
 const WALK_MINUTES_BETWEEN = 15
+/**
+ * Empieza la noche 30 minutos después de la puesta de sol (Estaciones, Parte 3): desde esa hora una
+ * experiencia nocturna ya se ve de noche. Si eso es antes de la cena (invierno) y la tarde deja sitio,
+ * el paseo va ANTES de cenar, de camino al barrio de la cena; si no (verano), después, como siempre.
+ */
+export const NIGHT_AFTER_SUNSET_MINUTES = 30
+/** Andando: 83 m/min con el rodeo medio de la matriz de Roma (1,32). */
+const walkMinutes = (a, b) => (Number.isFinite(metersBetween(a, b)) ? Math.ceil((metersBetween(a, b) * 1.32) / 83) : WALK_MINUTES_BETWEEN)
+
+/** Hora a la que empieza la noche ese día (null si no se sabe la puesta de sol). */
+export function nightStartsAt(sunsetMinutes) {
+  return Number.isFinite(sunsetMinutes) ? sunsetMinutes + NIGHT_AFTER_SUNSET_MINUTES : null
+}
 
 const coordsOf = (entry) => ({ lat: entry.coordinates?.[0], lng: entry.coordinates?.[1] })
 
@@ -78,6 +92,7 @@ export function planNightWalks(destData, plan) {
   }
 
   const levelOf = new Map((destData?.places ?? []).map((place) => [place.name, place.level]))
+  const placeByName = new Map((destData?.places ?? []).map((place) => [place.name, place]))
   const used = new Set()
   const byDay = new Map()
 
@@ -93,8 +108,22 @@ export function planNightWalks(destData, plan) {
     const center = dinnerPoint ?? destData?.zones?.[dinnerZone]?.center
     const dinnerCoords = Array.isArray(center) ? { lat: center[0], lng: center[1] } : null
 
+    // Un exterior con puertas (un jardín, un parque) que cierra antes de que sea de noche no puede ser
+    // nocturna ese día: el Jardín de los Naranjos cierra a las 18:00 de octubre a febrero, y lo que
+    // cierra "al anochecer" (`sunset`) nunca. Lo de interior se ve de noche desde fuera: no cuenta.
+    const nightStart = nightStartsAt(day.hours?.sunset)
+    const closedAtNight = (entry) =>
+      nightStart !== null &&
+      (entry.conflicts_with ?? []).some((name) => {
+        const place = placeByName.get(name)
+        if (!place || place.type !== 'exterior') return false
+        const closing = parseClosingMinutes(effectiveSchedule(place, day.hours ?? {}))
+        return closing !== null && closing < 24 * 60 && closing <= nightStart
+      })
+
     const available = catalogue.filter((entry) => {
       if (used.has(entry.name)) return false
+      if (closedAtNight(entry)) return false
       // En un viaje no se repite un lugar de nivel 2 o 3, tampoco de noche (decisión del 2026-09-25):
       // si el Janículo se ve al atardecer otro día, su nocturna no sale. Solo el nivel 1 se repite.
       if ((entry.conflicts_with ?? []).some((name) => dayVisited.has(name) && (levelOf.get(name) ?? 1) >= 2)) return false
@@ -141,11 +170,46 @@ export function planNightWalks(destData, plan) {
   return byDay
 }
 
-/** Las paradas nocturnas de un día, ya con hora. */
-export function nightStopsFor(chain, dayVisitedNames) {
+/**
+ * Cuándo va el paseo nocturno (Estaciones, Parte 3). Antes de cenar si ya es de noche antes de la cena
+ * y cabe entre la última visita y la cena, recorrido HACIA el barrio de la cena (se acaba en lo más
+ * cercano a él); si no cabe entero, se prueba quitando lo más lejano de la cena. Si no, después de
+ * cenar, desde las 21:30 (o cuando ya sea de noche).
+ * @param {object[]} chain  en orden de paseo desde la cena (planNightWalks)
+ * @param {{ sunset?: number|null, lastEnd?: number|null, lastCoords?: {lat:number,lng:number}|null,
+ *           dinnerStart?: number|null, dinnerCoords?: {lat:number,lng:number}|null }} timing
+ * @returns {{ entries: object[], start: number, beforeDinner: boolean }}
+ */
+export function nightTiming(chain, timing = {}) {
+  const nightStart = nightStartsAt(timing.sunset)
+  const { lastEnd, lastCoords, dinnerStart, dinnerCoords } = timing
+  if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart) {
+    // Hacia la cena: al revés que después de cenar.
+    let entries = [...chain].reverse()
+    while (entries.length > 0) {
+      const first = coordsOf(entries[0])
+      let cursor = Math.max(nightStart, roundUpToSlot(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
+      const start = cursor
+      for (const [index, entry] of entries.entries()) {
+        const at = index === 0 ? cursor : roundUpToSlot(cursor + WALK_MINUTES_BETWEEN)
+        cursor = at + durationOf(entry, index)
+      }
+      const toDinner = dinnerCoords ? walkMinutes(coordsOf(entries.at(-1)), dinnerCoords) : 0
+      if (cursor + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
+      entries = entries.slice(1)
+    }
+  }
+  return { entries: chain, start: Math.max(NIGHT_START, nightStart ?? 0), beforeDinner: false }
+}
+
+const durationOf = (entry, index) => (index === 0 ? FIRST_MINUTES : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES))
+
+/** Las paradas nocturnas de un día, ya con hora (ver nightTiming: antes o después de cenar). */
+export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   const stops = []
-  let cursor = NIGHT_START
-  for (const [index, entry] of chain.entries()) {
+  const plan = nightTiming(chain, timing)
+  let cursor = plan.start
+  for (const [index, entry] of plan.entries.entries()) {
     const duration = index === 0 ? FIRST_MINUTES : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES)
     const start = index === 0 ? cursor : roundUpToSlot(cursor + WALK_MINUTES_BETWEEN)
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
@@ -163,7 +227,8 @@ export function nightStopsFor(chain, dayVisitedNames) {
       tags: [],
       schedule: null,
       is_night_experience: true,
-      why: whyTexts.night(),
+      ...(plan.beforeDinner ? { before_dinner: true } : {}),
+      why: plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night(),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',
       category_label: 'De noche',
@@ -194,7 +259,7 @@ export function nightWalkPlan(trip) {
     days: trip.days.map((day) => {
       const zone = dinnerZoneOf(day)
       const units = (day.schedule?.visits ?? []).filter((visit) => !visit.place.passBy).map((visit) => ({ places: [visit.place] }))
-      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
+      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
     }),
   }
 }
