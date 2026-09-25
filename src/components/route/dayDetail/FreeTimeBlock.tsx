@@ -20,6 +20,17 @@ interface FreeTimeBlockProps {
 }
 
 export function FreeTimeBlock({ hours, city, onOpenMap, suggestions, onPickSuggestion, midDay }: FreeTimeBlockProps) {
+  // Hueco a mitad de día sin nada abierto y de camino que proponer: se dice igual, sin sugerencias.
+  if (midDay && !(suggestions && suggestions.length > 0)) {
+    return (
+      <div className="rounded-xl border border-dashed border-border px-3 py-2.5 text-small text-text-soft">
+        <p className="font-semibold text-text">Tiempo libre</p>
+        <p className="mt-0.5">
+          Tienes {midDay.minutes} min libres antes de la siguiente parada ({midDay.before}). Tómate algo o descansa un rato.
+        </p>
+      </div>
+    )
+  }
   if (suggestions && suggestions.length > 0) {
     return (
       <div className="rounded-xl border border-dashed border-border px-3 py-2.5 text-small text-text-soft">

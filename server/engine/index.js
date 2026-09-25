@@ -26,6 +26,7 @@ import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
+import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes } from '../../shared/routeEngine/openingHours.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -256,6 +257,8 @@ const FREE_AFTERNOON_MIN_MINUTES = 90
 /** Sugerencias de la tarde libre: a esta distancia a pie, como mucho, de donde acaba el día. */
 const FREE_AFTERNOON_MAX_WALK_MINUTES = 20
 const FREE_AFTERNOON_SUGGESTIONS = 3
+/** Desvío máximo de una sugerencia de tiempo libre respecto al camino hacia lo siguiente. */
+const SUGGESTION_MAX_DETOUR_MINUTES = 15
 
 /**
  * Tarde libre (decisión del 2026-09-24): cuando el destino ya no da para llenar la tarde, no es un
@@ -268,7 +271,16 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
   if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
-  return { minutes: idle, suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates) }
+  const dinner = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
+  return {
+    minutes: idle,
+    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates, {
+      startMinutes: last.end,
+      endMinutes: dinner ? dinner.start - (dinner.walkMinutes ?? 0) : null,
+      to: dinner?.coordinates ?? null,
+      hours: tripDay.hours ?? {},
+    }),
+  }
 }
 
 /**
@@ -294,12 +306,22 @@ function midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames) {
     minutes: worst.gap,
     after: previous.place.name,
     before: visits[worst.index].place.name,
-    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates),
+    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates, {
+      startMinutes: previous.end,
+      endMinutes: visits[worst.index].start - (visits[worst.index].walkMinutes ?? 0),
+      to: visits[worst.index].place.coordinates,
+      hours: tripDay.hours ?? {},
+    }),
   }
 }
 
-/** 2-3 sitios sin ver cerca de `from` (tarde libre y tiempo libre): primero los de sus experiencias. */
-function nearbySuggestions(destData, trip, options, dayVisitedNames, from) {
+/**
+ * 2-3 sitios sin ver cerca de `from` (tarde libre y tiempo libre): primero los de sus experiencias.
+ * Solo lo que está ABIERTO en ese rato (se llega, se visita entero y se sale a tiempo; no cierra ese
+ * día) y DE CAMINO hacia lo siguiente (`to`: la siguiente parada o la cena), con 15 min de desvío como
+ * mucho (revisión del 2026-09-25: se proponía la Villa Farnesina, que cierra a las 14:00, a las 17:00).
+ */
+function nearbySuggestions(destData, trip, options, dayVisitedNames, from, { startMinutes = null, endMinutes = null, to = null, hours = {} } = {}) {
   const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
   // Lo que enseña el Free Tour por fuera ya está visto (lo de interior de pago, como el Panteón, no).
   const tour = destData.default_free_tour
@@ -318,6 +340,20 @@ function nearbySuggestions(destData, trip, options, dayVisitedNames, from) {
     .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates))
     .map((place) => ({ place, walk: travel.leg(from, place.coordinates)?.minutes ?? Infinity, ofExperience: (place.tags ?? []).some((tag) => chosenTags.has(tag)) }))
     .filter((item) => item.walk <= FREE_AFTERNOON_MAX_WALK_MINUTES)
+    // De camino: el rodeo para pasar por allí hacia lo siguiente, 15 min como mucho.
+    .filter((item) => !to || item.walk + (travel.leg(item.place.coordinates, to)?.minutes ?? Infinity) - (travel.leg(from, to)?.minutes ?? 0) <= SUGGESTION_MAX_DETOUR_MINUTES)
+    // Abierto: se llega, cabe la visita entera y da tiempo a seguir.
+    .filter((item) => {
+      if (startMinutes == null) return true
+      if (closedOnDay(item.place, hours.weekday ?? null, hours.weekday ? hours.dateIso ?? null : null)) return false
+      const duration = item.place.duration_minutes ?? 30
+      const at = earliestVisitStart(effectiveSchedule(item.place, hours), startMinutes + item.walk, duration)
+      if (at === null) return false
+      const lastEntry = lastEntryMinutes(item.place, at, hours)
+      if (lastEntry !== null && at > lastEntry) return false
+      const onward = to ? travel.leg(item.place.coordinates, to)?.minutes ?? 0 : 0
+      return endMinutes == null || at + duration + onward <= endMinutes
+    })
     .sort((a, b) => Number(b.ofExperience) - Number(a.ofExperience) || (a.place.level ?? 9) - (b.place.level ?? 9) || a.walk - b.walk || a.place.name.localeCompare(b.place.name, 'es'))
     .slice(0, FREE_AFTERNOON_SUGGESTIONS)
     .map(({ place, walk }) => ({ name: place.name, walk_minutes: Math.round(walk), requires_ticket: !(place.is_free_access ?? place.type === 'exterior') }))

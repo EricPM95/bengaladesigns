@@ -1018,7 +1018,7 @@ export function DayDetailPanel({
                   )}
                 </div>
                 </SortableStop>
-                {day.freeTime && day.freeTime.suggestions.length > 0 && realStops[index]?.name === day.freeTime.after && realStops[index + 1]?.name === day.freeTime.before && (
+                {day.freeTime && realStops[index]?.name === day.freeTime.after && realStops[index + 1]?.name === day.freeTime.before && (
                   <div className="pt-2">
                     <FreeTimeBlock
                       hours={0}
