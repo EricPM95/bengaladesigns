@@ -42,8 +42,9 @@ import { placeWithArticle, whyTexts } from './whyTexts.js'
 import { tripDays } from './tripSkeleton.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
-import { nightWalkPlan, planNightWalks } from './nightWalk.js'
+import { NIGHT_REACH_METERS, nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
+import { straightLineMeters } from './travelTimes.js'
 import { seasonKey } from './openingHours.js'
 import { toMinutes } from './time.js'
 import { lunchSpots } from './lunchSpots.js'
@@ -100,6 +101,17 @@ const DINNER_MAX_WALK_MINUTES = 30
  * atardecer antes de cenar (decisión del 2026-09-23). En minutos de contenido, como el resto.
  */
 const SUNSET_BONUS_MINUTES = 45
+/**
+ * Extra de un barrio de cena con una nocturna a 15 min o menos que el viaje aún puede enseñar
+ * (decisión del 2026-09-25: la nocturna sale desde la cena o no sale). Menor que el del atardecer:
+ * desempata entre barrios parecidos, no arrastra el día a otra punta.
+ */
+const NIGHT_BONUS_MINUTES = 30
+/**
+ * Hueco a mitad de día (decisión del 2026-09-25): 60 min o más parado antes de una parada con hora
+ * (el Janículo al atardecer). Primero entra lo gratis de camino; si aún queda, "Tiempo libre".
+ */
+export const MID_DAY_GAP_MINUTES = 60
 /** Tiempo libre mínimo para que el mirador del atardecer cuente. */
 const SUNSET_MIN_ROOM_MINUTES = 30
 
@@ -744,6 +756,13 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     // Cada día puntúa cada barrio: contenido sin ver de camino (hasta lo que cabe en la tarde que
     // queda) + el extra del atardecer si hay un mirador de camino.
     const unseen = units.filter((unit) => !placedDay.has(unit.id) && !unit.isFreeTour)
+    // Nocturnas que el viaje aún puede enseñar: ninguna de un lugar de nivel 2-3 ya visto de día.
+    const placedNames = new Set(units.filter((unit) => placedDay.has(unit.id)).flatMap((unit) => unit.places.map((place) => place.name)))
+    const levelOf = new Map((destData?.places ?? []).map((place) => [place.name, place.level]))
+    const nightCoords = (destData?.night_experiences ?? [])
+      .filter((entry) => Array.isArray(entry.coordinates) && !(entry.conflicts_with ?? []).some((name) => placedNames.has(name) && (levelOf.get(name) ?? 1) >= 2))
+      .map((entry) => entry.coordinates)
+    const hasNight = (coords) => nightCoords.some((c) => straightLineMeters(coords, c) <= NIGHT_REACH_METERS)
     const candidates = []
     for (const day of cityDays) {
       const from = day.open.endCoordinates() ?? day.seedCoords
@@ -760,7 +779,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         const sunsetUnit = room >= SUNSET_MIN_ROOM_MINUTES
           ? onTheWay.filter((unit) => unit.tags.includes('mirador')).sort((a, b) => leg(from, a.places[0].coordinates) + leg(a.places.at(-1).coordinates, option.coordinates) - (leg(from, b.places[0].coordinates) + leg(b.places.at(-1).coordinates, option.coordinates)))[0] ?? null
           : null
-        candidates.push({ day, option, walk, sunsetUnit, score: Math.min(content, room) + (sunsetUnit ? SUNSET_BONUS_MINUTES : 0) })
+        candidates.push({ day, option, walk, sunsetUnit, score: Math.min(content, room) + (sunsetUnit ? SUNSET_BONUS_MINUTES : 0) + (hasNight(option.coordinates) ? NIGHT_BONUS_MINUTES : 0) })
       }
     }
 
@@ -1217,6 +1236,73 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       if (!best) break
       day.open.add(best.attempt)
       passedBy.add(best.place.name)
+    }
+  }
+
+  // ── Huecos a mitad de día (decisión del 2026-09-25) ──────────────────────────────────────
+  // Si entre dos visitas quedan 60 min o más de espera (a la hora del atardecer, a que abra algo),
+  // primero entra lo GRATIS que quede de camino, sin contar topes de categoría: es tiempo que ya
+  // estaba perdido. También la parte gratis de un grupo de pago que no está en la ruta, con lo de
+  // pago visto por fuera (el Puente Sant'Angelo, con el Castillo por fuera). Lo que siga quedando es
+  // "Tiempo libre" con sugerencias (lo pone el servidor, ver midDayFreeFor).
+  // La comida no es un hueco: entre dos visitas con la comida en medio no se mira.
+  // `before`: una vez abierto un hueco de 60+, se sigue llenando ESE mismo hueco mientras quepa algo
+  // gratis de camino (tras el Puente quedaban 45 min: cabe el Tempietto).
+  const midGapOf = (visits, meals = [], before = null) => {
+    let worst = null
+    for (let i = 1; i < visits.length; i++) {
+      if (meals.some((meal) => meal.start >= visits[i - 1].end && meal.start < visits[i].start)) continue
+      const gap = visits[i].start - visits[i - 1].end - (visits[i].walkMinutes ?? 0)
+      if (before && visits[i].place.name !== before) continue
+      if (gap >= (before ? 1 : MID_DAY_GAP_MINUTES) && (!worst || gap > worst.gap)) worst = { gap, before: visits[i].place.name, start: visits[i].start }
+    }
+    return worst
+  }
+  const tourNames = new Set(coveredByFreeTour.flatMap((item) => item.names))
+  const outsideVariant = (unit) => {
+    const free = unit.places.filter((place) => (place.is_free_access ?? place.type === 'exterior'))
+    const paid = unit.places.filter((place) => !(place.is_free_access ?? place.type === 'exterior'))
+    if (free.length === 0 || paid.length === 0 || !paid.every((place) => place.visible_from_outside)) return null
+    const outsideOf = paid.map((place) => place.name)
+    return {
+      ...unit,
+      id: `${unit.id} (por fuera)`,
+      outsideOfUnitId: unit.id,
+      places: free.map((place) => ({ ...place, outsideOf })),
+      minutes: free.reduce((sum, place) => sum + (place.duration_minutes ?? 30), 0),
+      requiresTicket: false,
+      closedOn: [],
+      priority: PRIORITY.FILLER,
+    }
+  }
+  for (const day of cityDays) {
+    let filling = null
+    for (let round = 0; round < 4; round++) {
+      const gap = midGapOf(day.open.visits(), day.open.meals(), filling)
+      if (!gap) break
+      filling = gap.before
+      const onDay = new Set(day.open.visits().map((visit) => visit.place.name))
+      const candidates = units
+        .filter((unit) => !unit.isFreeTour && !placedDay.has(unit.id) && unit.places.every((place) => !onDay.has(place.name) && !tourNames.has(place.name)))
+        .map((unit) => (unit.requiresTicket ? outsideVariant(unit) : unit))
+        .filter((unit) => unit && !(unit.closedOn.length > 0 && day.weekday && unit.closedOn.includes(day.weekday)))
+        .filter((unit) => !paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null))
+      let best = null
+      for (const unit of candidates) {
+        const attempt = day.open.tryAdd({ ...forDay(day, unit), gapFillerBefore: gap.before, capExempt: true }, { maxAddedWalk: MAX_FILL_ADDED_WALK_MINUTES })
+        if (!attempt) continue
+        // Solo vale si va DENTRO del hueco: la parada con hora sigue en su ventana (el programador ya lo
+        // comprueba; puede correrse un cuarto dentro de la del atardecer) y el hueco se acorta.
+        const preview = day.open.preview(attempt.sequence).visits
+        const fixed = preview.find((visit) => visit.place.name === gap.before)
+        const after = midGapOf(preview, day.open.preview(attempt.sequence).meals, gap.before)
+        if (!fixed || fixed.start < gap.start || (after && after.gap >= gap.gap)) continue
+        const origin = unit.outsideOfUnitId ?? unit.id
+        if (!best || attempt.addedCost < best.attempt.addedCost) best = { attempt, origin }
+      }
+      if (!best) break
+      day.open.add(best.attempt)
+      placedDay.set(best.origin, day.dayNumber)
     }
   }
 

@@ -20,7 +20,7 @@ import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
-import { planTrip } from '../../shared/routeEngine/planTrip.js'
+import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
@@ -204,6 +204,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   ]
   const freeAfternoon = freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
+  const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
+  if (freeTime) day.free_time = freeTime
   return day
 }
 
@@ -224,8 +226,39 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
   if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
+  return { minutes: idle, suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates) }
+}
+
+/**
+ * Tiempo libre a mitad de día (decisión del 2026-09-25): si después de meter lo gratis de camino
+ * (planTrip) siguen quedando 60 min o más de espera antes de una parada (el Janículo al atardecer),
+ * se dice, con 2-3 sugerencias cerca como la tarde libre —pueden ser de pago: el Castillo por dentro—.
+ * La comida no es un hueco.
+ */
+function midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames) {
+  const visits = tripDay.schedule?.visits ?? []
+  const meals = tripDay.schedule?.meals ?? []
+  let worst = null
+  for (let i = 1; i < visits.length; i++) {
+    if (visits[i].place.passBy) continue
+    if (meals.some((meal) => meal.start >= visits[i - 1].end && meal.start < visits[i].start)) continue
+    const gap = visits[i].start - visits[i - 1].end - (visits[i].walkMinutes ?? 0)
+    if (gap >= MID_DAY_GAP_MINUTES && (!worst || gap > worst.gap)) worst = { gap, index: i }
+  }
+  if (!worst) return null
+  const previous = visits[worst.index - 1]
+  // Entre las sugerencias, nada de lo que ya va hoy más tarde.
+  return {
+    minutes: worst.gap,
+    after: previous.place.name,
+    before: visits[worst.index].place.name,
+    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates),
+  }
+}
+
+/** 2-3 sitios sin ver cerca de `from` (tarde libre y tiempo libre): primero los de sus experiencias. */
+function nearbySuggestions(destData, trip, options, dayVisitedNames, from) {
   const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
-  const from = last.place.end_coordinates ?? last.place.coordinates
   // Lo que enseña el Free Tour por fuera ya está visto (lo de interior de pago, como el Panteón, no).
   const tour = destData.default_free_tour
   const hasTour = trip.days.some((d) => (d.schedule?.visits ?? []).some((visit) => visit.place.isFreeTour))
@@ -246,5 +279,5 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
     .sort((a, b) => Number(b.ofExperience) - Number(a.ofExperience) || (a.place.level ?? 9) - (b.place.level ?? 9) || a.walk - b.walk || a.place.name.localeCompare(b.place.name, 'es'))
     .slice(0, FREE_AFTERNOON_SUGGESTIONS)
     .map(({ place, walk }) => ({ name: place.name, walk_minutes: Math.round(walk), requires_ticket: !(place.is_free_access ?? place.type === 'exterior') }))
-  return { minutes: idle, suggestions }
+  return suggestions
 }

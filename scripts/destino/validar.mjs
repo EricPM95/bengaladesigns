@@ -88,6 +88,7 @@ const section = (title) => {
     for (const name of place.neighbor_of ?? []) check(`${place.name}.neighbor_of`, name)
     for (const name of place.approach_to ?? []) check(`${place.name}.approach_to`, name)
     check(`${place.name}.related_to`, place.related_to)
+    for (const name of place.leads_to ?? []) check(`${place.name}.leads_to`, name)
     for (const name of place.pass_by?.includes ?? []) check(`${place.name}.pass_by.includes`, name)
     if (place.zone && !D.zones?.[place.zone]) s.red.push(`${place.name}: zona "${place.zone}" no existe`)
     if (place.group && !D.groups?.[place.group]) s.red.push(`${place.name}: grupo "${place.group}" no existe`)
@@ -157,6 +158,14 @@ const section = (title) => {
   for (const place of places.filter((p) => p.related_to)) {
     const partner = byName.get(place.related_to)
     if (partner && partner.related_to !== place.name) s.warn.push(`related_to no es mutuo: ${place.name} → ${place.related_to}, pero ${partner.name} → ${partner.related_to ?? 'nada'}`)
+  }
+  // Sin precios en los datos (decisión del 2026-09-25): saldrán de las APIs de los proveedores, reales
+  // y al día. Ni en la pestaña Tickets (ticket_info) ni en consejos ni en el horario.
+  const PRICE = /€|~\s*\d|\d+\s*euros?\b/i
+  for (const place of places) {
+    for (const [field, text] of [['ticket_info', (place.ticket_info ?? []).join(' ')], ['tip', place.tip ?? ''], ['card_text', place.card_text ?? '']]) {
+      if (PRICE.test(text)) s.red.push(`${place.name}.${field}: lleva un precio — los precios salen de los proveedores, no del JSON`)
+    }
   }
 }
 

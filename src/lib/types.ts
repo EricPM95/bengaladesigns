@@ -553,6 +553,8 @@ export interface DayPlan {
   /** Motor v3: tarde libre (el destino ya no daba para más ese día), con 2-3 sugerencias cerca de
       donde acaba el día — pueden ser de pago, el viajero decide si las añade. */
   freeAfternoon?: { minutes: number; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
+  /** Motor v3: hueco de 60+ min a mitad de día (antes de una parada con hora), tras la parada `after`. */
+  freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo

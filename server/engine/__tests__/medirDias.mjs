@@ -168,7 +168,9 @@ function afternoonMeters(dayStops, lunchAt, pace, dinnerStop, lunchCoords = null
     const lastPlace = last ? placeByName.get(last[last.length - 1].name) : null
     const sameGroup = last && place?.group && lastPlace?.group === place.group
     const inside = last && place?.contained_in && last.some((s) => s.name === place.contained_in || placeByName.get(s.name)?.contained_in === place.contained_in)
-    if (sameGroup || inside) last.push(stop)
+    // La bajada natural (`leads_to`: del Campidoglio al Barrio Judío) va seguida, como en el motor.
+    const leads = last && (lastPlace?.leads_to ?? []).includes(stop.name)
+    if (sameGroup || inside || leads) last.push(stop)
     else pieces.push([stop])
   }
   if (pieces.length > MAX_PIEZAS_TARDE) return null
@@ -359,7 +361,8 @@ function measureTrip(trip, pace, exps) {
     // Lo visto "de paso" por un imprescindible que no llega a su cierre (el Foro desde la Via dei Fori
     // Imperiali, decisión del 2026-09-24) cuenta como visto para su grupo.
     ;(day?.stops ?? []).filter((stop) => !stop.is_night_experience && (!stop.is_revisit || stop.instead_of_visit)).forEach((stop, position) => {
-      for (const name of [stop.place_name ?? stop.name, ...(stop.instead_of_visit ? stop.pass_by_includes ?? [] : [])]) {
+      // Lo de pago visto por fuera desde su grupo (el Castillo desde el Puente) también.
+      for (const name of [stop.place_name ?? stop.name, ...(stop.instead_of_visit ? stop.pass_by_includes ?? [] : []), ...(stop.outside_of ?? [])]) {
         if (!dayOf.has(name)) {
           dayOf.set(name, index + 1)
           positionOf.set(name, position)

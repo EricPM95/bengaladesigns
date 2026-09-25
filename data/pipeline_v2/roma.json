@@ -142,7 +142,8 @@
         "Foro Romano y Palatino"
       ],
       "allow_same_day": true,
-      "_borrador": "BORRADOR 2026-09-25: nocturna nueva (vista del Foro desde el Campidoglio). Revisar texto y coordenadas."
+      "tip": "Rodea el Palazzo Senatorio por la derecha, por Via del Campidoglio, hasta la barandilla: la vista se abre de golpe.",
+      "same_day_as_visit": true
     }
   ],
   "closed_on": {
@@ -625,7 +626,12 @@
       },
       "closed_on": [],
       "reservation": "obligatoria",
-      "card_text": "Abre todos los días. Horario 2026: 29 mar-30 sep 08:30-19:15 (última entrada 18:15); 1-24 oct 08:30-18:30 (17:30); desde el 25 oct hasta finales de feb 08:30-16:30 (15:30). La última entrada es 1 h antes del cierre. Entrada con franja horaria reservada online. Cierra 25 dic y 1 ene."
+      "card_text": "Abre todos los días. Horario 2026: 29 mar-30 sep 08:30-19:15 (última entrada 18:15); 1-24 oct 08:30-18:30 (17:30); desde el 25 oct hasta finales de feb 08:30-16:30 (15:30). La última entrada es 1 h antes del cierre. Entrada con franja horaria reservada online. Cierra 25 dic y 1 ene.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva obligatoria.",
+        "Entrada conjunta con el Foro Romano y el Palatino."
+      ]
     },
     {
       "name": "Foro Romano y Palatino",
@@ -695,7 +701,12 @@
       },
       "closed_on": [],
       "reservation": "obligatoria",
-      "card_text": "Abre a las 09:00 y cierra a la misma hora que el Coliseo según la época (19:15 en verano, 16:30 en invierno). Última entrada 1 h antes del cierre. Entrada combinada con el Coliseo. Cierra 25 dic y 1 ene."
+      "card_text": "Abre a las 09:00 y cierra a la misma hora que el Coliseo según la época (19:15 en verano, 16:30 en invierno). Última entrada 1 h antes del cierre. Entrada combinada con el Coliseo. Cierra 25 dic y 1 ene.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva obligatoria.",
+        "Entrada conjunta con el Coliseo."
+      ]
     },
     {
       "name": "Arco de Constantino",
@@ -877,7 +888,9 @@
       "reservation": "recomendada",
       "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Taquilla hasta las 18:00. Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene.",
       "ticket_info": [
-        "Entrada de pago; se compra online o en taquilla (taquilla hasta las 18:00)."
+        "De pago.",
+        "Reserva recomendada.",
+        "Se compra online o en taquilla (taquilla hasta las 18:00)."
       ]
     },
     {
@@ -1080,7 +1093,9 @@
       "reservation": "recomendada",
       "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic).",
       "ticket_info": [
-        "El último domingo del mes, de 09:00 a 14:00, la entrada es gratis (última entrada 12:30)."
+        "De pago.",
+        "Reserva recomendada.",
+        "Gratis el último domingo de mes, de 09:00 a 14:00 (última entrada 12:30)."
       ]
     },
     {
@@ -1127,8 +1142,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones.",
       "ticket_info": [
-        "La basílica es gratis.",
-        "La subida a la cúpula se paga aparte (ver Cúpula de San Pedro)."
+        "Gratis.",
+        "La subida a la cúpula se paga aparte."
       ]
     },
     {
@@ -1238,7 +1253,11 @@
         "lunes"
       ],
       "reservation": "recomendada",
-      "card_text": "Martes a domingo de 09:00 a 19:30 (última entrada 18:30). Cerrado los lunes, salvo el primer lunes de cada mes entre agosto y diciembre de 2026 (14:00-20:00). Cierra 1 ene y 25 dic."
+      "card_text": "Martes a domingo de 09:00 a 19:30 (última entrada 18:30). Cerrado los lunes, salvo el primer lunes de cada mes entre agosto y diciembre de 2026 (14:00-20:00). Cierra 1 ene y 25 dic.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva recomendada."
+      ]
     },
     {
       "name": "Mirador del Janículo",
@@ -1307,7 +1326,11 @@
       ],
       "last_entry": "17:45",
       "reservation": "obligatoria",
-      "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos a cada hora en punto (visita de 2 h; el último turno, 17:45, es más corto). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene."
+      "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos a cada hora en punto (visita de 2 h; el último turno, 17:45, es más corto). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva obligatoria."
+      ]
     },
     {
       "name": "Parque de Villa Borghese",
@@ -1417,7 +1440,10 @@
       },
       "closed_on": [],
       "reservation": "no",
-      "card_text": "2026: 1 ene-28 mar 09:30-17:00; 29 mar-24 oct 09:30-18:00 (fines de semana y festivos del 29 mar al 4 oct hasta las 19:00). Última entrada 1 h antes del cierre. Solo cierra el 25 dic."
+      "card_text": "2026: 1 ene-28 mar 09:30-17:00; 29 mar-24 oct 09:30-18:00 (fines de semana y festivos del 29 mar al 4 oct hasta las 19:00). Última entrada 1 h antes del cierre. Solo cierra el 25 dic.",
+      "ticket_info": [
+        "De pago."
+      ]
     },
     {
       "name": "Galería Nacional de Arte Moderno",
@@ -1457,7 +1483,8 @@
       "reservation": "no",
       "card_text": "Martes a domingo de 09:00 a 19:00 (última entrada 18:15). Algunas noches abre de 19:00 a 23:00 (del 10 sep al 17 dic). Cerrado lunes y 25 dic.",
       "ticket_info": [
-        "El primer domingo del mes, gratis con reserva."
+        "De pago.",
+        "Gratis el primer domingo de mes, con reserva."
       ]
     },
     {
@@ -1513,8 +1540,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00.",
       "ticket_info": [
-        "El monumento es gratis.",
-        "Terraza panorámica con ascensor ('Roma dal cielo'): ~7€, de 09:30 a 19:30 (última subida 19:00)."
+        "Gratis.",
+        "La terraza panorámica con ascensor es de pago, de 09:30 a 19:30 (última subida 19:00)."
       ]
     },
     {
@@ -1736,7 +1763,7 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
-        "Entrada ~15€."
+        "De pago."
       ]
     },
     {
@@ -1791,7 +1818,9 @@
       "reservation": "recomendada",
       "card_text": "Horario de verano 07:00-18:00 (del cambio de hora de finales de marzo al de finales de octubre); horario de invierno 07:30-17:00. La última subida suele ser 1 h antes del cierre. Puede cerrar por celebraciones o mal tiempo.",
       "ticket_info": [
-        "~10€ con ascensor o ~8€ solo por escaleras."
+        "De pago.",
+        "Reserva recomendada.",
+        "Con ascensor o solo por escaleras."
       ]
     },
     {
@@ -1893,7 +1922,7 @@
       "card_text": "Lunes a viernes 09:30-12:45 y 14:30-18:15; sábado 09:30-12:00 y 14:30-18:30; domingo 12:00-12:45 y 14:30-18:30. El primer miércoles de cada mes cierra por la mañana. Horario sujeto a celebraciones.",
       "ticket_info": [
         "Gratis.",
-        "La luz de los Caravaggio funciona con monedas de 1€."
+        "La luz de los Caravaggio funciona con monedas."
       ]
     },
     {
@@ -1930,7 +1959,7 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
-        "Entrada ~10€."
+        "De pago."
       ]
     },
     {
@@ -2267,6 +2296,9 @@
       ],
       "neighbor_of": [
         "Museos Capitolinos"
+      ],
+      "leads_to": [
+        "Barrio Judío"
       ]
     },
     {
@@ -2306,7 +2338,8 @@
       "reservation": "recomendada",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
-        "Entrada ~15€."
+        "De pago.",
+        "Reserva recomendada."
       ]
     },
     {
@@ -2354,7 +2387,7 @@
       "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde.",
       "ticket_info": [
         "La basílica es gratis.",
-        "Excavaciones (niveles inferiores): ~10€, con reserva online (plazas limitadas)."
+        "Las excavaciones son de pago y con reserva online (plazas limitadas)."
       ]
     },
     {
@@ -2461,7 +2494,9 @@
       "reservation": "obligatoria",
       "card_text": "Solo viernes, sábado y domingo, con visita guiada en turnos cada 15 min y reserva previa. Última entrada 15:30. Cerrada el primer domingo de cada mes.",
       "ticket_info": [
-        "~16€, solo con visita guiada reservada online."
+        "De pago.",
+        "Reserva obligatoria.",
+        "Solo con visita guiada reservada online."
       ]
     },
     {
@@ -2518,7 +2553,8 @@
       "reservation": "recomendada",
       "card_text": "Martes a domingo. 1-28 mar 09:00-17:30; 29 mar-31 ago 09:00-19:15; sep 09:00-19:00; 1-24 oct 09:00-18:30; 25 oct-28 feb 09:00-16:30. Última entrada 1 h antes aprox. Cerrado los lunes.",
       "ticket_info": [
-        "Entrada ~8€."
+        "De pago.",
+        "Reserva recomendada."
       ]
     },
     {
@@ -2613,8 +2649,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 19:00 (última entrada 18:30). Se puede visitar durante las misas, con respeto. El museo tiene horario aparte. Puede haber cola para visitar la tumba del papa Francisco.",
       "ticket_info": [
-        "La basílica es gratis.",
-        "Museo y loggia de los mosaicos: ~5€."
+        "Gratis.",
+        "El museo y la loggia de los mosaicos se pagan aparte."
       ]
     },
     {
@@ -2882,7 +2918,8 @@
       "reservation": "recomendada",
       "card_text": "Lunes a sábado de 09:00 a 14:00 (última entrada 13:15). El segundo domingo de cada mes abre de 09:00 a 17:00. Cierra en algunos festivos.",
       "ticket_info": [
-        "Entrada ~10€."
+        "De pago.",
+        "Reserva recomendada."
       ]
     },
     {
@@ -3118,7 +3155,11 @@
         "miércoles"
       ],
       "reservation": "recomendada",
-      "card_text": "Lunes, martes y jueves 09:00-19:00 (última entrada 18:00); viernes a domingo 10:00-20:00 (última entrada 19:00). Cerrado los miércoles, 1 ene, Pascua y 25 dic."
+      "card_text": "Lunes, martes y jueves 09:00-19:00 (última entrada 18:00); viernes a domingo 10:00-20:00 (última entrada 19:00). Cerrado los miércoles, 1 ene, Pascua y 25 dic.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva recomendada."
+      ]
     },
     {
       "name": "Via Appia Antica",
@@ -3193,7 +3234,11 @@
         "miércoles"
       ],
       "reservation": "recomendada",
-      "card_text": "Solo con visita guiada (salidas cada 30 min, unos 40 min). 09:00-12:00 y 14:00-17:00. Cerrado los miércoles, 1 ene, Pascua, 25 dic y de mediados de enero a mediados de febrero."
+      "card_text": "Solo con visita guiada (salidas cada 30 min, unos 40 min). 09:00-12:00 y 14:00-17:00. Cerrado los miércoles, 1 ene, Pascua, 25 dic y de mediados de enero a mediados de febrero.",
+      "ticket_info": [
+        "De pago.",
+        "Reserva recomendada."
+      ]
     },
     {
       "name": "Cementerio Protestante",
@@ -3286,7 +3331,7 @@
       "card_text": "Tempietto de Bramante: martes a domingo de 10:00 a 18:00 (última entrada 17:30). Cerrado los lunes.",
       "is_free_access": true,
       "ticket_info": [
-        "Entrada al patio del Tempietto: gratis."
+        "Gratis."
       ]
     },
     {
@@ -3376,7 +3421,7 @@
       ],
       "ticket_info": [
         "La iglesia es gratis.",
-        "La cripta y el fresco de Cavallini tienen entrada aparte (el fresco, solo por la mañana)."
+        "La cripta y el fresco de Cavallini se pagan aparte (el fresco, solo por la mañana)."
       ]
     },
     {

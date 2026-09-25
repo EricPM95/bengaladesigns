@@ -520,9 +520,36 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 98. **El orden fijado de la tarde es obligatorio**: la mejora de la tarde nunca se queda con un orden que
     lo rompa, aunque ahorre una espera (Janículo → Acqua Paola → Trastevere, bajando del mirador a cenar).
 
+**Ajustes antes del push (2026-09-25)**
+
+99. **Ninguna cifra de precio en los datos**: la tarjeta "Entrada" (`ticket_info`) dice solo "De pago" /
+    "Gratis", "Reserva obligatoria/recomendada" y datos útiles sin importe ("gratis el primer domingo de
+    mes", "las excavaciones son aparte"). Los precios saldrán de las APIs de los proveedores, reales y al
+    día. `validar.mjs` marca en rojo cualquier precio en `ticket_info`, `tip` o `card_text`.
+100. **La nocturna sale desde la cena o no sale**: la primera nocturna está a 15 min andando o menos del
+    barrio de cena (`NIGHT_REACH_METERS`, ~950 m en línea recta con el rodeo medio). Si no hay ninguna, esa
+    noche no hay nocturna. Al elegir barrio de cena, uno con nocturna posible a esa distancia suma un extra
+    pequeño (`NIGHT_BONUS_MINUTES`, menor que el del atardecer: desempata, no arrastra el día). Una
+    nocturna que mira un lugar desde OTRO sitio puede ir el mismo día que su visita de día
+    (`same_day_as_visit`: el Foro iluminado desde el Campidoglio el día de la Roma Antigua).
+101. **La bajada natural** (`leads_to`, datos del destino): "de A se sale directo a B" (del Campidoglio se
+    baja al Barrio Judío). Si los dos van el mismo día, B justo después de A; en la tarde manda sobre los
+    metros (solo por detrás de las esperas largas). Lo que va obligatoriamente seguido (lo de dentro con
+    su contenedor, la bajada natural) se ordena como una sola pieza. El rato antes de comer no es un
+    hueco y no cuenta como coste: no se mete una visita antes de comer para taparlo.
+102. **Hueco a mitad de día**: si entre dos visitas quedan 60 min o más de espera (a la hora del atardecer,
+    a que abra algo), primero entra lo GRATIS que quede de camino (sin topes de categoría, desvío máximo
+    del relleno), también la parte gratis de un grupo de pago que no está en la ruta con lo de pago visto
+    por fuera (el Puente Sant'Angelo, con el Castillo por fuera). Una vez abierto, ese hueco se sigue
+    llenando mientras quepa algo. Si aún quedan 60 min o más: bloque "Tiempo libre" con 2-3 sugerencias
+    cerca, que pueden ser de pago, como la tarde libre. La comida no es un hueco. Por la mañana, antes de
+    una hora fija (el Free Tour), el día empieza más tarde en vez de esperar.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.
+- Ninguna nocturna a más de 15 min de donde se cena.
+- Ningún hueco de 60 min o más entre visitas sin su bloque "Tiempo libre".
 
 
 ---

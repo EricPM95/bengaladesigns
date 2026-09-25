@@ -145,6 +145,8 @@ export interface GeneratedDay {
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
   /** Motor v3: tarde libre con sugerencias cerca — DayPlan.freeAfternoon. */
   free_afternoon?: { minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
+  /** Motor v3: tiempo libre a mitad de día — DayPlan.freeTime. */
+  free_time?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -562,6 +564,16 @@ function mapDay(
           freeAfternoon: {
             minutes: generated.free_afternoon.minutes,
             suggestions: generated.free_afternoon.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
+          },
+        }
+      : {}),
+    ...(generated.free_time
+      ? {
+          freeTime: {
+            minutes: generated.free_time.minutes,
+            after: generated.free_time.after,
+            before: generated.free_time.before,
+            suggestions: generated.free_time.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
           },
         }
       : {}),

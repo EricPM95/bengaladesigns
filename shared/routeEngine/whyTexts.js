@@ -25,6 +25,10 @@ export const whyTexts = {
   onTheWay: () => 'Te pilla de camino a la cena: merece la parada.',
   /** Por la mañana no se va hacia la cena. */
   onTheWayMorning: () => 'Te pilla de camino: merece la parada.',
+  /** Lo gratis que llena un hueco a mitad de día (antes del mirador del atardecer, por ejemplo). */
+  inGap: () => 'Te pilla de camino y hay tiempo de sobra hasta la siguiente: merece la pena.',
+  /** La parte de pago de un grupo que se ve por fuera (el Castillo, desde el Puente). */
+  outside: (places) => `Por fuera: ${places} (la entrada es aparte).`,
   sunset: (city) => `Llegas justo a tiempo para ver el atardecer sobre ${city}.`,
   /** Llegada de 60 a 30 min antes de la puesta de sol. */
   sunsetEarly: (city) => `Llegas con tiempo para coger buen sitio antes del atardecer sobre ${city}.`,

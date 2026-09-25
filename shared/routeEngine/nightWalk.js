@@ -14,6 +14,7 @@
 
 import { roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
+import { dinnerZones } from './dinnerZones.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
 function metersBetween(a, b) {
@@ -27,15 +28,18 @@ function metersBetween(a, b) {
 /** Hasta dónde se encadena a pie de noche sin que deje de ser un paseo. */
 const CHAIN_MAX_METERS = 900
 /**
- * Hasta dónde se anda DESDE LA CENA para la primera parada del paseo: veinte minutos.
+ * Hasta dónde se anda DESDE LA CENA para la primera parada del paseo: quince minutos.
  *
- * Se mide del restaurante al sitio, no de centro de zona a centro de zona. Con el criterio de zonas
+ * Se mide desde donde se cena (el barrio de cena), no de centro de zona a centro de zona. Con el criterio de zonas
  * vecinas (1,5 km entre centros) no salía ni un paseo en todo el viaje: los centros de zona de Roma
  * están a entre 1,5 y 3,4 km, y Roma Antigua-Centro Histórico se quedaba en 1.574 m, setenta metros
  * por encima del corte. Pero bajar de Monti a la Fontana después de cenar es exactamente lo que
  * hace todo el mundo.
  */
-const NIGHT_REACH_METERS = 1600
+// 15 min andando desde donde se cena (decisión del 2026-09-25): en línea recta, con el rodeo medio
+// medido en la matriz de Roma (1,32) y 83 m/min, unos 950 m. Si no hay ninguna a esa distancia, esa
+// noche no hay nocturna.
+export const NIGHT_REACH_METERS = 950
 const MAX_PER_NIGHT = 3
 /** La primera se mira con calma; las encadenadas son de paso. */
 const FIRST_MINUTES = 45
@@ -84,7 +88,9 @@ export function planNightWalks(destData, plan) {
     if (!dinnerZone) continue
     // Se sale desde donde se ha cenado: el centro de la zona de la cena es la mejor aproximación
     // mientras no haya restaurante concreto elegido.
-    const center = destData?.zones?.[dinnerZone]?.center
+    // Donde se cena de verdad (el barrio de cena del motor v3); si no, el centro de la zona.
+    const dinnerPoint = day.dinnerZoneId ? dinnerZones(destData).find((zone) => zone.id === day.dinnerZoneId)?.coordinates : null
+    const center = dinnerPoint ?? destData?.zones?.[dinnerZone]?.center
     const dinnerCoords = Array.isArray(center) ? { lat: center[0], lng: center[1] } : null
 
     const available = catalogue.filter((entry) => {
@@ -97,7 +103,10 @@ export function planNightWalks(destData, plan) {
       if (!dinnerCoords) return false
       if (metersBetween(dinnerCoords, coordsOf(entry)) > NIGHT_REACH_METERS) return false
       if (shortTrip) return true
-      // Viaje largo: si el lugar se ve de día, su noche es otra.
+      // Viaje largo: si el lugar se ve de día, su noche es otra. Salvo la nocturna que lo mira desde
+      // OTRO sitio y cierra el día que se ha visitado (`same_day_as_visit`: el Foro iluminado desde el
+      // Campidoglio el día de la Roma Antigua).
+      if (entry.same_day_as_visit) return true
       const conflictDay = (entry.conflicts_with ?? []).map((name) => dayVisited.get(name)).find((d) => d !== undefined)
       return conflictDay === undefined || conflictDay !== day.dayNumber
     })
@@ -148,7 +157,7 @@ export function nightStopsFor(chain, dayVisitedNames) {
       duration_minutes: duration,
       latitude: entry.coordinates?.[0],
       longitude: entry.coordinates?.[1],
-      tip: entry.description ?? '',
+      tip: entry.tip ?? entry.description ?? '',
       description: entry.description ?? '',
       hours: null,
       tags: [],
@@ -185,7 +194,7 @@ export function nightWalkPlan(trip) {
     days: trip.days.map((day) => {
       const zone = dinnerZoneOf(day)
       const units = (day.schedule?.visits ?? []).filter((visit) => !visit.place.passBy).map((visit) => ({ places: [visit.place] }))
-      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
+      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
     }),
   }
 }

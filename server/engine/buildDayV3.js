@@ -78,6 +78,11 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
     return whyTexts.essential(city)
   }
   if (unit?.experienceTheme) return whyTexts.experience(unit.experienceTheme)
+  // Hueco a mitad de día: lo gratis que entró antes de la parada con hora (y lo de pago, por fuera).
+  if (unit?.gapFillerBefore) {
+    const outside = visit.place.outsideOf?.length ? ` ${whyTexts.outside(joinSpanish(visit.place.outsideOf))}` : ''
+    return whyTexts.inGap() + outside
+  }
   // Atardecer: solo el mirador que el motor colocó para la puesta de sol (lleva su hora). Llegar de 60 a
   // 30 min antes es "con tiempo"; menos de 30, "justo a tiempo".
   if (visit.place.sunset != null && visit.start >= visit.place.sunset - 60 && visit.start <= visit.place.sunset + 15) {
@@ -116,6 +121,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Entró por una experiencia elegida (Paso 3): la app le pone una etiqueta con su nombre.
     const experienceTheme = unitById.get(visit.unitId)?.experienceTheme
     if (experienceTheme) stop.experience = experienceTheme
+    // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
+    if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
     if (visit.place.passBy) stop.is_pass_by = true
     // Paso por fuera EN LUGAR de la visita (no ya visto otro día): el Foro que no llega a su cierre.

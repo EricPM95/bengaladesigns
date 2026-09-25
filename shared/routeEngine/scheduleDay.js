@@ -617,7 +617,9 @@ function simulate(sequence, ctx) {
   const takeLunch = () => {
     const at = Math.max(roundUpToQuarter(cursor), lunchOpen)
     if (at > lunchClose) return false
-    idle += at - cursor
+    // El rato antes de comer NO es un hueco (Paso 2): no cuenta como coste. Contarlo empujaba a
+    // meter una visita antes de comer aunque rompiera la bajada natural (el Barrio Judío a las
+    // 12:30, antes del Campidoglio desde el que se baja directo).
     const meal = { type: 'lunch', start: at, end: at + lunchBlock, eatMinutes: mode.mealMinutes, coordinates: position, spot: null }
     meals.push(meal)
     pendingLunch = { meal, from: position }
@@ -750,10 +752,12 @@ function simulate(sequence, ctx) {
       // La mañana empieza más tarde en vez de esperar: si lo hecho hasta ahora es todo de acceso libre
       // (la Fontana dell'Acqua Paola a las 08:00) y aquí hay que esperar a que abra (el Tempietto, a
       // las 10:00), lo anterior se corre hacia la apertura, en medias horas para no romper el :00/:30.
-      // Nunca lo que va a primera hora a propósito (la Fontana de Trevi a las 08:00, vacía).
+      // Nunca lo que va a primera hora a propósito (la Fontana de Trevi a las 08:00, vacía). También
+      // antes de una hora fija (el Free Tour de las 10:00): el Pincio a las 09:30, no a las 08:00 y
+      // hora y media esperando.
       let waitFrom = arrive
       const movable = (visit) => !visit.place.fixed_start && !visit.place.latest_end && !earlyUnitIds.has(visit.unitId) && effectiveSchedule(visit.place, ctx.hours) === null
-      if (seenVisit && meals.length === 0 && !place.fixed_start && at - arrive >= 30 && visits.every(movable)) {
+      if (seenVisit && meals.length === 0 && at - arrive >= 30 && visits.every(movable)) {
         const shift = Math.floor((at - arrive) / 30) * 30
         for (const visit of visits) {
           visit.start += shift
@@ -811,8 +815,9 @@ function simulate(sequence, ctx) {
     meals.push({ type: 'dinner', start: at, end: at + mode.mealMinutes, coordinates: dinnerPoint ?? position, walkMinutes: walkToDinner })
   }
 
-  const cost = walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY + preference + relatedApart(visits) * RELATED_APART_PENALTY
-  return { ok: true, visits, meals, walk, meters, idle, longestWait, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty }
+  const broken = leadsBroken(visits)
+  const cost = walk + idle + curatedInversions(sequence) * CURATED_INVERSION_PENALTY + preference + (relatedApart(visits) + broken) * RELATED_APART_PENALTY
+  return { ok: true, visits, meals, walk, meters, idle, longestWait, idleBeforeDinner, cost, tailPenalty: dinnerIdlePenalty, leadsBroken: broken }
 }
 
 /**
@@ -901,10 +906,23 @@ function relatedApart(visits) {
   for (const [index, visit] of visits.entries()) {
     const partner = visit.place.related_to
     // Cada pareja se cuenta una vez: desde el lugar que va primero.
-    if (!partner || !position.has(partner) || position.get(partner) < index) continue
-    if (position.get(partner) - index !== 1) apart++
+    if (partner && position.has(partner) && position.get(partner) > index && position.get(partner) - index !== 1) apart++
   }
   return apart
+}
+
+/**
+ * La bajada natural (`leads_to`, datos del destino): de A se sale directo a B (del Campidoglio se
+ * baja al Barrio Judío por la Cordonata). Si los dos van ese día, B justo después de A; con sentido,
+ * a diferencia de related_to. Cuántas se rompen.
+ */
+function leadsBroken(visits) {
+  const position = new Map(visits.map((visit, index) => [visit.place.name, index]))
+  let broken = 0
+  for (const [index, visit] of visits.entries()) {
+    for (const next of visit.place.leads_to ?? []) if (position.has(next) && position.get(next) !== index + 1) broken++
+  }
+  return broken
 }
 
 function curatedInversions(sequence) {
@@ -1050,8 +1068,8 @@ function bestAfternoon(sequence, ctx) {
   // Lo curado va en SU orden (el escrito a mano), no en el que traiga la secuencia: si un paso
   // anterior lo desordenó (Plaza de España antes que Popolo → Pincio), aquí se recoloca.
   const fixed = pieces.filter((unit) => unit.curatedIndex != null).sort((a, b) => a.curatedIndex - b.curatedIndex)
-  const movable = pieces.filter((unit) => unit.curatedIndex == null)
-  if (pieces.length > MAX_AFTERNOON_PIECES) return current
+  const movable = chainBlocks(pieces.filter((unit) => unit.curatedIndex == null))
+  if (fixed.length + movable.length > MAX_AFTERNOON_PIECES) return current
   // Solo lo curado: se deja en su orden (si cabe así).
   if (movable.length === 0) {
     const ordered = [...head, ...fixed, ...tail]
@@ -1064,14 +1082,18 @@ function bestAfternoon(sequence, ctx) {
   const curatedIndices = pieces.map((unit) => unit.curatedIndex).filter((index) => index != null)
   const respectsCurated = curatedIndices.every((index, i) => i === 0 || index >= curatedIndices[i - 1])
   let best = current.result.ok && respectsCurated ? current : null
-  // Primero, sin esperas por encima de la tolerancia del ritmo; luego, lo que menos camina.
+  // Primero, sin esperas por encima de la tolerancia del ritmo; luego, la bajada natural
+  // (`leads_to`); luego, lo que menos camina.
   const overWait = (r) => (r.longestWait > ctx.mode.gapTolerance ? r.longestWait : 0)
-  const better = (a, b) => !b || overWait(a) < overWait(b) || (overWait(a) === overWait(b) && (a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)))
+  const better = (a, b) =>
+    !b ||
+    overWait(a) < overWait(b) ||
+    (overWait(a) === overWait(b) && (a.leadsBroken < b.leadsBroken || (a.leadsBroken === b.leadsBroken && (a.meters < b.meters || (a.meters === b.meters && a.cost < b.cost)))))
   const order = []
   const used = new Array(movable.length).fill(false)
   const walkOrders = (nextFixed) => {
-    if (order.length === pieces.length) {
-      const candidate = [...head, ...order, ...tail]
+    if (order.length === fixed.length + movable.length) {
+      const candidate = [...head, ...order.flat(), ...tail]
       const result = simulate(candidate, ctx)
       if (result.ok && better(result, best?.result)) best = { sequence: candidate, result }
       return
@@ -1092,6 +1114,34 @@ function bestAfternoon(sequence, ctx) {
   }
   walkOrders(0)
   return best ?? current
+}
+
+/**
+ * Lo que va obligatoriamente seguido se prueba como UNA pieza en la tarde: lo de dentro detrás de su
+ * contenedor (las Tortugas detrás del Barrio Judío) y la bajada natural (`leads_to`: del Campidoglio
+ * al Barrio Judío). Así una tarde de 9 sitios cabe en la búsqueda completa en vez de quedarse con el
+ * orden de partida. Devuelve piezas: una unidad, o un array de unidades en su orden.
+ */
+function chainBlocks(units) {
+  const follows = (a, b) => {
+    const last = a.places.at(-1)
+    const first = b.places[0]
+    return first.contained_in === last.name || b.places.every((place) => a.places.some((own) => own.name === place.contained_in)) || (last.leads_to ?? []).includes(first.name)
+  }
+  const blocks = units.map((unit) => [unit])
+  for (let merged = true; merged; ) {
+    merged = false
+    for (const block of blocks) {
+      const nextIndex = blocks.findIndex((other) => other !== block && follows(block.at(-1), other[0]))
+      if (nextIndex < 0) continue
+      // Sin ciclos: B no puede estar ya delante de A.
+      block.push(...blocks[nextIndex])
+      blocks.splice(nextIndex, 1)
+      merged = true
+      break
+    }
+  }
+  return blocks.map((block) => (block.length === 1 ? block[0] : block))
 }
 
 /**

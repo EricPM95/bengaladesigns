@@ -1018,6 +1018,27 @@ export function DayDetailPanel({
                   )}
                 </div>
                 </SortableStop>
+                {day.freeTime && day.freeTime.suggestions.length > 0 && realStops[index]?.name === day.freeTime.after && realStops[index + 1]?.name === day.freeTime.before && (
+                  <div className="pt-2">
+                    <FreeTimeBlock
+                      hours={0}
+                      city={day.city}
+                      midDay={{ minutes: day.freeTime.minutes, before: day.freeTime.before }}
+                      onOpenMap={() => {
+                        const here = realStops[index]?.coordinates
+                        setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+                        setInsertAt(index + 1)
+                      }}
+                      suggestions={day.freeTime.suggestions}
+                      onPickSuggestion={(name) => {
+                        const here = realStops[index]?.coordinates
+                        setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+                        setAddStopInitialQuery(name)
+                        setInsertAt(index + 1)
+                      }}
+                    />
+                  </div>
+                )}
                 {showLunchAccordion && (
                   <>
                     {renderMealGap(index + 1)}
