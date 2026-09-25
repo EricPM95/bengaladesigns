@@ -4,6 +4,19 @@ import type { EsimStatus, GeneralBooking, TransportBooking } from './readiness'
 import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
 import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
+import { CENTRAL_MONTH } from './season'
+
+/**
+ * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
+ * el mes central (primavera → abril, verano → julio, otoño → octubre, invierno → enero); con fechas,
+ * el mes de la fecha de inicio. Sin migración: `answers` va dentro del jsonb `route`.
+ */
+function withTripMonth(route: Route): Route {
+  const answers = route?.answers
+  if (!answers || Number.isInteger(answers.month)) return route
+  const month = answers.dateRange?.start ? Number(answers.dateRange.start.slice(5, 7)) - 1 : answers.season ? CENTRAL_MONTH[answers.season] : undefined
+  return month === undefined ? route : { ...route, answers: { ...answers, month } }
+}
 
 export interface TripBookings {
   accommodationSelections: Record<string, MockHotelResult>
@@ -102,7 +115,7 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
     const generationState = row.generation_state as GenerationResumeState | null
     return {
       id: row.id as string,
-      route: row.route as Route,
+      route: withTripMonth(row.route as Route),
       bookings: row.bookings as TripBookings,
       wishlist: (row.wishlist ?? []) as WishlistItem[],
       uiState: row.ui_state as TripUiState,

@@ -29,6 +29,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, seasonKey } from '../../../shared/routeEngine/openingHours.js'
+import { tripCalendar } from '../../../shared/routeEngine/tripCalendar.js'
 import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
 import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
 import { buildDayBlockV3 } from '../index.js'
@@ -65,7 +66,11 @@ const FECHA = flag('--fecha') // sin fecha, closed_on no se aplica (igual que en
 // Época del formulario (winter | spring | summer | autumn): horarios por temporada. Sin ella, los
 // prudentes. Con --fecha, la época sale de la fecha y el horario es el del día de la semana.
 const TEMPORADA = flag('--temporada')
-const HOURS = { season: seasonKey(TEMPORADA, FECHA) }
+// Mes del viaje sin fechas (1-12, como se dice: --mes 10 = octubre). El motor usa el día 15 de ese mes
+// (Estaciones, Parte 1). --temporada queda como compatibilidad: su mes central.
+const MES = flag('--mes') ? Number(flag('--mes')) - 1 : null
+const CALENDARIO = tripCalendar({ dateRangeStartIso: FECHA, month: MES, season: TEMPORADA })
+const HOURS = { season: CALENDARIO.season ?? seasonKey(TEMPORADA, FECHA), dateIso: CALENDARIO.referenceIso }
 const casoIndex = args.indexOf('--caso')
 const CASO = casoIndex >= 0 ? { days: Number(args[casoIndex + 1]), pace: args[casoIndex + 2], exps: (args[casoIndex + 3] ?? '').split(',').filter(Boolean) } : null
 
@@ -252,7 +257,7 @@ async function buildTrip(motor, contentDays, pace, exps) {
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     const day =
       motor !== 'viejo'
-        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined, season: TEMPORADA })
+        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined, month: MES, season: TEMPORADA })
         : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }

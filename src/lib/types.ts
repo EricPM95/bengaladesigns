@@ -142,7 +142,11 @@ export interface QuestionnaireAnswers {
   days: number
   /** Fechas exactas del viaje, si el usuario las fijó. Cuando existen, determinan `days`. */
   dateRange?: DateRange
-  /** Momento del año, usado cuando no hay fechas exactas. Si tampoco se elige, se aplica la estación actual. */
+  /** Mes del viaje (0-11). Sin fechas es obligatorio; con fechas sale de ellas. El motor usa el día 15
+      de ese mes para horarios y puesta de sol (shared/routeEngine/tripCalendar.js). */
+  month?: number
+  /** Temporada, DEDUCIDA del mes (se guarda para mostrarla y para lo que aún la lee, como los
+      mercadillos navideños). Los viajes antiguos solo traen esto: pasan a su mes central. */
   season?: Season
   companion: Companion
   /** Solo companion='family' (Aventura en tribu): número de adultos del grupo. */

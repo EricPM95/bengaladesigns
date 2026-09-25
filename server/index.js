@@ -2001,6 +2001,8 @@ function formatSeasonOrDates(answers) {
   if (answers.dateRange?.start && answers.dateRange?.end) {
     return `exact dates: ${answers.dateRange.start} to ${answers.dateRange.end}`
   }
+  const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  if (Number.isInteger(answers.month) && MONTHS_EN[answers.month]) return `${MONTHS_EN[answers.month]} (no exact dates)`
   if (answers.season) return `${answers.season} (no exact dates)`
   return 'not specified'
 }
@@ -4681,7 +4683,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, season: answers.season ?? null },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

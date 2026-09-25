@@ -545,6 +545,15 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     cerca, que pueden ser de pago, como la tarde libre. La comida no es un hueco. Por la mañana, antes de
     una hora fija (el Free Tour), el día empieza más tarde en vez de esperar.
 
+**Estaciones (PROMPT_ESTACIONES.md, 2026-09-25)**
+
+103. **El motor siempre conoce la fecha o, como mínimo, el mes** (`tripCalendar.js`): recibe fechas
+    exactas (cada día, su fecha y su día de la semana) o días + mes 0-11 (todos los días, el **día 15** de
+    ese mes, sin día de la semana: horario de laborables + aviso). La temporada ya no es una entrada: se
+    deduce del mes (dic-feb invierno) y solo sirve para mostrarla y como reserva (`by_season`). Un viaje
+    antiguo con solo temporada pasa a su mes central (abril, julio, octubre, enero). Sin fechas, el mes
+    es obligatorio en el formulario; con fechas, sale de ellas.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

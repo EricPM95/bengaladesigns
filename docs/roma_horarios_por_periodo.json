@@ -1,0 +1,113 @@
+{
+  "_formato": {
+    "by_period": "Lista de periodos que cubre el año entero. Cada periodo: from/to en formato MM-DD (ambos incluidos; un periodo puede cruzar el año, ej. 10-25 → 02-28), windows (franjas del día) y last_entry (última entrada, o null si no hay). Sustituye a by_season en estos lugares; by_season se queda como reserva para destinos aún no auditados por periodo.",
+    "fechas_moviles": "Los cambios de horario de finales de marzo y finales de octubre siguen el cambio de hora (último domingo del mes). Aquí van con las fechas de 2026; hay que revisarlas cada año con el kit (validar.mjs debería avisar si el año de la auditoría no es el del viaje).",
+    "sunset": "En windows se puede usar la palabra 'sunset' como hora de cierre (ej. '07:00-sunset'). El motor la sustituye por la hora de la puesta de sol del día (o del día 15 del mes si solo hay mes). Sirve para parques que cierran al anochecer.",
+    "confianza": "alta = web oficial del lugar o del organismo que lo gestiona; media = fuente secundaria coherente con la oficial; baja = sin fuente oficial accesible, se mantiene el dato anterior y hay que verificarlo.",
+    "fecha_auditoria": "2026-09-25"
+  },
+  "places": {
+    "Coliseo": {
+      "by_period": [
+        { "from": "10-25", "to": "02-29", "windows": ["08:30-16:30"], "last_entry": "15:30" },
+        { "from": "03-01", "to": "03-15", "windows": ["08:30-17:00"], "last_entry": "16:00" },
+        { "from": "03-16", "to": "03-28", "windows": ["08:30-17:30"], "last_entry": "16:30" },
+        { "from": "03-29", "to": "09-30", "windows": ["08:30-19:15"], "last_entry": "18:15" },
+        { "from": "10-01", "to": "10-24", "windows": ["08:30-18:30"], "last_entry": "17:30" }
+      ],
+      "closed_dates": ["12-25", "01-01"],
+      "confianza": "alta (marzo 1-28: media)",
+      "fuente": "https://colosseo.it/orari-e-biglietti/",
+      "_nota": "La web oficial publica 29 mar–30 sep, 1–24 oct y 25 oct 2026–28 feb 2027. Marzo antes del cambio de hora aún no está publicado para 2027: se usa el patrón de años anteriores (17:00 hasta el 15, 17:30 hasta el cambio de hora)."
+    },
+    "Foro Romano y Palatino": {
+      "by_period": [
+        { "from": "10-25", "to": "02-29", "windows": ["09:00-16:30"], "last_entry": "15:30" },
+        { "from": "03-01", "to": "03-15", "windows": ["09:00-17:00"], "last_entry": "16:00" },
+        { "from": "03-16", "to": "03-28", "windows": ["09:00-17:30"], "last_entry": "16:30" },
+        { "from": "03-29", "to": "09-30", "windows": ["09:00-19:15"], "last_entry": "18:15" },
+        { "from": "10-01", "to": "10-24", "windows": ["09:00-18:30"], "last_entry": "17:30" }
+      ],
+      "closed_dates": ["12-25", "01-01"],
+      "confianza": "alta (marzo 1-28: media)",
+      "fuente": "https://colosseo.it/orari-e-biglietti/",
+      "_nota": "Mismo calendario de cierres que el Coliseo; abre a las 09:00."
+    },
+    "Termas de Caracalla": {
+      "by_period": [
+        { "from": "10-25", "to": "02-15", "windows": ["09:00-16:30"], "last_entry": "15:30" },
+        { "from": "02-16", "to": "03-15", "windows": ["09:00-17:00"], "last_entry": "16:00" },
+        { "from": "03-16", "to": "03-28", "windows": ["09:00-17:30"], "last_entry": "16:30" },
+        { "from": "03-29", "to": "08-31", "windows": ["09:00-19:15"], "last_entry": "18:30" },
+        { "from": "09-01", "to": "09-30", "windows": ["09:00-19:00"], "last_entry": "18:00" },
+        { "from": "10-01", "to": "10-24", "windows": ["09:00-18:30"], "last_entry": "17:30" }
+      ],
+      "closed_on": ["lunes"],
+      "closed_dates": ["01-01", "05-01", "12-25"],
+      "confianza": "media",
+      "fuente": "https://cultura.gov.it/index.php/luogo/terme-di-caracalla (horario actual de septiembre y cierre del lunes) + https://www.10cose.it/roma/le-terme-di-caracalla-a-roma (calendario completo)",
+      "_nota": "La web del Ministerio confirma el horario actual (9:00-19:00, última entrada 18:00) y que el lunes cierra. Otra fuente dice que el lunes abre por la mañana (hasta las 14:00): se deja como cerrado, que es lo que dice la oficial."
+    },
+    "Cúpula de San Pedro": {
+      "by_period": [
+        { "from": "03-29", "to": "10-25", "windows": ["07:00-18:00"], "last_entry": null },
+        { "from": "10-26", "to": "03-28", "windows": ["07:30-17:00"], "last_entry": null }
+      ],
+      "confianza": "alta",
+      "fuente": "https://www.basilicasanpietro.va/it/orari",
+      "_nota": "La web oficial no publica última entrada; no se inventa. Primavera pasa a 18:00 desde el cambio de hora (antes el JSON la tenía a 17:00 toda la primavera)."
+    },
+    "Basílica de San Pedro": {
+      "by_period": [
+        { "from": "01-01", "to": "12-31", "windows": ["07:00-20:00"], "last_entry": "19:15" }
+      ],
+      "confianza": "alta",
+      "fuente": "https://www.basilicasanpietro.va/it/news/nuovo-orario-di-apertura-della-basilica-di-san-pietro",
+      "_nota": "Horario nuevo desde el 1 de junio de 2026, todo el año. Coincide con lo que ya hay en roma.json: no cambia nada."
+    },
+    "Jardín de los Naranjos": {
+      "by_period": [
+        { "from": "10-01", "to": "02-29", "windows": ["07:00-18:00"], "last_entry": null },
+        { "from": "03-01", "to": "03-31", "windows": ["07:00-20:00"], "last_entry": null },
+        { "from": "04-01", "to": "08-31", "windows": ["07:00-21:00"], "last_entry": null },
+        { "from": "09-01", "to": "09-30", "windows": ["07:00-20:00"], "last_entry": null }
+      ],
+      "confianza": "alta",
+      "fuente": "https://www.turismoroma.it/en/places/savello-park-or-orange-garden",
+      "_nota": "Web oficial de turismo de Roma Capitale. Cambia a primeros de mes, no con el cambio de hora. Septiembre abre hasta las 20:00 (antes el JSON decía 18:00 todo el otoño)."
+    },
+    "Bioparque de Roma": {
+      "by_period": [
+        { "from": "10-25", "to": "03-28", "windows": ["09:30-17:00"], "last_entry": "16:00" },
+        { "from": "03-29", "to": "10-24", "windows": ["09:30-18:00"], "last_entry": "17:00" }
+      ],
+      "closed_dates": ["12-25"],
+      "confianza": "media",
+      "fuente": "https://ecommerce.bioparco.it/regolamento-orari.php",
+      "_nota": "Web oficial. Para el 25 oct–31 dic publica 09:30-19:00, que parece una errata (sería más horas en invierno que en verano): se usa 17:00, igual que el resto del invierno. Los fines de semana del 29 mar al 4 oct abre hasta las 19:00; no se usa (el horario de diario es el prudente). Última entrada: 60 min antes del cierre."
+    },
+    "Parque de Villa Borghese": {
+      "by_period": [
+        { "from": "01-01", "to": "12-31", "windows": ["07:00-sunset"], "last_entry": null }
+      ],
+      "confianza": "media",
+      "fuente": "https://turismoroma.it/en/places/villa-borghese",
+      "_nota": "La web oficial de turismo dice 'del amanecer al anochecer'. Se usa 07:00 como apertura y la puesta de sol como cierre. El dato anterior (08:30-17:00/19:00/20:00) no tenía fuente. OJO: la Terraza del Pincio se dejó como abierta 24 h; hay que confirmar que el acceso al Pincio desde la Piazza del Popolo sigue abierto de noche aunque el parque cierre."
+    },
+    "Iglesia de San Pietro in Vincoli": {
+      "by_period": [
+        { "from": "04-01", "to": "09-30", "windows": ["08:00-12:30", "15:00-19:00"], "last_entry": null },
+        { "from": "10-01", "to": "03-31", "windows": ["08:00-12:30", "15:00-18:00"], "last_entry": null }
+      ],
+      "confianza": "media",
+      "fuente": "https://www.oraridiapertura24.it/filiale/Roma-Basilica%20di%20San%20Pietro%20in%20Vincoli%20%28Aprile-Settembre%29-3904931U.html",
+      "_nota": "La web oficial (lateranensi.org) no respondía. El horario de verano va de abril a septiembre (antes el JSON solo lo aplicaba en verano)."
+    },
+    "Iglesia de Santa Maria in Trastevere": {
+      "by_period": null,
+      "confianza": "baja",
+      "fuente": null,
+      "_nota": "La web oficial (santamariaintrastevere.it/orari) no respondía. Se mantiene el by_season actual hasta verificarlo a mano."
+    }
+  }
+}

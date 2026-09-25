@@ -22,7 +22,7 @@ import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
-import { seasonKey } from './openingHours.js'
+import { tripCalendar } from './tripCalendar.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
 import { weekdayForDay } from './tripSkeleton.js'
@@ -124,10 +124,11 @@ function blockStops(block, pace, experiencesPositive, destData) {
  * @param {string[]} [args.poolNames]           en el orden en que se eligió
  * @param {string[]} [args.experiencesPositive] en el orden en que se eligió
  * @param {{leg: Function}} args.travel
- * @param {string|null} [args.season]            época del formulario ("winter"...), para los horarios
+ * @param {number|null} [args.month]             sin fechas: mes 0-11 (el 15 de ese mes, tripCalendar.js)
+ * @param {string|null} [args.season]            solo viajes antiguos: pasa a su mes central
  * @param {string|null} [args.dateRangeStartIso]  con fechas, el horario exacto de cada día
  */
-export function planShortTrip({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, season = null, dateRangeStartIso = null }) {
+export function planShortTrip({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, month = null, season = null, dateRangeStartIso = null }) {
   const config = destData.short_trips
   const { blocks } = config
   const mode = modeV3For(pace)
@@ -135,9 +136,10 @@ export function planShortTrip({ destData, slots, pace, hasFreeTour = false, pool
   // el ritmo, el día empieza a las 08:00 y sin el extra de duración, con aviso (pace_notice).
   const normalMode = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
   const hasPlanB = normalMode.dayStart !== mode.dayStart || normalMode.visitDurationBonus !== mode.visitDurationBonus
-  const seasonOfTrip = seasonKey(season, dateRangeStartIso)
+  const calendar = tripCalendar({ dateRangeStartIso, month, season })
+  const seasonOfTrip = calendar.season
   const lunchSpotList = lunchSpots(destData)
-  const hoursFor = (dayNumber) => ({ weekday: weekdayForDay(dateRangeStartIso, dayNumber), season: seasonOfTrip })
+  const hoursFor = (dayNumber) => ({ weekday: weekdayForDay(dateRangeStartIso, dayNumber), season: seasonOfTrip, dateIso: calendar.dateOfDay(dayNumber) })
   const notIncluded = []
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
 

@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react'
 import { DayPicker, type DateRange as PickerRange } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
-import type { DateRange, QuestionnaireAnswers, Season } from '../../lib/types'
+import type { DateRange, QuestionnaireAnswers } from '../../lib/types'
 import { daysBetweenInclusive, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
-import { SEASON_META, getCurrentSeason } from '../../lib/season'
+import { MONTH_ROWS, MONTH_SHORT, SEASON_META, seasonOfMonth } from '../../lib/season'
 
 interface DurationSelectorProps {
   days?: number
   dateRange?: DateRange
-  season?: Season
-  onChange: (partial: Partial<Pick<QuestionnaireAnswers, 'days' | 'dateRange' | 'season'>>) => void
+  /** Mes del viaje (0-11): obligatorio sin fechas; con fechas sale de ellas. */
+  month?: number
+  onChange: (partial: Partial<Pick<QuestionnaireAnswers, 'days' | 'dateRange' | 'season' | 'month'>>) => void
 }
 
 const QUICK_DAY_OPTIONS = [3, 5, 7, 10, 14]
@@ -23,7 +24,7 @@ function formatRangeEs(range: DateRange): string {
   return `${start} → ${end}`
 }
 
-export function DurationSelector({ days, dateRange, season, onChange }: DurationSelectorProps) {
+export function DurationSelector({ days, dateRange, month, onChange }: DurationSelectorProps) {
   const [customDraft, setCustomDraft] = useState(days !== undefined ? String(days) : '')
   const [showCalendar, setShowCalendar] = useState(false)
   // Rango a medio elegir (solo "Inicio" clicado, "Fin" todavía no) — el propio DayPicker se
@@ -80,7 +81,9 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
       return
     }
     setDateError(null)
-    onChange({ dateRange: { start, end }, days: spanDays, season: undefined })
+    // Con fechas, el mes (y la temporada) salen de ellas: no se pregunta.
+    const startMonth = Number(start.slice(5, 7)) - 1
+    onChange({ dateRange: { start, end }, days: spanDays, month: startMonth, season: seasonOfMonth(startMonth) })
   }
 
   const handleRangeSelect = (range: PickerRange | undefined) => {
@@ -189,28 +192,31 @@ export function DurationSelector({ days, dateRange, season, onChange }: Duration
 
       {days !== undefined && !seasonHidden && (
         <div className="space-y-2 pt-1">
-          <p className="font-dmsans text-caption font-semibold uppercase tracking-wide text-onb-text-muted">¿En qué época viajas? (opcional)</p>
-          <div className="grid grid-cols-2 gap-2">
-            {(Object.keys(SEASON_META) as Season[]).map((key) => {
-              const active = season === key
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => onChange({ season: key })}
-                  className={`flex items-center gap-2 rounded-onb-sm border px-3 py-2.5 font-dmsans text-body transition-colors ${
-                    active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
-                  }`}
-                >
-                  <span className="text-lg leading-none">{SEASON_META[key].icon}</span>
-                  {SEASON_META[key].label}
-                </button>
-              )
-            })}
+          <p className="font-dmsans text-caption font-semibold uppercase tracking-wide text-onb-text-muted">¿Qué mes viajas?</p>
+          {/* 12 meses en 4 filas por temporada (Estaciones, Parte 1): el mes decide horarios y
+              puesta de sol; la temporada se deduce. Obligatorio sin fechas. */}
+          <div className="space-y-1.5">
+            {MONTH_ROWS.map((row) => (
+              <div key={row.season} className="grid grid-cols-[6.5rem_repeat(3,1fr)] items-center gap-2">
+                <span className="font-dmsans text-caption text-onb-text-soft">{SEASON_META[row.season].label}</span>
+                {row.months.map((value) => {
+                  const active = month === value
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => onChange({ month: value, season: seasonOfMonth(value) })}
+                      className={`rounded-onb-sm border py-2 text-center font-dmsans text-body transition-colors ${
+                        active ? 'border-onb-accent bg-onb-accent-light text-onb-accent-hover' : 'border-onb-border bg-onb-card text-onb-text hover:border-onb-accent/50'
+                      }`}
+                    >
+                      {MONTH_SHORT[value]}
+                    </button>
+                  )
+                })}
+              </div>
+            ))}
           </div>
-          <p className="font-dmsans text-caption text-onb-text-muted">
-            Si no eliges, usaremos la estación actual ({SEASON_META[getCurrentSeason()].label.toLowerCase()}) para que la ruta tenga sentido.
-          </p>
         </div>
       )}
     </div>

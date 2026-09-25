@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
 import type { ExperienceCategoryId, ExperienceId, TripPace } from '../../lib/types'
-import { getCurrentSeason } from '../../lib/season'
 import { isTransportFullyResolved } from '../../lib/transportFlow'
 import { isCompanionFullyResolved } from '../../lib/companionFlow'
 import { classifyInBackground } from '../../lib/classifyInBackground'
@@ -166,7 +165,7 @@ export function Questionnaire() {
     paseDominante,
     travelPassConfirmed,
   )
-  const showCompanion = showDays && answers.days !== undefined
+  const showCompanion = showDays && answers.days !== undefined && (Boolean(answers.dateRange) || answers.month !== undefined)
   const showExperiences =
     showCompanion &&
     isCompanionFullyResolved(
@@ -260,11 +259,7 @@ export function Questionnaire() {
   const goToNextStep = () => setCurrentStepIndex((index) => Math.min(index, steps.length - 1) + 1)
 
   const handleCreateRoute = () => {
-    // Si el usuario nunca fijó fechas exactas ni eligió estación, aplicamos la estación actual
-    // del sistema para no bloquear el flujo.
-    if (answers.days !== undefined && !answers.dateRange && !answers.season) {
-      updateAnswers({ season: getCurrentSeason() })
-    }
+    // El mes ya es obligatorio (sin él no se llega aquí): no se rellena nada por defecto.
     setScreen('loading')
   }
 
@@ -339,7 +334,7 @@ export function Questionnaire() {
 
               {activeStep === 'days' && (
                 <div className="space-y-4">
-                  <DurationSelector days={answers.days} dateRange={answers.dateRange} season={answers.season} onChange={updateAnswers} />
+                  <DurationSelector days={answers.days} dateRange={answers.dateRange} month={answers.month} onChange={updateAnswers} />
                   {/* Única pantalla con botón "Continuar" explícito, sin avance automático — aquí
                       es más fácil equivocarse de fecha que en el resto del cuestionario, así que
                       conviene que el usuario confirme antes de seguir. Este tap es también el
@@ -348,7 +343,8 @@ export function Questionnaire() {
                       suggestExperiencesInBackground.ts) — si la sugerencia de experiencias de
                       Claude ya resolvió, se lanza aquí mismo; si no, la lanzará ella sola en
                       cuanto resuelva (dates_confirmed ya estará en true para entonces). */}
-                  {answers.days !== undefined && (
+                  {/* Sin fechas, el mes es obligatorio (Estaciones, Parte 1). */}
+                  {answers.days !== undefined && (answers.dateRange || answers.month !== undefined) && (
                     <button
                       type="button"
                       onClick={() => {
