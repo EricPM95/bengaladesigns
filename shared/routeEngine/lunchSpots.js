@@ -45,6 +45,20 @@ export function lunchSpots(destData) {
  */
 export function chooseLunchSpot(from, next, spots, travel) {
   if (!from || spots.length === 0) return null
+  // El programador pregunta lo mismo miles de veces al probar órdenes de la tarde: se guarda por
+  // lista de restaurantes y par de puntos.
+  let memo = lunchMemo.get(spots)
+  if (!memo) lunchMemo.set(spots, (memo = new Map()))
+  const key = `${from}|${next ?? ''}`
+  if (memo.has(key)) return memo.get(key)
+  const choice = chooseLunchSpotUncached(from, next, spots, travel)
+  memo.set(key, choice)
+  return choice
+}
+
+const lunchMemo = new WeakMap()
+
+function chooseLunchSpotUncached(from, next, spots, travel) {
   const options = spots.map((spot) => {
     const to = travel.leg(from, spot.coordinates)
     const onward = next ? travel.leg(spot.coordinates, next) : { minutes: 0, meters: 0 }

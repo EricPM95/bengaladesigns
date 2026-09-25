@@ -216,7 +216,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
             if (pool.length === 0) {
               for (const day of city) {
                 for (const name of [...(day.curated?.morning?.places ?? []), ...(day.curated?.afternoon?.places ?? [])]) {
-                  if (LEVEL1.includes(name) && seen.has(name) && seen.get(name) !== day.dayNumber && !date) fail(`${tag}: ${name} es del día ${day.dayNumber} en el curado y va el ${seen.get(name)}`)
+                  if (LEVEL1.includes(name) && seen.has(name) && seen.get(name) !== day.dayNumber && !date && !(trip.movedForJoya ?? []).includes(name)) fail(`${tag}: ${name} es del día ${day.dayNumber} en el curado y va el ${seen.get(name)}`)
                 }
               }
             }

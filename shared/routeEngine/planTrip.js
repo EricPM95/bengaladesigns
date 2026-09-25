@@ -54,6 +54,10 @@ import { tripCalendar } from './tripCalendar.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
+/** A partir de aquí de tiempo libre antes de cenar, el día tiene "tarde libre" (como el servidor). */
+const FREE_AFTERNOON_IDLE_MINUTES = 90
+/** Paseo de más que se acepta para meter algo de la experiencia antes de dejar la tarde libre. */
+const EXPERIENCE_BEFORE_FREE_MAX_WALK = 25
 
 /**
  * Pesos del relleno. Solo ordenan candidatos que YA caben. El tema pesa poco a propósito: la cuota
@@ -84,6 +88,8 @@ const EXTRA_STOPS_WHILE_AFTERNOON_EMPTY = 2
  * compensaba cualquier desvío.
  */
 const MAX_FILL_ADDED_WALK_MINUTES = 15
+/** Nunca se vuelve sobre los propios pasos más de esto para meter una parada opcional (revisión del 2026-09-25). */
+const BACKTRACK_MAX_MINUTES = 10
 
 /**
  * Lo que queda de camino SIN desvío (añade como mucho esto andando) no cuenta para el tope de
@@ -95,8 +101,12 @@ const ON_THE_WAY_MINUTES = 5
 /** Se puede repetir barrio de cena si en ese momento se está a esto o menos andando (decisión). */
 const DINNER_REPEAT_MAX_WALK_MINUTES = 15
 
-/** Barrios de cena que se consideran: a esto o menos andando desde donde acaba la tarde (decisión). */
-const DINNER_MAX_WALK_MINUTES = 30
+/**
+ * Se cena donde acaba el día (revisión del 2026-09-25): barrios de cena a esto o menos andando desde
+ * donde acaba la tarde. La ventaja por una nocturna cerca desempata entre estos, nunca lleva la cena
+ * más lejos. Era 30.
+ */
+const DINNER_MAX_WALK_MINUTES = 15
 
 /**
  * Extra de un barrio de cena con un mirador sin ver de camino, si queda tarde para verlo: el
@@ -372,10 +382,13 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   function themesOf(unit) {
     return selectedThemes.filter((theme) => unit.tags.some((tag) => TAG_INTEREST_MAP[theme].includes(tag)))
   }
+  /** Lo de la experiencia que entró para no dejar la tarde libre (regla 113): va aparte del mínimo-máximo. */
+  const beforeFreeTimeEntries = new Set()
   /** Entradas de experiencia de un tema en el viaje (o en un día). */
   function experienceCount(theme, day = null) {
     let count = 0
     for (const id of experienceEntries) {
+      if (beforeFreeTimeEntries.has(id)) continue
       const placed = placedDay.get(id)
       if (placed == null || (day && placed !== day.dayNumber)) continue
       if (themesOf(unitById.get(id)).includes(theme)) count++
@@ -431,6 +444,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const revisited = new Set()
   const unplacedPool = []
   const unplacedEssentials = []
+  const movedForJoya = new Set()
   // Días que se quedan sin su tema, y por qué. Nunca en silencio (ver paso 5).
   const quotaMisses = []
 
@@ -552,7 +566,16 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       }
       return false
     }
-    if (day.open.add(withIndex) || displaceFiller() || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
+    // Sin vaivenes (revisión del 2026-09-25): para meter una parada que no es imprescindible ni del
+    // pool no se vuelve sobre los propios pasos más de 10 min; si no, va otro día (la Villa Farnesina,
+    // que solo abre por la mañana, no se mete antes del Vaticano con 35 min de vuelta).
+    const optional = unit.priority > PRIORITY.ESSENTIAL && unit.poolIndex == null && unit.curatedIndex == null && !unit.draggedBy
+    const addWithinDetour = () => {
+      if (!optional) return day.open.add(withIndex)
+      const attempt = day.open.tryAdd(withIndex, { maxAddedWalk: BACKTRACK_MAX_MINUTES })
+      return attempt ? day.open.add(attempt) : false
+    }
+    if (addWithinDetour() || displaceFiller() || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
       placedDay.set(unit.id, day.dayNumber)
       droppedByRelation.delete(unit.id)
       recordEntry(unit)
@@ -703,9 +726,46 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Primero las joyas, luego los imprescindibles: si no cabe todo, lo que se queda fuera es de abajo.
   const pendingLevel1 = units.filter((u) => u.priority > PRIORITY.POOL && u.priority <= PRIORITY.ESSENTIAL && !placedDay.has(u.id))
   for (const unit of pendingLevel1.sort((a, b) => a.priority - b.priority || b.minutes - a.minutes || a.id.localeCompare(b.id, 'es'))) {
-    if (!daysByProximity(unit).some((day) => placeOnDay(day, unit))) {
-      unplacedEssentials.push({ unitId: unit.id, name: unit.places[0].name, reason: 'no_room' })
+    if (daysByProximity(unit).some((day) => placeOnDay(day, unit))) continue
+    // Una joya nunca se queda fuera (revisión del 2026-09-25): si no cabe en ninguna mañana, va por la
+    // tarde en un día sin otra visita larga (el Vaticano, en 2 días con Free Tour, la tarde del tour).
+    const isJoya = unit.places.some((place) => place.tier === 'joya')
+    const afternoonDay = isJoya
+      ? daysByProximity(unit).find((day) => {
+          if (!eligibleIgnoringCap(day, unit) || dayUnits(day).some((other) => other.isLong && other !== unit)) return false
+          return day.open.tryLongAfterLunch(forDay(day, unit))
+        })
+      : null
+    if (afternoonDay) {
+      placedDay.set(unit.id, afternoonDay.dayNumber)
+      recordEntry(unit)
+      continue
     }
+    // Si ni así, se hace sitio moviendo otra parada de ese día a otro día del viaje (sin perderla): el
+    // Panteón por dentro pasa al día 2 y la tarde del Free Tour se queda para el Vaticano.
+    const moved = isJoya
+      ? daysByProximity(unit).some((day) => {
+          if (!eligibleIgnoringCap(day, unit) || dayUnits(day).some((other) => other.isLong && other !== unit)) return false
+          const movable = dayUnits(day).filter((other) => !other.isFreeTour && other.poolIndex == null && !other.isLong)
+          return movable.some((other) => {
+            const snapshots = new Map(cityDays.map((d) => [d, d.open.snapshot()]))
+            const otherDay = placedDay.get(other.id)
+            day.open.remove(other.id)
+            placedDay.delete(other.id)
+            if (day.open.tryLongAfterLunch(forDay(day, unit)) && cityDays.some((target) => target !== day && placeOnDay(target, other, { allowFallback: false }))) {
+              for (const place of other.places) movedForJoya.add(place.name)
+              placedDay.set(unit.id, day.dayNumber)
+              recordEntry(unit)
+              return true
+            }
+            for (const [d, snap] of snapshots) d.open.restore(snap)
+            placedDay.set(other.id, otherDay)
+            return false
+          })
+        })
+      : false
+    if (moved) continue
+    unplacedEssentials.push({ unitId: unit.id, name: unit.places[0].name, reason: 'no_room' })
   }
 
   // ── Paso 4a: recorrido de tarde del destino (afternoon_flow) ──────────────────────────────
@@ -1296,6 +1356,99 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
   }
 
+  // ── Miradores al atardecer si el día tiene tiempo (revisión del 2026-09-25) ────────────────
+  // Si al día le sobra tiempo, un mirador que va a otra hora (el Pincio a las 12:00) pasa a la hora del
+  // atardecer: el tiempo sobrante se usa antes, no después. Solo si sigue cabiendo todo.
+  for (const day of cityDays) {
+    if (day.sunsetMinutes == null || day.sunsetUnit || (day.open.idleBeforeDinner() ?? 0) < SUNSET_MIN_ROOM_MINUTES) continue
+    const isMirador = (place) => (place.tags ?? []).includes('mirador') && !place.passBy
+    const mirador = dayUnits(day).find((unit) => !unit.isRevisit && unit.places.some(isMirador) && !unit.places.some((place) => place.sunset != null))
+    if (!mirador) continue
+    const name = mirador.places.find(isMirador).name
+    const snapshot = day.open.snapshot()
+    day.open.remove(mirador.id)
+    day.sunsetNames.add(name)
+    if (day.open.add(forDay(day, mirador))) {
+      day.sunsetUnit = mirador
+      sunsetUnitIds.add(mirador.id)
+    } else {
+      day.sunsetNames.delete(name)
+      day.open.restore(snapshot)
+    }
+  }
+
+  // ── Antes de una tarde libre, lo de la experiencia elegida (revisión del 2026-09-25) ────────
+  // La experiencia se tiene que notar: si al día le sobra la tarde (90 min o más antes de cenar), entra
+  // lo de sus experiencias que quepa, en el orden de `experience_highlights` (lo más representativo
+  // primero), aunque ya se haya llegado al máximo de la experiencia. Lo de pago, solo si aún hay sitio
+  // para ello (su mínimo-máximo y, con la Parte A, `museos_de_pago`); lo gratis, siempre.
+  // Las relaciones mandan también en estos pasos finales (van después de enforceRelations): lo de
+  // dentro de otro, solo el día de su contenedor; los vecinos y los accesos, el de su pareja.
+  // En los dos sentidos: la vecindad puede estar escrita en uno solo de los dos lugares (Santa Maria del
+  // Popolo → Piazza del Popolo).
+  const relationPartnersOf = (name) =>
+    (destData.places ?? []).flatMap((place) => {
+      const own = place.name === name ? [place.contained_in, ...(place.neighbor_of ?? []), ...(place.approach_to ?? [])] : []
+      const reverse = place.name !== name && (place.contained_in === name || (place.neighbor_of ?? []).includes(name) || (place.approach_to ?? []).includes(name)) ? [place.name] : []
+      return [...own, ...reverse]
+    })
+  const relationsAllow = (unit, day) => {
+    const allowed = relationDays(unit)
+    if (allowed && !allowed.includes(day.dayNumber)) return false
+    const partners = unit.places.flatMap((place) => relationPartnersOf(place.name)).filter(Boolean)
+    return partners.every((name) => {
+      const id = unitIdOfPlace.get(name)
+      const partnerDay = id && id !== unit.id ? placedDay.get(id) : undefined
+      return partnerDay == null || partnerDay === day.dayNumber
+    }) && unit.places.every((place) => !place.contained_in || placedDay.get(unitIdOfPlace.get(place.contained_in)) === day.dayNumber || unitIdOfPlace.get(place.contained_in) === unit.id)
+  }
+  if (selectedThemes.length > 0) {
+    for (const day of cityDays) {
+      for (let round = 0; round < 6; round++) {
+        if ((day.open.idleBeforeDinner() ?? 0) < FREE_AFTERNOON_IDLE_MINUTES) break
+        const candidates = units
+          .filter((unit) => !unit.isFreeTour && !placedDay.has(unit.id) && unit.priority === PRIORITY.THEME)
+          .filter((unit) => (unit.requiresTicket ? eligible(day, unit) : !closedThatDay(unit, day) && !outOfSeason(unit, day)))
+          .filter((unit) => relationsAllow(unit, day))
+          .map((unit) => ({ unit, rank: Math.min(...themesOf(unit).filter((theme) => selectedThemes.includes(theme)).map((theme) => highlightIndex(unit, theme))) }))
+          .sort((a, b) => a.rank - b.rank || a.unit.level - b.unit.level || a.unit.id.localeCompare(b.unit.id, 'es'))
+        const next = candidates.find(({ unit }) => {
+          const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: EXPERIENCE_BEFORE_FREE_MAX_WALK })
+          if (!attempt) return false
+          day.open.add(attempt)
+          placedDay.set(unit.id, day.dayNumber)
+          experienceEntries.add(unit.id)
+          beforeFreeTimeEntries.add(unit.id)
+          return true
+        })
+        if (!next) break
+      }
+    }
+  }
+
+  // ── Y después, lo gratis de nivel 2 que falte (revisión del 2026-09-25) ───────────────────
+  // Antes de dejar una tarde libre (días largos: el 6 y el 7), entran los lugares gratis de nivel 2 que
+  // aún no están en el viaje (el Parque de Villa Borghese, el Aventino), de más cerca a más lejos.
+  for (const day of cityDays) {
+    for (let round = 0; round < 6; round++) {
+      if ((day.open.idleBeforeDinner() ?? 0) < FREE_AFTERNOON_IDLE_MINUTES) break
+      const candidates = units
+        .filter((unit) => !unit.isFreeTour && !placedDay.has(unit.id) && unit.level <= 2 && !unit.requiresTicket && !unit.isRevisit)
+        .filter((unit) => !closedThatDay(unit, day) && !outOfSeason(unit, day) && !paidContainerIdsOf(unit).some((id) => placedDay.get(id) == null))
+        .filter((unit) => relationsAllow(unit, day))
+        .map((unit) => ({ unit, walk: walkFromDay(day, unit) }))
+        .sort((a, b) => a.walk - b.walk || a.unit.id.localeCompare(b.unit.id, 'es'))
+      const next = candidates.find(({ unit }) => {
+        const attempt = day.open.tryAdd(forDay(day, unit), { maxAddedWalk: EXPERIENCE_BEFORE_FREE_MAX_WALK })
+        if (!attempt) return false
+        day.open.add(attempt)
+        placedDay.set(unit.id, day.dayNumber)
+        return true
+      })
+      if (!next) break
+    }
+  }
+
   // ── Huecos a mitad de día (decisión del 2026-09-25) ──────────────────────────────────────
   // Si entre dos visitas quedan 60 min o más de espera (a la hora del atardecer, a que abra algo),
   // primero entra lo GRATIS que quede de camino, sin contar topes de categoría: es tiempo que ya
@@ -1348,7 +1501,9 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
         // otro, solo el día de su contenedor (la Plaza Trilussa, el día de Trastevere); los vecinos, el
         // de su pareja.
         .filter((unit) => {
-          const allowed = relationDays(unit.outsideOfUnitId ? units.find((u) => u.id === unit.outsideOfUnitId) ?? unit : unit)
+          const original = unit.outsideOfUnitId ? units.find((u) => u.id === unit.outsideOfUnitId) ?? unit : unit
+          if (!relationsAllow(original, day)) return false
+          const allowed = relationDays(original)
           if (allowed && !allowed.includes(day.dayNumber)) return false
           const containers = unit.places.map((place) => place.contained_in).filter(Boolean).map((name) => unitIdOfPlace.get(name)).filter((id) => id && id !== unit.id)
           return containers.every((id) => placedDay.get(id) === day.dayNumber)
@@ -1372,6 +1527,22 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     }
   }
 
+  // ── La cena, donde acaba el día de verdad ─────────────────────────────────────────────────
+  // El barrio se eligió antes de terminar la tarde; si al final la cena queda a más de 15 min de la
+  // última parada, se cambia por el barrio de cena más cercano a ella (si lo hay a 15 min o menos).
+  for (const day of cityDays) {
+    const end = day.open.endCoordinates()
+    if (!end || !day.dinnerCoords) continue
+    const walkTo = (coords) => travel.leg(end, coords)?.minutes ?? Infinity
+    if (walkTo(day.dinnerCoords) <= DINNER_MAX_WALK_MINUTES) continue
+    const nearest = dinnerOptions.map((option) => ({ option, walk: walkTo(option.coordinates) })).filter((item) => item.walk <= DINNER_MAX_WALK_MINUTES).sort((a, b) => a.walk - b.walk)[0]
+    if (!nearest || !day.open.setDinnerPoint(nearest.option.coordinates)) continue
+    day.dinnerZone = nearest.option.id
+    day.dinnerPlaceZone = nearest.option.placeZone
+    day.dinnerCoords = nearest.option.coordinates
+    day.dinnerDisplay = nearest.option.display
+  }
+
   // ── Resultado ─────────────────────────────────────────────────────────────────────────────
   const labelled = (unit) => (experienceEntries.has(unit.id) ? { ...unit, experienceTheme: themesOf(unit)[0] ?? null } : unit)
   const finished = new Map(cityDays.map((day) => [day.dayNumber, { units: dayUnits(day).map(labelled), schedule: day.open.finish(), dinnerZone: day.dinnerZone, dinnerPlaceZone: day.dinnerPlaceZone ?? null, dinnerRepeatWalk: day.dinnerRepeatWalk ?? null, sunsetUnitId: day.sunsetUnit?.id ?? null }]))
@@ -1386,5 +1557,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     experienceRange: EXPERIENCE_RANGE,
     experienceCounts: Object.fromEntries(selectedThemes.map((theme) => [theme, experienceCount(theme)])),
     coveredByFreeTour,
+    // Lo que pasó a otro día para hacer sitio a una joya (regla 112): el Panteón, para el Vaticano.
+    movedForJoya: [...movedForJoya],
   }
 }

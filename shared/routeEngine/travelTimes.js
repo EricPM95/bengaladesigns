@@ -45,10 +45,21 @@ export function createTravelTimes(matrix) {
    * @returns {{ minutes: number, meters: number, source: 'matrix'|'estimate' } | null}
    *          null solo si alguna coordenada no es válida.
    */
+  // El programador pregunta los mismos tramos miles de veces al probar órdenes: se guardan.
+  const cache = new Map()
   function leg(from, to, mode = 'walking') {
     const a = toLatLng(from)
     const b = toLatLng(to)
     if (!a || !b || a.some((n) => !Number.isFinite(n)) || b.some((n) => !Number.isFinite(n))) return null
+    const cacheKey = `${a[0]},${a[1]}|${b[0]},${b[1]}|${mode}`
+    const cached = cache.get(cacheKey)
+    if (cached) return cached
+    const result = computeLeg(a, b, mode)
+    cache.set(cacheKey, result)
+    return result
+  }
+
+  function computeLeg(a, b, mode) {
 
     const table = modes[mode]
     const i = indexByKey.get(keyOf(a))

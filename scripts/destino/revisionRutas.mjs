@@ -85,6 +85,7 @@ for (const [index, viaje] of VIAJES.entries()) {
       continue
     }
     if (day.pace_notice) out.push(`> ${day.pace_notice}`)
+    if (day.half_day_excursion) out.push(`**Mañana: excursión de medio día** (${day.half_day_excursion.id}, ${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at}); la ciudad, desde las ${day.half_day_excursion.route_starts_at}.`)
     const lunch = day.meals?.find((m) => m.time === 'lunch')
     const dinner = day.meals?.find((m) => m.time === 'dinner')
     const dayStops = day.stops.filter((s) => !s.is_night_experience)

@@ -614,6 +614,36 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     Plaza Venecia y el Altar por la mañana, y el Centro por la tarde. Se avisa: "Ese día cierra: … Lo ves
     por fuera."
 
+**Revisión de los 16 viajes (2026-09-25)**
+
+112. **Una joya nunca se queda fuera.** Si no cabe en ninguna mañana, va por la tarde en un día sin otra
+    visita larga (el Vaticano en 2 días con Free Tour, a las 14:30 con menos cola), reordenando el día; y
+    si ni así, otra parada de ese día pasa a otro día del viaje (sin perderse) para hacerle sitio.
+113. **La experiencia elegida se nota.** Antes de dejar una tarde libre entra lo de la experiencia que
+    quepa, en el orden de `experience_highlights`. Lo de pago, con su mínimo-máximo (y `museos_de_pago`).
+114. **Miradores al atardecer si el día tiene tiempo**: un mirador que iba a otra hora pasa a la hora
+    del atardecer cuando sobra tiempo, y el sobrante va antes.
+115. **Sin vaivenes**: para meter una parada que no es imprescindible ni del pool no se vuelve sobre los
+    propios pasos más de 10 min; si no, va otro día.
+116. **Se cena donde acaba el día**: el barrio de cena, a 15 min o menos del final de la tarde (antes,
+    30); si al terminar el día queda más lejos, se cambia por el más cercano. La ventaja por una
+    nocturna cerca desempata, nunca aleja la cena.
+117. **Nocturnas con su tiempo real**: la duración de cada una más el paseo hasta la siguiente, en
+    tramos de 5 min. Ninguna empieza después de las 23:00.
+118. **Tranquilo es menos paradas, no paradas más largas**: el extra de duración solo para visitas por
+    dentro. Madrugar (plan B, 08:00) solo si de verdad hace falta: antes se prueba a quitar un relleno. El
+    aviso nombra lo que se recupera de verdad (el Coliseo y el Foro, no el Arco).
+119. **Etiquetas de experiencias**: Naturaleza y Vistas = miradores y parques; Barrios y Sabores =
+    barrios, mercados y sitios de comer. Una plaza, una calle o una fuente sin más no son ninguna. El "por
+    qué" y la etiqueta de experiencia, solo si ese lugar es de ella (no se heredan del grupo).
+120. **Días largos**: antes de una tarde libre entran los lugares gratis de nivel 2 que falten (el
+    Parque de Villa Borghese, el Aventino). Los días de repaso llevan su excursión de medio día.
+121. **La excursión de día completo nunca el último día del viaje**: si `core_days` cae ahí, se adelanta
+    un día y ese día curado pasa al último.
+122. **"Tiempo libre" y "Tarde libre"**: solo sugerencias abiertas a esa hora (se llega, se visita entero
+    y da tiempo a seguir) y de camino (15 min de desvío como mucho hacia lo siguiente o la cena). Si no
+    queda ninguna, el bloque sale igual, sin sugerencias.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

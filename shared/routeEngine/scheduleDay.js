@@ -448,6 +448,28 @@ export function openDay(input) {
     },
 
     /**
+     * Una joya que no cabe en ninguna mañana puede ir después de comer (revisión del 2026-09-25: el
+     * Vaticano en 2 días con Free Tour; a las 14:30 hay menos cola). Si no entra, no cambia nada.
+     */
+    tryLongAfterLunch(unit) {
+      const altCtx = { ...ctx, longVisitsAnytime: true }
+      const before = { ctx, sequence, currentCost }
+      ctx = altCtx
+      if (this.add(unit)) return true
+      // Si no entra tal cual, reordenando el resto (el Panteón por dentro antes del Free Tour, a las
+      // 09:00, deja la tarde entera para el Vaticano).
+      const reordered = improve([...sequence, unit], altCtx)
+      const result = simulate(reordered, altCtx)
+      if (result.ok) {
+        sequence = reordered
+        currentCost = result.cost
+        return true
+      }
+      ;({ ctx, sequence, currentCost } = before)
+      return false
+    },
+
+    /**
      * Dónde se cena. false (y no cambia nada) si con ese paseo hasta la cena el día deja de caber.
      */
     setDinnerPoint(coordinates) {
