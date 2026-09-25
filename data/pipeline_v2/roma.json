@@ -6633,5 +6633,30 @@
       "verano": "20:40",
       "otono": "18:15"
     }
-  }
+  },
+  "museos_de_pago": {
+    "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",
+    "hasta_3_dias": 0,
+    "4_dias": 1,
+    "5_6_dias": 2,
+    "7_dias_o_mas": 3,
+    "nota": "En viajes cortos, 'Arte y Museos' se cumple con arte gratis: San Luigi (Caravaggio), Santa Maria del Popolo (Caravaggio y Rafael), Santa Maria della Vittoria (Bernini), San Pietro in Vincoli (Miguel Ángel), Santa Maria in Trastevere (mosaicos)."
+  },
+  "redundancias": {
+    "_que_es": "Lugares que cumplen el mismo papel. Si el principal está en el viaje, el otro no entra, salvo que el viajero lo ponga en su pool o el viaje sea de 5 días o más con la experiencia que lo pide.",
+    "Museos Capitolinos": {
+      "redundant_with": "Museos Vaticanos y Capilla Sixtina",
+      "motivo": "Con Coliseo, Panteón y Vaticanos ya pagados, los Capitolinos son demasiado. Solo entran si el viajero los añade (pool) o en viajes de 5 días o más con Arte."
+    }
+  },
+  "principios_local": [
+    "Una sola visita grande al día (más de 90 min). Otra por dentro, solo si es corta.",
+    "Viajes de 2-3 días: basta con un museo de pago (los Vaticanos). Aparte de joyas e imprescindibles, ningún otro museo de pago salvo que el viajero lo añada (ver museos_de_pago). El arte se cubre con iglesias gratis.",
+    "Si el principal de dos museos parecidos está en el viaje, el otro no entra (redundancias).",
+    "Las calles no son paradas: salen como 'Pasas por…'.",
+    "Los miradores, al atardecer cuando el día tiene tiempo; si no, un mirador que pilla de camino a otra hora también vale.",
+    "Un lugar bonito que pilla de camino puede entrar aunque no sea de la experiencia elegida, pero no cuenta como tal ni lleva 'Elegido según tus gustos'.",
+    "En mitad del viaje no puede haber horas muertas: un hueco de más de 90 min significa que falta un bloque, y el semáforo lo marca en rojo.",
+    "En verano, si hay atardecer, se cena después (21:00)."
+  ]
 }

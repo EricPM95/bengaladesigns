@@ -96,8 +96,9 @@ for (const kind of ['1_dia', '1_5_dias_salida_mediodia', '1_5_dias_llegada_tarde
             if (ft && a.id === 'B') continue
             for (const name of blocks[a.id].core) if (!shown.has(name) && !dropped.has(name) && !trip.notIncluded.some((n) => n.reason.includes(name))) fail(`${tag}: ${name} ni sale ni se avisa`)
           }
-          // Swap de arte en completo: Capitolinos en lugar de Plaza Venecia + Altar.
-          if (pace === 'nonstop' && exps[0] === 'arte_museos' && trip.assignment.some((a) => a.id === 'A') && !shown.has('Museos Capitolinos') && !dropped.has('Museos Capitolinos')) fail(`${tag}: sin el swap de arte`)
+          // Viajes cortos: ningún museo de pago de más (Parte A, regla 2): el swap de arte (Capitolinos) ya no
+          // se aplica y se quedan Plaza Venecia y el Altar.
+          if (!pool.includes('Museos Capitolinos') && shown.has('Museos Capitolinos')) fail(`${tag}: un museo de pago de más en un viaje corto (Capitolinos)`)
         }
       }
     }

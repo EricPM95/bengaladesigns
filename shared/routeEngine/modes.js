@@ -63,6 +63,13 @@ export function modeV3For(pace) {
   return pace === 'tranquilo' ? MODES_V3.tranquilo : MODES_V3.completo
 }
 
+/**
+ * En verano se cena después del atardecer (Parte A, regla 8): si el día tiene una parada al atardecer y
+ * el sol se pone a las 20:15 o más tarde, la cena pasa a las 21:00.
+ */
+export const LATE_SUNSET_MINUTES = HHMM('20:15')
+export const LATE_DINNER_START = HHMM('21:00')
+
 /** Última hora a la que se puede empezar a cenar sin pasarse del fin del día. */
 export function latestDinnerStart(mode) {
   return Math.min(mode.dinnerWindow[1], mode.dayEndWithDinner - mode.mealMinutes)

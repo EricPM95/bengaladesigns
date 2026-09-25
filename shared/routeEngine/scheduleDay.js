@@ -65,6 +65,8 @@
 
 import { roundUpToFive, roundUpToQuarter, roundUpToSlot, toMinutes } from './time.js'
 import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, nextOpenMinutes, parseHoursSessions } from './openingHours.js'
+import { STREET_MINUTES, isStreet } from './localRules.js'
+import { LATE_DINNER_START, LATE_SUNSET_MINUTES } from './modes.js'
 import { latestDinnerStart } from './modes.js'
 import { chooseLunchSpot } from './lunchSpots.js'
 import { SUNSET_WINDOW } from './sunset.js'
@@ -401,7 +403,8 @@ export function openDay(input) {
         if (addedWalk > maxAddedWalk) continue
         // Un relleno nunca obliga a esperar más que la tolerancia del ritmo a que abra algo (revisión
         // del 2026-09-24: con el horario auditado del Gesù, 17:00, salían esperas de 56 y 90 min).
-        if (unit.priority >= PRIORITY.THEME && result.longestWait > ctx.mode.gapTolerance && result.longestWait > (before.longestWait ?? 0)) continue
+        // Salvo lo que entra en un hueco que ya existía (la regla 102): esa espera no la provoca él.
+        if (unit.priority >= PRIORITY.THEME && !unit.gapFillerBefore && result.longestWait > ctx.mode.gapTolerance && result.longestWait > (before.longestWait ?? 0)) continue
         if (!best || result.cost < best.result.cost) best = { sequence: candidate, result, addedWalk }
       }
       if (!best) return null
@@ -573,7 +576,30 @@ export function openDay(input) {
       // reparto no, para no cambiar qué entra cada día).
       const finalCtx = { ...ctx, sunsetInRoute: true }
       const reordered = reseeded(sequence, finalCtx)
+      // Si no, se prueba lo curado en su orden (la Plaza de España, que iba por la mañana, detrás del
+      // Pincio al atardecer), manteniendo el resto donde estaba.
+      // Lo curado que va detrás del mirador en el recorrido y está delante pasa justo detrás de él, con
+      // sus vecinos y lo que tiene dentro (la Via Condotti va pegada a la Plaza de España).
+      const inCuratedOrder = (() => {
+        const sunsetIndex = sequence.findIndex((element) => element !== LUNCH && element.curatedIndex != null && element.places.some((place) => place.sunset != null))
+        if (sunsetIndex < 0) return sequence
+        const sunsetUnit = sequence[sunsetIndex]
+        const late = sequence.slice(0, sunsetIndex).filter((element) => element !== LUNCH && element.curatedIndex != null && element.curatedIndex > sunsetUnit.curatedIndex)
+        const names = (unit) => unit.places.map((place) => place.name)
+        const related = (a, b) =>
+          a.places.some((place) => (place.neighbor_of ?? []).some((name) => names(b).includes(name)) || names(b).includes(place.contained_in)) ||
+          b.places.some((place) => (place.neighbor_of ?? []).some((name) => names(a).includes(name)) || names(a).includes(place.contained_in))
+        const moving = [...late]
+        for (const unit of sequence) if (unit !== LUNCH && !moving.includes(unit) && unit !== sunsetUnit && late.some((other) => related(unit, other))) moving.push(unit)
+        const rest = sequence.filter((element) => !moving.includes(element))
+        const at = rest.indexOf(sunsetUnit) + 1
+        const ordered = moving.sort((a, b) => sequence.indexOf(a) - sequence.indexOf(b))
+        return [...rest.slice(0, at), ...ordered, ...rest.slice(at)]
+      })()
+      const curatedReseeded = reseeded(inCuratedOrder, finalCtx)
       if (simulate(reordered, finalCtx).ok) sequence = reordered
+      else if (simulate(curatedReseeded, finalCtx).ok) sequence = curatedReseeded
+      else if (simulate(inCuratedOrder, finalCtx).ok) sequence = inCuratedOrder
       else {
         // Si con el mirador en su sitio no cabe lo que le sigue en el recorrido (un 30 de marzo el sol se
         // pone a las 19:33 y detrás van Acqua Paola y Trastevere), manda el recorrido: ese día el mirador
@@ -611,7 +637,12 @@ function unitMinutes(unit) {
 function simulate(sequence, ctx) {
   const { mode, travel, start, pendingMeals, longVisitsAnytime, dinnerLatest, dinnerPoint } = ctx
   const [lunchOpen, lunchClose] = mode.lunchWindow
-  const visitLimit = pendingMeals.dinner ? dinnerLatest : mode.dayEndWithDinner
+  // Cena de verano (Parte A, regla 8): con atardecer a las 20:15 o más tarde, se cena a las 21:00.
+  const lateDinner = sequence.some((element) => element !== LUNCH && element.places.some((place) => place.sunset != null && place.sunset >= LATE_SUNSET_MINUTES))
+  const dinnerFrom = lateDinner ? LATE_DINNER_START : mode.dinnerWindow[0]
+  // Hasta media hora de margen para bajar del mirador y llegar al barrio de la cena.
+  const dinnerUntil = lateDinner ? Math.max(dinnerLatest, LATE_DINNER_START + 30) : dinnerLatest
+  const visitLimit = pendingMeals.dinner ? dinnerUntil : mode.dayEndWithDinner
 
   let cursor = start.minutes
   let position = start.coordinates ?? null
@@ -849,8 +880,8 @@ function simulate(sequence, ctx) {
   if (pendingMeals.dinner) {
     // Se va andando hasta el barrio donde se cena: ese paseo es parte del día.
     const walkToDinner = position && dinnerPoint ? (travel.leg(position, dinnerPoint)?.minutes ?? 0) : 0
-    const at = Math.max(roundUpToSlot(cursor + walkToDinner), mode.dinnerWindow[0])
-    if (at > dinnerLatest) return { ok: false, reason: 'dinner_out_of_window' }
+    const at = Math.max(roundUpToSlot(cursor + walkToDinner), dinnerFrom)
+    if (at > dinnerUntil) return { ok: false, reason: 'dinner_out_of_window' }
     walk += walkToDinner
     meters += walkToDinner > 0 ? (travel.leg(position, dinnerPoint)?.meters ?? 0) : 0
     idleBeforeDinner = at - cursor - walkToDinner
@@ -935,6 +966,8 @@ function visitMinutes(unit, index, mode) {
   // El Free Tour dura lo que dura; una parada "de paso" dura lo que dice su mensaje ("dedícale 15
   // minutos"), sin el extra del ritmo.
   if (place.isFreeTour || place.passBy) return place.duration_minutes ?? 30
+  // Una calle no es una parada: se pasa por ella (Parte A, regla 4).
+  if (isStreet(place)) return Math.min(place.duration_minutes ?? STREET_MINUTES, STREET_MINUTES)
   const durations = unit.places.map((p) => p.duration_minutes ?? 30)
   const main = durations.indexOf(Math.max(...durations))
   // Tranquilo es menos paradas, no paradas más largas (revisión del 2026-09-25): el extra solo para

@@ -24,6 +24,7 @@ import { MODES_V3, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay } from './openingHours.js'
+import { isPaidMuseum, paidMuseumQuota } from './localRules.js'
 import { sunsetFor } from './sunset.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
@@ -101,6 +102,8 @@ function blockStops(block, pace, experiencesPositive, destData) {
   for (const experience of experiencesPositive) {
     const swap = block.swaps?.[experience]
     if (!swap) continue
+    // Un cambio que mete un museo de pago sin cupo (Parte A, regla 2) no se aplica: se queda lo que había.
+    if (paidMuseumQuota(destData, 1) === 0 && [...(swap.with ?? []), ...(swap.add ?? []), ...(swap.add_at_end ?? [])].some((name) => isPaidMuseum(placeOf(name)))) continue
     if (swap.replace) {
       // Solo si lo que sustituye está en la ruta (en tranquilo no hay extras que sustituir) y no lo
       // ha sustituido ya una experiencia elegida antes.
@@ -118,7 +121,9 @@ function blockStops(block, pace, experiencesPositive, destData) {
     }
     if (swap.add_at_end) stops.push(...swap.add_at_end.map((name) => ({ name, role: 'extra', swappedBy: experience })))
   }
-  return stops
+  // Viajes cortos: ningún museo de pago de más (Parte A, regla 2: `museos_de_pago`); el arte, gratis.
+  // Lo del pool entra por su propio camino (sustituciones), no por aquí.
+  return paidMuseumQuota(destData, 1) > 0 ? stops : stops.filter((stop) => !isPaidMuseum(placeOf(stop.name)))
 }
 
 /**

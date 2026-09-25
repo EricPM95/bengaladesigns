@@ -325,6 +325,13 @@ function measureDay(day, pace, interestTags, plannedNames) {
     deadBeforeDinner: dinnerAt !== null ? dinnerAt - lastEnd : null,
     // Tarde libre: el destino ya no daba para más ese día (decisión del 2026-09-24). Amarillo, no rojo.
     freeAfternoon: Boolean(day.free_afternoon),
+    // El hueco más largo del día (Parte A, regla 7): entre paradas, antes de comer o la tarde libre.
+    deadMax: Math.max(
+      0,
+      ...gaps.map((gap) => gap.idle),
+      lunchAt !== null && morning.length > 0 ? lunchAt - endOf(morning[morning.length - 1]) : 0,
+      day.free_afternoon?.minutes ?? 0,
+    ),
     lunchInWindow: lunchAt === null ? null : lunchAt >= REF.lunchWindow[0] && lunchAt <= REF.lunchWindow[1],
     dinnerInWindow: dinnerAt === null ? null : dinnerAt >= REF.dinnerWindow[0] && dinnerAt <= REF.dinnerWindow[1],
     dayEndWithDinner: dinnerAt !== null ? dinnerAt + meal : lastEnd,
@@ -356,7 +363,7 @@ function measureTrip(trip, pace, exps) {
     const measured = measureDay(day, pace, interestTags, planned)
     // v3: lo que no ha cabido en ningún día viaja en not_included, con su motivo.
     if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) measured.dropped = (day.not_included ?? []).map((item) => item.name)
-    return { dayNumber: index + 1, ...measured }
+    return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, ...measured }
   })
 
   // Dónde cae cada lugar en el viaje, para grupos y nivel 1.
@@ -552,6 +559,8 @@ const LATEST_FIRST_AFTERNOON_END = 16 * 60
 // (decisión del 2026-09-23): son días más cortos a propósito y no se miden con "acaba antes de las 16:00".
 const CORE_DAYS = D.destination_config?.core_days ?? 4
 const isCoreDay = (day) => day.dayNumber <= CORE_DAYS
+/** Más que esto parado en mitad del viaje es una hora muerta (Parte A, regla 7). */
+const DEAD_HOURS_MINUTES = 90
 /** Como mucho 3 revisitas por día de repaso: más nuevos que repetidos (revisits.js). */
 const MAX_REVISITS_PER_DAY = 3
 const SEMAFORO_CRITERIOS = [
@@ -595,7 +604,10 @@ const SEMAFORO_CRITERIOS = [
   { id: 'sinTarde', label: `Días de ciudad hasta core_days (${CORE_DAYS}) que acaban antes de las 16:00 (sin contar las tardes libres)`, limite: '0', value: (rows, days) => days.filter((d) => isCoreDay(d) && !d.freeAfternoon && d.lastEnd < LATEST_FIRST_AFTERNOON_END).length, ok: (v) => v === 0 },
   // Amarillo (se mira, no bloquea): tardes libres, y la que caiga en el día 2 de un viaje de 3+ días,
   // que debería estar al final.
-  { id: 'libre', warnOnly: true, label: 'Tardes libres (el destino no da para más ese día)', limite: '—', value: (rows, days) => days.filter((d) => d.freeAfternoon).length, ok: (v) => v === 0 },
+  // Nada de horas muertas en mitad del viaje (Parte A, regla 7): un hueco de más de 90 min que no sea el
+  // último día significa que falta un bloque.
+  { id: 'muertas', label: 'Huecos de más de 90 min en mitad del viaje (falta un bloque)', limite: '0', value: (rows, days) => days.filter((d) => d.kind === 'ciudad' && !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).length, ok: (v) => v === 0 },
+  { id: 'libre', warnOnly: true, label: 'Tardes libres del último día', limite: '—', value: (rows, days) => days.filter((d) => d.freeAfternoon && d.isLastDay).length, ok: (v) => v === 0 },
   {
     id: 'repaso',
     label: `Días de repaso (más allá de core_days) con más de ${MAX_REVISITS_PER_DAY} revisitas`,

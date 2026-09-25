@@ -87,6 +87,8 @@ interface GeneratedStop {
   hours_warning?: string | null
   /** Temporada aproximada, en el margen: Stop.seasonNotice. */
   season_notice?: string | null
+  /** Calle: "Pasas por…" — Stop.passThrough. */
+  pass_through?: boolean
 }
 
 interface GeneratedMealOption {
@@ -355,6 +357,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
+    ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
     ...(generated.ticket_info?.length ? { ticketInfo: generated.ticket_info } : {}),

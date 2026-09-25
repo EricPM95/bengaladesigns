@@ -20,6 +20,7 @@ import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
+import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
@@ -134,6 +135,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const fit = seasonFit(source.available, { hasDates: Boolean(hours.weekday), month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) - 1 : null }, hours.dateIso ?? null, true)
       if (fit.notice) stop.season_notice = fit.notice
     }
+    // Una calle no es una parada (Parte A, regla 4): sale como "Pasas por…", sin número.
+    if (isStreet(visit.place)) {
+      stop.pass_through = true
+      stop.why = whyTexts.passThrough()
+      delete stop.experience
+    }
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
@@ -206,6 +213,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     lastEnd: lastVisit?.end ?? null,
     lastCoords: asPoint(lastVisit?.place.end_coordinates ?? lastVisit?.place.coordinates),
     dinnerStart: dinnerMeal?.start ?? null,
+    dinnerEnd: dinnerMeal?.end ?? null,
     dinnerCoords: asPoint(dinnerMeal?.coordinates),
   }
   return {

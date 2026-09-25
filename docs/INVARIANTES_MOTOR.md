@@ -644,6 +644,29 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     y da tiempo a seguir) y de camino (15 min de desvío como mucho hacia lo siguiente o la cena). Si no
     queda ninguna, el bloque sale igual, sin sugerencias.
 
+**Cómo planifica un local (PROMPT_MANANAS_Y_TARDES.md, Parte A, 2026-09-25)** — también en el JSON del
+destino (`principios_local`, `museos_de_pago`, `redundancias`); `shared/routeEngine/localRules.js`.
+
+123. **Una visita grande al día**: como mucho una de más de 90 min; y junto a ella, otra de pago por
+    dentro solo si dura 45 min o menos. Lo imprescindible (nivel 1) y el pool no cuentan.
+124. **Museos de pago de más, según los días** (`museos_de_pago`): hasta 3 días, ninguno aparte de joyas e
+    imprescindibles; 4 días, 1; 5-6, 2; 7 o más, 3. El pool entra siempre. En viajes cortos, "Arte y
+    Museos" se cumple con arte gratis (Caravaggio en San Luigi, Bernini en la Vittoria, el Moisés).
+125. **Museos parecidos** (`redundancias`): si el principal está en el viaje, el otro no entra, salvo
+    pool o viaje de 5 días o más con la experiencia que lo pide (con los Vaticanos, los Capitolinos no).
+126. **Las calles no son paradas**: lo que lleva la etiqueta `calle` sale como "Pasas por…", 10 min, sin
+    número (el Foro visto desde la Via dei Fori Imperiali sí es parada: es un sitio para mirar).
+127. **Miradores**: al atardecer cuando el día tiene tiempo (el tiempo va antes); si no, uno que pilla de
+    camino a otra hora también vale (regla 114).
+128. **Un lugar bonito de camino** puede entrar aunque no sea de la experiencia elegida, pero no cuenta para
+    su mínimo-máximo ni lleva "Elegido según tus gustos" (regla 119).
+129. **Nada de horas muertas en mitad del viaje**: un hueco de más de 90 min (entre paradas, antes de comer
+    o tarde libre) que no sea el último día es un bloque que falta: el semáforo lo marca en rojo
+    (`muertas`). La tarde libre del último día sigue en amarillo.
+130. **En verano se cena después del atardecer**: con una parada al atardecer y el sol a las 20:15 o más
+    tarde, la cena pasa a las 21:00 (hasta las 21:30 si hay que bajar del mirador), y las nocturnas
+    empiezan cuando acaba la cena.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

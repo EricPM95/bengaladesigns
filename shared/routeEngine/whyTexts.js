@@ -24,6 +24,8 @@ export const whyTexts = {
   essential: (city) => `Uno de los imprescindibles de ${city}.`,
   experience: (theme) => `Elegido según tus gustos: ${EXPERIENCE_TITLES[theme] ?? theme}.`,
   onTheWay: () => 'Te pilla de camino a la cena: merece la parada.',
+  /** Una calle: no es una parada, se pasa por ella. */
+  passThrough: () => 'Pasas por aquí de camino: no hace falta pararse.',
   /** Por la mañana no se va hacia la cena. */
   onTheWayMorning: () => 'Te pilla de camino: merece la parada.',
   /** Lo gratis que llena un hueco a mitad de día (antes del mirador del atardecer, por ejemplo). */

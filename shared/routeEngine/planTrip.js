@@ -40,7 +40,7 @@ import { TAG_INTEREST_MAP, categoryCapFor, categoryOfTags, interestTagsFor } fro
 import { MAX_REVISITS_PER_DAY, RELAXED_DAY_TARGET_STOPS, canRevisit } from './revisits.js'
 import { placeWithArticle, whyTexts } from './whyTexts.js'
 import { tripDays } from './tripSkeleton.js'
-import { MODES_V3, modeV3For } from './modes.js'
+import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODES_V3, modeV3For } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
 import { NIGHT_REACH_METERS, nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
@@ -51,6 +51,7 @@ import { sunsetFor } from './sunset.js'
 import { closedOnDay } from './openingHours.js'
 import { availableForTrip } from './availability.js'
 import { tripCalendar } from './tripCalendar.js'
+import { blockedByRedundancy, breaksOneBigVisit, isPaidMuseum, paidMuseumQuota } from './localRules.js'
 
 /** Hasta dónde se va andando a buscar algo para un día: más lejos ya no es "de camino". */
 const NEAR_WALK_MINUTES = 20
@@ -504,6 +505,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
 
   /** Cierres y visita larga: lo que ni yendo de camino se puede saltar. */
   function eligibleIgnoringCap(day, unit) {
+    if (!localRulesAllow(day, unit)) return false
     // Un relleno nunca es de pago (Paso 3, 2026-09-24): lo que pide entrada solo entra si es nivel 1,
     // del pool o de una experiencia elegida. Sin Arte, fuera el Ara Pacis o los Capitolinos. Lo que
     // está DENTRO de algo de pago tampoco es relleno salvo que su contenedor ya esté en la ruta (y
@@ -582,6 +584,24 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
       return true
     }
     return false
+  }
+
+  /**
+   * Cómo planifica un local (Parte A): (1) una visita grande al día, y otra de pago por dentro solo si es
+   * corta; (2) museos de pago de más, según los días del viaje (`museos_de_pago`); (3) museos parecidos
+   * (`redundancias`: con los Vaticanos, los Capitolinos no). Lo del pool entra siempre.
+   */
+  function localRulesAllow(day, unit) {
+    if (unit.poolIndex != null || unit.isFreeTour) return true
+    const dayPlaces = dayUnits(day).filter((other) => other.id !== unit.id).flatMap((other) => other.places)
+    if (breaksOneBigVisit(unit.places, dayPlaces)) return false
+    if (unit.places.some(isPaidMuseum)) {
+      const placedMuseums = units.filter((other) => other.id !== unit.id && other.poolIndex == null && placedDay.get(other.id) != null && other.places.some(isPaidMuseum)).length
+      if (placedMuseums >= paidMuseumQuota(destData, cityDays.length)) return false
+    }
+    const tripNames = new Set(units.filter((other) => placedDay.get(other.id) != null).flatMap((other) => other.places.map((place) => place.name)))
+    const matches = themesOf(unit).length > 0
+    return !unit.places.some((place) => blockedByRedundancy(destData, place.name, tripNames, { contentDays: cityDays.length, experienceMatches: matches }))
   }
 
   /** Días donde probar una unidad: primero los que la tienen cerca, y de esos el más temprano. */
@@ -786,7 +806,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     const zonesOfDay = new Set(dayUnits(day).flatMap((unit) => unit.places.map((place) => place.zone)))
     for (const zone of zonesOfDay) {
       // Ese día el sol se pone a la hora de cenar o después: su mirador con versión de noche, de noche.
-      const sunsetAfterDinner = day.sunsetMinutes != null && day.sunsetMinutes >= mode.dinnerWindow[0]
+      // En verano la cena se retrasa a las 21:00 (Parte A, regla 8): el mirador puede ir al atardecer.
+      const dinnerStart = day.sunsetMinutes != null && day.sunsetMinutes >= LATE_SUNSET_MINUTES ? LATE_DINNER_START : mode.dinnerWindow[0]
+      // Si el sol se pone a la hora de cenar (la de verano, 21:00) o después, el mirador va de noche.
+      const sunsetAfterDinner = day.sunsetMinutes != null && day.sunsetMinutes >= dinnerStart
       const flow = (destData.afternoon_flow?.[zone] ?? []).filter((name) => !(sunsetAfterDinner && withNightVersion.has(name) && isMirador(name)))
       for (const name of flow) if (withNightVersion.has(name) && isMirador(name)) day.sunsetNames.add(name)
       if (flow.length === 0) continue

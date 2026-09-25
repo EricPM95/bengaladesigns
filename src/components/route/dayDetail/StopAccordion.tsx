@@ -30,6 +30,20 @@ interface StopAccordionProps {
  */
 export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText, startTime }: StopAccordionProps) {
   const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
+  // Una calle no es una parada (Parte A): una línea "Pasas por…", sin número ni foto.
+  if (stop.passThrough) {
+    return (
+      <div className="relative">
+        <button type="button" onClick={onOpen} className="flex w-full items-center gap-3 rounded-xl px-3 py-1.5 text-left">
+          <span className="ml-2 h-2 w-2 shrink-0 rounded-full border border-text-muted" aria-hidden="true" />
+          <p className="text-small text-text-soft">
+            {startTime ? `${startTime} · ` : ''}Pasas por <span className="font-medium text-text">{displayStopName(stop.name)}</span>
+          </p>
+        </button>
+        {menu && <div className="absolute -right-2 -top-2 z-20">{menu}</div>}
+      </div>
+    )
+  }
   if (stop.isNightExperience) {
     const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
     return (

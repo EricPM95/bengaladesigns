@@ -207,7 +207,8 @@ export function nightTiming(chain, timing = {}) {
       entries = entries.slice(1)
     }
   }
-  return { entries: chain, start: Math.max(NIGHT_START, nightStart ?? 0), beforeDinner: false }
+  // Después de cenar: nunca antes de que acabe la cena (la de verano, a las 21:00, acaba más tarde).
+  return { entries: chain, start: Math.max(NIGHT_START, nightStart ?? 0, roundUpToSlot(timing.dinnerEnd ?? 0)), beforeDinner: false }
 }
 
 const durationOf = (entry, index) => (index === 0 ? Math.min(FIRST_MINUTES, entry.duration ?? FIRST_MINUTES) : Math.min(CHAINED_MINUTES, entry.duration ?? CHAINED_MINUTES))
