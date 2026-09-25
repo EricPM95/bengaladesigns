@@ -987,15 +987,26 @@
           "11:45-19:00"
         ]
       },
-      "last_entry": "18:30",
+      "last_entry": "18:45",
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Taquilla hasta las 18:00. Durante las misas solo entran fieles: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 25 dic y 1 ene.",
+      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:45). Durante las misas solo entran fieles y la venta de entradas se corta una hora antes: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 1 ene, 15 ago y 25 dic.",
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
         "Se compra online o en taquilla (taquilla hasta las 18:00)."
-      ]
+      ],
+      "closed_dates": [
+        "01-01",
+        "08-15",
+        "12-25"
+      ],
+      "hours_audit": {
+        "confianza": "alta (sábado y domingo: media)",
+        "fuente": "https://www.pantheonroma.com/en/openings-info/ (web oficial del Capítulo: 09:00-19:00, última entrada 18:45, cierra 1 ene, 15 ago y 25 dic) + https://it.vatican-city.it/pantheon-roma/ (misas: sábado 17:00, domingo 10:30; venta suspendida 1 h antes)",
+        "nota": "La web oficial no publica el horario de las misas. \"Sábados, solo de 09:00 a 16:00\" sale de la misa de las 17:00 con la venta cortada una hora antes; es posible que tras la misa se vuelva a entrar hasta las 19:00, sin confirmar: se deja lo prudente.",
+        "fecha": "2026-09-25"
+      }
     },
     {
       "name": "Piazza Navona",

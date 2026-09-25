@@ -17,6 +17,7 @@ import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START 
 import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
+import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -78,7 +79,11 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
     if (tourToday && paidInterior && (tour?.covers ?? []).includes(place.name)) return whyTexts.insideAfterTour(placeWithArticle(place), city)
     return whyTexts.essential(city)
   }
-  if (unit?.experienceTheme) return whyTexts.experience(unit.experienceTheme)
+  // La experiencia, solo si ESE lugar es de ella: en un grupo, la Boca de la Verdad no hereda el
+  // "Naturaleza y Vistas" del Jardín de los Naranjos.
+  if (unit?.experienceTheme && (TAG_INTEREST_MAP[unit.experienceTheme] ?? []).some((tag) => (place.tags ?? []).includes(tag))) {
+    return whyTexts.experience(unit.experienceTheme)
+  }
   // Hueco a mitad de día: lo gratis que entró antes de la parada con hora (y lo de pago, por fuera).
   if (unit?.gapFillerBefore) {
     const outside = visit.place.outsideOf?.length ? ` ${whyTexts.outside(joinSpanish(visit.place.outsideOf))}` : ''
@@ -121,7 +126,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (curatedIndex != null) stop.curated_index = curatedIndex
     // Entró por una experiencia elegida (Paso 3): la app le pone una etiqueta con su nombre.
     const experienceTheme = unitById.get(visit.unitId)?.experienceTheme
-    if (experienceTheme) stop.experience = experienceTheme
+    if (experienceTheme && (TAG_INTEREST_MAP[experienceTheme] ?? []).some((tag) => (visit.place.tags ?? []).includes(tag))) stop.experience = experienceTheme
     // De temporada con `aprox`, en el margen de 15 días: la parada lleva el aviso del propio dato.
     const source = destData.places?.find((candidate) => candidate.name === visit.place.name)
     if (source?.available) {

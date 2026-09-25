@@ -7,8 +7,10 @@
  * quedó muda sin dar ningún error.
  *
  * Las categorías absorbieron vecinas al rediseñarse: "Arte y Museos" se queda también con las
- * iglesias (una iglesia con tres Caravaggios es arte), "Barrios y Sabores" con los barrios, calles
- * y plazas donde el plan es pasear, y "Naturaleza y Vistas" con los parques y las fuentes.
+ * iglesias (una iglesia con tres Caravaggios es arte). "Barrios y Sabores" son barrios, mercados y
+ * sitios de comer; "Naturaleza y Vistas", miradores y parques. Una plaza, una calle o una fuente sin
+ * más no son ninguna de las dos (revisión del 2026-09-25: la Fuente del Tritón no es "Naturaleza y
+ * Vistas", ni la Plaza Colonna "Barrios y Sabores").
  *
  * `free_tour` no casa con ningún tag de lugar a propósito: el Free Tour no es un sitio del catálogo,
  * tiene su propio mecanismo (ver `hasFreeTour` y `default_free_tour`). Está en la tabla para que se
@@ -16,8 +18,8 @@
  */
 export const TAG_INTEREST_MAP = {
   arte_museos: ['museo', 'arte', 'iglesia'],
-  barrios_sabores: ['barrio', 'gastronomia', 'calle', 'plaza', 'mercado'],
-  naturaleza_vistas: ['mirador', 'parque', 'fuente'],
+  barrios_sabores: ['barrio', 'gastronomia', 'mercado'],
+  naturaleza_vistas: ['mirador', 'parque'],
   free_tour: ['free_tour'],
   // Los mercadillos son lugares con `available` (su temporada) y esta etiqueta propia (decisión del
   // 2026-09-25). Los datos los cura el usuario: mientras no haya, la experiencia no añade nada.
