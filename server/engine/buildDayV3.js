@@ -185,8 +185,16 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un
   // imprescindible. Con el nombre de lo que se recupera, no con la regla.
-  const recovered = (schedule.modeFallback?.recoveredUnitIds ?? []).map((id) => unitById.get(id)?.places[0]?.name).filter(Boolean)
-  const paceNotice = recovered.length > 0 ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${recovered.join(' y ')}` : null
+  // El motivo de verdad: lo principal de lo que se recupera (el Coliseo y el Foro, no el Arco que abre
+  // el grupo): sus imprescindibles de visita larga, o el más largo si no hay.
+  const recovered = (schedule.modeFallback?.recoveredUnitIds ?? [])
+    .flatMap((id) => {
+      const places = unitById.get(id)?.places ?? []
+      const main = places.filter((place) => place.level === 1 && (place.duration_minutes ?? 0) >= 45)
+      return (main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)).map((place) => placeWithArticle(place))
+    })
+    .filter(Boolean)
+  const paceNotice = recovered.length > 0 ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}` : null
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

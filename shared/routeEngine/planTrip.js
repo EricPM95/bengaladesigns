@@ -534,7 +534,25 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   function placeOnDay(day, unit, { allowFallback = true } = {}) {
     if (!eligible(day, unit)) return false
     const withIndex = forDay(day, unit)
-    if (day.open.add(withIndex) || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
+    // Antes de adelantar el día (plan B: el tranquilo a las 08:00), se prueba a quitar un relleno: el
+    // madrugón, solo si de verdad hace falta (revisión del 2026-09-25).
+    const displaceFiller = () => {
+      if (!allowFallback || unit.priority > PRIORITY.ESSENTIAL || !fallbackMode) return false
+      const fillers = dayUnits(day)
+        .filter((other) => other.priority >= PRIORITY.FILLER && other.curatedIndex == null && other.poolIndex == null && !other.isRevisit && !experienceEntries.has(other.id))
+        .sort((a, b) => b.minutes - a.minutes)
+      for (const filler of fillers) {
+        const snapshot = day.open.snapshot()
+        day.open.remove(filler.id)
+        if (day.open.add(withIndex)) {
+          placedDay.delete(filler.id)
+          return true
+        }
+        day.open.restore(snapshot)
+      }
+      return false
+    }
+    if (day.open.add(withIndex) || displaceFiller() || (allowFallback && unit.priority <= PRIORITY.ESSENTIAL && day.open.tryWithFallback(withIndex, fallbackMode))) {
       placedDay.set(unit.id, day.dayNumber)
       droppedByRelation.delete(unit.id)
       recordEntry(unit)

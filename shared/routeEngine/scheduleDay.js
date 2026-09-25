@@ -915,7 +915,11 @@ function visitMinutes(unit, index, mode) {
   if (place.isFreeTour || place.passBy) return place.duration_minutes ?? 30
   const durations = unit.places.map((p) => p.duration_minutes ?? 30)
   const main = durations.indexOf(Math.max(...durations))
-  return durations[index] + (index === main ? mode.visitDurationBonus : 0)
+  // Tranquilo es menos paradas, no paradas más largas (revisión del 2026-09-25): el extra solo para
+  // una visita por dentro. Una calle, una plaza o una fuente duran lo mismo en los dos ritmos (45 min
+  // en la Via della Conciliazione o en Trevi no tienen sentido).
+  const inside = place.type === 'interior' || place.type === 'mixto'
+  return durations[index] + (index === main && inside ? mode.visitDurationBonus : 0)
 }
 
 /** Cuándo acabaría el tramo del grupo que empieza en `fromIndex`, hasta su próximo punto de corte. */
