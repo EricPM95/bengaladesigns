@@ -298,3 +298,15 @@ Ninguna en estas seis partes: el mes (`answers.month`) y `seasonalConfirmed` van
   el día 2 como "día del Vaticano sin Vaticano" (Farnese, Puente Sant'Angelo, Conciliazione, Borgo Pio…)
   con esperas largas. Ahora, si el día curado no tiene con quién cambiarse, se reparte como un día sin
   curado: día 2 = Trevi, Panteón, Navona, Campidoglio, Plaza de España… (INVARIANTES 107).
+
+## Segunda revisión (2026-09-25)
+
+- **Lo fijo del bloque curado va primero** (INVARIANTES 108): "menos paradas" ya no puede con el
+  `core`. En 1 día sin experiencias vuelve el Foro por dentro: Arco 08:00 → Coliseo 08:30 → Foro 10:15 →
+  Plaza Venecia 12:30 y Altar 12:45 **de paso y por fuera** (8 min cada uno) → comida → Centro. Los
+  extras que no se ven desde la calle (los Museos Capitolinos) no van de paso: "No te dio tiempo". Un
+  acceso de paso va delante de aquello a lo que da acceso (el Puente, delante del Castillo).
+- **Bloque con cierre, por fuera** (INVARIANTES 111): el 25 de diciembre en 1 día: Arco 08:00 →
+  Coliseo por fuera 08:20 → Foro desde la Via dei Fori Imperiali 09:00 → Plaza Venecia → Altar → comida →
+  Navona, Panteón, Trevi, Plaza de España. Aviso: "Ese día cierra: Coliseo, Foro Romano y Palatino. Lo
+  ves por fuera."

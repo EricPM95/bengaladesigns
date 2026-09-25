@@ -34,6 +34,8 @@ const DEFAULT_AFTERNOON_START = '14:30'
 
 /** Una visita por dentro que deja el día con esta cantidad de paradas menos (o más) se ve por fuera (decisión del 2026-09-25). */
 const INSIDE_MAX_STOPS_LOST = 2
+/** Minutos, entre todos, de los extras de un bloque vistos de paso y por fuera (Plaza Venecia y el Altar). */
+const EXTRA_PASS_BY_MINUTES = 15
 /** Prioridad para caerse cuando algo no cabe: cuanto más alta, antes se cae. */
 const DROP_RANK = { extra: 4, core: 3, pool: 2, joya: 1 }
 
@@ -199,12 +201,25 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
     })
   const unusable = (id) => closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id])
   const closedBlocks = blockIds.filter(unusable)
+  // Un bloque con cierre y sin otra combinación NO desaparece: se hace por fuera, con lo gratis y lo
+  // que se ve desde la calle (decisión del 2026-09-25; el 25 de diciembre, Roma Antigua: Arco, Coliseo
+  // por fuera y el Foro desde la Via dei Fori Imperiali).
+  const exteriorBlocks = new Set()
   if (closedBlocks.length > 0) {
     const spare = Object.keys(blocks).filter((id) => !blockIds.includes(id) && !unusable(id))
-    blockIds = blockIds.map((id) => (closedBlocks.includes(id) ? spare.shift() ?? null : id)).filter(Boolean)
+    blockIds = blockIds.map((id) => {
+      if (!closedBlocks.includes(id)) return id
+      const replacement = spare.shift()
+      if (replacement) return replacement
+      exteriorBlocks.add(id)
+      return id
+    })
     // La pista de la noche era para la combinación que ya no va.
     nightHint = null
-    for (const id of closedBlocks) notIncluded.push({ name: blocks[id].label, reason: unavailableBlocks[id] ?? `Ese día cierra: ${closedEssentials(id).join(', ')}` })
+    for (const id of closedBlocks) {
+      const why = unavailableBlocks[id] ?? `Ese día cierra: ${closedEssentials(id).join(', ')}`
+      notIncluded.push({ name: blocks[id].label, reason: exteriorBlocks.has(id) ? `${why}. Lo ves por fuera.` : why })
+    }
   }
   for (const [blockId, text] of Object.entries(combination.not_included ?? {})) {
     if (!blockIds.includes(blockId) && !closedBlocks.includes(blockId)) notIncluded.push({ name: blocks[blockId].label, reason: text })
@@ -275,6 +290,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
   const groupOf = new Map(buildUnits(destData, true).flatMap((unit) => (unit.places.length > 1 ? unit.places.map((place) => [place.name, unit.id]) : [])))
   const freeTourTime = destData.default_free_tour?.default_time ?? null
   function unitsForBlock(blockId, slot) {
+    if (exteriorBlocks.has(blockId)) return exteriorUnitsForBlock(blockId, slot)
     const units = []
     for (const stop of stopsByBlock.get(blockId)) {
       if (stop.removedBySubstitution) continue
@@ -310,6 +326,55 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       if (notBefore && places[0]) places[0] = { ...places[0], not_before: notBefore }
       return { ...unit, places }
     })
+  }
+
+  /**
+   * El bloque en modo exterior: lo gratis y abierto, tal cual; lo de pago o cerrado, por fuera — con su
+   * paso (`pass_by`: el Foro desde la Via dei Fori Imperiali) o, si se ve desde la calle
+   * (`visible_from_outside`), 15 min por fuera. Lo que ni así se ve, fuera. Cada sitio va suelto: un
+   * paso por fuera no arrastra a su grupo.
+   */
+  function exteriorUnitsForBlock(blockId, slot) {
+    const paidInterior = (place) => !(place.is_free_access ?? place.type === 'exterior')
+    const closedAnyDay = (place) => tripDates.some((date) => closedOnDay(place, date.weekday, date.dateIso))
+    const units = []
+    for (const stop of stopsByBlock.get(blockId)) {
+      const place = placeByName.get(stop.name)
+      if (!place || stop.removedBySubstitution) continue
+      const outside = paidInterior(place) || closedAnyDay(place)
+      if (outside && !place.pass_by && !place.visible_from_outside) continue
+      const label = place.pass_by?.label ?? place.name
+      const from = outside ? place.pass_by?.from ?? null : null
+      const outsidePlace = outside
+        ? {
+            name: place.name,
+            coordinates: place.pass_by?.coordinates ?? place.coordinates,
+            duration_minutes: place.pass_by?.minutes ?? 15,
+            type: 'exterior',
+            tags: place.tags ?? [],
+            wikipedia_title: place.wikipedia_title,
+            zone: place.zone,
+            level: place.level,
+            passBy: { seenOnDay: null, includes: place.pass_by?.includes ?? [], from },
+          }
+        : place
+      const capitalized = `${label.charAt(0).toUpperCase()}${label.slice(1)}`
+      units.push({
+        id: `${place.name}:${blockId}:fuera`,
+        group: null,
+        places: placesForScheduler({ id: place.name, places: [outsidePlace] }, destData, freeTourTime),
+        dropRank: place.tier === 'joya' ? DROP_RANK.joya : DROP_RANK[stop.role] ?? DROP_RANK.extra,
+        slot,
+        blockId,
+        role: stop.role,
+        priority: PRIORITY.ESSENTIAL,
+        curatedIndex: units.length,
+        ...(outside
+          ? { isRevisit: true, revisitReason: from ? `${capitalized} cierra hoy, pero desde aquí lo tienes entero a tus pies.` : `${capitalized} cierra hoy, pero por fuera lo tienes entero.` }
+          : {}),
+      })
+    }
+    return units
   }
 
   // ── Un día por cada día del viaje, con sus franjas. Se prueba cada reparto válido con el reloj
@@ -372,11 +437,70 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       for (const place of insideWithPassBy) {
         const without = units.map((unit) => ({ ...unit, places: unit.places.filter((p) => p.name !== place.name) })).filter((unit) => unit.places.length > 0)
         const alt = run(dayMode, without)
-        // +1: el paso por fuera que sustituye a la visita. "Menos paradas" = dos o más: por una sola
-        // (Plaza Venecia) no se pierde el Foro por dentro de la mañana de Roma Antigua.
-        if ((joyaInteriorLost(schedule) && !joyaInteriorLost(alt)) || stopsOf(alt) + 1 - stopsOf(schedule) >= INSIDE_MAX_STOPS_LOST) {
+        // Lo fijo del bloque curado (`core`: el Foro en Roma Antigua) va primero (decisión del
+        // 2026-09-25): "menos paradas" solo vale contra visitas opcionales, nunca contra el core. Contra
+        // el core solo cuenta no desplazar el interior de una joya (el Panteón, en octubre con Free Tour).
+        const isCore = units.find((unit) => unit.places.some((p) => p.name === place.name))?.role === 'core'
+        // +1: el paso por fuera que sustituye a la visita. "Menos paradas" = dos o más.
+        const fewerStops = !isCore && stopsOf(alt) + 1 - stopsOf(schedule) >= INSIDE_MAX_STOPS_LOST
+        if ((joyaInteriorLost(schedule) && !joyaInteriorLost(alt)) || fewerStops) {
           const original = units.find((unit) => unit.places.some((p) => p.name === place.name))
           schedule = { ...alt, dropped: [...alt.dropped, { unit: { ...original, id: `${place.name} (por dentro)`, places: [place] }, reason: 'inside_displaces' }] }
+        }
+      }
+    }
+    // Los extras del bloque que no caben enteros (Plaza Venecia y el Altar tras el Foro por dentro) van
+    // de paso y por fuera, 15 min entre todos: están de camino hacia el centro. Solo si ni así caben,
+    // "No te dio tiempo" (decisión del 2026-09-25).
+    {
+      const extras = schedule.dropped.filter(({ unit }) => unit.role === 'extra' && !unit.places.some((place) => place.passBy))
+      if (extras.length > 0) {
+        const outsideOf = (unit) => {
+          const each = Math.max(5, Math.ceil(EXTRA_PASS_BY_MINUTES / unit.places.length))
+          const names = unit.places.map((place) => place.name).join(' y ')
+          return {
+            ...unit,
+            id: `${unit.id} (de paso)`,
+            places: unit.places.map((place) => ({
+              name: place.name,
+              coordinates: place.coordinates,
+              duration_minutes: each,
+              type: 'exterior',
+              tags: place.tags ?? [],
+              wikipedia_title: place.wikipedia_title,
+              zone: place.zone,
+              level: place.level,
+              passBy: { seenOnDay: null, includes: [], from: null },
+            })),
+            priority: PRIORITY.FILLER,
+            isRevisit: true,
+            revisitReason: `Hoy no da tiempo a entrar: ${names}, de paso y por fuera, de camino.`,
+          }
+        }
+        // Solo lo que de verdad se ha caído: si el grupo se partió (el Altar pasó a la tarde), lo que ya
+        // se visita no sale otra vez de paso.
+        const visited = new Set(schedule.kept.flatMap((unit) => unit.places.map((place) => place.name)))
+        // Solo lo que se ve desde la calle: una plaza, un monumento gratis o algo `visible_from_outside`.
+        // Un museo (los Capitolinos) por fuera no es nada: "No te dio tiempo".
+        const seenFromStreet = (place) => (place.is_free_access ?? place.type === 'exterior') || Boolean(place.visible_from_outside)
+        const outsideUnits = extras
+          .map(({ unit }) => ({ ...unit, places: unit.places.filter((place) => !visited.has(place.name) && seenFromStreet(place)) }))
+          .filter((unit) => unit.places.length > 0)
+          .map(outsideOf)
+        // Detrás de lo último que queda de su bloque; un acceso (\`approach_to\`: el Puente al Castillo),
+        // justo delante de aquello a lo que da acceso.
+        const sequence = [...schedule.kept]
+        for (const outside of outsideUnits) {
+          const approaches = new Set(outside.places.flatMap((place) => placeByName.get(place.name)?.approach_to ?? []))
+          const monument = sequence.findIndex((unit) => unit.places.some((place) => approaches.has(place.name)))
+          const lastOfBlock = sequence.map((unit) => unit.blockId).lastIndexOf(outside.blockId)
+          sequence.splice(monument >= 0 ? monument : lastOfBlock >= 0 ? lastOfBlock + 1 : sequence.length, 0, outside)
+        }
+        const withOutside = run(modeFallback ? normalMode : mode, sequence)
+        const placedOutside = outsideUnits.filter((unit) => withOutside.kept.some((kept) => kept.id === unit.id))
+        if (placedOutside.length > 0 && withOutside.kept.length >= schedule.kept.length + placedOutside.length) {
+          const recovered = new Set(placedOutside.map((unit) => unit.id.replace(/ \(de paso\)$/, '')))
+          schedule = { ...withOutside, dropped: [...schedule.dropped.filter(({ unit }) => !recovered.has(unit.id)), ...withOutside.dropped.filter(({ unit }) => !outsideUnits.includes(unit))] }
         }
       }
     }

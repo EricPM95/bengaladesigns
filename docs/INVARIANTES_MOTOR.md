@@ -593,9 +593,13 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     En viajes más largos, el día curado cuyo imprescindible cierra se cambia con otro día; si no hay con
     quién (2 días desde el domingo de Pascua: el Vaticano cierra los dos), el día se reparte como uno sin
     curado, nunca "el día del Vaticano sin Vaticano".
-108. **En viajes cortos, una visita por dentro nunca desplaza el interior de una joya ni reduce el día
-    a menos paradas** (dos o más): entonces se ve por fuera (el Foro, desde la Via dei Fori Imperiali) y
-    vuelve lo desplazado (octubre, 1 día con Free Tour: Panteón por dentro + Plaza Venecia + Altar).
+108. **En viajes cortos, lo fijo de un bloque curado (`core`) va primero.** Una visita por dentro nunca
+    desplaza el interior de una joya (octubre, 1 día con Free Tour: el Foro se ve desde la Via dei Fori
+    Imperiali y vuelven el Panteón por dentro, Plaza Venecia y el Altar). "No reducir el día a menos
+    paradas" (dos o más) solo vale para visitas opcionales, nunca contra el core: en 1 día sin
+    experiencias el Foro va por dentro. Los extras del bloque que no caben enteros (Plaza Venecia, el
+    Altar) van de paso y por fuera, 15 min entre todos, de camino (un acceso, delante de aquello a lo
+    que da acceso); solo si ni así caben, "No te dio tiempo".
 109. **El mirador del atardecer va siempre en su sitio del recorrido**, y la espera hasta el atardecer
     no es una espera que evitar: la cubre la regla de huecos (102). **Nunca se cruza el río ni se vuelve
     sobre los propios pasos dos veces para evitar una espera.** Si con el mirador en su sitio no cabe lo
@@ -603,6 +607,12 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     en su sitio sin esperar al atardecer.
 110. **Mercadillos**: son lugares con `available` (normalmente `aprox`) y la etiqueta
     `mercadillo_navideno`, que casa con la experiencia "Mercadillos Navideños".
+111. **Un bloque con cierre se hace por fuera, no desaparece.** Si el imprescindible de un bloque cierra
+    esa fecha y no hay otra combinación, el bloque va en modo exterior: lo gratis y abierto tal cual; lo
+    de pago o cerrado, por fuera (su `pass_by` o, si se ve desde la calle, 15 min); lo que ni así se ve,
+    fuera. El 25 de diciembre en 1 día: Arco, Coliseo por fuera, Foro desde la Via dei Fori Imperiali,
+    Plaza Venecia y el Altar por la mañana, y el Centro por la tarde. Se avisa: "Ese día cierra: … Lo ves
+    por fuera."
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
