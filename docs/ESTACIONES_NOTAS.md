@@ -228,3 +228,24 @@ Lo que se ve:
 
 **Arreglado aquí**: la hora de la nocturna antes de cenar salía sin redondear (18:59); ahora en punto o
 y media, como el resto.
+
+## Parte 6 — Kit de nuevo destino
+
+**Qué ha cambiado**
+- `docs/kit/plantilla_horarios_por_periodo.json`: auditoría con `by_period`, `closed_dates`,
+  `confianza`, `fuente`, `_nota` y `fecha_auditoria`, con los tres casos (horario normal, parque que
+  cierra en `sunset`, lugar sin fuente = `by_period: null`). Se importa con `importarPeriodos.mjs`.
+- `docs/kit/plantilla_temporada.json`: `available` en lugares, nocturnas y excursiones, y
+  `destination_config.experience_availability` para las experiencias.
+- `validar.mjs`: rojo si no se puede calcular la puesta de sol (falta `timezone` o un punto del
+  destino) y si un `available` está mal escrito. Probado con una copia rota de Roma (y borrada).
+- INVARIANTES, sección I (kit), paso 5 "Estaciones".
+
+**Dónde se nota**: en un destino nuevo, sin curar nada más que su `timezone` y sus zonas, ya tiene
+puesta de sol por fecha, noche a los 30 min y miradores al atardecer; el validador no le deja pasar
+sin ellos.
+
+## Migraciones de Supabase
+
+Ninguna en estas seis partes: el mes (`answers.month`) y `seasonalConfirmed` van dentro del jsonb
+`route` del viaje.

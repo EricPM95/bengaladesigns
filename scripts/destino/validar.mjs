@@ -188,6 +188,21 @@ const section = (title) => {
     if (missing.length) s.warn.push(`${place.name}.by_period: ${missing.length} días sin horario (${missing.slice(0, 4).join(', ')}${missing.length > 4 ? '…' : ''})`)
     if (overlap.length) s.warn.push(`${place.name}.by_period: ${overlap.length} días en dos periodos (${overlap.slice(0, 4).join(', ')}${overlap.length > 4 ? '…' : ''})`)
   }
+  // Disponibilidad por fechas (Estaciones, Parte 4): `available` bien escrito donde aparezca.
+  const availableWhere = [
+    ...places.map((p) => [`${p.name}.available`, p.available]),
+    ...(D.night_experiences ?? []).map((n) => [`${n.name}.available`, n.available]),
+    ...Object.entries(D.excursions?.options ?? {}).map(([id, o]) => [`excursión ${id}.available`, o?.available]),
+    ...Object.entries(D.destination_config?.experience_availability ?? {}).map(([id, w]) => [`experiencia ${id}`, w]),
+  ]
+  for (const [label, window] of availableWhere) {
+    if (window == null) continue
+    if (!yearDays.includes(window.from)) s.red.push(`${label}: "from" mal escrito (${window.from}), va en MM-DD`)
+    if (!yearDays.includes(window.to)) s.red.push(`${label}: "to" mal escrito (${window.to}), va en MM-DD`)
+  }
+  // La puesta de sol se calcula (Estaciones, Parte 3): hace falta la zona horaria y un punto del destino.
+  const sunPoint = Object.values(D.zones ?? {}).find((zone) => Array.isArray(zone.center))?.center ?? D.places?.[0]?.coordinates
+  if (!D.timezone || !Array.isArray(sunPoint)) s.red.push(`Sin puesta de sol: falta ${!D.timezone ? '`timezone` ("Europe/Rome")' : 'un punto del destino (centro de zona)'}`)
   // Los cambios de finales de marzo y octubre siguen el cambio de hora: la auditoría vale para su año.
   // Sin --anio, el año en curso.
   const tripYear = Number(process.argv[process.argv.indexOf('--anio') + 1]) || new Date().getFullYear()

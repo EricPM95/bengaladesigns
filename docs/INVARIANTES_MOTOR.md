@@ -603,6 +603,18 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
    después de las 16:00, sí como mucho 3 revisitas. **Destino listo = datos
    sin rojos + semáforo todo en verde.** Los límites no se aflojan para que un destino pase: si algo
    sale en rojo, o el dato está mal o el motor tiene un fallo.
+5. **Estaciones** (PROMPT_ESTACIONES.md):
+   - Horarios por periodo: rellenar `docs/kit/plantilla_horarios_por_periodo.json` (`by_period`,
+     `closed_dates`, `confianza`, `fuente`, `_nota`, `fecha_auditoria`) e importarla con
+     `node scripts/destino/importarPeriodos.mjs <destino> <fichero>`. `validar.mjs` avisa si los
+     periodos no cubren los 366 días o se solapan, y (con `--anio`) si la auditoría es de otro año.
+   - Puesta de sol: no se cura. Sale de `timezone` y del centro de la primera zona; `validar.mjs` marca
+     en rojo un destino sin ellos.
+   - Temporada: `available` en lugares, nocturnas y excursiones, y
+     `destination_config.experience_availability` para experiencias (`docs/kit/plantilla_temporada.json`).
+     Solo con fuente; `validar.mjs` marca en rojo una fecha mal escrita.
+   - Semáforo por meses: `--mes 1`, `--mes 4`, `--mes 7`, `--mes 10`, y con `--fecha` en los dos
+     cambios de hora del año.
 
 ---
 
