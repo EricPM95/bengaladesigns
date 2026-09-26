@@ -823,7 +823,10 @@ function simulate(sequence, ctx) {
       // resto de un grupo, lo que va dentro de su contenedor, o una visita larga como el Vaticano),
       // a las 13:30. Si no, se come primero y la visita abre la tarde.
       if (!lunchDone && pendingMeals.lunch && !place.fixed_start) {
-        const inProgress = continuesGroup || withContainer || (unit.isLong && Boolean(place.group))
+        // En un orden curado, lo que sigue a otra parada de su mismo grupo del JSON también está en marcha: el Foro
+        // detrás del Coliseo y el Arco llega hasta las 13:45 en tranquilo (decisión del 2026-09-26: sin madrugar).
+        const sameGroupRunning = ctx.keepOrder && Boolean(place.group) && previous?.place.group === place.group
+        const inProgress = continuesGroup || withContainer || (unit.isLong && Boolean(place.group)) || sameGroupRunning
         // En un bloque curado, la mañana puede alargarse hasta las 13:30 (y lo que está en marcha, media hora más).
         const limit = ctx.keepOrder ? (inProgress ? lunchClose + 30 : lunchClose) : inProgress ? lunchClose : lunchOpen
         if (at + duration > limit && !(inProgress && lunchComesNext)) {

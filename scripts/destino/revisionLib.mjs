@@ -85,10 +85,12 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
     const vistosDeDia = new Map()
     const visitados = new Map()
     const vistosDeNoche = new Set()
+    // El primer día en que cada lugar sale de noche ("lo mejor primero": una joya vista de noche cuenta ese día).
+    const nocheDia = new Map()
     const fuera = new Map()
     const firma = []
     // Para el resumen.
-    const cuenta = { paradas: [], madrugones: 0, comidasCortas: 0, huecos: 0, apariciones: new Map(), diaYNoche: [], poolMal: [], faltan: [] }
+    const cuenta = { paradas: [], madrugones: 0, comidasCortas: 0, huecos: 0, libres90: 0, apariciones: new Map(), diaYNoche: [], poolMal: [], faltan: [] }
     const aparece = (name) => cuenta.apariciones.set(name, (cuenta.apariciones.get(name) ?? 0) + 1)
     const poolVisto = new Map()
 
@@ -257,6 +259,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         cola.push({ at: t2m(night.suggested_time) + 0.5, row: `| ${night.suggested_time} | ${m2t(t2m(night.suggested_time) + night.duration_minutes)} | ${night.duration_minutes} min | 🌙 ${cell(night.name)} | ${paseo}${night.before_dinner ? ', antes de cenar' : ''} | |` })
         const lugar = String(night.place_name ?? night.name).replace(/\s*\(noche\)$/, '')
         vistosDeNoche.add(lugar)
+        if (!nocheDia.has(lugar)) nocheDia.set(lugar, n)
         aparece(lugar)
         const deDia = dayStops.find((stop) => (stop.place_name ?? stop.name) === lugar && !stop.pass_through)
         const dePaso = dayStops.find((stop) => (stop.place_name ?? stop.name) === lugar && stop.pass_through)
@@ -269,6 +272,20 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       for (const { row } of cola.sort((a, b) => a.at - b.at)) out.push(row)
       out.push('')
       cuenta.paradas.push(paradasDeVerdad)
+      // Huecos (sección 6 de DIAS_CURADOS_ROMA.md): en completo, ningún tiempo libre de más de 90 min, salvo el de
+      // antes de un atardecer de verano. Si sale, el día está mal curado para esa fecha: en rojo.
+      if (viaje.ritmo === 'completo') {
+        const verano = [5, 6, 7].includes(fechaDe(fecha).getUTCMonth())
+        const largos = [
+          ...libres.filter((entry) => entry.minutes > 90 && !(verano && dayStops.some((stop) => (stop.place_name ?? stop.name) === entry.before && stop.sunset_minutes != null))).map((entry) => `${entry.minutes} min antes de ${entry.before === LUNCH_LABEL ? 'comer' : entry.before}`),
+          ...(day.aperitivo && day.aperitivo.minutes > 90 ? [`${day.aperitivo.minutes} min de aperitivo antes de cenar`] : []),
+          ...(day.free_afternoon && day.free_afternoon.minutes > 90 ? [`${day.free_afternoon.minutes} min de tarde libre antes de cenar`] : []),
+        ]
+        for (const texto of largos) {
+          cuenta.libres90++
+          raro(n, `🔴 tiempo libre de más de 90 min en completo: ${cell(texto)}.`)
+        }
+      }
 
       const esUltimo = n === viaje.dias
       if (!esUltimo && !day.half_day_excursion && paradasDeVerdad < DIA_FLOJO[viaje.ritmo]) raro(n, `día flojo: ${paradasDeVerdad} paradas (sin contar lo de paso).`)
@@ -311,7 +328,9 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       // lo cerrado todo el viaje; y en 1-2 días, la joya que se queda solo con su nocturna (visita de última hora).
       const cierraAntes = (name) => vistosDeDia.has(name) && fechas.slice(0, vistosDeDia.get(name) - 1).some((iso) => cerradoEl(name, iso))
       const excepcion = (name) => (viaje.dias === 3 && conTour && vistosDeDia.get(name) === 3 && joyas.filter((other) => vistosDeDia.get(other) === 3).length === 1) || poolAntes(name) || cierraAntes(name) || cerradoTodo(name) || (viaje.dias <= 2 && !vistosDeDia.has(name) && vistosDeNoche.has(name))
-      const tardeJ = joyas.filter((name) => !excepcion(name)).filter((name) => !vistosDeDia.has(name) || (viaje.dias >= 3 && (vistosDeDia.get(name) > 3 || vistosDeDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}${vistosDeDia.get(name) === viaje.dias ? ' (el último)' : ''}` : vistosDeNoche.has(name) ? 'solo de noche' : 'no sale'}`)
+      // Una joya vista de noche cuenta como vista ese día (sección 6): el primer día, de día o de noche.
+      const primerDia = (name) => Math.min(vistosDeDia.get(name) ?? Infinity, nocheDia.get(name) ?? Infinity)
+      const tardeJ = joyas.filter((name) => !excepcion(name)).filter((name) => primerDia(name) === Infinity || (viaje.dias >= 3 && (primerDia(name) > 3 || primerDia(name) === viaje.dias))).map((name) => `joya ${name} ${primerDia(name) !== Infinity ? `el día ${primerDia(name)}${primerDia(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
       out.push(`- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): ${tardeJ.length ? `🔴 ${tardeJ.join(', ')}` : '🟢 sí'}.`)
       out.push('')
       if (tardeJ.length) raro(null, `lo mejor primero, en rojo: ${tardeJ.join(', ')}.`)
@@ -321,7 +340,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
     if (firmas.has(clave)) raro(null, `la ruta es igual que la del viaje ${firmas.get(clave)}.`)
     else firmas.set(clave, numero)
 
-    filasResumen.push(`| [${numero}](#viaje-${numero}) | ${viaje.dias} · ${viaje.ritmo}${conTour ? ' · FT' : ''} | ${cuenta.paradas.join(' · ')} | ${cuenta.madrugones} | ${cuenta.comidasCortas} | ${cuenta.huecos} | ${repetidos.length ? repetidos.map(([name, times]) => `${name} (${times})`).join(', ') : '—'} | ${cuenta.diaYNoche.length ? cuenta.diaYNoche.join(', ') : '—'} | ${cuenta.poolMal.length ? cuenta.poolMal.join(', ') : pool.length ? 'ok' : '—'} | ${nunca.length ? nunca.join(', ') : '—'} |`)
+    filasResumen.push(`| [${numero}](#viaje-${numero}) | ${viaje.dias} · ${viaje.ritmo}${conTour ? ' · FT' : ''} | ${cuenta.paradas.join(' · ')} | ${cuenta.madrugones} | ${cuenta.comidasCortas} | ${cuenta.huecos} | ${repetidos.length ? repetidos.map(([name, times]) => `${name} (${times})`).join(', ') : '—'} | ${cuenta.diaYNoche.length ? cuenta.diaYNoche.join(', ') : '—'} | ${cuenta.poolMal.length ? cuenta.poolMal.join(', ') : pool.length ? 'ok' : '—'} | ${nunca.length ? nunca.join(', ') : '—'} | ${cuenta.libres90 ? `🔴 ${cuenta.libres90}` : '0'} |`)
   }
 
   const comparacion = []
@@ -392,8 +411,8 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
           '',
           'Paradas por día (sin lo de paso ni las nocturnas; "exc." es el día de excursión), madrugones, comidas acortadas, huecos de más de 30 min sin nombre, lugares que salen más de 2 veces en el viaje (visita, de paso o de noche), día y noche el mismo día (en 3+ días también de paso), lo del pool que falta o va solo de paso e imprescindibles que no salen.',
           '',
-          '| Viaje | Tipo | Paradas por día | Madrugones | Comidas cortas | Huecos sin nombre | Más de 2 veces | Día y noche | Pool | Imprescindibles que faltan |',
-          '|---|---|---|---|---|---|---|---|---|---|',
+          '| Viaje | Tipo | Paradas por día | Madrugones | Comidas cortas | Huecos sin nombre | Más de 2 veces | Día y noche | Pool | Imprescindibles que faltan | Libre de más de 90 min (completo) |',
+          '|---|---|---|---|---|---|---|---|---|---|---|',
           ...filasResumen,
           '',
         ]

@@ -477,7 +477,8 @@ function measureTrip(trip, pace, exps) {
   const easterException = (name) => trip.hasFreeTour && lastDay === 4 && closedStart && firstDay.get(name) === lastDay && lateCount === 1
   // En 1-2 días la joya que se queda solo con su nocturna (visita de última hora) sale; y la que va tarde porque
   // cerraba algún día de antes (festivos), tampoco cuenta.
-  if (lastDay <= 2) for (const [name, day] of seenAtNight) if (!firstDay.has(name)) firstDay.set(name, day)
+  // Una joya vista de noche cuenta como vista ese día (DIAS_CURADOS_ROMA.md, sección 6), en viajes de cualquier duración.
+  for (const [name, day] of seenAtNight) if (!firstDay.has(name) || day < firstDay.get(name)) firstDay.set(name, day)
   const closedBefore = (name) => Boolean(FECHA) && firstDay.has(name) && Array.from({ length: firstDay.get(name) - 1 }, (_, i) => i + 1).some((n) => closedOnDay(placeOf(name), weekdayForDay(FECHA, n), addDaysIso(FECHA, n - 1)))
   const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name) && !easterException(name) && !closedBefore(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 

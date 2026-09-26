@@ -1,62 +1,49 @@
-# REVISION_RUTAS_V2: bloques → días curados
+# REVISION_RUTAS_V2: días curados (0cd2322) → días curados v3
 
-Antes: `C:\Users\ERIC\AppData\Local\Temp/rev_v2_bloques.md`. Después: `docs/REVISION_RUTAS_V2.md`. Mismos 21 viajes.
+Antes: `C:\Users\ERIC\AppData\Local\Temp/rev_v2_dias1.md`. Después: `docs/REVISION_RUTAS_V2.md`. Mismos 21 viajes.
 
 ## Por viaje
 
 | Viaje | Días antes (mañana + tarde) | Días ahora | Qué más cambia |
 |---|---|---|---|
-| 1 · 2 días · completo · Arte | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere | día 1: D1<br>día 2: D2 (invierno) | Paradas por día: 7 · 9 → 9 · 9 |
-| 2 · 2 días · completo · Naturaleza | día 1: roma_antigua + villa_borghese_pincio<br>día 2: vaticano + vaticano_trastevere | día 1: D1 (pool_borghese)<br>día 2: D2 | Paradas por día: 8 · 9 → 7 · 9<br>Pool: Castillo de Sant'Angelo falta → ok<br>Imprescindibles que faltan: Altar de la Patria → Plaza de España |
-| 3 · 2 días · completo · Free Tour + Barrios | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco | día 1: D3<br>día 2: D1-FT | Paradas por día: 4 · 7 → 4 · 10 |
-| 4 · 2 días · completo · Free Tour + Arte + Naturaleza | día 1: free_tour + letran_celio<br>día 2: roma_antigua + centro_barroco | día 1: D1-FT<br>día 2: D3 | Paradas por día: 6 · 7 → 10 · 4<br>Pool: Termas de Caracalla falta → Termas de Caracalla falta, Basílica de San Clemente falta<br>Imprescindibles que faltan: Museos Vaticanos y Capilla Sixtina, Basílica de San Pedro, Plaza de San Pedro → — |
-| 5 · 2 días · tranquilo · Barrios | día 1: vaticano + vaticano_trastevere<br>día 2: roma_antigua + centro_barroco | día 1: D2 (invierno, tranquilo, tranquilo_invierno)<br>día 2: D1 (tranquilo, pool_borghese) | Paradas por día: 6 · 8 → 5 · 6<br>Día y noche: D2 Panteón → —<br>Pool: Galería Borghese falta → ok<br>Imprescindibles que faltan: — → Piazza Navona, Plaza de España, Altar de la Patria |
-| 6 · 2 días · tranquilo · Free Tour + Naturaleza | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco | día 1: D3<br>día 2: D1-FT (tranquilo) | Paradas por día: 4 · 7 → 4 · 6<br>Madrugones: 1 → 0<br>Día y noche: D2 Panteón → — |
-| 7 · 3 días · completo · Arte | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere<br>día 3: campidoglio_ghetto + tridente_pincio | día 1: D1<br>día 2: D2<br>día 3: D4 | Paradas por día: 9 · 8 · 9 → 9 · 9 · 7 |
-| 8 · 3 días · completo · Naturaleza | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere<br>día 3: borghese + tridente_pincio | día 1: D1<br>día 2: D2<br>día 3: D4 | nada más |
-| 9 · 3 días · completo · Free Tour + Barrios | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco<br>día 3: campidoglio_ghetto + vaticano_trastevere | día 1: D3<br>día 2: D5 (domingo)<br>día 3: D1-FT | Paradas por día: 4 · 8 · 9 → 4 · 7 · 10 |
-| 10 · 3 días · completo · Free Tour + Arte + Naturaleza | día 1: caracalla_aventino + centro_barroco<br>día 2: free_tour + vaticano_por_la_tarde<br>día 3: roma_antigua + letran_celio | día 1: D1-FT (invierno)<br>día 2: D3<br>día 3: D5 (tarde_b) | Paradas por día: 9 · 4 · 8 → 9 · 4 · 7 |
-| 11 · 3 días · tranquilo · Barrios | día 1: vaticano + vaticano_trastevere<br>día 2: roma_antigua + centro_barroco<br>día 3: campidoglio_ghetto + tridente_pincio | día 1: D2 (tranquilo)<br>día 2: D4 (tranquilo, domingo)<br>día 3: D1 (tranquilo) | Paradas por día: 4 · 8 · 8 → 5 · 6 · 5<br>Madrugones: 1 → 0<br>Pool: Galería Borghese falta → ok |
-| 12 · 3 días · tranquilo · Free Tour + Naturaleza | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco<br>día 3: caracalla_aventino + campidoglio_ghetto | día 1: D3<br>día 2: D1-FT (tranquilo)<br>día 3: D4 (con_free_tour, tranquilo) | Paradas por día: 4 · 7 · 8 → 4 · 6 · 5<br>Madrugones: 1 → 0 |
-| 13 · 4 días · completo · Arte | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere<br>día 3: excursión<br>día 4: campidoglio_ghetto + tridente_pincio | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | Paradas por día: 9 · 8 · exc. · 10 → 9 · 9 · exc. · 7 |
-| 14 · 4 días · completo · Naturaleza | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere<br>día 3: excursión<br>día 4: borghese + tridente_pincio | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | Pool: Castillo de Sant'Angelo falta → ok |
-| 15 · 4 días · completo · Free Tour + Barrios | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco<br>día 3: excursión<br>día 4: caracalla_aventino + campidoglio_ghetto | día 1: D3<br>día 2: D1-FT (invierno)<br>día 3: excursión<br>día 4: D5 (tarde_b) | Paradas por día: 4 · 8 · exc. · 10 → 4 · 10 · exc. · 6 |
-| 16 · 4 días · completo · Free Tour + Arte + Naturaleza | día 1: caracalla_aventino + centro_barroco<br>día 2: free_tour + vaticano_por_la_tarde<br>día 3: excursión<br>día 4: roma_antigua + letran_celio | día 1: D1-FT<br>día 2: D3<br>día 3: excursión<br>día 4: D5 (tarde_b) | Paradas por día: 9 · 4 · exc. · 8 → 10 · 4 · exc. · 7 |
-| 17 · 4 días · tranquilo · Barrios | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere<br>día 3: excursión<br>día 4: campidoglio_ghetto + monti_basilicas | día 1: D1 (tranquilo)<br>día 2: D2 (tranquilo)<br>día 3: excursión<br>día 4: D4 (tranquilo) | Paradas por día: 7 · 6 · exc. · 8 → 5 · 6 · exc. · 6<br>Madrugones: 1 → 0<br>Pool: Galería Borghese falta → ok |
-| 18 · 4 días · tranquilo · Free Tour + Naturaleza | día 1: free_tour + vaticano_por_la_tarde<br>día 2: roma_antigua + centro_barroco<br>día 3: excursión<br>día 4: borghese + tridente_pincio | día 1: D3<br>día 2: D1-FT (invierno, tranquilo)<br>día 3: excursión<br>día 4: D4 (invierno, con_free_tour, tranquilo) | Paradas por día: 4 · 7 · exc. · 5 → 4 · 6 · exc. · 4 |
-| 19 · 2 días · completo · sin experiencias | día 1: vaticano + vaticano_trastevere<br>día 2: centro_temprano + bernini_trevi | día 1: D1<br>día 2: D2 (invierno) | Paradas por día: 9 · 12 → 9 · 9 |
-| 20 · 3 días · completo · sin experiencias | día 1: roma_antigua + centro_barroco<br>día 2: campidoglio_ghetto + bernini_trevi<br>día 3: vaticano_por_la_tarde + tridente_pincio | día 1: D1<br>día 2: D2 (invierno)<br>día 3: D4 (invierno) | Paradas por día: 9 · 9 · 8 → 9 · 8 · 5 |
-| 21 · 2 días · completo · sin experiencias | día 1: roma_antigua + centro_barroco<br>día 2: vaticano + vaticano_trastevere | día 1: D2<br>día 2: D1 | Paradas por día: 9 · 7 → 9 · 9<br>Comidas cortas: 1 → 0<br>Día y noche: D1 Panteón, D1 Fontana de Trevi → — |
+| 1 · 2 días · completo · Arte | día 1: D1<br>día 2: D2 (invierno) | día 1: D1<br>día 2: D2 (invierno) | nada más |
+| 2 · 2 días · completo · Naturaleza | día 1: D1 (pool_borghese)<br>día 2: D2 | día 1: D1 (pool_borghese)<br>día 2: D2 | Imprescindibles que faltan: Plaza de España → — |
+| 3 · 2 días · completo · Free Tour + Barrios | día 1: D3<br>día 2: D1-FT | día 1: D3<br>día 2: D1-FT | nada más |
+| 4 · 2 días · completo · Free Tour + Arte + Naturaleza | día 1: D1-FT<br>día 2: D3 | día 1: D1-FT<br>día 2: D3 | nada más |
+| 5 · 2 días · tranquilo · Barrios | día 1: D2 (invierno, tranquilo, tranquilo_invierno)<br>día 2: D1 (tranquilo, pool_borghese) | día 1: D2 (invierno, tranquilo, tranquilo_invierno)<br>día 2: D1 (tranquilo, pool_borghese) | Madrugones: 1 → 0<br>Imprescindibles que faltan: Piazza Navona, Plaza de España, Altar de la Patria → Altar de la Patria |
+| 6 · 2 días · tranquilo · Free Tour + Naturaleza | día 1: D3<br>día 2: D1-FT (tranquilo) | día 1: D3<br>día 2: D1-FT (tranquilo) | nada más |
+| 7 · 3 días · completo · Arte | día 1: D1<br>día 2: D2<br>día 3: D4 | día 1: D1<br>día 2: D2<br>día 3: D4 | nada más |
+| 8 · 3 días · completo · Naturaleza | día 1: D1<br>día 2: D2<br>día 3: D4 | día 1: D1<br>día 2: D2<br>día 3: D4 | nada más |
+| 9 · 3 días · completo · Free Tour + Barrios | día 1: D3<br>día 2: D5 (domingo)<br>día 3: D1-FT | día 1: D3<br>día 2: D1-FT<br>día 3: D5 (tarde_b, sin_caracalla) | Paradas por día: 4 · 7 · 10 → 4 · 10 · 8<br>Libre de más de 90 min: — → 🔴 1 |
+| 10 · 3 días · completo · Free Tour + Arte + Naturaleza | día 1: D1-FT (invierno)<br>día 2: D3<br>día 3: D5 (tarde_b) | día 1: D1-FT (invierno)<br>día 2: D3<br>día 3: D5 (tarde_b, tarde_b_san_clemente) | Libre de más de 90 min: — → 🔴 1 |
+| 11 · 3 días · tranquilo · Barrios | día 1: D2 (tranquilo)<br>día 2: D4 (tranquilo, domingo)<br>día 3: D1 (tranquilo) | día 1: D2 (tranquilo)<br>día 2: D4 (tranquilo, domingo)<br>día 3: D1 (tranquilo) | Paradas por día: 5 · 6 · 5 → 5 · 6 · 6 |
+| 12 · 3 días · tranquilo · Free Tour + Naturaleza | día 1: D3<br>día 2: D1-FT (tranquilo)<br>día 3: D4 (con_free_tour, tranquilo) | día 1: D3<br>día 2: D1-FT (tranquilo)<br>día 3: D4 (tranquilo, con_free_tour) | Paradas por día: 4 · 6 · 5 → 4 · 6 · 4 |
+| 13 · 4 días · completo · Arte | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | nada más |
+| 14 · 4 días · completo · Naturaleza | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | día 1: D1<br>día 2: D2<br>día 3: excursión<br>día 4: D4 | Paradas por día: 9 · 9 · exc. · 6 → 9 · 9 · exc. · 7 |
+| 15 · 4 días · completo · Free Tour + Barrios | día 1: D3<br>día 2: D1-FT (invierno)<br>día 3: excursión<br>día 4: D5 (tarde_b) | día 1: D3<br>día 2: D1-FT (invierno)<br>día 3: excursión<br>día 4: D5 (tarde_b) | Paradas por día: 4 · 10 · exc. · 6 → 4 · 10 · exc. · 7<br>Libre de más de 90 min: — → 🔴 1 |
+| 16 · 4 días · completo · Free Tour + Arte + Naturaleza | día 1: D1-FT<br>día 2: D3<br>día 3: excursión<br>día 4: D5 (tarde_b) | día 1: D1-FT<br>día 2: D3<br>día 3: excursión<br>día 4: D5 (tarde_b, tarde_b_san_clemente) | Libre de más de 90 min: — → 🔴 1 |
+| 17 · 4 días · tranquilo · Barrios | día 1: D1 (tranquilo)<br>día 2: D2 (tranquilo)<br>día 3: excursión<br>día 4: D4 (tranquilo) | día 1: D1 (tranquilo)<br>día 2: D2 (tranquilo)<br>día 3: excursión<br>día 4: D4 (tranquilo) | Paradas por día: 5 · 6 · exc. · 6 → 6 · 6 · exc. · 6 |
+| 18 · 4 días · tranquilo · Free Tour + Naturaleza | día 1: D3<br>día 2: D1-FT (invierno, tranquilo)<br>día 3: excursión<br>día 4: D4 (invierno, con_free_tour, tranquilo) | día 1: D3<br>día 2: D1-FT (invierno, tranquilo)<br>día 3: excursión<br>día 4: D4 (invierno, tranquilo, con_free_tour) | Madrugones: 1 → 0 |
+| 19 · 2 días · completo · sin experiencias | día 1: D1<br>día 2: D2 (invierno) | día 1: D2 (invierno)<br>día 2: D1 | Paradas por día: 9 · 9 → 9 · 6<br>Libre de más de 90 min: — → 🔴 2 |
+| 20 · 3 días · completo · sin experiencias | día 1: D1<br>día 2: D2 (invierno)<br>día 3: D4 (invierno) | día 1: D1<br>día 2: D4 (invierno)<br>día 3: D2 (invierno) | Paradas por día: 9 · 8 · 5 → 9 · 6 · 9<br>Libre de más de 90 min: — → 🔴 1 |
+| 21 · 2 días · completo · sin experiencias | día 1: D2<br>día 2: D1 | día 1: D2 (museos_cerrados)<br>día 2: D1 | Paradas por día: 9 · 9 → 8 · 9 |
 
 ## En total
 
 | | Antes | Ahora |
 |---|---|---|
-| Madrugones | 6 | 2 |
-| Comidas acortadas | 4 | 3 |
+| Madrugones | 2 | 0 |
+| Comidas acortadas | 3 | 3 |
 | Huecos de más de 30 min sin nombre | 0 | 0 |
 | Viajes con algo más de 2 veces | 0 | 0 |
-| Viajes con día y noche el mismo día | 3 | 0 |
-| Viajes con el pool mal (falta o solo de paso) | 6 | 1 |
-| Viajes con imprescindibles que faltan | 2 | 2 |
-| Cosas raras (caso a caso) | 12 | 13 |
+| Viajes con día y noche el mismo día | 0 | 0 |
+| Viajes con el pool mal (falta o solo de paso) | 1 | 1 |
+| Viajes con imprescindibles que faltan | 2 | 1 |
+| Cosas raras (caso a caso) | 13 | 13 |
 
 ## Lo raro que desaparece
 
-- **Viaje 2** (2 d, completo, abril): imprescindibles que no salen: Altar de la Patria.
-- **Viaje 2** (2 d, completo, abril): pool: Castillo de Sant'Angelo falta.
-- **Viaje 4** (2 d, completo, octubre): imprescindibles que no salen: Museos Vaticanos y Capilla Sixtina, Basílica de San Pedro, Plaza de San Pedro.
-- **Viaje 4** (2 d, completo, octubre): pool: Termas de Caracalla falta.
-- **Viaje 5** (2 d, tranquilo, enero): pool: Galería Borghese falta.
-- **Viaje 11** (3 d, tranquilo, abril): pool: Galería Borghese falta.
-- **Viaje 14** (4 d, completo, octubre): pool: Castillo de Sant'Angelo falta.
-- **Viaje 17** (4 d, tranquilo, julio): pool: Galería Borghese falta.
-- **Viaje 21, día 1** (2 d, completo, mayo): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-
-## Lo raro nuevo
-
 - **Viaje 2** (2 d, completo, abril): imprescindibles que no salen: Plaza de España.
-- **Viaje 4** (2 d, completo, octubre): pool: Termas de Caracalla falta, Basílica de San Clemente falta.
 - **Viaje 5** (2 d, tranquilo, enero): imprescindibles que no salen: Piazza Navona, Plaza de España, Altar de la Patria.
 - **Viaje 7** (3 d, completo, abril): lo mejor primero, en rojo: joya Fontana de Trevi el día 3 (el último).
 - **Viaje 9, día 3** (3 d, completo, octubre): Altar de la Patria se repite (ya se visitó el día 2).
@@ -65,3 +52,15 @@ Antes: `C:\Users\ERIC\AppData\Local\Temp/rev_v2_bloques.md`. Después: `docs/REV
 - **Viaje 13** (4 d, completo, julio): lo mejor primero, en rojo: joya Fontana de Trevi el día 4 (el último).
 - **Viaje 18, día 2** (4 d, tranquilo, enero): tarde libre de 136 min antes de cenar.
 - **Viaje 20** (3 d, completo, diciembre): lo mejor primero, en rojo: joya Fontana de Trevi el día 3 (el último).
+
+## Lo raro nuevo
+
+- **Viaje 5** (2 d, tranquilo, enero): imprescindibles que no salen: Altar de la Patria.
+- **Viaje 9, día 3** (3 d, completo, octubre): 🔴 tiempo libre de más de 90 min en completo: 174 min de tarde libre antes de cenar.
+- **Viaje 10, día 3** (3 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 154 min de tarde libre antes de cenar.
+- **Viaje 15, día 4** (4 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 159 min de tarde libre antes de cenar.
+- **Viaje 16, día 4** (4 d, completo, abril): 🔴 tiempo libre de más de 90 min en completo: 154 min de tarde libre antes de cenar.
+- **Viaje 19, día 2** (2 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 173 min antes de comer.
+- **Viaje 19, día 2** (2 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 115 min de aperitivo antes de cenar.
+- **Viaje 20, día 2** (3 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 167 min de tarde libre antes de cenar.
+- **Viaje 20, día 2** (3 d, completo, diciembre): tarde libre de 167 min antes de cenar.

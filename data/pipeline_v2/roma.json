@@ -8038,6 +8038,11 @@
               "rol": "parada"
             },
             {
+              "lugar": "Plaza de España",
+              "rol": "de_paso",
+              "nota": "De camino."
+            },
+            {
               "lugar": "Galería Borghese",
               "rol": "parada",
               "hora": "15:00",
@@ -8183,12 +8188,14 @@
         {
           "lugar": "Trastevere",
           "rol": "parada",
-          "nota": "Callejear."
+          "estirar": true,
+          "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte."
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "rol": "parada",
-          "nota": "Antes de las 18:00."
+          "si_cerrado": "de_paso",
+          "nota": "Antes de las 18:00; si ya cerró, de paso."
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -8242,6 +8249,7 @@
             {
               "lugar": "San Pietro in Montorio y Tempietto de Bramante",
               "rol": "parada",
+              "si_cerrado": "de_paso",
               "nota": "Si se llega antes de las 18:00."
             },
             {
@@ -8285,7 +8293,8 @@
             },
             {
               "lugar": "Trastevere",
-              "rol": "parada"
+              "rol": "parada",
+              "estirar": true
             },
             {
               "lugar": "Mirador del Janículo",
@@ -8364,12 +8373,13 @@
             }
           ]
         },
-        "domingo": {
+        "museos_cerrados": {
+          "si_cerrado": "Museos Vaticanos y Capilla Sixtina",
           "manana": [
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "nota": "El Ángelus es a las 12:00 si el Papa está en Roma."
+              "nota": "El Ángelus es a las 12:00 los domingos, si el Papa está en Roma."
             },
             {
               "lugar": "Basílica de San Pedro",
@@ -8378,6 +8388,52 @@
             {
               "lugar": "Cúpula de San Pedro",
               "rol": "parada"
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "nota": "Si abre ese día."
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "nota": "Y por el río hasta Trastevere."
+            },
+            {
+              "lugar": "Iglesia de Santa Maria in Trastevere",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Basílica de Santa Cecilia in Trastevere",
+              "rol": "parada",
+              "si_abre": true,
+              "nota": "Si abre."
+            }
+          ],
+          "comida": {
+            "texto": "Trastevere",
+            "restaurantes": []
+          },
+          "tarde": [
+            {
+              "lugar": "Trastevere",
+              "rol": "parada",
+              "estirar": true,
+              "nota": "Callejear."
+            },
+            {
+              "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+              "rol": "parada",
+              "si_cerrado": "de_paso"
+            },
+            {
+              "lugar": "Fontana dell'Acqua Paola",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Mirador del Janículo",
+              "rol": "atardecer"
             }
           ],
           "sin": "Museos Vaticanos y Capilla Sixtina"
@@ -8599,13 +8655,25 @@
           "nota": "A las 08:00, sin gente."
         },
         {
-          "lugar": "Plaza de España",
+          "lugar": "Iglesia de San Ignacio de Loyola",
           "rol": "parada",
-          "nota": "Y la escalinata."
+          "solo": {
+            "ritmo": "completo"
+          },
+          "nota": "La cúpula falsa; abre a las 09:00."
+        },
+        {
+          "lugar": "Plaza Colonna",
+          "rol": "de_paso"
         },
         {
           "lugar": "Via Condotti",
           "rol": "de_paso"
+        },
+        {
+          "lugar": "Plaza de España",
+          "rol": "parada",
+          "nota": "Y la escalinata."
         },
         {
           "lugar": "Ara Pacis",
@@ -8618,7 +8686,8 @@
         },
         {
           "lugar": "Piazza del Popolo",
-          "rol": "parada"
+          "rol": "parada",
+          "nota": "Por Via del Babuino."
         },
         {
           "lugar": "Santa Maria del Popolo",
@@ -8694,22 +8763,48 @@
         "con_free_tour": {
           "manana": [
             {
+              "lugar": "Galería Borghese",
+              "rol": "parada",
+              "hora": "09:00",
+              "pago": true,
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "experiencia": "arte_museos"
+                }
+              ],
+              "nota": "Turno de las 09:00 u 11:00, con reserva."
+            },
+            {
+              "lugar": "Parque de Villa Borghese",
+              "rol": "parada",
+              "nota": "Sin Galería, paseo largo: el lago, barca o bici."
+            }
+          ],
+          "comida": {
+            "texto": "Junto a Piazza del Popolo (Tridente)",
+            "restaurantes": [
+              "Edy",
+              "Poldo e Gianna Osteria",
+              "Sgarro Bistrot"
+            ]
+          },
+          "tarde": [
+            {
               "lugar": "Piazza del Popolo",
               "rol": "parada"
             },
             {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
-              "nota": "Caravaggio; de 10:30 a 12:00."
+              "nota": "Desde las 16:00."
             },
             {
-              "lugar": "Ara Pacis",
-              "rol": "parada",
-              "pago": true,
-              "solo": {
-                "experiencia": "arte_museos",
-                "min_dias": 5
-              }
+              "lugar": "Terraza del Pincio",
+              "rol": "atardecer",
+              "nota": "Antes, tiempo libre en el Tridente."
             }
           ]
         },
@@ -8770,8 +8865,7 @@
             {
               "min_dias": 4
             }
-          ],
-          "nota": "Si no toca, la mañana empieza en el Circo Máximo."
+          ]
         },
         {
           "lugar": "Circo Máximo",
@@ -8843,12 +8937,22 @@
       },
       "noche": "foro_a_tus_pies",
       "variantes": {
-        "tarde_b": {
-          "si_ya_salieron": [
-            "Plaza del Campidoglio",
-            "Barrio Judío"
-          ],
-          "tarde": [
+        "sin_caracalla": {
+          "si_no_va": "Termas de Caracalla",
+          "manana": [
+            {
+              "lugar": "Boca de la Verdad",
+              "rol": "parada",
+              "hora": "09:30"
+            },
+            {
+              "lugar": "Jardín de los Naranjos",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Ojo de la Cerradura del Aventino",
+              "rol": "parada"
+            },
             {
               "lugar": "Pirámide Cestia",
               "rol": "de_paso"
@@ -8860,14 +8964,68 @@
             {
               "lugar": "Testaccio",
               "rol": "parada",
+              "nota": "Bajar a Testaccio y callejear antes de comer."
+            }
+          ]
+        },
+        "tarde_b": {
+          "si_salen_en_otro_dia": [
+            "Plaza del Campidoglio",
+            "Barrio Judío"
+          ],
+          "tarde": [
+            {
+              "lugar": "Pirámide Cestia",
+              "rol": "de_paso",
+              "nota": "Metro B de Piramide a Cavour (10 min)."
+            },
+            {
+              "lugar": "Iglesia de San Pietro in Vincoli",
+              "rol": "parada",
+              "traslado": "el metro B (Piramide → Cavour)",
+              "nota": "El Moisés; reabre a las 15:00."
+            },
+            {
+              "lugar": "Basílica de Santa María la Mayor",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Monti",
+              "rol": "parada",
               "nota": "Callejear y aperitivo."
             }
           ],
           "cena": {
-            "texto": "Testaccio (Da Remo, Felice)",
-            "barrio": "testaccio"
+            "texto": "Monti",
+            "barrio": "monti"
           },
-          "noche": "trastevere_sublicio"
+          "noche": "coliseo"
+        },
+        "tarde_b_san_clemente": {
+          "tarde": [
+            {
+              "lugar": "Basílica de San Clemente",
+              "rol": "parada",
+              "hora": "14:00",
+              "traslado": "el metro B (Piramide → Colosseo)",
+              "nota": "Las tres iglesias superpuestas."
+            },
+            {
+              "lugar": "Basílica de San Juan de Letrán",
+              "rol": "parada",
+              "nota": "Luego, vuelta por el Celio."
+            },
+            {
+              "lugar": "Monti",
+              "rol": "parada",
+              "nota": "Callejear y aperitivo."
+            }
+          ],
+          "cena": {
+            "texto": "Monti",
+            "barrio": "monti"
+          },
+          "noche": "coliseo"
         },
         "invierno": {
           "atardecer": "Altar de la Patria"
@@ -8917,7 +9075,8 @@
       },
       "no_en": [
         {
-          "dia_semana": "lunes"
+          "dia_semana": "lunes",
+          "si_lleva": "Termas de Caracalla"
         }
       ]
     },
@@ -9110,10 +9269,17 @@
       "recorrido": [
         "Panteón (noche)",
         "Piazza Navona (noche)",
-        "Fontana de Trevi (noche)"
+        "Fontana de Trevi (noche)",
+        "Plaza de España (noche)"
       ],
-      "maximo": 3,
-      "texto": "Tu noche en el centro: el Panteón iluminado, la Piazza Navona con sus tres fuentes y, para terminar, la Fontana de Trevi. Tres joyas a diez minutos una de otra, con menos gente que de día y la ciudad a otro ritmo."
+      "maximo": 4,
+      "centro_dos_dias": [
+        "Panteón",
+        "Piazza Navona",
+        "Fontana de Trevi",
+        "Plaza de España"
+      ],
+      "texto": "Tu noche en el centro: lo que no has visto de día, iluminado y con menos gente. El Panteón, la Piazza Navona con sus fuentes, la Fontana de Trevi y la escalinata de la Plaza de España están a diez minutos unos de otros: un paseo precioso para cerrar el día."
     }
   },
   "curated_selection": {
@@ -9184,7 +9350,11 @@
     "Basílica de San Clemente": {
       "dia": "D6",
       "min_dias_ciudad": 5,
-      "antes": "pool_san_clemente"
+      "d5_tarde_b": "tarde_b_san_clemente",
+      "antes": "pool_san_clemente",
+      "nunca_en": [
+        "D5:manana"
+      ]
     },
     "Museos Capitolinos": {
       "dias": [

@@ -1010,3 +1010,21 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     alternativas o la nocturna más cercana a la cena.
 205. **Experiencia sin día** (mercadillos de Navidad): lo suyo en temporada, junto a la parada más cercana a 10 min
     como mucho, sin que se caiga nada.
+206. **Días curados v3** (DIAS_CURADOS_ROMA.md v3): variantes en orden tarde A/B → con_d5 → invierno → tranquilo
+    (+ tranquilo_invierno) → con_free_tour (después del ritmo: con tour, D4 da la vuelta al día) → día de la semana →
+    `si_cerrado` (D2 "Museos cerrados") → pool de D1 → tarde_b_san_clemente → sin_caracalla. La tarde A o B de D5 se
+    decide con el viaje entero (lo de `si_salen_en_otro_dia` en otro día o en el Free Tour); el tope de museos que
+    quita Caracalla vuelve a resolver el día (mañana sin Caracalla).
+207. **Banderas de parada**: `estirar` (Trastevere crece en tramos de 15 min hasta el atardecer sin perder visitas),
+    `si_abre` (fuera si está cerrada o hay que esperar más de 30 min: Santa Cecilia), `si_cerrado: 'de_paso'` (el
+    Tempietto cerrado se ve de paso, también cuando lo cierra el estirar).
+208. **Orden de los días**: solo evita cierres de lo que el día lleva de verdad (`no_en` con `si_lleva`: D5 en lunes
+    solo si lleva Caracalla). Una joya cerrada ese día cuesta 300 si se ve por fuera y 2000 si no (los Museos el 25
+    de diciembre o el 1 de enero mueven D2 a otro día).
+209. **Madrugón**: con `keepOrder`, la visita que sigue a otra del mismo grupo del JSON cuenta como en curso
+    (Coliseo → Foro), y la comida puede irse a las 14:00 en vez de madrugar.
+210. **Pool general**: `nunca_en` (San Clemente nunca en la mañana de D5); con D5 en tarde B, San Clemente va ahí.
+211. **Noche de 2 días**: los imprescindibles del centro que no salen de día van al paseo "centro iluminado"
+    (`centro_dos_dias`, hasta 4).
+212. **Revisión (sección 6)**: en completo, tiempo libre de más de 90 min en rojo salvo antes de un atardecer de
+    verano; una joya vista de noche cuenta como vista ese día (revisión y semáforo).

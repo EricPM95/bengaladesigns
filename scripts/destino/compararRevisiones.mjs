@@ -40,13 +40,13 @@ function viajes(text) {
 
 const A = viajes(antes)
 const B = viajes(despues)
-const cols = ['Tipo', 'Paradas por día', 'Madrugones', 'Comidas cortas', 'Huecos sin nombre', 'Más de 2 veces', 'Día y noche', 'Pool', 'Imprescindibles que faltan']
+const cols = ['Tipo', 'Paradas por día', 'Madrugones', 'Comidas cortas', 'Huecos sin nombre', 'Más de 2 veces', 'Día y noche', 'Pool', 'Imprescindibles que faltan', 'Libre de más de 90 min']
 const lines = [`# ${titulo}`, '', `Antes: \`${antesPath}\`. Después: \`${despuesPath}\`. Mismos ${B.out.size} viajes.`, '', '## Por viaje', '', '| Viaje | Días antes (mañana + tarde) | Días ahora | Qué más cambia |', '|---|---|---|---|']
 for (const [numero, viaje] of B.out) {
   const previo = A.out.get(numero)
   const ra = A.resumen.get(numero) ?? []
   const rb = B.resumen.get(numero) ?? []
-  const cambios = cols.slice(1).map((col, i) => (ra[i + 1] !== rb[i + 1] ? `${col}: ${ra[i + 1] ?? '—'} → ${rb[i + 1] ?? '—'}` : null)).filter(Boolean)
+  const cambios = cols.slice(1).map((col, i) => (ra[i + 1] !== rb[i + 1] && !(ra[i + 1] == null && rb[i + 1] === '0') ? `${col}: ${ra[i + 1] ?? '—'} → ${rb[i + 1] ?? '—'}` : null)).filter(Boolean)
   lines.push(`| ${numero} · ${viaje.titulo.split(' · ').slice(0, 3).join(' · ')} | ${(previo?.dias ?? []).map((d, i) => `día ${i + 1}: ${d}`).join('<br>')} | ${viaje.dias.map((d, i) => `día ${i + 1}: ${d}`).join('<br>')} | ${cambios.length ? cambios.join('<br>') : 'nada más'} |`)
 }
 const suma = (R, i) => [...R.resumen.values()].reduce((sum, row) => sum + (Number(row[i]) || 0), 0)

@@ -76,8 +76,8 @@ Marcas usadas abajo:
 3. Puente Sant'Angelo
 4. Paseo por el río (Lungotevere) hasta Trastevere
 5. Iglesia de Santa Maria in Trastevere
-6. Trastevere, callejear
-7. San Pietro in Montorio y Tempietto de Bramante (antes de las 18:00)
+6. Trastevere, callejear. **Aquí va todo el tiempo que sobre antes del atardecer** (aperitivo en el barrio), nunca arriba en el monte
+7. San Pietro in Montorio y Tempietto de Bramante (antes de las 18:00; si ya cerró, *de paso*)
 8. Fontana dell'Acqua Paola
 9. Mirador del Janículo 🌅
 10. Bajar a cenar a Trastevere (15 min cuesta abajo)
@@ -98,7 +98,8 @@ Marcas usadas abajo:
 **Tranquilo:** Museos de 10:00 a 13:00, comida de 13:00 a 14:30 y Plaza y Basílica de 14:30 a 16:00. Sin Cúpula y sin Castillo, salvo que esté en el pool. Después: Puente → Trastevere → Janículo 🌅 (en invierno, Trastevere y cena; el Janículo solo si da tiempo).
 
 **Cierres:**
-- **Domingo: Museos cerrados**, salvo el último domingo de mes de 09:00 a 14:00. Este día no va en domingo. Si no hay otro remedio: por la mañana Plaza, Basílica y Cúpula (y el Ángelus de las 12:00 si el Papa está en Roma), luego Castillo y tarde igual. Los Museos van a "No te dio tiempo" con aviso.
+- **Domingo: Museos cerrados**, salvo el último domingo de mes de 09:00 a 14:00. Este día no va en domingo.
+- **Variante "Museos cerrados"** (domingo sin alternativa, festivos como el 25 dic, 1 ene o 1 may): sin horas muertas. Mañana: Plaza de San Pedro, Basílica y Cúpula (y el Ángelus de las 12:00 si es domingo y el Papa está en Roma) → Castillo de Sant'Angelo (si abre ese día) → Puente Sant'Angelo → por el río a Trastevere → Iglesia de Santa Maria in Trastevere → Basílica de Santa Cecilia (si abre) → comida en Trastevere. Tarde: Trastevere, callejear → Tempietto → Acqua Paola → Janículo 🌅 → cena en Trastevere. Los Museos van a "No te dio tiempo" con su aviso.
 - **Lunes:** Castillo cerrado; se ve desde el puente.
 - **Miércoles por la mañana:** audiencia papal. Con los Museos a las 08:00 se llega a la Basílica cuando ya ha terminado, así que no afecta.
 
@@ -157,13 +158,15 @@ Marcas usadas abajo:
 ### D4 · Trevi sin gente, el Popolo y la Borghese
 *Tercer día para Arte, Naturaleza o sin experiencias. También cuando la Galería Borghese está en el pool.*
 
-**Mañana**
+**Mañana** (un paseo sin prisa del centro al Popolo, sin huecos antes de comer)
 1. Fontana de Trevi a las 08:00, sin gente
-2. Plaza de España y la escalinata
-3. Via Condotti *(de paso)*
-4. Ara Pacis 💶 *(Arte, 5+ días)*
-5. Piazza del Popolo
-6. Santa Maria del Popolo (Caravaggio; de 10:30 a 12:00)
+2. Iglesia de San Ignacio de Loyola (la cúpula falsa; abre a las 09:00) *(completo)*
+3. Plaza Colonna *(de paso)*
+4. Via Condotti *(de paso)*
+5. Plaza de España y la escalinata
+6. Ara Pacis 💶 *(Arte, 5+ días)*
+7. Piazza del Popolo (por Via del Babuino)
+8. Santa Maria del Popolo (Caravaggio; de 10:30 a 12:00)
 
 **Comida:** Tridente o Spagna (Edy, Poldo e Gianna Osteria, Sgarro Bistrot).
 
@@ -177,7 +180,7 @@ Marcas usadas abajo:
 
 **Invierno:** Galería en el turno de las 13:00, con la comida antes o después. El parque cierra al anochecer, así que el Pincio va a las 16:45-17:05.
 
-**Con Free Tour:** la mañana empieza en Piazza del Popolo, porque el tour ya enseñó Trevi y la Plaza de España.
+**Con Free Tour:** el tour ya enseñó Trevi, San Ignacio y la Plaza de España, así que el día se da la vuelta. Mañana: Galería Borghese 💶 (turno de las 09:00 u 11:00; si no hay Galería, paseo largo por el parque: lago, barca o bici) → Parque de Villa Borghese → comida junto a Piazza del Popolo. Tarde: Piazza del Popolo → Santa Maria del Popolo (desde las 16:00) → tiempo libre en el Tridente → Terraza del Pincio 🌅 → escalinata de noche. **Trevi y la Plaza de España de día no salen este día.**
 
 **Tranquilo:** Trevi a las 10:00 (con aviso: "a esta hora ya hay gente; si puedes, pásate temprano"). Plaza de España → Popolo → comida → Galería o parque → Pincio 🌅.
 
@@ -189,7 +192,7 @@ Marcas usadas abajo:
 *El día más local. Para Barrios o Naturaleza, o con las Termas de Caracalla en el pool.*
 
 **Mañana**
-1. Termas de Caracalla 💶, a las 09:00: **solo si están en el pool o el viaje es de 4+ días**; si no, la mañana empieza en el Circo Máximo
+1. Termas de Caracalla 💶, a las 09:00: **solo si están en el pool o el viaje es de 4+ días**. Sin Caracalla, la mañana empieza a las 09:30 en la Boca de la Verdad, y el Cementerio Protestante y Testaccio pasan a la mañana (antes de comer), para que no quede hueco
 2. Circo Máximo *(de paso)*
 3. Boca de la Verdad
 4. Jardín de los Naranjos
@@ -210,13 +213,16 @@ Marcas usadas abajo:
 **Cena (tarde A):** Monti.
 **Noche (tarde A):** 🌙 *El Foro a tus pies*: Foro Romano desde el Campidoglio.
 
-**Tarde B**, si el Campidoglio ya salió (viajes con Free Tour)
-1. Pirámide Cestia *(de paso)*
-2. Cementerio Protestante
-3. Testaccio, callejear
-4. Aperitivo
+**Tarde B**, si el Campidoglio sale en otro día del viaje (viajes con Free Tour). **Se decide mirando el viaje entero, no solo los días anteriores.**
+1. Pirámide Cestia *(de paso)* → metro B de Piramide a Cavour (10 min)
+2. Iglesia de San Pietro in Vincoli (el Moisés; reabre a las 15:00)
+3. Basílica de Santa María la Mayor
+4. Monti, callejear y aperitivo
 
-**Cena (tarde B):** Testaccio (Da Remo, Felice).
+Si **San Clemente** está en el pool: después de comer, metro a Colosseo → Basílica de San Clemente (desde las 14:00) → Basílica de San Juan de Letrán → vuelta por el Celio → Monti.
+
+**Cena (tarde B):** Monti.
+**Noche (tarde B):** 🌙 *El Coliseo iluminado* (10 min desde Monti).
 
 **Tranquilo:** Caracalla a las 10:00. Se quitan el Cementerio y el Circo *(de paso)* si no da tiempo.
 
@@ -282,7 +288,7 @@ Roma de noche es de lo que más se recuerda de un viaje, así que **cada día te
 **Reglas de las noches:**
 - En invierno (anochece hacia las 17:00), el paseo nocturno puede ir **antes de cenar**, entre el final de la tarde y la cena. Así se aprovecha el hueco que ahora sale como tiempo libre.
 - Nunca el mismo lugar de día y de noche el mismo día en viajes de 3+ días. Si un lugar ya salió de noche otro día, ese paseo cambia a otro lugar de la lista.
-- **Viajes de 2 días:** la noche de D1 puede ampliarse a *Panteón → Navona → Trevi iluminados* cuando el pool se lleva la tarde del centro (sección 4).
+- **Viajes de 2 días:** si algún imprescindible del centro (Panteón, Piazza Navona, Fontana de Trevi, Plaza de España) no sale de día, entra en el paseo nocturno de esa noche (*El centro iluminado*: Panteón → Navona → Trevi → Plaza de España, lo que falte). Ningún imprescindible del centro se queda sin ver en un viaje de 2 días.
 - Cada nocturna tiene su texto en el JSON: breve, con qué ver y por qué merece la pena, en tono cercano. Por ejemplo: "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y el ruido que tapa la ciudad. Tira la moneda de espaldas: dicen que así vuelves a Roma."
 
 ---
@@ -315,10 +321,10 @@ Con 4 días de ciudad entran D4 y D5; el orden entre ellos lo decide la experien
 
 | Lugar en el pool | Qué pasa |
 |---|---|
-| Galería Borghese | Entra D4 con Galería. **En 2 días:** la tarde de D1 pasa a ser Trevi → Galería → Pincio 🌅, y el Panteón y Navona se ven de noche (Panteón → Navona → Trevi iluminados). |
+| Galería Borghese | Entra D4 con Galería. **En 2 días:** la tarde de D1 pasa a ser Trevi → Plaza de España (de camino) → Galería → Pincio 🌅, y el Panteón y Navona se ven de noche (paseo *El centro iluminado*: Panteón → Navona). |
 | Castillo de Sant'Angelo | D2 con la visita al Castillo. Con Free Tour en 2-3 días: si no cabe sin quitar el Vaticano, va a "No te dio tiempo" con el motivo. |
 | Termas de Caracalla | Entra D5. **En 2 días:** la tarde de D1 pasa a ser Circo Máximo → Caracalla → Boca de la Verdad → Naranjos 🌅, cena en Trastevere, y el Panteón, Navona y Trevi de noche. |
-| Basílica de San Clemente | Entra D6 (5+ días). **En 2-4 días:** en D1 se come en Monti o el Celio y San Clemente va a las 14:00, antes del centro barroco. |
+| Basílica de San Clemente | Entra D6 (5+ días). **En 2-4 días:** si el viaje lleva D5 con tarde B, va ahí (San Clemente → Letrán → Monti); si no, en D1 se come en Monti o el Celio y San Clemente va a las 14:00, antes del centro barroco. **Nunca en la mañana de D5**, que está al otro lado. |
 | Museos Capitolinos | En la tarde del Campidoglio (D1-FT o D5 tarde A). |
 | Trastevere | Ya está en D2 o D1-FT. |
 | Catacumbas / Via Appia | Entra D7. |
@@ -350,6 +356,8 @@ Con 4 días de ciudad entran D4 y D5; el orden entre ellos lo decide la experien
 - Nocturnas: como mucho 2 por noche en completo y 1 en tranquilo. Nunca el mismo lugar de día y de noche el mismo día en viajes de 3+ días. En 1-2 días, si la visita de día cae después del atardecer, queda solo la nocturna.
 - Banners, avisos, cierres y festivos con visitas por fuera, avisos de traslado y cuestas: todo igual.
 - Comidas y cenas: el barrio lo marca el día; el restaurante se elige de los de ese barrio.
+- **Huecos:** en ritmo completo, ningún "Tiempo libre" de más de 90 min, salvo el que va antes de un atardecer de verano. Si aparece uno, el día está mal curado para esa fecha: la revisión lo marca en rojo, y no se rellena con paradas sueltas.
+- **"Lo mejor primero":** una joya vista de noche (Trevi o el Panteón en su paseo nocturno) cuenta como vista ese día.
 - **Museos de pago (💶):** además de las joyas y los imprescindibles (Coliseo y Foro, Vaticanos, Panteón), se respeta el tope de `museos_de_pago`: 0 extra hasta 3 días, 1 en 4 días, 2 en 5-6 días, 3 en 7 o más. **Con Arte, el tope sube en 1** (1 hasta 3 días, 2 en 4 días, 3 en 5-6 días, 4 en 7 o más). Con Arte en viajes de hasta 3 días, ese museo es la Galería Borghese (D4 con Galería). Lo del pool entra siempre y no cuenta para el tope. Si sobran museos 💶, se quitan en este orden: Ara Pacis → Mercados de Trajano → Castillo de Sant'Angelo → Termas de Caracalla → Galería Borghese. La Cúpula de San Pedro y el subterráneo de San Clemente no cuentan: son subidas o visitas cortas.
 
 ---
