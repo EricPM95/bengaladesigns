@@ -118,13 +118,11 @@ de zona.
 
 ### Queda por decidir
 
-1. **Lo mejor primero, lo que queda en rojo** (2026-09-26, con la propuesta ya aplicada):
-   - 3 días con Free Tour: el Vaticano sigue el día 3. Pasarlo a la tarde del día 1 deja la mañana del día 3
-     sin nada (el tour ya enseña el centro y las demás mañanas piden 4 días). ¿Se permite una mañana de 4
-     días (Trastevere, Caracalla) en 3 días con Free Tour, o se deja esa mañana libre?
-   - Pool que va primero (viajes 13 y 26 de la revisión completa): lo elegido por el viajero ocupa el día 1
-     y alguna joya cae el último día. ¿Pesa más el orden del pool o lo mejor primero?
-   - 4 días desde el domingo de Pascua: el Vaticano cierra el domingo y el lunes, y sale el día 4.
+1. **4 días con Free Tour desde el domingo de Pascua**: el Vaticano va el día 3 y el Coliseo el 4 (el último).
+   Con el Vaticano cerrado domingo y lunes, la excursión el lunes y el Free Tour el día 1, una joya cae el
+   último día sí o sí. ¿Se acepta como excepción?
+2. **Zigzag en tranquilo** (semáforo): el Altar de la Patria entra rescatado de paso al final del día (Monti →
+   Altar → cena) porque el Foro va después de comer; 0,4-0,9 km de más. Por estudiar.
 
 Resuelto (2026-09-26):
 - Quitar parada: la siguiente no se adelanta, salvo que el hueco pase de 45 min (entonces solo ella, sin

@@ -3797,6 +3797,17 @@ function nightExperienceOf(data, placeName) {
   return night ? { name: night.name, duration_min: night.duration ?? null, description: night.description ?? null } : null
 }
 
+/**
+ * Textos del cuestionario que viven en el JSON del destino (la pantalla de ritmo). Sin JSON, found:false y
+ * el cliente usa los suyos.
+ */
+app.post('/api/destination-texts', (req, res) => {
+  const { destination } = req.body ?? {}
+  const data = destination ? findPipelineV2Data(destination) : null
+  const pace = data?.destination_config?.pace_texts ?? null
+  res.json(pace ? { found: true, destination: data.destination ?? destination, pace } : { found: false })
+})
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {

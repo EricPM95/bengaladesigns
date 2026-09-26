@@ -66,9 +66,17 @@ export const MODES_V3 = {
   },
 }
 
-/** El cuestionario manda 'nonstop'/'tranquilo'. */
+/**
+ * El ritmo del motor a partir de lo que manda el cuestionario: 'nonstop' es completo; 'tranquilo', 'zen' y
+ * 'balanced' son tranquilo. Bug real (2026-09-26): la app manda 'zen' para "Tranquilo" y aquí solo se
+ * miraba 'tranquilo', así que todas las rutas tranquilas de la app salían completas.
+ */
+export function isTranquiloPace(pace) {
+  return pace === 'tranquilo' || pace === 'zen' || pace === 'balanced'
+}
+
 export function modeV3For(pace) {
-  return pace === 'tranquilo' ? MODES_V3.tranquilo : MODES_V3.completo
+  return isTranquiloPace(pace) ? MODES_V3.tranquilo : MODES_V3.completo
 }
 
 /**

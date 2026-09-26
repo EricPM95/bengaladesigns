@@ -17,6 +17,7 @@ import { PlaceSelector } from './PlaceSelector'
 import { CuratedPlacesPool, poolSelectionLimit } from './CuratedPlacesPool'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
+import { defaultPaceTexts, fetchPaceTexts, type PaceTexts } from '../../lib/destinationTextsApi'
 
 // Solo 2 de las 3 opciones de TripPace son alcanzables desde este selector (confirmado por el
 // usuario) — bug real encontrado en vivo: "Completo" enviaba 'balanced', pero el backend
@@ -26,10 +27,14 @@ import { Spinner } from '../ui/Spinner'
 // 'balanced', el pipeline generaba rutas mucho más ligeras de lo esperado para "Completo" — en un
 // viaje de pocos días, esto hacía que el esqueleto prefiriera meter una excursión de día completo
 // en vez de aprovechar los días en el propio destino.
-const paceOptions: { value: TripPace; icon: string; label: string; description: string }[] = [
-  { value: 'zen', icon: '🌿', label: 'Tranquilo', description: '2-3 paradas/día, mañanas tranquilas, pausas largas' },
-  { value: 'nonstop', icon: '⚡', label: 'Completo', description: '7-8 paradas/día, aprovechando el día al máximo' },
+// Pantalla de ritmo (decisión del 2026-09-26): Completo primero, preseleccionado y "Recomendado"; los
+// textos vienen del JSON del destino (destinationTextsApi.ts), con {destino} ya rellenado.
+const paceOptions: { value: TripPace; icon: string; label: string; textKey: 'completo' | 'tranquilo'; recommended: boolean }[] = [
+  { value: 'nonstop', icon: '⚡', label: 'Completo', textKey: 'completo', recommended: true },
+  { value: 'zen', icon: '🌿', label: 'Tranquilo', textKey: 'tranquilo', recommended: false },
 ]
+/** El ritmo que sale marcado mientras el viajero no elige otro. */
+const DEFAULT_PACE: TripPace = 'nonstop'
 
 type StepId = 'transport' | 'days' | 'companion' | 'experiences' | 'pace' | 'places'
 
@@ -115,6 +120,18 @@ export function Questionnaire() {
   // /api/curated-places-pool) en cuanto se conoce el destino decide qué versión del paso mostrar.
   // `null` = todavía no se sabe, `false` = destino no curado (PlaceSelector de siempre).
   const [curatedPool, setCuratedPool] = useState<PoolPlace[] | null | false>(null)
+  const [paceTexts, setPaceTexts] = useState<PaceTexts | null>(null)
+  useEffect(() => {
+    if (!destination) return
+    let cancelled = false
+    setPaceTexts(defaultPaceTexts(destination))
+    fetchPaceTexts(destination).then((texts) => {
+      if (!cancelled) setPaceTexts(texts)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [destination])
   useEffect(() => {
     if (!destination) return
     let cancelled = false
@@ -420,7 +437,7 @@ export function Questionnaire() {
               {activeStep === 'pace' && (
                 <div className="grid grid-cols-2 gap-3">
                   {paceOptions.map((option) => {
-                    const active = answers.pace === option.value
+                    const active = (answers.pace ?? DEFAULT_PACE) === option.value
                     return (
                       <button
                         key={option.value}
@@ -433,9 +450,12 @@ export function Questionnaire() {
                           active ? 'border-onb-accent bg-onb-accent-light' : 'border-onb-border bg-onb-card hover:border-onb-accent/50'
                         }`}
                       >
+                        {option.recommended && (
+                          <span className="rounded-full bg-onb-accent px-2.5 py-0.5 font-dmsans text-caption font-semibold text-white">{paceTexts?.recomendado ?? 'Recomendado'}</span>
+                        )}
                         <span className="text-3xl leading-none">{option.icon}</span>
                         <span className={`font-dmsans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.label}</span>
-                        <span className="font-dmsans text-small text-onb-text-soft">{option.description}</span>
+                        <span className="font-dmsans text-small text-onb-text-soft">{paceTexts?.[option.textKey] ?? ''}</span>
                       </button>
                     )
                   })}

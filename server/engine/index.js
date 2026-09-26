@@ -30,7 +30,7 @@ import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/rou
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
-import { MODES_V3 } from '../../shared/routeEngine/modes.js'
+import { MODES_V3, isTranquiloPace } from '../../shared/routeEngine/modes.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -280,7 +280,7 @@ export function contextBannerFor(destData, trip, options = {}) {
   const month = firstIso ? Number(firstIso.slice(5, 7)) : Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : Number.isInteger(options.month) ? options.month + 1 : null
   const winter = month !== null && (templates.meses_invierno ?? []).includes(month)
   const short = days <= 2
-  const tranquilo = (options.pace ?? '') === 'tranquilo'
+  const tranquilo = isTranquiloPace(options.pace)
   const usualStart = tranquilo ? MODES_V3.tranquilo.dayStart : MODES_V3.completo.dayStart
   // Los días que empiezan antes de su hora, y lo que salvan.
   const early = cityDays.filter((day) => day.schedule.modeFallback && (day.schedule.modeFallback.startedAt ?? usualStart) < usualStart)
@@ -376,6 +376,8 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
 
 /** Desde aquí, el rato antes de cenar ya se dice (FreeTimeBlock del cliente, 45 min). */
 const APERITIVO_MIN_MINUTES = 45
+/** Hasta aquí, el rato antes de cenar es aperitivo (decisión del 2026-09-26: los 99 min de 6 días en invierno). */
+const APERITIVO_MAX_MINUTES = 120
 
 /**
  * "Aperitivo y paseo por {barrio}" (PROMPT_AJUSTES_BLOQUES B.7): el tiempo libre de 90 min o menos justo
@@ -386,7 +388,7 @@ function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames) {
   const idle = tripDay.schedule?.idleBeforeDinner ?? 0
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
-  if (!last || idle < APERITIVO_MIN_MINUTES || idle > FREE_AFTERNOON_MIN_MINUTES) return null
+  if (!last || idle < APERITIVO_MIN_MINUTES || idle > APERITIVO_MAX_MINUTES) return null
   const zone = dinnerZones(destData).find((option) => option.id === tripDay.dinnerZone)
   if (!zone) return null
   const barrio = String(zone.label).replace(/\s*\/\s*/g, ' y ')

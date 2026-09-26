@@ -18,7 +18,7 @@ import { buildStop } from './buildDay.js'
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { hoursWarning, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -97,6 +97,33 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
   }
   return visit.start >= lunchEnd ? whyTexts.onTheWay() : whyTexts.onTheWayMorning()
 }
+
+/**
+ * El aviso del madrugón, con las plantillas del destino. {hora}: a la que se empieza; {lugar}: el nivel 1 que
+ * se salva, con su artículo ("el Foro Romano y el Altar de la Patria"); {cierre}: en invierno, la hora a la
+ * que cierra ese día (lo que antes cierra), si cierra antes de las 18:00.
+ */
+function wakeNoticeFor(destData, tripDay, places, startedAt) {
+  const templates = destData.destination_config?.pace_notices ?? {}
+  const levelOne = places.filter((place) => place.level === 1)
+  const named = (levelOne.length > 0 ? levelOne : places).map((place) => placeWithArticle(destData.places?.find((other) => other.name === place.name) ?? place))
+  const lugar = named.length > 0 ? joinSpanish([...new Set(named)]) : 'todo lo de hoy'
+  const hours = tripDay.hours ?? {}
+  const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : null
+  const winter = month !== null && (destData.destination_config?.context_banners?.meses_invierno ?? []).includes(month)
+  const closings = levelOne
+    .map((place) => parseClosingMinutes(scheduleForDay(destData.places?.find((other) => other.name === place.name) ?? place, hours)))
+    .filter((close) => close !== null && close < EARLY_CLOSING_MINUTES)
+  const fill = (text, values) => String(text).replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match)
+  // Varios lugares: la variante en plural ("cierran", "los veas").
+  const cierre = named.length > 1 ? templates.cierre_varios ?? templates.cierre : templates.cierre
+  if (winter && closings.length > 0 && cierre) return fill(cierre, { hora: toHHMM(startedAt), lugar, cierre: toHHMM(Math.min(...closings)) })
+  if (templates.general) return fill(templates.general, { hora: toHHMM(startedAt), lugar })
+  return `Hoy empezamos a las ${toHHMM(startedAt)} para que te dé tiempo a ver ${lugar}`
+}
+
+/** "Cierre temprano": lo que cierra antes de esta hora (el Foro, a las 16:30 en invierno). */
+const EARLY_CLOSING_MINUTES = 18 * 60
 
 /**
  * Un día de ciudad del motor v3, en el formato de la app.
@@ -194,20 +221,20 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   // imprescindible. Con el nombre de lo que se recupera, no con la regla.
   // El motivo de verdad: lo principal de lo que se recupera (el Coliseo y el Foro, no el Arco que abre
   // el grupo): sus imprescindibles de visita larga, o el más largo si no hay.
-  const recovered = [
+  const recoveredPlaces = [
     ...(schedule.modeFallback?.recoveredUnitIds ?? []).flatMap((id) => {
       const places = unitById.get(id)?.places ?? []
       const main = places.filter((place) => place.level === 1 && (place.duration_minutes ?? 0) >= 45)
-      return (main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)).map((place) => placeWithArticle(place))
+      return main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)
     }),
     // Madrugar pedido por la reparación del viaje: lo que se recupera es un imprescindible del viaje.
     // Solo lo que de verdad entra hoy (la reparación pasa la lista entera de lo que faltaba).
     ...(schedule.modeFallback?.recoveredNames ?? [])
       .filter((name) => schedule.visits.some((visit) => visit.place.name === name))
       .map((name) => destData.places?.find((place) => place.name === name))
-      .filter(Boolean)
-      .map((place) => placeWithArticle(place)),
+      .filter(Boolean),
   ].filter(Boolean)
+  const recovered = recoveredPlaces.map((place) => placeWithArticle(place)).filter(Boolean)
   // La comida acortada para no perder un imprescindible (ajustes C): se dice SIEMPRE (decisión del
   // 2026-09-26), con lo que se salva; si no se sabe nombrarlo, "todo lo de hoy". Nunca baja de 60 min.
   const shortened = schedule.shortenedLunch ?? []
@@ -216,18 +243,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     .filter(Boolean)
     .map((place) => placeWithArticle(place))
   const savedByLunch = namedByLunch.length > 0 ? namedByLunch : shortened.length > 0 ? ['todo lo de hoy'] : []
-  // Las dos cosas a la vez (madrugar y comer más corto) se dicen las dos: ninguna va en silencio.
-  const paceNotice =
-    recovered.length > 0 && savedByLunch.length > 0
-      ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}, y la comida es más corta para ver ${joinSpanish(savedByLunch)}`
-      : recovered.length > 0
-        ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}`
-        : savedByLunch.length > 0
-          ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}`
-          : // Se madruga y lo que se salva no se puede nombrar hoy: se dice igual (nunca un madrugón en silencio).
-            schedule.modeFallback?.startedAt != null
-            ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a verlo todo`
-            : null
+  // El madrugón se cuenta con cercanía (decisión del 2026-09-26), con las plantillas del JSON del destino
+  // (`destination_config.pace_notices`): la general, o la del cierre temprano en invierno. Si además se
+  // acorta la comida, se añade; ninguna de las dos cosas va en silencio.
+  const wakeNotice = schedule.modeFallback?.startedAt != null ? wakeNoticeFor(destData, tripDay, recoveredPlaces, schedule.modeFallback.startedAt) : null
+  const lunchNotice = savedByLunch.length > 0 ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}` : null
+  const paceNotice = wakeNotice && lunchNotice ? `${wakeNotice} ${lunchNotice}.` : wakeNotice ?? lunchNotice
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

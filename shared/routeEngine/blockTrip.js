@@ -84,6 +84,8 @@ const RESCUE_MAX_DETOUR = 15
 /** Un imprescindible que se ve desde la calle, de paso: 15 min y hasta este desvío (el bloque que pase más cerca). */
 const OUTSIDE_ESSENTIAL_MINUTES = 15
 const OUTSIDE_ESSENTIAL_MAX_DETOUR = 25
+/** "De camino" para ver algo de paso en vez de madrugar (el Altar): desvío de 10 min como mucho. */
+const OUTSIDE_ON_THE_WAY_MINUTES = 10
 /** El callejeo de un bloque (un barrio) se puede recortar hasta aquí para hacer sitio a un imprescindible. */
 const CALLEJEO_MIN_MINUTES = 20
 /** Más que esto andando entre la mañana y la tarde, el día avisa del traslado. */
@@ -218,10 +220,27 @@ export function planBlockTrip(args) {
     const consider = (trial, added) => {
       if (tripCost(trial) < tripCost(improved?.trial ?? best)) improved = { trial, added }
     }
-    for (const ban of [...wakes, ...earlier]) consider(planBlockTripOnce(args, new Set([...bans, ban])), [ban])
+    // Un madrugón solo vale si lo que faltaba entra ese mismo día (si no, es madrugar para nada).
+    const wokeFor = (trial, ban) => {
+      const [, dayNumber, names] = ban.match(/^madruga:(\d+):(.*)$/) ?? []
+      const day = trial.days.find((candidate) => candidate.dayNumber === Number(dayNumber))
+      return (names ?? '').split('|').some((name) => (day?.schedule?.visits ?? []).some((visit) => visit.place.name === name))
+    }
+    for (const ban of wakes) {
+      const trial = planBlockTripOnce(args, new Set([...bans, ban]))
+      if (wokeFor(trial, ban)) consider(trial, [ban])
+    }
+    // Y sin perder la visita: todas las joyas se siguen visitando por dentro (no solo el Coliseo de paso).
+    const visitedJoyas = (trip) => new Set(trip.days.flatMap((day) => (day.schedule?.visits ?? []).filter((visit) => !visit.place.passThrough).map((visit) => visit.place.name)))
+    const bestVisited = visitedJoyas(best)
+    for (const ban of earlier) {
+      const trial = planBlockTripOnce(args, new Set([...bans, ban]))
+      const trialVisited = visitedJoyas(trial)
+      if ((best.joyaNames ?? []).every((name) => !bestVisited.has(name) || trialVisited.has(name))) consider(trial, [ban])
+    }
     for (const day of dead) {
       for (const ban of repairBans(args, best, day)) {
-        if (bans.has(ban)) continue
+        if (bans.has(ban) || (best.pinnedMornings ?? []).includes(ban) || (best.pinnedMornings ?? []).some((pin) => ban === `todos:${pin.split(':')[1]}`)) continue
         const trial = planBlockTripOnce(args, new Set([...bans, ban]))
         consider(trial, [ban])
         // Si sin ese bloque el día muerto solo se ha ido a otro día (el Borghese pasa al día 3 y allí
@@ -230,7 +249,7 @@ export function planBlockTrip(args) {
         if (tripCost(trial) >= tripCost(best) + DEAD_DAY_COST || moved.length === 0) continue
         for (const other of moved) {
           for (const second of repairBans(args, trial, other)) {
-            if (bans.has(second) || second === ban) continue
+            if (bans.has(second) || second === ban || (best.pinnedMornings ?? []).includes(second) || (best.pinnedMornings ?? []).some((pin) => second === `todos:${pin.split(':')[1]}`)) continue
             consider(planBlockTripOnce(args, new Set([...bans, ban, second])), [ban, second])
           }
         }
@@ -272,7 +291,9 @@ function lateJoyasOf(trip) {
 function wakeBans(trip) {
   // Lo que falta del todo, y lo que solo entra de paso rescatado en otro día (el Altar al final del día del
   // Vaticano, lejos de todo): con el madrugón puede volver a su sitio, detrás del Foro.
-  const rescuedOutside = trip.days.flatMap((day) => (day.schedule?.kept ?? []).filter((unit) => String(unit.id).startsWith('de paso:')).flatMap((unit) => unit.places.map((place) => place.name)))
+  const rescuedOutside = trip.days
+    .flatMap((day) => (day.schedule?.kept ?? []).filter((unit) => String(unit.id).startsWith('de paso:')).flatMap((unit) => unit.places.map((place) => place.name)))
+    .filter((name) => (trip.rescueDetours?.[name] ?? Infinity) > OUTSIDE_ON_THE_WAY_MINUTES)
   const missing = [...new Set([...(trip.unplacedEssentials ?? []).map((item) => item.name), ...rescuedOutside])]
   if (missing.length === 0 || trip.mode?.dayStart === MODES_V3.completo.dayStart) return []
   // Cualquier día de tranquilo que empiece después de las 08:00 (con madrugón "lo justo" incluido): la
@@ -356,6 +377,19 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     return closedOnDay(place, hours.weekday, calendar.hasDates ? hours.dateIso : null) || !availableForTrip(place.available, calendar, hours.dateIso, inPool(name))
   }
   const anchorOf = (block) => block.paradas.find((stop) => stop.rol === 'ancla')?.lugar ?? null
+  // La excursión de día completo no le quita a una joya su único día bueno (decisión del 2026-09-26): 4 días
+  // desde el domingo de Pascua, el Vaticano cierra el domingo y el lunes; la excursión (día 3) pasa al lunes
+  // y el Vaticano va el día 3, no el último.
+  {
+    const excursionAt = skeleton.findIndex((day) => day.isExcursion)
+    const before = excursionAt > 0 ? skeleton.slice(0, excursionAt).filter((day) => !day.isBlank && !day.halfDayExcursion) : []
+    const stuck = [...joyaNames].find((name) => before.length > 0 && before.every((day) => closedThatDay(name, day)) && !closedThatDay(name, skeleton[excursionAt]))
+    if (stuck) {
+      const target = skeleton.indexOf(before.at(-1))
+      skeleton[excursionAt] = { ...skeleton[excursionAt], isExcursion: false, curated: skeleton[target].curated }
+      skeleton[target] = { ...skeleton[target], isExcursion: true, curated: null }
+    }
+  }
 
   // ── Mañanas ─────────────────────────────────────────────────────────────────────────────────
   // Un bloque que necesita transporte (la Via Appia: bus o taxi) se trata como excursión de medio día
@@ -426,12 +460,23 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   // El orden del pool manda también en los días (ajustes B.4): lo primero del pool, en los primeros días.
   const poolRank = (block) => Math.min(...block.paradas.filter((stop) => stop.rol !== 'de_paso' && inPool(stop.lugar)).map((stop) => poolNames.indexOf(stop.lugar)), Infinity)
   selectedMornings.sort((a, b) => poolRank(a) - poolRank(b))
+  // Una joya cerrada los primeros días (el Vaticano el domingo y el lunes de Pascua) va el primer día que
+  // abre, si llega a tiempo para lo mejor primero (decisión del 2026-09-26: el día 3, no el último).
+  const pinnedDayOf = new Map()
+  for (const block of selectedMornings) {
+    const anchor = anchorOf(block)
+    if (!anchor || !joyaNames.has(anchor)) continue
+    const firstOpen = morningDays.find((candidate) => !closedThatDay(anchor, candidate))
+    if (firstOpen && firstOpen !== morningDays[0] && firstOpen.dayNumber <= Math.min(EARLY_JOYA_LAST_DAY, contentDays - 1)) pinnedDayOf.set(block.id, firstOpen.dayNumber)
+  }
+  selectedMornings.sort((a, b) => Number(pinnedDayOf.has(b.id)) - Number(pinnedDayOf.has(a.id)))
   for (const block of selectedMornings) {
     const rest = selectedMornings.filter((other) => other !== block && !usedMornings.has(other.id))
     const free = (candidate) => !morningOf.has(candidate.dayNumber) && opensOn(block, candidate) && matchable(rest, new Map([...morningOf.entries(), [candidate.dayNumber, block]]))
     // Mejor un día en que todo lo imprescindible de la mañana abre por la mañana (el miércoles la
     // Basílica no abre hasta las 12:30): solo si no hay otro, ese día.
-    const day = morningDays.find((candidate) => free(candidate) && opensInMorning(block, candidate)) ?? morningDays.find(free)
+    const pinned = pinnedDayOf.has(block.id) ? morningDays.find((candidate) => candidate.dayNumber === pinnedDayOf.get(block.id) && free(candidate)) : null
+    const day = pinned ?? morningDays.find((candidate) => free(candidate) && opensInMorning(block, candidate)) ?? morningDays.find(free)
     if (!day) continue
     morningOf.set(day.dayNumber, block)
     usedMornings.add(block.id)
@@ -462,6 +507,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   const blockSummary = []
   let untypedHalves = 0
   const unplacedPool = []
+  // Lo rescatado de paso y su desvío (la reparación solo madruga por lo que queda lejos de camino).
+  const rescueDetours = new Map()
   const droppedForTime = new Set()
   const allUnits = buildUnits(destData, hasFreeTour)
   const plannedNames = new Set([...morningOf.values()].flatMap((block) => block.paradas.map((stop) => stop.lugar)))
@@ -617,6 +664,32 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // dio tiempo". Se probó madrugar lo justo (09:00, 09:30) y descolocaba el día: a las 08:00.
     const levelOne = (unit) => unit.places.some((place) => place.level === 1)
     const lostLevelOne = (candidate) => candidate.dropped.filter(({ unit }) => levelOne(unit)).length
+    // Un nivel 1 que se ve desde fuera (`pass_by`: el Altar desde Piazza Venezia) y se ha caído, de paso en
+    // su sitio del recorrido, si el desvío es de 10 min como mucho. Null si así no se recupera nada.
+    let outsideCache = null
+    const outsideInsteadOfWaking = (candidate) => {
+      if (outsideCache && outsideCache.from === candidate) return outsideCache.result
+      let list = units
+      for (const { unit } of candidate.dropped) {
+        const place = unit.places.find((other) => other.level === 1 && placeByName.get(other.name)?.pass_by)
+        if (!place || unit.role === 'de_paso') continue
+        const passBy = placeByName.get(place.name).pass_by
+        const at = list.indexOf(unit)
+        if (at < 0) continue
+        const coordinates = passBy.coordinates ?? place.coordinates
+        const prev = list[at - 1]?.places.at(-1)
+        const next = list[at + 1]?.places[0]
+        const leg = (x, y) => (x?.coordinates && y?.coordinates ? travel.leg(x.end_coordinates ?? x.coordinates, y.coordinates)?.minutes ?? Infinity : 0)
+        const detour = leg(prev, { coordinates }) + (next ? leg({ coordinates }, next) - leg(prev, next) : 0)
+        if (detour > OUTSIDE_ON_THE_WAY_MINUTES) continue
+        const outside = { ...asPassThrough(unit), places: [{ ...asPassThrough(unit).places[0], coordinates, duration_minutes: passBy.minutes ?? OUTSIDE_ESSENTIAL_MINUTES, ...(passBy.includes?.length ? { outsideOf: passBy.includes } : {}) }] }
+        list = list.map((other) => (other === unit ? outside : other))
+      }
+      const trial = list === units ? null : run(mode, list)
+      const result = trial && lostLevelOne(trial) < lostLevelOne(candidate) ? trial : null
+      outsideCache = { from: candidate, result }
+      return result
+    }
     // La reparación del viaje puede pedir madrugar un día (`madruga:<día>:<nombres>`): un imprescindible
     // se queda fuera de todo el viaje (o solo entra de paso rescatado lejos): se prueba empezar a las 08:00.
     const forcedWake = hasPlanB && morning ? [...bans].find((ban) => ban.startsWith(`madruga:${day.dayNumber}:`)) : null
@@ -637,6 +710,10 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     if (woken) {
       result = woken.result
       modeFallback = { recoveredUnitIds: [], recoveredNames: forcedWake.split(':').slice(2).join(':').split('|'), startedAt: woken.start, dayStart: woken.start }
+    } else if (hasPlanB && morning && lostLevelOne(result) > 0 && outsideInsteadOfWaking(result)) {
+      // Antes que madrugar (decisión del 2026-09-26): lo que se ve desde fuera (el Altar, desde Piazza
+      // Venezia) va de paso, 15 min, si queda de camino.
+      result = outsideInsteadOfWaking(result)
     } else if (hasPlanB && morning && lostLevelOne(result) > 0) {
       const baseLost = lostLevelOne(result)
       const found = wakeAsLateAsPossible((trial) => lostLevelOne(trial) < baseLost)
@@ -653,6 +730,24 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     }
     // Si aún se pierde un imprescindible, se acorta la comida (60 min comiendo, como mínimo) antes que
     // quitarlo (ajustes C: la Basílica con el Vaticano por la tarde en tranquilo).
+    // Antes de acortar la comida (decisión del 2026-09-26): fuera las paradas de paso secundarias de la
+    // tarde (no nivel 1, sin grupo con otra parada), de la última hacia atrás, solo las que hagan falta.
+    if (lost(result) > 0) {
+      const dayMode = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
+      const secondary = units.filter((unit) => !morningIds.has(unit.id) && unit.role === 'de_paso' && !levelOne(unit) && !unit.places.some((place) => place.group && units.some((other) => other !== unit && other.role !== 'de_paso' && other.places.some((mate) => mate.group === place.group))))
+      let list = units
+      const removed = []
+      for (const unit of [...secondary].reverse()) {
+        const trial = run(dayMode, list.filter((other) => other !== unit))
+        if (lost(trial) > lost(result)) continue
+        list = list.filter((other) => other !== unit)
+        removed.push(unit)
+        if (lost(trial) < lost(result)) {
+          result = { ...trial, dropped: [...trial.dropped, ...removed.map((other) => ({ unit: other, reason: 'lunch_kept' }))] }
+          if (lost(result) === 0) break
+        }
+      }
+    }
     if (lost(result) > 0) {
       const base = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
       // Nunca por debajo de 60 min comiendo (decisión del 2026-09-26).
@@ -1553,6 +1648,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       if (!best) continue
       const stillDropped = best.day.schedule.dropped.filter(({ unit: other }) => !other.places.some((p) => p.name === place.name))
       Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...stillDropped, ...best.result.dropped] } })
+      rescueDetours.set(place.name, best.detour)
       seen.add(place.name)
       for (const name of place.pass_by?.includes ?? []) seen.add(name)
       return true
@@ -1658,6 +1754,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     mode,
     days,
     joyaNames: [...joyaNames],
+    // Las mañanas fijadas por cierre (el Vaticano el día 3 en Pascua): la reparación no las mueve.
+    pinnedMornings: [...pinnedDayOf.entries()].filter(([id, dayNumber]) => morningOf.get(dayNumber)?.id === id).map(([id, dayNumber]) => `${dayNumber}:${id}`),
+    rescueDetours: Object.fromEntries(rescueDetours),
     notEnoughTime,
     coreDays: destData.destination_config?.core_days ?? null,
     placedDay: new Map(),

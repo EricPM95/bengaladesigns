@@ -65,9 +65,9 @@ export const MODE_CONFIG = {
   },
 }
 
-/** El cuestionario manda 'nonstop'/'tranquilo'; el motor piensa en completo/tranquilo. */
+/** El cuestionario manda 'nonstop' o 'zen'/'balanced'/'tranquilo'; el motor piensa en completo/tranquilo. */
 export function modeConfigFor(pace) {
-  return pace === 'tranquilo' ? MODE_CONFIG.tranquilo : MODE_CONFIG.completo
+  return pace === 'tranquilo' || pace === 'zen' || pace === 'balanced' ? MODE_CONFIG.tranquilo : MODE_CONFIG.completo
 }
 
 /**

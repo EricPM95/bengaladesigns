@@ -156,12 +156,14 @@ for (const [index, viaje] of VIAJES.entries()) {
     }
     if (day.pace_notice) {
       out.push(`- ⚠️ ${cell(day.pace_notice)}`)
-      const madrugar = /empezamos a las (\d\d:\d\d) para que te dé tiempo a ver (.*)$/i.exec(day.pace_notice)
+      // El aviso del madrugón (plantillas del destino): la hora y, en el texto, lo que se salva.
+      const hora = /(?:empezar|empezamos) a las (\d\d:\d\d)/i.exec(day.pace_notice)
+      const madrugar = hora ? [hora[0], hora[1], day.pace_notice.replace(/ Hoy la comida es más corta.*$/, '')] : null
       if (madrugar) {
         // Solo se madruga por un imprescindible de nivel 1 (decisión del 2026-09-26): lo demás es raro.
         const porQue = imprescindibles.filter((name) => madrugar[2].includes(name) || madrugar[2].includes(name.split(' y ')[0]))
         if (porQue.length === 0) raro(n, `se madruga (${madrugar[1]}) por algo que no es nivel 1: "${cell(day.pace_notice)}".`)
-        else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(day.pace_notice.replace(/, y la comida es más corta.*$/, ''))}"`, `viaje ${numero} día ${n}`)
+        else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(madrugar[2])}"`, `viaje ${numero} día ${n}`)
         if (/la comida es más corta/.test(day.pace_notice)) raro(n, `además la comida es más corta: "${cell(day.pace_notice)}".`)
       } else raro(n, `aviso del día: "${cell(day.pace_notice)}".`)
     }
@@ -269,7 +271,11 @@ for (const [index, viaje] of VIAJES.entries()) {
   // Lo mejor primero (ajustado el 2026-09-26): 2 días, las 4 joyas dentro; 3+, como muy tarde el día 3 y
   // ninguna solo el último día.
   if (viaje.dias >= 2) {
-    const tarde = joyas.filter((name) => !vistosDeDia.has(name) || (viaje.dias >= 3 && (vistosDeDia.get(name) > 3 || vistosDeDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}${vistosDeDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
+    // Excepciones (decisiones del 2026-09-26): en 3 días con Free Tour el Vaticano el día 3 vale; y una joya que
+    // va tarde porque lo del pool ocupa los días de antes no cuenta.
+    const poolAntes = (name) => pool.some((poolName) => vistosDeDia.has(poolName) && vistosDeDia.get(poolName) < (vistosDeDia.get(name) ?? Infinity))
+    const excepcion = (name) => (viaje.dias === 3 && viaje.exps.includes('free_tour') && vistosDeDia.get(name) === 3 && joyas.filter((other) => vistosDeDia.get(other) === 3).length === 1) || poolAntes(name)
+    const tarde = joyas.filter((name) => !excepcion(name)).filter((name) => !vistosDeDia.has(name) || (viaje.dias >= 3 && (vistosDeDia.get(name) > 3 || vistosDeDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}${vistosDeDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
     out.push(`- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): ${tarde.length ? `🔴 ${tarde.join(', ')}` : '🟢 sí'}.`)
     out.push('')
     if (tarde.length) raro(null, `lo mejor primero, en rojo: ${tarde.join(', ')}.`)

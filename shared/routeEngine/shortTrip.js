@@ -20,7 +20,7 @@ import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
-import { MODES_V3, modeV3For } from './modes.js'
+import { MODES_V3, isTranquiloPace, modeV3For } from './modes.js'
 import { toMinutes } from './time.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay } from './openingHours.js'
@@ -96,7 +96,7 @@ function blockStops(block, pace, experiencesPositive, destData) {
   const placeOf = (name) => destData.places?.find((place) => place.name === name)
   const paid = (place) => Boolean(place) && !(place.is_free_access ?? place.type === 'exterior')
   const themeOf = (place) => (experiencesPositive ?? []).find((theme) => theme in TAG_INTEREST_MAP && theme !== 'free_tour' && (place?.tags ?? []).some((tag) => TAG_INTEREST_MAP[theme].includes(tag))) ?? null
-  const extras = (pace === 'tranquilo' ? [] : (block.extras_completo ?? []))
+  const extras = (isTranquiloPace(pace) ? [] : (block.extras_completo ?? []))
     .map((name) => ({ name, place: placeOf(name) }))
     .filter(({ place }) => !paid(place) || themeOf(place))
     .map(({ name, place }) => (paid(place) ? { name, role: 'extra', swappedBy: themeOf(place) } : { name, role: 'extra' }))

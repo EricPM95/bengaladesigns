@@ -453,7 +453,10 @@ function measureTrip(trip, pace, exps) {
       for (const name of [stop.place_name ?? stop.name, ...(stop.outside_of ?? []), ...(stop.free_tour_covers ?? [])]) if (!firstDay.has(name)) firstDay.set(name, index + 1)
     }
   })
-  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name))).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
+  // Excepción (decisión del 2026-09-26): en 3 días con Free Tour, el Vaticano el día 3 vale.
+  // Una sola joya el día 3 (el Vaticano, o el Coliseo si el Vaticano va por la tarde del día del tour).
+  const tourException = (name) => trip.hasFreeTour && lastDay === 3 && firstDay.get(name) === 3 && JOYA_NAMES.filter((other) => firstDay.get(other) === 3).length === 1
+  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 
   return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }

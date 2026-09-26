@@ -849,6 +849,23 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     por el motor desde las plantillas de `destination_config.context_banners`: invierno corto, invierno,
     corto, tranquilo. En invierno, "y algún día empieza un poco antes" solo si algún día empieza antes de
     su hora.
+179. **Antes de acortar la comida**, fuera las paradas de paso secundarias de la tarde (no nivel 1, sin grupo
+    con otra parada), de la última hacia atrás y solo las que hagan falta. La comida solo se acorta si aun así
+    un nivel 1 se queda fuera del día.
+180. **Un nivel 1 que se ve desde fuera** (`pass_by`: el Altar, desde Piazza Venezia) y no cabe va de paso,
+    15 min, en su sitio del recorrido, antes que madrugar, si el desvío es de 10 min como mucho. La
+    reparación solo madruga por un imprescindible si entra ese mismo día, y no por uno rescatado de paso de
+    camino (10 min o menos).
+181. **Joyas y cierres**: si una joya está cerrada todos los días antes de la excursión y abre ese día, la
+    excursión pasa al último día cerrado (Pascua: excursión el lunes, Vaticano el día 3). Una joya cerrada
+    los primeros días va el primer día que abre si es como muy tarde el día 3, y la reparación no la mueve.
+    La reparación de lo mejor primero nunca deja una joya solo de paso (el Coliseo por fuera).
+182. **Lo mejor primero, excepciones** (semáforo y revisiones): en 3 días con Free Tour vale una joya el día
+    3; una joya que va tarde porque lo del pool ocupa los días de antes no cuenta; ni una joya cerrada todos
+    los días posibles.
+183. **Aperitivo hasta 120 min antes de cenar** ("Aperitivo y paseo por {barrio}"); por encima, tarde libre.
+184. **Ritmo del cuestionario**: 'zen' y 'balanced' son tranquilo (`isTranquiloPace`). Antes solo se miraba
+    'tranquilo' y la app mandaba 'zen': todas las rutas tranquilas de la app salían completas.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

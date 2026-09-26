@@ -195,7 +195,11 @@ for (const [index, viaje] of VIAJES.entries()) {
   // El último día de ciudad no cuenta (la tarde libre del último día es amarilla, no roja).
   for (const { n, minutos } of huecos.slice(0, -1)) if (minutos > 90) huecosRojos.push(`viaje ${index + 1}, día ${n}: ${minutos} min`)
   if (viaje.dias >= 2) {
-    const tarde = JOYAS.filter((name) => !primerDia.has(name) || (viaje.dias >= 3 && (primerDia.get(name) > 3 || primerDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${primerDia.has(name) ? `el día ${primerDia.get(name)}${primerDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
+    // Excepciones (decisiones del 2026-09-26): en 3 días con Free Tour el Vaticano el día 3 vale; y una joya que
+    // va tarde porque lo del pool ocupa los días de antes no cuenta.
+    const poolAntes = (name) => (viaje.pool ?? []).some((poolName) => primerDia.has(poolName) && primerDia.get(poolName) < (primerDia.get(name) ?? Infinity))
+    const excepcion = (name) => (viaje.dias === 3 && viaje.exps.includes('free_tour') && primerDia.get(name) === 3 && JOYAS.filter((other) => primerDia.get(other) === 3).length === 1) || poolAntes(name)
+    const tarde = JOYAS.filter((name) => !excepcion(name)).filter((name) => !primerDia.has(name) || (viaje.dias >= 3 && (primerDia.get(name) > 3 || primerDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${primerDia.has(name) ? `el día ${primerDia.get(name)}${primerDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
     if (tarde.length) mejorPrimero.push(`viaje ${index + 1}: ${tarde.join(', ')}`)
   }
   if (viaje.dias >= 2) for (const place of porFuera) if (!vistos.has(place.name)) faltanPorFuera.push(`viaje ${index + 1}: ${place.name}`)

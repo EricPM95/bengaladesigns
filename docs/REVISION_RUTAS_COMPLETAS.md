@@ -11,40 +11,40 @@ Cómo leerlo:
 
 ## Tranquilo frente a completo
 
-Los mismos 30 viajes hechos en los dos ritmos: paradas por día (sin lo de paso ni las nocturnas) y, entre paréntesis, la media. En total, completo 586 paradas y tranquilo 463 (7.4 frente a 5.9 por día).
+Los mismos 30 viajes hechos en los dos ritmos: paradas por día (sin lo de paso ni las nocturnas) y, entre paréntesis, la media. En total, completo 589 paradas y tranquilo 443 (7.5 frente a 5.6 por día).
 
 | Viaje | Días | Completo | Tranquilo | De menos |
 |---|---|---|---|---|
-| 1 | 2 | 9 · 8 (8.5) | 7 · 5 (6.0) | 5 |
-| 2 | 2 | 9 · 8 (8.5) | 7 · 4 (5.5) | 6 |
-| 3 | 2 | 4 · 7 (5.5) | 4 · 5 (4.5) | 2 |
+| 1 | 2 | 9 · 8 (8.5) | 8 · 5 (6.5) | 4 |
+| 2 | 2 | 9 · 8 (8.5) | 6 · 4 (5.0) | 7 |
+| 3 | 2 | 4 · 8 (6.0) | 4 · 6 (5.0) | 2 |
 | 4 | 2 | 7 · 9 (8.0) | 4 · 8 (6.0) | 4 |
-| 5 | 2 | 9 · 9 (9.0) | 7 · 8 (7.5) | 3 |
-| 6 | 2 | 9 · 9 (9.0) | 7 · 6 (6.5) | 5 |
-| 7 | 2 | 9 · 8 (8.5) | 7 · 5 (6.0) | 5 |
-| 8 | 2 | 8 · 9 (8.5) | 4 · 8 (6.0) | 5 |
-| 9 | 2 | 4 · 7 (5.5) | 4 · 5 (4.5) | 2 |
-| 10 | 3 | 8 · 8 · 6 (7.3) | 6 · 4 · 6 (5.3) | 6 |
-| 11 | 3 | 8 · 8 · 6 (7.3) | 6 · 6 · 6 (6.0) | 4 |
-| 12 | 3 | 8 · 8 · 6 (7.3) | 7 · 6 · 6 (6.3) | 3 |
-| 13 | 3 | 9 · 8 · 4 (7.0) | 7 · 7 · 4 (6.0) | 3 |
-| 14 | 3 | 8 · 8 · 6 (7.3) | 6 · 5 · 6 (5.7) | 5 |
-| 15 | 3 | 7 · 7 · 9 (7.7) | 6 · 7 · 4 (5.7) | 6 |
-| 16 | 3 | 8 · 8 · 6 (7.3) | 6 · 4 · 6 (5.3) | 6 |
-| 17 | 3 | 8 · 8 · 6 (7.3) | 4 · 7 · 6 (5.7) | 5 |
+| 5 | 2 | 9 · 9 (9.0) | 6 · 5 (5.5) | 7 |
+| 6 | 2 | 9 · 9 (9.0) | 6 · 6 (6.0) | 6 |
+| 7 | 2 | 9 · 8 (8.5) | 8 · 5 (6.5) | 4 |
+| 8 | 2 | 8 · 9 (8.5) | 4 · 6 (5.0) | 7 |
+| 9 | 2 | 4 · 8 (6.0) | 4 · 6 (5.0) | 2 |
+| 10 | 3 | 8 · 8 · 6 (7.3) | 4 · 4 · 8 (5.3) | 6 |
+| 11 | 3 | 8 · 8 · 6 (7.3) | 4 · 6 · 9 (6.3) | 3 |
+| 12 | 3 | 8 · 8 · 6 (7.3) | 5 · 7 · 6 (6.0) | 4 |
+| 13 | 3 | 9 · 8 · 4 (7.0) | 3 · 6 · 4 (4.3) | 8 |
+| 14 | 3 | 8 · 8 · 6 (7.3) | 7 · 5 · 6 (6.0) | 4 |
+| 15 | 3 | 7 · 7 · 9 (7.7) | 5 · 4 · 5 (4.7) | 9 |
+| 16 | 3 | 8 · 8 · 6 (7.3) | 4 · 4 · 8 (5.3) | 6 |
+| 17 | 3 | 8 · 8 · 6 (7.3) | 4 · 4 · 8 (5.3) | 6 |
 | 18 | 3 | 6 · 8 · 8 (7.3) | 5 · 7 · 5 (5.7) | 5 |
-| 19 | 4 | 8 · 8 · — · 5 (7.0) | 6 · 7 · — · 5 (6.0) | 3 |
-| 20 | 4 | 8 · 8 · — · 5 (7.0) | 4 · 7 · — · 6 (5.7) | 4 |
-| 21 | 4 | 4 · 7 · — · 6 (5.7) | 4 · 5 · — · 5 (4.7) | 3 |
-| 22 | 4 | 8 · 9 · — · 7 (8.0) | 7 · 8 · — · 6 (7.0) | 3 |
-| 23 | 4 | 8 · 8 · — · 5 (7.0) | 5 · 6 · — · 5 (5.3) | 5 |
-| 24 | 4 | 8 · 8 · — · 6 (7.3) | 6 · 7 · — · 5 (6.0) | 4 |
-| 25 | 4 | 8 · 8 · — · 5 (7.0) | 6 · 5 · — · 5 (5.3) | 5 |
-| 26 | 4 | 8 · 9 · — · 5 (7.3) | 7 · 5 · — · 5 (5.7) | 5 |
+| 19 | 4 | 8 · 8 · — · 5 (7.0) | 7 · 5 · — · 5 (5.7) | 4 |
+| 20 | 4 | 8 · 8 · — · 5 (7.0) | 4 · 4 · — · 9 (5.7) | 4 |
+| 21 | 4 | 4 · 8 · — · 6 (6.0) | 4 · 7 · — · 5 (5.3) | 2 |
+| 22 | 4 | 8 · 9 · — · 7 (8.0) | 4 · 4 · — · 7 (5.0) | 9 |
+| 23 | 4 | 8 · 8 · — · 5 (7.0) | 5 · 7 · — · 5 (5.7) | 4 |
+| 24 | 4 | 8 · 8 · — · 6 (7.3) | 6 · 4 · — · 7 (5.7) | 5 |
+| 25 | 4 | 8 · 8 · — · 5 (7.0) | 7 · 5 · — · 5 (5.7) | 4 |
+| 26 | 4 | 8 · 9 · — · 5 (7.3) | 4 · 4 · — · 6 (4.7) | 8 |
 | 27 | 1 | 10 (10.0) | 10 (10.0) | 0 |
 | 28 | 1 | 9 (9.0) | 9 (9.0) | 0 |
 | 29 | 5 | 7 · 8 · 10 · — · 6 (7.8) | 7 · 4 · 9 · — · 5 (6.3) | 6 |
-| 30 | 5 | 4 · 8 · 8 · — · 7 (6.8) | 4 · 7 · 6 · — · 5 (5.5) | 5 |
+| 30 | 5 | 4 · 8 · 8 · — · 7 (6.8) | 4 · 6 · 6 · — · 5 (5.3) | 6 |
 
 ## Índice
 
@@ -159,27 +159,22 @@ Del miércoles 14 de abril al jueves 15 de abril de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 19:49
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón
+- ⚠️ Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 09:00: así te da tiempo a ver el Panteón sin prisas. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
-| 08:30 | 10:00 | 90 min | Coliseo |  |  |
-| 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:25 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:15 | 30 min | Fontana de Trevi |  |  |
-| 19:30 | 19:45 | 15 min | Plaza de España | de paso |  |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico | 🚶 21 min |
+| 09:00 | 09:15 | 15 min | Arco de Constantino |  |  |
+| 09:20 | 10:50 | 90 min | Coliseo |  |  |
+| 11:30 | 13:15 | 105 min | Foro Romano y Palatino |  |  |
+| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:15 | 15:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 16:00 | 16:30 | 30 min | Piazza Navona |  | 🚶 17 min desde Altar de la Patria |
+| 16:45 | 16:55 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
+| 17:00 | 17:15 | 15 min | Panteón | de paso |  |
+| 17:30 | 18:00 | 30 min | Fontana de Trevi |  |  |
+| 18:15 | 18:45 | 30 min | Plaza de España |  |  |
+| | | 54 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Via Condotti, Fuente del Tritón, Plaza Colonna | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico | 🚶 21 min |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 | 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -204,7 +199,7 @@ Del miércoles 14 de abril al jueves 15 de abril de 2027.
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Cúpula de San Pedro (No te dio tiempo).
+- **No te dio tiempo**: Barrio Judío (No te dio tiempo); Cúpula de San Pedro (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -244,19 +239,20 @@ Del sábado 17 de julio al domingo 18 de julio de 2027.
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:30 | 14:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:00 | 15:10 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:15 | 15:45 | 30 min | Barrio Judío |  |  |
-| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
-| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
-| 16:45 | 16:55 | 10 min | Piazza Navona | de paso |  |
-| 17:00 | 17:20 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 17:55 | 18:05 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:10 | 18:40 | 30 min | Panteón |  |  |
-| | | 73 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Iglesia del Gesù, Plaza Colonna | |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 14:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
+| 15:45 | 16:05 | 20 min | Largo di Torre Argentina |  |  |
+| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
+| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
+| 17:00 | 17:10 | 10 min | Piazza Navona | de paso |  |
+| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:25 | 18:55 | 30 min | Panteón |  |  |
+| | | 58 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Plaza Colonna | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -298,26 +294,26 @@ Del sábado 20 de febrero al domingo 21 de febrero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:50
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón
+- ⚠️ Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria y la Plaza de España sin prisas. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:15 | 30 min | Fontana de Trevi |  |  |
-| 19:30 | 19:45 | 15 min | Plaza de España | de paso |  |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:30 | 15:50 | 20 min | Barrio Judío |  |  |
+| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
+| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
+| 16:45 | 17:15 | 30 min | Piazza Navona |  |  |
+| 17:30 | 17:50 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 18:00 | 18:10 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:15 | 18:45 | 30 min | Panteón |  |  |
+| 19:00 | 19:30 | 30 min | Fontana de Trevi |  |  |
+| 19:45 | 20:00 | 15 min | Plaza de España | de paso |  |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico | 🚶 21 min |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 | 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
@@ -473,26 +469,26 @@ Del miércoles 13 de enero al jueves 14 de enero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:01
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón
+- ⚠️ Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria sin prisas. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:25 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:15 | 30 min | Fontana de Trevi |  |  |
-| 19:30 | 19:45 | 15 min | Plaza de España | de paso |  |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:30 | 15:50 | 20 min | Barrio Judío |  |  |
+| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
+| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
+| 16:45 | 17:15 | 30 min | Piazza Navona |  |  |
+| 17:30 | 17:50 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 18:00 | 18:10 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:15 | 18:45 | 30 min | Panteón |  |  |
+| 19:00 | 19:30 | 30 min | Fontana de Trevi |  |  |
+| 19:45 | 20:00 | 15 min | Plaza de España | de paso |  |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico | 🚶 21 min |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 | 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
@@ -616,30 +612,22 @@ Del miércoles 4 de agosto al jueves 5 de agosto de 2027.
 ### Día 2 — jueves 5 de agosto · Roma — día 2
 
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
-- **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
+- **Tarde**: El Aventino al atardecer y cena en Testaccio (`aventino_testaccio`)
 - **Atardecer**: 20:24
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
-| 08:30 | 10:00 | 90 min | Coliseo |  |  |
-| 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 15:00 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:00 | 15:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:30 | 15:40 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:45 | 16:15 | 30 min | Barrio Judío |  |  |
-| 16:30 | 16:40 | 10 min | Plaza Farnese | de paso |  |
-| 16:45 | 16:55 | 10 min | Campo de' Fiori | de paso |  |
-| 17:15 | 17:25 | 10 min | Piazza Navona | de paso |  |
-| 17:30 | 17:40 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 18:00 | 18:10 | 10 min | Iglesia de Santa Maria sopra Minerva | de paso |  |
-| 18:15 | 18:25 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:30 | 19:00 | 30 min | Panteón |  |  |
-| | | 53 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Plaza Colonna | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:00 | 17:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 17:45 | 17:55 | 10 min | Circo Máximo | de paso | 🚶 20 min desde Altar de la Patria |
+| 18:15 | 18:35 | 20 min | Boca de la Verdad |  |  |
+| 19:00 | 19:20 | 20 min | Jardín de los Naranjos |  |  |
+| 19:30 | 19:40 | 10 min | Ojo de la Cerradura del Aventino |  |  |
+| 20:00 | 20:10 | 10 min | Pirámide Cestia | de paso |  |
+| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Testaccio |  |
 
 #### Lo que quedó fuera
 
@@ -660,7 +648,6 @@ Del lunes 12 de abril al miércoles 14 de abril de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 19:47
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -668,18 +655,17 @@ Del lunes 12 de abril al miércoles 14 de abril de 2027.
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
 | 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:25 | 18:55 | 30 min | Panteón |  |  |
-| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
+| 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 14:30 | 14:40 | 10 min | Fuente de las Tortugas | de paso |  |
+| 14:45 | 15:15 | 30 min | Barrio Judío |  |  |
+| 15:30 | 15:40 | 10 min | Plaza Farnese | de paso |  |
+| 15:45 | 15:55 | 10 min | Campo de' Fiori | de paso |  |
+| 16:15 | 16:45 | 30 min | Piazza Navona |  |  |
+| 17:00 | 17:20 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 17:55 | 18:05 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:10 | 18:40 | 30 min | Panteón |  |  |
+| 19:00 | 19:15 | 15 min | Fontana de Trevi | de paso |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -722,8 +708,8 @@ Del lunes 12 de abril al miércoles 14 de abril de 2027.
 | 17:00 | 17:15 | 15 min | Plaza Colonna |  |  |
 | 17:30 | 17:50 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
 | 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
+| 18:45 | 19:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi | 🚶 17 min |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
@@ -738,35 +724,30 @@ Del lunes 12 de abril al miércoles 14 de abril de 2027.
 
 Del miércoles 14 de julio al viernes 16 de julio de 2027.
 
-> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 1 día empieza antes, para que no te quedes sin ver la Fontana de Trevi y el Altar de la Patria.
+> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 ### Día 1 — miércoles 14 de julio · Roma — día 1
 
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 20:44
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
-| 08:30 | 10:00 | 90 min | Coliseo |  |  |
-| 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:25 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:00 | 15 min | Fontana de Trevi | de paso |  |
-| | | 46 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Plaza Colonna, Columna de Trajano | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:15 | 17:25 | 10 min | Plaza Farnese | de paso | 🚶 23 min desde Foro Romano y Palatino |
+| 17:30 | 17:40 | 10 min | Campo de' Fiori | de paso |  |
+| 18:00 | 18:30 | 30 min | Piazza Navona |  |  |
+| 18:45 | 18:55 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
+| 19:15 | 19:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 19:30 | 19:45 | 15 min | Panteón | de paso |  |
+| 20:00 | 20:15 | 15 min | Fontana de Trevi | de paso |  |
+| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
 ### Día 2 — jueves 15 de julio · Roma — día 2
 
@@ -799,15 +780,17 @@ Del miércoles 14 de julio al viernes 16 de julio de 2027.
 | 10:00 | 10:30 | 30 min | Fontana de Trevi |  |  |
 | 11:00 | 11:30 | 30 min | Plaza de España |  |  |
 | 12:00 | 12:10 | 10 min | Via Condotti | de paso |  |
-| 13:00 | 15:00 | | 🍝 **Comida**: Colline Emiliane | en Trevi | |
-| 16:00 | 16:20 | 20 min | Iglesia de Santa Maria della Vittoria |  |  |
-| 16:30 | 16:40 | 10 min | Fuente del Tritón | de paso |  |
-| 17:00 | 17:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
-| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 12:30 | 13:00 | 30 min | Panteón |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Armando al Pantheon | en Centro Histórico | |
+| 15:00 | 15:20 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 15:30 | 15:45 | 15 min | Plaza Colonna |  |  |
+| 16:15 | 16:35 | 20 min | Iglesia de Santa Maria della Vittoria |  | 🚶 18 min desde Plaza Colonna |
+| 16:45 | 16:55 | 10 min | Fuente del Tritón | de paso |  |
+| 17:15 | 17:35 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 18:00 | 18:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 18:30 | 19:00 | 30 min | Iglesia del Gesù |  |  |
+| 19:15 | 19:45 | 30 min | Barrio Judío |  |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere |  |
 
 #### Lo que quedó fuera
 
@@ -852,7 +835,6 @@ Del sábado 16 de enero al lunes 18 de enero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:06
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -860,18 +842,17 @@ Del sábado 16 de enero al lunes 18 de enero de 2027.
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
 | 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:25 | 18:55 | 30 min | Panteón |  |  |
-| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
+| 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 14:30 | 14:40 | 10 min | Fuente de las Tortugas | de paso |  |
+| 14:45 | 15:15 | 30 min | Barrio Judío |  |  |
+| 15:30 | 15:40 | 10 min | Plaza Farnese | de paso |  |
+| 15:45 | 15:55 | 10 min | Campo de' Fiori | de paso |  |
+| 16:15 | 16:45 | 30 min | Piazza Navona |  |  |
+| 17:00 | 17:20 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 17:55 | 18:05 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:10 | 18:40 | 30 min | Panteón |  |  |
+| 19:00 | 19:15 | 15 min | Fontana de Trevi | de paso |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -892,9 +873,9 @@ Del sábado 16 de enero al lunes 18 de enero de 2027.
 | 17:00 | 17:15 | 15 min | Plaza Colonna |  |  |
 | 17:30 | 17:50 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
 | 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
-| 19:00 | 19:45 | 45 min | 🌙 Panteón (noche) | experiencia nocturna, antes de cenar | |
+| 18:45 | 19:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi | 🚶 17 min |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
@@ -983,7 +964,7 @@ Del sábado 15 de mayo al lunes 17 de mayo de 2027.
 - **No te dio tiempo**: Mercado de Testaccio (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
-- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🔴 joya Fontana de Trevi el día 3 (el último), joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
+- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
 
 <a id="viaje-14"></a>
 ## Viaje 14 — 3 días · tranquilo · sin experiencias · febrero · empieza en lunes
@@ -997,24 +978,23 @@ Del lunes 15 de febrero al miércoles 17 de febrero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:43
-- ⚠️ Hoy empezamos a las 09:00 para que te dé tiempo a ver el Foro Romano, y la comida es más corta para ver el Panteón
+- ⚠️ Hoy toca madrugar un poco. En invierno el Foro Romano cierra a las 16:30, así que hoy empezamos a las 09:00 para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 09:00 | 09:15 | 15 min | Arco de Constantino |  |  |
 | 09:20 | 10:50 | 90 min | Coliseo |  |  |
 | 11:30 | 13:15 | 105 min | Foro Romano y Palatino |  |  |
-| 13:15 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:30 | 14:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:00 | 15:10 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:15 | 15:45 | 30 min | Barrio Judío |  |  |
-| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
-| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
-| 16:45 | 17:15 | 30 min | Piazza Navona |  |  |
-| 17:30 | 17:40 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 18:00 | 18:10 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:15 | 18:45 | 30 min | Panteón |  |  |
-| 19:00 | 19:15 | 15 min | Fontana de Trevi | de paso |  |
+| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:30 | 16:00 | 30 min | Barrio Judío |  |  |
+| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
+| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
+| 17:00 | 17:30 | 30 min | Piazza Navona |  |  |
+| 17:45 | 18:05 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 18:15 | 18:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:30 | 19:00 | 30 min | Panteón |  |  |
+| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -1054,9 +1034,9 @@ Del lunes 15 de febrero al miércoles 17 de febrero de 2027.
 | 17:00 | 17:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
 | 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
 | 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
-| 19:00 | 19:45 | 45 min | 🌙 Panteón (noche) | experiencia nocturna, antes de cenar | |
+| 18:45 | 19:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi | 🚶 17 min |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
@@ -1144,42 +1124,37 @@ Del sábado 17 de julio al lunes 19 de julio de 2027.
 - **No te dio tiempo**: nada.
 - **Imprescindibles que no salen**: ninguno.
 
-- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🔴 joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
+- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
 
 <a id="viaje-16"></a>
 ## Viaje 16 — 3 días · tranquilo · Arte · abril · empieza en miércoles
 
 Del miércoles 14 de abril al viernes 16 de abril de 2027.
 
-> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 1 día empieza antes, para que no te quedes sin ver la Fontana de Trevi y el Altar de la Patria.
+> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 ### Día 1 — miércoles 14 de abril · Roma — día 1
 
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 19:49
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
-| 08:30 | 10:00 | 90 min | Coliseo |  |  |
-| 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:25 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:00 | 15 min | Fontana de Trevi | de paso |  |
-| | | 46 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Plaza Colonna, Columna de Trajano | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:15 | 17:25 | 10 min | Plaza Farnese | de paso | 🚶 23 min desde Foro Romano y Palatino |
+| 17:30 | 17:40 | 10 min | Campo de' Fiori | de paso |  |
+| 18:00 | 18:30 | 30 min | Piazza Navona |  |  |
+| 18:45 | 18:55 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
+| 19:15 | 19:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 19:30 | 19:45 | 15 min | Panteón | de paso |  |
+| 20:00 | 20:15 | 15 min | Fontana de Trevi | de paso |  |
+| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
 ### Día 2 — jueves 15 de abril · Roma — día 2
 
@@ -1211,19 +1186,21 @@ Del miércoles 14 de abril al viernes 16 de abril de 2027.
 | 10:00 | 10:30 | 30 min | Fontana de Trevi |  |  |
 | 11:00 | 11:30 | 30 min | Plaza de España |  |  |
 | 12:00 | 12:10 | 10 min | Via Condotti | de paso |  |
-| 13:00 | 15:00 | | 🍝 **Comida**: Colline Emiliane | en Trevi | |
-| 16:00 | 16:20 | 20 min | Iglesia de Santa Maria della Vittoria |  |  |
+| 12:30 | 13:00 | 30 min | Panteón |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Armando al Pantheon | en Centro Histórico | |
+| 15:00 | 15:15 | 15 min | Plaza Colonna |  |  |
+| 16:00 | 16:20 | 20 min | Iglesia de Santa Maria della Vittoria |  | 🚶 18 min desde Plaza Colonna |
 | 16:30 | 16:40 | 10 min | Fuente del Tritón | de paso |  |
 | 17:00 | 17:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
-| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 17:45 | 18:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 18:15 | 18:45 | 30 min | Iglesia del Gesù |  |  |
+| 18:50 | 19:10 | 20 min | Largo di Torre Argentina |  |  |
+| 19:15 | 19:25 | 10 min | Iglesia de Santa Maria sopra Minerva | de paso |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: nada.
+- **No te dio tiempo**: Barrio Judío (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -1262,7 +1239,6 @@ Del sábado 7 de agosto al lunes 9 de agosto de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 20:20
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1270,18 +1246,17 @@ Del sábado 7 de agosto al lunes 9 de agosto de 2027.
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
 | 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:25 | 18:55 | 30 min | Panteón |  |  |
-| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
+| 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 14:30 | 14:40 | 10 min | Fuente de las Tortugas | de paso |  |
+| 14:45 | 15:15 | 30 min | Barrio Judío |  |  |
+| 15:30 | 15:40 | 10 min | Plaza Farnese | de paso |  |
+| 15:45 | 15:55 | 10 min | Campo de' Fiori | de paso |  |
+| 16:15 | 16:45 | 30 min | Piazza Navona |  |  |
+| 17:00 | 17:20 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 17:55 | 18:05 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:10 | 18:40 | 30 min | Panteón |  |  |
+| 19:00 | 19:15 | 15 min | Fontana de Trevi | de paso |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -1302,8 +1277,8 @@ Del sábado 7 de agosto al lunes 9 de agosto de 2027.
 | 17:00 | 17:15 | 15 min | Plaza Colonna |  |  |
 | 17:30 | 17:50 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
 | 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
+| 18:45 | 19:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi | 🚶 17 min |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
@@ -1348,7 +1323,7 @@ Del miércoles 13 de enero al viernes 15 de enero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: Campidoglio, el Altar y el Ghetto (`campidoglio_ghetto`)
 - **Atardecer**: 17:03
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria
+- ⚠️ Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria sin prisas. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1389,7 +1364,7 @@ Del miércoles 13 de enero al viernes 15 de enero de 2027.
 - **No te dio tiempo**: Cúpula de San Pedro (No te dio tiempo); Iglesia de Santa Maria in Trastevere (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
-- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🔴 joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
+- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
 
 <a id="viaje-19"></a>
 ## Viaje 19 — 4 días · completo · Arte + Naturaleza · enero · empieza en lunes
@@ -1403,16 +1378,15 @@ Del lunes 11 de enero al jueves 14 de enero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 16:59
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 14:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
 | 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
 | 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
 | 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
@@ -1489,7 +1463,7 @@ Del lunes 11 de enero al jueves 14 de enero de 2027.
 
 Del sábado 17 de abril al martes 20 de abril de 2027.
 
-> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 1 día empieza antes, para que no te quedes sin ver la Fontana de Trevi y el Altar de la Patria.
+> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 ### Día 1 — sábado 17 de abril · Roma — día 1
 
@@ -1515,28 +1489,23 @@ Del sábado 17 de abril al martes 20 de abril de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 19:54
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
-| 08:30 | 10:00 | 90 min | Coliseo |  |  |
-| 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
-| 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
-| 16:00 | 16:10 | 10 min | Campo de' Fiori | de paso |  |
-| 16:30 | 17:00 | 30 min | Piazza Navona |  |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 17:55 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:00 | 18:30 | 30 min | Panteón |  |  |
-| 18:45 | 19:00 | 15 min | Fontana de Trevi | de paso |  |
-| | | 46 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Plaza Colonna, Columna de Trajano | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:15 | 17:25 | 10 min | Plaza Farnese | de paso | 🚶 23 min desde Foro Romano y Palatino |
+| 17:30 | 17:40 | 10 min | Campo de' Fiori | de paso |  |
+| 18:00 | 18:30 | 30 min | Piazza Navona |  |  |
+| 18:45 | 18:55 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
+| 19:15 | 19:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 19:30 | 19:45 | 15 min | Panteón | de paso |  |
+| 20:00 | 20:15 | 15 min | Fontana de Trevi | de paso |  |
+| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
 ### Día 3 — lunes 19 de abril · Excursión
 
@@ -1556,15 +1525,17 @@ Del sábado 17 de abril al martes 20 de abril de 2027.
 | 10:00 | 10:30 | 30 min | Fontana de Trevi |  |  |
 | 11:00 | 11:30 | 30 min | Plaza de España |  |  |
 | 12:00 | 12:10 | 10 min | Via Condotti | de paso |  |
-| 13:00 | 15:00 | | 🍝 **Comida**: Colline Emiliane | en Trevi | |
-| 16:00 | 16:20 | 20 min | Iglesia de Santa Maria della Vittoria |  |  |
-| 16:30 | 16:40 | 10 min | Fuente del Tritón | de paso |  |
-| 17:00 | 17:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:00 | 18:30 | 30 min | Iglesia del Gesù |  |  |
-| | | 77 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Trevi | Largo di Torre Argentina, Plaza del Campidoglio, Plaza Venecia | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trevi |  |
-| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 12:30 | 13:00 | 30 min | Panteón |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Armando al Pantheon | en Centro Histórico | |
+| 15:00 | 15:20 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 15:30 | 15:45 | 15 min | Plaza Colonna |  |  |
+| 16:15 | 16:35 | 20 min | Iglesia de Santa Maria della Vittoria |  | 🚶 18 min desde Plaza Colonna |
+| 16:45 | 16:55 | 10 min | Fuente del Tritón | de paso |  |
+| 17:15 | 17:35 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 18:00 | 18:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 18:30 | 19:00 | 30 min | Iglesia del Gesù |  |  |
+| 19:15 | 19:45 | 30 min | Barrio Judío |  |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere |  |
 
 #### Lo que quedó fuera
 
@@ -1608,19 +1579,20 @@ Del miércoles 14 de julio al sábado 17 de julio de 2027.
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:30 | 14:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:00 | 15:10 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:15 | 15:45 | 30 min | Barrio Judío |  |  |
-| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
-| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
-| 16:45 | 16:55 | 10 min | Piazza Navona | de paso |  |
-| 17:00 | 17:20 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:30 | 17:50 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 17:55 | 18:05 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:10 | 18:40 | 30 min | Panteón |  |  |
-| | | 73 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina, Iglesia del Gesù, Plaza Colonna | |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 14:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
+| 15:45 | 16:05 | 20 min | Largo di Torre Argentina |  |  |
+| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
+| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
+| 17:00 | 17:10 | 10 min | Piazza Navona | de paso |  |
+| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:25 | 18:55 | 30 min | Panteón |  |  |
+| | | 58 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Plaza Colonna | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -1648,7 +1620,7 @@ Del miércoles 14 de julio al sábado 17 de julio de 2027.
 | 16:30 | 17:00 | 30 min | Piazza del Popolo |  |  |
 | 17:05 | 17:35 | 30 min | Santa Maria del Popolo |  |  |
 | 17:45 | 18:05 | 20 min | Terraza del Pincio |  |  |
-| | | 102 min | 🕐 **Tarde libre** | Plaza Colonna | |
+| | | 102 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Tridente y Spagna | Plaza Colonna | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 
 #### Lo que quedó fuera
@@ -1663,55 +1635,50 @@ Del miércoles 14 de julio al sábado 17 de julio de 2027.
 
 Del lunes 10 de mayo al jueves 13 de mayo de 2027.
 
-> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 2 días empiezan antes, para que no te quedes sin ver el Panteón.
+> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 ### Día 1 — lunes 10 de mayo · Roma — día 1
 
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 20:18
-- ⚠️ Hoy empezamos a las 09:00 para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 09:00 | 09:15 | 15 min | Arco de Constantino |  |  |
-| 09:20 | 10:50 | 90 min | Coliseo |  |  |
-| 11:30 | 13:15 | 105 min | Foro Romano y Palatino |  |  |
-| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:30 | 16:00 | 30 min | Barrio Judío |  |  |
-| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
-| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
-| 17:00 | 17:30 | 30 min | Piazza Navona |  |  |
-| 17:45 | 18:05 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 18:15 | 18:25 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:30 | 19:00 | 30 min | Panteón |  |  |
-| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:15 | 17:25 | 10 min | Plaza Farnese | de paso | 🚶 23 min desde Foro Romano y Palatino |
+| 17:30 | 17:40 | 10 min | Campo de' Fiori | de paso |  |
+| 18:00 | 18:30 | 30 min | Piazza Navona |  |  |
+| 18:45 | 18:55 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
+| 19:15 | 19:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 19:30 | 19:45 | 15 min | Panteón | de paso |  |
+| 20:00 | 20:15 | 15 min | Fontana de Trevi | de paso |  |
+| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
 ### Día 2 — martes 11 de mayo · Roma — día 2
 
 - **Mañana**: Museos Vaticanos, San Pedro y la Cúpula (`vaticano`)
 - **Tarde**: Del Castillo al Janículo y a cenar a Trastevere (`vaticano_trastevere`)
 - **Atardecer**: 20:19
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a verlo todo
+- 🚌 Borgo Pio → San Pietro in Montorio y Tempietto de Bramante: ~25 min andando (con cuesta) · o el bus 115 si prefieres no subirla
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 11:00 | 180 min | Museos Vaticanos y Capilla Sixtina |  |  |
-| 11:30 | 12:00 | 30 min | Plaza de San Pedro |  |  |
-| 12:05 | 13:20 | 75 min | Basílica de San Pedro |  |  |
-| 13:30 | 15:30 | | 🍝 **Comida**: Ristorante Arlù | en Vaticano y Borgo | |
-| 15:30 | 15:40 | 10 min | Via della Conciliazione | de paso |  |
-| 15:45 | 15:55 | 10 min | Borgo Pio | de paso |  |
-| 16:15 | 16:30 | 15 min | Puente Sant'Angelo |  |  |
-| 16:35 | 17:50 | 75 min | Castillo de Sant'Angelo |  |  |
-| 18:15 | 19:00 | 45 min | Trastevere |  | 🚶 25 min desde Castillo de Sant'Angelo |
-| 19:05 | 19:25 | 20 min | Iglesia de Santa Maria in Trastevere |  |  |
-| 19:45 | 19:55 | 10 min | San Pietro in Montorio y Tempietto de Bramante | de paso |  |
-| 20:15 | 20:55 | 40 min | Mirador del Janículo | 🌅 atardecer 20:19 | 🚶 17 min desde San Pietro in Montorio y Tempietto de Bramante |
-| 21:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere | 🚶 21 min |
+| 10:00 | 13:00 | 180 min | Museos Vaticanos y Capilla Sixtina |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: 200 Gradi | en Vaticano y Borgo | |
+| 15:00 | 15:30 | 30 min | Plaza de San Pedro |  |  |
+| 15:35 | 16:50 | 75 min | Basílica de San Pedro |  |  |
+| 17:00 | 17:10 | 10 min | Via della Conciliazione | de paso |  |
+| 17:15 | 17:25 | 10 min | Borgo Pio | de paso |  |
+| 18:00 | 18:10 | 10 min | San Pietro in Montorio y Tempietto de Bramante | de paso | 🚶 27 min desde Borgo Pio |
+| | | 68 min | 🕐 **Tiempo libre** | antes de Mirador del Janículo · Iglesia de Santa Maria in Trastevere, Fontana dell'Acqua Paola, Plaza Trilussa | |
+| 19:35 | 20:19 | 44 min | Mirador del Janículo | 🌅 atardecer 20:19 | 🚶 17 min desde San Pietro in Montorio y Tempietto de Bramante |
+| 21:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere | 🚶 21 min |
 
 ### Día 3 — miércoles 12 de mayo · Excursión
 
@@ -1725,28 +1692,28 @@ Del lunes 10 de mayo al jueves 13 de mayo de 2027.
 - **Mañana**: Trevi y la Escalinata sin gente, Panteón y Navona (`centro_temprano`)
 - **Tarde**: San Juan de Letrán, San Clemente y el Coliseo al anochecer (`letran_celio`)
 - **Atardecer**: 20:21
-- 🚌 Via dei Fori Imperiali → Basílica de San Juan de Letrán: ~25 min andando · o en taxi (10-20 min) o bus 87 desde Rinascimento (unos 28 min)
+- 🚌 Mercados de Trajano → Basílica de San Juan de Letrán: ~30 min andando · o en taxi (10-20 min) o bus 87 desde Rinascimento (unos 28 min)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 10:00 | 10:30 | 30 min | Fontana de Trevi |  |  |
 | 11:00 | 11:30 | 30 min | Plaza de España |  |  |
 | 12:00 | 12:10 | 10 min | Via Condotti | de paso |  |
-| 13:00 | 15:00 | | 🍝 **Comida**: Piccolo Arancio | en Trevi | |
+| 12:30 | 13:00 | 30 min | Panteón |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Enoteca Corsi | en Piazza Venezia | |
 | 15:00 | 15:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:30 | 15:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 16:15 | 16:45 | 30 min | Basílica de San Juan de Letrán |  | 🚶 27 min desde Via dei Fori Imperiali |
-| 17:00 | 17:45 | 45 min | Basílica de San Clemente |  |  |
-| 18:00 | 18:20 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
-| 18:30 | 19:10 | 40 min | Monti |  |  |
-| | | 49 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
+| 15:30 | 16:30 | 60 min | Mercados de Trajano |  |  |
+| 17:00 | 17:30 | 30 min | Basílica de San Juan de Letrán |  | 🚶 30 min desde Mercados de Trajano |
+| 17:45 | 17:55 | 10 min | Basílica de San Clemente | de paso |  |
+| 18:15 | 18:35 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 18:45 | 19:25 | 40 min | Monti |  |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 | 21:30 | 22:15 | 45 min | 🌙 Coliseo (noche) | experiencia nocturna | |
 | 22:30 | 22:55 | 25 min | 🌙 Foro Romano desde el Campidoglio (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: nada.
+- **No te dio tiempo**: Castillo de Sant'Angelo (No cabía en ningún día del viaje); Barrio Judío (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -1787,16 +1754,15 @@ Del sábado 20 de febrero al martes 23 de febrero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:50
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 14:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
 | 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
 | 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
 | 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
@@ -1878,16 +1844,15 @@ Del sábado 17 de julio al martes 20 de julio de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 20:42
-- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:15 | 15 min | Arco de Constantino |  |  |
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| 12:30 | 12:40 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:00 | 14:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:15 | 14:30 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
+| 13:15 | 14:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
 | 14:45 | 14:55 | 10 min | Fuente de las Tortugas | de paso |  |
 | 15:00 | 15:30 | 30 min | Barrio Judío |  |  |
 | 15:45 | 15:55 | 10 min | Plaza Farnese | de paso |  |
@@ -1946,24 +1911,23 @@ Del miércoles 13 de enero al sábado 16 de enero de 2027.
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
 - **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 17:01
-- ⚠️ Hoy empezamos a las 09:00 para que te dé tiempo a ver el Foro Romano, y la comida es más corta para ver el Panteón
+- ⚠️ Hoy toca madrugar un poco. En invierno el Foro Romano cierra a las 16:30, así que hoy empezamos a las 09:00 para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 09:00 | 09:15 | 15 min | Arco de Constantino |  |  |
 | 09:20 | 10:50 | 90 min | Coliseo |  |  |
 | 11:30 | 13:15 | 105 min | Foro Romano y Palatino |  |  |
-| 13:15 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:30 | 14:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| 15:00 | 15:10 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:15 | 15:45 | 30 min | Barrio Judío |  |  |
-| 16:00 | 16:10 | 10 min | Plaza Farnese | de paso |  |
-| 16:15 | 16:25 | 10 min | Campo de' Fiori | de paso |  |
-| 16:45 | 17:15 | 30 min | Piazza Navona |  |  |
-| 17:30 | 17:40 | 10 min | Iglesia de San Luigi dei Francesi | de paso |  |
-| 18:00 | 18:10 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:15 | 18:45 | 30 min | Panteón |  |  |
-| 19:00 | 19:15 | 15 min | Fontana de Trevi | de paso |  |
+| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:30 | 16:00 | 30 min | Barrio Judío |  |  |
+| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
+| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
+| 17:00 | 17:30 | 30 min | Piazza Navona |  |  |
+| 17:45 | 18:05 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 18:15 | 18:25 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:30 | 19:00 | 30 min | Panteón |  |  |
+| 19:15 | 19:30 | 15 min | Fontana de Trevi | de paso |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -2009,9 +1973,9 @@ Del miércoles 13 de enero al sábado 16 de enero de 2027.
 | 16:30 | 16:40 | 10 min | Fuente del Tritón | de paso |  |
 | 17:00 | 17:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
 | 17:25 | 18:25 | 60 min | Palazzo Doria Pamphilj |  |  |
-| | | 85 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Iglesia de Santa Maria sopra Minerva, Largo di Torre Argentina | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 19:00 | 19:45 | 45 min | 🌙 Panteón (noche) | experiencia nocturna, antes de cenar | |
+| 18:45 | 19:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico | 🚶 17 min |
+| 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
@@ -2109,7 +2073,7 @@ Del lunes 12 de abril al jueves 15 de abril de 2027.
 - **No te dio tiempo**: Mercado de Testaccio (No te dio tiempo).
 - **Imprescindibles que no salen**: ninguno.
 
-- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🔴 joya Museos Vaticanos y Capilla Sixtina el día 4 (el último).
+- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
 
 <a id="viaje-27"></a>
 ## Viaje 27 — 1 día · completo · Arte · mayo · empieza en sábado
@@ -2162,7 +2126,7 @@ Del lunes 11 de enero al lunes 11 de enero de 2027.
 - **Mañana**: ruta de 1 día, bloque A (`short_trips`)
 - **Tarde**: bloque B (`short_trips`)
 - **Atardecer**: 16:59
-- ⚠️ Hoy empezamos a las 08:00 para que te dé tiempo a ver el Coliseo y el Foro Romano
+- ⚠️ Hoy toca madrugar un poco. En invierno el Coliseo y el Foro Romano cierran a las 16:30, así que hoy empezamos a las 08:00 para que los veas con tranquilidad. El resto del día sigue a tu ritmo.
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -2287,7 +2251,7 @@ Del lunes 12 de abril al viernes 16 de abril de 2027.
 | 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
 | 16:45 | 17:05 | 20 min | Terraza del Pincio |  |  |
 | 17:30 | 18:15 | 45 min | Ara Pacis |  |  |
-| | | 99 min | 🕐 **Tarde libre** |  | |
+| | | 99 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Tridente y Spagna |  | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
@@ -2303,7 +2267,7 @@ Del lunes 12 de abril al viernes 16 de abril de 2027.
 
 Del sábado 17 de julio al miércoles 21 de julio de 2027.
 
-> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 1 día empieza antes, para que no te quedes sin ver el Panteón.
+> **Banner**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 ### Día 1 — sábado 17 de julio · Roma — día 1
 
@@ -2326,34 +2290,26 @@ Del sábado 17 de julio al miércoles 21 de julio de 2027.
 ### Día 2 — domingo 18 de julio · Roma — día 2
 
 - **Mañana**: Coliseo, Foro y Palatino (`roma_antigua`)
-- **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
+- **Tarde**: Santa María la Mayor, el Moisés y Monti (`monti_basilicas`)
 - **Atardecer**: 20:42
-- ⚠️ Hoy empezamos a las 08:30 para que te dé tiempo a ver el Panteón
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:30 | 08:45 | 15 min | Arco de Constantino |  |  |
-| 08:50 | 10:20 | 90 min | Coliseo |  |  |
-| 11:00 | 12:45 | 105 min | Foro Romano y Palatino |  |  |
-| 13:00 | 13:10 | 10 min | Via dei Fori Imperiali | de paso |  |
-| 13:15 | 15:15 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:15 | 15:25 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:30 | 16:00 | 30 min | Barrio Judío |  |  |
-| 16:15 | 16:25 | 10 min | Plaza Farnese | de paso |  |
-| 16:30 | 16:40 | 10 min | Campo de' Fiori | de paso |  |
-| 17:00 | 17:10 | 10 min | Piazza Navona | de paso |  |
-| 17:15 | 17:35 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:45 | 18:05 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 18:10 | 18:20 | 10 min | Elefantino de Bernini | de paso |  |
-| 18:25 | 18:55 | 30 min | Panteón |  |  |
-| | | 58 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Largo di Torre Argentina | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
+| 10:00 | 10:15 | 15 min | Arco de Constantino |  |  |
+| 10:20 | 11:50 | 90 min | Coliseo |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: La Prezzemolina | en Coliseo y Monti | |
+| 15:00 | 16:45 | 105 min | Foro Romano y Palatino |  |  |
+| 17:15 | 17:45 | 30 min | Basílica de Santa María la Mayor |  | 🚶 22 min desde Foro Romano y Palatino |
+| 18:00 | 18:20 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 18:30 | 19:10 | 40 min | Monti |  |  |
+| | | 49 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
+| 21:30 | 22:00 | 30 min | 🌙 Foro Romano desde el Campidoglio (noche) | experiencia nocturna | |
 
 ### Día 3 — lunes 19 de julio · Roma — día 3
 
 - **Mañana**: Trastevere de mañana y la Villa Farnesina (`trastevere_manana`)
-- **Tarde**: Campidoglio, el Altar y el Ghetto (`campidoglio_ghetto`)
+- **Tarde**: El centro barroco: Panteón, Caravaggio y el Ghetto (`centro_barroco`)
 - **Atardecer**: 20:41
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
@@ -2363,12 +2319,18 @@ Del sábado 17 de julio al miércoles 21 de julio de 2027.
 | 11:30 | 11:50 | 20 min | Iglesia de Santa Maria in Trastevere |  |  |
 | 11:55 | 12:40 | 45 min | Trastevere |  |  |
 | 13:00 | 15:00 | | 🍝 **Comida**: Tonnarello | en Trastevere | |
-| 15:00 | 15:10 | 10 min | Teatro de Marcelo | de paso |  |
-| 15:30 | 15:40 | 10 min | Plaza Venecia | de paso |  |
-| 15:45 | 16:45 | 60 min | Altar de la Patria |  |  |
-| 17:00 | 19:00 | 120 min | Museos Capitolinos |  |  |
-| | | 46 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Plaza del Campidoglio, Largo di Torre Argentina, Columna de Trajano | |
+| 15:00 | 15:10 | 10 min | Fuente de las Tortugas | de paso |  |
+| 15:15 | 15:45 | 30 min | Barrio Judío |  |  |
+| 16:00 | 16:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 16:30 | 17:00 | 30 min | Iglesia del Gesù |  |  |
+| 17:15 | 17:25 | 10 min | Plaza Farnese | de paso |  |
+| 17:30 | 17:40 | 10 min | Campo de' Fiori | de paso |  |
+| 18:00 | 18:10 | 10 min | Piazza Navona | de paso |  |
+| 18:30 | 18:40 | 10 min | Elefantino de Bernini | de paso |  |
+| 18:45 | 19:00 | 15 min | Panteón | de paso |  |
+| | | 53 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Largo di Torre Argentina | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
+| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
 
 ### Día 4 — martes 20 de julio · Excursión
 
@@ -2411,40 +2373,17 @@ Sacado de las rutas de arriba con estos criterios: traslados de más de 25 min s
 
 ### Patrones que se repiten
 
-- **Panteón: de día y otra vez de noche el mismo día** — 8 veces: viaje 1 día 1 (18:10 y 21:30); viaje 2 día 1 (18:00 y 21:30); viaje 4 día 2 (18:00 y 21:30); viaje 5 día 1 (18:10 y 21:30); viaje 6 día 1 (18:10 y 21:30); viaje 7 día 1 (18:00 y 21:30); viaje 8 día 2 (18:10 y 21:30); viaje 28 día 1 (15:40 y 23:00).
-- **Fontana de Trevi: de día y otra vez de noche el mismo día** — 9 veces: viaje 1 día 1 (19:00 y 22:25); viaje 2 día 1 (18:45 y 22:25); viaje 4 día 2 (18:45 y 22:25); viaje 5 día 1 (19:00 y 22:25); viaje 6 día 1 (19:00 y 22:25); viaje 7 día 1 (18:45 y 22:25); viaje 8 día 2 (19:00 y 22:25); viaje 27 día 1 (16:30 y 22:55); viaje 28 día 1 (16:30 y 22:25).
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España"** — 3 veces: viaje 2 día 1; viaje 4 día 2; viaje 7 día 1.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Panteón"** — 1 vez: viaje 9 día 2.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria"** — 3 veces: viaje 11 día 1; viaje 16 día 1; viaje 20 día 2.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 09:00 para que te dé tiempo a ver el Foro Romano"** — 2 veces: viaje 14 día 1; viaje 25 día 1.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria"** — 1 vez: viaje 18 día 2.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 09:00 para que te dé tiempo a ver el Panteón"** — 1 vez: viaje 22 día 1.
+- **Panteón: de día y otra vez de noche el mismo día** — 7 veces: viaje 1 día 1 (18:10 y 21:30); viaje 4 día 2 (18:15 y 21:30); viaje 5 día 1 (18:10 y 21:30); viaje 6 día 1 (18:10 y 21:30); viaje 7 día 1 (18:15 y 21:30); viaje 8 día 2 (18:10 y 21:30); viaje 28 día 1 (15:40 y 23:00).
+- **Fontana de Trevi: de día y otra vez de noche el mismo día** — 9 veces: viaje 1 día 1 (19:00 y 22:25); viaje 2 día 1 (17:30 y 22:25); viaje 4 día 2 (19:00 y 22:25); viaje 5 día 1 (19:00 y 22:25); viaje 6 día 1 (19:00 y 22:25); viaje 7 día 1 (19:00 y 22:25); viaje 8 día 2 (19:00 y 22:25); viaje 27 día 1 (16:30 y 22:55); viaje 28 día 1 (16:30 y 22:25).
+- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 09:00: así te da tiempo a ver el Panteón sin prisas. El resto del día sigue a tu ritmo."** — 1 vez: viaje 2 día 1.
+- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria y la Plaza de España sin prisas. El resto del día sigue a tu ritmo."** — 1 vez: viaje 4 día 2.
+- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria sin prisas. El resto del día sigue a tu ritmo."** — 2 veces: viaje 7 día 1; viaje 18 día 2.
+- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. En invierno el Foro Romano cierra a las 16:30, así que hoy empezamos a las 09:00 para que lo veas con tranquilidad. El resto del día sigue a tu ritmo."** — 2 veces: viaje 14 día 1; viaje 25 día 1.
 - **Plaza de España: de día y otra vez de noche el mismo día** — 2 veces: viaje 27 día 1 (17:15 y 22:00); viaje 28 día 1 (17:15 y 21:30).
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Coliseo y el Foro Romano"** — 1 vez: viaje 28 día 1.
-- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy empezamos a las 08:30 para que te dé tiempo a ver el Panteón"** — 1 vez: viaje 30 día 2.
+- **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. En invierno el Coliseo y el Foro Romano cierran a las 16:30, así que hoy empezamos a las 08:00 para que los veas con tranquilidad. El resto del día sigue a tu ritmo."** — 1 vez: viaje 28 día 1.
 
 ### Caso a caso
 
-- **Viaje 2, día 1** (2 d, tranquilo, abril): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón".
-- **Viaje 4, día 2** (2 d, tranquilo, febrero): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón".
-- **Viaje 7, día 1** (2 d, tranquilo, enero): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria y la Plaza de España, y la comida es más corta para ver el Panteón".
 - **Viaje 9, día 1** (2 d, tranquilo, agosto): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver Basílica de San Pedro".
-- **Viaje 9** (2 d, tranquilo, agosto): la ruta es igual que la del viaje 3.
-- **Viaje 10, día 1** (3 d, completo, abril): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 11, día 1** (3 d, tranquilo, julio): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón".
-- **Viaje 12, día 2** (3 d, completo, enero): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 13** (3 d, completo, mayo): lo mejor primero, en rojo: joya Fontana de Trevi el día 3 (el último), joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
-- **Viaje 14, día 1** (3 d, tranquilo, febrero): además la comida es más corta: "Hoy empezamos a las 09:00 para que te dé tiempo a ver el Foro Romano, y la comida es más corta para ver el Panteón".
-- **Viaje 15** (3 d, completo, julio): lo mejor primero, en rojo: joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
-- **Viaje 16, día 1** (3 d, tranquilo, abril): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón".
-- **Viaje 17, día 2** (3 d, completo, agosto): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 18** (3 d, tranquilo, enero): lo mejor primero, en rojo: joya Museos Vaticanos y Capilla Sixtina el día 3 (el último).
-- **Viaje 19, día 1** (4 d, completo, enero): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 20, día 2** (4 d, tranquilo, abril): además la comida es más corta: "Hoy empezamos a las 08:00 para que te dé tiempo a ver la Fontana de Trevi y el Altar de la Patria, y la comida es más corta para ver el Panteón".
-- **Viaje 22, día 2** (4 d, tranquilo, mayo): aviso del día: "Hoy empezamos a las 08:00 para que te dé tiempo a verlo todo".
-- **Viaje 23, día 2** (4 d, completo, febrero): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 24, día 2** (4 d, completo, julio): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver el Panteón".
-- **Viaje 25, día 1** (4 d, tranquilo, enero): además la comida es más corta: "Hoy empezamos a las 09:00 para que te dé tiempo a ver el Foro Romano, y la comida es más corta para ver el Panteón".
-- **Viaje 26** (4 d, completo, abril): lo mejor primero, en rojo: joya Museos Vaticanos y Capilla Sixtina el día 4 (el último).
 - **Viaje 30, día 1** (5 d, tranquilo, julio): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver Basílica de San Pedro".
 
