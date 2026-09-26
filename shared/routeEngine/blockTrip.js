@@ -471,7 +471,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
           ...result.dropped.filter(({ unit }) => !alt.dropped.some((d) => d.unit.id === unit.id)).map(({ unit }) => unit.id),
           ...slidStops(result).filter((unit) => !slidStops(alt).some((other) => other.id === unit.id)).map((unit) => unit.id),
         ]
-        modeFallback = { recoveredUnitIds: recovered, startedAt: normalMode.dayStart }
+        // El aviso nombra lo que se recupera de la MAÑANA (madrugar es por ella), no lo que cambia por la tarde.
+        modeFallback = { recoveredUnitIds: [...new Set(recovered)].filter((id) => morningIds.has(id) && units.find((unit) => unit.id === id)?.role !== 'de_paso'), startedAt: normalMode.dayStart }
         result = alt
       }
     }

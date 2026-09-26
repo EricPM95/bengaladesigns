@@ -51,6 +51,34 @@ const out = []
 // Resumen (Parte C): qué mañana y qué tarde tipo lleva cada día, y cuántos medios días sin tipo quedan.
 const resumen = []
 let sinTipo = 0
+// Parte D (ajustes a los bloques): bloques reordenados (tiene que ser 0), huecos rojos (más de 90 min en
+// mitad del viaje) e imprescindibles que se ven desde la calle y faltan.
+const reordenados = []
+const huecosRojos = []
+const faltanPorFuera = []
+const t2m = (hhmm) => {
+  const [h, m] = String(hhmm).split(':').map(Number)
+  return h * 60 + m
+}
+/** El hueco más largo del día: entre dos paradas (sin la comida) o antes de cenar. */
+function maxHueco(day) {
+  const stops = (day.stops ?? []).filter((stop) => !stop.is_night_experience)
+  const lunch = day.meals?.find((m) => m.time === 'lunch')
+  const dinner = day.meals?.find((m) => m.time === 'dinner')
+  const lunchAt = lunch ? t2m(lunch.suggested_time) : null
+  let worst = 0
+  for (let i = 1; i < stops.length; i++) {
+    const end = t2m(stops[i - 1].suggested_time) + stops[i - 1].duration_minutes
+    const start = t2m(stops[i].suggested_time)
+    if (lunchAt !== null && end <= lunchAt && start >= lunchAt) continue
+    const walk = travel.leg([stops[i - 1].latitude, stops[i - 1].longitude], [stops[i].latitude, stops[i].longitude])?.minutes ?? 0
+    worst = Math.max(worst, start - end - walk)
+  }
+  const last = stops.at(-1)
+  if (dinner && last) worst = Math.max(worst, t2m(dinner.suggested_time) - (t2m(last.suggested_time) + last.duration_minutes) - (day.dinner_walk_minutes ?? 0))
+  return worst
+}
+const porFuera = (D.places ?? []).filter((place) => place.level === 1 && (place.type === 'exterior' || place.pass_by || place.visible_from_outside))
 const nombreBloque = (id) => [...(D.morning_flows ?? []), ...(D.afternoon_flows ?? [])].find((b) => b.id === id)?.nombre ?? id
 const nombre = (b) => (b ? (b.id ? `${nombreBloque(b.id)} (${b.id})` : '**medio día sin tipo**') : '—')
 head.push('# Revisión de rutas de Roma — 16 viajes')
@@ -65,6 +93,8 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push('')
   const experiencesPositive = ['imprescindibles', ...viaje.exps.filter((e) => e !== 'imprescindibles')]
   const pace = viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo'
+  const vistos = new Set()
+  const huecos = []
   for (let n = 1; n <= viaje.dias; n++) {
     const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha ?? null, viaje.pool ?? [], viaje.exps.length ? experiencesPositive : [], {
       city: 'Roma',
@@ -107,6 +137,9 @@ for (const [index, viaje] of VIAJES.entries()) {
       out.push('')
       continue
     }
+    for (const stop of day.stops) for (const name of [stop.place_name ?? stop.name, ...(stop.free_tour_covers ?? []), ...(stop.outside_of ?? []), ...(stop.pass_by_includes ?? [])]) vistos.add(name)
+    for (const id of day.reordered_blocks ?? []) reordenados.push(`viaje ${index + 1}, día ${n}: ${id}`)
+    huecos.push({ n, minutos: maxHueco(day) })
     if (day.pace_notice) out.push(`> ${day.pace_notice}`)
     if (day.half_day_excursion) out.push(`**Mañana: excursión de medio día** (${day.half_day_excursion.id}, ${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at}); la ciudad, desde las ${day.half_day_excursion.route_starts_at}.`)
     const lunch = day.meals?.find((m) => m.time === 'lunch')
@@ -132,6 +165,7 @@ for (const [index, viaje] of VIAJES.entries()) {
     if (lunch && !lunchShown) out.push(`| ${lunch.suggested_time}–${lunch.window_end ?? ''} | 🍝 **Comida**${lunch.restaurant ? `: ${cell(lunch.restaurant)}` : ''} ${cell(lunch.zone_display ?? '')} | | | |`)
     out.push('')
     if (day.free_time) out.push(`- **Tiempo libre**: ${day.free_time.minutes} min entre ${day.free_time.after} y ${day.free_time.before}. Sugerencias: ${day.free_time.suggestions.map((s) => `${s.name} (${s.walk_minutes} min${s.requires_ticket ? ', entrada' : ''})`).join(', ')}.`)
+    if (day.aperitivo) out.push(`- **${day.aperitivo.title}** (${day.aperitivo.minutes} min).${day.aperitivo.suggestions.length ? ` Sugerencias: ${day.aperitivo.suggestions.map((s) => `${s.name} (${s.walk_minutes} min${s.requires_ticket ? ', entrada' : ''})`).join(', ')}.` : ''}`)
     if (day.free_afternoon) out.push(`- **Tarde libre** (${day.free_afternoon.minutes} min). Sugerencias: ${day.free_afternoon.suggestions.map((s) => `${s.name} (${s.walk_minutes} min${s.requires_ticket ? ', entrada' : ''})`).join(', ')}.`)
     if (dinner) out.push(`- **Cena**: ${dinner.suggested_time} ${cell(dinner.zone_display ?? '')}${day.dinner_walk_minutes ? ` (${day.dinner_walk_minutes} min andando desde la última parada)` : ''}.`)
     if (nights.length) out.push(`- **Nocturna**: ${nights.map((s) => `${s.suggested_time} ${s.name}${s.before_dinner ? ' (antes de cenar)' : ''}`).join(' → ')}.`)
@@ -140,12 +174,20 @@ for (const [index, viaje] of VIAJES.entries()) {
     if (day.not_included?.length) out.push(`- **No incluido**: ${day.not_included.map((i) => `${i.name} — ${i.reason}`).join('; ')}.`)
     out.push('')
   }
+  // El último día de ciudad no cuenta (la tarde libre del último día es amarilla, no roja).
+  for (const { n, minutos } of huecos.slice(0, -1)) if (minutos > 90) huecosRojos.push(`viaje ${index + 1}, día ${n}: ${minutos} min`)
+  if (viaje.dias >= 2) for (const place of porFuera) if (!vistos.has(place.name)) faltanPorFuera.push(`viaje ${index + 1}: ${place.name}`)
 }
 
 const path = process.argv[2] ?? 'docs/REVISION_RUTAS_ROMA_16.md'
 head.push('## Resumen: mañanas y tardes tipo')
 head.push('')
-head.push(`Medios días sin tipo (ningún bloque encaja y el motor improvisa): **${sinTipo}**. Los viajes de 1 día siguen con las rutas curadas de \`short_trips\` (con bloques salían peor).`)
+head.push(`- Bloques reordenados respecto al JSON: **${reordenados.length}**${reordenados.length ? ` (${reordenados.join('; ')})` : ''}.`)
+head.push(`- Medios días sin tipo (ningún bloque encaja y el motor improvisa): **${sinTipo}**.`)
+head.push(`- Huecos rojos (más de 90 min parado en mitad del viaje): **${huecosRojos.length}**${huecosRojos.length ? ` (${huecosRojos.join('; ')})` : ''}.`)
+head.push(`- Imprescindibles que se ven desde la calle y faltan (viajes de 2+ días): **${faltanPorFuera.length}**${faltanPorFuera.length ? ` (${faltanPorFuera.join('; ')})` : ''}.`)
+head.push('')
+head.push(`Los viajes de 1 día siguen con las rutas curadas de \`short_trips\` (con bloques salían peor).`)
 head.push('')
 head.push('| Viaje | Día | Mañana | Tarde |')
 head.push('|---|---|---|---|')

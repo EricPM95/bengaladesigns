@@ -13,6 +13,27 @@
 
 **Pregunta nueva:** L'Arcangelo, ¿abre a mediodía en invierno? Si es así, pasa a `ambos`.
 
+## Ajustes — Parte D, comprobación (2026-09-26)
+
+- `docs/REVISION_RUTAS_ROMA_16.md` regenerada, con el resumen arriba:
+  - bloques reordenados: **0**;
+  - medios días sin tipo: **4** (la última tarde de los viajes 6 y 8, detrás de "centro_temprano"; el día 5 del 15 y del 16);
+  - huecos rojos: **0**;
+  - imprescindibles que se ven desde la calle y faltan: **0**.
+- Semáforo en verde en enero, abril, julio y octubre, y con las fechas 28 y 30 de marzo de 2027 y 24 y 26 de octubre de 2026. Nuevas casillas: `reorden` (rojo) y `sinTipo` (amarillo).
+
+**Preguntas nuevas:**
+1. **Parejas del JSON a más de 20 min.** El prompt dice "nunca una tarde a más de 20 min de donde acaba la mañana", pero varias parejas que el propio JSON declara (`encaja_despues_de`) pasan de 20:
+   - `villa_borghese_pincio` tras el centro: 32 min;
+   - `bernini_trevi` tras la Borghese y tras el centro: 29 min;
+   - `letran_celio` tras la Roma Antigua (27) y tras el centro (46);
+   - `vaticano_por_la_tarde` tras el Free Tour: 38 min;
+   - `centro_barroco` y `campidoglio_ghetto` desde Testaccio: 23-40 min.
+
+   Las he respetado: el límite de 20 solo se aplica a lo que el motor decide por su cuenta (encaje por cercanía). ¿Las quitas del JSON o las dejas como excepción?
+2. **2 días en ritmo completo, desde el sábado 24 de octubre:** los dos días van llenos hasta la cena y la Plaza de España ya no cabe ni de paso (sale en "No incluido"). ¿Te vale en 2 días, o prefieres que ceda algo de un bloque?
+3. **Dal Toscano:** coordenada aproximada (el centro de Via Germanico). Hay que ponerla bien.
+
 ## Ajustes — Parte C, prueba concreta (2026-09-26)
 
 - **2 días, tranquilo, Free Tour, diciembre (el 15) y con fechas 16-17 de diciembre:** día 1, Free Tour 10:00-12:30, comida a las 13:00, Museos Vaticanos 14:45-17:45, Plaza de San Pedro 18:00-18:30 y **Basílica 18:35-19:50**, cena a las 20:30. Para que quepa, la comida se acorta a 60 min (sin el extra de tranquilo) y el día lo dice: "Hoy la comida es más corta para que te dé tiempo a ver la Basílica de San Pedro". No se quita nada.
