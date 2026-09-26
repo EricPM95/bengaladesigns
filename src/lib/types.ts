@@ -243,6 +243,9 @@ export interface Stop {
   ticketOptions?: TicketOption[]
   walkingTimeToNextMinutes?: number
   nextStopNote?: string
+  /** true cuando la siguiente parada cambió (se quitó la de en medio) y el tramo hasta ella aún no
+      se ha recalculado: DayDetailPanel lo pide a Mapbox y lo guarda con `setLegToNext`. */
+  nextLegPending?: boolean
   isRevisit?: boolean
   /** Por qué merece la pena volver — lo escribe el motor (ver revisits.js en el servidor). */
   revisitReason?: string

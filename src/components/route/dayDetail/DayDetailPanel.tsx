@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { Fragment, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
@@ -100,6 +100,11 @@ const LONG_WALK_MINUTES = 20
 const DAY_START_MINUTES = 9 * 60
 /** Minutos a pie entre dos paradas cuando el conector no trae un `walkMinutes` real todavía (ni mock ni refinado por Mapbox) — mismo valor de reserva que `retimeStops` en useRouteStore.ts, para que el horario calculado aquí no se desvíe del que ya usa Modo Hoy. */
 const DEFAULT_WALK_MINUTES = 15
+
+/** Clave de un conector: el par de paradas que une (la primera, la llegada del día), no su posición. */
+function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
+  return index === 0 || !stops[index - 1] || !stops[index] ? `${dayId}-connector-${index}` : `${dayId}-${stops[index - 1].id}>${stops[index].id}`
+}
 // Mismos límites/valor por defecto que el tirador de mapa de StopDetailSheet.tsx/ArrivalDetailSheet.tsx — ninguno de los dos lados puede llegar a desaparecer del todo.
 const MAP_MIN_VH = 15
 const MAP_MAX_VH = 75
@@ -275,6 +280,7 @@ export function DayDetailPanel({
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
   const reorderStops = useRouteStore((state) => state.reorderStops)
+  const setLegToNext = useRouteStore((state) => state.setLegToNext)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
   // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
   // parada real: no está en day.stops del store, lo añade el servidor al generar.
@@ -327,6 +333,8 @@ export function DayDetailPanel({
   // refineConnectorWithRealDistance en mockDayDetail.ts. Empieza vacío: el primer render siempre
   // muestra el mock (instantáneo), nunca un spinner.
   const [refinedConnectors, setRefinedConnectors] = useState<Record<string, ConnectorInfo>>({})
+  const refinedConnectorsRef = useRef(refinedConnectors)
+  refinedConnectorsRef.current = refinedConnectors
 
   const arrivalDetail = travel
     ? buildArrivalDepartureDetail(isLastDay ? travel.fromCity : travel.toCity, origin, isLastDay ? 'departure' : 'arrival')
@@ -354,12 +362,24 @@ export function DayDetailPanel({
   // buildConnectorInfo más abajo) y este efecto solo lo sustituye si/cuando resuelve. No hace nada
   // para paradas de plantilla (coordenadas (0,0)): refineConnectorWithRealDistance devuelve null y
   // el mock se queda tal cual, sin re-render de más.
+  //
+  // La clave es el PAR de paradas, no la posición: al quitar una, las demás se quedan con su tramo ya
+  // resuelto y solo se pide el del par que queda junto. Si ese tramo estaba pendiente (nextLegPending,
+  // ver withoutStop en el store), se guarda su tiempo a pie y la siguiente se mueve solo si hace falta.
   useEffect(() => {
     let cancelled = false
     for (let index = 1; index < realStops.length; index++) {
-      const connectorKey = `${day.id}-connector-${index}`
-      refineConnectorWithRealDistance(realStops[index - 1].coordinates, realStops[index].coordinates).then((refined) => {
-        if (!cancelled && refined) setRefinedConnectors((prev) => ({ ...prev, [connectorKey]: refined }))
+      const previousStop = realStops[index - 1]
+      const connectorKey = pairConnectorKey(day.id, realStops, index)
+      const known = refinedConnectorsRef.current[connectorKey]
+      if (known) {
+        if (previousStop.nextLegPending && known.walkMinutes != null) setLegToNext(day.id, previousStop.id, known.walkMinutes)
+        continue
+      }
+      refineConnectorWithRealDistance(previousStop.coordinates, realStops[index].coordinates).then((refined) => {
+        if (cancelled || !refined) return
+        setRefinedConnectors((prev) => ({ ...prev, [connectorKey]: refined }))
+        if (previousStop.nextLegPending && refined.walkMinutes != null) setLegToNext(day.id, previousStop.id, refined.walkMinutes)
       })
     }
     return () => {
@@ -447,7 +467,7 @@ export function DayDetailPanel({
   // Un conector por parada (llegada/instalación → parada 1, o parada→parada) — calculado una sola
   // vez y reutilizado tanto para el render como para el resumen "km a pie" de la cabecera.
   const connectorEntries = stops.map((_stop, index) => {
-    const connectorKey = `${day.id}-connector-${index}`
+    const connectorKey = pairConnectorKey(day.id, realStops, index)
     const fromAccommodation = index === 0 && useAccommodationOrigin && previousNightHotel
     const connector = fromAccommodation
       ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)

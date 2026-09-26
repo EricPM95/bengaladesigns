@@ -99,6 +99,51 @@ function pushOverlapsForward(stops: Stop[]): Stop[] {
 }
 
 /**
+ * Quitar una parada (bug del 2026-09-26): la de antes y la de después quedan juntas y el tramo entre
+ * ellas es otro. Se quita la parada y se marca ese tramo como pendiente (`nextLegPending`); nada más
+ * cambia de hora. El tramo nuevo lo pide DayDetailPanel a Mapbox y lo guarda con `setLegToNext`.
+ */
+function withoutStop(stops: Stop[], stopId: string): Stop[] {
+  const index = stops.findIndex((stop) => stop.id === stopId)
+  if (index < 0) return stops
+  const rest = stops.filter((stop) => stop.id !== stopId)
+  if (index === 0) return rest
+  const previous = rest[index - 1]
+  const hasNext = index < rest.length
+  rest[index - 1] = { ...previous, walkingTimeToNextMinutes: undefined, nextStopNote: undefined, nextLegPending: hasNext || undefined }
+  return rest
+}
+
+/**
+ * El tramo recalculado solo mueve la siguiente parada si ya no se llega a su hora; y detrás de ella,
+ * solo las que entonces se pisen. Si se llega antes, las horas se quedan (ver LA REGLA).
+ */
+function withLegToNext(stops: Stop[], stopId: string, minutes: number): Stop[] {
+  const index = stops.findIndex((stop) => stop.id === stopId)
+  if (index < 0) return stops
+  const updated = [...stops]
+  updated[index] = { ...stops[index], walkingTimeToNextMinutes: minutes, nextLegPending: undefined }
+  // Lo que se retrasa cada parada; cada una lo absorbe con el margen que ya tenía antes de la
+  // siguiente, y en cuanto queda en cero no se toca nada más. Las nocturnas no se mueven.
+  let delay = 0
+  for (let next = index + 1; next < updated.length; next++) {
+    const previous = updated[next - 1]
+    const stop = updated[next]
+    if (stop.isNightExperience) break
+    const previousStart = parseTimeToMinutes(stops[next - 1].time)
+    const start = parseTimeToMinutes(stop.time)
+    if (Number.isNaN(previousStart) || Number.isNaN(start)) break
+    const walk = next === index + 1 ? minutes : (previous.walkingTimeToNextMinutes ?? 0)
+    const needed = next === index + 1 ? previousStart + previous.durationMinutes + walk - start : delay - Math.max(0, start - (previousStart + previous.durationMinutes + walk))
+    if (needed <= 0) break
+    const newStart = roundUpToQuarterHour(start + needed)
+    updated[next] = { ...stop, time: minutesToTime(newStart) }
+    delay = newStart - start
+  }
+  return updated
+}
+
+/**
  * Reordenar ("Mover antes"/"Mover después") es el único caso en que las horas cambian de dueño: las
  * horas del día son sus huecos, y lo que el viajero mueve es QUÉ visita en cada hueco. Así el día
  * sigue leyéndose en orden en vez de quedar con las horas desordenadas. Tampoco aquí se planifica
@@ -333,6 +378,8 @@ interface RouteStoreState {
    */
   addBlankDayExcursion: (dayId: string, excursion: Excursion) => void
   removeStop: (dayId: string, stopId: string) => void
+  /** Guarda el tramo recalculado tras quitar una parada (ver withLegToNext). */
+  setLegToNext: (dayId: string, stopId: string, minutes: number) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   /**
    * Cambia de sitio un día entero dentro del viaje (arrastrar en la lista de días, DayList.tsx).
@@ -720,12 +767,18 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return {
-        // Quitar una parada no toca la hora de ninguna otra — ver LA REGLA arriba.
+        // Quitar una parada no toca la hora de ninguna otra — ver LA REGLA arriba y withoutStop.
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: day.stops.filter((stop) => stop.id !== stopId),
+          stops: withoutStop(day.stops, stopId),
         })),
       }
+    }),
+
+  setLegToNext: (dayId, stopId, minutes) =>
+    set((state) => {
+      if (!state.route) return state
+      return { route: updateDay(state.route, dayId, (day) => ({ ...day, stops: withLegToNext(day.stops, stopId, minutes) })) }
     }),
 
   reorderStops: (dayId, orderedStopIds) =>
@@ -797,7 +850,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             // El día de ORIGEN solo pierde una parada (como removeStop: nadie más cambia de hora).
             // En el de DESTINO la parada llega al final, y ahí sí hay que ponerle una hora porque la
             // que traía era la de otro día — pero sin tocar las que ya estaban.
-            if (day.id === fromDayId) return { ...day, stops: day.stops.filter((s) => s.id !== stopId) }
+            if (day.id === fromDayId) return { ...day, stops: withoutStop(day.stops, stopId) }
             if (day.id === toDayId) {
               return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }]) }
             }
