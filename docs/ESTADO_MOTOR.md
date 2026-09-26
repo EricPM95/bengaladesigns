@@ -127,6 +127,12 @@ de zona.
 El motor v3 de Roma monta los viajes con días enteros curados (`curated_days`, docs/DIAS_CURADOS_ROMA.md) en
 `shared/routeEngine/curatedTrip.js`. El de mañanas y tardes (`blockTrip.js`) sigue ahí: `ROUTE_V3_PLANNER=bloques`.
 Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CAMBIOS.md (qué cambia frente a bloques).
+Roma cerrada (2026-09-26): revisión V2 sin rojos tras los tres ajustes finales (reglas 219-223). El motor v3 con
+días curados es el de por defecto para Roma, también en producción (`engineFor` con `curated_days`).
+
+Pendiente: en viajes de 5+ días, la tarde B de D5 no debe repetir las basílicas de D6 (San Clemente, Letrán,
+Santa María la Mayor, San Pietro in Vincoli, Monti). En ese caso, tarde B = Testaccio y Trastevere de noche.
+
 v4 aplicada (2026-09-26): D4 con desayuno, Santa Maria del Popolo por la mañana y turno de la Galería por el
 atardecer; D5 tarde B con la ruta completa de las basílicas; D5 tercer día con Free Tour sin Galería; D1 "Navidad";
 Altar de paso siempre; pool de 2 días con Free Tour (reglas 213-218).

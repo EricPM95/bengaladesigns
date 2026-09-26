@@ -1045,3 +1045,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 218. **Pool en 2 días con Free Tour**: el primer lugar cambia la tarde de D1-FT (Caracalla: Circo Máximo → Caracalla
     → Boca de la Verdad → Naranjos); el segundo va a "No te dio tiempo" con el motivo (`pool_afternoon_taken`). El
     mirador del atardecer que a esa hora ya cerró (Naranjos en otoño) se visita mientras está abierto.
+219. **pool_caracalla de D1-FT**: si los Naranjos cierran antes del atardecer (`solo.cierra_antes_del_atardecer`),
+    después va el Ojo de la Cerradura y se baja por el Ponte Sublicio a Trastevere: aperitivo y cena en el barrio.
+220. **Tarde A de D5 solo si ni el Campidoglio ni el Ghetto salen en otro día del viaje**; si sale alguno, tarde B.
+221. **D4 sin Galería solo con el atardecer después de las 18:00**: en invierno sin Galería (ni pool ni Arte), el
+    tercer día es D5 (y en 4+ días, D5 antes que D4).
+222. **El paseo nocturno antes de cenar no es tiempo libre**: el aperitivo y la tarde libre descuentan su duración
+    (DIAS_CURADOS_ROMA.md, 2b: aprovecha el hueco).
+223. **Motor por defecto**: en un destino con `curated_days` (Roma), el motor v3 con días curados, también en
+    producción sin variables de entorno. Solo lo cambian una petición con `engine`, `ROUTE_ENGINE=viejo` o
+    `ROUTE_V3_PLANNER=bloques`.

@@ -51,9 +51,15 @@ export function plannerFor(requestPlanner) {
   return choice === 'bloques' || choice === 'blocks' ? 'bloques' : 'dias'
 }
 
-export function engineFor(requestEngine) {
-  const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
+export function engineFor(requestEngine, destData = null) {
+  const requested = (requestEngine ?? '').toString().trim().toLowerCase()
+  const fromEnv = (process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
+  const choice = requested || fromEnv
   if (choice === 'viejo' || choice === 'v2' || choice === 'old') return 'viejo'
+  // Un destino con días curados (Roma, DIAS_CURADOS_ROMA.md) va con el motor v3 y sus días curados por defecto, también
+  // en producción (decisión del 2026-09-26, revisión v4 cerrada). Solo lo cambian una petición que pida otro motor o
+  // `ROUTE_ENGINE=viejo` (vuelta atrás); `ROUTE_V3_PLANNER=bloques` vuelve a las mañanas y tardes dentro del v3.
+  if (!requested && Array.isArray(destData?.curated_days) && destData.curated_days.length > 0) return 'v3'
   // Motor v3 en construcción (repartidor que pregunta al programador + programador con reloj
   // real, ver shared/routeEngine/). Solo bajo petición: el defecto sigue siendo 'nuevo' hasta que
   // las métricas digan que gana.
@@ -285,9 +291,11 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   })
   if (notices.length > 0) day.transfer_notice = notices.join('\n')
   // "Aperitivo y paseo por {barrio}" (ajustes B.7): 90 min o menos antes de cenar en un barrio de cena.
-  const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames)
+  // El paseo nocturno que va antes de cenar (en invierno) ocupa ese rato: no es tiempo libre (DIAS_CURADOS_ROMA.md, 2b).
+  const nightBeforeDinner = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner).reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
+  const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (aperitivo) day.aperitivo = aperitivo
-  const freeAfternoon = aperitivo ? null : freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
+  const freeAfternoon = aperitivo ? null : freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
@@ -432,8 +440,8 @@ const SUGGESTION_MAX_DETOUR_MINUTES = 15
  * Pueden ser de pago —las añade el viajero si quiere—. Primero lo de sus experiencias; luego el nivel;
  * luego lo más cerca. Nunca algo ya visto en el viaje.
  */
-function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
-  const idle = tripDay.schedule?.idleBeforeDinner ?? 0
+function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0) {
+  const idle = Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
   if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
@@ -459,8 +467,8 @@ const APERITIVO_MAX_MINUTES = 120
  * antes de cenar, cuando se cena en un barrio con ambiente (un barrio de cena: 3+ restaurantes), se llama
  * así —no "Tarde libre (90 min)"— y lleva 2-3 sugerencias abiertas y de camino.
  */
-function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames) {
-  const idle = tripDay.schedule?.idleBeforeDinner ?? 0
+function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0) {
+  const idle = Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
   if (!last || idle < APERITIVO_MIN_MINUTES || idle > APERITIVO_MAX_MINUTES) return null

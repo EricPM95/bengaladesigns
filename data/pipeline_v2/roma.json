@@ -8786,6 +8786,21 @@
             {
               "lugar": "Jardín de los Naranjos",
               "rol": "atardecer"
+            },
+            {
+              "lugar": "Ojo de la Cerradura del Aventino",
+              "rol": "parada",
+              "solo": {
+                "cierra_antes_del_atardecer": "Jardín de los Naranjos"
+              }
+            },
+            {
+              "lugar": "Trastevere",
+              "rol": "parada",
+              "solo": {
+                "cierra_antes_del_atardecer": "Jardín de los Naranjos"
+              },
+              "nota": "Bajar por el Ponte Sublicio y callejear: aperitivo en el barrio."
             }
           ],
           "cena": {

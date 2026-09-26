@@ -19,7 +19,7 @@ import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
-import { closedOnDay } from './openingHours.js'
+import { closedOnDay, effectiveSchedule, parseClosingMinutes } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
@@ -99,6 +99,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const hours = hoursOf(day)
     return closedOnDay(place, hours.weekday, calendar.hasDates ? hours.dateIso : null) || !availableForTrip(place.available, calendar, hours.dateIso, inPool(name))
   }
+  // ¿Cierra ese día antes del atardecer? (el Jardín de los Naranjos a las 18:00 en otoño)
+  const closesBeforeSunset = (name, day) => {
+    const place = placeByName.get(name)
+    const hours = hoursOf(day)
+    const close = place ? parseClosingMinutes(effectiveSchedule(place, hours)) : null
+    return close != null && hours.sunset != null && close < hours.sunset
+  }
   const isWinter = (day) => {
     const sunset = hoursOf(day).sunset
     return sunset != null && sunset < WINTER_SUNSET_BEFORE
@@ -113,8 +120,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const rule = poolRules[name]
     return rule?.dia && (rule.min_dias_ciudad ?? 0) <= cityDays.length ? rule.dia : null
   }
-  // Con Free Tour y sin Galería (ni pool ni Arte), D4 se queda sin contenido: el tercer día es D5.
-  const tourSinGaleria = hasFreeTour && !inPool('Galería Borghese') && !selected.includes('arte_museos')
+  // Con Free Tour y sin Galería (ni pool ni Arte), D4 se queda sin contenido: el tercer día es D5. Y sin Galería, D4
+  // solo con el atardecer después de las 18:00: en invierno (el parque cierra al anochecer y la tarde se queda
+  // vacía), el tercer día es D5.
+  const sinGaleria = !inPool('Galería Borghese') && !selected.includes('arte_museos')
+  const tourSinGaleria = sinGaleria && (hasFreeTour || (cityDays[2] ? isWinter(cityDays[2]) : false))
   if (cityDays.length === 3) {
     // El tercer día: lo decide el pool (el primero que active D4 o D5) y, si no, la experiencia.
     const byPool = poolNames.map(extraDayOf).find((id) => id === 'D4' || id === 'D5')
@@ -216,6 +226,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.pool == null || (cond.pool ? inPool(stop.lugar) : !inPool(stop.lugar))) &&
       (cond.min_dias == null || contentDays >= cond.min_dias) &&
       (cond.fecha == null || (Boolean(day) && hoursOf(day).dateIso?.slice(5) === cond.fecha)) &&
+      (cond.cierra_antes_del_atardecer == null || (Boolean(day) && closesBeforeSunset(cond.cierra_antes_del_atardecer, day))) &&
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
     )
   }
@@ -294,7 +305,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const rule = entry.cfg.variantes?.tarde_b
     if (!rule) return false
     const others = new Set([...entries.filter((other) => other !== entry).flatMap((other) => namesOf(other.sections)), ...(hasFreeTour ? tourCovers : [])])
-    return (rule.si_salen_en_otro_dia ?? []).every((name) => others.has(name))
+    // Tarde B en cuanto alguno (el Campidoglio o el Ghetto) sale en otro día del viaje; la A, solo si no sale ninguno.
+    return (rule.si_salen_en_otro_dia ?? []).some((name) => others.has(name))
   }
   const resolveAll = () => {
     const first = order.map((id, index) => resolveEntry(id, index))
