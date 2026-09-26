@@ -55,7 +55,22 @@ export function joinSpanish(items) {
   return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`
 }
 
-/** El lugar con su artículo: la etiqueta de su paso por fuera si la tiene ("el Panteón"), si no el nombre. */
+/** Artículo por la primera palabra del nombre (lo que no está aquí va con "el"). */
+const ARTICLE_BY_FIRST_WORD = {
+  la: ['basílica', 'iglesia', 'plaza', 'piazza', 'fontana', 'fuente', 'galería', 'terraza', 'villa', 'isla', 'pirámide', 'boca', 'columna', 'cúpula', 'capilla', 'catedral', 'via', 'vía', 'torre', 'escalinata', 'colina'],
+  los: ['museos', 'jardines', 'mercados', 'foros', 'baños'],
+  las: ['termas', 'catacumbas', 'murallas'],
+}
+
+/**
+ * El lugar con su artículo: la etiqueta de su paso por fuera si la tiene ("el Panteón"); si no, el nombre con
+ * el artículo que le toca ("la Basílica de San Pedro", no "Basílica de San Pedro": decisión del 2026-09-26).
+ */
 export function placeWithArticle(place) {
-  return place?.pass_by?.label ?? place?.name ?? ''
+  if (place?.pass_by?.label) return place.pass_by.label
+  const name = place?.name ?? ''
+  if (!name || /^(el|la|los|las)\s/i.test(name)) return name
+  const first = name.split(/\s+/)[0].toLowerCase()
+  const article = Object.entries(ARTICLE_BY_FIRST_WORD).find(([, words]) => words.includes(first))?.[0] ?? 'el'
+  return `${article} ${name}`
 }

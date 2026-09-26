@@ -205,7 +205,14 @@ export async function buildDayBlockV3(
  */
 function buildCityDayV3(destData, trip, tripDay, options) {
   const nights = planNightWalks(destData, nightWalkPlan(trip))
-  const dayVisitedNames = new Set(trip.days.flatMap((day) => (day.schedule?.visits ?? []).map((visit) => visit.place.name)))
+  // Viaje de 1-2 días (decisión del 2026-09-26): la visita de día a partir de las 17:00 o del atardecer de un
+  // lugar que esa noche tiene su nocturna se quita; se queda solo la nocturna.
+  // Salvo la visita por la que se madruga: esa es el motivo del día y se queda (su nocturna también).
+  const wokeFor = new Set(tripDay.schedule?.modeFallback?.recoveredNames ?? [])
+  const replaced = new Set((nights.get(tripDay.dayNumber) ?? []).filter((entry) => entry.replacesDayVisit).flatMap((entry) => entry.conflicts_with ?? []).filter((name) => !wokeFor.has(name)))
+  if (replaced.size > 0) tripDay = withoutDayVisits(destData, tripDay, replaced, options)
+  // Lo que se ve de día en el viaje (sin la visita que ha dejado paso a su nocturna).
+  const dayVisitedNames = new Set(trip.days.flatMap((day) => (day.dayNumber === tripDay.dayNumber ? tripDay : day).schedule?.visits ?? []).map((visit) => visit.place.name))
   // ¿Vuelve el viaje a pasar por lo que enseña el Free Tour (de noche o de paso)? Cambia su texto.
   const covers = new Set(destData.default_free_tour?.covers ?? [])
   const tourRepeats =
@@ -232,7 +239,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
             : 'No cabía en ningún día del viaje',
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
-    ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+    // Lo que se queda solo con su nocturna no "falta": sale de noche.
+    ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo' })),
   ]
@@ -257,10 +265,51 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (freeAfternoon) day.free_afternoon = freeAfternoon
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
+  // Todos los huecos de más de 30 min, con nombre (el cliente los pinta en su sitio; `free_time` queda para
+  // las versiones de antes).
+  const freeTimes = freeTimesFor(destData, trip, tripDay, options, dayVisitedNames)
+  if (freeTimes.length > 0) day.free_times = freeTimes
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
   if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)
   return day
+}
+
+/**
+ * El día sin esas visitas de día (las de última hora que deja su nocturna): lo que queda antes de cenar se
+ * recalcula desde la nueva última parada, andando hasta la cena.
+ */
+function withoutDayVisits(destData, tripDay, names, options) {
+  const schedule = tripDay.schedule
+  const kept = schedule.visits.filter((visit) => !names.has(visit.place.name))
+  if (kept.length === schedule.visits.length || kept.length === 0) return tripDay
+  const dinner = schedule.meals.find((meal) => meal.type === 'dinner')
+  const lunch = schedule.meals.find((meal) => meal.type === 'lunch')
+  const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
+  // Lo que venía detrás de lo quitado se adelanta (andando desde lo anterior, en tramos de 5 min y sin
+  // entrar antes de que abra): el rato que sobra se queda antes de cenar, no en medio de la tarde.
+  const firstRemoved = schedule.visits.findIndex((visit) => names.has(visit.place.name))
+  const visits = []
+  for (const visit of kept) {
+    const previous = visits.at(-1)
+    const index = schedule.visits.indexOf(visit)
+    if (!previous || index < firstRemoved || visit.place.sunset != null || visit.place.fixed_start || (lunch && lunch.start >= previous.end && lunch.start < visit.start)) {
+      visits.push(visit)
+      continue
+    }
+    const walk = travel.leg(previous.place.end_coordinates ?? previous.place.coordinates, visit.place.coordinates)?.minutes ?? visit.walkMinutes ?? 0
+    const duration = visit.end - visit.start
+    const earliest = Math.ceil((previous.end + walk) / 5) * 5
+    const at = earliestVisitStart(effectiveSchedule(visit.place, tripDay.hours ?? {}), earliest, duration) ?? visit.start
+    const start = Math.min(visit.start, Math.max(earliest, at))
+    visits.push({ ...visit, start, end: start + duration, walkMinutes: walk })
+  }
+  const last = visits.at(-1)
+  const walkToDinner = dinner?.coordinates ? travel.leg(last.place.end_coordinates ?? last.place.coordinates, dinner.coordinates)?.minutes ?? 0 : 0
+  const meals = schedule.meals.map((meal) => (meal === dinner ? { ...meal, walkMinutes: walkToDinner } : meal))
+  const idleBeforeDinner = dinner ? dinner.start - last.end - walkToDinner : schedule.idleBeforeDinner
+  const ids = new Set(visits.map((visit) => visit.unitId))
+  return { ...tripDay, units: tripDay.units.filter((unit) => ids.has(unit.id)), schedule: { ...schedule, visits, meals, idleBeforeDinner } }
 }
 
 const HHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
@@ -289,7 +338,7 @@ export function contextBannerFor(destData, trip, options = {}) {
   const savedNames = [...new Set(early.flatMap((day) => [
     ...(day.schedule.modeFallback.recoveredNames ?? []),
     ...(day.schedule.modeFallback.recoveredUnitIds ?? []).map((id) => String(id).split(':').slice(1).join(':') || String(id)),
-  ].filter((name) => (day.schedule.visits ?? []).some((visit) => visit.place.name === name))))].filter((name) => placeByName.get(name)?.level === 1)
+  ].filter((name) => (day.schedule.visits ?? []).some((visit) => visit.place.name === name && !visit.place.passThrough))))].filter((name) => placeByName.get(name)?.level === 1)
   const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => (values[key] ?? match))
 
   if (short && winter) return fill(days === 1 ? templates.invierno_corto_1 : templates.invierno_corto, { dias: days })
@@ -413,33 +462,62 @@ function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames) {
  * La comida no es un hueco.
  */
 function midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames) {
-  const visits = tripDay.schedule?.visits ?? []
-  const meals = tripDay.schedule?.meals ?? []
-  let worst = null
+  // El de más minutos entre dos paradas (el cliente de antes solo pinta uno, entre dos paradas).
+  return freeTimesFor(destData, trip, tripDay, options, dayVisitedNames)
+    .filter((entry) => entry.after !== LUNCH_LABEL && entry.before !== LUNCH_LABEL && entry.minutes >= MID_DAY_GAP_MINUTES)
+    .sort((a, b) => b.minutes - a.minutes)[0] ?? null
+}
+
+/** Un hueco de más de esto (sin la comida ni lo de antes de cenar) sale como "Tiempo libre" (decisión del 2026-09-26). */
+const FREE_GAP_MINUTES = 30
+/** El otro extremo de un hueco cuando es la comida. */
+const LUNCH_LABEL = 'la comida'
+
+/**
+ * Todos los huecos del día de más de 30 min, con nombre: "Tiempo libre" y 2-3 sugerencias de camino (decisión
+ * del 2026-09-26: ningún día tiene huecos sin nombre). Entre dos paradas, antes de la comida (el Coliseo
+ * acaba a las 11:50 y se come a las 13:00) y después (la Vittoria no abre hasta las 16:00). La espera al
+ * mirador del atardecer también: es el tiempo libre que va ANTES del mirador. Lo de antes de cenar es el
+ * aperitivo o la tarde libre, aparte.
+ */
+function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
+  const visits = (tripDay.schedule?.visits ?? []).filter((visit) => !visit.place.isNightExperience)
+  const lunch = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'lunch')
+  const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
+  const coordsOf = (visit) => visit.place.end_coordinates ?? visit.place.coordinates
+  const gaps = []
   for (let i = 1; i < visits.length; i++) {
-    if (visits[i].place.passBy) continue
-    if (meals.some((meal) => meal.start >= visits[i - 1].end && meal.start < visits[i].start)) continue
-    const gap = visits[i].start - visits[i - 1].end - (visits[i].walkMinutes ?? 0)
-    if (gap >= MID_DAY_GAP_MINUTES && (!worst || gap > worst.gap)) worst = { gap, index: i }
+    const previous = visits[i - 1]
+    const next = visits[i]
+    if (lunch && lunch.start >= previous.end && lunch.start < next.start) {
+      // Antes de comer: hasta que empieza la comida (andando hasta el restaurante).
+      const toLunch = lunch.coordinates ? travel.leg(coordsOf(previous), lunch.coordinates)?.minutes ?? 0 : 0
+      gaps.push({ minutes: lunch.start - previous.end - toLunch, from: previous, after: previous.place.name, before: LUNCH_LABEL, to: lunch.coordinates ?? null, end: lunch.start - toLunch, zone: previous.place.zone })
+      // Después: desde que acaba la franja de la comida (que ya lleva el paseo) hasta la siguiente.
+      gaps.push({ minutes: next.start - lunch.end, fromCoords: next.place.coordinates, fromEnd: lunch.end, after: LUNCH_LABEL, before: next.place.name, to: next.place.coordinates, end: next.start, zone: next.place.zone })
+      continue
+    }
+    gaps.push({ minutes: next.start - previous.end - (next.walkMinutes ?? 0), from: previous, after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (next.walkMinutes ?? 0), zone: previous.place.zone ?? next.place.zone })
   }
-  if (!worst) return null
-  const previous = visits[worst.index - 1]
-  // Entre las sugerencias, nada de lo que ya va hoy más tarde.
-  const suggestions = nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates, {
-    startMinutes: previous.end,
-    endMinutes: visits[worst.index].start - (visits[worst.index].walkMinutes ?? 0),
-    to: visits[worst.index].place.coordinates,
-    hours: tripDay.hours ?? {},
-  })
-  return {
-    minutes: worst.gap,
-    after: previous.place.name,
-    before: visits[worst.index].place.name,
-    suggestions,
-    // Sin nada que proponer (la espera al atardecer del Pincio, con todo visto): una idea corta de la
-    // zona, sin más paradas (decisión del 2026-09-26).
-    ...(suggestions.length === 0 ? { hint: zoneHintFor(destData, visits[worst.index].place.zone ?? previous.place.zone) } : {}),
-  }
+  const seenToday = new Set(dayVisitedNames)
+  return gaps
+    .filter((gap) => gap.minutes > FREE_GAP_MINUTES)
+    .map((gap) => {
+      const from = gap.from ? coordsOf(gap.from) : gap.fromCoords
+      const startMinutes = gap.from ? gap.from.end : gap.fromEnd
+      const suggestions = nearbySuggestions(destData, trip, options, seenToday, from, { startMinutes, endMinutes: gap.end, to: gap.to, hours: tripDay.hours ?? {} })
+      // Lo que se propone en un hueco no se vuelve a proponer en otro del mismo día.
+      for (const item of suggestions) seenToday.add(item.name)
+      return {
+        minutes: gap.minutes,
+        after: gap.after,
+        before: gap.before,
+        suggestions,
+        // Sin nada que proponer (la espera al atardecer del Pincio, con todo visto): una idea corta de la
+        // zona, sin más paradas (decisión del 2026-09-26).
+        ...(suggestions.length === 0 ? { hint: zoneHintFor(destData, gap.zone) } : {}),
+      }
+    })
 }
 
 /** "Pasear por Villa Borghese: el pulmón verde de Roma." — el paseo de la zona, en una frase. */

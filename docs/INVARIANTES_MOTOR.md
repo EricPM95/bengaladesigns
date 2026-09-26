@@ -877,6 +877,42 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 188. **Pascua, 4 días con Free Tour**: una joya el día 4 vale si alguna joya está cerrada los dos primeros días
     (excepción de "lo mejor primero", decisión del 2026-09-26).
 
+**Cierre de Roma (10 arreglos, 2026-09-26)**
+189. **Último día sin repetir**: un bloque con `evita_si_ya_salieron` (centro_temprano, bernini_trevi: Trevi, Panteón
+    y Navona) no va si todo eso ya salió; una joya de calle cuenta como salida si ese día ya es tarde para ella (lo
+    mejor primero la saca de paso antes). La mañana repetida, la que ya no tiene su ancla o el día sin mañana se
+    cambian por la mejor mañana o tarde sin atardecer que aún no haya salido (`replacementMorning`: experiencias,
+    imprescindibles nuevos, pool; sin `minimo_dias_viaje`). Si ninguna tarde encaja, antes de improvisar se prueba
+    cualquier tarde no usada (`relaxed`).
+190. **Como mucho 2 veces por viaje** (visita, de paso o de noche): las nocturnas no salen si el lugar ya sale 2 veces.
+191. **Pool siempre y con visita**: nunca va de paso (`scheduleBlock` no lo convierte; el ajuste de miradores no lo
+    quita); si de camino no cabe, fuera lo de paso secundario del día y luego hasta 40 min de desvío; la tarde que lo
+    trae vale aunque no encaje si ningún día posterior puede llevarlo (`poolNeedsNow`).
+192. **Día y noche**: en 3+ días nunca el mismo día, tampoco de paso (`daysOf` guarda TODOS los días de cada lugar).
+    En 1-2 días, la visita de día desde las 17:00 o el atardecer se quita y queda la nocturna (`replacesDayVisit`),
+    salvo la que justifica el madrugón. Tranquilo: una nocturna por noche.
+193. **Madrugón**: solo si por él se VISITA (no de paso) un imprescindible que si no no se visitaba; el aviso nombra
+    eso (el Foro que cierra pronto). Una joya no se ve "por fuera en vez de madrugar" (`outsideInsteadOfWaking`).
+194. **Huecos**: dentro de un bloque curado se encadena hasta 10 min andando y dentro de un grupo del JSON hasta 15 (Coliseo
+    → Foro). Todo hueco de más de 30 min sale como tiempo libre con sugerencias (`free_times`, también antes y
+    después de comer); la mañana que acaba 60+ min antes de comer se rellena de camino (`fillBeforeLunch`).
+195. **Free Tour**: siempre el día 1 por la mañana (también con pool; la reparación no lo mueve) y la tarde de ese día
+    no lleva nada de lo que enseña el tour, ni de paso. Lo de paso de una tarde que se visita en la mañana de un día
+    posterior no se adelanta.
+196. **Aventino** (`aventino_testaccio`): Boca → Circo Máximo → Naranjos → Cerradura → Pirámide y Cementerio → Mercado
+    de Testaccio con `solo_si_abierto` (si a esa hora está cerrado no entra, ni de paso).
+197. **Miradores**: el tiempo libre va antes del mirador del atardecer (la espera que solo mueve el rato de antes de
+    cenar no cuesta; con horas por delante, relleno con 25 min de desvío). Si la tarde lleva el mirador al atardecer,
+    lo que la mañana ponía desde él (Pincio, Popolo) pasa a la tarde.
+198. **Cerrados**: un nivel 1 nunca desaparece; si no cabe de ninguna forma, por fuera (`force`, puede quitar hasta dos
+    paradas de nivel 2-3 o un mirador que no es nivel 1), con `closed_notice` ("El Coliseo está cerrado el 25 de
+    diciembre por Navidad: te lo enseñamos por fuera…"). Lo que no se ve por fuera (los Museos Vaticanos) y cierra todo
+    el viaje: su bloque va sin él, con la Plaza y la Basílica y el aviso. Dos joyas con un único día bueno: ese día es
+    para la que no se ve por fuera. Se prefiere el día en que abren todos los imprescindibles de la mañana. Un
+    imprescindible que no entra de día se queda con su nocturna (`mustNight`). Plantillas y festivos en
+    `destination_config.closed_notices`.
+199. **Artículos**: `placeWithArticle` pone el artículo por la primera palabra del nombre ("la Basílica de San Pedro").
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

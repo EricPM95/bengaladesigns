@@ -281,6 +281,9 @@ export interface Stop {
   /** De temporada con fechas aproximadas, en el margen de 15 días: "Es probable que algunos mercadillos
       aún no hayan abierto." (Estaciones, Parte 4). */
   seasonNotice?: string | null
+  /** Imprescindible cerrado ese día que se enseña por fuera, o el grupo cuya ancla cierra todo el viaje: "El
+      Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual." */
+  closedNotice?: string | null
   /** Una calle: no es una parada, sale como "Pasas por…" sin número (Parte A, regla 4). */
   passThrough?: boolean
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
@@ -572,6 +575,9 @@ export interface DayPlan {
   /** Motor v3: hueco de 60+ min a mitad de día (antes de una parada con hora), tras la parada `after`. */
   /** `hint`: sin sugerencias de lugares, una idea corta de la zona ("Pasear por Villa Borghese: …"). */
   freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null } | null
+  /** Motor v3: TODOS los huecos de más de 30 min, con nombre (decisión del 2026-09-26). `before`/`after` pueden
+      ser "la comida": el hueco antes de comer o el de después. */
+  freeTimes?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null }[] | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo

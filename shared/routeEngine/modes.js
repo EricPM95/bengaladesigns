@@ -34,6 +34,9 @@ const SHARED = {
   dayEndWithDinner: HHMM('21:30'),
   dinnerMinutes: 60,
   chainMaxWalkMinutes: 3,
+  // Dentro de un mismo bloque curado se encadena hasta 10 min andando (decisión del 2026-09-26).
+  blockChainMaxWalkMinutes: 10,
+  groupChainMaxWalkMinutes: 15,
   longVisitMinutes: 180,
   // Día con excursión de medio día: la mañana (08:00-14:00) es la excursión, 14:00-16:00 es volver
   // y comer, y la ciudad empieza aquí. La hora la pone el operador de la excursión, no el ritmo.

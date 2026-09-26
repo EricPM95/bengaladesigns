@@ -112,6 +112,12 @@ function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
   return index === 0 || !stops[index - 1] || !stops[index] ? `${dayId}-connector-${index}` : `${dayId}-${stops[index - 1].id}>${stops[index].id}`
 }
 // Mismos límites/valor por defecto que el tirador de mapa de StopDetailSheet.tsx/ArrivalDetailSheet.tsx — ninguno de los dos lados puede llegar a desaparecer del todo.
+/** El otro extremo de un tiempo libre cuando es la comida (lo que manda el motor v3). */
+const LUNCH_FREE_LABEL = 'la comida'
+type FreeTimeEntry = NonNullable<DayPlan['freeTime']>
+/** Los huecos con nombre del día: la lista nueva o, de rutas guardadas antes, el único que había. */
+const freeTimesOf = (day: DayPlan): FreeTimeEntry[] => day.freeTimes ?? (day.freeTime ? [day.freeTime] : [])
+
 const MAP_MIN_VH = 15
 const MAP_MAX_VH = 75
 const DEFAULT_MAP_VH = 28
@@ -671,6 +677,27 @@ export function DayDetailPanel({
   // pinta el de ANTES de la tarjeta dorada — el de después ya lo cubre el hueco que abre la
   // siguiente parada (o el de fin de día si la comida cierra el día), y pintar los dos dejaría dos
   // botones pegados.
+  const renderFreeTime = (entry: FreeTimeEntry, index: number) => (
+    <div key={`free-${entry.after}-${entry.before}`} className="pt-2">
+      <FreeTimeBlock
+        hours={0}
+        city={day.city}
+        midDay={{ minutes: entry.minutes, before: entry.before, hint: entry.hint }}
+        onOpenMap={() => {
+          const here = realStops[index]?.coordinates
+          setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+          setInsertAt(index + 1)
+        }}
+        suggestions={entry.suggestions}
+        onPickSuggestion={(name) => {
+          const here = realStops[index]?.coordinates
+          setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+          setAddStopInitialQuery(name)
+          setInsertAt(index + 1)
+        }}
+      />
+    </div>
+  )
   const renderMealGap = (insertIndex: number) => renderGap(`${day.id}-meal-gap-${insertIndex}`, null, '', '', insertIndex)
 
   // Mismo patrón de tirador arrastrable que StopDetailSheet.tsx/ArrivalDetailSheet.tsx — agranda/encoge el mini-mapa, clamped entre MAP_MIN_VH y MAP_MAX_VH.
@@ -1078,27 +1105,11 @@ export function DayDetailPanel({
                   )}
                 </div>
                 </SortableStop>
-                {day.freeTime && realStops[index]?.name === day.freeTime.after && realStops[index + 1]?.name === day.freeTime.before && (
-                  <div className="pt-2">
-                    <FreeTimeBlock
-                      hours={0}
-                      city={day.city}
-                      midDay={{ minutes: day.freeTime.minutes, before: day.freeTime.before, hint: day.freeTime.hint }}
-                      onOpenMap={() => {
-                        const here = realStops[index]?.coordinates
-                        setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-                        setInsertAt(index + 1)
-                      }}
-                      suggestions={day.freeTime.suggestions}
-                      onPickSuggestion={(name) => {
-                        const here = realStops[index]?.coordinates
-                        setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-                        setAddStopInitialQuery(name)
-                        setInsertAt(index + 1)
-                      }}
-                    />
-                  </div>
-                )}
+                {/* Todos los huecos de más de 30 min, con nombre (decisión del 2026-09-26): entre dos paradas y,
+                    con la comida en medio, el de antes de comer aquí y el de después tras la comida. */}
+                {freeTimesOf(day)
+                  .filter((entry) => realStops[index]?.name === entry.after && (entry.before === LUNCH_FREE_LABEL ? showLunchAccordion : realStops[index + 1]?.name === entry.before))
+                  .map((entry) => renderFreeTime(entry, index))}
                 {showLunchAccordion && (
                   <>
                     {renderMealGap(index + 1)}
@@ -1114,6 +1125,9 @@ export function DayDetailPanel({
                         onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
                       />
                     </div>
+                    {freeTimesOf(day)
+                      .filter((entry) => entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before)
+                      .map((entry) => renderFreeTime(entry, index))}
                   </>
                 )}
                 {showDinnerAccordion && (

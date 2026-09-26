@@ -43,6 +43,10 @@ const CHAIN_MAX_METERS = 900
 // noche no hay nocturna.
 export const NIGHT_REACH_METERS = 950
 const MAX_PER_NIGHT = 3
+/** En viajes de 1-2 días, la visita de día desde esta hora (o desde el atardecer) deja paso a su nocturna. */
+const LATE_VISIT_MINUTES = 17 * 60
+/** La nocturna de un imprescindible que no entra de día: desde la cena, hasta esto (unos 20 min andando). */
+const MUST_NIGHT_REACH_METERS = 1600
 /** La primera se mira con calma; las encadenadas son de paso. */
 const FIRST_MINUTES = 45
 const CHAINED_MINUTES = 25
@@ -72,8 +76,11 @@ const coordsOf = (entry) => ({ lat: entry.coordinates?.[0], lng: entry.coordinat
  *   - cada experiencia se usa UNA vez en el viaje
  *   - se ofrecen en la noche cuya cena cae en su misma zona
  *   - si el lugar se visitó de día: en viajes de 3+ días su versión nocturna se reserva para OTRA
- *     noche (verlo el lunes y volver el jueves lo redescubre; verlo dos veces el lunes lo gasta);
- *     en viajes de 1-2 días puede ir esa misma noche, porque no hay dónde repartir
+ *     noche, también si de día solo se pasó por delante (decisión del 2026-09-26: nunca de día y de
+ *     noche el mismo día); en viajes de 1-2 días puede ir esa misma noche si la visita de día es a partir
+ *     de las 17:00 o del atardecer, y entonces la visita de día se quita (`replacesDayVisit`)
+ *   - ningún lugar sale más de 2 veces en el viaje, contando lo de paso y las nocturnas
+ *   - en ritmo tranquilo, una nocturna por noche como mucho (`plan.maxPerNight`)
  *
  * @returns {Map<number, object[]>} día -> experiencias de esa noche, ya en orden de paseo
  */
@@ -82,20 +89,58 @@ export function planNightWalks(destData, plan) {
   if (catalogue.length === 0) return new Map()
 
   const shortTrip = plan.days.length <= 2
-  // Qué día se visita cada lugar, para saber si la nocturna es una revisita y de qué noche huir.
+  // Qué días sale cada lugar (todos: de paso el día 2 y de visita el día 4), cuántas veces, y a qué hora
+  // empieza la visita de cada día.
   const dayVisited = new Map()
+  const daysOf = new Map()
+  const timesSeen = new Map()
+  const startOn = new Map()
   for (const day of plan.days) {
     for (const slotName of ['morning', 'afternoon']) {
       for (const unit of day.slots[slotName].units) {
-        for (const place of unit.places) dayVisited.set(place.name, day.dayNumber)
+        for (const place of unit.places) {
+          dayVisited.set(place.name, day.dayNumber)
+          daysOf.set(place.name, new Set([...(daysOf.get(place.name) ?? []), day.dayNumber]))
+          timesSeen.set(place.name, (timesSeen.get(place.name) ?? 0) + 1)
+          if (unit.start != null && !startOn.has(`${day.dayNumber}:${place.name}`)) startOn.set(`${day.dayNumber}:${place.name}`, unit.start)
+        }
       }
     }
   }
+  const maxPerNight = plan.maxPerNight ?? MAX_PER_NIGHT
+  // Viaje de 1-2 días: la visita de día de ese lugar, ese día, es a partir de las 17:00 o del atardecer.
+  const lateDayVisit = (entry, day) =>
+    (entry.conflicts_with ?? []).some((name) => {
+      const start = startOn.get(`${day.dayNumber}:${name}`)
+      return start != null && (start >= LATE_VISIT_MINUTES || (Number.isFinite(day.hours?.sunset) && start >= day.hours.sunset))
+    })
 
   const levelOf = new Map((destData?.places ?? []).map((place) => [place.name, place.level]))
   const placeByName = new Map((destData?.places ?? []).map((place) => [place.name, place]))
   const used = new Set()
   const byDay = new Map()
+
+  // Un imprescindible que no ha entrado de día en ningún sitio (`plan.mustNight`: Navona en 2 días tranquilos con la
+  // Galería Borghese del pool) se queda con su nocturna (decisión del 2026-09-26): la noche cuya cena quede más
+  // cerca, con más margen de distancia y aunque no esté en la lista de la tarde.
+  const forced = new Map()
+  const dinnerCoordsOf = (day) => {
+    const point = day.dinnerZoneId ? dinnerZones(destData).find((zone) => zone.id === day.dinnerZoneId)?.coordinates : null
+    const center = point ?? destData?.zones?.[day.slots.afternoon.zone ?? day.slots.morning.zone]?.center
+    return Array.isArray(center) ? { lat: center[0], lng: center[1] } : null
+  }
+  for (const name of plan.mustNight ?? []) {
+    const entry = catalogue.find((candidate) => (candidate.conflicts_with ?? []).includes(name) && !used.has(candidate.name))
+    if (!entry) continue
+    const best = plan.days
+      .filter((day) => !day.isBlank && !day.isExcursion && dinnerCoordsOf(day))
+      .map((day) => ({ day, meters: metersBetween(dinnerCoordsOf(day), coordsOf(entry)) }))
+      .filter((item) => item.meters <= MUST_NIGHT_REACH_METERS)
+      .sort((a, b) => (forced.get(a.day.dayNumber)?.length ?? 0) - (forced.get(b.day.dayNumber)?.length ?? 0) || a.meters - b.meters)[0]
+    if (!best) continue
+    used.add(entry.name)
+    forced.set(best.day.dayNumber, [...(forced.get(best.day.dayNumber) ?? []), entry])
+  }
 
   for (const day of plan.days) {
     // Ni en blanco ni de excursión: no hay cena en la ciudad de la que salir a pasear.
@@ -130,13 +175,15 @@ export function planNightWalks(destData, plan) {
     const inSeason = (entry) => fitOf(entry).enters
 
     const available = catalogue.filter((entry) => {
-      if (used.has(entry.name)) return false
+      if (used.has(entry.name) || (forced.get(day.dayNumber) ?? []).includes(entry)) return false
       // Con tarde tipo (Mañanas y tardes, Parte B), solo las nocturnas de su lista.
       if (Array.isArray(day.nightNames) && !day.nightNames.includes(entry.name)) return false
       if (closedAtNight(entry) || !inSeason(entry)) return false
       // En un viaje no se repite un lugar de nivel 2 o 3, tampoco de noche (decisión del 2026-09-25):
       // si el Janículo se ve al atardecer otro día, su nocturna no sale. Solo el nivel 1 se repite.
       if ((entry.conflicts_with ?? []).some((name) => dayVisited.has(name) && (levelOf.get(name) ?? 1) >= 2)) return false
+      // Como mucho 2 veces en el viaje, contando lo de paso: si ya sale dos veces de día, no hay nocturna.
+      if ((entry.conflicts_with ?? []).some((name) => (timesSeen.get(name) ?? 0) >= 2)) return false
       // A distancia de paseo desde la cena. La zona exacta no vale como criterio: es justo la zona
       // donde ese lugar ya se ha visitado de día, así que en viajes largos se excluían todas.
       if (!dinnerCoords) return false
@@ -146,20 +193,21 @@ export function planNightWalks(destData, plan) {
       // OTRO sitio y cierra el día que se ha visitado (`same_day_as_visit`: el Foro iluminado desde el
       // Campidoglio el día de la Roma Antigua).
       if (entry.same_day_as_visit) return true
-      const conflictDay = (entry.conflicts_with ?? []).map((name) => dayVisited.get(name)).find((d) => d !== undefined)
-      return conflictDay === undefined || conflictDay !== day.dayNumber
+      return !(entry.conflicts_with ?? []).some((name) => daysOf.get(name)?.has(day.dayNumber))
     })
-    if (available.length === 0) continue
-    // Viaje de 1-2 días (decisión del 2026-09-26): lo visto de día esa misma noche solo si no hay otra
-    // nocturna posible; si la hay, van solo las otras (y la del lugar visto puede ir otra noche).
-    const sameDay = (entry) => !entry.same_day_as_visit && (entry.conflicts_with ?? []).some((name) => dayVisited.get(name) === day.dayNumber)
-    if (shortTrip && available.some((entry) => !sameDay(entry))) available.splice(0, available.length, ...available.filter((entry) => !sameDay(entry)))
+    if (available.length === 0 && !forced.has(day.dayNumber)) continue
+    // Viaje de 1-2 días (decisión del 2026-09-26): lo visto de día esa misma noche solo si la visita de día
+    // es a partir de las 17:00 o del atardecer (entonces se queda solo la nocturna) o si no hay otra
+    // nocturna posible.
+    const sameDay = (entry) => !entry.same_day_as_visit && (entry.conflicts_with ?? []).some((name) => daysOf.get(name)?.has(day.dayNumber))
+    const keepsDay = (entry) => sameDay(entry) && !lateDayVisit(entry, day)
+    if (shortTrip && available.some((entry) => !keepsDay(entry))) available.splice(0, available.length, ...available.filter((entry) => !keepsDay(entry)))
 
     // Desde el restaurante hacia fuera, vecino más cercano. Cuando el viaje tenga alojamiento
     // elegido, ese punto sesgará el orden; mientras no lo haya, el paseo encadena lo más cercano.
-    const chain = []
-    let cursor = null
-    while (chain.length < MAX_PER_NIGHT) {
+    const chain = [...(forced.get(day.dayNumber) ?? [])]
+    let cursor = chain.length > 0 ? coordsOf(chain.at(-1)) : null
+    while (chain.length < maxPerNight) {
       const candidates = available.filter((entry) => !chain.includes(entry))
       if (candidates.length === 0) break
       let next = null
@@ -180,7 +228,8 @@ export function planNightWalks(destData, plan) {
 
     for (const entry of chain) used.add(entry.name)
     // Con `aprox`, en el margen de 15 días: sale con su aviso ("Es probable que … aún no hayan abierto").
-    if (chain.length > 0) byDay.set(day.dayNumber, chain.map((entry) => (fitOf(entry).notice ? { ...entry, season_notice: fitOf(entry).notice } : entry)))
+    // La nocturna del lugar visto ese mismo día a última hora (1-2 días) sustituye a esa visita de día.
+    if (chain.length > 0) byDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, ...(fitOf(entry).notice ? { season_notice: fitOf(entry).notice } : {}), ...(shortTrip && sameDay(entry) && lateDayVisit(entry, day) ? { replacesDayVisit: true } : {}) })))
   }
   return byDay
 }
@@ -210,6 +259,8 @@ export function nightTiming(chain, timing = {}) {
       const last = timed.at(-1)
       const toDinner = dinnerCoords ? walkMinutes(coordsOf(last.entry), dinnerCoords) : 0
       if (timed.length === entries.length && last.start + last.duration + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
+      // La que sustituye a una visita de día (1-2 días) no se puede quedar fuera: entonces, después de cenar.
+      if (entries[0].replacesDayVisit) break
       entries = entries.slice(1)
     }
   }
@@ -285,15 +336,21 @@ export function dinnerZoneOf(tripDay) {
 
 /**
  * El viaje del motor v3 con la forma que espera planNightWalks. Con las paradas que de verdad se
- * visitan —no las del reparto— y SIN las paradas "de paso": pasar por delante del Coliseo camino de
- * la cena no es haberlo visitado ese día, y si contara movería su versión nocturna a otra noche.
+ * visitan —no las del reparto—, también las "de paso" y lo visto por fuera: desde el 2026-09-26 cuentan
+ * para no ver un lugar de día y de noche el mismo día, y para el tope de 2 veces por viaje.
  */
 export function nightWalkPlan(trip) {
   return {
     days: trip.days.map((day) => {
       const zone = dinnerZoneOf(day)
-      const units = (day.schedule?.visits ?? []).filter((visit) => !visit.place.passBy).map((visit) => ({ places: [visit.place] }))
+      // Lo de paso y lo visto por fuera también cuentan (decisión del 2026-09-26: nunca de día y de noche el
+      // mismo día, tampoco de paso; y como mucho 2 veces en el viaje).
+      const units = (day.schedule?.visits ?? []).map((visit) => ({ places: [visit.place], start: visit.start }))
       return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, nightNames: day.nightNames ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
     }),
+    // Los imprescindibles que no han entrado de día: su nocturna va sí o sí.
+    mustNight: (trip.unplacedEssentials ?? []).map((item) => item.name),
+    // Ritmo tranquilo: una nocturna por noche como mucho (decisión del 2026-09-26).
+    ...(trip.mode?.id === 'tranquilo' ? { maxPerNight: 1 } : {}),
   }
 }

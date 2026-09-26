@@ -413,12 +413,23 @@ function measureTrip(trip, pace, exps) {
     }
   })
 
+  // Lo que sale solo de noche (decisión del 2026-09-26): en 1-2 días, la visita de última hora deja paso a su
+  // nocturna; y el imprescindible que no entra de día se queda con su nocturna. Cuenta como visto.
+  const seenAtNight = new Map()
+  trip.days.forEach((day, index) => {
+    for (const stop of (day?.stops ?? []).filter((candidate) => candidate.is_night_experience)) {
+      const name = String(stop.place_name ?? stop.name).replace(/\s*\(noche\)$/, '')
+      if (!seenAtNight.has(name)) seenAtNight.set(name, index + 1)
+    }
+  })
   const brokenGroups = []
+  const closedWholeTrip = (name) => Boolean(FECHA) && Array.from({ length: trip.days.length }, (_, i) => i + 1).every((n) => closedOnDay(D.places.find((place) => place.name === name), weekdayForDay(FECHA, n), addDaysIso(FECHA, n - 1)))
   for (const [group, members] of GROUPS) {
     const present = members.filter((member) => dayOf.has(member.name) && !seenWithTour.has(member.name))
     if (present.length === 0) continue
     // Lo que se ve con el Free Tour (Navona, del grupo Panteón + Navona) cuenta como visto: no falta.
-    const missing = members.filter((member) => !dayOf.has(member.name) && !seenWithTour.has(member.name))
+    // Lo cerrado todos los días del viaje (los Museos Vaticanos en Pascua) no rompe su grupo: sale con su aviso.
+    const missing = members.filter((member) => !dayOf.has(member.name) && !seenWithTour.has(member.name) && !seenAtNight.has(member.name) && !closedWholeTrip(member.name))
     if (missing.length > 0) {
       brokenGroups.push(`${group}: solo ${present.map((m) => m.name).join(' + ')} (faltan ${missing.map((m) => m.name).join(', ')})`)
       continue
@@ -437,7 +448,7 @@ function measureTrip(trip, pace, exps) {
   }
 
   const cityDays = dayMetrics.filter((d) => d.kind === 'ciudad').length
-  const missingLevel1 = cityDays > 0 ? LEVEL1_NAMES.filter((name) => !dayOf.has(name)) : []
+  const missingLevel1 = cityDays > 0 ? LEVEL1_NAMES.filter((name) => !dayOf.has(name) && !seenAtNight.has(name) && !closedWholeTrip(name)) : []
   const defaultTime = D.default_free_tour?.default_time ?? null
   const freeTourOffTime = trip.hasFreeTour ? dayMetrics.filter((d) => d.freeTourStart && d.freeTourStart !== defaultTime).length : 0
 
@@ -464,7 +475,11 @@ function measureTrip(trip, pace, exps) {
   const closedStart = JOYA_NAMES.some((other) => closedUntil(other, 2))
   const lateCount = JOYA_NAMES.filter((other) => firstDay.get(other) === lastDay).length
   const easterException = (name) => trip.hasFreeTour && lastDay === 4 && closedStart && firstDay.get(name) === lastDay && lateCount === 1
-  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name) && !easterException(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
+  // En 1-2 días la joya que se queda solo con su nocturna (visita de última hora) sale; y la que va tarde porque
+  // cerraba algún día de antes (festivos), tampoco cuenta.
+  if (lastDay <= 2) for (const [name, day] of seenAtNight) if (!firstDay.has(name)) firstDay.set(name, day)
+  const closedBefore = (name) => Boolean(FECHA) && firstDay.has(name) && Array.from({ length: firstDay.get(name) - 1 }, (_, i) => i + 1).some((n) => closedOnDay(placeOf(name), weekdayForDay(FECHA, n), addDaysIso(FECHA, n - 1)))
+  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name) && !easterException(name) && !closedBefore(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 
   return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }

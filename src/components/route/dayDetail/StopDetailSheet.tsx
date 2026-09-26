@@ -557,7 +557,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
                       de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
                       nunca redactado por Claude, para garantizar que aparece siempre igual. */}
-                  {(hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice) && (
+                  {(hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice || stop.closedNotice) && (
                     <div className="space-y-1 border-t border-border pt-3">
                       <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
                         <ClockIcon />
@@ -567,6 +567,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                           (temporadas, días de cierre, días gratis, notas) — ver formatScheduleDetail. */}
                       {stop.hoursWarning && <p className="text-small font-medium text-accent-red">{stop.hoursWarning}</p>}
                       {stop.seasonNotice && <p className="text-small font-medium text-accent-red">{stop.seasonNotice}</p>}
+                      {stop.closedNotice && <p className="text-small text-text-muted">{stop.closedNotice}</p>}
                       {hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{hoursDetail}</p>}
                       {/* Plazas, fuentes, calles (sin horario en ningún sitio): nada que consultar (decisión del 2026-09-26). */}
                       {hoursTag?.variant === 'always' && !hoursDetail ? (

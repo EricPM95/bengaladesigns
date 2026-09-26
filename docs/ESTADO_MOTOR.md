@@ -124,7 +124,15 @@ de zona.
 
 ### Queda por decidir
 
-Nada abierto ahora mismo.
+Lo que enseña docs/REVISION_RUTAS_V2.md (2026-09-26, sin arreglar: lo lee el usuario primero). Pool de dos lugares
+que no entra entero (Castillo o Galería Borghese en 2-4 días), 2 días con Free Tour y pool B sin el Vaticano, y el
+Altar que falta en 2 días completo con pool A.
+
+Rojos del semáforo explicados (2026-09-26):
+- Pascua (28-29 de marzo) con Free Tour: los Museos cierran los dos días y la tarde del tour no puede ser el centro
+  barroco; en 2 días queda una tarde libre de 143 min (día 1) y en 5-7 días la tarde de Letrán anda 1,4 km de más.
+- 7 días con Arte en julio, día 5: 3 h 24 min de tiempo libre antes del Pincio al atardecer (regla 8: el tiempo
+  libre va antes del mirador) y en 7 días ya no queda nada nuevo cerca.
 
 Resuelto (2026-09-26):
 - 4 días con Free Tour desde el domingo de Pascua: el Coliseo el día 4 se acepta como excepción de "lo mejor

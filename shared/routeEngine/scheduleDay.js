@@ -653,6 +653,8 @@ function simulate(sequence, ctx) {
   let lunchDone = !pendingMeals.lunch
   let afterMeal = false
   let seenVisit = false
+  // El bloque curado de la última visita (para encadenar dentro del bloque, ver `blockChainMaxWalkMinutes`).
+  let lastBlockId = null
   let walk = 0
   let meters = 0
   let idle = 0
@@ -779,7 +781,12 @@ function simulate(sequence, ctx) {
       // contenedor como una sola visita, aunque haya 4 minutos andando.
       const previous = visits[visits.length - 1]
       const withContainer = Boolean(place.contained_in && previous && (previous.place.name === place.contained_in || previous.place.contained_in === place.contained_in))
-      const chained = !afterMeal && (index > 0 || withContainer || (seenVisit && position !== null && walkMinutes <= mode.chainMaxWalkMinutes))
+      // Y dentro de un mismo bloque curado, a 10 min o menos (decisión del 2026-09-26): del Coliseo al Foro
+      // sin redondear a la media hora.
+      const sameBlock = unit.curatedIndex != null && Boolean(unit.blockId) && unit.blockId === lastBlockId && walkMinutes <= (mode.blockChainMaxWalkMinutes ?? mode.chainMaxWalkMinutes)
+      // Del mismo grupo del JSON (el Coliseo y el Foro, 11 min por la matriz), un poco más.
+      const sameGroup = Boolean(place.group) && previous?.place.group === place.group && walkMinutes <= (mode.groupChainMaxWalkMinutes ?? mode.chainMaxWalkMinutes)
+      const chained = !afterMeal && (index > 0 || withContainer || (seenVisit && position !== null && (walkMinutes <= mode.chainMaxWalkMinutes || sameBlock || sameGroup)))
       // Por la tarde, cuartos de hora; por la mañana, :00/:30.
       const roundSlot = lunchDone ? roundUpToQuarter : roundUpToSlot
 
@@ -858,6 +865,7 @@ function simulate(sequence, ctx) {
       position = place.end_coordinates ?? place.coordinates
       seenVisit = true
       afterMeal = false
+      lastBlockId = unit.curatedIndex != null ? unit.blockId ?? null : null
     }
 
     // Preferencias de hora de la unidad, medidas sobre su primera visita.

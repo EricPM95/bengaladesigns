@@ -6853,7 +6853,28 @@
       "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.",
       "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad. El resto del día sigue a tu ritmo."
     },
-    "night_view_text": "Vistas de Roma iluminada: a esta hora ya es de noche y la ciudad se enciende a tus pies."
+    "night_view_text": "Vistas de Roma iluminada: a esta hora ya es de noche y la ciudad se enciende a tus pies.",
+    "closed_notices": {
+      "_nota": "Avisos de cerrado (decisión del 2026-09-26). {Lugar}: el lugar con su artículo y mayúscula; {esta}: está/están; {cerrado}: cerrado/cerrada/cerrados/cerradas; {dia}: \"25 de diciembre\" o \"lunes\"; {motivo}: el festivo o \"cierre semanal\"; {fechas}: \"el 1 de mayo (Día del Trabajo) y el 2 de mayo (domingo)\"; {resto}: lo que sí se ve de su grupo.",
+      "por_fuera": "{Lugar} {esta} {cerrado} el {dia} por {motivo}: te lo enseñamos por fuera, merece la pena igual.",
+      "sin_visita_por_fuera": "{Lugar} {esta} {cerrado} {fechas}. Hoy ves {resto}, que sí abren.",
+      "cierre_semanal": "cierre semanal",
+      "festivos": {
+        "01-01": "Año Nuevo",
+        "01-06": "Reyes",
+        "02-11": "el aniversario de los Pactos de Letrán",
+        "03-19": "San José",
+        "easter": "Pascua",
+        "easter+1": "el Lunes de Pascua",
+        "05-01": "el Día del Trabajo",
+        "06-29": "San Pedro y San Pablo",
+        "08-14": "Ferragosto",
+        "08-15": "Ferragosto",
+        "12-08": "la Inmaculada",
+        "12-25": "Navidad",
+        "12-26": "San Esteban"
+      }
+    }
   },
   "museos_de_pago": {
     "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",
@@ -6984,6 +7005,11 @@
       "excluye_tardes_mismo_dia": [
         "centro_barroco",
         "tridente_pincio"
+      ],
+      "evita_si_ya_salieron": [
+        "Fontana de Trevi",
+        "Panteón",
+        "Piazza Navona"
       ]
     },
     {
@@ -7393,12 +7419,12 @@
       ],
       "paradas": [
         {
-          "lugar": "Circo Máximo",
-          "rol": "de_paso"
-        },
-        {
           "lugar": "Boca de la Verdad",
           "rol": "parada"
+        },
+        {
+          "lugar": "Circo Máximo",
+          "rol": "de_paso"
         },
         {
           "lugar": "Jardín de los Naranjos",
@@ -7413,11 +7439,22 @@
         {
           "lugar": "Pirámide Cestia",
           "rol": "de_paso"
+        },
+        {
+          "lugar": "Cementerio Protestante",
+          "rol": "parada",
+          "nota": "Junto a la Pirámide: cierra a las 17:00 (el domingo a las 13:00); si no llega, se ve de paso."
+        },
+        {
+          "lugar": "Mercado de Testaccio",
+          "rol": "parada",
+          "solo_si_abierto": true,
+          "nota": "Solo si está abierto a esa hora (cierra a las 15:30 y el domingo): si no, no entra."
         }
       ],
       "cena": "Testaccio",
       "nocturnas": [],
-      "notas": "La tarde más local de Roma: barrio residencial, vistas sin multitudes y cena donde comen los romanos. Se baja del Aventino a Testaccio andando."
+      "notas": "La tarde más local de Roma: barrio residencial, vistas sin multitudes y cena donde comen los romanos. Se baja del Aventino a Testaccio andando. Orden sin zigzag (decisión del 2026-09-26): Boca de la Verdad → Circo Máximo → Naranjos → Cerradura → Pirámide y Cementerio → Testaccio."
     },
     {
       "id": "monti_basilicas",
@@ -7581,7 +7618,12 @@
       "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte. Desde el 2026-09-26 también en viajes de 3 días (tras la mañana del centro); la Fontana de Trevi, si ya se vio por la mañana, no se repite.",
       "traslados": {
         "centro": "bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)"
-      }
+      },
+      "evita_si_ya_salieron": [
+        "Fontana de Trevi",
+        "Panteón",
+        "Piazza Navona"
+      ]
     },
     {
       "id": "letran_celio",
@@ -7678,6 +7720,8 @@
     "prioridad": "1 = lo que harías si solo tuvieras un día. El motor coge las mañanas por prioridad y ajusta por pool y experiencias.",
     "reversible": "El bloque se puede hacer en sentido contrario cuando se llega por el otro extremo.",
     "paseo": "true en una parada = se llega por un paseo agradable (ej. junto al río) que puede pasar de 20 min; validar.mjs no lo marca en rojo.",
-    "traslados": "(tardes) Cómo moverse desde el final de cada mañana cuando el traslado pasa de 25 min andando: { acaba_en: \"bus 492 (unos 20 min) o taxi\" }. El día lo avisa: \"Traslado de ~X min: mejor en …\". Sin dato, \"bus o metro\"."
+    "traslados": "(tardes) Cómo moverse desde el final de cada mañana cuando el traslado pasa de 25 min andando: { acaba_en: \"bus 492 (unos 20 min) o taxi\" }. El día lo avisa: \"Traslado de ~X min: mejor en …\". Sin dato, \"bus o metro\".",
+    "evita_si_ya_salieron": "Lugares que, si ya salieron todos en el viaje (visita, de paso o de noche), hacen que el bloque no vaya: el motor elige otro que aún no haya salido. centro_temprano y bernini_trevi detrás del centro barroco.",
+    "solo_si_abierto": "La parada solo entra si está abierta a la hora a la que se llega; si no, no sale (ni de paso)."
   }
 }

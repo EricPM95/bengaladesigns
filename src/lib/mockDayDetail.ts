@@ -230,6 +230,8 @@ export interface MockStopDetail {
   hoursWarning?: string | null
   /** Ver Stop.seasonNotice en types.ts. */
   seasonNotice?: string | null
+  /** Ver Stop.closedNotice en types.ts. */
+  closedNotice?: string | null
   /** Ver Stop.passThrough en types.ts. */
   passThrough?: boolean
   /** Ver Stop.experience en types.ts. */
@@ -451,6 +453,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     reservation: stop.reservation ?? null,
     hoursWarning: stop.hoursWarning ?? null,
     seasonNotice: stop.seasonNotice ?? null,
+    closedNotice: stop.closedNotice ?? null,
     passThrough: stop.passThrough ?? false,
     experience: stop.experience ?? null,
     why: stop.why ?? null,
@@ -528,6 +531,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       reservation: detail.reservation ?? null,
       hoursWarning: detail.hoursWarning ?? null,
       seasonNotice: detail.seasonNotice ?? null,
+      closedNotice: detail.closedNotice ?? null,
       passThrough: detail.passThrough ?? false,
       experience: detail.experience ?? null,
       why: detail.why ?? null,

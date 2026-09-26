@@ -22,6 +22,7 @@ import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
+import { closedAnchorNotice, closedOutsideNotice } from '../../shared/routeEngine/closedNotices.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
@@ -177,6 +178,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.why = whyTexts.passThrough()
       delete stop.experience
     }
+    // Un imprescindible cerrado ese día que se enseña por fuera (decisión del 2026-09-26): con su motivo.
+    const sourcePlace = destData.places?.find((candidate) => candidate.name === visit.place.name)
+    if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy)) {
+      const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
+      if (notice) stop.closed_notice = notice
+    }
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
@@ -230,16 +237,18 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   // imprescindible. Con el nombre de lo que se recupera, no con la regla.
   // El motivo de verdad: lo principal de lo que se recupera (el Coliseo y el Foro, no el Arco que abre
   // el grupo): sus imprescindibles de visita larga, o el más largo si no hay.
+  // Nunca lo que va de paso (decisión del 2026-09-26): el motivo es lo que por madrugar se visita.
+  const visitedToday = (name) => schedule.visits.some((visit) => visit.place.name === name && !visit.place.passThrough && !visit.place.passBy)
   const recoveredPlaces = [
     ...(schedule.modeFallback?.recoveredUnitIds ?? []).flatMap((id) => {
-      const places = unitById.get(id)?.places ?? []
+      const places = (unitById.get(id)?.places ?? []).filter((place) => visitedToday(place.name))
       const main = places.filter((place) => place.level === 1 && (place.duration_minutes ?? 0) >= 45)
       return main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)
     }),
     // Madrugar pedido por la reparación del viaje: lo que se recupera es un imprescindible del viaje.
     // Solo lo que de verdad entra hoy (la reparación pasa la lista entera de lo que faltaba).
     ...(schedule.modeFallback?.recoveredNames ?? [])
-      .filter((name) => schedule.visits.some((visit) => visit.place.name === name))
+      .filter(visitedToday)
       .map((name) => destData.places?.find((place) => place.name === name))
       .filter(Boolean),
   ].filter(Boolean)
@@ -258,6 +267,18 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const wakeNotice = schedule.modeFallback?.startedAt != null ? wakeNoticeFor(destData, tripDay, recoveredPlaces, schedule.modeFallback.startedAt) : null
   const lunchNotice = savedByLunch.length > 0 ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}` : null
   const paceNotice = wakeNotice && lunchNotice ? `${wakeNotice} ${lunchNotice}.` : wakeNotice ?? lunchNotice
+
+  // El ancla cerrada todo el viaje que no se ve por fuera (los Museos Vaticanos): el aviso va en la primera parada
+  // de su bloque, con lo que sí se ve (la Plaza y la Basílica de San Pedro).
+  for (const closed of tripDay.closedAnchors ?? []) {
+    const blockVisits = schedule.visits.filter((visit) => String(visit.unitId).startsWith(`${closed.blockId}:`) && !visit.place.passThrough)
+    const at = schedule.visits.indexOf(blockVisits[0])
+    if (at < 0) continue
+    const rest = blockVisits.map((visit) => destData.places?.find((place) => place.name === visit.place.name)).filter((place) => place?.level === 1)
+    const place = destData.places?.find((candidate) => candidate.name === closed.name)
+    const notice = closedAnchorNotice(destData, place, closed.dates, rest, joinSpanish)
+    if (notice) stops[at].closed_notice = notice
+  }
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

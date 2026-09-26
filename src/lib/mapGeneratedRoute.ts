@@ -87,6 +87,8 @@ interface GeneratedStop {
   hours_warning?: string | null
   /** Temporada aproximada, en el margen: Stop.seasonNotice. */
   season_notice?: string | null
+  /** Cerrado ese día, enseñado por fuera: Stop.closedNotice. */
+  closed_notice?: string | null
   /** Calle: "Pasas por…" — Stop.passThrough. */
   pass_through?: boolean
 }
@@ -157,6 +159,8 @@ export interface GeneratedDay {
   aperitivo?: { title: string; barrio: string; minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
   /** Motor v3: tiempo libre a mitad de día — DayPlan.freeTime. */
   free_time?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null } | null
+  /** Motor v3: todos los huecos de más de 30 min — DayPlan.freeTimes. */
+  free_times?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null }[] | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -363,6 +367,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
+    ...(generated.closed_notice ? { closedNotice: generated.closed_notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
@@ -598,6 +603,17 @@ function mapDay(
             suggestions: generated.free_time.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
             hint: generated.free_time.hint ?? null,
           },
+        }
+      : {}),
+    ...(generated.free_times?.length
+      ? {
+          freeTimes: generated.free_times.map((entry) => ({
+            minutes: entry.minutes,
+            after: entry.after,
+            before: entry.before,
+            suggestions: entry.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
+            hint: entry.hint ?? null,
+          })),
         }
       : {}),
     halfDayExcursion: generated.half_day_excursion
