@@ -74,12 +74,18 @@ const OUTSIDE_ESSENTIAL_MAX_DETOUR = 25
 const CALLEJEO_MIN_MINUTES = 20
 /** Más que esto andando entre la mañana y la tarde, el día avisa del traslado. */
 const TRANSFER_NOTICE_MINUTES = 25
+/** Una tarde cuya ancla va de paso (ya salió otro día) tiene que traer al menos esto de paradas nuevas. */
+const ANCHOR_PASS_BY_MIN_NEW = 2
+/** Se ve desde la calle: un exterior, o algo con paso por fuera o visible desde fuera. */
+const fromStreet = (place) => Boolean(place) && (place.type === 'exterior' || Boolean(place.pass_by) || Boolean(place.visible_from_outside))
 /** Una espera de más de esto dentro del día se rellena con algo de camino. */
 const WAIT_FILL_MINUTES = 60
 /** Lo que rellena una espera, a esto andando como mucho de cada extremo de la espera original. */
 const WAIT_FILL_REACH = 20
 /** Más que esto parado antes de cenar es una hora muerta (Parte A, regla 7). */
 const DEAD_HOURS_MINUTES = 90
+/** Lo que cuesta en un viaje cada día con horas muertas. */
+const DEAD_DAY_COST = 100
 const CURATED_AFTERNOON_OFFSET = 100
 /** Más espera que esto antes del mirador del atardecer: lo que va detrás en el bloque pasa delante. */
 const SUNSET_WAIT_MAX = 45
@@ -89,6 +95,10 @@ const SUNSET_STRETCH_MIN = 20
 const SUNSET_STRETCH_SLACK = 10
 /** Lo que se deja de "Tiempo libre" antes del mirador cuando la espera se rellena. */
 const SUNSET_FREE_TIME_MAX = 60
+/** Lo que rellena la espera al atardecer, con este desvío como mucho (sin bajar y volver a subir). */
+const SUNSET_FILL_MAX_DETOUR = 10
+/** Una espera muerta (más de 90 min) antes del atardecer cuesta más que renunciar a él. */
+const SUNSET_DEAD_WAIT_COST = 600
 const SUNSET_PASS_COST = 40
 /** Saltarse lo de "antes del atardecer" por falta de tiempo: cuesta, pero menos que perder paradas. */
 const SUNSET_SKIP_COST = 120
@@ -168,22 +178,51 @@ export function planBlockTrip(args) {
   for (let round = 0; round < REPAIR_ROUNDS; round++) {
     const dead = [...new Set([...deadDays(best), ...shortDays(best)])]
     if (dead.length === 0) break
+    const deadNumbers = new Set(dead.map((day) => day.dayNumber))
     let improved = null
+    const consider = (trial, added) => {
+      if (tripCost(trial) < tripCost(improved?.trial ?? best)) improved = { trial, added }
+    }
     for (const day of dead) {
-      // Sin esa tarde ese día; y si la tarde no tiene bloque, sin esa mañana (la del Aventino no tiene
-      // ninguna tarde que encaje).
-      const candidates = day.blocks.filter((block) => block.id).flatMap((block) => [`${day.dayNumber}:${block.id}`, `todos:${block.id}`])
-      for (const ban of candidates) {
+      for (const ban of repairBans(args, best, day)) {
         if (bans.has(ban)) continue
         const trial = planBlockTripOnce(args, new Set([...bans, ban]))
-        if (tripCost(trial) < tripCost(improved?.trial ?? best)) improved = { trial, ban }
+        consider(trial, [ban])
+        // Si sin ese bloque el día muerto solo se ha ido a otro día (el Borghese pasa al día 3 y allí
+        // espera a que abra la Vittoria), se prueba también sin el bloque que lo deja muerto allí.
+        const moved = deadDays(trial).filter((other) => !deadNumbers.has(other.dayNumber))
+        if (tripCost(trial) >= tripCost(best) + DEAD_DAY_COST || moved.length === 0) continue
+        for (const other of moved) {
+          for (const second of repairBans(args, trial, other)) {
+            if (bans.has(second) || second === ban) continue
+            consider(planBlockTripOnce(args, new Set([...bans, ban, second])), [ban, second])
+          }
+        }
       }
     }
     if (!improved) break
-    bans.add(improved.ban)
+    for (const ban of improved.added) bans.add(ban)
     best = improved.trial
   }
   return best
+}
+
+/**
+ * Lo que se prueba a quitar para arreglar un día muerto: sus bloques (ese día y en todo el viaje); y si
+ * la tarde lleva su ancla de paso, el bloque de otro día que la enseñó (sin él, esa tarde va entera).
+ */
+function repairBans(args, trip, day) {
+  const bans = day.blocks.filter((block) => block.id).flatMap((block) => [`${day.dayNumber}:${block.id}`, `todos:${block.id}`])
+  const passByAnchor = day.blocks.find((block) => block.passByAnchor)?.passByAnchor
+  if (!passByAnchor) return bans
+  const blockById = new Map([...(args.destData.morning_flows ?? []), ...(args.destData.afternoon_flows ?? [])].map((block) => [block.id, block]))
+  for (const other of trip.days) {
+    if (other.dayNumber >= day.dayNumber) continue
+    for (const block of other.blocks ?? []) {
+      if (block.id && blockById.get(block.id)?.paradas.some((stop) => stop.lugar === passByAnchor)) bans.push(`${other.dayNumber}:${block.id}`)
+    }
+  }
+  return bans
 }
 
 /** Días de ciudad (sin contar el último) con más de 90 min parado: entre paradas, tras comer o antes de cenar. */
@@ -208,7 +247,7 @@ function shortDays(trip) {
 
 /** Lo que cuesta un viaje: horas muertas, imprescindibles fuera, pool fuera, medios días sin tipo. */
 function tripCost(trip) {
-  return 100 * deadDays(trip).length + 60 * shortDays(trip).length + 400 * trip.unplacedEssentials.length + 80 * trip.unplacedPool.length + 60 * trip.untypedHalves + trip.days.reduce((sum, day) => sum + (day.schedule?.walkMinutes ?? 0), 0) / 2
+  return DEAD_DAY_COST * deadDays(trip).length + 60 * shortDays(trip).length + 400 * trip.unplacedEssentials.length + 80 * trip.unplacedPool.length + 60 * trip.untypedHalves + trip.days.reduce((sum, day) => sum + (day.schedule?.walkMinutes ?? 0), 0) / 2
 }
 
 function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }, bans) {
@@ -346,7 +385,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
    * Las paradas de un bloque para un día: el papel de cada una, lo que se salta y lo que va de paso.
    * @returns {{ place: object, role: string, name: string }[]}
    */
-  function stopsOf(block, day, dayPlaces) {
+  function stopsOf(block, day, dayPlaces, passByNames = new Set()) {
     const list = []
     for (const stop of block.paradas) {
       const name = stop.lugar
@@ -361,6 +400,11 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         continue
       }
       const chosen = inPool(name)
+      // El ancla que ya sale otro día y se ve desde la calle va de paso (la Plaza de España camino del Pincio).
+      if (passByNames.has(name)) {
+        list.push({ name, role: 'de_paso', place })
+        continue
+      }
       // Ya visto en el viaje: no se repite (lo que enseñó el Free Tour, de paso).
       if (seen.has(name) || dayPlaces.some((other) => other.name === name)) {
         if (tourCovers.has(name) && stop.rol !== 'de_paso') list.push({ name, role: 'de_paso', place })
@@ -419,7 +463,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         slot,
         blockId: block.id,
         role,
-        dropRank: joyaNames.has(name) ? DROP_RANK.joya : role === 'pool' ? DROP_RANK.pool : DROP_RANK[role] ?? DROP_RANK.parada,
+        // Lo de paso que es del grupo de otra parada del bloque (Plaza Venecia con el Altar) no se cae antes
+        // que el resto de lo de paso: el grupo no se parte.
+        dropRank: joyaNames.has(name) ? DROP_RANK.joya : role === 'pool' ? DROP_RANK.pool : role === 'de_paso' && place.group && stops.some((other) => other.name !== name && other.role !== 'de_paso' && other.place?.group === place.group) ? DROP_RANK.parada : DROP_RANK[role] ?? DROP_RANK.parada,
         priority: place.level === 1 ? PRIORITY.ESSENTIAL : role === 'pool' ? PRIORITY.POOL : PRIORITY.THEME,
         // Un solo orden para todo el día: la mañana delante de la tarde.
         curatedIndex: (slot === 'manana' ? 0 : CURATED_AFTERNOON_OFFSET) + index,
@@ -542,7 +588,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     {
       const result = run(afternoonUnits)
       if (result.visits.some((visit) => visit.place.sunset != null)) {
-        options.push({ units: [...morningUnits, ...afternoonUnits], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes })
+        options.push({ units: [...morningUnits, ...afternoonUnits], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + sunsetWaitCost(waitBefore(result)) + result.walkMinutes })
       }
     }
     // Lo que va detrás del mirador y no cabe entero antes de cenar se ve de paso bajando (Piazza del
@@ -553,7 +599,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       const list = afternoonUnits.map((unit, index) => (converted.has(index) ? asPassThrough(unit) : unit))
       const result = run(list)
       if (!result.visits.some((visit) => visit.place.sunset != null)) continue
-      options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_PASS_COST * k })
+      options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + sunsetWaitCost(waitBefore(result)) + result.walkMinutes + SUNSET_PASS_COST * k })
     }
     // Sin tiempo antes del atardecer (invierno), lo marcado `antes_del_atardecer` se salta a la ida y se
     // sube directo al mirador: mejor que perder el atardecer.
@@ -573,7 +619,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       for (const [list, extra] of [[kept, 0], [descending, SUNSET_DESCENT_COST], [withReturn, SUNSET_DESCENT_COST - SUNSET_RETURN_BONUS * skippedUnits.length]]) {
         const result = run(list)
         if (!result.visits.some((visit) => visit.place.sunset != null)) continue
-        options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_SKIP_COST * skipped + extra, descent: extra > 0 })
+        options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + sunsetWaitCost(waitBefore(result)) + result.walkMinutes + SUNSET_SKIP_COST * skipped + extra, descent: extra > 0 })
       }
     }
     const plain = afternoonUnits.map((unit, index) => (index === at ? { ...unit, places: unit.places.map(({ sunset, ...place }) => place) } : unit))
@@ -675,6 +721,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     places: unit.places.map((place) => ({ ...place, passThrough: true, duration_minutes: Math.min(place.duration_minutes ?? PASS_THROUGH_MINUTES, PASS_THROUGH_MINUTES), windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior' })),
   })
 
+  /** Esperar al atardecer: lo que pasa de 45 min cuesta; más de 90 (horas muertas), mucho: mejor el mirador en su sitio. */
+  const sunsetWaitCost = (wait) => Math.max(0, wait - SUNSET_WAIT_MAX) + (wait > DEAD_HOURS_MINUTES ? SUNSET_DEAD_WAIT_COST : 0)
+
   /** La cena de verano es a las 21:00 (Parte A, regla 8): más tarde, solo si no hay otra. */
   const lateDinnerCost = (result) => {
     const dinner = result.meals?.find((meal) => meal.type === 'dinner')
@@ -749,7 +798,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         .filter((place) => !blockedByRedundancy(destData, place.name, new Set([...seen, ...today]), { contentDays, experienceMatches: matches(place) }))
         .filter((place) => (place.duration_minutes ?? 30) <= wait)
         .map((place) => ({ place, fromOrigin: travel.leg(ends.from, place.coordinates)?.minutes ?? Infinity, toTarget: travel.leg(place.coordinates, ends.to)?.minutes ?? Infinity, walk: (travel.leg(from, place.coordinates)?.minutes ?? Infinity) + (travel.leg(place.coordinates, to)?.minutes ?? Infinity) }))
-        .filter((item) => item.walk <= 2 * TAIL_MAX_WALK && item.fromOrigin <= WAIT_FILL_REACH && item.toTarget <= WAIT_FILL_REACH && (visits[index].place.sunset != null || item.toTarget <= (travel.leg(from, to)?.minutes ?? Infinity) + 5))
+        .filter((item) => item.walk <= 2 * TAIL_MAX_WALK && item.fromOrigin <= WAIT_FILL_REACH && item.toTarget <= WAIT_FILL_REACH && (visits[index].place.sunset != null ? item.walk - (travel.leg(from, to)?.minutes ?? 0) <= SUNSET_FILL_MAX_DETOUR : item.toTarget <= (travel.leg(from, to)?.minutes ?? Infinity) + 5))
         // (y acercándose a la parada que espera, sin ir y volver)
         .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || Number(matches(b.place)) - Number(matches(a.place)) || a.walk - b.walk)
       const unitIndex = chosen.result.kept.findIndex((unit) => unit.id === visits[index].unitId)
@@ -978,6 +1027,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         .map(([only]) => anchorOf(only))
         .filter(Boolean),
     )
+    // ¿El ancla ya salió otro día? Solo lo ya visto: la que va en la mañana de un día posterior no se
+    // adelanta de paso (arrastraría lo que esa mañana hace alrededor, como Navona con el Panteón).
+    const anchorElsewhere = (name) => Boolean(name) && seen.has(name)
     const otherMorningNames = new Set(
       [...morningOf.entries()].filter(([number]) => number > day.dayNumber).flatMap(([, block]) => block.paradas.map((stop) => stop.lugar)),
     )
@@ -1016,7 +1068,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const anchor = anchorOf(block)
         return !anchor || !allMorningAnchors.has(anchor) || !morningAnchors.has(anchor)
       })
-      .filter((block) => !closedThatDay(anchorOf(block), day) && !otherMorningNames.has(anchorOf(block)))
+      // Un ancla ya vista otro día solo vale si se ve desde la calle: entonces va de paso (decisión del
+      // 2026-09-26). Si no, la tarde no va. La que es de la mañana de otro día, tampoco.
+      .filter((block) => !closedThatDay(anchorOf(block), day) && !otherMorningNames.has(anchorOf(block)) && (!anchorElsewhere(anchorOf(block)) || fromStreet(placeByName.get(anchorOf(block)))))
       .map((block, order) => {
         const anchor = anchorOf(block)
         const newEssentials = block.paradas.filter((stop) => placeByName.get(stop.lugar)?.level === 1 && !seen.has(stop.lugar) && !morningPlaces.some((place) => place.name === stop.lugar)).length
@@ -1051,9 +1105,12 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       const morningPlacesHere = morningPlaces.filter((place) => !movedToAfternoon(place.name))
       const morningStopsHere = morningStops.filter((stop) => !movedToAfternoon(stop.name))
       const morningUnitsHere = morningUnits.filter((unit) => !unit.places.some((place) => movedToAfternoon(place.name)))
-      const afternoonStops = trimForPace(stopsOf(block, day, morningPlacesHere), morningStopsHere)
       const anchor = anchorOf(block)
+      const anchorPassBy = anchor && anchorElsewhere(anchor) && fromStreet(placeByName.get(anchor)) ? new Set([anchor]) : new Set()
+      const afternoonStops = trimForPace(stopsOf(block, day, morningPlacesHere, anchorPassBy), morningStopsHere)
       if (anchor && !afternoonStops.some((stop) => stop.name === anchor)) continue
+      // Con el ancla de paso, la tarde tiene que traer al menos dos paradas nuevas (el Pincio y Popolo).
+      if (anchorPassBy.size > 0 && afternoonStops.filter((stop) => stop.role !== 'de_paso').length < ANCHOR_PASS_BY_MIN_NEW) continue
       const dinner = dinnerFor(block, afternoonStops.at(-1)?.place.coordinates ?? null)
       const { units, result } = withSunsetFilled(day, morningUnitsHere, unitsOf(afternoonStops, block, 'tarde', day), dinner)
       // El ancla tiene que caber; si no, otra tarde. Salvo que sea de "antes del atardecer" y se haya
@@ -1062,7 +1119,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       if (anchor && !anchorSkippedForSunset && !result.kept.some((unit) => unit.places.some((place) => place.name === anchor))) continue
       // La mejor tarde es la que encaja, no se queda a medias y no deja horas muertas antes de cenar
       // (ya alargada de camino a la cena).
-      const candidate = { block, units, dinner, result, afternoonStops }
+      const candidate = { block, units, dinner, result, afternoonStops, passByAnchor: anchorPassBy.size > 0 ? anchor : null }
       fillWait(day, candidate, otherMorningNames)
       extendTail(day, candidate, otherMorningNames)
       const idle = Math.max(candidate.result.idleBeforeDinner ?? 0, longestWait(candidate.result))
@@ -1171,6 +1228,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // Lo que se ha visto de verdad (lo que el programador mantiene) cuenta para el resto del viaje.
     for (const unit of chosen.result.kept) {
       for (const place of unit.places) {
+        // Lo que hoy solo se ve de paso y tiene su visita en la mañana de otro día (la Plaza de España,
+        // de paso camino del Pincio) no cuenta como visto: esa mañana la sigue haciendo entera.
+        if (place.passThrough && otherMorningNames.has(place.name)) continue
         seen.add(place.name)
         if (isPaidMuseum(placeByName.get(place.name)) && unit.poolIndex == null) paidMuseums++
       }
@@ -1190,7 +1250,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       nightNames: chosen.block ? chosen.block.nocturnas ?? [] : null,
       blocks: [
         ...(morningBlock ? [{ id: morningBlock.id, slot: 'manana', label: morningBlock.nombre }] : day.halfDayExcursion ? [] : [{ id: null, slot: 'manana', label: 'Medio día sin tipo' }]),
-        ...(chosen.block ? [{ id: chosen.block.id, slot: 'tarde', label: chosen.block.nombre }] : [{ id: null, slot: 'tarde', label: 'Medio día sin tipo' }]),
+        ...(chosen.block ? [{ id: chosen.block.id, slot: 'tarde', label: chosen.block.nombre, passByAnchor: chosen.passByAnchor ?? null }] : [{ id: null, slot: 'tarde', label: 'Medio día sin tipo' }]),
       ],
       untypedAfternoon: !chosen.block,
       // Bloques cuyo orden no es el del JSON (ajustes B.8: tiene que ser 0; el semáforo lo marca en rojo).

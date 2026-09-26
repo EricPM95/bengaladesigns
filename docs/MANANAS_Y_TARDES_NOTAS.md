@@ -62,7 +62,7 @@
   - con el punto del propio local en OpenStreetMap: Taverna Trilussa, Pizzarium, Ai Marmi, Da Remo, Pasticceria Regoli, Freni e Frizioni, Enoteca Ferrara, Ai Tre Scalini, Panella, Ma Che Siete Venuti a Fà y Mordi e Vai;
   - con el portal de Mapbox, porque OpenStreetMap no tiene el local o encuentra otra sucursal: Da Enzo al 29, SantoPalato, Neve di Latte, Otaleg, Faro, Osteria Fernanda (estaba a casi 1 km) y Trapizzino.
   - Direcciones corregidas: Ma Che Siete Venuti a Fà → "Via Benedetta, 25" (ponía "Via di Benedetta"); Mordi e Vai → box 15 del Mercado de Testaccio, Via Beniamino Franklin 12e.
-- **Duda:** Trecca - Cucina di Mercato. Tenemos "Via di Porta Cavalleggeri 126" (zona Vaticano), pero OpenStreetMap lo sitúa en Via Alessandro Severo 222 (Ostiense, a casi 6 km). No lo he tocado: ¿cuál es la buena?
+- **Trecca - Cucina di Mercato: descartado por distancia.** Su dirección real es Via Alessandro Severo 222 (Garbatella/San Paolo), no Porta Cavalleggeri (decisión del usuario, 2026-09-26). Ningún bloque acaba cerca: el más próximo es `aventino_testaccio`, que acaba en la Pirámide Cestia, a 39 min a pie (la Via Appia queda a 33, pero ese bloque va como excursión). Se ha quitado de la lista de restaurantes. El barrio de cena de Vaticano se queda con 5.
 
 ### Dal Toscano: coordenada corregida
 
@@ -83,6 +83,28 @@ Los 4 son **tardes**. En cada caso, las once tardes del JSON quedan descartadas 
 - **Viajes 6 y 8: lo esperado según los datos.** En viajes de 3 días no hay ninguna tarde para después de la mañana del centro: las que encajan piden 4 o 5 días o las excluye esa mañana. Es el último día, y la tarde improvisada sale con sentido (San Luigi, el Gesù, Campo de' Fiori). Si se quiere evitar, la solución es de datos: permitir `bernini_trevi` en 3 días o añadir una tarde "después del centro" para viajes cortos.
 - **Viaje 15: lo esperado.** En 6 días el viaje ya ha gastado todo lo que encaja después del Aventino.
 - **Viaje 16: en parte es un fallo.** `tridente_pincio` se descarta solo porque su ancla (la Plaza de España, una plaza que se ve por fuera) va en la mañana de otro día, cuando lo demás de esa tarde (Popolo, Santa Maria del Popolo y el Pincio al atardecer) es nuevo. Como consecuencia, el Pincio y Popolo, que la mañana de la Borghese no llega a hacer, se quedan fuera del viaje. Propuesta (sin aplicar): si el ancla ya vista es un exterior, la tarde vale igual con el ancla de paso, siempre que traiga al menos dos paradas nuevas.
+
+### Medios días sin tipo: aplicado (2026-09-26)
+
+Decisiones del usuario: ancla ya vista → de paso; `bernini_trevi` en viajes de 3 días; sin bloques nuevos. Resultado en la revisión: **0 medios días sin tipo** (antes 4).
+
+| Viaje | Día | Antes | Ahora |
+|---|---|---|---|
+| 6 (3 días, Arte) | 3 | `centro_temprano` + tarde sin tipo | `centro_temprano` + `bernini_trevi`. La Fontana de Trevi no se repite: la de la tarde se salta porque ya salió por la mañana. |
+| 8 (3 días, tranquilo, Naturaleza) | 3 | lo mismo | lo mismo que el 6. |
+| 15 (6 días, sin experiencias) | 5 | `caracalla_aventino` + tarde sin tipo | `caracalla_aventino` + `centro_barroco`, con el Panteón de paso (ya visto el día 3). |
+| 16 (7 días, Arte + Naturaleza) | 3 y 5 | día 3 `borghese` + tarde sin tipo | Día 3: `centro_temprano` + `villa_borghese_pincio`. **El Pincio (al atardecer) y Popolo entran.** Día 5: `caracalla_aventino` + `centro_barroco`, con el Panteón de paso. |
+
+- `tridente_pincio` en 3 días ya encajaba tras el centro, pero la excluye la propia mañana: su ancla, la Plaza de España, es de esa misma mañana. Por eso hacía falta `bernini_trevi` (`minimo_dias_viaje` 3).
+- **Cómo funciona el ancla de paso.** Solo vale si el ancla ya se vio un día **anterior**, se ve desde la calle y la tarde trae al menos 2 paradas nuevas.
+  - El ancla que va en la mañana de un día posterior no se adelanta de paso. Probado: se llevaba lo de alrededor (Navona detrás del Panteón), y la mañana del centro se quedaba en 3 paradas, con 2 horas muertas.
+  - Lo que hoy es de paso y tiene su visita en la mañana de otro día no cuenta como visto.
+- **Reparación del viaje.** A veces quitar un bloque solo mueve el día muerto a otro día. Ahora, en ese caso, también se prueba a quitar el bloque que lo deja muerto allí (dos niveles).
+  - Caso concreto: 6 días, Naturaleza, 26 de octubre. El Borghese iba al día 5 con la tarde del Pincio y el ancla de paso, con 99 min antes de cenar. Ahora vuelve al día 3, como antes.
+- **Lo de paso de un grupo.** Si pertenece al grupo de otra parada del bloque (Plaza Venecia con el Altar), se cae después que el resto de lo de paso. En el último día corto se caía Plaza Venecia y el grupo se partía.
+- **Esperas al atardecer.**
+  - El relleno de una espera antes del mirador se desvía como mucho 10 min (antes: zigzag por el Ara Pacis).
+  - Una espera de más de 90 min antes del atardecer cuesta más que renunciar a él.
 
 ## Ajustes — Parte D, comprobación (2026-09-26)
 

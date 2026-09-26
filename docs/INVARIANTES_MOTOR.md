@@ -796,6 +796,16 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 165. **Hueco para un imprescindible que se ve desde la calle**: se recorta en este orden, y solo lo
     necesario: el tiempo libre (rellenos), el callejeo de un bloque (un barrio, a la mitad y 20 min como
     mínimo), una sola parada de paso sin grupo. Nunca el orden de un bloque ni su parada principal.
+166. **Ancla ya vista, de paso**: si el ancla de una tarde ya se vio un día anterior y se ve desde la
+    calle, la tarde vale igual con el ancla de paso, siempre que traiga al menos dos paradas nuevas
+    (`centro_barroco` con el Panteón ya visto). Si el ancla no se ve desde la calle, la tarde no va; si
+    es de la mañana de un día posterior, tampoco (se llevaría lo de alrededor: Navona). Lo que hoy es de
+    paso y tiene su visita en la mañana de otro día no cuenta como visto.
+167. **Reparación a dos niveles**: si quitar un bloque solo mueve el día muerto a otro día, se prueba
+    también a quitar el bloque que lo deja muerto allí; y si la tarde lleva su ancla de paso, el bloque
+    del día que la enseñó.
+168. **Lo de paso de un grupo no se cae primero**: si es del grupo de otra parada del bloque (Plaza
+    Venecia con el Altar), se cae como una parada, no como lo de paso.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

@@ -5,7 +5,7 @@ Motor v3, generado el 2026-09-26 con `node scripts/destino/revisionRutas.mjs`. S
 ## Resumen: mañanas y tardes tipo
 
 - Bloques reordenados respecto al JSON: **0**.
-- Medios días sin tipo (ningún bloque encaja y el motor improvisa): **4**.
+- Medios días sin tipo (ningún bloque encaja y el motor improvisa): **0**.
 - Huecos rojos (más de 90 min parado en mitad del viaje): **0**.
 - Imprescindibles que se ven desde la calle y faltan (viajes de 2+ días): **0**.
 
@@ -22,13 +22,13 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 5 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
 | 6 | 1 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 6 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
-| 6 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | **medio día sin tipo** |
+| 6 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
 | 7 | 1 | Free Tour por el centro histórico (free_tour) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
 | 7 | 2 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 7 | 3 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
 | 8 | 1 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 8 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
-| 8 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | **medio día sin tipo** |
+| 8 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
 | 9 | 1 | Free Tour por el centro histórico (free_tour) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
 | 9 | 2 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 9 | 3 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
@@ -58,15 +58,15 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 15 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
 | 15 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
 | 15 | 4 | excursión de día completo | — |
-| 15 | 5 | Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) | **medio día sin tipo** |
+| 15 | 5 | Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
 | 15 | 6 | excursión de medio día (ostia_antica) | Santa María la Mayor, el Moisés y Monti (monti_basilicas) |
 | 16 | 1 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 16 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
-| 16 | 3 | Galería Borghese, el parque y el Popolo (borghese) | **medio día sin tipo** |
+| 16 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Galería Borghese, el parque y el Pincio (villa_borghese_pincio) |
 | 16 | 4 | excursión de día completo | — |
-| 16 | 5 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
-| 16 | 6 | excursión de medio día (ostia_antica) | El Aventino al atardecer y cena en Testaccio (aventino_testaccio) |
-| 16 | 7 | excursión de medio día (tivoli_villas) | Santa María la Mayor, el Moisés y Monti (monti_basilicas) |
+| 16 | 5 | Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
+| 16 | 6 | excursión de medio día (ostia_antica) | Santa María la Mayor, el Moisés y Monti (monti_basilicas) |
+| 16 | 7 | excursión de medio día (tivoli_villas) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
 | 17 | 1 | Coliseo, Foro y Palatino (roma_antigua) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
 | 17 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
 
@@ -159,7 +159,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:35 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. |
 | 20:00 | Pasas por Borgo Pio | 10 min | 7 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Cena**: 20:30 en Vaticano (5 min andando desde la última parada).
+- **Cena**: 20:30 en Prati y Vaticano (7 min andando desde la última parada).
 - **Nocturna**: 21:30 Puente Sant'Angelo (noche).
 
 ### Día 2
@@ -289,8 +289,9 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 ### Día 3 — domingo 26 de septiembre de 2027
 
-**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: **medio día sin tipo**
+**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
+> 🚌 Traslado de ~30 min: mejor en bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 09:30 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
@@ -298,17 +299,16 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 11:30 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
 | 12:00 | Panteón | 30 min | 12 min | Uno de los imprescindibles de Roma. |
 | 13:00 | Piazza Navona | 30 min | 7 min | Uno de los imprescindibles de Roma. |
-| 13:30–15:00 | 🍝 **Comida**: Armando al Pantheon en Centro Histórico | | | |
-| 15:00 | Iglesia de San Luigi dei Francesi | 20 min | 3 min | Elegido según tus gustos: Arte y Museos. |
-| 15:30 | Iglesia de Santa Maria sopra Minerva | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 15:55 | Elefantino de Bernini | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
-| 16:15 | Iglesia del Gesù | 30 min | 5 min | Elegido según tus gustos: Arte y Museos. |
-| 16:50 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 17:30 | Campo de' Fiori | 25 min | 6 min | Te pilla de camino a la cena: merece la parada. |
-| 18:00 | Plaza Farnese | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
+| 13:30–15:00 | 🍝 **Comida**: Trattoria Dal Cavalier Gino en Centro Histórico | | | |
+| 15:00 | Plaza Colonna | 15 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 18 min | Elegido según tus gustos: Arte y Museos. |
+| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Elegido según tus gustos: Arte y Museos. |
+| 17:30 | Iglesia de Santa Maria sopra Minerva | 20 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 18:00 | Iglesia del Gesù | 30 min | 7 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Tarde libre** (105 min). Sugerencias: Plaza Trilussa (7 min).
-- **Cena**: 20:00 en Centro Histórico (5 min andando desde la última parada).
+- **Aperitivo y paseo por Trevi** (77 min). Sugerencias: Largo di Torre Argentina (3 min), Campo de' Fiori (8 min), Elefantino de Bernini (5 min).
+- **Cena**: 20:00 en Trevi (13 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ## 7. 3 días · octubre · completo · Imprescindibles + Free Tour + Barrios
@@ -402,7 +402,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min).
+- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
 - **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
@@ -429,9 +429,10 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 ### Día 3
 
-**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: **medio día sin tipo**
+**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
 > Hoy empezamos a las 08:00 para que te dé tiempo a ver la Piazza Navona
+> 🚌 Traslado de ~30 min: mejor en bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 08:00 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
@@ -439,17 +440,18 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 10:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
 | 10:30 | Panteón | 30 min | 12 min | Uno de los imprescindibles de Roma. ⚠️ Domingos y festivos, solo de 09:00 a 09:30 y de 11:45 a 19:00. |
 | 11:30 | Piazza Navona | 30 min | 7 min | Uno de los imprescindibles de Roma. |
-| 13:00–15:00 | 🍝 **Comida**: Armando al Pantheon en Centro Histórico | | | |
-| 15:00 | Iglesia de San Luigi dei Francesi | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 16:00 | Iglesia del Gesù | 30 min | 12 min | Te pilla de camino a la cena: merece la parada. |
-| 16:35 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 17:15 | Plaza Trilussa | 15 min | 11 min | Te pilla de camino a la cena: merece la parada. |
-| 17:45 | Campo de' Fiori | 25 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 18:15 | Plaza Farnese | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
+| 13:00–15:00 | 🍝 **Comida**: Trattoria Dal Cavalier Gino en Centro Histórico | | | |
+| 15:00 | Plaza Colonna | 15 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 18 min | Te pilla de camino a la cena: merece la parada. |
+| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Te pilla de camino a la cena: merece la parada. |
+| 17:30 | Elefantino de Bernini | 10 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Iglesia del Gesù | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 18:20 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Centro Histórico** (90 min). Sugerencias: Elefantino de Bernini (9 min), Iglesia de Santa Maria sopra Minerva (9 min).
-- **Cena**: 20:00 en Centro Histórico (5 min andando desde la última parada).
-- **Nocturna**: 21:30 Puente Sant'Angelo (noche).
+- **Aperitivo y paseo por Centro Histórico** (73 min). Sugerencias: Campo de' Fiori (6 min), Plaza Farnese (7 min).
+- **Cena**: 20:00 en Centro Histórico (7 min andando desde la última parada).
+- **Nocturna**: ninguna.
 
 ## 9. 3 días · del sábado 14 de agosto de 2027 al lunes 16 de agosto de 2027 · completo · Imprescindibles + Free Tour
 
@@ -922,12 +924,13 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 11:30 | Parque de Villa Borghese | 90 min | 8 min | Te pilla de camino: merece la parada. |
 | 13:00–14:30 | 🍝 **Comida**: Edy en Tridente y Spagna | | | |
 | 14:30 | Pasas por Plaza de España | 10 min | 7 min | Pasas por aquí de camino: no hace falta pararse. |
-| 15:00 | Ara Pacis | 45 min | 10 min | Te pilla de camino a la cena: merece la parada. |
-| 16:00 | Piazza del Popolo | 30 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 16:35 | Santa Maria del Popolo | 30 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 18:35 | Terraza del Pincio 🌅 | 45 min | 6 min | Llegas con tiempo para coger buen sitio antes del atardecer sobre Roma. |
+| 15:00 | Pasas por Via del Corso | 10 min | 9 min | Pasas por aquí de camino: no hace falta pararse. |
+| 15:30 | Ara Pacis | 45 min | 8 min | Te pilla de camino a la cena: merece la parada. |
+| 16:30 | Piazza del Popolo | 30 min | 7 min | Te pilla de camino a la cena: merece la parada. |
+| 17:05 | Santa Maria del Popolo | 30 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Terraza del Pincio | 20 min | 6 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Tiempo libre**: 84 min entre Santa Maria del Popolo y Terraza del Pincio. Sugerencias: .
+- **Tarde libre** (102 min). Sugerencias: Plaza Colonna (19 min).
 - **Cena**: 20:00 en Tridente y Spagna (13 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
@@ -1001,9 +1004,9 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 17:45 | Iglesia del Gesù | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 18:20 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Centro Histórico** (73 min). Sugerencias: Plaza Farnese (7 min).
+- **Aperitivo y paseo por Centro Histórico** (73 min).
 - **Cena**: 20:00 en Centro Histórico (7 min andando desde la última parada).
-- **Nocturna**: ninguna.
+- **Nocturna**: 21:30 Panteón (noche).
 
 ### Día 4
 
@@ -1011,8 +1014,9 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 ### Día 5
 
-**Bloques**: mañana: Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) · tarde: **medio día sin tipo**
+**Bloques**: mañana: Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) · tarde: El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco)
 
+> 🚌 Traslado de ~30 min: mejor en bus o metro
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 09:00 | Termas de Caracalla | 60 min | — | Te pilla de camino: merece la parada. ⚠️ Cierra los lunes. |
@@ -1021,14 +1025,17 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 12:00 | Jardín de los Naranjos | 20 min | 11 min | Te pilla de camino: merece la parada. |
 | 12:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino: merece la parada. |
 | 13:00–14:30 | 🍝 **Comida**: Trattoria Da Enzo al 29 en Trastevere | | | |
-| 14:30 | Museos Capitolinos | 120 min | 11 min | Te pilla de camino a la cena: merece la parada. |
-| 16:45 | Campo de' Fiori | 25 min | 13 min | Te pilla de camino a la cena: merece la parada. |
-| 17:30 | Iglesia de San Luigi dei Francesi | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
-| 18:00 | Ara Pacis | 45 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 14:30 | Pasas por Plaza Farnese | 10 min | 16 min | Pasas por aquí de camino: no hace falta pararse. |
+| 14:45 | Pasas por Campo de' Fiori | 10 min | 1 min | Pasas por aquí de camino: no hace falta pararse. |
+| 15:15 | Iglesia de San Luigi dei Francesi | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 15:45 | Iglesia de Santa Maria sopra Minerva | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
+| 16:15 | Palazzo Doria Pamphilj | 60 min | 4 min | Te pilla de camino a la cena: merece la parada. ⚠️ Cierra los miércoles. |
+| 17:30 | Pasas por Panteón | 10 min | 7 min | Pasas por aquí de camino: no hace falta pararse. |
+| 18:00 | Ara Pacis | 45 min | 11 min | Te pilla de camino a la cena: merece la parada. |
 
 - **Aperitivo y paseo por Tridente y Spagna** (69 min). Sugerencias: Piazza del Popolo (7 min).
 - **Cena**: 20:00 en Tridente y Spagna (6 min andando desde la última parada).
-- **Nocturna**: 21:30 Plaza de España (noche) → 22:25 Fontana de Trevi (noche) → 23:00 Panteón (noche).
+- **Nocturna**: 21:30 Fontana de Trevi (noche).
 
 ### Día 6
 
@@ -1068,7 +1075,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:00 | Basílica de Santa Cecilia in Trastevere | 30 min | 12 min | Te pilla de camino a la cena: merece la parada. |
 | 18:45 | Isla Tiberina | 20 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Iglesia de Santa Maria in Trastevere (9 min).
+- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Iglesia de Santa Maria in Trastevere (9 min), Plaza Trilussa (9 min).
 - **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
@@ -1095,34 +1102,9 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 ### Día 3 — miércoles 15 de septiembre de 2027
 
-**Bloques**: mañana: Galería Borghese, el parque y el Popolo (borghese) · tarde: **medio día sin tipo**
+**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Galería Borghese, el parque y el Pincio (villa_borghese_pincio)
 
-| Hora | Parada | Duración | Andando | Por qué |
-|---|---|---|---|---|
-| 09:00 | Galería Borghese | 120 min | — | Elegido según tus gustos: Arte y Museos. |
-| 11:30 | Parque de Villa Borghese | 90 min | 8 min | Elegido según tus gustos: Naturaleza y Vistas. |
-| 13:00–14:30 | 🍝 **Comida**: Edy en Tridente y Spagna | | | |
-| 14:30 | Ara Pacis | 45 min | 7 min | Elegido según tus gustos: Arte y Museos. |
-| 15:30 | Iglesia de San Luigi dei Francesi | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
-| 16:00 | Iglesia de Santa Maria sopra Minerva | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 16:30 | Iglesia del Gesù | 30 min | 7 min | Elegido según tus gustos: Arte y Museos. |
-| 17:05 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 17:45 | Campo de' Fiori | 25 min | 6 min | Te pilla de camino a la cena: merece la parada. |
-| 18:15 | Plaza Farnese | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
-
-- **Aperitivo y paseo por Centro Histórico** (90 min).
-- **Cena**: 20:00 en Centro Histórico (5 min andando desde la última parada).
-- **Nocturna**: 21:30 Panteón (noche) → 22:25 Fontana de Trevi (noche).
-
-### Día 4 — jueves 16 de septiembre de 2027
-
-**Excursión** — preseleccionada: pompeya_sorrento. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren, Excursión a la Costa Amalfitana, Excursión a Florencia en tren de alta velocidad.
-
-### Día 5 — viernes 17 de septiembre de 2027
-
-**Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
-
-> 🚌 Traslado de ~30 min: mejor en bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)
+> 🚌 Traslado de ~30 min: mejor en bus o metro
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 08:00 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
@@ -1130,49 +1112,79 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 10:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
 | 10:30 | Panteón | 30 min | 12 min | Uno de los imprescindibles de Roma. |
 | 11:30 | Piazza Navona | 30 min | 7 min | Uno de los imprescindibles de Roma. |
-| 13:00–14:30 | 🍝 **Comida**: Trattoria Dal Cavalier Gino en Centro Histórico | | | |
-| 14:30 | Plaza Colonna | 15 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 14:50 | Pasas por Via del Corso | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 18 min | Elegido según tus gustos: Arte y Museos. |
-| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Elegido según tus gustos: Arte y Museos. |
-| 17:25 | Palazzo Doria Pamphilj | 60 min | 3 min | Elegido según tus gustos: Arte y Museos. |
+| 13:00–14:30 | 🍝 **Comida**: Poldo e Gianna Osteria en Tridente y Spagna | | | |
+| 14:45 | Galería Borghese | 120 min | 29 min | Elegido según tus gustos: Arte y Museos. |
+| 17:00 | Parque de Villa Borghese | 90 min | 8 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 18:45 | Terraza del Pincio 🌅 | 35 min | 11 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 19:30 | Piazza del Popolo | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 20:05 | Pasas por Santa Maria del Popolo | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Aperitivo y paseo por Centro Histórico** (85 min).
-- **Cena**: 20:00 en Centro Histórico (10 min andando desde la última parada).
+- **Cena**: 20:30 en Tridente y Spagna (11 min andando desde la última parada).
 - **Nocturna**: ninguna.
+
+### Día 4 — jueves 16 de septiembre de 2027
+
+**Excursión** — preseleccionada: pompeya_sorrento. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren, Excursión a la Costa Amalfitana, Excursión a Florencia en tren de alta velocidad.
+
+### Día 5 — viernes 17 de septiembre de 2027
+
+**Bloques**: mañana: Termas de Caracalla, Aventino y mercado de Testaccio (caracalla_aventino) · tarde: El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco)
+
+> 🚌 Traslado de ~30 min: mejor en bus o metro
+| Hora | Parada | Duración | Andando | Por qué |
+|---|---|---|---|---|
+| 09:00 | Termas de Caracalla | 60 min | — | Te pilla de camino: merece la parada. |
+| 10:30 | Pasas por Circo Máximo | 10 min | 17 min | Pasas por aquí de camino: no hace falta pararse. |
+| 11:00 | Boca de la Verdad | 20 min | 6 min | Te pilla de camino: merece la parada. |
+| 12:00 | Jardín de los Naranjos | 20 min | 11 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 12:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino: merece la parada. |
+| 13:00–14:30 | 🍝 **Comida**: Trattoria Da Enzo al 29 en Trastevere | | | |
+| 14:30 | Pasas por Plaza Farnese | 10 min | 16 min | Pasas por aquí de camino: no hace falta pararse. |
+| 14:45 | Pasas por Campo de' Fiori | 10 min | 1 min | Pasas por aquí de camino: no hace falta pararse. |
+| 15:15 | Iglesia de San Luigi dei Francesi | 20 min | 10 min | Elegido según tus gustos: Arte y Museos. |
+| 15:45 | Iglesia de Santa Maria sopra Minerva | 20 min | 7 min | Elegido según tus gustos: Arte y Museos. |
+| 16:10 | Pasas por Elefantino de Bernini | 10 min | 1 min | Pasas por aquí de camino: no hace falta pararse. |
+| 16:30 | Iglesia del Gesù | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 17:05 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Pasas por Panteón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 18:15 | Ara Pacis | 45 min | 11 min | Te pilla de camino a la cena: merece la parada. |
+
+- **Aperitivo y paseo por Tridente y Spagna** (54 min).
+- **Cena**: 20:00 en Tridente y Spagna (6 min andando desde la última parada).
+- **Nocturna**: 21:30 Fontana de Trevi (noche).
 
 ### Día 6 — sábado 18 de septiembre de 2027
 
-**Bloques**: mañana: excursión de medio día (ostia_antica) · tarde: El Aventino al atardecer y cena en Testaccio (aventino_testaccio)
+**Bloques**: mañana: excursión de medio día (ostia_antica) · tarde: Santa María la Mayor, el Moisés y Monti (monti_basilicas)
 
 **Mañana: excursión de medio día** (ostia_antica, 08:00-14:00); la ciudad, desde las 16:00.
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 17:00 | Pasas por Circo Máximo | 10 min | — | Pasas por aquí de camino: no hace falta pararse. |
-| 17:30 | Boca de la Verdad | 20 min | 6 min | Te pilla de camino a la cena: merece la parada. |
-| 18:30 | Jardín de los Naranjos 🌅 | 45 min | 11 min | Elegido según tus gustos: Naturaleza y Vistas. |
-| 19:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino a la cena: merece la parada. |
-| 20:00 | Pasas por Pirámide Cestia | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
+| 16:00 | Basílica de Santa María la Mayor | 30 min | — | Elegido según tus gustos: Arte y Museos. |
+| 16:45 | Iglesia de San Pietro in Vincoli | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
+| 17:15 | Mercados de Trajano | 60 min | 9 min | Te pilla de camino a la cena: merece la parada. |
+| 18:30 | Monti | 40 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Cena**: 20:30 en Testaccio (12 min andando desde la última parada).
-- **Nocturna**: ninguna.
+- **Aperitivo y paseo por Monti** (49 min).
+- **Cena**: 20:00 en Monti (1 min andando desde la última parada).
+- **Nocturna**: 21:30 Coliseo (noche) → 22:30 Foro Romano desde el Campidoglio (noche).
 
 ### Día 7 — domingo 19 de septiembre de 2027
 
-**Bloques**: mañana: excursión de medio día (tivoli_villas) · tarde: Santa María la Mayor, el Moisés y Monti (monti_basilicas)
+**Bloques**: mañana: excursión de medio día (tivoli_villas) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
 **Mañana: excursión de medio día** (tivoli_villas, 08:00-14:00); la ciudad, desde las 16:00.
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 16:00 | Basílica de Santa María la Mayor | 30 min | — | Elegido según tus gustos: Arte y Museos. |
-| 16:45 | Iglesia de San Pietro in Vincoli | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
-| 17:15 | Monti | 40 min | 4 min | Te pilla de camino a la cena: merece la parada. |
-| 18:15 | Columna de Trajano | 10 min | 10 min | Te pilla de camino a la cena: merece la parada. |
-| 18:45 | Elefantino de Bernini | 10 min | 12 min | Te pilla de camino a la cena: merece la parada. |
-| 19:15 | Plaza Trilussa | 15 min | 15 min | Te pilla de camino a la cena: merece la parada. |
+| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | — | Elegido según tus gustos: Arte y Museos. |
+| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Pasas por Via del Corso | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:15 | Plaza Colonna | 15 min | 4 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Iglesia de San Ignacio de Loyola | 20 min | 4 min | Elegido según tus gustos: Arte y Museos. |
+| 18:15 | Columna de Trajano | 10 min | 9 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Cena**: 20:00 en Trastevere (8 min andando desde la última parada).
+- **Aperitivo y paseo por Monti** (82 min).
+- **Cena**: 20:00 en Monti (13 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ## 17. 2 días · del sábado 24 de octubre de 2026 al domingo 25 de octubre de 2026 · completo · sin experiencias (empieza en sábado; caso añadido)

@@ -6153,23 +6153,6 @@
       }
     },
     {
-      "name": "Trecca - Cucina di Mercato",
-      "sub_category": "trattoria",
-      "meal": "ambos",
-      "address": "Via di Porta Cavalleggeri, 126, 00165 Roma",
-      "coordinates": {
-        "lat": 41.8972,
-        "lng": 12.4508
-      },
-      "zone": "Vaticano / Borgo",
-      "price_range": "€€",
-      "avg_price_person": "25-35€",
-      "what_to_order": "Pasta del día, verduras de temporada del mercado, secondi de carne o pescado",
-      "tip": "Cocina de mercado fresca. Cada día el menú cambia según lo que llega. Cerca del Vaticano pero sin turistas. Recomendada por Katie Parla.",
-      "hours": "Mar-Dom 12:30-15:00, 19:00-23:00. Lunes cerrado.",
-      "best_for": "Cocina de mercado fresca cerca del Vaticano"
-    },
-    {
       "name": "Il Bocconcino",
       "sub_category": "trattoria",
       "meal": "ambos",
@@ -7320,7 +7303,10 @@
       ],
       "cena": "Trastevere (se baja del Janículo a cenar, 15 min cuesta abajo)",
       "nocturnas": [],
-      "notas": "Así lo hace un romano: callejear Trastevere por la tarde, subir al Janículo para el atardecer y bajar a cenar. Si no queda tiempo antes del atardecer (invierno, atardecer ~16:45), las paradas marcadas antes_del_atardecer se saltan a la ida: del Puente se sube directo al Janículo por el Paseo del Gianicolo y se baja por Acqua Paola a cenar a Trastevere. En verano la cena va a las 21:00."
+      "notas": "Así lo hace un romano: callejear Trastevere por la tarde, subir al Janículo para el atardecer y bajar a cenar. Si no queda tiempo antes del atardecer (invierno, atardecer ~16:45), las paradas marcadas antes_del_atardecer se saltan a la ida: del Puente se sube directo al Janículo por el Paseo del Gianicolo y se baja por Acqua Paola a cenar a Trastevere. En verano la cena va a las 21:00.",
+      "excluye": [
+        "trastevere_a_fondo"
+      ]
     },
     {
       "id": "aventino_testaccio",
@@ -7490,7 +7476,7 @@
       "experiencias": [
         "arte_museos"
       ],
-      "minimo_dias_viaje": 4,
+      "minimo_dias_viaje": 3,
       "paradas": [
         {
           "lugar": "Iglesia de Santa Maria della Vittoria",
@@ -7519,7 +7505,7 @@
       "nocturnas": [
         "Panteón (noche)"
       ],
-      "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte.",
+      "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte. Desde el 2026-09-26 también en viajes de 3 días (tras la mañana del centro); la Fontana de Trevi, si ya se vio por la mañana, no se repite.",
       "traslados": {
         "centro": "bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)"
       }
