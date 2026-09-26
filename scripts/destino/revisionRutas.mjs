@@ -35,6 +35,8 @@ const VIAJES = [
   { dias: 5, mes: 9, ritmo: 'completo', exps: ['imprescindibles', 'free_tour'] },
   { dias: 6, mes: 5, ritmo: 'completo', exps: [], nota: 'sin experiencias' },
   { dias: 7, fecha: '2027-09-13', ritmo: 'completo', exps: ['imprescindibles', 'arte_museos', 'naturaleza_vistas'], nota: 'empieza en lunes' },
+  // Caso añadido (decisiones del 2026-09-26): 2 días completos desde un sábado; la Plaza de España tiene que entrar.
+  { dias: 2, fecha: '2026-10-24', ritmo: 'completo', exps: [], nota: 'empieza en sábado; caso añadido' },
 ]
 
 const D = findPipelineV2Data('Roma')
@@ -81,7 +83,7 @@ function maxHueco(day) {
 const porFuera = (D.places ?? []).filter((place) => place.level === 1 && (place.type === 'exterior' || place.pass_by || place.visible_from_outside))
 const nombreBloque = (id) => [...(D.morning_flows ?? []), ...(D.afternoon_flows ?? [])].find((b) => b.id === id)?.nombre ?? id
 const nombre = (b) => (b ? (b.id ? `${nombreBloque(b.id)} (${b.id})` : '**medio día sin tipo**') : '—')
-head.push('# Revisión de rutas de Roma — 16 viajes')
+head.push(`# Revisión de rutas de Roma — 16 viajes + ${VIAJES.length - 16} caso añadido`)
 head.push('')
 head.push(`Motor v3, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revisionRutas.mjs\`. Sin fechas, cada día usa el 15 del mes (horarios y puesta de sol) y el horario de laborables. "Andando" = minutos desde la parada anterior (matriz del destino; en la primera, desde el punto de partida no se cuenta).`)
 head.push('')
@@ -141,6 +143,7 @@ for (const [index, viaje] of VIAJES.entries()) {
     for (const id of day.reordered_blocks ?? []) reordenados.push(`viaje ${index + 1}, día ${n}: ${id}`)
     huecos.push({ n, minutos: maxHueco(day) })
     if (day.pace_notice) out.push(`> ${day.pace_notice}`)
+    if (day.transfer_notice) out.push(`> 🚌 ${day.transfer_notice}`)
     if (day.half_day_excursion) out.push(`**Mañana: excursión de medio día** (${day.half_day_excursion.id}, ${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at}); la ciudad, desde las ${day.half_day_excursion.route_starts_at}.`)
     const lunch = day.meals?.find((m) => m.time === 'lunch')
     const dinner = day.meals?.find((m) => m.time === 'dinner')

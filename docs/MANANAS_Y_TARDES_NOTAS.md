@@ -13,6 +13,45 @@
 
 **Pregunta nueva:** L'Arcangelo, ¿abre a mediodía en invierno? Si es así, pasa a `ambos`.
 
+## Decisiones sobre las preguntas (2026-09-26)
+
+### 1. Tardes a más de 20 min de donde acaba la mañana: excepción explícita
+
+- Las parejas que el JSON declara compatibles (`encaja_despues_de`) se quedan. El límite de 20 min solo vale para lo que el motor decide por su cuenta (encaje por cercanía).
+- Si el traslado pasa de 25 min andando, el día lo avisa (`transfer_notice`, bajo el título del día en la app): "Traslado de ~X min: mejor en …". Cómo moverse sale del bloque (`traslados[acaba_en]`, nuevo en el formato); sin dato, "bus o metro".
+- Las de más de 35 min, revisadas en transporte:
+
+| Pareja | A pie | Transporte | Decisión |
+|---|---|---|---|
+| `vaticano_por_la_tarde` tras el Free Tour (Navona → Museos Vaticanos) | 38 min | bus 492 desde Senato, 16-21 min (cada 20 min); taxi unos 19 min | Baja de 20: **se queda**, con aviso |
+| `letran_celio` tras el centro (Navona → San Juan de Letrán) | 46 min | taxi 7-19 min según el tráfico; bus 87 desde Rinascimento, 28 min | En taxi baja de 20: **se queda**, con aviso (el bus no baja de 20) |
+
+  Fuentes: rome2rio (Piazza Navona → Museos Vaticanos, → San Juan de Letrán y → Santa Maria della Vittoria) y Mapbox Directions en coche (`driving-traffic`, con el tráfico del momento de la consulta).
+- Con aviso también, al pasar de 25 min:
+  - `bernini_trevi` tras el centro (29 min a pie): bus 492 hasta Largo di Santa Susanna, unos 20-23 min, o taxi, 5-10 min;
+  - `letran_celio` tras la Roma Antigua (27 min a pie): taxi, unos 10 min, o bus 87.
+- **Cómo se calculan hoy los minutos:** solo a pie. Salen de la matriz del destino (`data/pipeline_v2/travel/roma.json`): rutas de Mapbox Directions `walking`, pedidas una vez por `scripts/buildTravelMatrix.mjs` en los dos sentidos y guardadas. No hay transporte en la matriz.
+- **Propuesta para comparar con transporte (sin implementar):**
+  - añadir a la matriz un modo `driving` (taxi) con el mismo script (`modes.driving`, Mapbox `driving-traffic`, sumándole unos 5 min de espera). El motor ya lee los modos como dato;
+  - para bus y metro, Mapbox no tiene transporte público. Habría que usar una API de transporte (Google Directions `transit`, Navitia o la GTFS de ATAC) solo para las parejas mañana-tarde, que son pocas, y guardarlas en la matriz como `modes.transit`;
+  - el aviso diría el mejor de los dos, y `validar.mjs` marcaría en rojo una pareja declarada que no baje de 20 min en ningún medio.
+
+### 2. 2 días, ritmo completo, empezando en sábado: la Plaza de España entra
+
+- Un imprescindible que se ve desde la calle entra de paso (15 min) en el camino a la cena o entre bloques. Para hacerle sitio se recorta en este orden:
+  1. el tiempo libre (los rellenos);
+  2. el callejeo de un bloque (un barrio, a la mitad, 20 min como mínimo);
+  3. una sola parada de paso de menos peso (sin grupo).
+
+  Nunca el orden de un bloque ni su parada principal.
+- Probado en tres sábados (24-10-2026, 15-05-2027 y 16-01-2027): en los tres entra la Plaza de España, de paso a las 19:45, camino de la cena. El 24 de octubre se cae una parada de paso (el Elefantino de Bernini).
+- Añadido a la revisión como caso 17 (2 días desde el sábado 24 de octubre). "Imprescindibles que se ven desde la calle y faltan": **0**.
+
+### 3. L'Arcangelo: solo cenas
+
+- Cenas de lunes a sábado, 19:15-22:45. Cerrado el domingo (`closed_on`) y del 10 al 31 de agosto. Fuentes: Falstaff (abril de 2026) y la web oficial.
+- **Pendiente:** confirmar por teléfono (06 3210992) si abre a mediodía. Si sí: comida de lunes a viernes, 13:00-14:30; cerrado el sábado a mediodía y el domingo.
+
 ## Ajustes — Parte D, comprobación (2026-09-26)
 
 - `docs/REVISION_RUTAS_ROMA_16.md` regenerada, con el resumen arriba:

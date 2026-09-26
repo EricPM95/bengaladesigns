@@ -70,6 +70,10 @@ const RESCUE_MAX_DETOUR = 15
 /** Un imprescindible que se ve desde la calle, de paso: 15 min y hasta este desvío (el bloque que pase más cerca). */
 const OUTSIDE_ESSENTIAL_MINUTES = 15
 const OUTSIDE_ESSENTIAL_MAX_DETOUR = 25
+/** El callejeo de un bloque (un barrio) se puede recortar hasta aquí para hacer sitio a un imprescindible. */
+const CALLEJEO_MIN_MINUTES = 20
+/** Más que esto andando entre la mañana y la tarde, el día avisa del traslado. */
+const TRANSFER_NOTICE_MINUTES = 25
 /** Una espera de más de esto dentro del día se rellena con algo de camino. */
 const WAIT_FILL_MINUTES = 60
 /** Lo que rellena una espera, a esto andando como mucho de cada extremo de la espera original. */
@@ -603,6 +607,21 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       if (result.dropped.length <= option.result.dropped.length && result.visits.some((visit) => visit.place.sunset != null)) return { ...option, units: [...morningUnits, ...list], result }
     }
     return option
+  }
+
+  /**
+   * Parejas mañana-tarde que el JSON declara compatibles aunque estén lejos (Navona → Museos Vaticanos,
+   * 38 min a pie): se quedan como excepción, pero si el traslado pasa de 25 min andando el día lo dice,
+   * con cómo moverse si el bloque lo trae (`traslados[acaba_en]`); si no, "bus o metro".
+   */
+  function transferNoticeOf(morningBlock, afternoonBlock, result) {
+    if (!morningBlock || !afternoonBlock) return null
+    const last = [...result.visits].reverse().find((visit) => String(visit.unitId).startsWith(`${morningBlock.id}:`))
+    const first = result.visits.find((visit) => String(visit.unitId).startsWith(`${afternoonBlock.id}:`))
+    if (!last || !first) return null
+    const minutes = travel.leg(last.place.end_coordinates ?? last.place.coordinates, first.place.coordinates)?.minutes ?? 0
+    if (minutes <= TRANSFER_NOTICE_MINUTES) return null
+    return { minutes, from: last.place.name, to: first.place.name, how: afternoonBlock.traslados?.[morningBlock.acaba_en] ?? null }
   }
 
   /**
@@ -1176,6 +1195,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       untypedAfternoon: !chosen.block,
       // Bloques cuyo orden no es el del JSON (ajustes B.8: tiene que ser 0; el semáforo lo marca en rojo).
       reorderedBlocks: reorderedBlocks([morningBlock, chosen.block].filter(Boolean), chosen.result),
+      // Traslado largo entre la mañana y la tarde (más de 25 min andando): se avisa, con cómo moverse.
+      transferNotice: transferNoticeOf(morningBlock, chosen.block, chosen.result),
       curated: null,
     })
   }
@@ -1254,9 +1275,36 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       places: [{ name: place.name, coordinates, duration_minutes: minutes, type: 'exterior', passThrough: true, tags: place.tags ?? [], zone: place.zone, level: 1, group: place.group, wikipedia_title: place.wikipedia_title, ...(place.pass_by?.includes?.length ? { outsideOf: place.pass_by.includes } : {}) }],
       slot: 'tarde', blockId: 'de_paso', role: 'de_paso', dropRank: DROP_RANK.extra, priority: PRIORITY.ESSENTIAL, curatedIndex: null, poolIndex: null,
     }
-    const cheap = (other) => (other.role === 'extra' || (other.role === 'de_paso' && !other.places.some((p) => p.group))) && !other.places.some((p) => p.level === 1)
-    let best = null
+    // Para hacerle sitio se recorta en este orden (ajustes de bloques, 2 días desde el sábado): 1) el tiempo
+    // libre (los rellenos); 2) el callejeo de un bloque (un barrio, a la mitad, 20 min como mínimo); 3) UNA
+    // parada de paso de menos peso (sin grupo). Nunca el orden de un bloque ni su parada principal.
+    const isFiller = (other) => other.role === 'extra' && !other.places.some((p) => p.level === 1)
+    const isLightPass = (other) => other.role === 'de_paso' && !other.places.some((p) => p.group || p.level === 1)
+    const shortenCallejeo = (list) =>
+      list.map((other) =>
+        other.role !== 'de_paso' && other.places.some((p) => (p.tags ?? []).includes('barrio') && (p.duration_minutes ?? 0) > CALLEJEO_MIN_MINUTES)
+          ? { ...other, places: other.places.map((p) => ((p.tags ?? []).includes('barrio') ? { ...p, duration_minutes: Math.max(CALLEJEO_MIN_MINUTES, Math.round((p.duration_minutes ?? 45) / 2 / 5) * 5) } : p)) }
+          : other,
+      )
+    const stages = [
+      { transform: (list) => list, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other)) },
+      { transform: shortenCallejeo, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other)) },
+      { transform: shortenCallejeo, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other) || isLightPass(other)) && dropped.filter(({ unit: other }) => isLightPass(other)).length <= 1 },
+    ]
     const partnerDay = groupDay(place)
+    for (const stage of stages) {
+      const best = tryOutsideStage(stage, partnerDay, unit, coordinates, place)
+      if (!best) continue
+      const stillDropped = best.day.schedule.dropped.filter(({ unit: other }) => !other.places.some((p) => p.name === place.name))
+      Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...stillDropped, ...best.result.dropped] } })
+      seen.add(place.name)
+      for (const name of place.pass_by?.includes ?? []) seen.add(name)
+      return true
+    }
+    return false
+  }
+  function tryOutsideStage(stage, partnerDay, unit, coordinates, place) {
+    let best = null
     for (const day of days.filter((d) => d.schedule && (!partnerDay || d === partnerDay))) {
       // Con su grupo ese día, pegado a él.
       const groupAt = place.group ? day.units.map((unit) => unit.places.some((p) => p.group === place.group)).lastIndexOf(true) : -1
@@ -1268,19 +1316,15 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const leg = (x, y) => (x?.coordinates && y?.coordinates ? travel.leg(x.end_coordinates ?? x.coordinates, y ? y.coordinates : null)?.minutes ?? Infinity : 0)
         const detour = leg(prev, { coordinates }) + (next ? leg({ coordinates }, next) - leg(prev, next) : 0)
         if (detour > OUTSIDE_ESSENTIAL_MAX_DETOUR) continue
-        const units = [...unstretched(day.units).slice(0, at), { ...unit, slot: day.units[at]?.slot ?? 'tarde' }, ...unstretched(day.units).slice(at)]
+        const base = stage.transform(unstretched(day.units))
+        const units = [...base.slice(0, at), { ...unit, slot: day.units[at]?.slot ?? 'tarde' }, ...base.slice(at)]
         // Como un bloque: lo que por el horario ya no llega va de paso (el Tempietto, que cierra a las 18:00).
         const result = scheduleBlock(day, [], units, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null)
-        if (!result.kept.some((other) => other.id === unit.id) || !result.dropped.every(({ unit: other }) => cheap(other))) continue
+        if (!result.kept.some((other) => other.id === unit.id) || !stage.allows(result.dropped)) continue
         if (!best || detour < best.detour) best = { day, result, detour }
       }
     }
-    if (!best) return false
-    const stillDropped = best.day.schedule.dropped.filter(({ unit }) => !unit.places.some((p) => p.name === place.name))
-    Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...stillDropped, ...best.result.dropped] } })
-    seen.add(place.name)
-    for (const name of place.pass_by?.includes ?? []) seen.add(name)
-    return true
+    return best
   }
   for (const name of poolNames) {
     if (rescue(name, 'pool')) continue

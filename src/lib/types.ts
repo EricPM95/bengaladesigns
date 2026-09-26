@@ -555,6 +555,8 @@ export interface DayPlan {
    * el motor pasó ese día al horario normal. Null en el resto.
    */
   paceNotice?: string | null
+  /** Motor v3: traslado de más de 25 min andando entre la mañana y la tarde, con cómo moverse. */
+  transferNotice?: string | null
   /** Minutos andando desde la última visita hasta el sitio de la cena (motor v3). Sirve para saber cuánto tiempo LIBRE queda antes de cenar, ver FreeTimeBlock. */
   dinnerWalkMinutes?: number | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */

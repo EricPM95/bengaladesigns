@@ -789,6 +789,13 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 163. **Al bajar del mirador en invierno**, lo que se saltó a la ida (callejear Trastevere) se hace camino de
     la cena; y si cerca del barrio de la cena ya no queda nada, el alargue sigue a 15 min de donde acaba el
     día y la cena pasa al barrio más cercano. Todo lo añadido junto, 20 min de desvío como mucho.
+164. **Parejas mañana-tarde declaradas en el JSON: excepción al límite de 20 min**, que solo vale para lo
+    que el motor elige por su cuenta. Si el traslado pasa de 25 min andando, el día lo avisa: "Traslado de
+    ~X min: mejor en …" (`traslados[acaba_en]` del bloque; sin dato, "bus o metro"). Una pareja de más de
+    35 min andando solo se queda si en transporte (bus, metro o taxi) baja de 20.
+165. **Hueco para un imprescindible que se ve desde la calle**: se recorta en este orden, y solo lo
+    necesario: el tiempo libre (rellenos), el callejeo de un bloque (un barrio, a la mitad y 20 min como
+    mínimo), una sola parada de paso sin grupo. Nunca el orden de un bloque ni su parada principal.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

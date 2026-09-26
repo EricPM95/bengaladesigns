@@ -143,6 +143,8 @@ export interface GeneratedDay {
   max_auto_days?: number | null
   /** Motor v3: el día pasó al horario normal para no perder un imprescindible — ver DayPlan.paceNotice. */
   pace_notice?: string | null
+  /** Motor v3: traslado largo entre la mañana y la tarde — ver DayPlan.transferNotice. */
+  transfer_notice?: string | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
@@ -604,6 +606,7 @@ function mapDay(
         }
       : null,
     paceNotice: generated.pace_notice ?? null,
+    transferNotice: generated.transfer_notice ?? null,
     dinnerWalkMinutes: generated.dinner_walk_minutes ?? null,
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),

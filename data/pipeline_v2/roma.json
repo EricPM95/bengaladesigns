@@ -6334,16 +6334,19 @@
       },
       "zone": "Prati / Vaticano",
       "tip": "Cocina romana del chef Arcangelo Dandini, en la Guía Michelin.",
-      "hours": "Lun-Sáb 19:00-22:30 (horario de verano). Domingo cerrado. Vacaciones del 10 al 31 de agosto.",
+      "hours": "Lun-Sáb 19:15-22:45. Domingo cerrado. Vacaciones del 10 al 31 de agosto.",
       "sources": [
         "https://guide.michelin.com/us/en/lazio/roma/restaurant/l-arcangelo",
         "https://www.larcangelo.com/en/"
       ],
       "hours_audit": {
-        "fuente": "https://www.larcangelo.com/en/ (web oficial) + OpenStreetMap (coordenadas)",
-        "nota": "La web solo publica el horario de verano, sin mediodía: queda como \"cena\" (el JSON de origen decía \"ambos\"). Si en invierno abre a mediodía, cambiar a \"ambos\".",
+        "fuente": "Falstaff (abril de 2026) + https://www.larcangelo.com/en/ (web oficial) + OpenStreetMap (coordenadas)",
+        "nota": "Las fuentes recientes dan solo cenas (19:15-22:45) y cierre el domingo; las antiguas, también mediodía de lunes a viernes. Pendiente: confirmar por teléfono (06 3210992) si abre a mediodía. Si sí: comida L-V 13:00-14:30, cerrado sábado a mediodía y domingo.",
         "fecha": "2026-09-26"
-      }
+      },
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Osteria dell'Angelo",
@@ -7448,7 +7451,10 @@
       "nocturnas": [
         "Panteón (noche)"
       ],
-      "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte."
+      "notas": "Todo cuesta abajo, del Quirinal al centro. Para viajes largos con Arte.",
+      "traslados": {
+        "centro": "bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)"
+      }
     },
     {
       "id": "letran_celio",
@@ -7483,7 +7489,11 @@
         "Coliseo (noche)",
         "Foro Romano desde el Campidoglio (noche)"
       ],
-      "notas": "Para viajes de 5 días o más: da sentido a una tarde que hoy sale casi vacía."
+      "notas": "Para viajes de 5 días o más: da sentido a una tarde que hoy sale casi vacía.",
+      "traslados": {
+        "centro": "taxi (10-20 min) o bus 87 desde Rinascimento (unos 28 min)",
+        "roma_antigua": "taxi (unos 10 min) o bus 87"
+      }
     },
     {
       "id": "vaticano_por_la_tarde",
@@ -7518,7 +7528,11 @@
       "cena": "Vaticano / Borgo o Prati",
       "nocturnas": [
         "Puente Sant'Angelo (noche)"
-      ]
+      ],
+      "traslados": {
+        "free_tour": "bus 492 desde Senato (unos 20 min) o taxi (unos 20 min)",
+        "centro": "bus 492 desde Senato (unos 20 min) o taxi (unos 20 min)"
+      }
     }
   ],
   "flows_formato": {
@@ -7536,6 +7550,7 @@
     "fecha": "2026-09-25",
     "prioridad": "1 = lo que harías si solo tuvieras un día. El motor coge las mañanas por prioridad y ajusta por pool y experiencias.",
     "reversible": "El bloque se puede hacer en sentido contrario cuando se llega por el otro extremo.",
-    "paseo": "true en una parada = se llega por un paseo agradable (ej. junto al río) que puede pasar de 20 min; validar.mjs no lo marca en rojo."
+    "paseo": "true en una parada = se llega por un paseo agradable (ej. junto al río) que puede pasar de 20 min; validar.mjs no lo marca en rojo.",
+    "traslados": "(tardes) Cómo moverse desde el final de cada mañana cuando el traslado pasa de 25 min andando: { acaba_en: \"bus 492 (unos 20 min) o taxi\" }. El día lo avisa: \"Traslado de ~X min: mejor en …\". Sin dato, \"bus o metro\"."
   }
 }

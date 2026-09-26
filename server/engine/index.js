@@ -237,6 +237,11 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))
     day.untyped_halves = tripDay.blocks.filter((block) => block.id == null).length
     day.reordered_blocks = tripDay.reorderedBlocks ?? []
+    // Traslado largo entre la mañana y la tarde: "Traslado de ~38 min: mejor en bus 492 (unos 20 min) o taxi".
+    if (tripDay.transferNotice) {
+      const { minutes, how } = tripDay.transferNotice
+      day.transfer_notice = `Traslado de ~${Math.round(minutes / 5) * 5} min: mejor en ${how ?? 'bus o metro'}`
+    }
   }
   // "Aperitivo y paseo por {barrio}" (ajustes B.7): 90 min o menos antes de cenar en un barrio de cena.
   const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames)
