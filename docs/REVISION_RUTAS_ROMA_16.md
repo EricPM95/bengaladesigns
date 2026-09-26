@@ -62,9 +62,9 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 15 | 6 | excursión de medio día (ostia_antica) | Santa María la Mayor, el Moisés y Monti (monti_basilicas) |
 | 16 | 1 | Coliseo, Foro y Palatino (roma_antigua) | Campidoglio, el Altar y el Ghetto (campidoglio_ghetto) |
 | 16 | 2 | Museos Vaticanos, San Pedro y la Cúpula (vaticano) | Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere) |
-| 16 | 3 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
+| 16 | 3 | Galería Borghese, el parque y el Popolo (borghese) | **medio día sin tipo** |
 | 16 | 4 | excursión de día completo | — |
-| 16 | 5 | Galería Borghese, el parque y el Popolo (borghese) | **medio día sin tipo** |
+| 16 | 5 | Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) | Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi) |
 | 16 | 6 | excursión de medio día (ostia_antica) | El Aventino al atardecer y cena en Testaccio (aventino_testaccio) |
 | 16 | 7 | excursión de medio día (tivoli_villas) | Santa María la Mayor, el Moisés y Monti (monti_basilicas) |
 | 17 | 1 | Coliseo, Foro y Palatino (roma_antigua) | El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco) |
@@ -78,17 +78,17 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 10:00 | Free Tour Centro Histórico | 150 min | — | Con el Free Tour descubrirás varios imprescindibles del centro histórico, como la Plaza de España, la Fontana de Trevi, el Panteón y la Piazza Navona, de la mano de un guía que te contará su historia y sus secretos. El recorrido es por fuera, sin entrar en los monumentos. Si puedes, vuelve de noche: la experiencia es totalmente distinta. |
+| 10:00 | Free Tour Centro Histórico | 150 min | — | Con el Free Tour descubrirás varios imprescindibles del centro histórico, como la Plaza de España, la Fontana de Trevi, el Panteón y la Piazza Navona, de la mano de un guía que te contará su historia y sus secretos. El recorrido es por fuera, sin entrar en los monumentos. Te los volveremos a enseñar a otra hora del viaje, porque la experiencia es totalmente distinta. |
 | 13:00–14:30 | 🍝 **Comida**: Armando al Pantheon en Centro Histórico | | | |
-| 14:30 | Arco de Constantino | 15 min | 25 min | Uno de los imprescindibles de Roma. |
+| 14:30 | Arco de Constantino | 15 min | 24 min | Uno de los imprescindibles de Roma. |
 | 14:50 | Coliseo | 90 min | 3 min | Uno de los imprescindibles de Roma. |
 | 16:30 | Foro Romano visto desde Via dei Fori Imperiali | 15 min | 10 min | El Foro Romano por dentro no da tiempo hoy, pero desde aquí lo tienes entero a tus pies. |
 | 17:15 | Panteón | 30 min | 16 min | El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Conocer su historia es imprescindible en cualquier viaje a Roma. ⚠️ Sábados, solo de 09:00 a 16:00. |
 | 18:00 | Plaza Venecia | 10 min | 11 min | Te pilla de camino a la cena: merece la parada. |
 | 18:15 | Altar de la Patria | 60 min | 5 min | Uno de los imprescindibles de Roma. |
 
-- **Cena**: 20:00 en Monti (13 min andando desde la última parada).
-- **Nocturna**: 21:30 Coliseo (noche) → 22:30 Foro Romano desde el Campidoglio (noche).
+- **Cena**: 20:00 en Centro Histórico (17 min andando desde la última parada).
+- **Nocturna**: 21:30 Panteón (noche) → 22:25 Fontana de Trevi (noche).
 - **No incluido**: Vaticano — Con medio día más podrías ver el Vaticano.; Foro Romano y Palatino — No te dio tiempo.
 
 ## 2. 1 día · julio · completo · Arte
@@ -159,7 +159,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:35 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. |
 | 20:00 | Pasas por Borgo Pio | 10 min | 7 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Cena**: 20:30 en Vaticano (6 min andando desde la última parada).
+- **Cena**: 20:30 en Vaticano (5 min andando desde la última parada).
 - **Nocturna**: 21:30 Puente Sant'Angelo (noche).
 
 ### Día 2
@@ -236,7 +236,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:00 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Mirador del Janículo | 40 min | 17 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Cena**: 20:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ## 6. 3 días · del viernes 24 de septiembre de 2027 al domingo 26 de septiembre de 2027 · completo · Arte (de viernes a domingo)
@@ -258,10 +258,11 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 16:45 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
 | 17:00 | Barrio Judío | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 17:35 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:00 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 18:00 | Basílica de Santa Cecilia in Trastevere | 30 min | 12 min | Te pilla de camino a la cena: merece la parada. |
+| 18:45 | Isla Tiberina | 20 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (90 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2 — sábado 25 de septiembre de 2027
@@ -283,7 +284,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:15 | Fontana dell'Acqua Paola | 15 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 19:00 | Mirador del Janículo 🌅 | 40 min | 16 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
 
-- **Cena**: 20:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:30 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — domingo 26 de septiembre de 2027
@@ -354,8 +355,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 17:45 | Basílica de Santa Cecilia in Trastevere | 30 min | 4 min | Te pilla de camino a la cena: merece la parada. ⚠️ Domingos y festivos, solo de 11:30 a 12:30 y de 16:30 a 18:00. |
 | 18:30 | Plaza Trilussa | 15 min | 9 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (68 min). Sugerencias: Trastevere (5 min), Iglesia de Santa Maria in Trastevere (3 min).
-- **Cena**: 20:00 en Trastevere (7 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (67 min). Sugerencias: Trastevere (5 min), Iglesia de Santa Maria in Trastevere (3 min).
+- **Cena**: 20:00 en Trastevere (8 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -375,8 +376,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 17:15 | Fontana dell'Acqua Paola | 15 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 18:00 | Mirador del Janículo 🌅 | 40 min | 16 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
 
-- **Aperitivo y paseo por Trastevere** (60 min). Sugerencias: Iglesia de Santa Maria in Trastevere (20 min).
-- **Cena**: 20:00 en Trastevere (20 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (59 min). Sugerencias: Iglesia de Santa Maria in Trastevere (20 min).
+- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ## 8. 3 días · mayo · tranquilo · Naturaleza
@@ -401,8 +402,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (60 min). Sugerencias: Boca de la Verdad (6 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2
@@ -423,7 +424,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:35 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Te pilla de camino a la cena: merece la parada. |
 | 19:40 | Mirador del Janículo 🌅 | 43 min | 22 min | Elegido según tus gustos: Naturaleza y Vistas. |
 
-- **Cena**: 21:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 21:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -492,9 +493,10 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 16:45 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
 | 17:15 | Basílica de Santa Cecilia in Trastevere | 30 min | 11 min | Te pilla de camino a la cena: merece la parada. |
 | 18:00 | Isla Tiberina | 20 min | 4 min | Te pilla de camino a la cena: merece la parada. |
+| 18:30 | Plaza Trilussa | 15 min | 9 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (90 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (67 min).
+- **Cena**: 20:00 en Trastevere (8 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — lunes 16 de agosto de 2027
@@ -515,7 +517,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:30 | Fontana dell'Acqua Paola | 15 min | 12 min | Te pilla de camino a la cena: merece la parada. |
 | 19:25 | Mirador del Janículo 🌅 | 44 min | 16 min | Llegas con tiempo para coger buen sitio antes del atardecer sobre Roma. |
 
-- **Cena**: 20:30 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:30 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ## 10. 4 días · del jueves 25 de marzo de 2027 al domingo 28 de marzo de 2027 · tranquilo · Arte + Barrios (Semana Santa)
@@ -540,8 +542,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (60 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2 — viernes 26 de marzo de 2027
@@ -562,7 +564,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:00 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Mirador del Janículo 🌅 | 40 min | 17 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
 
-- **Cena**: 20:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — sábado 27 de marzo de 2027
@@ -614,7 +616,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 | 19:00 | Pasas por Pirámide Cestia | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Cena**: 20:00 en Testaccio (11 min andando desde la última parada).
+- **Cena**: 20:00 en Testaccio (12 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2
@@ -637,7 +639,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 19:15 | Fontana dell'Acqua Paola | 15 min | 5 min | Elegido según tus gustos: Naturaleza y Vistas. |
 | 20:05 | Mirador del Janículo 🌅 | 42 min | 16 min | Elegido según tus gustos: Naturaleza y Vistas. |
 
-- **Cena**: 21:30 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 21:30 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -691,7 +693,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:30 | Trastevere | 45 min | 9 min | Elegido según tus gustos: Barrios y Sabores. |
 | 19:20 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
 
-- **Cena**: 20:00 en Trastevere (4 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (5 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2 — domingo 6 de diciembre de 2026
@@ -708,13 +710,14 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 14:30 | Plaza del Campidoglio | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
 | 15:00 | Altar de la Patria | 60 min | 7 min | Uno de los imprescindibles de Roma. |
 | 16:15 | Pasas por Plaza Venecia | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:45 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:00 | Barrio Judío | 30 min | 5 min | Elegido según tus gustos: Barrios y Sabores. |
-| 17:35 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:00 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 16:45 | Basílica de Santa Cecilia in Trastevere | 30 min | 17 min | Te pilla de camino a la cena: merece la parada. |
+| 17:30 | Pasas por Teatro de Marcelo | 10 min | 12 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:45 | Barrio Judío | 30 min | 5 min | Elegido según tus gustos: Barrios y Sabores. |
+| 18:20 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
+| 18:45 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (90 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — lunes 7 de diciembre de 2026
@@ -785,8 +788,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
 | 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (60 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -807,7 +810,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:15 | Trastevere | 45 min | 8 min | Uno de tus favoritos. |
 | 19:05 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
 
-- **Cena**: 20:00 en Trastevere (4 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (5 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 4
@@ -879,8 +882,8 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 17:45 | Basílica de Santa Cecilia in Trastevere | 30 min | 4 min | Te pilla de camino a la cena: merece la parada. ⚠️ Domingos y festivos, solo de 11:30 a 12:30 y de 16:30 a 18:00. |
 | 18:30 | Plaza Trilussa | 15 min | 9 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (68 min).
-- **Cena**: 20:00 en Trastevere (7 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (67 min).
+- **Cena**: 20:00 en Trastevere (8 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -902,7 +905,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:15 | Fontana dell'Acqua Paola | 15 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 19:00 | Mirador del Janículo 🌅 | 40 min | 16 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
 
-- **Cena**: 20:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:30 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 4
@@ -947,10 +950,11 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 16:45 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
 | 17:00 | Barrio Judío | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 17:35 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:00 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 18:00 | Basílica de Santa Cecilia in Trastevere | 30 min | 12 min | Te pilla de camino a la cena: merece la parada. ⚠️ Domingos y festivos, solo de 11:30 a 12:30 y de 16:30 a 18:00. |
+| 18:45 | Isla Tiberina | 20 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (90 min). Sugerencias: Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Plaza Trilussa (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2
@@ -972,7 +976,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:45 | Fontana dell'Acqua Paola | 15 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 19:40 | Mirador del Janículo 🌅 | 43 min | 16 min | Llegas con tiempo para coger buen sitio antes del atardecer sobre Roma. |
 
-- **Cena**: 21:00 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 21:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3
@@ -1017,7 +1021,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 12:00 | Jardín de los Naranjos | 20 min | 11 min | Te pilla de camino: merece la parada. |
 | 12:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino: merece la parada. |
 | 13:00–14:30 | 🍝 **Comida**: Trattoria Da Enzo al 29 en Trastevere | | | |
-| 14:30 | Museos Capitolinos | 120 min | 15 min | Te pilla de camino a la cena: merece la parada. |
+| 14:30 | Museos Capitolinos | 120 min | 11 min | Te pilla de camino a la cena: merece la parada. |
 | 16:45 | Campo de' Fiori | 25 min | 13 min | Te pilla de camino a la cena: merece la parada. |
 | 17:30 | Iglesia de San Luigi dei Francesi | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
 | 18:00 | Ara Pacis | 45 min | 10 min | Te pilla de camino a la cena: merece la parada. |
@@ -1061,10 +1065,11 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 16:45 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
 | 17:00 | Barrio Judío | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
 | 17:35 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:00 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 18:00 | Basílica de Santa Cecilia in Trastevere | 30 min | 12 min | Te pilla de camino a la cena: merece la parada. |
+| 18:45 | Isla Tiberina | 20 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (90 min).
-- **Cena**: 20:00 en Trastevere (10 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (46 min). Sugerencias: Iglesia de Santa Maria in Trastevere (9 min).
+- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2 — martes 14 de septiembre de 2027
@@ -1081,16 +1086,39 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 15:30 | Pasas por Via della Conciliazione | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
 | 15:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
 | 16:15 | Puente Sant'Angelo | 15 min | 9 min | Te pilla de camino a la cena: merece la parada. |
-| 17:00 | Trastevere | 45 min | 24 min | Te pilla de camino a la cena: merece la parada. |
-| 17:50 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
-| 18:30 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:45 | Fontana dell'Acqua Paola | 15 min | 5 min | Elegido según tus gustos: Naturaleza y Vistas. |
-| 19:30 | Mirador del Janículo 🌅 | 40 min | 16 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 17:00 | San Pietro in Montorio y Tempietto de Bramante | 30 min | 27 min | Elegido según tus gustos: Arte y Museos. |
+| 17:45 | Fontana dell'Acqua Paola | 15 min | 5 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 18:40 | Mirador del Janículo 🌅 | 42 min | 16 min | Elegido según tus gustos: Naturaleza y Vistas. |
 
-- **Cena**: 20:30 en Trastevere (20 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — miércoles 15 de septiembre de 2027
+
+**Bloques**: mañana: Galería Borghese, el parque y el Popolo (borghese) · tarde: **medio día sin tipo**
+
+| Hora | Parada | Duración | Andando | Por qué |
+|---|---|---|---|---|
+| 09:00 | Galería Borghese | 120 min | — | Elegido según tus gustos: Arte y Museos. |
+| 11:30 | Parque de Villa Borghese | 90 min | 8 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 13:00–14:30 | 🍝 **Comida**: Edy en Tridente y Spagna | | | |
+| 14:30 | Ara Pacis | 45 min | 7 min | Elegido según tus gustos: Arte y Museos. |
+| 15:30 | Iglesia de San Luigi dei Francesi | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
+| 16:00 | Iglesia de Santa Maria sopra Minerva | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
+| 16:30 | Iglesia del Gesù | 30 min | 7 min | Elegido según tus gustos: Arte y Museos. |
+| 17:05 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Campo de' Fiori | 25 min | 6 min | Te pilla de camino a la cena: merece la parada. |
+| 18:15 | Plaza Farnese | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
+
+- **Aperitivo y paseo por Centro Histórico** (90 min).
+- **Cena**: 20:00 en Centro Histórico (5 min andando desde la última parada).
+- **Nocturna**: 21:30 Panteón (noche) → 22:25 Fontana de Trevi (noche).
+
+### Día 4 — jueves 16 de septiembre de 2027
+
+**Excursión** — preseleccionada: pompeya_sorrento. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren, Excursión a la Costa Amalfitana, Excursión a Florencia en tren de alta velocidad.
+
+### Día 5 — viernes 17 de septiembre de 2027
 
 **Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
@@ -1108,36 +1136,10 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 18 min | Elegido según tus gustos: Arte y Museos. |
 | 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
 | 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Elegido según tus gustos: Arte y Museos. |
-| 17:30 | Iglesia de Santa Maria sopra Minerva | 20 min | 5 min | Te pilla de camino a la cena: merece la parada. |
-| 18:00 | Iglesia del Gesù | 30 min | 7 min | Te pilla de camino a la cena: merece la parada. |
+| 17:25 | Palazzo Doria Pamphilj | 60 min | 3 min | Elegido según tus gustos: Arte y Museos. |
 
-- **Aperitivo y paseo por Trevi** (77 min). Sugerencias: Elefantino de Bernini (5 min), Columna de Trajano (8 min).
-- **Cena**: 20:00 en Trevi (13 min andando desde la última parada).
-- **Nocturna**: ninguna.
-
-### Día 4 — jueves 16 de septiembre de 2027
-
-**Excursión** — preseleccionada: pompeya_sorrento. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren, Excursión a la Costa Amalfitana, Excursión a Florencia en tren de alta velocidad.
-
-### Día 5 — viernes 17 de septiembre de 2027
-
-**Bloques**: mañana: Galería Borghese, el parque y el Popolo (borghese) · tarde: **medio día sin tipo**
-
-| Hora | Parada | Duración | Andando | Por qué |
-|---|---|---|---|---|
-| 09:00 | Galería Borghese | 120 min | — | Elegido según tus gustos: Arte y Museos. |
-| 11:30 | Parque de Villa Borghese | 90 min | 8 min | Elegido según tus gustos: Naturaleza y Vistas. |
-| 13:00–14:30 | 🍝 **Comida**: Edy en Tridente y Spagna | | | |
-| 14:30 | Ara Pacis | 45 min | 7 min | Elegido según tus gustos: Arte y Museos. |
-| 15:30 | Iglesia de San Luigi dei Francesi | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
-| 16:00 | Largo di Torre Argentina | 20 min | 9 min | Te pilla de camino a la cena: merece la parada. |
-| 16:30 | Campo de' Fiori | 25 min | 6 min | Te pilla de camino a la cena: merece la parada. |
-| 17:00 | Plaza Farnese | 10 min | 1 min | Te pilla de camino a la cena: merece la parada. |
-| 17:30 | Plaza Trilussa | 15 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 18:00 | Basílica de Santa Cecilia in Trastevere | 30 min | 10 min | Te pilla de camino a la cena: merece la parada. |
-
-- **Aperitivo y paseo por Trastevere** (83 min).
-- **Cena**: 20:00 en Trastevere (7 min andando desde la última parada).
+- **Aperitivo y paseo por Centro Histórico** (85 min).
+- **Cena**: 20:00 en Centro Histórico (10 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 6 — sábado 18 de septiembre de 2027
@@ -1153,7 +1155,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 19:30 | Ojo de la Cerradura del Aventino | 10 min | 4 min | Te pilla de camino a la cena: merece la parada. |
 | 20:00 | Pasas por Pirámide Cestia | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Cena**: 20:30 en Testaccio (11 min andando desde la última parada).
+- **Cena**: 20:30 en Testaccio (12 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 7 — domingo 19 de septiembre de 2027
@@ -1165,12 +1167,13 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 |---|---|---|---|---|
 | 16:00 | Basílica de Santa María la Mayor | 30 min | — | Elegido según tus gustos: Arte y Museos. |
 | 16:45 | Iglesia de San Pietro in Vincoli | 20 min | 12 min | Elegido según tus gustos: Arte y Museos. |
-| 17:15 | Mercados de Trajano | 60 min | 9 min | Te pilla de camino a la cena: merece la parada. |
-| 18:30 | Monti | 40 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 17:15 | Monti | 40 min | 4 min | Te pilla de camino a la cena: merece la parada. |
+| 18:15 | Columna de Trajano | 10 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 18:45 | Elefantino de Bernini | 10 min | 12 min | Te pilla de camino a la cena: merece la parada. |
+| 19:15 | Plaza Trilussa | 15 min | 15 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Monti** (49 min).
-- **Cena**: 20:00 en Monti (1 min andando desde la última parada).
-- **Nocturna**: 21:30 Coliseo (noche) → 22:30 Foro Romano desde el Campidoglio (noche).
+- **Cena**: 20:00 en Trastevere (8 min andando desde la última parada).
+- **Nocturna**: ninguna.
 
 ## 17. 2 días · del sábado 24 de octubre de 2026 al domingo 25 de octubre de 2026 · completo · sin experiencias (empieza en sábado; caso añadido)
 
@@ -1218,6 +1221,6 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 18:45 | Trastevere | 45 min | 9 min | Te pilla de camino a la cena: merece la parada. |
 | 19:35 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Cena**: 20:00 en Trastevere (4 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (5 min andando desde la última parada).
 - **Nocturna**: ninguna.
 

@@ -106,6 +106,15 @@ de zona.
 - Validar el motor nuevo sobre rutas reales en la app (bandera arriba) y cambiar el defecto.
 - Ampliar el harness viejo a 1 día y 6-7 días y resolver o justificar sus 9 fallos preexistentes.
 - Entrega C: la UI de excursiones y días en blanco (prompt aparte).
+- **Traslados en transporte (decisión del 2026-09-26: no implementar todavía).** Hoy los minutos son solo
+  a pie (matriz de Mapbox `walking`) y cómo moverse va a mano en el campo `traslados` de cada tarde. Cuando
+  toque:
+  1. añadir a la matriz un modo `driving` (taxi) con el mismo script (`scripts/buildTravelMatrix.mjs`,
+     Mapbox `driving-traffic`, más unos 5 min de espera);
+  2. bus y metro con una API de transporte (Google Directions `transit`, Navitia o la GTFS de ATAC), solo
+     para las parejas mañana-tarde, guardado como `modes.transit`;
+  3. `validar.mjs` en rojo si una pareja declarada (`encaja_despues_de`) no baja de 20 min en ningún medio.
+  Detalle en `docs/MANANAS_Y_TARDES_NOTAS.md`.
 
 ---
 

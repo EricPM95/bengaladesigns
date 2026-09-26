@@ -49,8 +49,40 @@
 
 ### 3. L'Arcangelo: solo cenas
 
-- Cenas de lunes a sábado, 19:15-22:45. Cerrado el domingo (`closed_on`) y del 10 al 31 de agosto. Fuentes: Falstaff (abril de 2026) y la web oficial.
-- **Pendiente:** confirmar por teléfono (06 3210992) si abre a mediodía. Si sí: comida de lunes a viernes, 13:00-14:30; cerrado el sábado a mediodía y el domingo.
+- Solo cenas, todos los días, 19:15-22:45 (el usuario, 2026-09-26: abre todos los días; se quita el cierre del domingo). Sin pendientes.
+
+### Criterio para restaurantes (2026-09-26)
+
+- Son recomendaciones: el viajero comprueba el horario en Google Maps o Apple Maps. Se mantienen los días de cierre que ya están, pero no se dedica más trabajo a verificar horarios.
+- Lo que importa es que la dirección y la coordenada sean correctas, para que el enlace al mapa funcione.
+
+### Coordenadas de los restaurantes revisadas (2026-09-26)
+
+- Los 65 restaurantes, geocodificados por su dirección (Mapbox v6) y contrastados con OpenStreetMap (búsqueda del local por nombre). 20 estaban a más de 150 m de su dirección; casi todos, unos 300 m desplazados. Corregidos 18 (más Dal Toscano), cada uno con `coordinates_checked` y su fuente:
+  - con el punto del propio local en OpenStreetMap: Taverna Trilussa, Pizzarium, Ai Marmi, Da Remo, Pasticceria Regoli, Freni e Frizioni, Enoteca Ferrara, Ai Tre Scalini, Panella, Ma Che Siete Venuti a Fà y Mordi e Vai;
+  - con el portal de Mapbox, porque OpenStreetMap no tiene el local o encuentra otra sucursal: Da Enzo al 29, SantoPalato, Neve di Latte, Otaleg, Faro, Osteria Fernanda (estaba a casi 1 km) y Trapizzino.
+  - Direcciones corregidas: Ma Che Siete Venuti a Fà → "Via Benedetta, 25" (ponía "Via di Benedetta"); Mordi e Vai → box 15 del Mercado de Testaccio, Via Beniamino Franklin 12e.
+- **Duda:** Trecca - Cucina di Mercato. Tenemos "Via di Porta Cavalleggeri 126" (zona Vaticano), pero OpenStreetMap lo sitúa en Via Alessandro Severo 222 (Ostiense, a casi 6 km). No lo he tocado: ¿cuál es la buena?
+
+### Dal Toscano: coordenada corregida
+
+- Dirección de su web oficial: Via Germanico 58/60, 00192 Roma. Geocodificada con Mapbox (v6, precisión de portal): **41.9078, 12.4575** (antes, el centro de Via Germanico, a unos 300 m).
+- Los centros de los barrios de cena de Prati y Vaticano dependen de él. Con los de Monti y Testaccio (que cambiaron al contar las etiquetas dobles), no estaban en la matriz: recalculados (`scripts/buildTravelMatrix.mjs`, incremental).
+
+### Medios días sin tipo: por qué salen (sin cambiar nada todavía)
+
+Los 4 son **tardes**. En cada caso, las once tardes del JSON quedan descartadas por estas razones:
+
+| Viaje | Día | Mañana | Por qué no entra ninguna tarde |
+|---|---|---|---|
+| 6 (3 días, sept., Arte) | 3 | `centro_temprano` | Tras "centro" solo encajan `centro_barroco` y `tridente_pincio` (las excluye la propia mañana: repiten Panteón/Navona y España), `bernini_trevi` y `villa_borghese_pincio` (piden 4 días), `letran_celio` (pide 5), `trastevere_a_fondo` (su ancla, Trastevere, ya salió el día 2 con `vaticano_trastevere`) y `vaticano_por_la_tarde` (el Vaticano ya es una mañana del viaje). |
+| 8 (3 días, mayo, tranquilo, Naturaleza) | 3 | `centro_temprano` | Lo mismo que el viaje 6. |
+| 15 (6 días, mayo, sin experiencias) | 5 | `caracalla_aventino` | Tras "aventino" encajan `centro_barroco` (el Panteón ya salió el día 3), `campidoglio_ghetto` (usada el día 1), `trastevere_a_fondo` (Trastevere ya salió el día 2) y `aventino_testaccio` (la excluye la propia mañana: es el mismo Aventino). |
+| 16 (7 días, sept., Arte + Naturaleza) | 3 | `borghese` | Tras "villa_borghese" encajan `tridente_pincio` (su ancla, la Plaza de España, va en la mañana del día 5), `villa_borghese_pincio` (la excluye la mañana: la misma Galería) y `bernini_trevi`. Esta última sí entraba en el primer reparto, pero la reparación del viaje se la pasa al día 5, porque es la única tarde que encaja tras la mañana del centro, y el día 3 se queda sin nada. `monti_basilicas` ya no encaja tras la Borghese desde el cambio del JSON. |
+
+- **Viajes 6 y 8: lo esperado según los datos.** En viajes de 3 días no hay ninguna tarde para después de la mañana del centro: las que encajan piden 4 o 5 días o las excluye esa mañana. Es el último día, y la tarde improvisada sale con sentido (San Luigi, el Gesù, Campo de' Fiori). Si se quiere evitar, la solución es de datos: permitir `bernini_trevi` en 3 días o añadir una tarde "después del centro" para viajes cortos.
+- **Viaje 15: lo esperado.** En 6 días el viaje ya ha gastado todo lo que encaja después del Aventino.
+- **Viaje 16: en parte es un fallo.** `tridente_pincio` se descarta solo porque su ancla (la Plaza de España, una plaza que se ve por fuera) va en la mañana de otro día, cuando lo demás de esa tarde (Popolo, Santa Maria del Popolo y el Pincio al atardecer) es nuevo. Como consecuencia, el Pincio y Popolo, que la mañana de la Borghese no llega a hacer, se quedan fuera del viaje. Propuesta (sin aplicar): si el ancla ya vista es un exterior, la tarde vale igual con el ancla de paso, siempre que traiga al menos dos paradas nuevas.
 
 ## Ajustes — Parte D, comprobación (2026-09-26)
 
