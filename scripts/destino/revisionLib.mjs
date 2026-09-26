@@ -217,7 +217,9 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         aparece(nombre)
         if (pool.includes(nombre)) poolVisto.set(nombre, poolVisto.get(nombre) === 'visita' || !(stop.pass_through || stop.is_pass_by) ? 'visita' : 'de paso')
         if (walk != null && walk > SALTO_GRANDE && !String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`)) raro(n, `traslado de ${walk} min andando hasta ${cell(stop.name)} sin aviso de transporte.`)
-        if (previousEnd != null && walk != null && previous?.name !== LUNCH_LABEL) {
+        // (Si el tramo lleva aviso de transporte —el metro B hasta San Clemente—, se cuenta en metro, no andando.)
+        const enTransporte = String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`) && /metro|bus|tranv/i.test(String(day.transfer_notice))
+        if (previousEnd != null && walk != null && previous?.name !== LUNCH_LABEL && !enTransporte) {
           const holgura = start - previousEnd - walk
           if (holgura < 0) raro(n, `horario apretado: a ${cell(stop.name)} (${stop.suggested_time}) se llega ${-holgura} min tarde andando ${walk} min.`)
           const conNombre = libres.some((item) => item.before === nombre)

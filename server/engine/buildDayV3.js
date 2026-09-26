@@ -73,6 +73,8 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
       .map(placeWithArticle)
     return whyTexts.freeTour({ area: tour?.area_del ?? null, places: joinSpanish(essentials), repeats: tourRepeats })
   }
+  // La pausa con nombre del día curado (el desayuno romano): su propio texto.
+  if (visit.place.isBreak) return visit.place.why ?? visit.place.description ?? null
   // Revisitas y pasos por fuera ya traen su texto (revisitReason).
   if (visit.place.passBy || unit?.isRevisit) return null
   if (unit?.poolIndex != null) return whyTexts.pool()

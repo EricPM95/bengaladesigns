@@ -7923,6 +7923,11 @@
               "lugar": "Foro Romano y Palatino",
               "rol": "parada",
               "nota": "Antes de su última entrada: no hace falta madrugar ni en invierno."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso",
+              "nota": "Nunca se quita: está de camino, a 5 min del Foro."
             }
           ],
           "comida": {
@@ -7935,10 +7940,6 @@
           "tarde": [
             {
               "lugar": "Plaza del Campidoglio",
-              "rol": "de_paso"
-            },
-            {
-              "lugar": "Altar de la Patria",
               "rol": "de_paso"
             },
             {
@@ -8008,10 +8009,6 @@
         },
         "tranquilo_sabado": {
           "tarde": [
-            {
-              "lugar": "Altar de la Patria",
-              "rol": "de_paso"
-            },
             {
               "lugar": "Panteón",
               "rol": "parada",
@@ -8085,6 +8082,160 @@
             "barrio": "trastevere"
           },
           "noche": "centro_iluminado"
+        },
+        "navidad": {
+          "si_fecha": [
+            "12-25",
+            "01-01"
+          ],
+          "manana": [
+            {
+              "lugar": "Coliseo",
+              "rol": "parada",
+              "hora": "10:00",
+              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino."
+            },
+            {
+              "lugar": "Foro Romano y Palatino",
+              "rol": "parada",
+              "nota": "Desde Via dei Fori Imperiali."
+            },
+            {
+              "lugar": "Plaza del Campidoglio",
+              "rol": "parada",
+              "nota": "Por fuera: los museos cierran hoy."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Fuente de las Tortugas",
+              "rol": "de_paso"
+            }
+          ],
+          "tarde": [
+            {
+              "lugar": "Largo di Torre Argentina",
+              "rol": "de_paso",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Panteón",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Elefantino de Bernini",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Iglesia de Santa Maria sopra Minerva",
+              "rol": "parada",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Campo de' Fiori",
+              "rol": "de_paso"
+            }
+          ]
+        },
+        "navidad_25": {
+          "si_fecha": [
+            "12-25"
+          ],
+          "manana": [
+            {
+              "lugar": "Coliseo",
+              "rol": "parada",
+              "hora": "10:00",
+              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino."
+            },
+            {
+              "lugar": "Foro Romano y Palatino",
+              "rol": "parada",
+              "nota": "Desde Via dei Fori Imperiali."
+            },
+            {
+              "lugar": "Plaza del Campidoglio",
+              "rol": "de_paso",
+              "nota": "Por fuera: los museos cierran hoy."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Bendición Urbi et Orbi",
+              "rol": "parada",
+              "hora": "12:00",
+              "fija": true,
+              "nota": "Opcional."
+            }
+          ],
+          "comida": {
+            "texto": "Borgo o Prati",
+            "restaurantes": [
+              "Borghiciana Pastificio Artigianale",
+              "200 Gradi",
+              "Pizzarium (Bonci)"
+            ]
+          },
+          "tarde": [
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Panteón",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Elefantino de Bernini",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Iglesia de Santa Maria sopra Minerva",
+              "rol": "parada",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Largo di Torre Argentina",
+              "rol": "de_paso",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Fuente de las Tortugas",
+              "rol": "de_paso"
+            }
+          ]
         },
         "pool_san_clemente": {
           "comida": {
@@ -8596,6 +8747,52 @@
         "invierno": {
           "noche": "roma_desde_arriba"
         },
+        "pool_caracalla": {
+          "manana": [
+            {
+              "lugar": "Coliseo",
+              "rol": "parada",
+              "hora": "08:30",
+              "nota": "A la apertura: menos cola y menos calor."
+            },
+            {
+              "lugar": "Arco de Constantino",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Foro Romano y Palatino",
+              "rol": "parada",
+              "nota": "Se sale por el lado del Campidoglio."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            }
+          ],
+          "tarde": [
+            {
+              "lugar": "Circo Máximo",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Termas de Caracalla",
+              "rol": "parada",
+              "pago": true
+            },
+            {
+              "lugar": "Boca de la Verdad",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Jardín de los Naranjos",
+              "rol": "atardecer"
+            }
+          ],
+          "cena": {
+            "texto": "Trastevere",
+            "barrio": "trastevere"
+          }
+        },
         "tranquilo": {
           "manana": [
             {
@@ -8655,6 +8852,15 @@
           "nota": "A las 08:00, sin gente."
         },
         {
+          "lugar": "Desayuno romano",
+          "rol": "parada",
+          "minutos": 45,
+          "solo": {
+            "ritmo": "completo"
+          },
+          "nota": "Cappuccino y cornetto de pie en la barra, como un local."
+        },
+        {
           "lugar": "Iglesia de San Ignacio de Loyola",
           "rol": "parada",
           "solo": {
@@ -8685,14 +8891,14 @@
           }
         },
         {
-          "lugar": "Piazza del Popolo",
-          "rol": "parada",
-          "nota": "Por Via del Babuino."
-        },
-        {
           "lugar": "Santa Maria del Popolo",
           "rol": "parada",
-          "nota": "Caravaggio; de 10:30 a 12:00."
+          "antes_de": "12:00",
+          "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00."
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "rol": "parada"
         }
       ],
       "comida": {
@@ -8717,7 +8923,7 @@
               "experiencia": "arte_museos"
             }
           ],
-          "nota": "Turno de las 15:00, con reserva."
+          "nota": "Turno de las 15:00 (contando desde el atardecer; nunca el de las 17:00), con reserva."
         },
         {
           "lugar": "Parque de Villa Borghese",
@@ -8736,10 +8942,79 @@
       "noche": "escalinata",
       "variantes": {
         "invierno": {
+          "manana": [
+            {
+              "lugar": "Fontana de Trevi",
+              "rol": "parada",
+              "hora": "08:00",
+              "nota": "A las 08:00, sin gente."
+            },
+            {
+              "lugar": "Desayuno romano",
+              "rol": "parada",
+              "minutos": 30,
+              "solo": {
+                "ritmo": "completo"
+              },
+              "nota": "Cappuccino y cornetto de pie en la barra, como un local."
+            },
+            {
+              "lugar": "Iglesia de San Ignacio de Loyola",
+              "rol": "parada",
+              "solo": {
+                "ritmo": "completo"
+              },
+              "nota": "La cúpula falsa; abre a las 09:00."
+            },
+            {
+              "lugar": "Plaza Colonna",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Via Condotti",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Plaza de España",
+              "rol": "parada",
+              "nota": "Y la escalinata."
+            },
+            {
+              "lugar": "Ara Pacis",
+              "rol": "parada",
+              "pago": true,
+              "solo": {
+                "experiencia": "arte_museos",
+                "min_dias": 5
+              }
+            },
+            {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "antes_de": "12:00",
+              "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00."
+            },
+            {
+              "lugar": "Piazza del Popolo",
+              "rol": "parada"
+            }
+          ],
+          "comida": {
+            "texto": "Tridente o Spagna, temprano",
+            "restaurantes": [
+              "Edy",
+              "Poldo e Gianna Osteria",
+              "Sgarro Bistrot"
+            ],
+            "hora": "12:00",
+            "bloque": 60,
+            "si_lleva": "Galería Borghese"
+          },
           "tarde": [
             {
               "lugar": "Galería Borghese",
               "rol": "parada",
+              "hora": "13:00",
               "pago": true,
               "solo": [
                 {
@@ -8748,7 +9023,8 @@
                 {
                   "experiencia": "arte_museos"
                 }
-              ]
+              ],
+              "nota": "Turno de las 13:00, con reserva."
             },
             {
               "lugar": "Parque de Villa Borghese",
@@ -8977,17 +9253,28 @@
             {
               "lugar": "Pirámide Cestia",
               "rol": "de_paso",
-              "nota": "Metro B de Piramide a Cavour (10 min)."
+              "nota": "Metro B de Piramide a Colosseo (8 min)."
+            },
+            {
+              "lugar": "Basílica de San Clemente",
+              "rol": "parada",
+              "traslado": "el metro B (Piramide → Colosseo)",
+              "traslado_min": 20,
+              "nota": "Desde las 14:00; las tres iglesias superpuestas."
+            },
+            {
+              "lugar": "Basílica de San Juan de Letrán",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Basílica de Santa María la Mayor",
+              "rol": "parada",
+              "nota": "15 min andando."
             },
             {
               "lugar": "Iglesia de San Pietro in Vincoli",
               "rol": "parada",
-              "traslado": "el metro B (Piramide → Cavour)",
-              "nota": "El Moisés; reabre a las 15:00."
-            },
-            {
-              "lugar": "Basílica de Santa María la Mayor",
-              "rol": "parada"
+              "nota": "El Moisés; cierra a las 18:00."
             },
             {
               "lugar": "Monti",
@@ -8995,32 +9282,14 @@
               "nota": "Callejear y aperitivo."
             }
           ],
-          "cena": {
-            "texto": "Monti",
-            "barrio": "monti"
+          "comida": {
+            "texto": "Mercado de Testaccio o Felice a Testaccio",
+            "restaurantes": [
+              "Mordi e Vai",
+              "Felice a Testaccio"
+            ],
+            "temprana": "12:30"
           },
-          "noche": "coliseo"
-        },
-        "tarde_b_san_clemente": {
-          "tarde": [
-            {
-              "lugar": "Basílica de San Clemente",
-              "rol": "parada",
-              "hora": "14:00",
-              "traslado": "el metro B (Piramide → Colosseo)",
-              "nota": "Las tres iglesias superpuestas."
-            },
-            {
-              "lugar": "Basílica de San Juan de Letrán",
-              "rol": "parada",
-              "nota": "Luego, vuelta por el Celio."
-            },
-            {
-              "lugar": "Monti",
-              "rol": "parada",
-              "nota": "Callejear y aperitivo."
-            }
-          ],
           "cena": {
             "texto": "Monti",
             "barrio": "monti"
@@ -9350,7 +9619,6 @@
     "Basílica de San Clemente": {
       "dia": "D6",
       "min_dias_ciudad": 5,
-      "d5_tarde_b": "tarde_b_san_clemente",
       "antes": "pool_san_clemente",
       "nunca_en": [
         "D5:manana"
@@ -9374,5 +9642,29 @@
     "Via Appia Antica": {
       "dia": "D7"
     }
-  }
+  },
+  "curated_breaks": [
+    {
+      "name": "Desayuno romano",
+      "duration_minutes": 45,
+      "coordinates": [
+        41.9001,
+        12.4813
+      ],
+      "zone": "centro_historico",
+      "description": "Cappuccino y cornetto de pie en la barra, como un romano, entre Trevi y San Ignacio.",
+      "why": "Cappuccino y cornetto de pie en la barra, como un local: el desayuno romano de verdad, sin prisa y sin sentarse."
+    },
+    {
+      "name": "Bendición Urbi et Orbi",
+      "duration_minutes": 45,
+      "coordinates": [
+        41.9022,
+        12.4568
+      ],
+      "zone": "vaticano",
+      "description": "El 25 de diciembre a las 12:00, el Papa da la bendición Urbi et Orbi desde el balcón de la Basílica de San Pedro.",
+      "why": "El 25 de diciembre a las 12:00, la bendición Urbi et Orbi del Papa en la Plaza de San Pedro. Opcional: llega con margen por los controles."
+    }
+  ]
 }

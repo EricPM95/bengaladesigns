@@ -223,7 +223,7 @@ Del domingo 17 de octubre al lunes 18 de octubre de 2027.
 
 ### Día 1 — domingo 17 de octubre · Roma — día 1
 
-- **Día curado**: D1-FT · Roma Antigua, el Ghetto y Trastevere
+- **Día curado**: D1-FT · Roma Antigua, el Ghetto y Trastevere · variantes: pool_caracalla
 - **Atardecer**: 18:26
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
@@ -231,18 +231,15 @@ Del domingo 17 de octubre al lunes 18 de octubre de 2027.
 | 08:30 | 10:00 | 90 min | Coliseo |  |  |
 | 10:05 | 10:20 | 15 min | Arco de Constantino |  |  |
 | 10:30 | 12:15 | 105 min | Foro Romano y Palatino |  |  |
-| | | 40 min | 🕐 **Tiempo libre** | antes de comer · Via dei Fori Imperiali, Columna de Trajano, Plaza Venecia | |
+| 12:30 | 12:45 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
 | 13:00 | 14:30 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 14:30 | 14:50 | 20 min | Plaza del Campidoglio |  |  |
-| 15:00 | 16:00 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
-| 16:15 | 16:45 | 30 min | Barrio Judío |  |  |
-| 16:50 | 17:00 | 10 min | Fuente de las Tortugas | de paso |  |
-| 17:10 | 17:30 | 20 min | Isla Tiberina |  |  |
-| 17:40 | 18:25 | 45 min | Trastevere |  |  |
-| 18:30 | 18:50 | 20 min | Iglesia de Santa Maria in Trastevere |  |  |
-| 19:15 | 19:55 | 40 min | Mirador del Janículo | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 22 min desde Iglesia de Santa Maria in Trastevere |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere | 🚶 21 min |
-| 21:30 | 22:10 | 40 min | 🌙 Trastevere de noche | paseo nocturno «Trastevere de noche» | |
+| 14:30 | 14:40 | 10 min | Circo Máximo | de paso |  |
+| 15:00 | 16:00 | 60 min | Termas de Caracalla |  | 🚶 17 min desde Circo Máximo |
+| 16:30 | 16:50 | 20 min | Boca de la Verdad |  | 🚶 21 min desde Termas de Caracalla |
+| 17:05 | 17:25 | 20 min | Jardín de los Naranjos |  |  |
+| | | 136 min | 🕐 **Tarde libre** | Iglesia de Santa Maria in Trastevere, Testaccio, Isla Tiberina | |
+| 19:00 | 19:40 | 40 min | 🌙 Trastevere de noche | paseo nocturno «Trastevere de noche», antes de cenar | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere | 🚶 19 min |
 
 ### Día 2 — lunes 18 de octubre · Roma — día 2
 
@@ -262,7 +259,7 @@ Del domingo 17 de octubre al lunes 18 de octubre de 2027.
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Termas de Caracalla (No cabía en ningún día del viaje); Basílica de San Clemente (No cabía en ningún día del viaje); Basílica de Santa Cecilia in Trastevere (No te dio tiempo).
+- **No te dio tiempo**: Basílica de San Clemente (En 2 días solo hay una tarde para tus lugares elegidos, y es para Termas de Caracalla).
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -295,25 +292,27 @@ Del sábado 16 de enero al domingo 17 de enero de 2027.
 
 - **Día curado**: D1 · Roma Antigua y el centro barroco · variantes: tranquilo, pool_borghese
 - **Atardecer**: 17:06
+- ⚠️ Hoy la comida es más corta para que te dé tiempo a ver la Galería Borghese
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 10:00 | 11:30 | 90 min | Coliseo |  |  |
 | 11:35 | 11:50 | 15 min | Arco de Constantino |  |  |
 | 12:00 | 13:45 | 105 min | Foro Romano y Palatino |  |  |
-| 13:45 | 15:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:45 | 16:15 | 30 min | Fontana de Trevi |  |  |
-| 16:25 | 16:40 | 15 min | Plaza de España | de paso |  |
-| 17:00 | 19:00 | 120 min | Galería Borghese |  | 🚶 16 min desde Plaza de España |
-| 19:30 | 19:50 | 20 min | Terraza del Pincio | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 17 min desde Galería Borghese |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 13:45 | 15:00 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
+| 15:00 | 15:15 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 15:30 | 16:00 | 30 min | Fontana de Trevi |  |  |
+| 16:10 | 16:25 | 15 min | Plaza de España | de paso |  |
+| 16:45 | 18:45 | 120 min | Galería Borghese |  | 🚶 16 min desde Plaza de España |
+| 19:15 | 19:35 | 20 min | Terraza del Pincio | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 17 min desde Galería Borghese |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | paseo nocturno «El centro iluminado» | |
 | 22:25 | 22:50 | 25 min | 🌙 Piazza Navona (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Altar de la Patria (No cabía en ningún día del viaje); Trastevere (No te dio tiempo); Iglesia de Santa Maria in Trastevere (No te dio tiempo).
-- **Imprescindibles que no salen**: Altar de la Patria. Solo de noche: Panteón, Piazza Navona.
+- **No te dio tiempo**: Trastevere (No te dio tiempo); Iglesia de Santa Maria in Trastevere (No te dio tiempo).
+- **Imprescindibles que no salen**: ninguno. Solo de noche: Panteón, Piazza Navona.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
 
@@ -430,23 +429,23 @@ Del lunes 12 de abril al miércoles 14 de abril de 2027.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:30 | 30 min | Fontana de Trevi |  |  |
-| 09:00 | 09:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 09:25 | 09:35 | 10 min | Plaza Colonna | de paso |  |
-| 09:45 | 09:55 | 10 min | Via Condotti | de paso |  |
-| 10:05 | 10:35 | 30 min | Plaza de España |  |  |
-| 11:00 | 11:30 | 30 min | Piazza del Popolo |  |  |
-| | | 85 min | 🕐 **Tiempo libre** | antes de comer · Ara Pacis | |
+| 08:35 | 09:20 | 45 min | Desayuno romano |  |  |
+| 09:25 | 09:45 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 09:50 | 10:00 | 10 min | Plaza Colonna | de paso |  |
+| 10:10 | 10:20 | 10 min | Via Condotti | de paso |  |
+| 10:30 | 11:00 | 30 min | Plaza de España |  |  |
+| 11:30 | 12:00 | 30 min | Santa Maria del Popolo |  |  |
+| 12:05 | 12:35 | 30 min | Piazza del Popolo |  |  |
 | 13:00 | 14:30 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| | | 90 min | 🕐 **Tiempo libre** | antes de Santa Maria del Popolo · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 17:00 | 19:00 | 120 min | Galería Borghese |  | 🚶 22 min desde Santa Maria del Popolo |
-| 19:30 | 19:50 | 20 min | Terraza del Pincio | 🌅 atardecer 19:49 | 🚶 17 min desde Galería Borghese |
+| 15:00 | 17:00 | 120 min | Galería Borghese |  | 🚶 19 min desde la comida |
+| 17:10 | 18:40 | 90 min | Parque de Villa Borghese |  |  |
+| 19:05 | 19:49 | 44 min | Terraza del Pincio | 🌅 atardecer 19:49 |  |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Parque de Villa Borghese (No te dio tiempo).
+- **No te dio tiempo**: nada.
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -515,23 +514,24 @@ Del miércoles 14 de julio al viernes 16 de julio de 2027.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:30 | 30 min | Fontana de Trevi |  |  |
-| 09:00 | 09:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 09:25 | 09:35 | 10 min | Plaza Colonna | de paso |  |
-| 09:45 | 09:55 | 10 min | Via Condotti | de paso |  |
-| 10:05 | 10:35 | 30 min | Plaza de España |  |  |
-| 11:00 | 11:30 | 30 min | Piazza del Popolo |  |  |
-| | | 85 min | 🕐 **Tiempo libre** | antes de comer · Ara Pacis | |
+| 08:35 | 09:20 | 45 min | Desayuno romano |  |  |
+| 09:25 | 09:45 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 09:50 | 10:00 | 10 min | Plaza Colonna | de paso |  |
+| 10:10 | 10:20 | 10 min | Via Condotti | de paso |  |
+| 10:30 | 11:00 | 30 min | Plaza de España |  |  |
+| 11:30 | 12:00 | 30 min | Santa Maria del Popolo |  |  |
+| 12:05 | 12:35 | 30 min | Piazza del Popolo |  |  |
 | 13:00 | 14:30 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| | | 90 min | 🕐 **Tiempo libre** | antes de Santa Maria del Popolo · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 17:00 | 19:00 | 120 min | Galería Borghese |  | 🚶 22 min desde Santa Maria del Popolo |
-| 19:30 | 19:50 | 20 min | Terraza del Pincio |  | 🚶 17 min desde Galería Borghese |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
-| 21:30 | 22:15 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
+| 15:00 | 17:00 | 120 min | Galería Borghese |  | 🚶 19 min desde la comida |
+| 17:10 | 18:40 | 90 min | Parque de Villa Borghese |  |  |
+| | | 69 min | 🕐 **Tiempo libre** | antes de Terraza del Pincio · Pasear por Villa Borghese: el pulmón verde de Roma. | |
+| 20:00 | 20:43 | 43 min | Terraza del Pincio | 🌅 atardecer 20:43 |  |
+| 21:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 22:00 | 22:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Parque de Villa Borghese (No te dio tiempo).
+- **No te dio tiempo**: nada.
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -586,7 +586,7 @@ Del sábado 16 de octubre al lunes 18 de octubre de 2027.
 
 - **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b, sin_caracalla
 - **Atardecer**: 18:25
-- 🚌 Desde la comida → Iglesia de San Pietro in Vincoli: ~35 min andando · o en el metro B (Piramide → Cavour)
+- 🚌 Desde la comida → Basílica de San Clemente: ~35 min andando · o en el metro B (Piramide → Colosseo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -598,10 +598,12 @@ Del sábado 16 de octubre al lunes 18 de octubre de 2027.
 | 11:40 | 12:20 | 40 min | Testaccio |  |  |
 | | | 39 min | 🕐 **Tiempo libre** | antes de comer · Pasear por Testaccio: el barrio obrero convertido en el más auténtico de Roma. | |
 | 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 15:00 | 15:20 | 20 min | Iglesia de San Pietro in Vincoli |  | 🚶 34 min desde la comida |
-| 15:45 | 16:15 | 30 min | Basílica de Santa María la Mayor |  |  |
-| 16:25 | 17:05 | 40 min | Monti |  |  |
-| | | 174 min | 🕐 **Tarde libre** |  | |
+| 14:30 | 15:15 | 45 min | Basílica de San Clemente |  | 🚶 33 min desde la comida |
+| 15:30 | 16:00 | 30 min | Basílica de San Juan de Letrán |  |  |
+| 16:30 | 17:00 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
+| 17:15 | 17:35 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 17:40 | 18:20 | 40 min | Monti |  |  |
+| | | 99 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
 | 19:00 | 19:45 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado», antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 
@@ -661,9 +663,9 @@ Del domingo 17 de enero al martes 19 de enero de 2027.
 
 ### Día 3 — martes 19 de enero · Roma — día 3
 
-- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b, tarde_b_san_clemente
+- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b
 - **Atardecer**: 17:08
-- 🚌 Desde la comida → Basílica de San Clemente: ~35 min andando · o en el metro B (Piramide → Colosseo)
+- 🚌 Pirámide Cestia → Basílica de San Clemente: ~30 min andando · o en el metro B (Piramide → Colosseo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -672,13 +674,15 @@ Del domingo 17 de enero al martes 19 de enero de 2027.
 | 10:50 | 11:10 | 20 min | Boca de la Verdad |  |  |
 | 11:25 | 11:45 | 20 min | Jardín de los Naranjos |  |  |
 | 11:50 | 12:00 | 10 min | Ojo de la Cerradura del Aventino |  |  |
-| | | 53 min | 🕐 **Tiempo libre** | antes de comer · Testaccio, Pirámide Cestia, Cementerio Protestante | |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:45 | 15:30 | 45 min | Basílica de San Clemente |  | 🚶 33 min desde la comida |
-| 15:45 | 16:15 | 30 min | Basílica de San Juan de Letrán |  |  |
-| 16:45 | 17:25 | 40 min | Monti |  | 🚶 25 min desde Basílica de San Juan de Letrán |
-| | | 154 min | 🕐 **Tarde libre** | Iglesia de San Pietro in Vincoli | |
-| 18:00 | 18:45 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado», antes de cenar | |
+| 12:30 | 14:00 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:00 | 14:10 | 10 min | Pirámide Cestia | de paso |  |
+| 14:30 | 15:15 | 45 min | Basílica de San Clemente |  | 🚶 31 min desde Pirámide Cestia |
+| 15:30 | 16:00 | 30 min | Basílica de San Juan de Letrán |  |  |
+| 16:30 | 17:00 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
+| 17:15 | 17:35 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 17:40 | 18:20 | 40 min | Monti |  |  |
+| | | 99 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
+| 18:30 | 19:15 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado», antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 
 #### Lo que quedó fuera
@@ -740,8 +744,8 @@ Del sábado 17 de abril al lunes 19 de abril de 2027.
 | 11:35 | 11:50 | 15 min | Arco de Constantino |  |  |
 | 12:00 | 13:45 | 105 min | Foro Romano y Palatino |  |  |
 | 13:45 | 15:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:45 | 15:55 | 10 min | Plaza del Campidoglio | de paso |  |
-| 16:05 | 16:20 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 15:45 | 16:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 16:10 | 16:20 | 10 min | Plaza del Campidoglio | de paso |  |
 | 16:45 | 16:55 | 10 min | Barrio Judío | de paso |  |
 | 17:15 | 17:45 | 30 min | Panteón |  |  |
 | 17:55 | 18:15 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
@@ -802,21 +806,27 @@ Del miércoles 13 de octubre al viernes 15 de octubre de 2027.
 
 ### Día 3 — viernes 15 de octubre · Roma — día 3
 
-- **Día curado**: D4 · Trevi sin gente, el Popolo y la Borghese · variantes: tranquilo, con_free_tour
+- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tranquilo, sin_caracalla
 - **Atardecer**: 18:29
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 10:00 | 11:30 | 90 min | Parque de Villa Borghese |  |  |
-| | | 77 min | 🕐 **Tiempo libre** | antes de comer · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 13:00 | 15:00 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| 15:00 | 15:30 | 30 min | Piazza del Popolo |  |  |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| | | 69 min | 🕐 **Tiempo libre** | antes de Terraza del Pincio · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 17:45 | 18:29 | 44 min | Terraza del Pincio | 🌅 atardecer 18:29 |  |
-| | | 78 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Tridente y Spagna | Via del Corso, Plaza Colonna | |
-| 19:00 | 19:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada», antes de cenar | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 10:00 | 10:20 | 20 min | Boca de la Verdad |  |  |
+| 10:35 | 10:55 | 20 min | Jardín de los Naranjos |  |  |
+| 11:00 | 11:10 | 10 min | Ojo de la Cerradura del Aventino |  |  |
+| 11:20 | 11:30 | 10 min | Pirámide Cestia | de paso |  |
+| 11:35 | 12:00 | 25 min | Cementerio Protestante |  |  |
+| 12:10 | 12:50 | 40 min | Testaccio |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 15:00 | 15:20 | 20 min | Isla Tiberina |  | 🚶 19 min desde la comida |
+| 15:30 | 16:00 | 30 min | Barrio Judío |  |  |
+| 16:05 | 16:15 | 10 min | Fuente de las Tortugas | de paso |  |
+| 16:25 | 16:35 | 10 min | Teatro de Marcelo | de paso |  |
+| 16:45 | 17:05 | 20 min | Plaza del Campidoglio |  |  |
+| 17:15 | 18:15 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
+| | | 86 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti | Iglesia del Gesù, Largo di Torre Argentina, Mercados de Trajano | |
+| 19:00 | 19:30 | 30 min | 🌙 Foro Romano desde el Campidoglio (noche) | paseo nocturno «El Foro a tus pies», antes de cenar | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
 #### Lo que quedó fuera
 
@@ -894,23 +904,24 @@ Del domingo 18 de julio al miércoles 21 de julio de 2027.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:30 | 30 min | Fontana de Trevi |  |  |
-| 09:00 | 09:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 09:25 | 09:35 | 10 min | Plaza Colonna | de paso |  |
-| 09:45 | 09:55 | 10 min | Via Condotti | de paso |  |
-| 10:05 | 10:35 | 30 min | Plaza de España |  |  |
-| 11:00 | 11:30 | 30 min | Piazza del Popolo |  |  |
-| | | 85 min | 🕐 **Tiempo libre** | antes de comer · Ara Pacis | |
+| 08:35 | 09:20 | 45 min | Desayuno romano |  |  |
+| 09:25 | 09:45 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 09:50 | 10:00 | 10 min | Plaza Colonna | de paso |  |
+| 10:10 | 10:20 | 10 min | Via Condotti | de paso |  |
+| 10:30 | 11:00 | 30 min | Plaza de España |  |  |
+| 11:30 | 12:00 | 30 min | Santa Maria del Popolo |  |  |
+| 12:05 | 12:35 | 30 min | Piazza del Popolo |  |  |
 | 13:00 | 14:30 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| | | 90 min | 🕐 **Tiempo libre** | antes de Santa Maria del Popolo · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 17:00 | 19:00 | 120 min | Galería Borghese |  | 🚶 22 min desde Santa Maria del Popolo |
-| 19:30 | 19:50 | 20 min | Terraza del Pincio |  | 🚶 17 min desde Galería Borghese |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
-| 21:30 | 22:15 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
+| 15:00 | 17:00 | 120 min | Galería Borghese |  | 🚶 19 min desde la comida |
+| 17:10 | 18:40 | 90 min | Parque de Villa Borghese |  |  |
+| | | 64 min | 🕐 **Tiempo libre** | antes de Terraza del Pincio · Pasear por Villa Borghese: el pulmón verde de Roma. | |
+| 19:55 | 20:40 | 45 min | Terraza del Pincio | 🌅 atardecer 20:40 |  |
+| 21:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 22:00 | 22:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
 
 #### Lo que quedó fuera
 
-- **No te dio tiempo**: Parque de Villa Borghese (No te dio tiempo).
+- **No te dio tiempo**: nada.
 - **Imprescindibles que no salen**: ninguno.
 
 - **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): 🟢 sí.
@@ -983,18 +994,19 @@ Del lunes 11 de octubre al jueves 14 de octubre de 2027.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:30 | 30 min | Fontana de Trevi |  |  |
-| 09:00 | 09:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 09:25 | 09:35 | 10 min | Plaza Colonna | de paso |  |
-| 09:45 | 09:55 | 10 min | Via Condotti | de paso |  |
-| 10:05 | 10:35 | 30 min | Plaza de España |  |  |
-| 11:00 | 11:30 | 30 min | Piazza del Popolo |  |  |
-| | | 85 min | 🕐 **Tiempo libre** | antes de comer · Ara Pacis | |
+| 08:35 | 09:20 | 45 min | Desayuno romano |  |  |
+| 09:25 | 09:45 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 09:50 | 10:00 | 10 min | Plaza Colonna | de paso |  |
+| 10:10 | 10:20 | 10 min | Via Condotti | de paso |  |
+| 10:30 | 11:00 | 30 min | Plaza de España |  |  |
+| 11:30 | 12:00 | 30 min | Santa Maria del Popolo |  |  |
+| 12:05 | 12:35 | 30 min | Piazza del Popolo |  |  |
 | 13:00 | 14:30 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| | | 90 min | 🕐 **Tiempo libre** | antes de Santa Maria del Popolo · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 17:00 | 19:00 | 120 min | Galería Borghese |  | 🚶 22 min desde Santa Maria del Popolo |
-| 19:30 | 19:50 | 20 min | Terraza del Pincio | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 17 min desde Galería Borghese |
-| 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 15:00 | 17:00 | 120 min | Galería Borghese |  | 🚶 19 min desde la comida |
+| | | 33 min | 🕐 **Tiempo libre** | antes de Terraza del Pincio · Pasear por Villa Borghese: el pulmón verde de Roma. | |
+| 17:50 | 18:31 | 41 min | Terraza del Pincio | 🌅 atardecer 18:31 | 🚶 17 min desde Galería Borghese |
+| | | 76 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Tridente y Spagna | Via del Corso | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada» | |
 
 #### Lo que quedó fuera
@@ -1062,7 +1074,7 @@ Del miércoles 13 de enero al sábado 16 de enero de 2027.
 
 - **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b
 - **Atardecer**: 17:05
-- 🚌 Pirámide Cestia → Iglesia de San Pietro in Vincoli: ~35 min andando · o en el metro B (Piramide → Cavour)
+- 🚌 Pirámide Cestia → Basílica de San Clemente: ~30 min andando · o en el metro B (Piramide → Colosseo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1071,14 +1083,15 @@ Del miércoles 13 de enero al sábado 16 de enero de 2027.
 | 10:50 | 11:10 | 20 min | Boca de la Verdad |  |  |
 | 11:25 | 11:45 | 20 min | Jardín de los Naranjos |  |  |
 | 11:50 | 12:00 | 10 min | Ojo de la Cerradura del Aventino |  |  |
-| | | 53 min | 🕐 **Tiempo libre** | antes de comer · Testaccio, Cementerio Protestante | |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 14:40 | 10 min | Pirámide Cestia | de paso |  |
-| 15:15 | 15:35 | 20 min | Iglesia de San Pietro in Vincoli |  | 🚶 35 min desde Pirámide Cestia |
-| 16:00 | 16:30 | 30 min | Basílica de Santa María la Mayor |  |  |
-| 16:40 | 17:20 | 40 min | Monti |  |  |
-| | | 159 min | 🕐 **Tarde libre** |  | |
-| 18:00 | 18:45 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado», antes de cenar | |
+| 12:30 | 14:00 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:00 | 14:10 | 10 min | Pirámide Cestia | de paso |  |
+| 14:30 | 15:15 | 45 min | Basílica de San Clemente |  | 🚶 31 min desde Pirámide Cestia |
+| 15:30 | 16:00 | 30 min | Basílica de San Juan de Letrán |  |  |
+| 16:30 | 17:00 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
+| 17:15 | 17:35 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 17:40 | 18:20 | 40 min | Monti |  |  |
+| | | 99 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
+| 18:30 | 19:15 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado», antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 
 #### Lo que quedó fuera
@@ -1143,9 +1156,9 @@ Del domingo 18 de abril al miércoles 21 de abril de 2027.
 
 ### Día 4 — miércoles 21 de abril · Roma — día 4
 
-- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b, tarde_b_san_clemente
+- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: tarde_b
 - **Atardecer**: 19:57
-- 🚌 Desde la comida → Basílica de San Clemente: ~35 min andando · o en el metro B (Piramide → Colosseo)
+- 🚌 Pirámide Cestia → Basílica de San Clemente: ~30 min andando · o en el metro B (Piramide → Colosseo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1154,12 +1167,15 @@ Del domingo 18 de abril al miércoles 21 de abril de 2027.
 | 10:50 | 11:10 | 20 min | Boca de la Verdad |  |  |
 | 11:25 | 11:45 | 20 min | Jardín de los Naranjos |  |  |
 | 11:50 | 12:00 | 10 min | Ojo de la Cerradura del Aventino |  |  |
-| | | 53 min | 🕐 **Tiempo libre** | antes de comer · Testaccio, Pirámide Cestia, Cementerio Protestante | |
+| | | 53 min | 🕐 **Tiempo libre** | antes de comer · Testaccio, Cementerio Protestante | |
 | 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:45 | 15:30 | 45 min | Basílica de San Clemente |  | 🚶 33 min desde la comida |
-| 15:45 | 16:15 | 30 min | Basílica de San Juan de Letrán |  |  |
-| 16:45 | 17:25 | 40 min | Monti |  | 🚶 25 min desde Basílica de San Juan de Letrán |
-| | | 154 min | 🕐 **Tarde libre** | Iglesia de San Pietro in Vincoli | |
+| 14:30 | 14:40 | 10 min | Pirámide Cestia | de paso |  |
+| 15:00 | 15:45 | 45 min | Basílica de San Clemente |  | 🚶 31 min desde Pirámide Cestia |
+| 16:00 | 16:30 | 30 min | Basílica de San Juan de Letrán |  |  |
+| 17:00 | 17:30 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
+| 17:45 | 18:05 | 20 min | Iglesia de San Pietro in Vincoli |  |  |
+| 18:10 | 18:50 | 40 min | Monti |  |  |
+| | | 69 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti |  | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 | 21:30 | 22:15 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado» | |
 
@@ -1188,8 +1204,8 @@ Del miércoles 14 de julio al sábado 17 de julio de 2027.
 | 11:35 | 11:50 | 15 min | Arco de Constantino |  |  |
 | 12:00 | 13:45 | 105 min | Foro Romano y Palatino |  |  |
 | 13:45 | 15:45 | | 🍝 **Comida**: La Taverna dei Fori Imperiali | en Monti y Fori Imperiali | |
-| 15:45 | 15:55 | 10 min | Plaza del Campidoglio | de paso |  |
-| 16:05 | 16:20 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 15:45 | 16:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 16:10 | 16:20 | 10 min | Plaza del Campidoglio | de paso |  |
 | 16:45 | 16:55 | 10 min | Barrio Judío | de paso |  |
 | 17:15 | 17:45 | 30 min | Panteón |  |  |
 | 17:55 | 18:15 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
@@ -1300,20 +1316,26 @@ Del sábado 16 de enero al martes 19 de enero de 2027.
 
 ### Día 4 — martes 19 de enero · Roma — día 4
 
-- **Día curado**: D4 · Trevi sin gente, el Popolo y la Borghese · variantes: invierno, tranquilo, con_free_tour
+- **Día curado**: D5 · Caracalla, el Aventino y Testaccio · variantes: invierno, tranquilo
 - **Atardecer**: 17:08
+- 🚌 Pirámide Cestia → Fuente de las Tortugas: ~30 min andando · o en bus o taxi
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 10:00 | 11:30 | 90 min | Parque de Villa Borghese |  |  |
-| | | 77 min | 🕐 **Tiempo libre** | antes de comer · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 13:00 | 15:00 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| 15:00 | 15:30 | 30 min | Piazza del Popolo |  |  |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 16:40 | 17:08 | 28 min | Terraza del Pincio | 🌅 atardecer 17:08 |  |
-| | | 159 min | 🕐 **Tarde libre** | Ara Pacis, Via del Corso, Plaza Colonna | |
-| 18:00 | 18:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada», antes de cenar | |
-| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
+| 10:00 | 11:00 | 60 min | Termas de Caracalla |  |  |
+| 11:30 | 11:40 | 10 min | Circo Máximo | de paso | 🚶 17 min desde Termas de Caracalla |
+| 11:50 | 12:10 | 20 min | Boca de la Verdad |  |  |
+| 12:25 | 12:45 | 20 min | Jardín de los Naranjos |  |  |
+| 12:50 | 13:00 | 10 min | Ojo de la Cerradura del Aventino |  |  |
+| 13:00 | 15:00 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 15:00 | 15:10 | 10 min | Pirámide Cestia | de paso |  |
+| 15:45 | 15:55 | 10 min | Fuente de las Tortugas | de paso | 🚶 32 min desde Pirámide Cestia |
+| 16:05 | 16:15 | 10 min | Teatro de Marcelo | de paso |  |
+| 16:25 | 16:45 | 20 min | Plaza del Campidoglio |  |  |
+| 16:55 | 17:55 | 60 min | Altar de la Patria | 🌅 atardecer 17:08 · se ve por fuera: Plaza Venecia |  |
+| | | 106 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti | Iglesia del Gesù, Largo di Torre Argentina, Mercados de Trajano | |
+| 18:00 | 18:30 | 30 min | 🌙 Foro Romano desde el Campidoglio (noche) | paseo nocturno «El Foro a tus pies», antes de cenar | |
+| 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
 #### Lo que quedó fuera
 
@@ -1354,31 +1376,29 @@ Del jueves 24 de diciembre al viernes 25 de diciembre de 2026.
 
 ### Día 2 — viernes 25 de diciembre · Roma — día 2
 
-- **Día curado**: D1 · Roma Antigua y el centro barroco
+- **Día curado**: D1 · Roma Antigua y el centro barroco · variantes: navidad, navidad_25
 - **Atardecer**: 16:44
+- 🚌 Altar de la Patria → Bendición Urbi et Orbi: ~35 min andando · o en bus o taxi
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
-| 08:00 | 08:20 | 20 min | Coliseo | de paso · se ve por fuera: Arco de Constantino · 🔒 El Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
-| 08:25 | 08:40 | 15 min | Arco de Constantino |  |  |
-| 08:50 | 09:05 | 15 min | Foro Romano y Palatino | de paso · 🔒 El Foro Romano está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
-| 09:15 | 09:35 | 20 min | Plaza del Campidoglio |  |  |
-| 09:45 | 10:00 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
-| | | 173 min | 🕐 **Tiempo libre** | antes de comer · Iglesia del Gesù, Museos Capitolinos, Plaza Venecia | |
-| 13:00 | 14:30 | | 🍝 **Comida**: Giggetto al Portico d'Ottavia | en Barrio Judío | |
-| 14:30 | 15:00 | 30 min | Barrio Judío |  |  |
-| 15:05 | 15:15 | 10 min | Fuente de las Tortugas | de paso |  |
-| 15:20 | 15:30 | 10 min | Largo di Torre Argentina | de paso |  |
-| 15:40 | 15:55 | 15 min | Panteón | de paso · 🔒 El Panteón está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
-| 16:00 | 16:10 | 10 min | Elefantino de Bernini | de paso |  |
-| 16:15 | 16:35 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
-| 16:45 | 17:05 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
-| 17:10 | 17:40 | 30 min | Piazza Navona |  |  |
-| 17:50 | 18:00 | 10 min | Campo de' Fiori | de paso |  |
-| | | 115 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Plaza Farnese, Plaza Trilussa | |
+| 10:00 | 10:20 | 20 min | Coliseo | de paso · se ve por fuera: Arco de Constantino · 🔒 El Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
+| 10:30 | 10:45 | 15 min | Foro Romano y Palatino | de paso · 🔒 El Foro Romano está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
+| 10:55 | 11:10 | 15 min | Altar de la Patria | de paso · se ve por fuera: Plaza Venecia |  |
+| 12:00 | 12:45 | 45 min | Bendición Urbi et Orbi |  | 🚶 37 min desde Altar de la Patria |
+| 13:00 | 14:30 | | 🍝 **Comida**: Borghiciana Pastificio Artigianale | en Vaticano y Borgo | |
+| 14:30 | 15:00 | 30 min | Piazza Navona |  | 🚶 16 min desde la comida |
+| 15:05 | 15:25 | 20 min | Iglesia de San Luigi dei Francesi |  |  |
+| 15:30 | 15:45 | 15 min | Panteón | de paso · 🔒 El Panteón está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual. |  |
+| 15:50 | 16:00 | 10 min | Elefantino de Bernini | de paso |  |
+| 16:05 | 16:25 | 20 min | Iglesia de Santa Maria sopra Minerva |  |  |
+| 16:30 | 16:40 | 10 min | Largo di Torre Argentina | de paso |  |
+| 16:50 | 17:20 | 30 min | Barrio Judío |  |  |
+| 17:25 | 17:35 | 10 min | Fuente de las Tortugas | de paso |  |
+| | | 135 min | 🕐 **Tarde libre** | Campo de' Fiori, Iglesia del Gesù, Plaza del Campidoglio | |
+| 18:00 | 18:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «El centro iluminado», antes de cenar | |
+| 18:55 | 19:20 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna, antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «El centro iluminado» | |
-| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | experiencia nocturna | |
 
 #### Lo que quedó fuera
 
@@ -1428,17 +1448,19 @@ Del jueves 31 de diciembre al sábado 2 de enero de 2026.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 08:00 | 08:30 | 30 min | Fontana de Trevi |  |  |
-| 09:00 | 09:20 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
-| 09:25 | 09:35 | 10 min | Plaza Colonna | de paso |  |
-| 09:45 | 09:55 | 10 min | Via Condotti | de paso |  |
-| 10:05 | 10:35 | 30 min | Plaza de España |  |  |
-| 11:00 | 11:30 | 30 min | Piazza del Popolo |  |  |
-| | | 85 min | 🕐 **Tiempo libre** | antes de comer · Ara Pacis | |
+| 08:35 | 09:05 | 30 min | Desayuno romano |  |  |
+| 09:10 | 09:30 | 20 min | Iglesia de San Ignacio de Loyola |  |  |
+| 09:35 | 09:45 | 10 min | Plaza Colonna | de paso |  |
+| 09:55 | 10:05 | 10 min | Via Condotti | de paso |  |
+| 10:15 | 10:45 | 30 min | Plaza de España |  |  |
+| 11:00 | 11:30 | 30 min | Santa Maria del Popolo |  |  |
+| 11:35 | 12:05 | 30 min | Piazza del Popolo |  |  |
+| | | 50 min | 🕐 **Tiempo libre** | antes de comer · Pasear por Villa Borghese: el pulmón verde de Roma. | |
 | 13:00 | 14:30 | | 🍝 **Comida**: Edy | en Tridente y Spagna | |
-| | | 90 min | 🕐 **Tiempo libre** | antes de Santa Maria del Popolo · Pasear por Villa Borghese: el pulmón verde de Roma. | |
-| 16:00 | 16:30 | 30 min | Santa Maria del Popolo |  |  |
-| 16:40 | 17:00 | 20 min | Terraza del Pincio | 🌅 atardecer 16:49 |  |
-| | | 167 min | 🕐 **Tarde libre** | Ara Pacis, Via del Corso | |
+| 14:30 | 14:40 | 10 min | Parque de Villa Borghese | de paso |  |
+| | | 74 min | 🕐 **Tiempo libre** | antes de Terraza del Pincio · Pasear por Villa Borghese: el pulmón verde de Roma. | |
+| 16:05 | 16:49 | 44 min | Terraza del Pincio | 🌅 atardecer 16:49 |  |
+| | | 178 min | 🕐 **Tarde libre** | Ara Pacis, Via del Corso | |
 | 17:30 | 18:15 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La escalinata iluminada», antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 
@@ -1544,23 +1566,23 @@ Paradas por día (sin lo de paso ni las nocturnas; "exc." es el día de excursi�
 | [1](#viaje-1) | 2 · completo | 9 · 9 | 0 | 0 | 0 | — | — | — | — | 0 |
 | [2](#viaje-2) | 2 · completo | 7 · 9 | 0 | 0 | 0 | — | — | ok | — | 0 |
 | [3](#viaje-3) | 2 · completo · FT | 4 · 10 | 0 | 0 | 0 | — | — | — | — | 0 |
-| [4](#viaje-4) | 2 · completo · FT | 10 · 4 | 0 | 0 | 0 | — | — | Termas de Caracalla falta, Basílica de San Clemente falta | — | 0 |
-| [5](#viaje-5) | 2 · tranquilo | 5 · 6 | 0 | 0 | 0 | — | — | ok | Altar de la Patria | 0 |
+| [4](#viaje-4) | 2 · completo · FT | 6 · 4 | 0 | 0 | 0 | — | — | Basílica de San Clemente falta | — | 🔴 1 |
+| [5](#viaje-5) | 2 · tranquilo | 5 · 6 | 0 | 1 | 0 | — | — | ok | — | 0 |
 | [6](#viaje-6) | 2 · tranquilo · FT | 4 · 6 | 0 | 1 | 0 | — | — | — | — | 0 |
-| [7](#viaje-7) | 3 · completo | 9 · 9 · 7 | 0 | 0 | 0 | — | — | — | — | 0 |
-| [8](#viaje-8) | 3 · completo | 9 · 10 · 7 | 0 | 0 | 0 | — | — | ok | — | 0 |
-| [9](#viaje-9) | 3 · completo · FT | 4 · 10 · 8 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
-| [10](#viaje-10) | 3 · completo · FT | 9 · 4 · 7 | 0 | 0 | 0 | — | — | ok | — | 🔴 1 |
+| [7](#viaje-7) | 3 · completo | 9 · 9 · 9 | 0 | 0 | 0 | — | — | — | — | 0 |
+| [8](#viaje-8) | 3 · completo | 9 · 10 · 9 | 0 | 0 | 0 | — | — | ok | — | 0 |
+| [9](#viaje-9) | 3 · completo · FT | 4 · 10 · 10 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
+| [10](#viaje-10) | 3 · completo · FT | 9 · 4 · 9 | 0 | 0 | 0 | — | — | ok | — | 🔴 1 |
 | [11](#viaje-11) | 3 · tranquilo | 5 · 6 · 6 | 0 | 0 | 0 | — | — | ok | — | 0 |
-| [12](#viaje-12) | 3 · tranquilo · FT | 4 · 6 · 4 | 0 | 1 | 0 | — | — | — | — | 0 |
-| [13](#viaje-13) | 4 · completo | 9 · 9 · exc. · 7 | 0 | 0 | 0 | — | — | — | — | 0 |
-| [14](#viaje-14) | 4 · completo | 9 · 9 · exc. · 7 | 0 | 0 | 0 | — | — | ok | — | 0 |
-| [15](#viaje-15) | 4 · completo · FT | 4 · 10 · exc. · 7 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
-| [16](#viaje-16) | 4 · completo · FT | 10 · 4 · exc. · 7 | 0 | 0 | 0 | — | — | ok | — | 🔴 1 |
+| [12](#viaje-12) | 3 · tranquilo · FT | 4 · 6 · 9 | 0 | 1 | 0 | — | — | — | — | 0 |
+| [13](#viaje-13) | 4 · completo | 9 · 9 · exc. · 9 | 0 | 0 | 0 | — | — | — | — | 0 |
+| [14](#viaje-14) | 4 · completo | 9 · 9 · exc. · 8 | 0 | 0 | 0 | — | — | ok | — | 0 |
+| [15](#viaje-15) | 4 · completo · FT | 4 · 10 · exc. · 9 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
+| [16](#viaje-16) | 4 · completo · FT | 10 · 4 · exc. · 9 | 0 | 0 | 0 | — | — | ok | — | 0 |
 | [17](#viaje-17) | 4 · tranquilo | 6 · 6 · exc. · 6 | 0 | 0 | 0 | — | — | ok | — | 0 |
-| [18](#viaje-18) | 4 · tranquilo · FT | 4 · 6 · exc. · 4 | 0 | 1 | 0 | — | — | — | — | 0 |
-| [19](#viaje-19) | 2 · completo | 9 · 6 | 0 | 0 | 0 | — | — | — | — | 🔴 2 |
-| [20](#viaje-20) | 3 · completo | 9 · 6 · 9 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
+| [18](#viaje-18) | 4 · tranquilo · FT | 4 · 6 · exc. · 6 | 0 | 1 | 0 | — | — | — | — | 0 |
+| [19](#viaje-19) | 2 · completo | 9 · 5 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
+| [20](#viaje-20) | 3 · completo | 9 · 7 · 9 | 0 | 0 | 0 | — | — | — | — | 🔴 1 |
 | [21](#viaje-21) | 2 · completo | 8 · 9 | 0 | 0 | 0 | — | — | — | — | 0 |
 
 ## Lo que parece raro (para decidir; no se ha arreglado nada)
@@ -1569,23 +1591,26 @@ Sacado de las rutas de arriba con estos criterios: traslados de más de 25 min s
 
 ### Patrones que se repiten
 
-- **Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)** — 6 veces: viaje 4 día 1 (Mirador del Janículo a las 19:15); viaje 5 día 1 (Mirador del Janículo a las 19:15); viaje 5 día 2 (Terraza del Pincio a las 19:30); viaje 9 día 2 (Mirador del Janículo a las 19:15); viaje 14 día 2 (Mirador del Janículo a las 19:15); viaje 14 día 4 (Terraza del Pincio a las 19:30).
-- **Plaza de España: de día y de noche el mismo día, excepción aprobada del día curado** — 9 veces: viaje 7 día 3; viaje 8 día 3; viaje 11 día 2; viaje 12 día 3; viaje 13 día 4; viaje 14 día 4; viaje 17 día 4; viaje 18 día 4; viaje 20 día 2.
+- **Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)** — 4 veces: viaje 5 día 1 (Mirador del Janículo a las 19:15); viaje 5 día 2 (Terraza del Pincio a las 19:15); viaje 9 día 2 (Mirador del Janículo a las 19:15); viaje 14 día 2 (Mirador del Janículo a las 19:15).
+- **Plaza de España: de día y de noche el mismo día, excepción aprobada del día curado** — 7 veces: viaje 7 día 3; viaje 8 día 3; viaje 11 día 2; viaje 13 día 4; viaje 14 día 4; viaje 17 día 4; viaje 20 día 2.
 - **Imprescindible cerrado ese día (se enseña por fuera o se avisa)** — 4 veces: viaje 19 día 2 (Coliseo); viaje 19 día 2 (Foro Romano y Palatino); viaje 19 día 2 (Panteón); viaje 21 día 1 (Plaza de San Pedro).
 
 ### Caso a caso
 
-- **Viaje 4** (2 d, completo, octubre): pool: Termas de Caracalla falta, Basílica de San Clemente falta.
-- **Viaje 5** (2 d, tranquilo, enero): imprescindibles que no salen: Altar de la Patria.
+- **Viaje 4, día 1** (2 d, completo, octubre): 🔴 tiempo libre de más de 90 min en completo: 136 min de tarde libre antes de cenar.
+- **Viaje 4, día 1** (2 d, completo, octubre): tarde libre de 136 min antes de cenar.
+- **Viaje 4** (2 d, completo, octubre): pool: Basílica de San Clemente falta.
+- **Viaje 5, día 2** (2 d, tranquilo, enero): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver la Galería Borghese".
 - **Viaje 6, día 1** (2 d, tranquilo, julio): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver la Basílica de San Pedro".
-- **Viaje 9, día 3** (3 d, completo, octubre): 🔴 tiempo libre de más de 90 min en completo: 174 min de tarde libre antes de cenar.
-- **Viaje 10, día 3** (3 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 154 min de tarde libre antes de cenar.
+- **Viaje 9, día 3** (3 d, completo, octubre): 🔴 tiempo libre de más de 90 min en completo: 99 min de aperitivo antes de cenar.
+- **Viaje 10, día 3** (3 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 99 min de aperitivo antes de cenar.
 - **Viaje 12, día 1** (3 d, tranquilo, octubre): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver la Basílica de San Pedro".
-- **Viaje 15, día 4** (4 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 159 min de tarde libre antes de cenar.
-- **Viaje 16, día 4** (4 d, completo, abril): 🔴 tiempo libre de más de 90 min en completo: 154 min de tarde libre antes de cenar.
+- **Viaje 12, día 3** (3 d, tranquilo, octubre): Isla Tiberina se repite (ya se visitó el día 2).
+- **Viaje 12, día 3** (3 d, tranquilo, octubre): Barrio Judío se repite (ya se visitó el día 2).
+- **Viaje 15, día 4** (4 d, completo, enero): 🔴 tiempo libre de más de 90 min en completo: 99 min de aperitivo antes de cenar.
 - **Viaje 18, día 1** (4 d, tranquilo, enero): aviso del día: "Hoy la comida es más corta para que te dé tiempo a ver la Basílica de San Pedro".
-- **Viaje 19, día 2** (2 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 173 min antes de comer.
-- **Viaje 19, día 2** (2 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 115 min de aperitivo antes de cenar.
-- **Viaje 20, día 2** (3 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 167 min de tarde libre antes de cenar.
-- **Viaje 20, día 2** (3 d, completo, diciembre): tarde libre de 167 min antes de cenar.
+- **Viaje 19, día 2** (2 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 135 min de tarde libre antes de cenar.
+- **Viaje 20, día 2** (3 d, completo, diciembre): 🔴 tiempo libre de más de 90 min en completo: 178 min de tarde libre antes de cenar.
+- **Viaje 20, día 2** (3 d, completo, diciembre): el día acaba a las 16:49.
+- **Viaje 20, día 2** (3 d, completo, diciembre): tarde libre de 178 min antes de cenar.
 

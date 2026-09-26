@@ -127,6 +127,9 @@ de zona.
 El motor v3 de Roma monta los viajes con días enteros curados (`curated_days`, docs/DIAS_CURADOS_ROMA.md) en
 `shared/routeEngine/curatedTrip.js`. El de mañanas y tardes (`blockTrip.js`) sigue ahí: `ROUTE_V3_PLANNER=bloques`.
 Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CAMBIOS.md (qué cambia frente a bloques).
+v4 aplicada (2026-09-26): D4 con desayuno, Santa Maria del Popolo por la mañana y turno de la Galería por el
+atardecer; D5 tarde B con la ruta completa de las basílicas; D5 tercer día con Free Tour sin Galería; D1 "Navidad";
+Altar de paso siempre; pool de 2 días con Free Tour (reglas 213-218).
 v3 aplicada (2026-09-26): D2 con tiempo libre en Trastevere y "Museos cerrados", D4 nueva con vuelta por Free Tour,
 D5 sin Caracalla / tarde B por Monti o San Clemente, noche de 2 días con el centro; reglas 206-212 de INVARIANTES.
 Pendiente: la matriz de tiempos no tiene aún Testaccio ni los dos restaurantes del Ghetto (tramos estimados).

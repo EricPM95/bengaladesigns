@@ -1028,3 +1028,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     (`centro_dos_dias`, hasta 4).
 212. **Revisión (sección 6)**: en completo, tiempo libre de más de 90 min en rojo salvo antes de un atardecer de
     verano; una joya vista de noche cuenta como vista ese día (revisión y semáforo).
+213. **Días curados v4** (DIAS_CURADOS_ROMA.md v4). D4: "Desayuno romano" es una parada con nombre
+    (`curated_breaks`, fuera de `places`), Santa Maria del Popolo con `antes_de: '12:00'` (`latest_end`: nunca se
+    pasa a la tarde; se entra nada más llegar a la plaza) y la Galería en el turno de las 15:00, o en invierno en el
+    de las 13:00 con comida a las 12:00 (`comida.hora`/`bloque`, solo `si_lleva` la Galería). El domingo sigue siendo
+    la excepción: la iglesia solo abre de 16:30 a 18:00.
+214. **Tarde B de D5**: la ruta completa de las basílicas (San Clemente → Letrán → Santa María la Mayor → San Pietro
+    in Vincoli → Monti), con o sin San Clemente en el pool. El metro hasta San Clemente cuenta como 20 min
+    (`traslado_min`), y la comida se adelanta a las 12:30 (`comida.temprana`) solo si así no se pierde nada.
+215. **Tercer día con Free Tour y sin Galería** (ni pool ni Arte): D5; en 4+ días, D5 antes que D4.
+216. **Navidad** (D1 el 25 de diciembre o el 1 de enero, `si_fecha`): desde las 10:00, el Coliseo y el Foro por
+    fuera (la `hora` vale aunque la parada vaya por fuera por cierre). El 25, la bendición Urbi et Orbi a las 12:00
+    (`fija`, parada con nombre) y la tarde desde el Vaticano. El 1 de enero, el Ghetto antes de comer.
+217. **El Altar de la Patria de paso** va en la mañana de D1 tranquilo (detrás del Foro), así ninguna variante de
+    tarde lo quita. La comida acortada como último recurso vale también para no perder un lugar del pool.
+218. **Pool en 2 días con Free Tour**: el primer lugar cambia la tarde de D1-FT (Caracalla: Circo Máximo → Caracalla
+    → Boca de la Verdad → Naranjos); el segundo va a "No te dio tiempo" con el motivo (`pool_afternoon_taken`). El
+    mirador del atardecer que a esa hora ya cerró (Naranjos en otoño) se visita mientras está abierto.

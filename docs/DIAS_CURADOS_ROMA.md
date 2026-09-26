@@ -49,12 +49,12 @@ Marcas usadas abajo:
 
 **Noche:** 🌙 *La Roma de las fuentes*: Fontana de Trevi → Plaza de España iluminadas (ver 2b).
 
-**Tranquilo:** Coliseo a las 10:00, Foro hasta las 13:45 aprox. y comida en Monti o los Foros (La Taverna dei Fori Imperiali, La Boccaccia). Por la tarde: Campidoglio y Ghetto *(de paso)* → Panteón → San Luigi → Navona. Noche: solo Trevi. **No hace falta madrugar ni en invierno**: el Foro se visita antes de su última entrada (15:30).
+**Tranquilo:** el Altar de la Patria *(de paso)* nunca se quita, en ninguna variante (está de camino, 5 min del Foro). Coliseo a las 10:00, Foro hasta las 13:45 aprox. y comida en Monti o los Foros (La Taverna dei Fori Imperiali, La Boccaccia). Por la tarde: Campidoglio y Ghetto *(de paso)* → Panteón → San Luigi → Navona. Noche: solo Trevi. **No hace falta madrugar ni en invierno**: el Foro se visita antes de su última entrada (15:30).
 
 **Invierno:** igual. A las 17:00 ya es de noche, y Navona al anochecer está preciosa.
 
 **Cierres:**
-- 25 dic y 1 ene: Coliseo y Foro cerrados. Si no hay otro día para este, van por fuera (Via dei Fori Imperiali) con su aviso.
+- 25 dic y 1 ene: Coliseo y Foro cerrados. Si no hay otro día para este, se usa la **variante "Navidad"**: se empieza a las 10:00, con el Coliseo, el Foro (desde Via dei Fori Imperiali) y el Campidoglio por fuera, con su aviso. El 25 de diciembre, a las 12:00, la bendición *Urbi et Orbi* del Papa en la Plaza de San Pedro, como parada con nombre (opcional). Por la tarde, el centro barroco y los belenes de las iglesias (los de Piazza Navona cuando estén en los datos de temporada). Sin horas muertas.
 - 1 ene, 15 ago y 25 dic: Panteón cerrado. Va por fuera y queda la plaza de noche.
 
 ---
@@ -160,18 +160,19 @@ Marcas usadas abajo:
 
 **Mañana** (un paseo sin prisa del centro al Popolo, sin huecos antes de comer)
 1. Fontana de Trevi a las 08:00, sin gente
-2. Iglesia de San Ignacio de Loyola (la cúpula falsa; abre a las 09:00) *(completo)*
-3. Plaza Colonna *(de paso)*
-4. Via Condotti *(de paso)*
-5. Plaza de España y la escalinata
-6. Ara Pacis 💶 *(Arte, 5+ días)*
-7. Piazza del Popolo (por Via del Babuino)
-8. Santa Maria del Popolo (Caravaggio; de 10:30 a 12:00)
+2. ☕ **Desayuno romano** (30-45 min, parada con nombre, no hueco): cappuccino y cornetto de pie en la barra, como un local *(completo)*
+3. Iglesia de San Ignacio de Loyola (la cúpula falsa; abre a las 09:00) *(completo)*
+4. Plaza Colonna *(de paso)*
+5. Via Condotti *(de paso)*
+6. Plaza de España y la escalinata
+7. Ara Pacis 💶 *(Arte, 5+ días)*
+8. Piazza del Popolo (por Via del Babuino)
+9. Santa Maria del Popolo (Caravaggio). **Siempre por la mañana, antes de las 12:00**; nunca se pasa a la tarde
 
 **Comida:** Tridente o Spagna (Edy, Poldo e Gianna Osteria, Sgarro Bistrot).
 
 **Tarde**
-1. Galería Borghese 💶 (turno de las 15:00, con reserva). **Solo si está en el pool o con Arte** (dentro del tope de museos de pago)
+1. Galería Borghese 💶 (con reserva). **Solo si está en el pool o con Arte** (dentro del tope de museos de pago). **El turno se elige contando hacia atrás desde el atardecer:** en invierno el de las 13:00 (comida temprana, a las 12:00), el resto del año el de las 15:00. Nunca el de las 17:00, porque se come el parque y el atardecer
 2. Parque de Villa Borghese: el lago y el templete. Si no hay Galería, este paseo es el protagonista de la tarde (Naturaleza: barca o bici)
 3. Terraza del Pincio 🌅
 4. 🌙 *La escalinata iluminada*: bajar por Trinità dei Monti a la Plaza de España de noche
@@ -180,7 +181,7 @@ Marcas usadas abajo:
 
 **Invierno:** Galería en el turno de las 13:00, con la comida antes o después. El parque cierra al anochecer, así que el Pincio va a las 16:45-17:05.
 
-**Con Free Tour:** el tour ya enseñó Trevi, San Ignacio y la Plaza de España, así que el día se da la vuelta. Mañana: Galería Borghese 💶 (turno de las 09:00 u 11:00; si no hay Galería, paseo largo por el parque: lago, barca o bici) → Parque de Villa Borghese → comida junto a Piazza del Popolo. Tarde: Piazza del Popolo → Santa Maria del Popolo (desde las 16:00) → tiempo libre en el Tridente → Terraza del Pincio 🌅 → escalinata de noche. **Trevi y la Plaza de España de día no salen este día.**
+**Con Free Tour y sin Galería** (ni pool ni Arte): D4 se queda sin contenido, así que el tercer día es D5. **Con Free Tour y con Galería:** el tour ya enseñó Trevi, San Ignacio y la Plaza de España, así que el día se da la vuelta. Mañana: Galería Borghese 💶 (turno de las 09:00 u 11:00; si no hay Galería, paseo largo por el parque: lago, barca o bici) → Parque de Villa Borghese → comida junto a Piazza del Popolo. Tarde: Piazza del Popolo → Santa Maria del Popolo (desde las 16:00) → tiempo libre en el Tridente → Terraza del Pincio 🌅 → escalinata de noche. **Trevi y la Plaza de España de día no salen este día.**
 
 **Tranquilo:** Trevi a las 10:00 (con aviso: "a esta hora ya hay gente; si puedes, pásate temprano"). Plaza de España → Popolo → comida → Galería o parque → Pincio 🌅.
 
@@ -213,13 +214,13 @@ Marcas usadas abajo:
 **Cena (tarde A):** Monti.
 **Noche (tarde A):** 🌙 *El Foro a tus pies*: Foro Romano desde el Campidoglio.
 
-**Tarde B**, si el Campidoglio sale en otro día del viaje (viajes con Free Tour). **Se decide mirando el viaje entero, no solo los días anteriores.**
-1. Pirámide Cestia *(de paso)* → metro B de Piramide a Cavour (10 min)
-2. Iglesia de San Pietro in Vincoli (el Moisés; reabre a las 15:00)
-3. Basílica de Santa María la Mayor
-4. Monti, callejear y aperitivo
-
-Si **San Clemente** está en el pool: después de comer, metro a Colosseo → Basílica de San Clemente (desde las 14:00) → Basílica de San Juan de Letrán → vuelta por el Celio → Monti.
+**Tarde B**, si el Campidoglio sale en otro día del viaje (viajes con Free Tour). **Se decide mirando el viaje entero, no solo los días anteriores.** Es la ruta de las basílicas, una tarde completa y sin huecos:
+1. Pirámide Cestia *(de paso)* → metro B de Piramide a Colosseo (8 min)
+2. Basílica de San Clemente (desde las 14:00; las tres iglesias superpuestas)
+3. Basílica de San Juan de Letrán
+4. Basílica de Santa María la Mayor (15 min andando)
+5. Iglesia de San Pietro in Vincoli (el Moisés; cierra a las 18:00)
+6. Monti, callejear y aperitivo
 
 **Cena (tarde B):** Monti.
 **Noche (tarde B):** 🌙 *El Coliseo iluminado* (10 min desde Monti).

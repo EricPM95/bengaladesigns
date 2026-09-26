@@ -113,12 +113,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const rule = poolRules[name]
     return rule?.dia && (rule.min_dias_ciudad ?? 0) <= cityDays.length ? rule.dia : null
   }
+  // Con Free Tour y sin Galería (ni pool ni Arte), D4 se queda sin contenido: el tercer día es D5.
+  const tourSinGaleria = hasFreeTour && !inPool('Galería Borghese') && !selected.includes('arte_museos')
   if (cityDays.length === 3) {
     // El tercer día: lo decide el pool (el primero que active D4 o D5) y, si no, la experiencia.
     const byPool = poolNames.map(extraDayOf).find((id) => id === 'D4' || id === 'D5')
-    list.push(byPool ?? (barriosSinArte ? rules.tercer_dia?.barrios_sin_arte ?? 'D5' : rules.tercer_dia?.resto ?? 'D4'))
+    list.push(byPool ?? (barriosSinArte || tourSinGaleria ? rules.tercer_dia?.barrios_sin_arte ?? 'D5' : rules.tercer_dia?.resto ?? 'D4'))
   } else if (cityDays.length >= 4) {
-    list.push(...(barriosSinArte ? ['D5', 'D4'] : ['D4', 'D5']))
+    list.push(...(barriosSinArte || tourSinGaleria ? ['D5', 'D4'] : ['D4', 'D5']))
   }
   if (cityDays.length >= 5) list.push(rules.cinco_dias ?? 'D6')
   if (cityDays.length >= 6) list.push(rules.seis_dias ?? 'D7')
@@ -133,20 +135,30 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (replaceable) list.splice(list.indexOf(replaceable), 1, id)
     }
   }
-  // Variantes de pool dentro de D1 (2 días, o el segundo lugar que no tiene día propio): una tarde como mucho.
+  // Variantes de pool dentro de D1, o de D1-FT con Free Tour (2 días, o el segundo lugar que no tiene día propio):
+  // una tarde como mucho. En 2 días, el lugar del pool que se queda sin tarde (ya es de otro, o su variante no
+  // existe en ese día) va a "No te dio tiempo" con el motivo, no a la regla general.
+  const poolDay = list.includes('D1') ? 'D1' : list.includes('D1-FT') ? 'D1-FT' : null
   const poolVariants = new Map()
+  const poolBlocked = new Map()
+  const variantOwner = new Map()
   for (const name of poolNames) {
     const rule = poolRules[name]
-    if (!rule) continue
+    if (!rule || !poolDay) continue
     const ownDay = extraDayOf(name)
     if (ownDay && list.includes(ownDay)) continue
-    const variant = (!ownDay || !list.includes(ownDay)) && (rule.dos_dias || rule.antes) ? rule.dos_dias ?? rule.antes : null
-    if (!variant || !list.includes('D1')) continue
-    const current = poolVariants.get('D1') ?? []
-    const variantDef = curatedById.get('D1')?.variantes?.[variant]
+    const variant = rule.dos_dias || rule.antes ? rule.dos_dias ?? rule.antes : null
+    if (!variant) continue
+    const current = poolVariants.get(poolDay) ?? []
+    const variantDef = curatedById.get(poolDay)?.variantes?.[variant]
     // Solo una variante que cambie la tarde (la Borghese o Caracalla); San Clemente solo añade al principio.
-    if (variantDef?.tarde && current.some((other) => curatedById.get('D1')?.variantes?.[other]?.tarde)) continue
-    poolVariants.set('D1', [...current, variant])
+    const taker = current.find((other) => curatedById.get(poolDay)?.variantes?.[other]?.tarde)
+    if (!variantDef || (variantDef.tarde && taker)) {
+      if (cityDays.length <= 2 && taker) poolBlocked.set(name, variantOwner.get(taker))
+      continue
+    }
+    variantOwner.set(variant, name)
+    poolVariants.set(poolDay, [...current, variant])
   }
   // Si hay más días de ciudad que días elegidos (viajes largos), los que queden sin usar.
   for (const id of ['D4', 'D5', 'D6', 'D7']) if (list.length < cityDays.length && !list.includes(id) && curatedById.has(id)) list.push(id)
@@ -203,6 +215,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.experiencia == null || selected.includes(cond.experiencia)) &&
       (cond.pool == null || (cond.pool ? inPool(stop.lugar) : !inPool(stop.lugar))) &&
       (cond.min_dias == null || contentDays >= cond.min_dias) &&
+      (cond.fecha == null || (Boolean(day) && hoursOf(day).dateIso?.slice(5) === cond.fecha)) &&
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
     )
   }
@@ -244,10 +257,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       apply(weekday)
       if (tranquilo) apply(`tranquilo_${weekday}`)
     }
+    // Las de fecha (`si_fecha`: D1 el 25 de diciembre o el 1 de enero, "Navidad"), en el orden del JSON.
+    const mmdd = hoursOf(day).dateIso?.slice(5) ?? null
+    for (const [name, variant] of Object.entries(cfg.variantes ?? {})) if (mmdd && (variant.si_fecha ?? []).includes(mmdd)) apply(name)
     // "Museos cerrados" (D2 en domingo sin alternativa o en festivo): el día entero sin horas muertas.
     for (const [name, variant] of Object.entries(cfg.variantes ?? {})) if (variant.si_cerrado && closedThatDay(variant.si_cerrado, day)) apply(name)
     // Las de pool de D1 (2 días). San Clemente va a la tarde B de D5 si el viaje la lleva.
-    for (const variant of index === order.indexOf('D1') ? poolVariants.get('D1') ?? [] : []) {
+    for (const variant of poolDay && index === order.indexOf(poolDay) ? poolVariants.get(poolDay) ?? [] : []) {
       if (variant === poolRules['Basílica de San Clemente']?.antes && order.includes('D5')) continue
       apply(variant)
     }
@@ -306,6 +322,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
   }
 
+  let lunchOverride = null
+  const toMin = (hhmm) => {
+    const [h, m] = String(hhmm).split(':').map(Number)
+    return h * 60 + m
+  }
   // ── 5. Horas ────────────────────────────────────────────────────────────────────────────────
   const allLunchSpots = lunchSpots(destData)
   const dinnerOptions = dinnerZones(destData)
@@ -328,7 +349,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
 
   function unitOf(stop, slot, index, dayId, day) {
     const hours = hoursOf(day)
-    const source = stop.lugar === tour?.name ? { ...tour, isFreeTour: true, duration_minutes: tour.duration_minutes ?? 150 } : placeByName.get(stop.lugar)
+    // Las pausas con nombre del día curado (`curated_breaks`: el desayuno romano de D4) son paradas, no huecos.
+    const pause = (destData.curated_breaks ?? []).find((item) => item.name === stop.lugar)
+    const source = stop.lugar === tour?.name ? { ...tour, isFreeTour: true, duration_minutes: tour.duration_minutes ?? 150 } : pause ? { ...pause, isBreak: true, level: 3, type: 'exterior', is_free_access: true } : placeByName.get(stop.lugar)
     if (!source) return null
     let role = stop.rol ?? 'parada'
     let ready = { ...source }
@@ -353,8 +376,17 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
     } else if (role === 'atardecer' && hours.sunset != null) ready = { ...ready, sunset: hours.sunset }
     // La hora del día curado (Coliseo 08:30, Trevi 08:00, la Galería a las 15:00): como pronto a esa hora.
-    if (stop.hora && role !== 'de_paso') ready = { ...ready, not_before: stop.hora }
+    if (stop.hora && (stop.rol ?? 'parada') !== 'de_paso') ready = { ...ready, not_before: stop.hora }
+    // `fija`: a esa hora exacta (la bendición Urbi et Orbi, a las 12:00).
+    if (stop.fija && stop.hora) ready = { ...ready, fixed_start: stop.hora }
+    // `antes_de`: la visita tiene que haber acabado a esa hora (Santa Maria del Popolo, antes de las 12:00: nunca
+    // se pasa a la tarde).
+    if (stop.antes_de && role !== 'de_paso') ready = { ...ready, latest_end: stop.antes_de }
     if (stop.no_calle) ready = { ...ready, notStreet: true }
+    if (stop.minutos) ready = { ...ready, duration_minutes: stop.minutos }
+    // `traslado_min`: se llega en transporte y el tramo no pasa de esos minutos (el metro B de Piramide a Colosseo
+    // en la tarde B de D5, 20 min puerta a puerta frente a 30 andando).
+    if (stop.traslado_min) ready = { ...ready, transitMinutes: stop.traslado_min }
     if (stop.aviso) ready = { ...ready, stopNotice: stop.aviso }
     if (stop.nota) ready = { ...ready, curatedNote: stop.nota }
     const [scheduled] = placesForScheduler({ id: stop.lugar, places: [ready] }, destData, tour?.default_time ?? null)
@@ -385,11 +417,30 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   /** Programa un día: madrugón solo por un nivel 1 (tranquilo), comida acortada como último recurso. */
   function schedule(day, units, dinnerPoint, spots, morning) {
     const hours = hoursOf(day)
+    // La hora de comer del día, si la trae (`comida.hora`, `comida.bloque`: D4 en invierno come a las 12:00 para
+    // llegar al turno de las 13:00 de la Galería).
+    // `comida.temprana`: solo si así no se pierde nada del día (la tarde B de D5 en invierno llega al Moisés).
+    const lunch = lunchOverride
+    let lunchAt = lunch?.hora ?? null
+    const withLunch = (dayMode) => (lunchAt ? { ...dayMode, lunchWindow: [toMin(lunchAt), toMin(lunchAt) + 15], ...(lunch?.bloque ? { lunchBlockMinutes: lunch.bloque, mealMinutes: Math.min(dayMode.mealMinutes, lunch.bloque - 15) } : {}) } : dayMode)
+    // Los tramos que el día hace en transporte (`traslado_min`): como mucho esos minutos.
+    const travelFor = (list) => {
+      const transitTo = new Map(list.flatMap((unit) => unit.places.filter((place) => place.transitMinutes).map((place) => [String(place.coordinates), place.transitMinutes])))
+      if (transitTo.size === 0) return travel
+      return {
+        ...travel,
+        leg: (from, to, travelMode) => {
+          const base = travel.leg(from, to, travelMode)
+          const cap = transitTo.get(String(Array.isArray(to) ? to : [to?.lat, to?.lng]))
+          return base && cap != null && base.minutes > cap ? { ...base, minutes: cap, transit: true } : base
+        },
+      }
+    }
     const run = (dayMode, list = units) =>
       scheduleFixedOrder({
         units: list,
-        mode: dayMode,
-        travel,
+        mode: withLunch(dayMode),
+        travel: travelFor(list),
         start: { minutes: morning ? dayMode.dayStart : dayMode.halfDayRouteStart ?? mode.halfDayRouteStart, coordinates: null },
         pendingMeals: { lunch: morning, dinner: true },
         dinnerPoint,
@@ -400,6 +451,15 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const levelOneLost = (result) => result.dropped.filter(({ unit }) => unit.places.some((place) => place.level === 1)).length
     const realLevelOne = (result) => new Set(result.visits.filter((visit) => !visit.place.passThrough && placeByName.get(visit.place.name)?.level === 1).map((visit) => visit.place.name))
     let result = run(mode)
+    if (lunch?.temprana && morning) {
+      const lost = (candidate) => candidate.dropped.filter(({ unit }) => unit.role !== 'de_paso').length
+      if (lost(result) > 0) {
+        lunchAt = lunch.temprana
+        const early = run(mode)
+        if (lost(early) < lost(result)) result = early
+        else lunchAt = null
+      }
+    }
     let modeFallback = null
     let shortenedLunch = null
     // Tranquilo solo madruga si un nivel 1 se queda fuera del día, lo justo, y el motivo es lo que así se VISITA.
@@ -416,12 +476,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         }
       }
     }
-    if (levelOneLost(result) > 0 && morning) {
+    // (Y para no perder un lugar del pool: el pool manda sobre todo.)
+    const keyLost = (candidate) => candidate.dropped.filter(({ unit }) => unit.places.some((place) => place.level === 1 || inPool(place.name))).length
+    if (keyLost(result) > 0 && morning) {
       const baseMode = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
       const shortLunch = { ...baseMode, mealMinutes: Math.max(SHORT_LUNCH_MINUTES, Math.min(baseMode.mealMinutes, SHORT_LUNCH_MINUTES)), lunchBlockMinutes: Math.min(baseMode.lunchBlockMinutes, SHORT_LUNCH_BLOCK_MINUTES), visitDurationBonus: 0 }
       const alt = run(shortLunch)
-      if (levelOneLost(alt) < levelOneLost(result)) {
-        shortenedLunch = result.dropped.filter(({ unit }) => unit.places.some((place) => place.level === 1) && !alt.dropped.some((other) => other.unit.id === unit.id)).flatMap(({ unit }) => unit.places.map((place) => place.name))
+      if (keyLost(alt) < keyLost(result) && levelOneLost(alt) <= levelOneLost(result)) {
+        shortenedLunch = result.dropped.filter(({ unit }) => unit.places.some((place) => place.level === 1 || inPool(place.name)) && !alt.dropped.some((other) => other.unit.id === unit.id)).flatMap(({ unit }) => unit.places.map((place) => place.name))
         result = alt
       }
     }
@@ -430,6 +492,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
 
   function planDay(entry, day) {
     const { id: dayId, cfg, sections } = entry
+    const lunchNeeds = sections.comida?.si_lleva
+    lunchOverride = (sections.comida?.hora || sections.comida?.temprana) && (!lunchNeeds || [...sections.manana, ...sections.tarde].some((stop) => stop.lugar === lunchNeeds)) ? sections.comida : null
     const hours = hoursOf(day)
     const morning = !day.halfDayExcursion
     const skipped = []
@@ -464,6 +528,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (closedAtHour.length > 0) {
       const ids = new Set(closedAtHour.map(({ unit }) => unit.id))
       units = units.map((unit) => (ids.has(unit.id) ? unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit : unit))
+      result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+    }
+    // El mirador del atardecer que a esa hora ya ha cerrado (el Jardín de los Naranjos cierra a las 18:00 en otoño):
+    // visita normal mientras está abierto, sin atardecer.
+    const closedAtSunset = result.dropped.filter(({ unit, reason }) => unit.role === 'atardecer' && HOURS_REASONS.has(reason))
+    if (closedAtSunset.length > 0) {
+      const ids = new Set(closedAtSunset.map(({ unit }) => unit.id))
+      units = units.map((unit) => (ids.has(unit.id) ? { ...unit, role: 'parada', places: unit.places.map(({ sunset, ...place }) => place) } : unit))
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     }
     // El mirador que no llega a su atardecer (se llega de noche): en su sitio, como vistas de Roma iluminada.
@@ -567,6 +639,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (seen.has(name)) continue
     const place = placeByName.get(name)
     if (!place) continue
+    if (poolBlocked.has(name)) {
+      unplacedPool.push({ unitId: name, name, reason: 'pool_afternoon_taken', takenBy: poolBlocked.get(name), closedOn: place.closed_on ?? [] })
+      continue
+    }
     // El día cuya zona queda más cerca (lo más cerca de alguna de sus paradas), abierto ese día.
     const candidates = cityPlanned
       .filter((day) => !closedThatDay(name, day))

@@ -204,7 +204,9 @@ export async function buildDayBlockV3(
         ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
         : item.reason === 'out_of_season'
           ? `Solo ${availabilityLabel(item.available)}`
-          : 'No cabía en ningún día del viaje',
+          : item.reason === 'pool_afternoon_taken'
+            ? `En 2 días solo hay una tarde para tus lugares elegidos, y es para ${item.takenBy}`
+            : 'No cabía en ningún día del viaje',
     suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
   }))
 
@@ -249,7 +251,9 @@ function buildCityDayV3(destData, trip, tripDay, options) {
           ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
           : item.reason === 'out_of_season'
             ? `Solo ${availabilityLabel(item.available)}`
-            : 'No cabía en ningún día del viaje',
+            : item.reason === 'pool_afternoon_taken'
+              ? `En 2 días solo hay una tarde para tus lugares elegidos, y es para ${item.takenBy}`
+              : 'No cabía en ningún día del viaje',
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     // Lo que se queda solo con su nocturna no "falta": sale de noche.
