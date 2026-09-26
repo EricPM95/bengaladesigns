@@ -23,6 +23,7 @@ import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
+import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
@@ -235,8 +236,12 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (Array.isArray(tripDay.blocks)) {
     day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))
     day.untyped_halves = tripDay.blocks.filter((block) => block.id == null).length
+    day.reordered_blocks = tripDay.reorderedBlocks ?? []
   }
-  const freeAfternoon = freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
+  // "Aperitivo y paseo por {barrio}" (ajustes B.7): 90 min o menos antes de cenar en un barrio de cena.
+  const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames)
+  if (aperitivo) day.aperitivo = aperitivo
+  const freeAfternoon = aperitivo ? null : freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
@@ -281,6 +286,36 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames) {
   if (idle < FREE_AFTERNOON_MIN_MINUTES || !last) return null
   const dinner = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
   return {
+    minutes: idle,
+    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates, {
+      startMinutes: last.end,
+      endMinutes: dinner ? dinner.start - (dinner.walkMinutes ?? 0) : null,
+      to: dinner?.coordinates ?? null,
+      hours: tripDay.hours ?? {},
+    }),
+  }
+}
+
+/** Desde aquí, el rato antes de cenar ya se dice (FreeTimeBlock del cliente, 45 min). */
+const APERITIVO_MIN_MINUTES = 45
+
+/**
+ * "Aperitivo y paseo por {barrio}" (PROMPT_AJUSTES_BLOQUES B.7): el tiempo libre de 90 min o menos justo
+ * antes de cenar, cuando se cena en un barrio con ambiente (un barrio de cena: 3+ restaurantes), se llama
+ * así —no "Tarde libre (90 min)"— y lleva 2-3 sugerencias abiertas y de camino.
+ */
+function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames) {
+  const idle = tripDay.schedule?.idleBeforeDinner ?? 0
+  const visits = tripDay.schedule?.visits ?? []
+  const last = visits[visits.length - 1]
+  if (!last || idle < APERITIVO_MIN_MINUTES || idle > FREE_AFTERNOON_MIN_MINUTES) return null
+  const zone = dinnerZones(destData).find((option) => option.id === tripDay.dinnerZone)
+  if (!zone) return null
+  const barrio = String(zone.label).replace(/\s*\/\s*/g, ' y ')
+  const dinner = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
+  return {
+    title: `Aperitivo y paseo por ${barrio}`,
+    barrio,
     minutes: idle,
     suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates, {
       startMinutes: last.end,

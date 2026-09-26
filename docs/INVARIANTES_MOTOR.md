@@ -743,6 +743,53 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 148. **El repartidor antiguo (`planTrip.js`) es legacy**: solo para destinos sin bloques; no se arregla y
     `verifyPlanTrip` no cuenta para el verde. Se retira cuando todos los destinos tengan bloques.
 
+**Ajustes a los bloques (PROMPT_AJUSTES_BLOQUES.md, Partes B y C, 2026-09-26)**
+
+149. **El orden de un bloque es sagrado**: nunca se reordena para rellenar tiempo. Si sobra antes del
+    atardecer, se alarga lo marcado `antes_del_atardecer` (primero lo que es barrio: callejear Trastevere,
+    no la iglesia) o queda un "Tiempo libre" justo antes del mirador; lo que el bloque pone detrás del
+    mirador y no cabe se ve de paso bajando. El semáforo marca en rojo cualquier bloque en otro orden que
+    el del JSON (`reorden`); no cuentan lo saltado, el bloque reversible hecho al revés ni la bajada que
+    el propio bloque dice.
+150. **Lo que sobra de la mañana no arrastra la tarde**: lo que no cabe antes de comer va de paso si se ve
+    desde la calle; si no, fuera (un imprescindible lo recoge el rescate, de camino, en su sitio). La tarde
+    empieza donde dice su bloque.
+151. **Cerrado a esa hora, también si hay que esperar**: una parada de la tarde que obliga a esperar a que
+    abra más que la tolerancia del ritmo va de paso (Santa Cecilia a las 14:30, abre a las 16:00). Nunca un
+    imprescindible: para ese se acorta la comida o va a otro día.
+152. **Rellenos de camino, sin derivar**: lo que llena una espera está a 20 min como mucho de los dos
+    extremos de la espera original y se acerca a la parada que espera; lo que alarga la tarde hasta la
+    cena queda a 15 min del barrio de la cena. La espera al mirador no se rellena con paradas.
+153. **La experiencia elegida pesa más al elegir la tarde**: cada coincidencia vale más que la última
+    oportunidad de un imprescindible suelto (el Altar puede ir de paso en otro bloque).
+154. **El orden del pool manda en los días**: lo primero del pool, en los primeros días (la Borghese el
+    día 1, no el 5). Qué mañanas entran sigue igual (Free Tour, joya que solo sale por la mañana, pool…).
+155. **Los imprescindibles que se ven desde la calle nunca se quedan fuera**: si ningún bloque del viaje
+    los tiene y no cabe su visita, entran de paso (15 min, desde su punto de paso si lo tienen) en el
+    bloque que pase más cerca (25 min de desvío como mucho), sin que se caiga nada del bloque.
+156. **Aperitivo y paseo por {barrio}**: 45-90 min libres justo antes de cenar en un barrio de cena se
+    llaman así (no "Tarde libre"), con 2-3 sugerencias abiertas de camino.
+157. **Antes que perder un imprescindible, comida más corta**: 60 min comiendo (75 con el paseo) y sin el
+    extra de tranquilo, con aviso ("Hoy la comida es más corta para que te dé tiempo a ver …").
+158. **Una mañana, al día en que su imprescindible abre por la mañana**: el miércoles la Basílica de San
+    Pedro no abre hasta las 12:30, así que el Vaticano va otro día si puede.
+159. **1 día**: con Arte, arte gratis (San Luigi) y al final Popolo → Santa Maria del Popolo → Pincio al
+    atardecer, en vez de los Capitolinos. La tarde libre de 1 día (90 min o más) se rellena con el tramo
+    del destino (`short_trips.relleno_tarde_libre`), parada a parada, sin repetir lo que ya está.
+160. **Un bloque reversible se prueba en los dos sentidos**: se queda el que mejor sale (el Panteón cierra
+    a las 16:00 los sábados: el centro barroco, empezando por él); a igualdad, el que empieza más cerca.
+161. **Lo que la mañana no llega a hacer puede salir en la tarde** si su bloque de tarde lo lleva (el
+    Pincio y Popolo tras la Borghese): no cuenta como visto por la mañana. Si la mañana pierde dos paradas o
+    más, antes se prueba a madrugar; y lo que se cae de la mañana cae con su grupo (el Aventino entero),
+    salvo que en el grupo haya un ancla o un imprescindible.
+162. **El rescate va con su grupo**: si un compañero de grupo ya va en el viaje, solo ese día y justo al
+    lado (la Basílica detrás de la Plaza de San Pedro). Lo de dentro de una joya, siempre por dentro si
+    cabe; lo que se ve desde la calle, de paso. Para hacerle sitio solo se caen rellenos o lo de paso sin
+    grupo. Lo alargado para esperar al atardecer es tiempo libre: el rescate lo puede usar.
+163. **Al bajar del mirador en invierno**, lo que se saltó a la ida (callejear Trastevere) se hace camino de
+    la cena; y si cerca del barrio de la cena ya no queda nada, el alargue sigue a 15 min de donde acaba el
+    día y la cena pasa al barrio más cercano. Todo lo añadido junto, 20 min de desvío como mucho.
+
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.
 - Ningún relleno arrastra un contenedor de pago.

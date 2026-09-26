@@ -364,7 +364,7 @@ function measureTrip(trip, pace, exps) {
     const measured = measureDay(day, pace, interestTags, planned)
     // v3: lo que no ha cabido en ningún día viaja en not_included, con su motivo.
     if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) measured.dropped = (day.not_included ?? []).map((item) => item.name)
-    return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, untypedHalves: day?.untyped_halves ?? 0, ...measured }
+    return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, untypedHalves: day?.untyped_halves ?? 0, reorderedBlocks: day?.reordered_blocks ?? [], ...measured }
   })
 
   // Dónde cae cada lugar en el viaje, para grupos y nivel 1.
@@ -617,6 +617,8 @@ const SEMAFORO_CRITERIOS = [
   // último día significa que falta un bloque.
   { id: 'muertas', label: 'Huecos de más de 90 min en mitad del viaje (falta un bloque)', limite: '0', value: (rows, days) => days.filter((d) => d.kind === 'ciudad' && !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).length, ok: (v) => v === 0 },
   // Mañanas y tardes tipo (Parte B): un medio día que ningún bloque cubre se improvisa. Se mira, no bloquea.
+  // El orden de un bloque es sagrado (ajustes B.8): un bloque que sale en otro orden que el del JSON, en rojo.
+  { id: 'reorden', label: 'Bloques reordenados respecto al JSON', limite: '0', value: (rows, days) => days.reduce((sum, d) => sum + (d.reorderedBlocks?.length ?? 0), 0), ok: (v) => v === 0 },
   { id: 'sinTipo', warnOnly: true, label: 'Medios días sin tipo (ningún bloque encaja: se improvisan)', limite: '—', value: (rows, days) => days.reduce((sum, d) => sum + (d.untypedHalves ?? 0), 0), ok: (v) => v === 0 },
   { id: 'libre', warnOnly: true, label: 'Tardes libres del último día', limite: '—', value: (rows, days) => days.filter((d) => d.freeAfternoon && d.isLastDay).length, ok: (v) => v === 0 },
   {
@@ -674,7 +676,7 @@ function printSemaforo(motor) {
       for (const row of rows.filter((r) => r.pace === cell.pace && r.days.length === cell.n)) {
         const days = row.days.filter((d) => d.kind === 'ciudad')
         if (cell.criterio.ok(cell.criterio.value([row], days, cell.pace))) continue
-        const detail = cell.criterio.id === 'grupos' ? row.brokenGroups.join(' | ') : cell.criterio.id === 'nivel1' ? row.missingLevel1.join(', ') : cell.criterio.id === 'muertas' ? days.filter((d) => !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).map((d) => `D${d.dayNumber} ${d.deadMax} min`).join(', ') : cell.criterio.id === 'zigzag' || cell.criterio.id === 'tardeKm' ? days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.05).map((d) => `D${d.dayNumber} ${d.afternoonKm.toFixed(2)}/${d.afternoonMinKm.toFixed(2)} km`).join(', '): cell.criterio.id === 'fuera' ? days.flatMap((d) => d.dropped ?? []).join(', ') : ''
+        const detail = cell.criterio.id === 'grupos' ? row.brokenGroups.join(' | ') : cell.criterio.id === 'nivel1' ? row.missingLevel1.join(', ') : cell.criterio.id === 'muertas' ? days.filter((d) => !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).map((d) => `D${d.dayNumber} ${d.deadMax} min`).join(', ') : cell.criterio.id === 'reorden' ? days.filter((d) => d.reorderedBlocks?.length).map((d) => `D${d.dayNumber} ${d.reorderedBlocks.join(',')}`).join(', ') : cell.criterio.id === 'zigzag' || cell.criterio.id === 'tardeKm' ? days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.05).map((d) => `D${d.dayNumber} ${d.afternoonKm.toFixed(2)}/${d.afternoonMinKm.toFixed(2)} km`).join(', '): cell.criterio.id === 'fuera' ? days.flatMap((d) => d.dropped ?? []).join(', ') : ''
         console.log(`  [${cell.criterio.id}] ${cell.pace} ${cell.n}d ${row.exps.join('+') || '—'}: ${detail}`)
       }
     }

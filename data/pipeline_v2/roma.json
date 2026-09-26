@@ -4964,15 +4964,6 @@
         "lunch_zone_if_morning": "roma_antigua",
         "dinner_zone_if_afternoon": "roma_antigua",
         "swaps": {
-          "arte_museos": {
-            "replace": [
-              "Plaza Venecia",
-              "Altar de la Patria"
-            ],
-            "with": [
-              "Museos Capitolinos"
-            ]
-          },
           "barrios_sabores": {
             "replace": [
               "Plaza Venecia",
@@ -5008,6 +4999,19 @@
               "Terraza del Pincio"
             ],
             "_nota": "Pincio al atardecer y se baja por la Escalinata ya iluminada."
+          },
+          "arte_museos": {
+            "insert_before": "Piazza Navona",
+            "add": [
+              "Iglesia de San Luigi dei Francesi"
+            ],
+            "add_at_end": [
+              "Piazza del Popolo",
+              "Santa Maria del Popolo",
+              "Terraza del Pincio"
+            ],
+            "atardecer": "Terraza del Pincio",
+            "_nota": "Con Arte, arte gratis (Caravaggio en San Luigi y en Santa Maria del Popolo) en lugar de los Capitolinos, y el Pincio al atardecer (PROMPT_AJUSTES_BLOQUES B.6)."
           }
         },
         "free_tour": {
@@ -5211,6 +5215,15 @@
           }
         ]
       }
+    },
+    "relleno_tarde_libre": {
+      "paradas": [
+        "Piazza del Popolo",
+        "Santa Maria del Popolo",
+        "Terraza del Pincio"
+      ],
+      "atardecer": "Terraza del Pincio",
+      "_nota": "En 1 día, si la tarde se queda libre (90 min o más antes de cenar), se sigue por aquí, sin repetir lo que ya está en el día (PROMPT_AJUSTES_BLOQUES B.6)."
     }
   },
   "algorithm_hints": {

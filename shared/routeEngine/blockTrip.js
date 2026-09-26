@@ -30,7 +30,7 @@ import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones, restaurantZonesNamedIn } from './dinnerZones.js'
 import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
-import { closedOnDay } from './openingHours.js'
+import { closedOnDay, effectiveSchedule, parseHoursSessions } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { lunchSpots } from './lunchSpots.js'
@@ -49,6 +49,10 @@ const UNTYPED_MAX_WALK = 15
 const UNTYPED_FIRST_HOP = 30
 /** Hasta cuántas paradas sueltas se prueban todos los órdenes (6! = 720). */
 const UNTYPED_REORDER_MAX = 6
+/** Hasta cuántos rellenos se prueban todas las posiciones a la vez en el repaso final. */
+const POLISH_JOINT_MAX = 3
+/** Hacer un bloque reversible en el sentido que empieza más lejos cuesta un poco. */
+const ORIENTATION_FAR_PENALTY = 5
 /** Cuántas veces se replanifica el viaje para quitar horas muertas. */
 const REPAIR_ROUNDS = Number(process.env.REPAIR_ROUNDS ?? 4)
 /** Dónde acaba el Free Tour, para las tardes (su recorrido termina en Piazza Navona). */
@@ -60,24 +64,45 @@ const TAIL_IDLE_TARGET = 60
 /** Lo que se añade al final de la tarde: a esto andando, como mucho, de la parada anterior. */
 const TAIL_MAX_WALK = 15
 const TAIL_MAX_NEW_WAIT = 15
+const TAIL_TOTAL_DETOUR = 20
 /** Un imprescindible rescatado va de camino: como mucho este desvío. */
 const RESCUE_MAX_DETOUR = 15
+/** Un imprescindible que se ve desde la calle, de paso: 15 min y hasta este desvío (el bloque que pase más cerca). */
+const OUTSIDE_ESSENTIAL_MINUTES = 15
+const OUTSIDE_ESSENTIAL_MAX_DETOUR = 25
 /** Una espera de más de esto dentro del día se rellena con algo de camino. */
 const WAIT_FILL_MINUTES = 60
+/** Lo que rellena una espera, a esto andando como mucho de cada extremo de la espera original. */
+const WAIT_FILL_REACH = 20
 /** Más que esto parado antes de cenar es una hora muerta (Parte A, regla 7). */
 const DEAD_HOURS_MINUTES = 90
 const CURATED_AFTERNOON_OFFSET = 100
 /** Más espera que esto antes del mirador del atardecer: lo que va detrás en el bloque pasa delante. */
 const SUNSET_WAIT_MAX = 45
 /** Adelantar una parada por delante del mirador obliga a volver: cuesta más que verla de paso bajando. */
-const SUNSET_MOVE_COST = 80
+/** Esperas antes del mirador que se reparten en lo de "antes del atardecer" (y lo que se deja de margen). */
+const SUNSET_STRETCH_MIN = 20
+const SUNSET_STRETCH_SLACK = 10
+/** Lo que se deja de "Tiempo libre" antes del mirador cuando la espera se rellena. */
+const SUNSET_FREE_TIME_MAX = 60
 const SUNSET_PASS_COST = 40
 /** Saltarse lo de "antes del atardecer" por falta de tiempo: cuesta, pero menos que perder paradas. */
 const SUNSET_SKIP_COST = 120
+/** Comida acortada para no perder un imprescindible: 60 min comiendo, 75 con el paseo. */
+const SHORT_LUNCH_MINUTES = 60
+/** Paradas de la mañana del bloque que no llegan antes de comer a partir de las cuales se madruga. */
+const MORNING_STOPS_TO_WAKE_EARLY = 2
+/** Un imprescindible de una mañana tiene que abrir, como tarde, a esta hora para que esa mañana vaya ese día. */
+const MORNING_OPENS_BY = 11 * 60
+const SHORT_LUNCH_BLOCK_MINUTES = 75
+/** El horario del día de un lugar (null si no tiene: se puede ver a cualquier hora). */
+const effectiveScheduleOf = (place, hours) => effectiveSchedule(place, hours)
 /** Motivos del programador que son de horario: esa parada, a esa hora, va de paso. */
 const HOURS_DROP_REASONS = new Set(['closed', 'closes_during_visit', 'after_last_entry', 'after_latest_end'])
 /** Bajar del mirador por lo que el bloque ponía antes (solo con lo de antes del atardecer saltado). */
 const SUNSET_DESCENT_COST = 20
+/** Recuperar al bajar lo que se saltó a la ida vale algo (por parada). */
+const SUNSET_RETURN_BONUS = 40
 
 /** ¿Meter algo en la posición `at` deja en medio de un grupo del JSON (Panteón … Navona)? */
 function splitsGroup(units, at) {
@@ -87,16 +112,36 @@ function splitsGroup(units, at) {
 }
 
 /** La espera más larga del día entre dos paradas (o entre la comida y la siguiente), sin el paseo. */
-function longestWait(result) {
+function longestWait(result, { skipSunset = false } = {}) {
   let worst = 0
   const visits = result.visits ?? []
   for (let i = 1; i < visits.length; i++) {
+    if (skipSunset && visits[i].place.sunset != null) continue
     const meal = (result.meals ?? []).find((m) => m.start >= visits[i - 1].end && m.start < visits[i].start)
     // Después de comer cuenta desde que se acaba de comer, no desde el final de la franja (que incluye el paseo).
     const from = meal ? meal.start + (meal.eatMinutes ?? meal.end - meal.start) : visits[i - 1].end
     worst = Math.max(worst, visits[i].start - from - (visits[i].walkMinutes ?? 0))
   }
   return worst
+}
+
+/**
+ * Los bloques del día cuyas paradas no van en el orden del JSON (o al revés, si el bloque es reversible y
+ * se ha hecho al revés). Lo que se salta no cuenta; la bajada que dice el bloque (`descentAfterSunset`),
+ * tampoco.
+ */
+function reorderedBlocks(blocks, result) {
+  const kept = new Map(result.kept.map((unit) => [unit.id, unit]))
+  return blocks
+    .filter((block) => {
+      const order = block.paradas.map((stop) => stop.lugar)
+      const indices = result.visits
+        .filter((visit) => String(visit.unitId).startsWith(`${block.id}:`) && !kept.get(visit.unitId)?.descentAfterSunset)
+        .map((visit) => order.indexOf(visit.place.name))
+        .filter((index) => index >= 0)
+      return indices.some((index, i) => i > 0 && index < indices[i - 1])
+    })
+    .map((block) => block.id)
 }
 
 /** Todos los órdenes de una lista corta. */
@@ -245,14 +290,29 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     }
     return blocks.every((block) => tryPlace(block, new Set()))
   }
+  const opensInMorning = (block, day) =>
+    block.paradas
+      .filter((stop) => stop.rol !== 'de_paso' && placeByName.get(stop.lugar)?.level === 1)
+      .every((stop) => {
+        const schedule = effectiveSchedule(placeByName.get(stop.lugar), hoursOf(day))
+        if (!schedule) return true
+        const sessions = parseHoursSessions(schedule)
+        return sessions.length === 0 || Math.min(...sessions.map((session) => session.open)) <= MORNING_OPENS_BY
+      })
   const selectedMornings = []
   for (const block of morningOrder) {
     if (selectedMornings.length >= morningDays.length) break
     if (matchable([...selectedMornings, block])) selectedMornings.push(block)
   }
+  // El orden del pool manda también en los días (ajustes B.4): lo primero del pool, en los primeros días.
+  const poolRank = (block) => Math.min(...block.paradas.filter((stop) => stop.rol !== 'de_paso' && inPool(stop.lugar)).map((stop) => poolNames.indexOf(stop.lugar)), Infinity)
+  selectedMornings.sort((a, b) => poolRank(a) - poolRank(b))
   for (const block of selectedMornings) {
     const rest = selectedMornings.filter((other) => other !== block && !usedMornings.has(other.id))
-    const day = morningDays.find((candidate) => !morningOf.has(candidate.dayNumber) && opensOn(block, candidate) && matchable(rest, new Map([...morningOf.entries(), [candidate.dayNumber, block]])))
+    const free = (candidate) => !morningOf.has(candidate.dayNumber) && opensOn(block, candidate) && matchable(rest, new Map([...morningOf.entries(), [candidate.dayNumber, block]]))
+    // Mejor un día en que todo lo imprescindible de la mañana abre por la mañana (el miércoles la
+    // Basílica no abre hasta las 12:30): solo si no hay otro, ese día.
+    const day = morningDays.find((candidate) => free(candidate) && opensInMorning(block, candidate)) ?? morningDays.find(free)
     if (!day) continue
     morningOf.set(day.dayNumber, block)
     usedMornings.add(block.id)
@@ -379,9 +439,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   /** Programa un día con sus unidades; con plan B (madrugar) si se pierde un imprescindible. */
   function schedule(day, units, dinner, { morning = true } = {}) {
     const hours = hoursOf(day)
-    const run = (dayMode) =>
+    const run = (dayMode, list = units) =>
       scheduleFixedOrder({
-        units,
+        units: list,
         mode: dayMode,
         travel,
         start: { minutes: morning ? dayMode.dayStart : dayMode.halfDayRouteStart ?? mode.halfDayRouteStart, coordinates: null },
@@ -397,21 +457,62 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // del Coliseo): la mañana tipo no se hace como dice.
     const morningIds = new Set(units.filter((unit) => unit.slot === 'manana').map((unit) => unit.id))
     const slid = (result) => result.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && essential(unit))
+    // Dos paradas o más de la mañana del bloque que no llegan antes de comer (el Aventino en tranquilo):
+    // también se madruga, antes que quedarse sin lo que da sentido a la mañana.
+    const slidStops = (result) => result.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && unit.role !== 'de_paso')
     let result = run(mode)
     let modeFallback = null
+    let shortenedLunch = null
     // Madrugar solo si hace falta (revisión 16), y con el motivo de lo que se recupera.
-    if (hasPlanB && morning && (lost(result) > 0 || slid(result).length > 0)) {
+    if (hasPlanB && morning && (lost(result) > 0 || slid(result).length > 0 || slidStops(result).length >= MORNING_STOPS_TO_WAKE_EARLY)) {
       const alt = run(normalMode)
-      if (lost(alt) < lost(result) || (lost(alt) === lost(result) && slid(alt).length < slid(result).length)) {
+      if (lost(alt) < lost(result) || (lost(alt) === lost(result) && (slid(alt).length < slid(result).length || (slid(alt).length === slid(result).length && slidStops(alt).length < slidStops(result).length && slidStops(result).length >= MORNING_STOPS_TO_WAKE_EARLY)))) {
         const recovered = [
           ...result.dropped.filter(({ unit }) => !alt.dropped.some((d) => d.unit.id === unit.id)).map(({ unit }) => unit.id),
-          ...slid(result).filter((unit) => !slid(alt).some((other) => other.id === unit.id)).map((unit) => unit.id),
+          ...slidStops(result).filter((unit) => !slidStops(alt).some((other) => other.id === unit.id)).map((unit) => unit.id),
         ]
         modeFallback = { recoveredUnitIds: recovered, startedAt: normalMode.dayStart }
         result = alt
       }
     }
-    return { ...result, modeFallback }
+    // Si aún se pierde un imprescindible, se acorta la comida (60 min comiendo, como mínimo) antes que
+    // quitarlo (ajustes C: la Basílica con el Vaticano por la tarde en tranquilo).
+    if (lost(result) > 0) {
+      const base = modeFallback ? normalMode : mode
+      const shortLunch = { ...base, mealMinutes: Math.min(base.mealMinutes, SHORT_LUNCH_MINUTES), lunchBlockMinutes: Math.min(base.lunchBlockMinutes, SHORT_LUNCH_BLOCK_MINUTES), visitDurationBonus: 0 }
+      const alt = run(shortLunch)
+      if (lost(alt) < lost(result)) {
+        shortenedLunch = result.dropped.filter(({ unit }) => essential(unit) && !alt.dropped.some((d) => d.unit.id === unit.id)).flatMap(({ unit }) => unit.places.map((place) => place.name))
+        result = alt
+      }
+    }
+    // Lo que sobra de la mañana no arrastra la tarde (ajustes B.2): lo que no cabe antes de comer va de
+    // paso si se ve desde la calle; si no, fuera (un imprescindible lo recoge luego el rescate, en su sitio
+    // de camino). La tarde empieza donde dice su bloque.
+    const overflowOf = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde')
+    if (overflowOf(result).length > 0) {
+      const dayMode = modeFallback ? normalMode : mode
+      const seenFromStreet = (unit) => unit.places.every((place) => place.passThrough || place.type === 'exterior' || place.visible_from_outside || place.pass_by)
+      // Con su grupo del JSON entero: si la Cerradura no llega, el Aventino (Boca, Naranjos, Cerradura) va junto.
+      // Salvo que en el grupo haya un ancla o un imprescindible (el Vaticano: la Basílica sola va a la tarde).
+      const heavyGroups = new Set(units.filter((unit) => morningIds.has(unit.id) && (unit.role === 'ancla' || essential(unit))).flatMap((unit) => unit.places.map((place) => place.group)).filter(Boolean))
+      const overflowGroups = new Set(overflowOf(result).flatMap((unit) => unit.places.map((place) => place.group)).filter((group) => group && !heavyGroups.has(group)))
+      const overflow = new Set(units.filter((unit) => overflowOf(result).some((other) => other.id === unit.id) || (unit.slot === 'manana' && unit.places.some((place) => overflowGroups.has(place.group)))).map((unit) => unit.id))
+      let list = units.map((unit) => (overflow.has(unit.id) && unit.role !== 'de_paso' && seenFromStreet(unit) ? asPassThrough(unit) : unit))
+      let trial = run(dayMode, list)
+      const stillBase = overflowOf(trial)
+      const stillGroups = new Set(stillBase.flatMap((unit) => unit.places.map((place) => place.group)).filter((group) => group && !heavyGroups.has(group)))
+      const still = trial.kept.filter((unit) => stillBase.includes(unit) || (morningIds.has(unit.id) && unit.places.some((place) => stillGroups.has(place.group))))
+      const left = []
+      if (still.length > 0) {
+        const out = new Set(still.map((unit) => unit.id))
+        left.push(...still.map((unit) => ({ unit, reason: 'morning_overflow' })))
+        list = list.filter((unit) => !out.has(unit.id))
+        trial = run(dayMode, list)
+      }
+      result = { ...trial, dropped: [...trial.dropped, ...left] }
+    }
+    return { ...result, modeFallback, ...(shortenedLunch ? { shortenedLunch } : {}) }
   }
 
   /**
@@ -428,19 +529,16 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       if (index <= 0) return 0
       return result.visits[index].start - result.visits[index - 1].end - (result.visits[index].walkMinutes ?? 0)
     }
-    // Cuántas paradas del bloque pasan delante del mirador: la que menos pierda, luego la que menos
-    // espere, luego la que menos cambie el orden. Si ninguna guarda el atardecer, el mirador va como
-    // una parada más, en su sitio (en abril el sol se pone tarde para cenar a las 20:00 después).
+    // El orden del bloque no se cambia nunca para rellenar tiempo (ajustes B.1): si sobra antes del
+    // atardecer, se alarga lo marcado `antes_del_atardecer` (callejear Trastevere) o queda un "Tiempo
+    // libre" justo antes del mirador. Si ni así se guarda el atardecer, el mirador va como una parada
+    // más, en su sitio (en abril el sol se pone tarde para cenar a las 20:00 después).
     const options = []
-    // Nunca pasa delante el ancla ni lo que va detrás de ella: el bloque acaba donde acaba (Trastevere,
-    // bajando del Janículo), sin vaivenes.
-    const anchorAt = afternoonUnits.findIndex((unit) => unit.role === 'ancla')
-    const lastMovable = anchorAt > at ? anchorAt : afternoonUnits.length
-    for (let moved = 0; at + moved < lastMovable; moved++) {
-      const list = [...afternoonUnits.slice(0, at), ...afternoonUnits.slice(at + 1, at + 1 + moved), afternoonUnits[at], ...afternoonUnits.slice(at + 1 + moved)]
-      const result = run(list)
-      if (!result.visits.some((visit) => visit.place.sunset != null)) continue
-      options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_MOVE_COST * moved })
+    {
+      const result = run(afternoonUnits)
+      if (result.visits.some((visit) => visit.place.sunset != null)) {
+        options.push({ units: [...morningUnits, ...afternoonUnits], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes })
+      }
     }
     // Lo que va detrás del mirador y no cabe entero antes de cenar se ve de paso bajando (Piazza del
     // Popolo, al bajar del Pincio): mejor que adelantarlo y volver a subir.
@@ -461,9 +559,13 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       const sunsetAt = kept.findIndex((unit) => unit.places.some((place) => place.sunset != null))
       const lastSkipped = afternoonUnits.map((unit) => unit.beforeSunset).lastIndexOf(true)
       const between = kept.filter((unit, index) => index < sunsetAt && afternoonUnits.indexOf(unit) > lastSkipped)
-      const descending = [...kept.slice(0, sunsetAt).filter((unit) => !between.includes(unit)), kept[sunsetAt], ...between, ...kept.slice(sunsetAt + 1)]
+      // La bajada la dice el propio bloque (su nota): no cuenta como reordenar.
+      const descending = [...kept.slice(0, sunsetAt).filter((unit) => !between.includes(unit)), kept[sunsetAt], ...between.map((unit) => ({ ...unit, descentAfterSunset: true })), ...kept.slice(sunsetAt + 1)]
       const skipped = afternoonUnits.length - kept.length
-      for (const [list, extra] of [[kept, 0], [descending, SUNSET_DESCENT_COST]]) {
+      // Y bajando a cenar, lo que se saltó a la ida (callejear Trastevere de noche, camino de la cena).
+      const skippedUnits = afternoonUnits.filter((unit) => unit.beforeSunset).map((unit) => ({ ...unit, descentAfterSunset: true }))
+      const withReturn = [...descending.filter((unit) => !afternoonUnits.slice(afternoonUnits.indexOf(kept[sunsetAt]) + 1).includes(unit) || between.some((b) => b.id === unit.id)), ...skippedUnits, ...kept.slice(sunsetAt + 1).filter((unit) => !between.includes(unit))]
+      for (const [list, extra] of [[kept, 0], [descending, SUNSET_DESCENT_COST], [withReturn, SUNSET_DESCENT_COST - SUNSET_RETURN_BONUS * skippedUnits.length]]) {
         const result = run(list)
         if (!result.visits.some((visit) => visit.place.sunset != null)) continue
         options.push({ units: [...morningUnits, ...list], result, cost: 300 * lossOf(result) + lateDinnerCost(result) + Math.max(0, waitBefore(result) - SUNSET_WAIT_MAX) + result.walkMinutes + SUNSET_SKIP_COST * skipped + extra, descent: extra > 0 })
@@ -473,7 +575,33 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     const plainResult = run(plain)
     // Sin atardecer cuenta como perder media parada: solo si así se pierde menos.
     options.push({ units: [...morningUnits, ...plain], result: plainResult, cost: 300 * lossOf(plainResult) + 500 + plainResult.walkMinutes })
-    return options.sort((a, b) => a.cost - b.cost)[0]
+    const best = options.sort((a, b) => a.cost - b.cost)[0]
+    return stretchBeforeSunset(best, run, morningUnits)
+  }
+
+  /**
+   * El tiempo que sobra antes del atardecer se queda en lo marcado `antes_del_atardecer` (se callejea
+   * Trastevere más rato), sin tocar el orden: se alarga la última de esas paradas antes del mirador, en
+   * cuartos de hora, mientras no se caiga nada.
+   */
+  function stretchBeforeSunset(option, run, morningUnits) {
+    const visits = option.result.visits
+    const sunsetAt = visits.findIndex((visit) => visit.place.sunset != null)
+    if (sunsetAt <= 0) return option
+    const wait = visits[sunsetAt].start - visits[sunsetAt - 1].end - (visits[sunsetAt].walkMinutes ?? 0)
+    const afternoonUnits = option.units.slice(morningUnits.length)
+    // Primero lo que es para callejear (un barrio, algo por fuera): Trastevere, no la iglesia.
+    const candidates = afternoonUnits.filter((unit) => unit.beforeSunset && visits.slice(0, sunsetAt).some((visit) => visit.unitId === unit.id))
+    const isBarrio = (unit) => unit.places.some((place) => (place.tags ?? []).includes('barrio'))
+    const outdoors = (unit) => unit.places.some((place) => place.type === 'exterior')
+    const target = [...candidates].reverse().find(isBarrio) ?? [...candidates].reverse().find(outdoors) ?? candidates.at(-1)
+    if (!target || wait <= SUNSET_STRETCH_MIN) return option
+    for (let extra = Math.floor((wait - SUNSET_STRETCH_SLACK) / 15) * 15; extra >= 15; extra -= 15) {
+      const list = afternoonUnits.map((unit) => (unit === target ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra, stretchBase: place.stretchBase ?? place.duration_minutes ?? 30 } : place)) } : unit))
+      const result = run(list)
+      if (result.dropped.length <= option.result.dropped.length && result.visits.some((visit) => visit.place.sunset != null)) return { ...option, units: [...morningUnits, ...list], result }
+    }
+    return option
   }
 
   /**
@@ -500,7 +628,18 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     let current = list
     for (let round = 0; round < 3; round++) {
       const result = schedule(day, [...morningUnits, ...current], dinner, { morning: !day.halfDayExcursion })
-      const byHours = new Set(result.dropped.filter(({ unit, reason }) => HOURS_DROP_REASONS.has(reason) && unit.slot === 'tarde' && unit.role !== 'de_paso' && unit.role !== 'ancla' && current.some((other) => other.id === unit.id)).map(({ unit }) => unit.id))
+      const byHours = new Set(result.dropped.filter(({ unit, reason }) => HOURS_DROP_REASONS.has(reason) && unit.slot === 'tarde' && unit.role !== 'de_paso' && unit.role !== 'ancla' && !unit.places.some((place) => place.level === 1) && current.some((other) => other.id === unit.id)).map(({ unit }) => unit.id))
+      // Lo que obliga a esperar a que abra más que la tolerancia del ritmo (Santa Cecilia abre a las 16:00
+      // y se llega a las 14:30): a esa hora está cerrado, así que también va de paso.
+      const blockIds = new Set(current.map((unit) => unit.id))
+      result.visits.forEach((visit, index) => {
+        if (index === 0 || visit.place.sunset != null || visit.place.fixed_start) return
+        const unit = current.find((other) => other.id === visit.unitId)
+        if (!unit || !blockIds.has(unit.id) || unit.role === 'de_paso' || unit.role === 'ancla' || unit.slot !== 'tarde' || unit.places.some((place) => place.level === 1)) return
+        const meal = (result.meals ?? []).find((m) => m.start >= result.visits[index - 1].end && m.start < visit.start)
+        const from = meal ? meal.start + (meal.eatMinutes ?? meal.end - meal.start) : result.visits[index - 1].end
+        if (visit.start - from - (visit.walkMinutes ?? 0) > mode.gapTolerance && effectiveScheduleOf(visit.place, hoursOf(day))) byHours.add(unit.id)
+      })
       if (byHours.size === 0) return result
       current = current.map((unit) => (byHours.has(unit.id) ? asPassThrough(unit) : unit))
       if (round === 2) return schedule(day, [...morningUnits, ...current], dinner, { morning: !day.halfDayExcursion })
@@ -534,13 +673,17 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     const numbered = (list) => list.filter((stop) => stop.role !== 'de_paso').length
     const limit = mode.targetStops?.[1] ?? Infinity
     let list = [...afternoonStops]
+    // Un grupo del JSON (Boca de la Verdad, Naranjos, Cerradura) no se parte: si uno no se puede quitar
+    // (el ancla), no se quita ninguno.
+    const protectedGroups = new Set(list.filter((stop) => stop.role !== 'parada' || stop.place.level === 1 || joyaNames.has(stop.name)).map((stop) => stop.place.group).filter(Boolean))
     while (numbered([...morningStops, ...list]) > limit) {
       const candidates = list
         .map((stop, index) => ({ stop, index }))
-        .filter(({ stop }) => stop.role === 'parada' && !joyaNames.has(stop.name) && stop.place.level !== 1)
+        .filter(({ stop }) => stop.role === 'parada' && !joyaNames.has(stop.name) && stop.place.level !== 1 && !protectedGroups.has(stop.place.group))
         .sort((a, b) => (b.stop.place.level ?? 3) - (a.stop.place.level ?? 3) || b.index - a.index)
       if (candidates.length === 0) break
-      list = list.filter((_, index) => index !== candidates[0].index)
+      const group = candidates[0].stop.place.group
+      list = list.filter((stop, index) => index !== candidates[0].index && !(group && stop.place.group === group))
     }
     return list
   }
@@ -558,6 +701,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   function fillWait(day, chosen, otherMorningNames) {
     const matches = (place) => (place.tags ?? []).some((tag) => selected.some((id) => TAG_INTEREST_MAP[id].includes(tag)))
     const anchorsLeft = new Set([...(destData.afternoon_flows ?? []).filter((block) => !usedAfternoons.has(block.id) && block.id !== chosen.block?.id), ...mornings.filter((block) => !usedMornings.has(block.id))].map(anchorOf).filter(Boolean))
+    // Los extremos de la espera ORIGINAL: lo que se añade tiene que estar entre los dos, no ir derivando.
+    let ends = null
     for (let added = 0; added < 3; added++) {
       const wait = longestWait(chosen.result)
       if (wait <= Math.min(WAIT_FILL_MINUTES, mode.gapTolerance)) return
@@ -569,17 +714,23 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         return visit.start - from - (visit.walkMinutes ?? 0) === wait
       })
       if (index < 1) return
+      // La espera al atardecer es el "Tiempo libre" antes del mirador (B.1): solo se rellena si pasa de 90
+      // min (horas muertas), y hasta dejarla en una hora.
+      if (visits[index].place.sunset != null && wait <= (ends ? SUNSET_FREE_TIME_MAX : DEAD_HOURS_MINUTES)) return
       const meal = (chosen.result.meals ?? []).find((m) => m.start >= visits[index - 1].end && m.start < visits[index].start)
       const from = meal?.coordinates ?? visits[index - 1].place.end_coordinates ?? visits[index - 1].place.coordinates
       const to = visits[index].place.coordinates
+      if (!ends) ends = { from, to, target: visits[index].unitId }
+      else if (visits[index].unitId !== ends.target) return
       const today = new Set(visits.map((visit) => visit.place.name))
       const candidates = (destData.places ?? [])
-        .filter((place) => !seen.has(place.name) && !today.has(place.name) && !otherMorningNames.has(place.name) && !tourCovers.has(place.name) && !anchorsLeft.has(place.name) && !place.group)
+        .filter((place) => !seen.has(place.name) && !today.has(place.name) && !otherMorningNames.has(place.name) && !tourCovers.has(place.name) && !anchorsLeft.has(place.name) && !place.group && !dayBlockNames(day, chosen).has(place.name))
         .filter((place) => !(isPaidMuseum(place) && paidMuseums >= museumQuota) && !closedThatDay(place.name, day))
         .filter((place) => !blockedByRedundancy(destData, place.name, new Set([...seen, ...today]), { contentDays, experienceMatches: matches(place) }))
         .filter((place) => (place.duration_minutes ?? 30) <= wait)
-        .map((place) => ({ place, walk: (travel.leg(from, place.coordinates)?.minutes ?? Infinity) + (travel.leg(place.coordinates, to)?.minutes ?? Infinity) }))
-        .filter((item) => item.walk <= 2 * TAIL_MAX_WALK)
+        .map((place) => ({ place, fromOrigin: travel.leg(ends.from, place.coordinates)?.minutes ?? Infinity, toTarget: travel.leg(place.coordinates, ends.to)?.minutes ?? Infinity, walk: (travel.leg(from, place.coordinates)?.minutes ?? Infinity) + (travel.leg(place.coordinates, to)?.minutes ?? Infinity) }))
+        .filter((item) => item.walk <= 2 * TAIL_MAX_WALK && item.fromOrigin <= WAIT_FILL_REACH && item.toTarget <= WAIT_FILL_REACH && (visits[index].place.sunset != null || item.toTarget <= (travel.leg(from, to)?.minutes ?? Infinity) + 5))
+        // (y acercándose a la parada que espera, sin ir y volver)
         .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || Number(matches(b.place)) - Number(matches(a.place)) || a.walk - b.walk)
       const unitIndex = chosen.result.kept.findIndex((unit) => unit.id === visits[index].unitId)
       let placed = false
@@ -591,8 +742,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const units = [...kept.slice(0, unitIndex), unit, ...kept.slice(unitIndex)]
         const result = schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
         if (!result.kept.some((other) => other.id === unit.id) || result.dropped.length > 0 || longestWait(result) >= wait) continue
-        // Sin dejar otra espera por encima de la tolerancia del ritmo entre dos paradas.
-        if (longestWait(result) > mode.gapTolerance) continue
+        // Cada parada tiene que acortar la espera de verdad (un cuarto de hora como mínimo).
+        if (longestWait(result) > wait - 15) continue
         chosen.units = units
         chosen.result = { ...result, dropped: chosen.result.dropped }
         placed = true
@@ -611,7 +762,35 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     const run = (units) => schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
     const waitLimit = Math.max(mode.gapTolerance, longestWait(chosen.result))
     const idleLimit = Math.max(DEAD_HOURS_MINUTES, chosen.result.idleBeforeDinner ?? 0)
-    const ok = (result) => result.dropped.length === 0 && longestWait(result) <= waitLimit && (result.idleBeforeDinner ?? 0) <= idleLimit
+    // La espera al mirador es tiempo libre legítimo mientras no sean horas muertas.
+    const waitLimitOf = (result) => longestWait(result, { skipSunset: true })
+    const ok = (result) => result.dropped.length === 0 && waitLimitOf(result) <= Math.max(mode.gapTolerance, waitLimitOf(chosen.result)) && longestWait(result) <= Math.max(DEAD_HOURS_MINUTES, waitLimit) && (result.idleBeforeDinner ?? 0) <= idleLimit
+    // Pocos rellenos (3 o menos): todas sus posiciones a la vez, en su orden relativo o no.
+    const extras = chosen.result.kept.filter((unit) => unit.role === 'extra')
+    if (extras.length > 0 && extras.length <= POLISH_JOINT_MAX) {
+      const base = chosen.result.kept.filter((unit) => unit.role !== 'extra')
+      const firstAfternoon = Math.max(0, base.findIndex((other) => other.slot === 'tarde'))
+      let best = null
+      const place = (list, remaining) => {
+        if (remaining.length === 0) {
+          if (list.every((unit, index) => unit.id === chosen.result.kept[index]?.id)) return
+          const result = run(list)
+          if (ok(result) && result.meters < (best?.result.meters ?? chosen.result.meters - 1)) best = { list, result }
+          return
+        }
+        const [unit, ...rest] = remaining
+        const start = list.findIndex((other) => other.slot === 'tarde')
+        for (let at = Math.max(0, start < 0 ? firstAfternoon : start); at <= list.length; at++) {
+          if (splitsGroup(list, at)) continue
+          place([...list.slice(0, at), unit, ...list.slice(at)], rest)
+        }
+      }
+      place(base, extras)
+      if (best) {
+        chosen.units = best.list
+        chosen.result = { ...best.result, dropped: chosen.result.dropped }
+      }
+    }
     for (let round = 0; round < 3; round++) {
       let improved = false
       const kept = chosen.result.kept
@@ -671,11 +850,23 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     }
   }
 
+  /** Lo que el bloque del día se ha saltado a propósito (recorte de tranquilo, solo_con, cuota) no vuelve como relleno. */
+  const dayBlockNames = (day, chosen) => new Set([...(chosen.block?.paradas ?? []), ...(morningOf.get(day.dayNumber)?.paradas ?? [])].map((stop) => stop.lugar))
+
   function extendTail(day, chosen, otherMorningNames) {
     const unusedAnchors = () =>
       new Set([...(destData.afternoon_flows ?? []).filter((block) => !usedAfternoons.has(block.id) && block.id !== chosen.block?.id), ...mornings.filter((block) => !usedMornings.has(block.id))].map(anchorOf).filter(Boolean))
-    const dinnerPoint = chosen.dinner?.coordinates ?? null
+    let dinnerPoint = chosen.dinner?.coordinates ?? null
     const matches = (place) => (place.tags ?? []).some((tag) => selected.some((id) => TAG_INTEREST_MAP[id].includes(tag)))
+    // Si cerca del barrio de la cena ya no queda nada (Trastevere, visto entero otro día) y el día se
+    // quedaría con horas muertas, se sigue por lo que pilla a 15 min de donde acaba y se cena en el barrio
+    // de cena más cercano a donde se termine.
+    let flexibleDinner = false
+    // Todo lo añadido junto se desvía como mucho TAIL_TOTAL_DETOUR del camino directo a la cena desde
+    // donde acaba el bloque (sin ir a Monti y volver a Trevi).
+    const blockEnd = chosen.result.visits.at(-1)?.place
+    const blockEndCoords = blockEnd?.end_coordinates ?? blockEnd?.coordinates
+    let tailWalk = 0
     for (let added = 0; added < 4; added++) {
       const idle = chosen.result.idleBeforeDinner ?? 0
       // También si el día se queda por debajo de las paradas mínimas del ritmo con tarde de sobra.
@@ -689,7 +880,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       const direct = dinnerPoint ? (travel.leg(from, dinnerPoint)?.minutes ?? 0) : 0
       const candidates = (destData.places ?? [])
         // Lo que es el ancla de otro bloque tampoco: sería quitarle a ese bloque su razón de ser.
-        .filter((place) => !seen.has(place.name) && !today.has(place.name) && !otherMorningNames.has(place.name) && !tourCovers.has(place.name) && !unusedAnchors().has(place.name))
+        .filter((place) => !seen.has(place.name) && !today.has(place.name) && !otherMorningNames.has(place.name) && !tourCovers.has(place.name) && !unusedAnchors().has(place.name) && !dayBlockNames(day, chosen).has(place.name))
         // Lo que va en grupo (el Aventino: Boca de la Verdad, Naranjos, Cerradura) se ve entero o no se ve.
         .filter((place) => !place.group)
         .filter((place) => !(isPaidMuseum(place) && paidMuseums >= museumQuota) && !closedThatDay(place.name, day))
@@ -697,10 +888,13 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         .filter((place) => !breaksOneBigVisit([place], chosen.result.visits.map((visit) => visit.place)))
         .map((place) => {
           const walk = travel.leg(from, place.coordinates)?.minutes ?? Infinity
-          const detour = dinnerPoint ? walk + (travel.leg(place.coordinates, dinnerPoint)?.minutes ?? Infinity) - direct : 0
-          return { place, walk, detour }
+          const toDinner = dinnerPoint ? (travel.leg(place.coordinates, dinnerPoint)?.minutes ?? Infinity) : 0
+          const detour = dinnerPoint ? walk + toDinner - direct : 0
+          const totalDetour = dinnerPoint && blockEndCoords ? tailWalk + walk + toDinner - (travel.leg(blockEndCoords, dinnerPoint)?.minutes ?? 0) : 0
+          return { place, walk, detour, toDinner, totalDetour }
         })
-        .filter((item) => item.walk <= TAIL_MAX_WALK && item.detour <= TAIL_MAX_WALK && (item.place.duration_minutes ?? 30) <= Math.max(idle - TAIL_IDLE_TARGET + 30, idle - 15))
+        // Siempre cerca de donde se cena: sin irse al otro lado y volver.
+        .filter((item) => item.walk <= TAIL_MAX_WALK && (flexibleDinner || (item.detour <= TAIL_MAX_WALK && item.toDinner <= TAIL_MAX_WALK && item.totalDetour <= TAIL_TOTAL_DETOUR)) && (item.place.duration_minutes ?? 30) <= Math.max(idle - TAIL_IDLE_TARGET + 30, idle - 15))
         .sort((a, b) => Number(inPool(b.place.name)) - Number(inPool(a.place.name)) || (a.place.level ?? 3) - (b.place.level ?? 3) || Number(matches(b.place)) - Number(matches(a.place)) || a.walk - b.walk)
       let placed = false
       for (const { place } of candidates.slice(0, 5)) {
@@ -711,24 +905,34 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const kept = chosen.result.kept
         const firstAfternoon = Math.max(0, kept.findIndex((other) => other.slot === 'tarde'))
         let best = null
-        for (let at = firstAfternoon; at <= kept.length; at++) {
+        // Con la cena cambiada, lo añadido va al final (la cena, donde se acabe).
+        const dinnerHere = flexibleDinner ? dinnerFor(null, place.coordinates) : chosen.dinner
+        for (let at = flexibleDinner ? kept.length : firstAfternoon; at <= kept.length; at++) {
           if (splitsGroup(kept, at)) continue
           const units = [...kept.slice(0, at), unit, ...kept.slice(at)]
-          const result = schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
+          const result = schedule(day, units, dinnerHere, { morning: !day.halfDayExcursion })
           if (!result.kept.some((other) => other.id === unit.id) || result.dropped.length > 0 || (result.idleBeforeDinner ?? 0) >= idle) continue
           // Sin esperas nuevas entre paradas (el Gesù, que abre a las 16:00, no va nada más comer).
           if ((result.idleMinutes ?? 0) > (chosen.result.idleMinutes ?? 0) + TAIL_MAX_NEW_WAIT) continue
           if (longestWait(result) > Math.max(longestWait(chosen.result), mode.gapTolerance)) continue
-          if (!best || result.walkMinutes < best.result.walkMinutes) best = { units, result }
+          if (!best || result.walkMinutes < best.result.walkMinutes) best = { units, result, dinner: dinnerHere }
         }
         if (best) {
           chosen.units = best.units
           chosen.result = { ...best.result, dropped: chosen.result.dropped }
+          tailWalk += travel.leg(from, place.coordinates)?.minutes ?? 0
+          if (best.dinner !== chosen.dinner) {
+            chosen.dinner = best.dinner
+            dinnerPoint = best.dinner?.coordinates ?? dinnerPoint
+          }
           placed = true
           break
         }
       }
-      if (!placed) return
+      if (!placed) {
+        if (flexibleDinner || (chosen.result.idleBeforeDinner ?? 0) <= DEAD_HOURS_MINUTES) return
+        flexibleDinner = true
+      }
     }
   }
 
@@ -803,18 +1007,35 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         // Lo que va en la mañana de OTRO día no se adelanta a esta tarde: esa mañana se quedaría vacía.
         const stolen = block.paradas.filter((stop) => stop.rol !== 'de_paso' && otherMorningNames.has(stop.lugar)).length + 3 * block.paradas.filter((stop) => reservedAnchors.has(stop.lugar) && anchorOf(block) !== stop.lugar).length + 3 * Number(reservedAnchors.has(anchorOf(block)))
         const joyaAnchor = anchor && joyaNames.has(anchor) && !seen.has(anchor) ? 20 : 0
-        return { block, order, score: 100 * Number(fitsAfter(block)) + 50 * Number(blockHasPool(block)) + joyaAnchor + 3 * newEssentials + 15 * lastChance + 2 * blockMatches(block) - repeats - 10 * stolen }
+        return { block, order, score: 100 * Number(fitsAfter(block)) + 50 * Number(blockHasPool(block)) + joyaAnchor + 3 * newEssentials + 5 * lastChance + 20 * blockMatches(block) - repeats - 10 * stolen }
       })
       .sort((a, b) => b.score - a.score || a.order - b.order)
 
     let chosen = null
-    for (const { block: original, score } of candidates) {
-      const block = oriented(original, morningStops.at(-1)?.place ?? null)
-      const afternoonStops = trimForPace(stopsOf(block, day, morningPlaces), morningStops)
+    // Un bloque reversible se prueba en los dos sentidos (el Panteón al final cierra a las 16:00 los
+    // sábados): se queda el que mejor sale; a igualdad, el que empieza más cerca.
+    const orientations = candidates.flatMap(({ block: original, score }) => {
+      const near = oriented(original, morningStops.at(-1)?.place ?? null)
+      if (!original.reversible) return [{ block: near, score }]
+      const other = near.reversed ? original : { ...original, paradas: [...original.paradas].reverse(), reversed: true }
+      return [{ block: near, score }, { block: other, score: score - ORIENTATION_FAR_PENALTY }]
+    })
+    // Lo que la mañana no llega a hacer antes de comer (el Pincio y Popolo tras la Borghese) puede salir en
+    // la tarde si su bloque lo lleva: no cuenta como visto por la mañana.
+    const morningOverflow = morningBlock && !day.halfDayExcursion
+      ? new Set(schedule(day, morningUnits, null, { morning: true }).dropped.filter(({ reason }) => reason === 'morning_overflow').flatMap(({ unit }) => unit.places.map((place) => place.name)))
+      : new Set()
+    for (const { block, score } of orientations) {
+      const blockNames = new Set(block.paradas.map((stop) => stop.lugar))
+      const movedToAfternoon = (name) => morningOverflow.has(name) && blockNames.has(name)
+      const morningPlacesHere = morningPlaces.filter((place) => !movedToAfternoon(place.name))
+      const morningStopsHere = morningStops.filter((stop) => !movedToAfternoon(stop.name))
+      const morningUnitsHere = morningUnits.filter((unit) => !unit.places.some((place) => movedToAfternoon(place.name)))
+      const afternoonStops = trimForPace(stopsOf(block, day, morningPlacesHere), morningStopsHere)
       const anchor = anchorOf(block)
       if (anchor && !afternoonStops.some((stop) => stop.name === anchor)) continue
       const dinner = dinnerFor(block, afternoonStops.at(-1)?.place.coordinates ?? null)
-      const { units, result } = withSunsetFilled(day, morningUnits, unitsOf(afternoonStops, block, 'tarde', day), dinner)
+      const { units, result } = withSunsetFilled(day, morningUnitsHere, unitsOf(afternoonStops, block, 'tarde', day), dinner)
       // El ancla tiene que caber; si no, otra tarde. Salvo que sea de "antes del atardecer" y se haya
       // saltado para llegar al mirador a tiempo (Trastevere en invierno: se cena allí igualmente).
       const anchorSkippedForSunset = afternoonStops.some((stop) => stop.name === anchor && stop.beforeSunset) && result.visits.some((visit) => visit.place.sunset != null)
@@ -952,6 +1173,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         ...(chosen.block ? [{ id: chosen.block.id, slot: 'tarde', label: chosen.block.nombre }] : [{ id: null, slot: 'tarde', label: 'Medio día sin tipo' }]),
       ],
       untypedAfternoon: !chosen.block,
+      // Bloques cuyo orden no es el del JSON (ajustes B.8: tiene que ser 0; el semáforo lo marca en rojo).
+      reorderedBlocks: reorderedBlocks([morningBlock, chosen.block].filter(Boolean), chosen.result),
       curated: null,
     })
   }
@@ -961,6 +1184,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
    * sitio donde menos se ande (de camino: el Altar de la Patria al salir de los Foros). Puede caerse
    * algo "de paso" o añadido para hacerle sitio; nada del bloque ni otro imprescindible.
    */
+  /** El día en que ya va algo del grupo del lugar (Navona va con el Panteón): el rescate solo va ahí. */
+  const groupDay = (place) => (place.group ? days.find((d) => d.schedule && d.units.some((unit) => unit.places.some((p) => p.group === place.group && p.name !== place.name))) ?? null : null)
+  const unstretched = (list) => list.map((unit) => (unit.places.some((place) => place.stretchBase != null) ? { ...unit, places: unit.places.map(({ stretchBase, ...place }) => (stretchBase != null ? { ...place, duration_minutes: stretchBase } : place)) } : unit))
   const rescue = (name, role) => {
     const place = placeByName.get(name)
     if (!place || seen.has(name)) return true
@@ -970,13 +1196,19 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       : [place]
     const scheduled = placesForScheduler({ id: place.group ?? name, places: members }, destData, freeTourTime)
     const extra = { id: `${role}:${name}`, group: place.group ?? null, places: scheduled, slot: 'tarde', blockId: role, role, dropRank: DROP_RANK.pool, priority: role === 'pool' ? PRIORITY.POOL : PRIORITY.ESSENTIAL, curatedIndex: null, poolIndex: inPool(name) ? poolNames.indexOf(name) : null }
-    const cheap = (unit) => (unit.role === 'de_paso' || unit.role === 'extra') && !unit.places.some((p) => p.level === 1 || joyaNames.has(p.name))
+    // Para hacer sitio solo se caen rellenos y lo de paso suelto; lo de paso con grupo (la Plaza Venecia, del
+    // Altar) no: rompería el grupo.
+    const cheap = (unit) => (unit.role === 'extra' || (unit.role === 'de_paso' && !unit.places.some((p) => p.group))) && !unit.places.some((p) => p.level === 1 || joyaNames.has(p.name))
     let best = null
-    for (const day of days.filter((d) => d.schedule && !closedThatDay(name, d))) {
+    const partnerDay = groupDay(place)
+    for (const day of days.filter((d) => d.schedule && !closedThatDay(name, d) && (!partnerDay || d === partnerDay))) {
       if (isPaidMuseum(place) && !inPool(name) && paidMuseums >= museumQuota) break
       // Nunca dentro de la mañana del bloque: al acabarla o por la tarde.
       const morningEnd = day.units.map((unit) => unit.slot).lastIndexOf('manana') + 1
+      // Si su grupo ya va ese día (la Plaza de San Pedro, el miércoles), justo detrás de él: nada en medio.
+      const groupAt = place.group ? day.units.map((unit) => unit.places.some((p) => p.group === place.group)).lastIndexOf(true) : -1
       for (let at = morningEnd; at <= day.units.length; at++) {
+        if (groupAt >= 0 && at !== Math.max(groupAt + 1, morningEnd)) continue
         if (splitsGroup(day.units, at)) continue
         // De camino: 15 min de desvío como mucho entre lo de antes y lo de después.
         const prev = day.units[at - 1]?.places.at(-1)
@@ -984,8 +1216,10 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const leg = (x, y) => (x?.coordinates && y?.coordinates ? travel.leg(x.end_coordinates ?? x.coordinates, y.coordinates)?.minutes ?? Infinity : 0)
         if (leg(prev, members[0]) + leg(members.at(-1), next) - leg(prev, next) > RESCUE_MAX_DETOUR) continue
         const slot = day.units[at]?.slot ?? 'tarde'
-        const units = [...day.units.slice(0, at), { ...extra, slot }, ...day.units.slice(at)]
-        const result = schedule(day, units, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null, { morning: !day.halfDayExcursion })
+        // Lo alargado para esperar al atardecer es tiempo libre: el rescate puede usarlo.
+        const units = [...unstretched(day.units).slice(0, at), { ...extra, slot }, ...unstretched(day.units).slice(at)]
+        // Como un bloque: lo que por el horario ya no llega va de paso (el Tempietto, que cierra a las 18:00).
+        const result = scheduleBlock(day, [], units, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null)
         // Entero: si el grupo pierde a alguien por el camino, no vale.
         const keptExtra = result.kept.find((unit) => unit.id === extra.id)
         if (!keptExtra || keptExtra.places.length !== members.length || !result.dropped.every(({ unit }) => cheap(unit))) continue
@@ -994,8 +1228,57 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       }
     }
     if (!best) return false
-    Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...best.day.schedule.dropped, ...best.result.dropped] } })
+    // Lo rescatado ya no está entre lo que se cayó.
+    const rescued = new Set(members.map((member) => member.name))
+    const stillDropped = best.day.schedule.dropped.filter(({ unit }) => !unit.places.some((p) => rescued.has(p.name)))
+    Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...stillDropped, ...best.result.dropped] } })
     for (const member of members) seen.add(member.name)
+    return true
+  }
+  /**
+   * Un imprescindible que se ve desde la calle (la Plaza de España, el Altar de la Patria) nunca se queda
+   * fuera (ajustes B.5): si no cabe su visita, entra de paso, 15 min, en el bloque que pase más cerca
+   * (desde su punto de paso si lo tiene: `pass_by`), sin que se caiga nada del bloque.
+   */
+  const rescueOutside = (place) => {
+    if (seen.has(place.name)) return true
+    const fromStreet = place.type === 'exterior' || place.pass_by || place.visible_from_outside
+    if (!fromStreet) return false
+    const coordinates = place.pass_by?.coordinates ?? place.coordinates
+    const minutes = place.pass_by?.minutes ?? OUTSIDE_ESSENTIAL_MINUTES
+    const unit = {
+      id: `de paso:${place.name}`,
+      group: null,
+      // Lo que se ve desde ese mismo paso (la Plaza Venecia, desde el Altar) cuenta como visto por fuera.
+      places: [{ name: place.name, coordinates, duration_minutes: minutes, type: 'exterior', passThrough: true, tags: place.tags ?? [], zone: place.zone, level: 1, group: place.group, wikipedia_title: place.wikipedia_title, ...(place.pass_by?.includes?.length ? { outsideOf: place.pass_by.includes } : {}) }],
+      slot: 'tarde', blockId: 'de_paso', role: 'de_paso', dropRank: DROP_RANK.extra, priority: PRIORITY.ESSENTIAL, curatedIndex: null, poolIndex: null,
+    }
+    const cheap = (other) => (other.role === 'extra' || (other.role === 'de_paso' && !other.places.some((p) => p.group))) && !other.places.some((p) => p.level === 1)
+    let best = null
+    const partnerDay = groupDay(place)
+    for (const day of days.filter((d) => d.schedule && (!partnerDay || d === partnerDay))) {
+      // Con su grupo ese día, pegado a él.
+      const groupAt = place.group ? day.units.map((unit) => unit.places.some((p) => p.group === place.group)).lastIndexOf(true) : -1
+      for (let at = 1; at <= day.units.length; at++) {
+        if (groupAt >= 0 && at !== groupAt + 1) continue
+        if (splitsGroup(day.units, at)) continue
+        const prev = day.units[at - 1]?.places.at(-1)
+        const next = day.units[at]?.places[0]
+        const leg = (x, y) => (x?.coordinates && y?.coordinates ? travel.leg(x.end_coordinates ?? x.coordinates, y ? y.coordinates : null)?.minutes ?? Infinity : 0)
+        const detour = leg(prev, { coordinates }) + (next ? leg({ coordinates }, next) - leg(prev, next) : 0)
+        if (detour > OUTSIDE_ESSENTIAL_MAX_DETOUR) continue
+        const units = [...unstretched(day.units).slice(0, at), { ...unit, slot: day.units[at]?.slot ?? 'tarde' }, ...unstretched(day.units).slice(at)]
+        // Como un bloque: lo que por el horario ya no llega va de paso (el Tempietto, que cierra a las 18:00).
+        const result = scheduleBlock(day, [], units, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null)
+        if (!result.kept.some((other) => other.id === unit.id) || !result.dropped.every(({ unit: other }) => cheap(other))) continue
+        if (!best || detour < best.detour) best = { day, result, detour }
+      }
+    }
+    if (!best) return false
+    const stillDropped = best.day.schedule.dropped.filter(({ unit }) => !unit.places.some((p) => p.name === place.name))
+    Object.assign(best.day, { units: best.result.kept, schedule: { ...best.result, dropped: [...stillDropped, ...best.result.dropped] } })
+    seen.add(place.name)
+    for (const name of place.pass_by?.includes ?? []) seen.add(name)
     return true
   }
   for (const name of poolNames) {
@@ -1014,7 +1297,15 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     })
   }
   for (const place of destData.places ?? []) {
-    if (place.level === 1 && !tourCovers.has(place.name)) rescue(place.name, 'imprescindible')
+    if (place.level !== 1 || tourCovers.has(place.name) || seen.has(place.name)) continue
+    // Lo que se ve desde la calle (la Plaza de España, Trevi, Navona) entra de paso, 15 min (B.5); lo de
+    // dentro (el Panteón, la Basílica), con su visita, de camino.
+    // Una joya (el Panteón) va siempre por dentro si cabe.
+    const fromStreet = place.tier !== 'joya' && (place.type === 'exterior' || place.pass_by || place.visible_from_outside)
+    if (fromStreet ? !rescueOutside(place) : !rescue(place.name, 'imprescindible')) {
+      if (fromStreet) rescue(place.name, 'imprescindible')
+      else rescueOutside(place)
+    }
   }
 
   // Joyas e imprescindibles que no han salido en ningún día.

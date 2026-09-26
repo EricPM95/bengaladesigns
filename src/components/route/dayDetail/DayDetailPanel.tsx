@@ -1078,7 +1078,8 @@ export function DayDetailPanel({
                               setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
                               setInsertAt(index + 1)
                             }}
-                            suggestions={day.freeAfternoon?.suggestions}
+                            suggestions={day.aperitivo?.suggestions ?? day.freeAfternoon?.suggestions}
+                            aperitivo={day.aperitivo ? { title: day.aperitivo.title, minutes: day.aperitivo.minutes } : undefined}
                             onPickSuggestion={(name) => {
                               const here = realStops[index]?.coordinates
                               setAddStopFocus(here && hasRealCoordinates(here) ? here : null)

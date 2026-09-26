@@ -201,7 +201,17 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       return (main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)).map((place) => placeWithArticle(place))
     })
     .filter(Boolean)
-  const paceNotice = recovered.length > 0 ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}` : null
+  // La comida acortada para no perder un imprescindible (ajustes C): se dice, con lo que se salva.
+  const savedByLunch = (schedule.shortenedLunch ?? [])
+    .map((name) => destData.places?.find((place) => place.name === name))
+    .filter(Boolean)
+    .map((place) => placeWithArticle(place))
+  const paceNotice =
+    recovered.length > 0
+      ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}`
+      : savedByLunch.length > 0
+        ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}`
+        : null
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

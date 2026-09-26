@@ -60,7 +60,7 @@ export function restaurantZonesNamedIn(text, destData, meal) {
   if (!t) return []
   const matches = (name) => {
     const n = normText(name)
-    return n.length > 0 && new RegExp(`(^|[^a-z])${n.replace(/[.*+?^${}()|[]\]/g, '\$&')}([^a-z]|$)`).test(t)
+    return n.length > 0 && new RegExp(`(^|[^a-z])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`).test(t)
   }
   if (meal === 'cena') return dinnerZones(destData).filter((zone) => matches(zone.label) || matches(zone.id.replace(/_/g, ' ')) || matches(mainZoneOf(zone.label)))
   const mains = mainZonesOf(destData)

@@ -36,6 +36,9 @@ const DEFAULT_AFTERNOON_START = '14:30'
 /** Una visita por dentro que deja el día con esta cantidad de paradas menos (o más) se ve por fuera (decisión del 2026-09-25). */
 const INSIDE_MAX_STOPS_LOST = 2
 /** Minutos, entre todos, de los extras de un bloque vistos de paso y por fuera (Plaza Venecia y el Altar). */
+/** En 1 día, a partir de aquí la tarde se da por libre y se rellena (`relleno_tarde_libre`). */
+const SHORT_FREE_AFTERNOON_MINUTES = 90
+const FILLER_CURATED_OFFSET = 1000
 const EXTRA_PASS_BY_MINUTES = 15
 /** Prioridad para caerse cuando algo no cabe: cuanto más alta, antes se cae. */
 const DROP_RANK = { extra: 4, core: 3, pool: 2, joya: 1 }
@@ -120,6 +123,8 @@ function blockStops(block, pace, experiencesPositive, destData) {
       stops.splice(at >= 0 ? at : stops.length, 0, ...swap.add.map((name) => ({ name, role: 'extra', swappedBy: experience })))
     }
     if (swap.add_at_end) stops.push(...swap.add_at_end.map((name) => ({ name, role: 'extra', swappedBy: experience })))
+    // El mirador del cambio va a la hora del atardecer (el Pincio con Arte).
+    if (swap.atardecer) for (const stop of stops) if (stop.name === swap.atardecer) stop.atSunset = true
   }
   // Viajes cortos: ningún museo de pago de más (Parte A, regla 2: `museos_de_pago`); el arte, gratis.
   // Lo del pool entra por su propio camino (sustituciones), no por aquí.
@@ -312,7 +317,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       units.push({
         id: group ? `${group}:${blockId}` : stop.name,
         group,
-        places: [place],
+        places: [stop.atSunset ? { ...place, atSunset: true } : place],
         dropRank: rank,
         slot,
         blockId,
@@ -404,7 +409,18 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
     const dinnerZone = nearestDinner?.id ?? (afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon ?? null : null)
     const dinnerCoords = nearestDinner?.coordinates ?? (dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null)
     const hours = hoursFor(dayNumber)
-    const run = (dayMode, dayUnits) =>
+    // El mirador marcado para el atardecer, a su hora; si con el atardecer se pierde algo, a otra hora.
+    const withSunset = (list) => list.map((unit) => ({ ...unit, places: unit.places.map((place) => (place.atSunset && hours.sunset != null ? { ...place, sunset: hours.sunset } : place)) }))
+    const run = (dayMode, dayUnits) => {
+      const sunsetUnits = withSunset(dayUnits)
+      const plain = scheduleFixed(dayMode, dayUnits)
+      if (sunsetUnits.every((unit, index) => unit.places.every((place, i) => place === dayUnits[index].places[i]))) return plain
+      const atSunset = scheduleFixed(dayMode, sunsetUnits)
+      // El atardecer no vale un imprescindible: se cuenta lo que se pierde, lo de nivel 1 mucho más.
+      const loss = (result) => result.dropped.reduce((sum, { unit }) => sum + unit.places.reduce((acc, place) => acc + (place.level === 1 ? 10 : 1), 0), 0)
+      return loss(atSunset) <= loss(plain) ? atSunset : plain
+    }
+    const scheduleFixed = (dayMode, dayUnits) =>
       scheduleFixedOrder({
         units: dayUnits,
         mode: dayMode,
@@ -559,6 +575,25 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       for (const unit of units) pushPassBys(unit)
       const withPassBy = run(modeFallback ? normalMode : mode, sequence)
       if (withPassBy.dropped.length === 0) schedule = { ...withPassBy, dropped: [...schedule.dropped] }
+    }
+    // La tarde libre de 1 día se rellena con el tramo del destino (`relleno_tarde_libre`: Popolo →
+    // Santa Maria del Popolo → Pincio al atardecer), sin repetir lo que ya está en el día.
+    const filler = config.relleno_tarde_libre
+    if (filler && afternoon && (schedule.idleBeforeDinner ?? 0) >= SHORT_FREE_AFTERNOON_MINUTES) {
+      const present = new Set(schedule.visits.map((visit) => visit.place.name))
+      const extraUnits = (filler.paradas ?? [])
+        .filter((name) => !present.has(name) && placeByName.has(name))
+        .map((name) => {
+          const [place] = placesForScheduler({ id: name, places: [{ ...placeByName.get(name), ...(name === filler.atardecer ? { atSunset: true } : {}) }] }, destData, freeTourTime)
+          // El tramo es curado (su orden lo dice el destino): va detrás de lo curado del día.
+          return { id: `relleno:${name}`, group: null, places: [place], dropRank: DROP_RANK.extra, slot: 'tarde', blockId: afternoon.id, role: 'extra', priority: PRIORITY.FILLER, curatedIndex: FILLER_CURATED_OFFSET + (filler.paradas ?? []).indexOf(name) }
+        })
+      // En su orden, de una en una: lo que a esa hora no cabe (Santa Maria del Popolo cierra a las 18:00)
+      // se salta y se sigue con lo siguiente.
+      for (const unit of extraUnits) {
+        const trial = run(modeFallback ? normalMode : mode, [...schedule.kept, unit])
+        if (trial.dropped.length === 0) schedule = { ...trial, dropped: [...schedule.dropped] }
+      }
     }
     const kept = schedule.kept
     return {
