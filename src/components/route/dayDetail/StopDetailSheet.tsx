@@ -97,6 +97,16 @@ function MetroIcon() {
   )
 }
 
+/** Título de la sección "Transporte": mismo tamaño que el reloj de "Horario". */
+function TransportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
+      <rect x="5" y="3" width="14" height="14" rx="4" />
+      <path d="M8 21l1.5-3h5L16 21M5 11h14" />
+    </svg>
+  )
+}
+
 function BusIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
@@ -558,14 +568,25 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       {stop.hoursWarning && <p className="text-small font-medium text-accent-red">{stop.hoursWarning}</p>}
                       {stop.seasonNotice && <p className="text-small font-medium text-accent-red">{stop.seasonNotice}</p>}
                       {hoursDetail && <p className="whitespace-pre-line text-small text-text-soft">{hoursDetail}</p>}
-                      <p className="text-caption text-text-muted">
-                        Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
-                        {description?.officialWebsite ? ' (enlace más abajo).' : '.'}
-                      </p>
+                      {/* Plazas, fuentes, calles (sin horario en ningún sitio): nada que consultar (decisión del 2026-09-26). */}
+                      {hoursTag?.variant === 'always' && !hoursDetail ? (
+                        <p className="text-small text-text-soft">Visitable todo el año</p>
+                      ) : (
+                        <p className="text-caption text-text-muted">
+                          Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita
+                          {description?.officialWebsite ? ' (enlace más abajo).' : '.'}
+                        </p>
+                      )}
                     </div>
                   )}
 
                   <div className="space-y-2 border-t border-border pt-3">
+                    {(description?.address || nearbyTransit.metro.length > 0 || nearbyTransit.bus.length > 0) && (
+                      <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
+                        <TransportIcon />
+                        Transporte
+                      </h3>
+                    )}
                     {description?.address && (
                       <div className="flex items-center justify-between gap-3">
                         <span className="flex items-center gap-1.5 text-small text-text">
