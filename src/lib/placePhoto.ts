@@ -126,9 +126,11 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
   const jobs = route.days.flatMap((day) =>
     day.stops.map((stop) =>
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
-      fetchPlacePhoto(stop.name, day.city, stop.wikipediaTitle, 'regular').then((photo) => {
-        if (photo) stop.photoUrl = photo
-      }),
+      stop.isBreak || stop.fixedPhotoUrl
+        ? Promise.resolve()
+        : fetchPlacePhoto(stop.photoName ?? stop.name, day.city, stop.wikipediaTitle, 'regular').then((photo) => {
+            if (photo) stop.photoUrl = photo
+          }),
     ),
   )
   await Promise.allSettled(jobs)

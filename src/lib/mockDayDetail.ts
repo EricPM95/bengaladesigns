@@ -243,6 +243,19 @@ export interface MockStopDetail {
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
   revisitReason?: string
+  /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
+      sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
+  isBreak?: boolean
+  /** Solo isBreak: el icono de la pausa ("☕"). */
+  breakIcon?: string | null
+  /** Solo isBreak: cafés cercanos de los restaurantes del destino. */
+  breakSuggestions?: { name: string; walkMinutes: number; address?: string | null }[]
+  /** Nocturnas: el nombre del paseo nocturno curado al que pertenece ("El centro iluminado"). */
+  nightWalkName?: string | null
+  /** Foto: buscar la de este otro lugar en vez de la del nombre de la parada (el Free Tour usa la de Piazza Navona). */
+  photoName?: string | null
+  /** Foto propia fija (la del Free Tour, cuando la haya): se usa tal cual, sin buscar. */
+  fixedPhotoUrl?: string | null
 }
 
 type StopTemplate = (city: string, rand: () => number) => MockStopDetail
@@ -460,6 +473,12 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ticketInfo: stop.ticketInfo ?? null,
     isRevisit: stop.isRevisit,
     revisitReason: stop.revisitReason,
+    isBreak: stop.isBreak,
+    breakIcon: stop.breakIcon ?? null,
+    breakSuggestions: stop.breakSuggestions,
+    nightWalkName: stop.nightWalkName ?? null,
+    photoName: stop.photoName ?? null,
+    fixedPhotoUrl: stop.fixedPhotoUrl ?? null,
   }
 }
 

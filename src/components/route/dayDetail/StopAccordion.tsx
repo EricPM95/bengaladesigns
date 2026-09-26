@@ -5,6 +5,7 @@ import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/
 import { tagColor, tagLabel } from '../../../lib/tagColors'
 import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { ClockIcon, FreeTourIcon, HourglassIcon, MoonIcon } from '../../ui/TimeIcons'
+import { BreakCard } from './BreakCard'
 
 const NIGHT_GRADIENT = 'linear-gradient(135deg, #1a1a2e, #16213e)'
 const NIGHT_BORDER = '#2d3561'
@@ -29,6 +30,8 @@ interface StopAccordionProps {
  * completa (StopDetailSheet), ya no expande contenido inline debajo de la tarjeta como antes.
  */
 export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText, startTime }: StopAccordionProps) {
+  // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
+  if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} />
   const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
   // Una calle no es una parada (Parte A): una línea "Pasas por…", sin número ni foto.
   if (stop.passThrough) {
@@ -62,7 +65,10 @@ export function StopAccordion({ index, stop, onOpen, menu, circleBg, circleText,
               {startTime ? `Noche · ${startTime}${endTime ? `–${endTime}` : ''}` : 'Noche'}
             </p>
             <p className="text-body font-semibold text-white">{displayStopName(stop.name)}</p>
-            <span className="inline-block rounded-full bg-[#2d3561] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">Experiencia nocturna</span>
+            {/* El paseo nocturno curado al que pertenece, siempre con su nombre ("🌙 Paseo nocturno: El centro iluminado"). */}
+            <span className="inline-block rounded-full bg-[#2d3561] px-2 py-0.5 text-caption font-medium text-[#9DB4FF]">
+              {stop.nightWalkName ? (stop.nightWalkName === 'Paseo nocturno' ? '🌙 Paseo nocturno' : `🌙 Paseo nocturno: ${stop.nightWalkName}`) : 'Experiencia nocturna'}
+            </span>
             {stop.why && <p className="text-caption italic text-[#C5CEF5]">{stop.why}</p>}
           </div>
 

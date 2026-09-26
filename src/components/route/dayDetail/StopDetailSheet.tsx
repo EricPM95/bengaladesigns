@@ -133,15 +133,20 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
   useEffect(() => {
-    if (!stop) { setPhoto(null); return }
+    if (!stop || stop.isBreak) { setPhoto(null); return }
+    // Foto propia fija (el Free Tour, cuando la haya): tal cual, sin buscar.
+    if (stop.fixedPhotoUrl) {
+      setPhoto({ source: 'wikipedia', thumb: stop.fixedPhotoUrl, small: stop.fixedPhotoUrl, regular: stop.fixedPhotoUrl, blurHash: null, attribution: null })
+      return
+    }
     let cancelled = false
-    fetchPlacePhotoDetail(stop.name, city).then((result) => {
+    fetchPlacePhotoDetail(stop.photoName ?? stop.name, city).then((result) => {
       if (!cancelled) setPhoto(result)
     })
     return () => {
       cancelled = true
     }
-  }, [stop?.name, city])
+  }, [stop?.name, stop?.photoName, stop?.fixedPhotoUrl, stop?.isBreak, city])
   const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   const [internalDescription, setInternalDescription] = useState<StopDescription | null>(null)
   const [internalDescLoading, setInternalDescLoading] = useState(false)
@@ -180,7 +185,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     setCuratedResolved(false)
     // El Free Tour es lo único que se salta esto: no es un lugar del destino, es una experiencia con
     // su propio contenido nativo (punto de encuentro, highlights, tips) y nunca va a tener ficha.
-    if (stop.isFreeTour) {
+    if (stop.isFreeTour || stop.isBreak) {
       setCuratedResolved(true)
       return
     }
@@ -201,7 +206,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     setDescFailed(false)
     // externalContent presente (aunque sea null) = AddStopScreen.tsx ya gestiona su propio fetch
     // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
-    if (externalContent || stop.isFreeTour) {
+    if (externalContent || stop.isFreeTour || stop.isBreak) {
       setInternalDescription(null)
       return
     }
@@ -247,7 +252,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // por viaje. Metro/bus vacíos = Claude no encontró nada verificable con búsqueda web — la sección
   // simplemente no se muestra, nunca se inventa una parada.
   useEffect(() => {
-    if (!stop || !curatedResolved) {
+    if (!stop || !curatedResolved || stop.isBreak) {
       setNearbyTransit({ metro: [], bus: [] })
       return
     }

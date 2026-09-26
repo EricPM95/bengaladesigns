@@ -22,7 +22,9 @@
       "Panteón",
       "Piazza Navona"
     ],
-    "area_del": "del centro histórico"
+    "area_del": "del centro histórico",
+    "photo_url": null,
+    "photo_from": "Piazza Navona"
   },
   "joyas": [
     "Coliseo",
@@ -6940,7 +6942,7 @@
       "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.",
       "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad. El resto del día sigue a tu ritmo."
     },
-    "night_view_text": "Vistas de Roma iluminada: a esta hora ya es de noche y la ciudad se enciende a tus pies.",
+    "night_view_text": "🌃 Roma iluminada a tus pies",
     "closed_notices": {
       "_nota": "Avisos de cerrado (decisión del 2026-09-26). {Lugar}: el lugar con su artículo y mayúscula; {esta}: está/están; {cerrado}: cerrado/cerrada/cerrados/cerradas; {dia}: \"25 de diciembre\" o \"lunes\"; {motivo}: el festivo o \"cierre semanal\"; {fechas}: \"el 1 de mayo (Día del Trabajo) y el 2 de mayo (domingo)\"; {resto}: lo que sí se ve de su grupo.",
       "por_fuera": "{Lugar} {esta} {cerrado} el {dia} por {motivo}: te lo enseñamos por fuera, merece la pena igual.",
@@ -6961,7 +6963,8 @@
         "12-25": "Navidad",
         "12-26": "San Esteban"
       }
-    }
+    },
+    "sunset_text": "🌅 El momento perfecto para ver el atardecer"
   },
   "museos_de_pago": {
     "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",
@@ -9297,6 +9300,23 @@
               "nota": "Callejear y aperitivo."
             }
           ],
+          "si_sobra": {
+            "minutos": 60,
+            "atardecer_desde": "20:00",
+            "estirar": "Monti",
+            "anadir": [
+              {
+                "lugar": "Via dei Fori Imperiali",
+                "rol": "de_paso"
+              },
+              {
+                "lugar": "Columna de Trajano",
+                "rol": "atardecer",
+                "minutos": 15,
+                "nota": "Al atardecer, de paso: los Foros Imperiales con la última luz."
+              }
+            ]
+          },
           "comida": {
             "texto": "Mercado de Testaccio o Felice a Testaccio",
             "restaurantes": [
@@ -9537,7 +9557,7 @@
       "recorrido": [
         "Coliseo (noche)"
       ],
-      "texto": "El final natural del día: vuelves por el Celio y el Coliseo aparece iluminado. De noche impresiona todavía más que de día, y tienes dónde cenar justo al lado."
+      "texto": "El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor."
     },
     "libre": {
       "nombre": "Un paseo a tu aire",
@@ -9563,6 +9583,21 @@
         "Fontana de Trevi",
         "Plaza de España"
       ],
+      "solo_si_falta": [
+        "Panteón",
+        "Piazza Navona"
+      ],
+      "texto_partes": {
+        "inicio": "Tu noche en el centro, iluminado y con menos gente.",
+        "lugares": {
+          "Panteón (noche)": "el Panteón, con su pórtico iluminado",
+          "Piazza Navona (noche)": "la Piazza Navona con sus fuentes",
+          "Fontana de Trevi (noche)": "la Fontana de Trevi",
+          "Plaza de España (noche)": "la escalinata de la Plaza de España"
+        },
+        "varios": "están a pocos minutos a pie unos de otros: un paseo precioso para cerrar el día.",
+        "uno": "está a un paso: el broche perfecto para cerrar el día."
+      },
       "texto": "Tu noche en el centro: lo que no has visto de día, iluminado y con menos gente. El Panteón, la Piazza Navona con sus fuentes, la Fontana de Trevi y la escalinata de la Plaza de España están a diez minutos unos de otros: un paseo precioso para cerrar el día."
     }
   },
@@ -9667,6 +9702,11 @@
         12.4813
       ],
       "zone": "centro_historico",
+      "icon": "☕",
+      "suggest": {
+        "sub_category": "cafe",
+        "count": 2
+      },
       "description": "Cappuccino y cornetto de pie en la barra, como un romano, entre Trevi y San Ignacio.",
       "why": "Cappuccino y cornetto de pie en la barra, como un local: el desayuno romano de verdad, sin prisa y sin sentarse."
     },

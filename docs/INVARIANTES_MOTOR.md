@@ -1055,3 +1055,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 223. **Motor por defecto**: en un destino con `curated_days` (Roma), el motor v3 con días curados, también en
     producción sin variables de entorno. Solo lo cambian una petición con `engine`, `ROUTE_ENGINE=viejo` o
     `ROUTE_V3_PLANNER=bloques`.
+224. **Pausas con nombre** (`curated_breaks`: el desayuno romano): la parada lleva `is_break`, `break_icon` y
+    `break_suggestions` (los 2 cafés más cercanos de `restaurants`, `sub_category: cafe`) y ni horario, ni etiquetas,
+    ni foto. La app la pinta como la comida (BreakCard), sin número ni marcador en el mapa, y no se abre: nunca pide
+    ficha, foto ni nada a Claude.
+225. **Etiqueta de los miradores**: al atardecer, `destination_config.sunset_text` ("🌅 El momento perfecto para ver
+    el atardecer"); si llega de noche, `night_view_text` ("🌃 Roma iluminada a tus pies").
+226. **Paseos nocturnos**: todas sus paradas llevan `night_walk_name` y la tarjeta enseña "🌙 Paseo nocturno: {nombre}".
+    En 2 días, "El centro iluminado" solo si el Panteón o Navona no han salido de día (`solo_si_falta`); su texto se
+    monta con lo que lleva de verdad (`texto_partes`).
+227. **Foto del Free Tour**: `default_free_tour.photo_url` (la propia, pendiente) o, mientras, la de `photo_from`
+    (Piazza Navona); nunca la que salga buscando "Free Tour".
+228. **D5 tarde B en verano** (`si_sobra`): con más de 60 min antes de cenar y atardecer desde las 20:00, la tarde
+    acaba con la Via dei Fori Imperiali y la Columna de Trajano al atardecer, y el rato de antes se queda en Monti.

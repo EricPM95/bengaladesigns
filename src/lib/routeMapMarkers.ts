@@ -55,7 +55,8 @@ function spreadOverlappingCoords<T extends { coordinates: Coordinates }>(items: 
 // Prompt 6: un paseo por barrio no es un punto concreto — se pasea por una zona entera. Si se
 // pintara su pin (el centro del barrio) la ruta del día se doblaría hacia allí de forma artificial.
 function realStops(day: DayPlan) {
-  return day.stops.filter((stop) => !stop.isZoneWalk && hasRealCoordinates(stop.coordinates))
+  // La pausa (el desayuno romano) no es un lugar: sin marcador, como la comida.
+  return day.stops.filter((stop) => !stop.isZoneWalk && !stop.isBreak && hasRealCoordinates(stop.coordinates))
 }
 
 /**

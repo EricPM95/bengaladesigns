@@ -55,6 +55,32 @@ function dinnerFields(destData, dinnerZoneId, placeZone) {
   return zone ? { zone: zone.label, zone_display: zone.display } : zoneFields(destData, placeZone, 'cena')
 }
 
+/** Los cafés más cercanos a una pausa (`suggest.sub_category` de la pausa, 2 por defecto), con minutos a pie aproximados. */
+function breakSuggestions(destData, pause) {
+  const [lat, lng] = pause.coordinates ?? []
+  if (lat == null || lng == null) return []
+  const wanted = pause.suggest?.sub_category ?? 'cafe'
+  const count = pause.suggest?.count ?? 2
+  const meters = (restaurant) => {
+    const r = restaurant.coordinates ?? {}
+    const x = ((r.lng - lng) * Math.PI) / 180 * Math.cos((((r.lat + lat) / 2) * Math.PI) / 180)
+    const y = ((r.lat - lat) * Math.PI) / 180
+    return Math.sqrt(x * x + y * y) * 6371000
+  }
+  return (destData.restaurants ?? [])
+    .filter((restaurant) => restaurant.sub_category === wanted && restaurant.coordinates?.lat != null)
+    .map((restaurant) => ({ restaurant, meters: meters(restaurant) }))
+    .sort((a, b) => a.meters - b.meters)
+    .slice(0, count)
+    .map(({ restaurant, meters: distance }) => ({
+      name: restaurant.name,
+      walk_minutes: Math.max(1, Math.round((distance * 1.3) / 80)),
+      address: restaurant.address ?? null,
+      latitude: restaurant.coordinates.lat,
+      longitude: restaurant.coordinates.lng,
+    }))
+}
+
 function zoneFields(destData, zoneKey, mealType) {
   const info = mealZoneInfo(destData, zoneKey, mealType)
   return { zone: info.name, zone_display: info.display }
@@ -153,6 +179,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
     // Mirador del atardecer: la hora de la puesta de sol a la que se ajusta (para las comprobaciones).
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
+    // Y su etiqueta: "🌅 El momento perfecto para ver el atardecer" (texto del destino), no "Elegido según tus gustos".
+    if (visit.place.sunset != null && destData.destination_config?.sunset_text) stop.why = destData.destination_config.sunset_text
     // El mirador que llega ya de noche (en invierno): no se vende como atardecer, sino como la ciudad
     // iluminada (decisión del 2026-09-26; el texto, en el JSON del destino).
     // (También el de las rutas de 1 día, que no pasan por el ajuste de blockTrip.)
@@ -165,6 +193,24 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
+    // La foto del Free Tour: la propia del destino (`photo_url`) cuando la haya; mientras, la de un lugar que ya
+    // tiene la app (`photo_from`: Piazza Navona), nunca la que devuelva buscar "Free Tour" por su nombre.
+    if (visit.place.isFreeTour) {
+      if (tour?.photo_url) stop.photo_url = tour.photo_url
+      const photoPlace = tour?.photo_from ? destData.places?.find((candidate) => candidate.name === tour.photo_from) : null
+      if (photoPlace) {
+        stop.photo_name = photoPlace.name
+        stop.wikipedia_title = photoPlace.wikipedia_title ?? null
+      }
+    }
+    // Una pausa con nombre (el desayuno romano): no es un lugar, se pinta como la comida, con su icono, su texto
+    // y dos cafés cerca de los restaurantes del destino. Sin horario, etiquetas ni ficha.
+    if (visit.place.isBreak) {
+      stop.is_break = true
+      stop.break_icon = visit.place.icon ?? '☕'
+      stop.break_suggestions = breakSuggestions(destData, visit.place)
+      for (const key of ['hours', 'schedule', 'hours_card', 'tags', 'category', 'category_label', 'wikipedia_title', 'tip', 'reservation', 'ticket_info', 'experience']) delete stop[key]
+    }
     // Posición en el orden curado del día (fijado a mano: Popolo → Pincio → España): el programador
     // no lo invierte y la métrica de zigzag tampoco lo cuenta como paseo de más.
     const curatedIndex = unitById.get(visit.unitId)?.curatedIndex

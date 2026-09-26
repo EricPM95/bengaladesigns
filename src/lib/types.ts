@@ -293,6 +293,19 @@ export interface Stop {
   why?: string | null
   /** Precio y condiciones de entrada ("Entrada ~15€.") — solo se enseñan en la pestaña Tickets. */
   ticketInfo?: string[] | null
+  /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
+      sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
+  isBreak?: boolean
+  /** Solo isBreak: el icono de la pausa ("☕"). */
+  breakIcon?: string | null
+  /** Solo isBreak: cafés cercanos de los restaurantes del destino. */
+  breakSuggestions?: { name: string; walkMinutes: number; address?: string | null }[]
+  /** Nocturnas: el nombre del paseo nocturno curado al que pertenece ("El centro iluminado"). */
+  nightWalkName?: string | null
+  /** Foto: buscar la de este otro lugar en vez de la del nombre de la parada (el Free Tour usa la de Piazza Navona). */
+  photoName?: string | null
+  /** Foto propia fija (la del Free Tour, cuando la haya): se usa tal cual, sin buscar. */
+  fixedPhotoUrl?: string | null
 }
 
 /**

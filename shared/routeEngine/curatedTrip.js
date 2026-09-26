@@ -244,7 +244,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const variant = cfg.variantes?.[name]
       if (!variant) return
       applied.push(name)
-      for (const key of ['manana', 'comida', 'tarde', 'cena', 'noche']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
+      for (const key of ['manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
       if (variant.tarde_antes) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar)), tarde: [...variant.tarde_antes, ...sections.tarde.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar))] }
       for (const insert of variant.insertar ?? []) {
@@ -572,6 +572,19 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       })
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     }
+    // `si_sobra` (D5 tarde B en verano): si antes de cenar sobran más de esos minutos y el sol se pone tarde, la tarde
+    // acaba con su paseo al atardecer (Via dei Fori Imperiali y la Columna de Trajano) y el rato de antes se queda en
+    // la parada que dice `estirar` (Monti: callejear y aperitivo). Solo si no se pierde nada.
+    const extra = sections.si_sobra
+    if (extra && (result.idleBeforeDinner ?? 0) > (extra.minutos ?? 60) && hours.sunset != null && hours.sunset >= toMin(extra.atardecer_desde ?? '00:00')) {
+      const added = (extra.anadir ?? []).map((stop, index) => unitOf(stop, 'tarde', 80 + index, dayId, day)).filter((unit) => unit && !unit.skipped)
+      const list = [...units.map((unit) => (extra.estirar && unit.places.some((place) => place.name === extra.estirar) ? { ...unit, stretch: true } : unit)), ...added]
+      const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+      if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId)) && added.every((unit) => trial.visits.some((visit) => visit.unitId === unit.id))) {
+        units = list
+        result = trial
+      }
+    }
     // El tiempo que sobra antes del atardecer se queda en la parada marcada `estirar` (callejear Trastevere), no
     // arriba en el mirador: se alarga de 15 en 15 min mientras no se caiga nada.
     const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
@@ -754,6 +767,17 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   }
   const usedNights = new Set()
   const nightsByDay = new Map()
+  // El texto del paseo según lo que lleva de verdad (`texto_partes`: una frase por nocturna del recorrido); sin
+  // partes, el texto fijo del paseo.
+  const walkText = (walk, chain) => {
+    const parts = walk.texto_partes
+    if (!parts) return chain.length < walk.recorrido.length && walk.texto_corto ? walk.texto_corto : walk.texto
+    const pieces = chain.map((entry) => parts.lugares?.[entry.name]).filter(Boolean)
+    if (pieces.length === 0) return walk.texto ?? null
+    const list = pieces.length === 1 ? pieces[0] : `${pieces.slice(0, -1).join(', ')} y ${pieces.at(-1)}`
+    const joined = list.charAt(0).toUpperCase() + list.slice(1)
+    return `${parts.inicio} ${joined} ${pieces.length === 1 ? parts.uno : parts.varios}`
+  }
   for (const day of cityPlanned) {
     const walk = walks[day.curatedDay.noche]
     if (!walk) continue
@@ -792,8 +816,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       usedNights.add(entry.name)
       for (const name of entry.conflicts_with ?? []) timesSeen.set(name, (timesSeen.get(name) ?? 0) + 1)
     }
-    const shortened = chain.length < walk.recorrido.length
-    const text = fromAlternative ? null : shortened && walk.texto_corto ? walk.texto_corto : walk.texto
+    const text = fromAlternative ? null : walkText(walk, chain)
     nightsByDay.set(
       day.dayNumber,
       chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) && !(entry.conflicts_with ?? []).some((name) => wokeFor.has(name)) ? { replacesDayVisit: true } : {}) })),
@@ -809,8 +832,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const seenByDay = new Set(cityPlanned.flatMap((day) => day.schedule.visits.flatMap((visit) => [visit.place.name, ...(visit.place.outsideOf ?? [])])))
     const covered = new Set([...seenByDay, ...tourCovers])
     const missing = centro.centro_dos_dias.filter((name) => !covered.has(name))
+    // Solo cuando el Panteón o Navona no han salido de día (`solo_si_falta`): si faltan solo Trevi y la Plaza de
+    // España, ya las lleva el paseo de D1 ("La Roma de las fuentes").
+    const needed = centro.solo_si_falta ? missing.some((name) => centro.solo_si_falta.includes(name)) : missing.length > 0
     const host = cityPlanned.find((day) => day.curatedDay.id === 'D1') ?? cityPlanned.find((day) => day.curatedDay.id !== 'D3') ?? cityPlanned[0]
-    if (missing.length > 0 && host) {
+    if (needed && host) {
       const current = nightsByDay.get(host.dayNumber) ?? []
       const wanted = new Set([...missing, ...current.flatMap((entry) => entry.conflicts_with ?? [])])
       const chain = centro.recorrido
@@ -820,7 +846,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (chain.length > 0) {
         for (const [dayNumber, list] of nightsByDay) if (dayNumber !== host.dayNumber) nightsByDay.set(dayNumber, list.filter((entry) => !chain.some((other) => other.name === entry.name)))
         nightsByDay.set(host.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true })))
-        host.nightWalk = { nombre: centro.nombre, texto: centro.texto }
+        host.nightWalk = { nombre: centro.nombre, texto: walkText(centro, chain) }
       }
     }
   }

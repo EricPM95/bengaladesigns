@@ -130,6 +130,10 @@ Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CA
 Roma cerrada (2026-09-26): revisión V2 sin rojos tras los tres ajustes finales (reglas 219-223). El motor v3 con
 días curados es el de por defecto para Roma, también en producción (`engineFor` con `curated_days`).
 
+Ajustes de la app (2026-09-26, reglas 224-228): desayuno como pausa, etiquetas de atardecer y de noche, nombre
+del paseo nocturno, foto del Free Tour y tarde B de verano. Pendiente: la foto propia del Free Tour
+(`default_free_tour.photo_url` en roma.json).
+
 Pendiente: en viajes de 5+ días, la tarde B de D5 no debe repetir las basílicas de D6 (San Clemente, Letrán,
 Santa María la Mayor, San Pietro in Vincoli, Monti). En ese caso, tarde B = Testaccio y Trastevere de noche.
 

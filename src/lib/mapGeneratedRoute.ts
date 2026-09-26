@@ -93,6 +93,15 @@ interface GeneratedStop {
   notice?: string | null
   /** Calle: "Pasas por…" — Stop.passThrough. */
   pass_through?: boolean
+  /** Pausa con nombre (el desayuno romano) — Stop.isBreak/breakIcon/breakSuggestions. */
+  is_break?: boolean
+  break_icon?: string | null
+  break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
+  /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
+  night_walk_name?: string | null
+  /** Foto de otro lugar / foto propia fija — Stop.photoName / Stop.fixedPhotoUrl. */
+  photo_name?: string | null
+  photo_url?: string | null
 }
 
 interface GeneratedMealOption {
@@ -371,6 +380,16 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
     ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
+    ...(generated.is_break
+      ? {
+          isBreak: true,
+          breakIcon: generated.break_icon ?? '☕',
+          breakSuggestions: (generated.break_suggestions ?? []).map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, address: item.address ?? null })),
+        }
+      : {}),
+    ...(generated.night_walk_name ? { nightWalkName: generated.night_walk_name } : {}),
+    ...(generated.photo_name ? { photoName: generated.photo_name } : {}),
+    ...(generated.photo_url ? { fixedPhotoUrl: generated.photo_url, photoUrl: generated.photo_url } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
     ...(generated.ticket_info?.length ? { ticketInfo: generated.ticket_info } : {}),

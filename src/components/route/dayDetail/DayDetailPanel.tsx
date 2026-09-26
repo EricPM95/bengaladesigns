@@ -498,7 +498,7 @@ export function DayDetailPanel({
 
   // Prompt 6: un paseo por barrio es una sugerencia para un hueco, no un lugar que el viaje
   // incluya — no se cuenta ni en "N paradas" ni en el mapa (ver realStops en routeMapMarkers.ts).
-  const visitCount = stops.reduce((count, _stop, index) => (realStops[index]?.isZoneWalk ? count : count + 1), 0)
+  const visitCount = stops.reduce((count, _stop, index) => (realStops[index]?.isZoneWalk || realStops[index]?.isBreak ? count : count + 1), 0)
   // Los metros hasta el paseo tampoco cuentan: su conector ni siquiera se pinta (no se va a un
   // barrio, se pasea por él), así que sumarlos falsearía el "a pie" de la cabecera.
   const totalWalkMeters =
@@ -1094,7 +1094,8 @@ export function DayDetailPanel({
                     )
                   ) : (
                     <StopAccordion
-                      index={index}
+                      // El número, como en el mapa: sin contar las pausas (el desayuno) ni los paseos por barrio.
+                      index={realStops.slice(0, index).filter((other) => !other.isBreak && !other.isZoneWalk).length}
                       stop={stop}
                       circleBg={stopCircleBg}
                       circleText={stopCircleText}

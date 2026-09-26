@@ -272,7 +272,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     day.night_walk = { name: tripDay.nightWalk.nombre, text: tripDay.nightWalk.texto ?? null }
     const first = day.stops.find((stop) => stop.is_night_experience)
     if (tripDay.nightWalk.texto) first.why = tripDay.nightWalk.texto
-    first.night_walk_name = tripDay.nightWalk.nombre
+    // El nombre del paseo va en todas sus paradas nocturnas: la tarjeta lo enseña siempre.
+    for (const stop of day.stops) if (stop.is_night_experience) stop.night_walk_name = tripDay.nightWalk.nombre
   }
   // El día curado y las variantes que se le han aplicado (para la revisión y la ficha).
   if (tripDay.curatedDay) day.curated_day = { id: tripDay.curatedDay.id, name: tripDay.curatedDay.nombre, variants: tripDay.curatedDay.variantes }

@@ -70,8 +70,8 @@ Del lunes 11 de enero al martes 12 de enero de 2027.
 | 18:20 | 18:30 | 10 min | Campo de' Fiori | de paso |  |
 | | | 85 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Plaza Farnese, Plaza Trilussa | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «El centro iluminado» | |
-| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | experiencia nocturna | |
+| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «La Roma de las fuentes» | |
+| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | paseo nocturno «La Roma de las fuentes» | |
 
 ### Día 2 — martes 12 de enero · Roma — día 2
 
@@ -130,7 +130,7 @@ Del miércoles 14 de abril al jueves 15 de abril de 2027.
 | 19:05 | 19:49 | 44 min | Terraza del Pincio | 🌅 atardecer 19:49 | 🚶 17 min desde Galería Borghese |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | paseo nocturno «El centro iluminado» | |
-| 22:25 | 22:50 | 25 min | 🌙 Piazza Navona (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Piazza Navona (noche) | paseo nocturno «El centro iluminado» | |
 
 ### Día 2 — jueves 15 de abril · Roma — día 2
 
@@ -309,7 +309,7 @@ Del sábado 16 de enero al domingo 17 de enero de 2027.
 | 19:15 | 19:35 | 20 min | Terraza del Pincio | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 17 min desde Galería Borghese |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Panteón (noche) | paseo nocturno «El centro iluminado» | |
-| 22:25 | 22:50 | 25 min | 🌙 Piazza Navona (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Piazza Navona (noche) | paseo nocturno «El centro iluminado» | |
 
 #### Lo que quedó fuera
 
@@ -1396,8 +1396,8 @@ Del jueves 24 de diciembre al viernes 25 de diciembre de 2026.
 | 16:50 | 17:20 | 30 min | Barrio Judío |  |  |
 | 17:25 | 17:35 | 10 min | Fuente de las Tortugas | de paso |  |
 | | | 65 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Campo de' Fiori, Iglesia del Gesù, Plaza del Campidoglio | |
-| 18:00 | 18:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «El centro iluminado», antes de cenar | |
-| 18:55 | 19:20 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna, antes de cenar | |
+| 18:00 | 18:45 | 45 min | 🌙 Plaza de España (noche) | paseo nocturno «La Roma de las fuentes», antes de cenar | |
+| 18:55 | 19:20 | 25 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «La Roma de las fuentes», antes de cenar | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 
 #### Lo que quedó fuera
@@ -1439,7 +1439,7 @@ Del jueves 31 de diciembre al sábado 2 de enero de 2026.
 | | | 85 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Plaza Farnese, Plaza Trilussa | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
 | 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «La Roma de las fuentes» | |
-| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | experiencia nocturna | |
+| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | paseo nocturno «La Roma de las fuentes» | |
 
 ### Día 2 — viernes 1 de enero · Roma — día 2
 
@@ -1549,8 +1549,8 @@ Del sábado 1 de mayo al domingo 2 de mayo de 2027.
 | 18:20 | 18:30 | 10 min | Campo de' Fiori | de paso |  |
 | | | 85 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Centro Histórico | Iglesia del Gesù, Plaza Farnese, Plaza Trilussa | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Centro Histórico |  |
-| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «El centro iluminado» | |
-| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | experiencia nocturna | |
+| 21:30 | 22:15 | 45 min | 🌙 Fontana de Trevi (noche) | paseo nocturno «La Roma de las fuentes» | |
+| 22:25 | 22:50 | 25 min | 🌙 Plaza de España (noche) | paseo nocturno «La Roma de las fuentes» | |
 
 #### Lo que quedó fuera
 
