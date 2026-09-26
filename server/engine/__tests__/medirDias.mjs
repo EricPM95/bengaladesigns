@@ -124,6 +124,7 @@ const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) =
 const JOYA_NAMES = D.places.filter((place) => place.tier === 'joya').map((place) => place.name)
 /** Lo mejor primero (decisión del 2026-09-26): en 3+ días, las joyas como muy tarde este día. */
 const JOYA_LAST_DAY = 3
+const ZIGZAG_KM_LEVEL1_PASS = 1
 const addDaysIso = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
@@ -345,6 +346,8 @@ function measureDay(day, pace, interestTags, plannedNames) {
     revisits: dayStops.filter((stop) => stop.is_revisit && !stop.is_pass_by).length,
     afternoonKm: tarde ? tarde.real / 1000 : null,
     afternoonMinKm: tarde ? tarde.min / 1000 : null,
+    // Un nivel 1 rescatado de paso (el Altar al final del día): su zigzag se tolera hasta 1 km.
+    levelOnePassBy: dayStops.some((stop) => stop.pass_through && placeByName.get(stop.place_name ?? stop.name)?.level === 1),
     outOfHours: dayStops.map((stop) => ({ name: stop.name, why: outOfHours(stop) })).filter((item) => item.why),
     dropped,
     themeStops: dayStops.filter((stop) => (placeByName.get(stop.name)?.tags ?? []).some((tag) => interestTags.has(tag))).length,
@@ -456,7 +459,12 @@ function measureTrip(trip, pace, exps) {
   // Excepción (decisión del 2026-09-26): en 3 días con Free Tour, el Vaticano el día 3 vale.
   // Una sola joya el día 3 (el Vaticano, o el Coliseo si el Vaticano va por la tarde del día del tour).
   const tourException = (name) => trip.hasFreeTour && lastDay === 3 && firstDay.get(name) === 3 && JOYA_NAMES.filter((other) => firstDay.get(other) === 3).length === 1
-  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
+  // Pascua en 4 días con Free Tour (decisión del 2026-09-26): con una joya cerrada los dos primeros días, el
+  // tour el día 1 y la excursión el día cerrado, otra joya cae el último día: vale una.
+  const closedStart = JOYA_NAMES.some((other) => closedUntil(other, 2))
+  const lateCount = JOYA_NAMES.filter((other) => firstDay.get(other) === lastDay).length
+  const easterException = (name) => trip.hasFreeTour && lastDay === 4 && closedStart && firstDay.get(name) === lastDay && lateCount === 1
+  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name)) && !tourException(name) && !easterException(name)).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 
   return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }
@@ -629,7 +637,8 @@ const SEMAFORO_CRITERIOS = [
     ok: (v) => v === 0,
   },
   { id: 'sinTiempo', warnOnly: true, label: 'Paradas de bloque que van a "No te dio tiempo" (viajes de 3+ días)', limite: '—', applies: (n) => n >= 3, value: (rows, days) => sum(days, (d) => d.noTime?.length ?? 0), ok: (v) => v === 0 },
-  { id: 'zigzag', label: 'Tardes que andan más de 400 m de más frente al mínimo', limite: '0', value: (rows, days) => days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.4).length, ok: (v) => v === 0 },
+  // Decisión del 2026-09-26: con un nivel 1 rescatado de paso, el límite es 1 km (ZIGZAG_KM_LEVEL1_PASS).
+  { id: 'zigzag', label: 'Tardes que andan más de 400 m de más frente al mínimo (1 km si llevan un nivel 1 de paso)', limite: '0', value: (rows, days) => days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > (d.levelOnePassBy ? ZIGZAG_KM_LEVEL1_PASS : 0.4)).length, ok: (v) => v === 0 },
   {
     id: 'tardeKm',
     label: 'Km de más por la tarde frente al mínimo con las mismas paradas',

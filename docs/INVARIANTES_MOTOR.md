@@ -866,6 +866,16 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 183. **Aperitivo hasta 120 min antes de cenar** ("Aperitivo y paseo por {barrio}"); por encima, tarde libre.
 184. **Ritmo del cuestionario**: 'zen' y 'balanced' son tranquilo (`isTranquiloPace`). Antes solo se miraba
     'tranquilo' y la app mandaba 'zen': todas las rutas tranquilas de la app salían completas.
+185. **Rescate de paso de una joya temprana** (`rescueOutside` con `upToDay`): puede quitar varias paradas de
+    paso ligeras, no solo una (Trevi el día 1 a las 19:45 en tranquilo 4 días, en vez del día 4).
+186. **Mirador del atardecer que llega de noche** (más de 30 min después de la puesta de sol,
+    `MIRADOR_LATE_MINUTES`): se adelanta quitando lo de paso secundario de delante, sin romper el orden del
+    bloque (lo que sobra pasa a aperitivo o tiempo libre); si no llega, `night_view` con el texto
+    `destination_config.night_view_text`. Se aplica SOLO al plan ya elegido (`settleMiradores`, al final de
+    `planBlockTrip`): dentro de cada intento cambiaba el coste y 4 días en diciembre perdía la Galería Borghese.
+187. **Zigzag con un nivel 1 de paso**: el límite de desvío es 1 km (0,4 km para el resto).
+188. **Pascua, 4 días con Free Tour**: una joya el día 4 vale si alguna joya está cerrada los dos primeros días
+    (excepción de "lo mejor primero", decisión del 2026-09-26).
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

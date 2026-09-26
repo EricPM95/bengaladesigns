@@ -53,6 +53,8 @@ const LATE_JOYA_COST = 40
 const LATE_JOYA_CAP = 70
 /** Empezar antes para no perder un nivel 1: se prueba de media en media hora, lo justo. */
 const WAKE_EARLY_STEP = 30
+/** Un mirador "al atardecer" que llega más tarde que esto después de la puesta de sol ya es de noche. */
+const MIRADOR_LATE_MINUTES = 30
 const DROP_RANK = { ancla: 1, joya: 1, pool: 2, parada: 3, atardecer: 3, de_paso: 5, extra: 4 }
 /** Tranquilo: el nivel 3 antes que el nivel 2, y los dos antes que lo de paso (los rellenos, antes que todo). */
 const DROP_RANK_BY_LEVEL = { 3: 7, 2: 6, de_paso: 5.5, extra: 8 }
@@ -259,6 +261,8 @@ export function planBlockTrip(args) {
     for (const ban of improved.added) bans.add(ban)
     best = improved.trial
   }
+  best.settleMiradores?.()
+  delete best.settleMiradores
   return best
 }
 
@@ -1641,6 +1645,8 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       { transform: (list) => list, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other)) },
       { transform: shortenCallejeo, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other)) },
       { transform: shortenCallejeo, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other) || isLightPass(other)) && dropped.filter(({ unit: other }) => isLightPass(other)).length <= 1 },
+      // Para adelantar una joya (Trevi de paso el día 1, no el último): lo de paso secundario que haga falta.
+      ...(upToDay !== null ? [{ transform: shortenCallejeo, allows: (dropped) => dropped.every(({ unit: other }) => isFiller(other) || isLightPass(other)) }] : []),
     ]
     const partnerDay = groupDay(place)
     for (const stage of stages) {
@@ -1726,6 +1732,36 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     if (normalLunch) Object.assign(day, { units: normalLunch.list, schedule: normalLunch.result })
   }
 
+  // Miradores del atardecer que caen de noche (decisión del 2026-09-26: el Janículo a las 19:15 en enero).
+  // Más de 30 min después de la puesta de sol: se adelanta quitando lo de paso secundario de delante, sin
+  // tocar el orden del bloque; si ni así llega, se presenta como vistas de la ciudad iluminada (nightView).
+  // Solo sobre el plan ya elegido (planBlockTrip lo llama al final): dentro de cada intento cambiaba el
+  // coste y el reparto cambiaba de tarde (4 días en diciembre perdía la Galería Borghese por el Pincio).
+  const settleMiradores = () => days.filter((d) => d.schedule).forEach((day) => {
+    const sunset = hoursOf(day).sunset
+    if (sunset == null) return
+    const roleOf = (visit) => day.schedule.kept.find((unit) => unit.id === visit.unitId)?.role
+    const late = day.schedule.visits.find((visit) => roleOf(visit) === 'atardecer' && visit.start > sunset + MIRADOR_LATE_MINUTES)
+    if (!late) return
+    const at = day.units.findIndex((unit) => unit.id === late.unitId)
+    const expendable = day.units.slice(0, Math.max(0, at)).filter((unit) => unit.slot === 'tarde' && unit.role === 'de_paso' && !unit.places.some((place) => place.level === 1 || place.group))
+    let list = day.units
+    let fixed = null
+    for (const unit of [...expendable].reverse()) {
+      list = list.filter((other) => other !== unit)
+      const result = schedule(day, list, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null, { morning: !day.halfDayExcursion })
+      const visit = result.visits.find((candidate) => candidate.unitId === late.unitId)
+      if (visit && visit.start <= sunset + MIRADOR_LATE_MINUTES && result.dropped.every(({ unit: other }) => other.role === 'extra' || other.role === 'de_paso')) {
+        fixed = { list, result }
+        break
+      }
+    }
+    if (fixed) {
+      Object.assign(day, { units: fixed.list, schedule: { ...fixed.result, dropped: day.schedule.dropped } })
+      day.longWalks = longWalksOf(day)
+    } else late.place = { ...late.place, nightView: true }
+  })
+
   // Traslados largos (más de 25 min andando), con el día ya montado: lo de paso que ha metido el rescate
   // también cuenta (decisión del 2026-09-26). No son un fallo: se dicen, andando primero y con la alternativa.
   for (const day of days.filter((d) => d.schedule)) day.longWalks = longWalksOf(day)
@@ -1770,5 +1806,6 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     blockSummary,
     untypedHalves,
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
+    settleMiradores,
   }
 }

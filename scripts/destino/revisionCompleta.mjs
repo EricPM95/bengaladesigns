@@ -207,6 +207,11 @@ for (const [index, viaje] of VIAJES.entries()) {
       if (stop.pass_through || stop.is_pass_by) notas.push('de paso')
       if (stop.instead_of_visit) notas.push('por fuera, en vez de la visita')
       if (/tiempo libre/i.test(stop.name) || stop.is_free_time) notas.push('tiempo libre')
+      // Mirador que llega ya de noche: se presenta como vistas de la ciudad iluminada.
+      if (stop.night_view) {
+        notas.push('🌃 vistas de noche (el atardecer ya pasó)')
+        patron('Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)', `viaje ${numero} día ${n} (${cell(stop.name)} a las ${stop.suggested_time})`)
+      }
       if (stop.sunset_minutes != null) notas.push(`🌅 atardecer ${m2t(stop.sunset_minutes)}`)
       if (stop.outside_of?.length) notas.push(`se ve por fuera: ${stop.outside_of.join(', ')}`)
       if (stop.free_tour_covers?.length) notas.push(`recorre: ${stop.free_tour_covers.join(', ')}`)

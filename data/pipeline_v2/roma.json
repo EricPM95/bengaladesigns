@@ -6852,7 +6852,8 @@
       "general": "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las {hora}: así te da tiempo a ver {lugar} sin prisas. El resto del día sigue a tu ritmo.",
       "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.",
       "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad. El resto del día sigue a tu ritmo."
-    }
+    },
+    "night_view_text": "Vistas de Roma iluminada: a esta hora ya es de noche y la ciudad se enciende a tus pies."
   },
   "museos_de_pago": {
     "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",

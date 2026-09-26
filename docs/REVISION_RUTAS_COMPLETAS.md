@@ -1356,7 +1356,7 @@ Del miércoles 13 de enero al viernes 15 de enero de 2027.
 | 17:00 | 17:10 | 10 min | Via della Conciliazione | de paso |  |
 | 17:15 | 17:25 | 10 min | Borgo Pio | de paso |  |
 | 18:00 | 18:45 | 45 min | Trastevere |  | 🚶 24 min desde Borgo Pio |
-| 19:15 | 19:55 | 40 min | Mirador del Janículo |  | 🚶 23 min desde Trastevere |
+| 19:15 | 19:55 | 40 min | Mirador del Janículo | 🌃 vistas de noche (el atardecer ya pasó) | 🚶 23 min desde Trastevere |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Trastevere | 🚶 21 min |
 
 #### Lo que quedó fuera
@@ -2139,7 +2139,7 @@ Del lunes 11 de enero al lunes 11 de enero de 2027.
 | 16:30 | 17:00 | 30 min | Fontana de Trevi |  |  |
 | 17:15 | 17:45 | 30 min | Plaza de España |  |  |
 | 18:00 | 18:30 | 30 min | Piazza del Popolo |  |  |
-| 18:45 | 19:05 | 20 min | Terraza del Pincio |  |  |
+| 18:45 | 19:05 | 20 min | Terraza del Pincio | 🌃 vistas de noche (el atardecer ya pasó) |  |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Tridente y Spagna |  |
 | 21:30 | 22:15 | 45 min | 🌙 Plaza de España (noche) | experiencia nocturna | |
 | 22:25 | 22:50 | 25 min | 🌙 Fontana de Trevi (noche) | experiencia nocturna | |
@@ -2379,6 +2379,7 @@ Sacado de las rutas de arriba con estos criterios: traslados de más de 25 min s
 - **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria y la Plaza de España sin prisas. El resto del día sigue a tu ritmo."** — 1 vez: viaje 4 día 2.
 - **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 08:00: así te da tiempo a ver el Altar de la Patria sin prisas. El resto del día sigue a tu ritmo."** — 2 veces: viaje 7 día 1; viaje 18 día 2.
 - **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. En invierno el Foro Romano cierra a las 16:30, así que hoy empezamos a las 09:00 para que lo veas con tranquilidad. El resto del día sigue a tu ritmo."** — 2 veces: viaje 14 día 1; viaje 25 día 1.
+- **Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)** — 2 veces: viaje 18 día 3 (Mirador del Janículo a las 19:15); viaje 28 día 1 (Terraza del Pincio a las 18:45).
 - **Plaza de España: de día y otra vez de noche el mismo día** — 2 veces: viaje 27 día 1 (17:15 y 22:00); viaje 28 día 1 (17:15 y 21:30).
 - **Se madruga con ritmo tranquilo por un imprescindible (permitido, con aviso): "Hoy toca madrugar un poco. En invierno el Coliseo y el Foro Romano cierran a las 16:30, así que hoy empezamos a las 08:00 para que los veas con tranquilidad. El resto del día sigue a tu ritmo."** — 1 vez: viaje 28 día 1.
 

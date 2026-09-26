@@ -743,12 +743,11 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 | 10:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
 | 13:00–14:30 | 🍝 **Comida**: Sgarro Bistrot en Tridente y Spagna | | | |
 | 14:30 | Galería Borghese | 120 min | 22 min | Elegido según tus gustos: Arte y Museos. |
-| 16:45 | Pasas por Parque de Villa Borghese | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:15 | Terraza del Pincio | 20 min | 11 min | Te pilla de camino a la cena: merece la parada. |
-| 17:45 | Piazza del Popolo | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
-| 18:20 | Pasas por Santa Maria del Popolo | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Terraza del Pincio | 20 min | 17 min | Te pilla de camino a la cena: merece la parada. |
+| 17:30 | Piazza del Popolo | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
+| 18:05 | Pasas por Santa Maria del Popolo | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Aperitivo y paseo por Tridente y Spagna** (79 min). Sugerencias: Via del Corso (15 min), Plaza Colonna (17 min).
+- **Aperitivo y paseo por Tridente y Spagna** (94 min). Sugerencias: Ara Pacis (9 min, entrada), Via del Corso (15 min), Plaza Colonna (17 min).
 - **Cena**: 20:00 en Tridente y Spagna (11 min andando desde la última parada).
 - **Nocturna**: ninguna.
 

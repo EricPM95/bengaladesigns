@@ -116,15 +116,21 @@ de zona.
   3. `validar.mjs` en rojo si una pareja declarada (`encaja_despues_de`) no baja de 20 min en ningún medio.
   Detalle en `docs/MANANAS_Y_TARDES_NOTAS.md`.
 
+### Pendiente de los vuelos
+
+- **El día de vuelta lleva la ruta entera** (visto el 2026-09-26 en el navegador: 2 días completo, el día 2
+  es a la vez "Vuelta a Madrid" y tiene paradas hasta las 22:50 con las nocturnas). No se toca ahora
+  (decisión del 2026-09-26): se resolverá cuando la hora del vuelo de vuelta recorte ese día.
+
 ### Queda por decidir
 
-1. **4 días con Free Tour desde el domingo de Pascua**: el Vaticano va el día 3 y el Coliseo el 4 (el último).
-   Con el Vaticano cerrado domingo y lunes, la excursión el lunes y el Free Tour el día 1, una joya cae el
-   último día sí o sí. ¿Se acepta como excepción?
-2. **Zigzag en tranquilo** (semáforo): el Altar de la Patria entra rescatado de paso al final del día (Monti →
-   Altar → cena) porque el Foro va después de comer; 0,4-0,9 km de más. Por estudiar.
+Nada abierto ahora mismo.
 
 Resuelto (2026-09-26):
+- 4 días con Free Tour desde el domingo de Pascua: el Coliseo el día 4 se acepta como excepción de "lo mejor
+  primero".
+- Zigzag en tranquilo: con un nivel 1 de paso (el Altar) el límite es 1 km; el semáforo queda en verde.
+- Miradores en invierno: más de 30 min tarde se adelantan o salen como "Vistas de Roma iluminada".
 - Quitar parada: la siguiente no se adelanta, salvo que el hueco pase de 45 min (entonces solo ella, sin
   pasar de su hora de apertura).
 - Ciudades sin catálogo: sin "Entradas" ni "Excursiones" en Añadir parada. El buscador de Mapbox ya no

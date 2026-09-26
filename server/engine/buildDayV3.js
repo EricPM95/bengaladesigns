@@ -146,6 +146,15 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
     // Mirador del atardecer: la hora de la puesta de sol a la que se ajusta (para las comprobaciones).
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
+    // El mirador que llega ya de noche (en invierno): no se vende como atardecer, sino como la ciudad
+    // iluminada (decisión del 2026-09-26; el texto, en el JSON del destino).
+    // (También el de las rutas de 1 día, que no pasan por el ajuste de blockTrip.)
+    const sunsetToday = tripDay.hours?.sunset ?? null
+    const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name))
+    if (visit.place.nightView || (sunsetMirador && visit.place.sunset == null && sunsetToday != null && visit.start > sunsetToday + 30)) {
+      stop.night_view = true
+      stop.why = destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
+    }
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // Posición en el orden curado del día (fijado a mano: Popolo → Pincio → España): el programador
