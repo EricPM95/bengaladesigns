@@ -23,6 +23,7 @@ import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
+import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
@@ -40,6 +41,16 @@ import { MODES_V3, isTranquiloPace } from '../../shared/routeEngine/modes.js'
  * del viejo: mismo formato, ningún campo menos, dos de más (`dinner_zone`, `is_revisit`). Volver
  * atrás no necesita un despliegue, solo `ROUTE_ENGINE=viejo`.
  */
+/**
+ * Qué planificador usa el motor v3 en un destino con días curados (DIAS_CURADOS_ROMA.md, 2026-09-26): 'dias'
+ * (por defecto) o 'bloques' (mañanas y tardes sueltas, el de antes). `ROUTE_V3_PLANNER=bloques` en .env.local o
+ * `planner: 'bloques'` en las opciones de una petición vuelven al de bloques sin desplegar.
+ */
+export function plannerFor(requestPlanner) {
+  const choice = (requestPlanner ?? process.env.ROUTE_V3_PLANNER ?? '').toString().trim().toLowerCase()
+  return choice === 'bloques' || choice === 'blocks' ? 'bloques' : 'dias'
+}
+
 export function engineFor(requestEngine) {
   const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
   if (choice === 'viejo' || choice === 'v2' || choice === 'old') return 'viejo'
@@ -115,7 +126,8 @@ export async function buildDayBlockV3(
     dateRangeStartIso,
   }
   // Mañanas y tardes tipo (Parte B): con bloques curados en el destino, el viaje se monta con ellos.
-  const planner = isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
+  const curated = isV3 && Array.isArray(destData.curated_days) && destData.curated_days.length > 0 && plannerFor(options.planner) === 'dias'
+  const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
   const plan = isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
@@ -204,7 +216,8 @@ export async function buildDayBlockV3(
  * añaden las nocturnas —calculadas con lo que de verdad se visita— y lo que no ha cabido.
  */
 function buildCityDayV3(destData, trip, tripDay, options) {
-  const nights = planNightWalks(destData, nightWalkPlan(trip))
+  // Con días curados, el paseo nocturno lo trae cada día (night_walks); si no, el reparto de siempre.
+  const nights = trip.nightsByDay ?? planNightWalks(destData, nightWalkPlan(trip))
   // Viaje de 1-2 días (decisión del 2026-09-26): la visita de día a partir de las 17:00 o del atardecer de un
   // lugar que esa noche tiene su nocturna se quita; se queda solo la nocturna.
   // Salvo la visita por la que se madruga: esa es el motivo del día y se queda (su nocturna también).
@@ -244,6 +257,15 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo' })),
   ]
+  // El paseo nocturno curado: nombre propio y su texto (en la primera nocturna del día).
+  if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {
+    day.night_walk = { name: tripDay.nightWalk.nombre, text: tripDay.nightWalk.texto ?? null }
+    const first = day.stops.find((stop) => stop.is_night_experience)
+    if (tripDay.nightWalk.texto) first.why = tripDay.nightWalk.texto
+    first.night_walk_name = tripDay.nightWalk.nombre
+  }
+  // El día curado y las variantes que se le han aplicado (para la revisión y la ficha).
+  if (tripDay.curatedDay) day.curated_day = { id: tripDay.curatedDay.id, name: tripDay.curatedDay.nombre, variants: tripDay.curatedDay.variantes }
   // Mañanas y tardes tipo (Parte B): qué bloque lleva cada medio día; sin bloque, "medio día sin tipo".
   if (Array.isArray(tripDay.blocks)) {
     day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))

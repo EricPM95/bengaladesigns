@@ -111,8 +111,15 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       const tipo = (b) => (!b ? '—' : b.id ? `${nombreBloque(b.id)} (\`${b.id}\`)` : '**medio día sin tipo**')
       const tipoManana = day.half_day_excursion ? `excursión de medio día (\`${day.half_day_excursion.id}\`, ${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at})` : viaje.dias === 1 ? `ruta de 1 día, bloque ${manana?.id ?? '—'} (\`short_trips\`)` : tipo(manana)
       const tipoTarde = viaje.dias === 1 ? `bloque ${tarde?.id ?? '—'} (\`short_trips\`)` : tipo(tarde)
-      out.push(`- **Mañana**: ${tipoManana}`)
-      out.push(`- **Tarde**: ${tipoTarde}`)
+      if (day.curated_day) {
+        // Días curados (DIAS_CURADOS_ROMA.md): el día entero y las variantes que se le han aplicado.
+        const variantes = day.curated_day.variants?.length ? ` · variantes: ${day.curated_day.variants.join(', ')}` : ''
+        const media = day.half_day_excursion ? ` · con excursión de medio día (\`${day.half_day_excursion.id}\`)` : ''
+        out.push(`- **Día curado**: ${day.curated_day.id} · ${day.curated_day.name}${variantes}${media}`)
+      } else {
+        out.push(`- **Mañana**: ${tipoManana}`)
+        out.push(`- **Tarde**: ${tipoTarde}`)
+      }
       out.push(`- **Atardecer**: ${sunset != null ? m2t(sunset) : '—'}`)
       if (day.untyped_halves) raro(n, `${day.untyped_halves} medio día sin tipo (el motor improvisa).`)
 
@@ -198,6 +205,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
           notas.push(`🔒 ${stop.closed_notice}`)
           patron('Imprescindible cerrado ese día (se enseña por fuera o se avisa)', `viaje ${numero} día ${n} (${cell(nombre)})`)
         }
+        if (stop.notice) notas.push(`ℹ️ ${stop.notice}`)
         if (stop.hours_warning) notas.push(`⚠️ ${stop.hours_warning}`)
         if (stop.season_notice) notas.push(`⚠️ ${stop.season_notice}`)
         const traslado = walk != null && walk > TRASLADO_VISIBLE ? `🚶 ${walk} min${previous?.name ? ` desde ${cell(previous.name)}` : ''}` : ''
@@ -245,15 +253,18 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         cola.push({ at: t2m(dinner.suggested_time), row: `| ${dinner.suggested_time} | | | 🍷 **Cena**: ${dinner.restaurant ? cell(dinner.restaurant) : 'sin restaurante elegido (el motor elige el barrio)'} | ${cell(dinner.zone_display ?? dinner.zone ?? '')} | ${walk != null && walk > TRASLADO_VISIBLE ? `🚶 ${walk} min` : ''} |` })
       }
       for (const night of nights) {
-        cola.push({ at: t2m(night.suggested_time) + 0.5, row: `| ${night.suggested_time} | ${m2t(t2m(night.suggested_time) + night.duration_minutes)} | ${night.duration_minutes} min | 🌙 ${cell(night.name)} | experiencia nocturna${night.before_dinner ? ', antes de cenar' : ''} | |` })
+        const paseo = night.night_walk_name ? `paseo nocturno «${cell(night.night_walk_name)}»` : 'experiencia nocturna'
+        cola.push({ at: t2m(night.suggested_time) + 0.5, row: `| ${night.suggested_time} | ${m2t(t2m(night.suggested_time) + night.duration_minutes)} | ${night.duration_minutes} min | 🌙 ${cell(night.name)} | ${paseo}${night.before_dinner ? ', antes de cenar' : ''} | |` })
         const lugar = String(night.place_name ?? night.name).replace(/\s*\(noche\)$/, '')
         vistosDeNoche.add(lugar)
         aparece(lugar)
         const deDia = dayStops.find((stop) => (stop.place_name ?? stop.name) === lugar && !stop.pass_through)
         const dePaso = dayStops.find((stop) => (stop.place_name ?? stop.name) === lugar && stop.pass_through)
-        if (deDia) patron(`${lugar}: de día y otra vez de noche el mismo día`, `viaje ${numero} día ${n} (${deDia.suggested_time} y ${night.suggested_time})`)
-        if (deDia || (dePaso && viaje.dias >= 3)) cuenta.diaYNoche.push(`D${n} ${lugar}`)
-        if (viaje.dias >= 3 && (deDia || dePaso)) raro(n, `${lugar} de día${dePaso && !deDia ? ' (de paso)' : ''} y de noche el mismo día en un viaje de ${viaje.dias} días.`)
+        if (deDia && !night.same_day_exception) patron(`${lugar}: de día y otra vez de noche el mismo día`, `viaje ${numero} día ${n} (${deDia.suggested_time} y ${night.suggested_time})`)
+        // La excepción aprobada del día curado (la escalinata de D4) no cuenta.
+        if (night.same_day_exception) patron(`${lugar}: de día y de noche el mismo día, excepción aprobada del día curado`, `viaje ${numero} día ${n}`)
+        else if (deDia || (dePaso && viaje.dias >= 3)) cuenta.diaYNoche.push(`D${n} ${lugar}`)
+        if (!night.same_day_exception && viaje.dias >= 3 && (deDia || dePaso)) raro(n, `${lugar} de día${dePaso && !deDia ? ' (de paso)' : ''} y de noche el mismo día en un viaje de ${viaje.dias} días.`)
       }
       for (const { row } of cola.sort((a, b) => a.at - b.at)) out.push(row)
       out.push('')

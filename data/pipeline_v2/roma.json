@@ -158,6 +158,20 @@
         "Piazza Navona"
       ],
       "allow_same_day": true
+    },
+    {
+      "name": "Trastevere de noche",
+      "duration": 40,
+      "description": "La Plaza Trilussa llena de gente, la fuente iluminada y el Ponte Sisto con el río a los pies. El barrio con más ambiente de Roma después de cenar.",
+      "coordinates": [
+        41.8914,
+        12.4701
+      ],
+      "zone": "trastevere",
+      "conflicts_with": [
+        "Plaza Trilussa"
+      ],
+      "allow_same_day": true
     }
   ],
   "closed_on": {
@@ -3957,6 +3971,37 @@
       "ticket_info": [
         "Gratis."
       ]
+    },
+    {
+      "name": "Testaccio",
+      "duration_minutes": 40,
+      "zone": "testaccio",
+      "coordinates": [
+        41.8796,
+        12.477
+      ],
+      "level": 2,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "barrio",
+        "gastronomia",
+        "local"
+      ],
+      "filter_category": "monumentos",
+      "description": "El barrio más romano de Roma: obrero, sin turistas, con el mercado, las trattorias de toda la vida y la Piazza Testaccio como salón del barrio",
+      "tip": "Siéntate en la Piazza Testaccio a media tarde: es donde se juntan los vecinos, y el aperitivo aquí es de verdad",
+      "search_aliases": [
+        "testaccio",
+        "rione testaccio",
+        "barrio de testaccio"
+      ],
+      "wikipedia_title": "Testaccio",
+      "search_en": "Testaccio Rome",
+      "search_en_keywords": [
+        "testaccio"
+      ],
+      "_fuente": "Coordenadas de la Piazza Testaccio (OpenStreetMap, 2026-09-26)"
     }
   ],
   "groups": {
@@ -6457,6 +6502,48 @@
         "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabe si abre a mediodía: queda como \"cena\".",
         "fecha": "2026-09-26"
       }
+    },
+    {
+      "name": "Nonna Betta",
+      "sub_category": "cocina judeo-romana",
+      "meal": "ambos",
+      "address": "Via del Portico d'Ottavia, 16, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8928,
+        "lng": 12.4781
+      },
+      "zone": "Barrio Judío",
+      "price_range": "€€",
+      "avg_price_person": "25-35€",
+      "what_to_order": "Carciofi alla giudia, fiori di zucca, aliciotti con indivia",
+      "tip": "Cocina judeo-romana kosher en plena calle del Portico d’Ottavia. Cierra los martes.",
+      "hours": "Mié-Lun 12:15-15:00 y 18:30-22:00. Martes cerrado.",
+      "closed_on": [
+        "martes"
+      ],
+      "best_for": "La alcachofa a la judía en su barrio de siempre",
+      "_fuente": "https://www.nonnabetta.it/ (dirección, horario y cierre); coordenadas OpenStreetMap (2026-09-26)"
+    },
+    {
+      "name": "Giggetto al Portico d'Ottavia",
+      "sub_category": "trattoria romana",
+      "meal": "ambos",
+      "address": "Via del Portico d'Ottavia, 21/a-22, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8927,
+        "lng": 12.4784
+      },
+      "zone": "Barrio Judío",
+      "price_range": "€€",
+      "avg_price_person": "30-40€",
+      "what_to_order": "Carciofi alla giudia, filetti di baccalà, rigatoni alla gricia",
+      "tip": "Clásico desde 1923, con mesas junto a las ruinas del Pórtico de Octavia. Cierra los lunes.",
+      "hours": "Mar-Dom 12:30-15:00 y 19:30-23:00. Lunes cerrado.",
+      "closed_on": [
+        "lunes"
+      ],
+      "best_for": "Comer junto a las ruinas del Pórtico de Octavia",
+      "_fuente": "https://www.giggetto.it/contatti (dirección, horario; el lunes no figura: cerrado); coordenadas OpenStreetMap (2026-09-26)"
     }
   ],
   "excursions": {
@@ -7722,6 +7809,1400 @@
     "paseo": "true en una parada = se llega por un paseo agradable (ej. junto al río) que puede pasar de 20 min; validar.mjs no lo marca en rojo.",
     "traslados": "(tardes) Cómo moverse desde el final de cada mañana cuando el traslado pasa de 25 min andando: { acaba_en: \"bus 492 (unos 20 min) o taxi\" }. El día lo avisa: \"Traslado de ~X min: mejor en …\". Sin dato, \"bus o metro\".",
     "evita_si_ya_salieron": "Lugares que, si ya salieron todos en el viaje (visita, de paso o de noche), hacen que el bloque no vaya: el motor elige otro que aún no haya salido. centro_temprano y bernini_trevi detrás del centro barroco.",
-    "solo_si_abierto": "La parada solo entra si está abierta a la hora a la que se llega; si no, no sale (ni de paso)."
+    "solo_si_abierto": "La parada solo entra si está abierta a la hora a la que se llega; si no, no sale (ni de paso).",
+    "curated_days": "Días curados de principio a fin (DIAS_CURADOS_ROMA.md): manana/tarde con paradas (rol, hora, solo, nota, aviso), comida con restaurantes, cena con barrio, noche (id de night_walks) y variantes (invierno, tranquilo, días de la semana, pool) que sustituyen secciones enteras o quitan/insertan paradas."
+  },
+  "curated_days": [
+    {
+      "id": "D1",
+      "nombre": "Roma Antigua y el centro barroco",
+      "joyas": [
+        "Coliseo",
+        "Panteón"
+      ],
+      "manana": [
+        {
+          "lugar": "Coliseo",
+          "rol": "parada",
+          "hora": "08:30",
+          "nota": "A la apertura: menos cola y menos calor."
+        },
+        {
+          "lugar": "Arco de Constantino",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Foro Romano y Palatino",
+          "rol": "parada",
+          "nota": "Se sale por el lado del Campidoglio."
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "rol": "parada",
+          "nota": "La vista del Foro desde arriba."
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "rol": "de_paso",
+          "nota": "Por fuera, con Plaza Venecia."
+        }
+      ],
+      "comida": {
+        "texto": "Centro Histórico, junto al Ghetto o Campo de' Fiori",
+        "restaurantes": [
+          "Nonna Betta",
+          "Giggetto al Portico d'Ottavia",
+          "Antico Forno Roscioli",
+          "Enoteca Corsi"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Barrio Judío",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "rol": "de_paso",
+          "solo": {
+            "ritmo": "completo"
+          }
+        },
+        {
+          "lugar": "Panteón",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "rol": "parada",
+          "solo": {
+            "ritmo": "completo"
+          }
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "rol": "parada",
+          "nota": "Los Caravaggio; reabre a las 14:30."
+        },
+        {
+          "lugar": "Piazza Navona",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "rol": "de_paso",
+          "nota": "Para el aperitivo."
+        }
+      ],
+      "cena": {
+        "texto": "Campo de' Fiori o Navona",
+        "barrio": "centro_historico"
+      },
+      "noche": "fuentes",
+      "variantes": {
+        "tranquilo": {
+          "manana": [
+            {
+              "lugar": "Coliseo",
+              "rol": "parada",
+              "nota": "A las 10:00."
+            },
+            {
+              "lugar": "Arco de Constantino",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Foro Romano y Palatino",
+              "rol": "parada",
+              "nota": "Antes de su última entrada: no hace falta madrugar ni en invierno."
+            }
+          ],
+          "comida": {
+            "texto": "Monti o los Foros",
+            "restaurantes": [
+              "La Taverna dei Fori Imperiali",
+              "La Boccaccia"
+            ]
+          },
+          "tarde": [
+            {
+              "lugar": "Plaza del Campidoglio",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Panteón",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada"
+            }
+          ]
+        },
+        "sabado": {
+          "tarde": [
+            {
+              "lugar": "Panteón",
+              "rol": "parada",
+              "nota": "El sábado cierra a las 16:00: lo primero después de comer."
+            },
+            {
+              "lugar": "Elefantino de Bernini",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Iglesia de Santa Maria sopra Minerva",
+              "rol": "parada",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Campo de' Fiori",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Largo di Torre Argentina",
+              "rol": "de_paso",
+              "solo": {
+                "ritmo": "completo"
+              }
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Fuente de las Tortugas",
+              "rol": "de_paso"
+            }
+          ]
+        },
+        "tranquilo_sabado": {
+          "tarde": [
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Panteón",
+              "rol": "parada",
+              "nota": "El sábado cierra a las 16:00: lo primero después de comer."
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "de_paso"
+            }
+          ]
+        },
+        "pool_borghese": {
+          "tarde": [
+            {
+              "lugar": "Fontana de Trevi",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Galería Borghese",
+              "rol": "parada",
+              "hora": "15:00",
+              "pago": true,
+              "nota": "Turno de las 15:00, con reserva."
+            },
+            {
+              "lugar": "Terraza del Pincio",
+              "rol": "atardecer"
+            }
+          ],
+          "cena": {
+            "texto": "Tridente o Spagna",
+            "barrio": "tridente"
+          },
+          "noche": "centro_iluminado"
+        },
+        "pool_caracalla": {
+          "tarde": [
+            {
+              "lugar": "Circo Máximo",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Termas de Caracalla",
+              "rol": "parada",
+              "pago": true
+            },
+            {
+              "lugar": "Boca de la Verdad",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Jardín de los Naranjos",
+              "rol": "atardecer"
+            }
+          ],
+          "cena": {
+            "texto": "Trastevere",
+            "barrio": "trastevere"
+          },
+          "noche": "centro_iluminado"
+        },
+        "pool_san_clemente": {
+          "comida": {
+            "texto": "Monti o el Celio",
+            "restaurantes": [
+              "Il Bocconcino",
+              "La Taverna dei Fori Imperiali",
+              "La Boccaccia",
+              "Trattoria Monti"
+            ]
+          },
+          "tarde_antes": [
+            {
+              "lugar": "Basílica de San Clemente",
+              "rol": "parada",
+              "hora": "14:00",
+              "nota": "Las tres iglesias superpuestas."
+            }
+          ]
+        }
+      },
+      "no_en": [
+        {
+          "fecha": "12-25"
+        },
+        {
+          "fecha": "01-01"
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "nombre": "Vaticano, Castillo y Trastevere al atardecer",
+      "joyas": [
+        "Museos Vaticanos y Capilla Sixtina"
+      ],
+      "manana": [
+        {
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "rol": "parada",
+          "hora": "08:00",
+          "nota": "Primer turno."
+        },
+        {
+          "lugar": "Plaza de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Cúpula de San Pedro",
+          "rol": "parada",
+          "solo": [
+            {
+              "ritmo": "completo"
+            },
+            {
+              "experiencia": "naturaleza_vistas"
+            }
+          ]
+        }
+      ],
+      "comida": {
+        "texto": "Borgo o Prati",
+        "restaurantes": [
+          "Borghiciana Pastificio Artigianale",
+          "200 Gradi",
+          "Pizzarium (Bonci)"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Borgo Pio",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "rol": "parada",
+          "pago": true,
+          "solo": [
+            {
+              "pool": true
+            },
+            {
+              "experiencia": "arte_museos",
+              "min_dias": 5
+            }
+          ]
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "rol": "parada",
+          "nota": "Y por el Lungotevere, junto al río, hasta Trastevere."
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Trastevere",
+          "rol": "parada",
+          "nota": "Callejear."
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "rol": "parada",
+          "nota": "Antes de las 18:00."
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "rol": "atardecer",
+          "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo."
+        }
+      ],
+      "cena": {
+        "texto": "Trastevere",
+        "barrio": "trastevere"
+      },
+      "noche": "trastevere",
+      "variantes": {
+        "invierno": {
+          "tarde": [
+            {
+              "lugar": "Borgo Pio",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "experiencia": "arte_museos",
+                  "min_dias": 5
+                }
+              ]
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Mirador del Janículo",
+              "rol": "atardecer",
+              "nota": "~30 min andando con cuesta, o el bus 115."
+            },
+            {
+              "lugar": "Fontana dell'Acqua Paola",
+              "rol": "parada"
+            },
+            {
+              "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+              "rol": "parada",
+              "nota": "Si se llega antes de las 18:00."
+            },
+            {
+              "lugar": "Trastevere",
+              "rol": "parada",
+              "nota": "Bajar de noche callejeando."
+            },
+            {
+              "lugar": "Iglesia de Santa Maria in Trastevere",
+              "rol": "parada"
+            }
+          ]
+        },
+        "tranquilo": {
+          "manana": [
+            {
+              "lugar": "Museos Vaticanos y Capilla Sixtina",
+              "rol": "parada"
+            }
+          ],
+          "tarde": [
+            {
+              "lugar": "Plaza de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Basílica de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "solo": {
+                "pool": true
+              }
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Trastevere",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Mirador del Janículo",
+              "rol": "atardecer"
+            }
+          ]
+        },
+        "tranquilo_invierno": {
+          "tarde": [
+            {
+              "lugar": "Plaza de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Basílica de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "solo": {
+                "pool": true
+              }
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Mirador del Janículo",
+              "rol": "atardecer",
+              "nota": "Solo si da tiempo."
+            },
+            {
+              "lugar": "Trastevere",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Iglesia de Santa Maria in Trastevere",
+              "rol": "parada"
+            }
+          ]
+        },
+        "miercoles": {
+          "manana": [
+            {
+              "lugar": "Museos Vaticanos y Capilla Sixtina",
+              "rol": "parada",
+              "hora": "08:00",
+              "nota": "Primer turno."
+            }
+          ],
+          "tarde_antes": [
+            {
+              "lugar": "Plaza de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Basílica de San Pedro",
+              "rol": "parada",
+              "nota": "El miércoles abre a las 12:30, tras la audiencia papal."
+            },
+            {
+              "lugar": "Cúpula de San Pedro",
+              "rol": "parada",
+              "solo": [
+                {
+                  "ritmo": "completo"
+                },
+                {
+                  "experiencia": "naturaleza_vistas"
+                }
+              ],
+              "nota": "Durante la audiencia suele estar cerrada: después."
+            }
+          ]
+        },
+        "domingo": {
+          "manana": [
+            {
+              "lugar": "Plaza de San Pedro",
+              "rol": "parada",
+              "nota": "El Ángelus es a las 12:00 si el Papa está en Roma."
+            },
+            {
+              "lugar": "Basílica de San Pedro",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Cúpula de San Pedro",
+              "rol": "parada"
+            }
+          ],
+          "sin": "Museos Vaticanos y Capilla Sixtina"
+        }
+      },
+      "no_en": [
+        {
+          "dia_semana": "domingo"
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "nombre": "Free Tour y Vaticano por la tarde",
+      "joyas": [
+        "Museos Vaticanos y Capilla Sixtina"
+      ],
+      "manana": [
+        {
+          "lugar": "Free Tour Centro Histórico",
+          "rol": "parada",
+          "nota": "De 10:00 a 12:30."
+        }
+      ],
+      "comida": {
+        "texto": "Centro Histórico",
+        "restaurantes": [
+          "Supplizio",
+          "Armando al Pantheon"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "rol": "parada",
+          "hora": "14:30",
+          "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00."
+        },
+        {
+          "lugar": "Plaza de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "rol": "de_paso"
+        }
+      ],
+      "cena": {
+        "texto": "Borgo o Prati",
+        "barrio": "vaticano"
+      },
+      "noche": "castillo_tiber",
+      "variantes": {},
+      "no_en": [
+        {
+          "dia_semana": "domingo"
+        }
+      ]
+    },
+    {
+      "id": "D1-FT",
+      "nombre": "Roma Antigua, el Ghetto y Trastevere",
+      "joyas": [
+        "Coliseo"
+      ],
+      "manana": [
+        {
+          "lugar": "Coliseo",
+          "rol": "parada",
+          "hora": "08:30",
+          "nota": "A la apertura: menos cola y menos calor."
+        },
+        {
+          "lugar": "Arco de Constantino",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Foro Romano y Palatino",
+          "rol": "parada",
+          "nota": "Se sale por el lado del Campidoglio."
+        }
+      ],
+      "comida": {
+        "texto": "Monti y los Foros, o Enoteca Corsi",
+        "restaurantes": [
+          "La Taverna dei Fori Imperiali",
+          "La Boccaccia",
+          "Enoteca Corsi"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Plaza del Campidoglio",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "rol": "parada",
+          "solo": {
+            "pool": true
+          }
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "rol": "parada",
+          "nota": "Visita y terraza panorámica."
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Barrio Judío",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "rol": "parada",
+          "solo": {
+            "ritmo": "completo"
+          },
+          "nota": "Abre a las 16:30."
+        },
+        {
+          "lugar": "Trastevere",
+          "rol": "parada",
+          "nota": "Callejear."
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "rol": "atardecer",
+          "solo": {
+            "ritmo": "completo",
+            "estacion": "no_invierno"
+          }
+        }
+      ],
+      "cena": {
+        "texto": "Trastevere",
+        "barrio": "trastevere"
+      },
+      "noche": "trastevere",
+      "variantes": {
+        "invierno": {
+          "noche": "roma_desde_arriba"
+        },
+        "tranquilo": {
+          "manana": [
+            {
+              "lugar": "Coliseo",
+              "rol": "parada",
+              "nota": "A las 10:00."
+            },
+            {
+              "lugar": "Arco de Constantino",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Foro Romano y Palatino",
+              "rol": "parada"
+            }
+          ],
+          "tarde": [
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Isla Tiberina",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Trastevere",
+              "rol": "parada"
+            }
+          ]
+        }
+      },
+      "no_en": [
+        {
+          "fecha": "12-25"
+        },
+        {
+          "fecha": "01-01"
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "nombre": "Trevi sin gente, el Popolo y la Borghese",
+      "joyas": [
+        "Fontana de Trevi"
+      ],
+      "manana": [
+        {
+          "lugar": "Fontana de Trevi",
+          "rol": "parada",
+          "hora": "08:00",
+          "nota": "A las 08:00, sin gente."
+        },
+        {
+          "lugar": "Plaza de España",
+          "rol": "parada",
+          "nota": "Y la escalinata."
+        },
+        {
+          "lugar": "Via Condotti",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Ara Pacis",
+          "rol": "parada",
+          "pago": true,
+          "solo": {
+            "experiencia": "arte_museos",
+            "min_dias": 5
+          }
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Santa Maria del Popolo",
+          "rol": "parada",
+          "nota": "Caravaggio; de 10:30 a 12:00."
+        }
+      ],
+      "comida": {
+        "texto": "Tridente o Spagna",
+        "restaurantes": [
+          "Edy",
+          "Poldo e Gianna Osteria",
+          "Sgarro Bistrot"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Galería Borghese",
+          "rol": "parada",
+          "hora": "15:00",
+          "pago": true,
+          "solo": [
+            {
+              "pool": true
+            },
+            {
+              "experiencia": "arte_museos"
+            }
+          ],
+          "nota": "Turno de las 15:00, con reserva."
+        },
+        {
+          "lugar": "Parque de Villa Borghese",
+          "rol": "parada",
+          "nota": "El lago y el templete. Con Naturaleza: barca o bici."
+        },
+        {
+          "lugar": "Terraza del Pincio",
+          "rol": "atardecer"
+        }
+      ],
+      "cena": {
+        "texto": "Tridente o Spagna",
+        "barrio": "tridente"
+      },
+      "noche": "escalinata",
+      "variantes": {
+        "invierno": {
+          "tarde": [
+            {
+              "lugar": "Galería Borghese",
+              "rol": "parada",
+              "pago": true,
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "experiencia": "arte_museos"
+                }
+              ]
+            },
+            {
+              "lugar": "Parque de Villa Borghese",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Terraza del Pincio",
+              "rol": "atardecer"
+            }
+          ]
+        },
+        "con_free_tour": {
+          "manana": [
+            {
+              "lugar": "Piazza del Popolo",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "nota": "Caravaggio; de 10:30 a 12:00."
+            },
+            {
+              "lugar": "Ara Pacis",
+              "rol": "parada",
+              "pago": true,
+              "solo": {
+                "experiencia": "arte_museos",
+                "min_dias": 5
+              }
+            }
+          ]
+        },
+        "tranquilo": {
+          "manana": [
+            {
+              "lugar": "Fontana de Trevi",
+              "rol": "parada",
+              "aviso": "A esta hora ya hay gente; si puedes, pásate temprano."
+            },
+            {
+              "lugar": "Plaza de España",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Piazza del Popolo",
+              "rol": "parada"
+            }
+          ]
+        },
+        "domingo": {
+          "quitar": [
+            "Santa Maria del Popolo"
+          ],
+          "insertar": [
+            {
+              "antes_de": "Terraza del Pincio",
+              "parada": {
+                "lugar": "Santa Maria del Popolo",
+                "rol": "parada",
+                "nota": "El domingo solo abre de 16:30 a 18:00."
+              }
+            }
+          ]
+        }
+      },
+      "no_en": [
+        {
+          "dia_semana": "lunes",
+          "si_lleva": "Galería Borghese"
+        }
+      ]
+    },
+    {
+      "id": "D5",
+      "nombre": "Caracalla, el Aventino y Testaccio",
+      "joyas": [],
+      "manana": [
+        {
+          "lugar": "Termas de Caracalla",
+          "rol": "parada",
+          "hora": "09:00",
+          "pago": true,
+          "solo": [
+            {
+              "pool": true
+            },
+            {
+              "min_dias": 4
+            }
+          ],
+          "nota": "Si no toca, la mañana empieza en el Circo Máximo."
+        },
+        {
+          "lugar": "Circo Máximo",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Boca de la Verdad",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Jardín de los Naranjos",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "rol": "parada",
+          "nota": "Luego se baja a Testaccio."
+        }
+      ],
+      "comida": {
+        "texto": "Mercado de Testaccio o Felice a Testaccio",
+        "restaurantes": [
+          "Mordi e Vai",
+          "Felice a Testaccio"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Pirámide Cestia",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Cementerio Protestante",
+          "rol": "parada",
+          "solo": {
+            "ritmo": "completo"
+          },
+          "nota": "Cierra a las 17:00."
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada",
+          "nota": "Por el río, 25 min junto al Tíber."
+        },
+        {
+          "lugar": "Barrio Judío",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "rol": "de_paso"
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "rol": "parada"
+        }
+      ],
+      "cena": {
+        "texto": "Monti",
+        "barrio": "monti"
+      },
+      "noche": "foro_a_tus_pies",
+      "variantes": {
+        "tarde_b": {
+          "si_ya_salieron": [
+            "Plaza del Campidoglio",
+            "Barrio Judío"
+          ],
+          "tarde": [
+            {
+              "lugar": "Pirámide Cestia",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Cementerio Protestante",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Testaccio",
+              "rol": "parada",
+              "nota": "Callejear y aperitivo."
+            }
+          ],
+          "cena": {
+            "texto": "Testaccio (Da Remo, Felice)",
+            "barrio": "testaccio"
+          },
+          "noche": "trastevere_sublicio"
+        },
+        "invierno": {
+          "atardecer": "Altar de la Patria"
+        },
+        "tranquilo": {
+          "manana": [
+            {
+              "lugar": "Termas de Caracalla",
+              "rol": "parada",
+              "pago": true,
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "min_dias": 4
+                }
+              ],
+              "nota": "A las 10:00."
+            },
+            {
+              "lugar": "Circo Máximo",
+              "rol": "de_paso"
+            },
+            {
+              "lugar": "Boca de la Verdad",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Jardín de los Naranjos",
+              "rol": "parada"
+            },
+            {
+              "lugar": "Ojo de la Cerradura del Aventino",
+              "rol": "parada"
+            }
+          ]
+        },
+        "domingo": {
+          "comida": {
+            "texto": "Felice a Testaccio (el mercado cierra el domingo)",
+            "restaurantes": [
+              "Felice a Testaccio"
+            ]
+          }
+        }
+      },
+      "no_en": [
+        {
+          "dia_semana": "lunes"
+        }
+      ]
+    },
+    {
+      "id": "D6",
+      "nombre": "Monti, las basílicas y el Coliseo al anochecer",
+      "joyas": [],
+      "manana": [
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "rol": "parada"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "rol": "parada",
+          "nota": "El Moisés de Miguel Ángel; hasta las 12:30."
+        },
+        {
+          "lugar": "Monti",
+          "rol": "parada",
+          "nota": "Callejear: Piazza della Madonna dei Monti."
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "rol": "parada",
+          "pago": true,
+          "solo": {
+            "experiencia": "arte_museos",
+            "ritmo": "completo"
+          }
+        },
+        {
+          "lugar": "Columna de Trajano",
+          "rol": "de_paso"
+        }
+      ],
+      "comida": {
+        "texto": "Monti",
+        "restaurantes": [
+          "Trattoria Monti",
+          "La Boccaccia"
+        ]
+      },
+      "tarde": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "rol": "parada",
+          "hora": "14:00",
+          "nota": "Las tres iglesias superpuestas."
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "rol": "parada",
+          "nota": "Luego se vuelve por el Celio (20 min)."
+        }
+      ],
+      "cena": {
+        "texto": "Monti o el Celio",
+        "barrio": "coliseo"
+      },
+      "noche": "coliseo",
+      "variantes": {},
+      "no_en": []
+    },
+    {
+      "id": "D7",
+      "nombre": "Via Appia Antica y las catacumbas",
+      "joyas": [],
+      "manana": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "rol": "parada",
+          "hora": "09:00"
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "rol": "parada",
+          "no_calle": true,
+          "nota": "A pie o en bici (90 min)."
+        }
+      ],
+      "comida": {
+        "texto": "En la zona de la Via Appia",
+        "restaurantes": []
+      },
+      "tarde": [
+        {
+          "lugar": "Jardín de los Naranjos",
+          "rol": "atardecer",
+          "traslado": "el bus 118",
+          "nota": "Vuelta en el bus 118."
+        }
+      ],
+      "cena": {
+        "texto": "Testaccio",
+        "barrio": "testaccio"
+      },
+      "noche": "libre",
+      "variantes": {
+        "con_d5": {
+          "tarde": [],
+          "cena": {
+            "texto": "Centro Histórico",
+            "barrio": "centro_historico"
+          }
+        }
+      },
+      "no_en": [
+        {
+          "dia_semana": "miércoles"
+        }
+      ]
+    }
+  ],
+  "night_walks": {
+    "fuentes": {
+      "nombre": "La Roma de las fuentes",
+      "recorrido": [
+        "Fontana de Trevi (noche)",
+        "Plaza de España (noche)"
+      ],
+      "quitar_si_va": {
+        "D4": [
+          "Plaza de España (noche)"
+        ]
+      },
+      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma."
+    },
+    "trastevere": {
+      "nombre": "Trastevere de noche",
+      "recorrido": [
+        "Trastevere de noche"
+      ],
+      "texto": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado."
+    },
+    "castillo_tiber": {
+      "nombre": "El Castillo y el Tíber",
+      "recorrido": [
+        "Puente Sant'Angelo (noche)"
+      ],
+      "texto": "A cinco minutos de la cena tienes el Puente Sant'Angelo: los ángeles de Bernini iluminados y el Castillo reflejado en el Tíber. Crúzalo despacio y vuelve por la orilla del río, que a esta hora está tranquila."
+    },
+    "roma_desde_arriba": {
+      "nombre": "Roma desde arriba",
+      "recorrido": [
+        "Mirador del Janículo (noche)"
+      ],
+      "texto": "En invierno el atardecer llega pronto, y a cambio el Janículo te regala Roma entera iluminada: cúpulas, campanarios y tejados hasta el horizonte. Sube con calma o en el bus 115, y baja luego a Trastevere, que queda al lado."
+    },
+    "escalinata": {
+      "nombre": "La escalinata iluminada",
+      "recorrido": [
+        "Plaza de España (noche)"
+      ],
+      "excepcion_mismo_dia": true,
+      "texto": "Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores."
+    },
+    "foro_a_tus_pies": {
+      "nombre": "El Foro a tus pies",
+      "recorrido": [
+        "Foro Romano desde el Campidoglio (noche)"
+      ],
+      "texto": "Detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado aparece a tus pies. Probablemente la mejor vista nocturna de Roma, gratis y a dos minutos de donde acaba la tarde."
+    },
+    "trastevere_sublicio": {
+      "nombre": "Trastevere de noche",
+      "recorrido": [
+        "Trastevere de noche"
+      ],
+      "texto": "Desde Testaccio, cruza el Ponte Sublicio y en diez minutos estás en Trastevere: callejuelas iluminadas, la Plaza Trilussa llena de gente y el barrio con más ambiente de Roma hasta bien tarde."
+    },
+    "coliseo": {
+      "nombre": "El Coliseo iluminado",
+      "recorrido": [
+        "Coliseo (noche)"
+      ],
+      "texto": "El final natural del día: vuelves por el Celio y el Coliseo aparece iluminado. De noche impresiona todavía más que de día, y tienes dónde cenar justo al lado."
+    },
+    "libre": {
+      "nombre": "Un paseo a tu aire",
+      "recorrido": [],
+      "alternativas": [
+        "Piazza Navona (noche)",
+        "Terraza del Pincio (noche)"
+      ],
+      "texto": "Si te quedan ganas, date una vuelta de noche: la Piazza Navona con sus fuentes iluminadas o la Terraza del Pincio con Roma a tus pies. De lo que más se recuerda del viaje."
+    },
+    "centro_iluminado": {
+      "nombre": "El centro iluminado",
+      "recorrido": [
+        "Panteón (noche)",
+        "Piazza Navona (noche)",
+        "Fontana de Trevi (noche)"
+      ],
+      "maximo": 3,
+      "texto": "Tu noche en el centro: el Panteón iluminado, la Piazza Navona con sus tres fuentes y, para terminar, la Fontana de Trevi. Tres joyas a diez minutos una de otra, con menos gente que de día y la ciudad a otro ritmo."
+    }
+  },
+  "curated_selection": {
+    "_nota": "Qué días van en cada viaje (DIAS_CURADOS_ROMA.md, sección 3). Por días de ciudad (sin la excursión).",
+    "base": {
+      "sin_free_tour": [
+        "D1",
+        "D2"
+      ],
+      "con_free_tour": [
+        "D3",
+        "D1-FT"
+      ]
+    },
+    "tercer_dia": {
+      "barrios_sin_arte": "D5",
+      "resto": "D4"
+    },
+    "cuatro_dias": [
+      "D4",
+      "D5"
+    ],
+    "cinco_dias": "D6",
+    "seis_dias": "D7",
+    "museos_de_pago": {
+      "_nota": "💶 (`pago` en las paradas): tope por días del viaje, +1 con Arte; lo del pool no cuenta. Si sobran, se quitan en este orden.",
+      "tope": [
+        {
+          "hasta_dias": 3,
+          "extra": 0
+        },
+        {
+          "hasta_dias": 4,
+          "extra": 1
+        },
+        {
+          "hasta_dias": 6,
+          "extra": 2
+        },
+        {
+          "hasta_dias": 99,
+          "extra": 3
+        }
+      ],
+      "con_arte": 1,
+      "quitar_en_orden": [
+        "Ara Pacis",
+        "Mercados de Trajano",
+        "Castillo de Sant'Angelo",
+        "Termas de Caracalla",
+        "Galería Borghese"
+      ]
+    }
+  },
+  "curated_pool": {
+    "_nota": "Qué activa cada lugar del pool (sección 4). Lo que no está aquí va por la regla general: al día de la zona más cercana, con visita.",
+    "Galería Borghese": {
+      "dia": "D4",
+      "dos_dias": "pool_borghese"
+    },
+    "Castillo de Sant'Angelo": {
+      "dia": "D2"
+    },
+    "Termas de Caracalla": {
+      "dia": "D5",
+      "dos_dias": "pool_caracalla"
+    },
+    "Basílica de San Clemente": {
+      "dia": "D6",
+      "min_dias_ciudad": 5,
+      "antes": "pool_san_clemente"
+    },
+    "Museos Capitolinos": {
+      "dias": [
+        "D1-FT",
+        "D5"
+      ]
+    },
+    "Trastevere": {
+      "dias": [
+        "D2",
+        "D1-FT"
+      ]
+    },
+    "Catacumbas de San Calixto": {
+      "dia": "D7"
+    },
+    "Via Appia Antica": {
+      "dia": "D7"
+    }
   }
 }

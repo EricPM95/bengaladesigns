@@ -259,8 +259,9 @@ export function nightTiming(chain, timing = {}) {
       const last = timed.at(-1)
       const toDinner = dinnerCoords ? walkMinutes(coordsOf(last.entry), dinnerCoords) : 0
       if (timed.length === entries.length && last.start + last.duration + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
-      // La que sustituye a una visita de día (1-2 días) no se puede quedar fuera: entonces, después de cenar.
-      if (entries[0].replacesDayVisit) break
+      // La que sustituye a una visita de día (1-2 días) no se puede quedar fuera, y un paseo curado va entero:
+      // entonces, después de cenar.
+      if (entries[0].replacesDayVisit || entries[0].wholeWalk) break
       entries = entries.slice(1)
     }
   }
@@ -314,6 +315,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       is_night_experience: true,
       ...(plan.beforeDinner ? { before_dinner: true } : {}),
       ...(entry.season_notice ? { season_notice: entry.season_notice } : {}),
+      // La excepción de su día curado (la escalinata de D4, con la Plaza de España vista por la mañana).
+      ...(entry.sameDayException ? { same_day_exception: true } : {}),
       why: plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night(),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',

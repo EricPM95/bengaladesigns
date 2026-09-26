@@ -122,6 +122,13 @@ de zona.
   es a la vez "Vuelta a Madrid" y tiene paradas hasta las 22:50 con las nocturnas). No se toca ahora
   (decisión del 2026-09-26): se resolverá cuando la hora del vuelo de vuelta recorte ese día.
 
+### Días curados (2026-09-26)
+
+El motor v3 de Roma monta los viajes con días enteros curados (`curated_days`, docs/DIAS_CURADOS_ROMA.md) en
+`shared/routeEngine/curatedTrip.js`. El de mañanas y tardes (`blockTrip.js`) sigue ahí: `ROUTE_V3_PLANNER=bloques`.
+Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CAMBIOS.md (qué cambia frente a bloques).
+Pendiente: la matriz de tiempos no tiene aún Testaccio ni los dos restaurantes del Ghetto (tramos estimados).
+
 ### Queda por decidir
 
 Lo que enseña docs/REVISION_RUTAS_V2.md (2026-09-26, sin arreglar: lo lee el usuario primero). Pool de dos lugares

@@ -112,13 +112,17 @@ function wakeNoticeFor(destData, tripDay, places, startedAt) {
   const hours = tripDay.hours ?? {}
   const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : null
   const winter = month !== null && (destData.destination_config?.context_banners?.meses_invierno ?? []).includes(month)
-  const closings = levelOne
-    .map((place) => parseClosingMinutes(scheduleForDay(destData.places?.find((other) => other.name === place.name) ?? place, hours)))
-    .filter((close) => close !== null && close < EARLY_CLOSING_MINUTES)
+  // Lo que cierra pronto ese día (el Foro a las 16:30). El aviso de invierno nombra SOLO eso (decisión del
+  // 2026-09-26: decía "el Foro Romano y el Panteón cierran a las 16:30" y el Panteón abre hasta las 19:00).
+  const earlyClosing = levelOne
+    .map((place) => ({ place, close: parseClosingMinutes(scheduleForDay(destData.places?.find((other) => other.name === place.name) ?? place, hours)) }))
+    .filter(({ close }) => close !== null && close < EARLY_CLOSING_MINUTES)
+  const closings = earlyClosing.map(({ close }) => close)
   const fill = (text, values) => String(text).replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match)
+  const closingNamed = [...new Set(earlyClosing.map(({ place }) => placeWithArticle(destData.places?.find((other) => other.name === place.name) ?? place)))]
   // Varios lugares: la variante en plural ("cierran", "los veas").
-  const cierre = named.length > 1 ? templates.cierre_varios ?? templates.cierre : templates.cierre
-  if (winter && closings.length > 0 && cierre) return fill(cierre, { hora: toHHMM(startedAt), lugar, cierre: toHHMM(Math.min(...closings)) })
+  const cierre = closingNamed.length > 1 ? templates.cierre_varios ?? templates.cierre : templates.cierre
+  if (winter && closings.length > 0 && cierre) return fill(cierre, { hora: toHHMM(startedAt), lugar: joinSpanish(closingNamed), cierre: toHHMM(Math.min(...closings)) })
   if (templates.general) return fill(templates.general, { hora: toHHMM(startedAt), lugar })
   return `Hoy empezamos a las ${toHHMM(startedAt)} para que te dé tiempo a ver ${lugar}`
 }
@@ -151,7 +155,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // iluminada (decisión del 2026-09-26; el texto, en el JSON del destino).
     // (También el de las rutas de 1 día, que no pasan por el ajuste de blockTrip.)
     const sunsetToday = tripDay.hours?.sunset ?? null
-    const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name))
+    const curatedStops = (destData.curated_days ?? []).flatMap((day) => [...(day.manana ?? []), ...(day.tarde ?? []), ...Object.values(day.variantes ?? {}).flatMap((variant) => [...(variant.manana ?? []), ...(variant.tarde ?? [])])])
+    const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)) || curatedStops.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)
     if (visit.place.nightView || (sunsetMirador && visit.place.sunset == null && sunsetToday != null && visit.start > sunsetToday + 30)) {
       stop.night_view = true
       stop.why = destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
@@ -173,7 +178,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       if (fit.notice) stop.season_notice = fit.notice
     }
     // Una calle no es una parada (Parte A, regla 4): sale como "Pasas por…", sin número.
-    if (isStreet(visit.place) || visit.place.passThrough) {
+    // (La Via Appia Antica en D7 es el paseo del día, no una calle de paso: `no_calle`.)
+    if ((isStreet(visit.place) && !visit.place.notStreet) || visit.place.passThrough) {
       stop.pass_through = true
       stop.why = whyTexts.passThrough()
       delete stop.experience
@@ -184,6 +190,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
     }
+    // El aviso y la nota del día curado ("a esta hora ya hay gente; si puedes, pásate temprano").
+    if (visit.place.stopNotice) stop.notice = visit.place.stopNotice
+    if (visit.place.curatedNote) stop.note = visit.place.curatedNote
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).

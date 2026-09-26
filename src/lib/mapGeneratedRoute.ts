@@ -89,6 +89,8 @@ interface GeneratedStop {
   season_notice?: string | null
   /** Cerrado ese día, enseñado por fuera: Stop.closedNotice. */
   closed_notice?: string | null
+  /** Aviso del día curado en la parada ("a esta hora ya hay gente"): se pinta como closedNotice. */
+  notice?: string | null
   /** Calle: "Pasas por…" — Stop.passThrough. */
   pass_through?: boolean
 }
@@ -367,7 +369,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
-    ...(generated.closed_notice ? { closedNotice: generated.closed_notice } : {}),
+    ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),

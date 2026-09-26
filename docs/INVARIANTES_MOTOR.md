@@ -984,3 +984,29 @@ El motor nuevo **no se da por bueno hasta que pasa este mismo harness ampliado a
 días**, con esos 9 fallos resueltos o justificados uno a uno. Comprobaciones nuevas que hay que
 añadirle: ninguna hora en `:15`/`:45`, ninguna parada antes de su apertura, el pool siempre presente,
 las experiencias reflejadas en el núcleo del día, y una visita larga por día como máximo.
+
+**Días curados (docs/DIAS_CURADOS_ROMA.md, 2026-09-26)** — `shared/routeEngine/curatedTrip.js`, detrás de la
+bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador de mañanas y tardes).
+200. **El día es la unidad**: `curated_days` del JSON (D1, D2, D3, D1-FT, D4-D7). El motor elige los días
+    (`curated_selection`: por días de ciudad, Free Tour, tercer día por experiencia, pool), los ordena (probando todos
+    los órdenes: `no_en` y lo del pool cerrado ese día pesan 1000; joyas tarde o solo el último día, 100; luego el
+    orden por defecto) y aplica la variante que toca sin inventar otra: tarde B, invierno (atardecer antes de las
+    18:00), Free Tour, tranquilo (y tranquilo_invierno), el día de la semana (y tranquilo_<día>; el domingo de D2
+    solo si no hubo remedio) y las de pool de D1.
+201. **Paradas**: `solo` (ritmo, experiencia, pool, días del viaje, estación; varias = basta una); lo del pool va
+    siempre. Tope de museos de pago (💶, `pago`): `curated_selection.museos_de_pago`, sin contar el pool, quitando en
+    su orden. `hora` = como pronto a esa hora; `no_calle`, `aviso` y `nota` pasan a la parada.
+202. **Horas**: el programador de siempre con el orden fijo; comida en los restaurantes del día y cena en su barrio.
+    Tranquilo madruga solo si así se VISITA un nivel 1; comida corta como último recurso. Lo cerrado: el nivel 1 por
+    fuera (`pass_by`, con aviso), lo que se ve desde la calle de paso, el resto se salta (y su grupo lo ve por fuera);
+    la joya cerrada sin vista por fuera, con el aviso del día (`closedAnchors`). El mirador que no llega a su
+    atardecer va en su sitio como vistas de Roma iluminada.
+203. **Pool que ningún día trae**: al día con la parada más cercana, detrás de ella, con visita; se puede quitar la
+    parada de menos nivel que no sea nivel 1, y solo vale si todo lo demás del día se sigue visitando. Si no, "No te
+    dio tiempo" con su motivo (fuera de temporada, cerrado o sin sitio).
+204. **Noches**: cada día su paseo (`night_walks`), entero (antes de cenar solo si cabe todo), con nombre y texto.
+    Tope de 2 veces por lugar, nunca de día y de noche el mismo día en 3+ días (salvo `excepcion_mismo_dia`: la
+    escalinata de D4), `quitar_si_va` (D1 sin la Plaza de España si va D4), 1 en tranquilo; si ninguna vale, las
+    alternativas o la nocturna más cercana a la cena.
+205. **Experiencia sin día** (mercadillos de Navidad): lo suyo en temporada, junto a la parada más cercana a 10 min
+    como mucho, sin que se caiga nada.
