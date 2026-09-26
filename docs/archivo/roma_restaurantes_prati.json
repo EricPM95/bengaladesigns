@@ -1,0 +1,61 @@
+{
+  "_que_es": "Restaurantes nuevos para cenar cerca del Vaticano (Prati). Mismo formato que roma_restaurantes_nuevos.json: coordenadas y datos por completar y verificar con Google Places.",
+  "restaurants": [
+    {
+      "name": "Dal Toscano",
+      "zone": "Prati / Vaticano",
+      "meal": "ambos",
+      "address": "Via Germanico 58-60",
+      "type": "trattoria",
+      "_nota": "Cocina toscana y carne a la brasa, en Prati desde hace décadas.",
+      "sources": [
+        "https://www.ristorantedaltoscano.it/en/"
+      ],
+      "coordinates": null,
+      "_verificar": [
+        "horario y día de cierre",
+        "coordenadas"
+      ]
+    },
+    {
+      "name": "L'Arcangelo",
+      "zone": "Prati / Vaticano",
+      "meal": "ambos",
+      "address": "Via Giuseppe Gioachino Belli 59",
+      "type": "trattoria",
+      "_nota": "Cocina romana del chef Arcangelo Dandini, en la Guía Michelin.",
+      "sources": [
+        "https://guide.michelin.com/us/en/lazio/roma/restaurant/l-arcangelo",
+        "https://www.larcangelo.com/en/"
+      ],
+      "coordinates": null,
+      "_verificar": [
+        "horario y día de cierre",
+        "coordenadas"
+      ]
+    },
+    {
+      "name": "Osteria dell'Angelo",
+      "zone": "Prati / Vaticano",
+      "meal": "cena",
+      "address": "Via Giovanni Bettolo 24-32",
+      "type": "trattoria",
+      "_nota": "Trattoria romana de toda la vida, con menú cerrado.",
+      "sources": [
+        "https://www.touringclub.it/destinazioni/roma/mangiare/240317-osteria-dellangelo"
+      ],
+      "coordinates": null,
+      "_verificar": [
+        "horario (sobre todo si abre a mediodía)",
+        "coordenadas"
+      ]
+    }
+  ],
+  "cambios": [
+    {
+      "name": "Il Sorpasso",
+      "meal": "ambos",
+      "_nota": "Hoy no tiene 'meal': es bistró de comida y cena en Prati."
+    }
+  ]
+}

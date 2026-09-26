@@ -435,7 +435,8 @@ export function Questionnaire() {
               )}
 
               {activeStep === 'pace' && (
-                <div className="grid grid-cols-2 gap-3">
+                // En móvil (menos de 600 px) una debajo de otra, Completo arriba; en escritorio, lado a lado.
+                <div className="grid grid-cols-1 gap-3 min-[600px]:grid-cols-2">
                   {paceOptions.map((option) => {
                     const active = (answers.pace ?? DEFAULT_PACE) === option.value
                     return (
