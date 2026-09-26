@@ -570,7 +570,8 @@ export interface DayPlan {
   /** Motor v3: 90 min o menos antes de cenar en un barrio con ambiente — "Aperitivo y paseo por {barrio}". */
   aperitivo?: { title: string; barrio: string; minutes: number; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
   /** Motor v3: hueco de 60+ min a mitad de día (antes de una parada con hora), tras la parada `after`. */
-  freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
+  /** `hint`: sin sugerencias de lugares, una idea corta de la zona ("Pasear por Villa Borghese: …"). */
+  freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null } | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo

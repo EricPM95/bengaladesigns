@@ -157,7 +157,8 @@ for (const [index, viaje] of VIAJES.entries()) {
         // Solo se madruga por un imprescindible de nivel 1 (decisión del 2026-09-26): lo demás es raro.
         const porQue = imprescindibles.filter((name) => madrugar[2].includes(name) || madrugar[2].includes(name.split(' y ')[0]))
         if (porQue.length === 0) raro(n, `se madruga (${madrugar[1]}) por algo que no es nivel 1: "${cell(day.pace_notice)}".`)
-        else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(day.pace_notice)}"`, `viaje ${numero} día ${n}`)
+        else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(day.pace_notice.replace(/, y la comida es más corta.*$/, ''))}"`, `viaje ${numero} día ${n}`)
+        if (/la comida es más corta/.test(day.pace_notice)) raro(n, `además la comida es más corta: "${cell(day.pace_notice)}".`)
       } else raro(n, `aviso del día: "${cell(day.pace_notice)}".`)
     }
     for (const line of String(day.transfer_notice ?? '').split('\n').filter(Boolean)) out.push(`- 🚌 ${cell(line)}`)
@@ -192,7 +193,8 @@ for (const [index, viaje] of VIAJES.entries()) {
       }
       // Tiempo libre a mitad de día (el motor lo dice entre dos paradas).
       if (day.free_time && day.free_time.before === (stop.place_name ?? stop.name)) {
-        out.push(`| | | ${day.free_time.minutes} min | 🕐 **Tiempo libre** | antes de ${cell(day.free_time.before)} | |`)
+        const ideas = day.free_time.suggestions?.length ? day.free_time.suggestions.map((item) => item.name).join(', ') : day.free_time.hint ?? ''
+        out.push(`| | | ${day.free_time.minutes} min | 🕐 **Tiempo libre** | antes de ${cell(day.free_time.before)}${ideas ? ` · ${cell(ideas)}` : ''} | |`)
       }
       const walk = previous ? legOf(previous, stop) : null
       const notas = []
@@ -215,7 +217,8 @@ for (const [index, viaje] of VIAJES.entries()) {
       if (previousEnd != null && walk != null && previous?.name !== 'la comida') {
         const holgura = start - previousEnd - walk
         if (holgura < 0) raro(n, `horario apretado: a ${cell(stop.name)} (${stop.suggested_time}) se llega ${-holgura} min tarde andando ${walk} min.`)
-        if (holgura > ESPERA_LARGA) raro(n, `espera de ${holgura} min antes de ${cell(stop.name)} (${stop.suggested_time}).`)
+        // Un hueco que ya sale como "Tiempo libre" (con su sugerencia) no es una espera rara.
+        if (holgura > ESPERA_LARGA && day.free_time?.before !== (stop.place_name ?? stop.name)) raro(n, `espera de ${holgura} min antes de ${cell(stop.name)} (${stop.suggested_time}).`)
       }
       const nombre = stop.place_name ?? stop.name
       // Repetido: dos visitas de verdad al mismo sitio (lo de paso y lo que enseña el Free Tour por fuera no cuentan).
@@ -259,13 +262,11 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push(`- **Imprescindibles que no salen**: ${nunca.length ? nunca.join(', ') : 'ninguno'}.${soloNoche.length ? ` Solo de noche: ${soloNoche.join(', ')}.` : ''}`)
   out.push('')
   if (viaje.dias >= 2 && nunca.length) raro(null, `imprescindibles que no salen: ${nunca.join(', ')}.`)
-  // Lo mejor primero (decisión del 2026-09-26): las joyas en los días 1-2 y el nivel 1 antes del día 4.
+  // Lo mejor primero (ajustado el 2026-09-26): 2 días, las 4 joyas dentro; 3+, como muy tarde el día 3 y
+  // ninguna solo el último día.
   if (viaje.dias >= 2) {
-    const tarde = [
-      ...joyas.filter((name) => !vistosDeDia.has(name) || vistosDeDia.get(name) > 2).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}` : 'no sale'}`),
-      ...imprescindibles.filter((name) => !joyas.includes(name) && vistosDeDia.has(name) && vistosDeDia.get(name) > 3).map((name) => `${name} el día ${vistosDeDia.get(name)}`),
-    ]
-    out.push(`- **Lo mejor primero** (joyas en los días 1-2, nivel 1 antes del día 4): ${tarde.length ? `🔴 ${tarde.join(', ')}` : '🟢 sí'}.`)
+    const tarde = joyas.filter((name) => !vistosDeDia.has(name) || (viaje.dias >= 3 && (vistosDeDia.get(name) > 3 || vistosDeDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}${vistosDeDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
+    out.push(`- **Lo mejor primero** (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): ${tarde.length ? `🔴 ${tarde.join(', ')}` : '🟢 sí'}.`)
     out.push('')
     if (tarde.length) raro(null, `lo mejor primero, en rojo: ${tarde.join(', ')}.`)
   }
@@ -298,7 +299,7 @@ const head = [
 const tail = [
   '## Lo que parece raro (para decidir; no se ha arreglado nada)',
   '',
-  `Sacado de las rutas de arriba con estos criterios: traslados de más de ${SALTO_GRANDE} min sin su aviso (con aviso no son un fallo), ritmo tranquilo antes de las 10:00 sin aviso o por algo que no es nivel 1, lo mejor primero (joyas en los días 1-2 y nivel 1 antes del día 4), horarios que no dan (se llega tarde andando; tras la comida no se mira, su franja ya lleva el paseo), esperas de más de ${ESPERA_LARGA} min entre paradas (sin la comida), días flojos (menos de ${DIA_FLOJO.completo} paradas en completo o ${DIA_FLOJO.tranquilo} en tranquilo, sin el último día), días que acaban antes de las 17:00, tardes libres, avisos del día, un lugar de día y de noche el mismo día, lugares repetidos, imprescindibles que no salen y rutas iguales.`,
+  `Sacado de las rutas de arriba con estos criterios: traslados de más de ${SALTO_GRANDE} min sin su aviso (con aviso no son un fallo), ritmo tranquilo antes de las 10:00 sin aviso o por algo que no es nivel 1, lo mejor primero (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día), horarios que no dan (se llega tarde andando; tras la comida no se mira, su franja ya lleva el paseo), esperas de más de ${ESPERA_LARGA} min entre paradas (sin la comida), días flojos (menos de ${DIA_FLOJO.completo} paradas en completo o ${DIA_FLOJO.tranquilo} en tranquilo, sin el último día), días que acaban antes de las 17:00, tardes libres, avisos del día, un lugar de día y de noche el mismo día, lugares repetidos, imprescindibles que no salen y rutas iguales.`,
   '',
   '### Patrones que se repiten',
   '',

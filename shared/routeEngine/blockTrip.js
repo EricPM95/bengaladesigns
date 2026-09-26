@@ -175,12 +175,14 @@ export function planBlockTrip(args) {
   let best = planBlockTripOnce(args, bans)
   for (let round = 0; round < REPAIR_ROUNDS; round++) {
     const dead = [...new Set([...deadDays(best), ...shortDays(best)])]
-    if (dead.length === 0) break
+    const wakes = wakeBans(best).filter((ban) => !bans.has(ban))
+    if (dead.length === 0 && wakes.length === 0) break
     const deadNumbers = new Set(dead.map((day) => day.dayNumber))
     let improved = null
     const consider = (trial, added) => {
       if (tripCost(trial) < tripCost(improved?.trial ?? best)) improved = { trial, added }
     }
+    for (const ban of wakes) consider(planBlockTripOnce(args, new Set([...bans, ban])), [ban])
     for (const day of dead) {
       for (const ban of repairBans(args, best, day)) {
         if (bans.has(ban)) continue
@@ -203,6 +205,26 @@ export function planBlockTrip(args) {
     best = improved.trial
   }
   return best
+}
+
+/**
+ * Madrugar como reparación (decisión del 2026-09-26): si un imprescindible se queda fuera de todo el
+ * viaje, se prueba a madrugar cada día de ritmo tranquilo en que un nivel 1 de la mañana pasó a después de
+ * comer (el Foro tras el Coliseo): ese rato de tarde es el que le faltaba (el Altar de la Patria).
+ */
+function wakeBans(trip) {
+  // Lo que falta del todo, y lo que solo entra de paso rescatado en otro día (el Altar al final del día del
+  // Vaticano, lejos de todo): con el madrugón puede volver a su sitio, detrás del Foro.
+  const rescuedOutside = trip.days.flatMap((day) => (day.schedule?.kept ?? []).filter((unit) => String(unit.id).startsWith('de paso:')).flatMap((unit) => unit.places.map((place) => place.name)))
+  const missing = [...new Set([...(trip.unplacedEssentials ?? []).map((item) => item.name), ...rescuedOutside])]
+  if (missing.length === 0 || trip.mode?.dayStart === MODES_V3.completo.dayStart) return []
+  return trip.days
+    .filter((day) => day.schedule && !day.schedule.modeFallback && !day.halfDayExcursion)
+    .filter((day) => {
+      const morningId = day.blocks?.find((block) => block.slot === 'manana')?.id
+      return Boolean(morningId) && day.schedule.kept.some((unit) => unit.slot === 'tarde' && String(unit.id).startsWith(`${morningId}:`) && unit.places.some((place) => place.level === 1))
+    })
+    .map((day) => `madruga:${day.dayNumber}:${missing.join('|')}`)
 }
 
 /**
@@ -486,7 +508,11 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   }
 
   /** Programa un día con sus unidades; con plan B (madrugar) si se pierde un imprescindible. */
-  function schedule(day, units, dinner, { morning = true } = {}) {
+  function schedule(day, input, dinner, { morning = true } = {}) {
+    // Lo de la mañana del bloque vuelve a ser de la mañana en cada programación: si en una anterior pasó
+    // a después de comer (la Plaza y la Basílica de San Pedro), esa marca no se arrastra. Si no, madrugar
+    // no las devolvía a la mañana y quedaban dos horas muertas antes de comer.
+    const units = morning ? input.map((unit) => (unit.slot === 'tarde' && unit.curatedIndex != null && unit.curatedIndex < CURATED_AFTERNOON_OFFSET ? { ...unit, slot: 'manana' } : unit)) : input
     const hours = hoursOf(day)
     const run = (dayMode, list = units) =>
       scheduleFixedOrder({
@@ -508,24 +534,32 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     let result = run(mode)
     let modeFallback = null
     let shortenedLunch = null
-    // Madrugar solo para no perder un imprescindible de nivel 1 (decisión del 2026-09-26): ni por las
-    // joyas ni porque se deslicen paradas normales (antes bastaban 2, y el ritmo tranquilo empezaba a las
-    // 08:00 casi todos los días). Lo demás que no llega va de paso o a "No te dio tiempo". Se probó madrugar
-    // lo justo (09:00, 09:30) y descolocaba el resto del día (el Altar detrás del Ghetto): a las 08:00.
+    // Madrugar solo si un imprescindible de nivel 1 se queda fuera del día entero (decisiones del
+    // 2026-09-26): ni por las joyas ni porque se deslicen paradas normales. Que pase a después de comer
+    // el mismo día NO es perderlo (el Foro detrás del Coliseo y la comida; la Plaza y la Basílica de San
+    // Pedro detrás de los Museos; Navona detrás del Panteón). Lo demás que no llega va de paso o a "No te
+    // dio tiempo". Se probó madrugar lo justo (09:00, 09:30) y descolocaba el día: a las 08:00.
     const levelOne = (unit) => unit.places.some((place) => place.level === 1)
-    const lostLevelOne = (candidate) =>
-      candidate.dropped.filter(({ unit }) => levelOne(unit)).length + candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && levelOne(unit)).length
-    if (hasPlanB && morning && lostLevelOne(result) > 0) {
+    const lostLevelOne = (candidate) => candidate.dropped.filter(({ unit }) => levelOne(unit)).length
+    // La reparación del viaje puede pedir madrugar un día (`madruga:<día>:<nombres>`): un imprescindible
+    // se queda fuera de TODO el viaje porque ese día un nivel 1 pasó a después de comer y le quitó el sitio.
+    const forcedWake = hasPlanB && morning ? [...bans].find((ban) => ban.startsWith(`madruga:${day.dayNumber}:`)) : null
+    // Solo si madrugar devuelve de verdad el nivel 1 a la mañana (un miércoles la Basílica no abre hasta
+    // las 12:30: madrugar solo dejaría dos horas muertas antes de comer).
+    const slidLevelOne = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && levelOne(unit)).length
+    const woken = forcedWake ? run(normalMode) : null
+    if (woken && slidLevelOne(woken) < slidLevelOne(result) && lostLevelOne(woken) <= lostLevelOne(result)) {
+      result = woken
+      modeFallback = { recoveredUnitIds: [], recoveredNames: forcedWake.split(':').slice(2).join(':').split('|'), startedAt: normalMode.dayStart, dayStart: normalMode.dayStart }
+    } else if (hasPlanB && morning && lostLevelOne(result) > 0) {
       const alt = run(normalMode)
       if (lostLevelOne(alt) < lostLevelOne(result)) {
         const startedAt = normalMode.dayStart
-        const lostUnits = (candidate) => [
-          ...candidate.dropped.map(({ unit }) => unit),
-          ...candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde'),
-        ].filter(levelOne)
+        const lostUnits = (candidate) => candidate.dropped.map(({ unit }) => unit).filter(levelOne)
         const recovered = lostUnits(result).filter((unit) => !lostUnits(alt).some((other) => other.id === unit.id)).map((unit) => unit.id)
-        // El aviso nombra lo que se recupera de la MAÑANA (madrugar es por ella), no lo que cambia por la tarde.
-        modeFallback = { recoveredUnitIds: [...new Set(recovered)].filter((id) => morningIds.has(id) && units.find((unit) => unit.id === id)?.role !== 'de_paso'), startedAt, dayStart: startedAt }
+        // El aviso nombra el nivel 1 que se recupera, sea de la mañana o de la tarde (con el Foro después de
+        // comer, lo que se perdía era el Panteón de la tarde).
+        modeFallback = { recoveredUnitIds: [...new Set(recovered)], startedAt, dayStart: startedAt }
         result = alt
       }
     }
@@ -541,9 +575,9 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       }
     }
     // Lo que sobra de la mañana no arrastra la tarde (ajustes B.2): lo que no cabe antes de comer va de
-    // paso si se ve desde la calle; si no, fuera (un imprescindible lo recoge luego el rescate, en su sitio
-    // de camino). La tarde empieza donde dice su bloque.
-    const overflowOf = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde')
+    // paso si se ve desde la calle; si no, fuera. Salvo un nivel 1: va después de comer, entero y en su
+    // orden, antes de la tarde (decisión del 2026-09-26).
+    const overflowOf = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && !levelOne(unit))
     if (overflowOf(result).length > 0) {
       const dayMode = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
       const seenFromStreet = (unit) => unit.places.every((place) => place.passThrough || place.type === 'exterior' || place.visible_from_outside || place.pass_by)

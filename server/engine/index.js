@@ -355,17 +355,29 @@ function midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames) {
   if (!worst) return null
   const previous = visits[worst.index - 1]
   // Entre las sugerencias, nada de lo que ya va hoy más tarde.
+  const suggestions = nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates, {
+    startMinutes: previous.end,
+    endMinutes: visits[worst.index].start - (visits[worst.index].walkMinutes ?? 0),
+    to: visits[worst.index].place.coordinates,
+    hours: tripDay.hours ?? {},
+  })
   return {
     minutes: worst.gap,
     after: previous.place.name,
     before: visits[worst.index].place.name,
-    suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, previous.place.end_coordinates ?? previous.place.coordinates, {
-      startMinutes: previous.end,
-      endMinutes: visits[worst.index].start - (visits[worst.index].walkMinutes ?? 0),
-      to: visits[worst.index].place.coordinates,
-      hours: tripDay.hours ?? {},
-    }),
+    suggestions,
+    // Sin nada que proponer (la espera al atardecer del Pincio, con todo visto): una idea corta de la
+    // zona, sin más paradas (decisión del 2026-09-26).
+    ...(suggestions.length === 0 ? { hint: zoneHintFor(destData, visits[worst.index].place.zone ?? previous.place.zone) } : {}),
   }
+}
+
+/** "Pasear por Villa Borghese: el pulmón verde de Roma." — el paseo de la zona, en una frase. */
+function zoneHintFor(destData, zone) {
+  const walk = (destData.zone_walks ?? []).find((entry) => entry.zone === zone)
+  if (!walk) return null
+  const sentence = String(walk.description ?? '').split(/(?<=\.)\s/)[0] ?? ''
+  return sentence ? `${walk.name}: ${sentence.charAt(0).toLowerCase()}${sentence.slice(1)}` : walk.name
 }
 
 /**

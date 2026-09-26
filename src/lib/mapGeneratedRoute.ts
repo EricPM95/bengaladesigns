@@ -154,7 +154,7 @@ export interface GeneratedDay {
   /** Motor v3: aperitivo y paseo antes de cenar — DayPlan.aperitivo. */
   aperitivo?: { title: string; barrio: string; minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
   /** Motor v3: tiempo libre a mitad de día — DayPlan.freeTime. */
-  free_time?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
+  free_time?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null } | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -594,6 +594,7 @@ function mapDay(
             after: generated.free_time.after,
             before: generated.free_time.before,
             suggestions: generated.free_time.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
+            hint: generated.free_time.hint ?? null,
           },
         }
       : {}),

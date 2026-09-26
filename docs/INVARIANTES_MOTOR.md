@@ -806,9 +806,17 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     del día que la enseñó.
 168. **Lo de paso de un grupo no se cae primero**: si es del grupo de otra parada del bloque (Plaza
     Venecia con el Altar), se cae como una parada, no como lo de paso.
-169. **Ritmo tranquilo, nunca antes de las 10:00**, salvo para no perder un imprescindible de nivel 1
-    (no una joya ni un nivel 2-3), y entonces a las 08:00, con aviso (madrugar lo justo, a las 09:00 o
-    09:30, descolocaba el resto del día). Lo demás que no llega va de paso o a "No te dio tiempo" (`notEnoughTime`).
+169. **Ritmo tranquilo, nunca antes de las 10:00**, salvo si un imprescindible de nivel 1 se queda fuera
+    del día entero, ni siquiera de paso (no una joya ni un nivel 2-3); entonces a las 08:00, con aviso
+    (madrugar lo justo, a las 09:00 o 09:30, descolocaba el resto del día). Que un nivel 1 pase a después
+    de comer el mismo día NO es perderlo: va entero y en su orden antes de la tarde (el Foro tras el
+    Coliseo y la comida; la Plaza y la Basílica tras los Museos; Navona tras el Panteón), con la comida en
+    su ventana normal. Lo demás que no llega va de paso o a "No te dio tiempo" (`notEnoughTime`).
+    La reparación del viaje también puede madrugar un día (`madruga:<día>:<nombres>`) si un imprescindible
+    se queda fuera de todo el viaje por ese nivel 1 de después de comer, y solo si madrugar lo devuelve
+    de verdad a la mañana. Lo de la mañana del bloque vuelve a ser de la mañana en cada programación (la
+    marca "tarde" de una programación anterior no se arrastra). El aviso nombra lo que se recupera,
+    sea de la mañana o de la tarde, y si además se acorta la comida, dice las dos cosas.
 170. **Nocturnas**: en 3+ días, un lugar visto de día no es nocturna ese mismo día; en 1-2 días, solo si
     esa noche no hay otra nocturna posible.
 171. **Comida acortada solo si hace falta**: con el día ya montado (y después del rescate), se prueba la
@@ -817,8 +825,11 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
 172. **Traslados largos (más de 25 min andando) no son un fallo, pero se dicen**, cada uno con su tramo
     real (lo de paso metido por el rescate incluido): andando primero y luego la alternativa; con cuesta
     (`uphill` del lugar), "(con cuesta) · o el bus 115 si prefieres no subirla". Sin dato, "bus o taxi".
-173. **Lo mejor primero** (semáforo, `primero`): en viajes de 2+ días, las 4 joyas salen en los días 1-2
-    y todo el nivel 1 antes del día 4. Solo se comprueba: el reparto de mañanas aún no lo busca.
+173. **Lo mejor primero** (semáforo, `primero`): en 2 días, las 4 joyas dentro de los 2 días; en 3+ días,
+    como muy tarde el día 3 y ninguna solo el último día del viaje. Solo se comprueba: el reparto de
+    mañanas aún no lo busca.
+174. **Tiempo libre sin sugerencias**: una idea corta de la zona (el paseo de `zone_walks`, en una
+    frase), sin más paradas: la espera al atardecer del Pincio con todo visto.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

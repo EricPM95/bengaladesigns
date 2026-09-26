@@ -121,9 +121,8 @@ for (const members of GROUPS.values()) members.sort((a, b) => (a.group_order ?? 
 const DINNER_ZONES = dinnerZones(D)
 const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) => place.name)
 const JOYA_NAMES = D.places.filter((place) => place.tier === 'joya').map((place) => place.name)
-/** Lo mejor primero (decisión del 2026-09-26): las joyas en los días 1-2 y el nivel 1 antes del día 4. */
-const JOYA_LAST_DAY = 2
-const LEVEL1_LAST_DAY = 3
+/** Lo mejor primero (decisión del 2026-09-26): en 3+ días, las joyas como muy tarde este día. */
+const JOYA_LAST_DAY = 3
 
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
 function outOfHours(stop) {
@@ -437,14 +436,10 @@ function measureTrip(trip, pace, exps) {
   const defaultTime = D.default_free_tour?.default_time ?? null
   const freeTourOffTime = trip.hasFreeTour ? dayMetrics.filter((d) => d.freeTourStart && d.freeTourStart !== defaultTime).length : 0
 
-  // Lo mejor primero, en viajes de 2+ días: una joya que no sale en los días 1-2 (o no sale), o un
-  // imprescindible que sale el día 4 o después. Lo que no sale del nivel 1 ya lo cuenta "nivel1".
-  const bestLate = trip.days.length >= 2
-    ? [
-        ...JOYA_NAMES.filter((name) => !dayOf.has(name) || dayOf.get(name) > JOYA_LAST_DAY).map((name) => `joya ${name} ${dayOf.has(name) ? `el día ${dayOf.get(name)}` : 'no sale'}`),
-        ...LEVEL1_NAMES.filter((name) => !JOYA_NAMES.includes(name) && dayOf.has(name) && dayOf.get(name) > LEVEL1_LAST_DAY).map((name) => `${name} el día ${dayOf.get(name)}`),
-      ]
-    : []
+  // Lo mejor primero (ajustado el 2026-09-26): en 2 días, las 4 joyas dentro de los 2 días; en 3+ días,
+  // como muy tarde el día 3 y ninguna solo el último día del viaje.
+  const lastDay = trip.days.length
+  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !dayOf.has(name) || (lastDay >= 3 && (dayOf.get(name) > JOYA_LAST_DAY || dayOf.get(name) === lastDay))).map((name) => `joya ${name} ${dayOf.has(name) ? `el día ${dayOf.get(name)}${dayOf.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 
   return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }
@@ -607,7 +602,7 @@ const SEMAFORO_CRITERIOS = [
   },
   // En 1-2 días no cabe todo por diseño: lo que se queda fuera sale en "No te dio tiempo".
   { id: 'nivel1', label: 'Viajes de 3+ días sin algún imprescindible', limite: '0', applies: (n) => n >= 3, value: (rows) => rows.filter((r) => r.missingLevel1.length > 0).length, ok: (v) => v === 0 },
-  { id: 'primero', label: 'Lo mejor primero: joyas en los días 1-2 y nivel 1 antes del día 4 (viajes de 2+ días)', limite: '0', applies: (n) => n >= 2, value: (rows) => rows.filter((r) => r.bestLate.length > 0).length, ok: (v) => v === 0 },
+  { id: 'primero', label: 'Lo mejor primero: las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día', limite: '0', applies: (n) => n >= 2, value: (rows) => rows.filter((r) => r.bestLate.length > 0).length, ok: (v) => v === 0 },
   { id: 'fuera', label: 'Lugares que no caben, viajes de 3+ días', limite: '0', applies: (n) => n >= 3, value: (rows, days) => sum(days, (d) => d.dropped.length), ok: (v) => v === 0 },
   {
     id: 'huecos',

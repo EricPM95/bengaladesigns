@@ -1083,7 +1083,7 @@ export function DayDetailPanel({
                     <FreeTimeBlock
                       hours={0}
                       city={day.city}
-                      midDay={{ minutes: day.freeTime.minutes, before: day.freeTime.before }}
+                      midDay={{ minutes: day.freeTime.minutes, before: day.freeTime.before, hint: day.freeTime.hint }}
                       onOpenMap={() => {
                         const here = realStops[index]?.coordinates
                         setAddStopFocus(here && hasRealCoordinates(here) ? here : null)

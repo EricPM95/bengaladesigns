@@ -62,7 +62,6 @@ const faltanPorFuera = []
 // antes del día 4.
 const mejorPrimero = []
 const JOYAS = (D.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name)
-const NIVEL1 = (D.places ?? []).filter((place) => place.level === 1).map((place) => place.name)
 const t2m = (hhmm) => {
   const [h, m] = String(hhmm).split(':').map(Number)
   return h * 60 + m
@@ -192,10 +191,7 @@ for (const [index, viaje] of VIAJES.entries()) {
   // El último día de ciudad no cuenta (la tarde libre del último día es amarilla, no roja).
   for (const { n, minutos } of huecos.slice(0, -1)) if (minutos > 90) huecosRojos.push(`viaje ${index + 1}, día ${n}: ${minutos} min`)
   if (viaje.dias >= 2) {
-    const tarde = [
-      ...JOYAS.filter((name) => !primerDia.has(name) || primerDia.get(name) > 2).map((name) => `joya ${name} ${primerDia.has(name) ? `el día ${primerDia.get(name)}` : 'no sale'}`),
-      ...NIVEL1.filter((name) => !JOYAS.includes(name) && primerDia.has(name) && primerDia.get(name) > 3).map((name) => `${name} el día ${primerDia.get(name)}`),
-    ]
+    const tarde = JOYAS.filter((name) => !primerDia.has(name) || (viaje.dias >= 3 && (primerDia.get(name) > 3 || primerDia.get(name) === viaje.dias))).map((name) => `joya ${name} ${primerDia.has(name) ? `el día ${primerDia.get(name)}${primerDia.get(name) === viaje.dias ? ' (el último)' : ''}` : 'no sale'}`)
     if (tarde.length) mejorPrimero.push(`viaje ${index + 1}: ${tarde.join(', ')}`)
   }
   if (viaje.dias >= 2) for (const place of porFuera) if (!vistos.has(place.name)) faltanPorFuera.push(`viaje ${index + 1}: ${place.name}`)
@@ -207,7 +203,7 @@ head.push('')
 head.push(`- Bloques reordenados respecto al JSON: **${reordenados.length}**${reordenados.length ? ` (${reordenados.join('; ')})` : ''}.`)
 head.push(`- Medios días sin tipo (ningún bloque encaja y el motor improvisa): **${sinTipo}**.`)
 head.push(`- Huecos rojos (más de 90 min parado en mitad del viaje): **${huecosRojos.length}**${huecosRojos.length ? ` (${huecosRojos.join('; ')})` : ''}.`)
-head.push(`- ${mejorPrimero.length ? "🔴" : "🟢"} Lo mejor primero (joyas en los días 1-2, nivel 1 antes del día 4; viajes de 2+ días): **${mejorPrimero.length}** viajes en rojo${mejorPrimero.length ? ` (${mejorPrimero.join('; ')})` : ''}.`)
+head.push(`- ${mejorPrimero.length ? "🔴" : "🟢"} Lo mejor primero (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): **${mejorPrimero.length}** viajes en rojo${mejorPrimero.length ? ` (${mejorPrimero.join('; ')})` : ''}.`)
 head.push(`- Imprescindibles que se ven desde la calle y faltan (viajes de 2+ días): **${faltanPorFuera.length}**${faltanPorFuera.length ? ` (${faltanPorFuera.join('; ')})` : ''}.`)
 head.push('')
 head.push(`Los viajes de 1 día siguen con las rutas curadas de \`short_trips\` (con bloques salían peor).`)

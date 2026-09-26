@@ -194,24 +194,32 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   // imprescindible. Con el nombre de lo que se recupera, no con la regla.
   // El motivo de verdad: lo principal de lo que se recupera (el Coliseo y el Foro, no el Arco que abre
   // el grupo): sus imprescindibles de visita larga, o el más largo si no hay.
-  const recovered = (schedule.modeFallback?.recoveredUnitIds ?? [])
-    .flatMap((id) => {
+  const recovered = [
+    ...(schedule.modeFallback?.recoveredUnitIds ?? []).flatMap((id) => {
       const places = unitById.get(id)?.places ?? []
       const main = places.filter((place) => place.level === 1 && (place.duration_minutes ?? 0) >= 45)
       return (main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)).map((place) => placeWithArticle(place))
-    })
-    .filter(Boolean)
+    }),
+    // Madrugar pedido por la reparación del viaje: lo que se recupera es un imprescindible del viaje.
+    ...(schedule.modeFallback?.recoveredNames ?? [])
+      .map((name) => destData.places?.find((place) => place.name === name))
+      .filter(Boolean)
+      .map((place) => placeWithArticle(place)),
+  ].filter(Boolean)
   // La comida acortada para no perder un imprescindible (ajustes C): se dice, con lo que se salva.
   const savedByLunch = (schedule.shortenedLunch ?? [])
     .map((name) => destData.places?.find((place) => place.name === name))
     .filter(Boolean)
     .map((place) => placeWithArticle(place))
+  // Las dos cosas a la vez (madrugar y comer más corto) se dicen las dos: ninguna va en silencio.
   const paceNotice =
-    recovered.length > 0
-      ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}`
-      : savedByLunch.length > 0
-        ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}`
-        : null
+    recovered.length > 0 && savedByLunch.length > 0
+      ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}, y la comida es más corta para ver ${joinSpanish(savedByLunch)}`
+      : recovered.length > 0
+        ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}`
+        : savedByLunch.length > 0
+          ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}`
+          : null
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

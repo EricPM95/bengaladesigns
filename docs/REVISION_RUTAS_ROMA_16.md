@@ -7,7 +7,7 @@ Motor v3, generado el 2026-09-26 con `node scripts/destino/revisionRutas.mjs`. S
 - Bloques reordenados respecto al JSON: **0**.
 - Medios días sin tipo (ningún bloque encaja y el motor improvisa): **0**.
 - Huecos rojos (más de 90 min parado en mitad del viaje): **0**.
-- 🔴 Lo mejor primero (joyas en los días 1-2, nivel 1 antes del día 4; viajes de 2+ días): **11** viajes en rojo (viaje 6: joya Fontana de Trevi el día 3, joya Panteón el día 3; viaje 7: joya Museos Vaticanos y Capilla Sixtina el día 3; viaje 8: joya Fontana de Trevi el día 3, joya Panteón el día 3; viaje 9: joya Museos Vaticanos y Capilla Sixtina el día 3; viaje 10: joya Fontana de Trevi el día 4, joya Panteón el día 4, Piazza Navona el día 4, Plaza de España el día 4; viaje 11: joya Fontana de Trevi el día 4, joya Panteón el día 4, Piazza Navona el día 4, Plaza de España el día 4; viaje 12: joya Fontana de Trevi el día 4, joya Panteón el día 4, Piazza Navona el día 4, Plaza de España el día 4; viaje 13: joya Panteón el día 5, joya Museos Vaticanos y Capilla Sixtina el día 3, Piazza Navona el día 5, Plaza de España el día 5; viaje 14: joya Museos Vaticanos y Capilla Sixtina el día 3; viaje 15: joya Fontana de Trevi el día 3, joya Panteón el día 3; viaje 16: joya Fontana de Trevi el día 3, joya Panteón el día 3).
+- 🔴 Lo mejor primero (las 4 joyas dentro del viaje en 2 días; en 3+, como muy tarde el día 3 y ninguna solo el último día): **8** viajes en rojo (viaje 6: joya Fontana de Trevi el día 3 (el último), joya Panteón el día 3 (el último); viaje 7: joya Museos Vaticanos y Capilla Sixtina el día 3 (el último); viaje 8: joya Fontana de Trevi el día 3 (el último), joya Panteón el día 3 (el último); viaje 9: joya Museos Vaticanos y Capilla Sixtina el día 3 (el último); viaje 10: joya Fontana de Trevi el día 4 (el último), joya Panteón el día 4 (el último); viaje 11: joya Fontana de Trevi el día 4 (el último), joya Panteón el día 4 (el último); viaje 12: joya Fontana de Trevi el día 4 (el último), joya Panteón el día 4 (el último); viaje 13: joya Panteón el día 5 (el último)).
 - Imprescindibles que se ven desde la calle y faltan (viajes de 2+ días): **0**.
 
 Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques salían peor).
@@ -194,7 +194,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 **Bloques**: mañana: Coliseo, Foro y Palatino (roma_antigua) · tarde: El centro barroco: Panteón, Caravaggio y el Ghetto (centro_barroco)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver el Foro Romano
+> Hoy empezamos a las 08:00 para que te dé tiempo a ver Plaza de España y Altar de la Patria, y la comida es más corta para ver el Panteón
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 08:00 | Arco de Constantino | 15 min | — | Uno de los imprescindibles de Roma. |
@@ -215,27 +215,26 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 - **Cena**: 20:30 en Centro Histórico (21 min andando desde la última parada).
 - **Nocturna**: 21:30 Panteón (noche) → 22:25 Fontana de Trevi (noche).
+- **No incluido**: Mirador del Janículo — No te dio tiempo.
 
 ### Día 2
 
 **Bloques**: mañana: Museos Vaticanos, San Pedro y la Cúpula (vaticano) · tarde: Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Plaza de San Pedro y Basílica de San Pedro
+> 🚌 Basílica de San Pedro → Trastevere: ~25 min andando · o en bus o taxi
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 08:00 | Museos Vaticanos y Capilla Sixtina | 180 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
-| 11:30 | Plaza de San Pedro | 30 min | 11 min | Uno de los imprescindibles de Roma. |
-| 12:05 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. ⚠️ Miércoles, solo de 12:30 a 20:00. |
-| 13:30–15:30 | 🍝 **Comida**: Ristorante Arlù en Vaticano y Borgo | | | |
-| 15:30 | Pasas por Via della Conciliazione | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 15:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:30 | Trastevere | 45 min | 24 min | Te pilla de camino a la cena: merece la parada. |
-| 17:20 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
-| 18:00 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:30 | Mirador del Janículo | 40 min | 17 min | Te pilla de camino a la cena: merece la parada. |
+| 10:00 | Museos Vaticanos y Capilla Sixtina | 195 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
+| 13:15–15:15 | 🍝 **Comida**: 200 Gradi en Vaticano y Borgo | | | |
+| 15:15 | Plaza de San Pedro | 30 min | 8 min | Uno de los imprescindibles de Roma. |
+| 15:50 | Basílica de San Pedro | 90 min | 3 min | Uno de los imprescindibles de Roma. |
+| 18:00 | Trastevere | 45 min | 26 min | Te pilla de camino a la cena: merece la parada. |
+| 18:50 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
 
-- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
+- **Aperitivo y paseo por Trastevere** (45 min). Sugerencias: Isla Tiberina (8 min), Plaza Trilussa (3 min), Fontana dell'Acqua Paola (12 min).
+- **Cena**: 20:00 en Trastevere (5 min andando desde la última parada).
 - **Nocturna**: ninguna.
+- **No incluido**: Mirador del Janículo — No te dio tiempo.
 
 ## 6. 3 días · del viernes 24 de septiembre de 2027 al domingo 26 de septiembre de 2027 · completo · Arte (de viernes a domingo)
 
@@ -384,71 +383,69 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 **Bloques**: mañana: Coliseo, Foro y Palatino (roma_antigua) · tarde: Campidoglio, el Altar y el Ghetto (campidoglio_ghetto)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver el Foro Romano
+> Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 08:00 | Arco de Constantino | 15 min | — | Uno de los imprescindibles de Roma. |
 | 08:30 | Coliseo | 90 min | 3 min | Uno de los imprescindibles de Roma. |
 | 10:30 | Foro Romano y Palatino | 105 min | 11 min | Uno de los imprescindibles de Roma. |
 | 12:30 | Pasas por Via dei Fori Imperiali | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
-| 13:00–15:00 | 🍝 **Comida**: La Taverna dei Fori Imperiali en Monti y Fori Imperiali | | | |
-| 15:00 | Plaza del Campidoglio | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 15:30 | Altar de la Patria | 60 min | 7 min | Uno de los imprescindibles de Roma. |
-| 16:45 | Pasas por Plaza Venecia | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:15 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:30 | Barrio Judío | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
-| 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 13:00–15:00 | 🍝 **Comida**: La Prezzemolina en Coliseo y Monti | | | |
+| 15:00 | Isla Tiberina | 20 min | 16 min | Te pilla de camino a la cena: merece la parada. |
+| 15:30 | Pasas por Fuente de las Tortugas | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
+| 15:45 | Barrio Judío | 30 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 16:30 | Pasas por Teatro de Marcelo | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Pasas por Plaza Venecia | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:15 | Altar de la Patria | 60 min | 5 min | Uno de los imprescindibles de Roma. |
+| 18:30 | Plaza del Campidoglio | 20 min | 8 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
+- **Aperitivo y paseo por Centro Histórico** (56 min). Sugerencias: Largo di Torre Argentina (8 min), Campo de' Fiori (13 min), Columna de Trajano (8 min).
+- **Cena**: 20:00 en Centro Histórico (14 min andando desde la última parada).
 - **Nocturna**: ninguna.
+- **No incluido**: Cúpula de San Pedro — No te dio tiempo.
 
 ### Día 2
 
 **Bloques**: mañana: Museos Vaticanos, San Pedro y la Cúpula (vaticano) · tarde: Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Plaza de San Pedro y Basílica de San Pedro
+> 🚌 Borgo Pio → Mirador del Janículo: ~25 min andando (con cuesta) · o el bus 115 si prefieres no subirla
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 08:00 | Museos Vaticanos y Capilla Sixtina | 180 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
-| 11:30 | Plaza de San Pedro | 30 min | 11 min | Uno de los imprescindibles de Roma. |
-| 12:05 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. ⚠️ Miércoles, solo de 12:30 a 20:00. |
-| 13:20 | Cúpula de San Pedro | 30 min | 0 min | Elegido según tus gustos: Naturaleza y Vistas. |
-| 14:00–16:00 | 🍝 **Comida**: Ristorante Arlù en Vaticano y Borgo | | | |
-| 16:00 | Pasas por Via della Conciliazione | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:15 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:00 | Trastevere | 90 min | 24 min | Te pilla de camino a la cena: merece la parada. |
-| 18:35 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Te pilla de camino a la cena: merece la parada. |
-| 19:40 | Mirador del Janículo 🌅 | 43 min | 22 min | Elegido según tus gustos: Naturaleza y Vistas. |
+| 10:00 | Museos Vaticanos y Capilla Sixtina | 195 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
+| 13:15–15:15 | 🍝 **Comida**: 200 Gradi en Vaticano y Borgo | | | |
+| 15:15 | Plaza de San Pedro | 30 min | 8 min | Uno de los imprescindibles de Roma. |
+| 15:50 | Basílica de San Pedro | 90 min | 3 min | Uno de los imprescindibles de Roma. |
+| 17:30 | Pasas por Via della Conciliazione | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
+| 19:40 | Mirador del Janículo 🌅 | 43 min | 26 min | Elegido según tus gustos: Naturaleza y Vistas. |
 
+- **Tiempo libre**: 79 min entre Borgo Pio y Mirador del Janículo. Sugerencias: Puente Sant'Angelo (9 min).
 - **Cena**: 21:00 en Trastevere (21 min andando desde la última parada).
 - **Nocturna**: ninguna.
+- **No incluido**: Cúpula de San Pedro — No te dio tiempo.
 
 ### Día 3
 
 **Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Piazza Navona
+> 🚌 Iglesia del Gesù → Iglesia de Santa Maria della Vittoria: ~25 min andando · o en bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
-| 09:00 | Plaza de España | 30 min | 10 min | Uno de los imprescindibles de Roma. |
-| 10:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
-| 10:30 | Panteón | 30 min | 12 min | Uno de los imprescindibles de Roma. ⚠️ Domingos y festivos, solo de 09:00 a 09:30 y de 11:45 a 19:00. |
-| 11:30 | Piazza Navona | 30 min | 7 min | Uno de los imprescindibles de Roma. |
-| 13:00–15:00 | 🍝 **Comida**: Trattoria Dal Cavalier Gino en Centro Histórico | | | |
-| 15:00 | Plaza Colonna | 15 min | 3 min | Te pilla de camino a la cena: merece la parada. |
-| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 18 min | Te pilla de camino a la cena: merece la parada. |
-| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Te pilla de camino a la cena: merece la parada. |
-| 17:30 | Elefantino de Bernini | 10 min | 5 min | Te pilla de camino a la cena: merece la parada. |
-| 17:45 | Iglesia del Gesù | 30 min | 5 min | Te pilla de camino a la cena: merece la parada. |
-| 18:20 | Largo di Torre Argentina | 20 min | 3 min | Te pilla de camino a la cena: merece la parada. |
+| 10:00 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
+| 11:00 | Plaza de España | 30 min | 10 min | Uno de los imprescindibles de Roma. |
+| 12:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 12:30 | Panteón | 45 min | 12 min | Uno de los imprescindibles de Roma. |
+| 13:15–15:15 | 🍝 **Comida**: Armando al Pantheon en Centro Histórico | | | |
+| 15:15 | Piazza Navona | 30 min | 4 min | Uno de los imprescindibles de Roma. |
+| 16:00 | Iglesia del Gesù | 30 min | 11 min | Te pilla de camino a la cena: merece la parada. |
+| 17:00 | Iglesia de Santa Maria della Vittoria | 35 min | 26 min | Te pilla de camino a la cena: merece la parada. |
+| 17:45 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 18:15 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Centro Histórico** (73 min). Sugerencias: Campo de' Fiori (6 min), Plaza Farnese (7 min).
-- **Cena**: 20:00 en Centro Histórico (7 min andando desde la última parada).
+- **Aperitivo y paseo por Trevi** (77 min). Sugerencias: Plaza Colonna (4 min), Elefantino de Bernini (5 min), Iglesia de Santa Maria sopra Minerva (5 min).
+- **Cena**: 20:00 en Trevi (8 min andando desde la última parada).
 - **Nocturna**: ninguna.
+- **No incluido**: Cúpula de San Pedro — No te dio tiempo.
 
 ## 9. 3 días · del sábado 14 de agosto de 2027 al lunes 16 de agosto de 2027 · completo · Imprescindibles + Free Tour
 
@@ -525,45 +522,43 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 **Bloques**: mañana: Coliseo, Foro y Palatino (roma_antigua) · tarde: Campidoglio, el Altar y el Ghetto (campidoglio_ghetto)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver el Foro Romano
+> Hoy empezamos a las 08:00 para que te dé tiempo a ver el Altar de la Patria
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
 | 08:00 | Arco de Constantino | 15 min | — | Uno de los imprescindibles de Roma. |
 | 08:30 | Coliseo | 90 min | 3 min | Uno de los imprescindibles de Roma. |
 | 10:30 | Foro Romano y Palatino | 105 min | 11 min | Uno de los imprescindibles de Roma. |
 | 12:30 | Pasas por Via dei Fori Imperiali | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
-| 13:00–15:00 | 🍝 **Comida**: La Taverna dei Fori Imperiali en Monti y Fori Imperiali | | | |
-| 15:00 | Plaza del Campidoglio | 20 min | 7 min | Te pilla de camino a la cena: merece la parada. |
-| 15:30 | Altar de la Patria | 60 min | 7 min | Uno de los imprescindibles de Roma. |
-| 16:45 | Pasas por Plaza Venecia | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:15 | Pasas por Teatro de Marcelo | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:30 | Barrio Judío | 30 min | 5 min | Elegido según tus gustos: Barrios y Sabores. |
-| 18:05 | Pasas por Fuente de las Tortugas | 10 min | 4 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:30 | Isla Tiberina | 20 min | 10 min | Te pilla de camino a la cena: merece la parada. |
+| 13:00–15:00 | 🍝 **Comida**: La Prezzemolina en Coliseo y Monti | | | |
+| 15:00 | Isla Tiberina | 20 min | 16 min | Te pilla de camino a la cena: merece la parada. |
+| 15:30 | Pasas por Fuente de las Tortugas | 10 min | 10 min | Pasas por aquí de camino: no hace falta pararse. |
+| 15:45 | Barrio Judío | 30 min | 3 min | Elegido según tus gustos: Barrios y Sabores. |
+| 16:30 | Pasas por Teatro de Marcelo | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:00 | Pasas por Plaza Venecia | 10 min | 11 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:15 | Altar de la Patria | 60 min | 5 min | Uno de los imprescindibles de Roma. |
+| 18:30 | Plaza del Campidoglio | 20 min | 8 min | Te pilla de camino a la cena: merece la parada. |
 
-- **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
-- **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
+- **Aperitivo y paseo por Centro Histórico** (56 min). Sugerencias: Iglesia del Gesù (6 min), Campo de' Fiori (13 min), Largo di Torre Argentina (8 min).
+- **Cena**: 20:00 en Centro Histórico (14 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 2 — viernes 26 de marzo de 2027
 
 **Bloques**: mañana: Museos Vaticanos, San Pedro y la Cúpula (vaticano) · tarde: Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Plaza de San Pedro y Basílica de San Pedro
+> 🚌 Borgo Pio → Mirador del Janículo: ~25 min andando (con cuesta) · o el bus 115 si prefieres no subirla
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 08:00 | Museos Vaticanos y Capilla Sixtina | 180 min | — | Uno de los imprescindibles de Roma. |
-| 11:30 | Plaza de San Pedro | 30 min | 11 min | Uno de los imprescindibles de Roma. |
-| 12:05 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. |
-| 13:30–15:30 | 🍝 **Comida**: Ristorante Arlù en Vaticano y Borgo | | | |
-| 15:30 | Pasas por Via della Conciliazione | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 15:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:30 | Trastevere | 45 min | 24 min | Elegido según tus gustos: Barrios y Sabores. |
-| 17:20 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
-| 18:00 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 8 min | Pasas por aquí de camino: no hace falta pararse. |
-| 18:30 | Mirador del Janículo 🌅 | 40 min | 17 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
+| 10:00 | Museos Vaticanos y Capilla Sixtina | 195 min | — | Uno de los imprescindibles de Roma. |
+| 13:15–15:15 | 🍝 **Comida**: 200 Gradi en Vaticano y Borgo | | | |
+| 15:15 | Plaza de San Pedro | 30 min | 8 min | Uno de los imprescindibles de Roma. |
+| 15:50 | Basílica de San Pedro | 90 min | 3 min | Uno de los imprescindibles de Roma. |
+| 17:30 | Pasas por Via della Conciliazione | 10 min | 5 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
+| 18:30 | Mirador del Janículo 🌅 | 40 min | 26 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
+| 19:30 | Pasas por San Pietro in Montorio y Tempietto de Bramante | 10 min | 15 min | Pasas por aquí de camino: no hace falta pararse. |
 
-- **Cena**: 20:00 en Trastevere (21 min andando desde la última parada).
+- **Cena**: 20:00 en Trastevere (7 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
 ### Día 3 — sábado 27 de marzo de 2027
@@ -574,21 +569,20 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 
 **Bloques**: mañana: Trevi y la Escalinata sin gente, Panteón y Navona (centro_temprano) · tarde: Bernini, Trevi y la cúpula falsa de San Ignacio (bernini_trevi)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Piazza Navona
+> 🚌 Piazza Navona → Iglesia de Santa Maria della Vittoria: ~30 min andando · o en bus 492 hasta Largo di Santa Susanna (unos 20 min) o taxi (unos 10 min)
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 09:30 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
-| 10:30 | Plaza de España | 30 min | 10 min | Uno de los imprescindibles de Roma. |
-| 11:30 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
-| 12:00 | Panteón | 30 min | 12 min | Uno de los imprescindibles de Roma. |
-| 13:00 | Piazza Navona | 30 min | 7 min | Uno de los imprescindibles de Roma. |
-| 13:30–15:30 | 🍝 **Comida**: Trattoria Dal Cavalier Gino en Centro Histórico | | | |
-| 16:00 | Iglesia de Santa Maria della Vittoria | 20 min | 22 min | Elegido según tus gustos: Arte y Museos. |
-| 16:30 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
-| 17:00 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Elegido según tus gustos: Arte y Museos. |
-| 17:25 | Palazzo Doria Pamphilj | 60 min | 3 min | Elegido según tus gustos: Arte y Museos. |
+| 10:00 | Fontana de Trevi | 30 min | — | Uno de los imprescindibles de Roma. |
+| 11:00 | Plaza de España | 30 min | 10 min | Uno de los imprescindibles de Roma. |
+| 12:00 | Pasas por Via Condotti | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 12:30 | Panteón | 45 min | 12 min | Uno de los imprescindibles de Roma. |
+| 13:15–15:15 | 🍝 **Comida**: Armando al Pantheon en Centro Histórico | | | |
+| 15:15 | Piazza Navona | 30 min | 4 min | Uno de los imprescindibles de Roma. |
+| 16:15 | Iglesia de Santa Maria della Vittoria | 35 min | 29 min | Elegido según tus gustos: Arte y Museos. |
+| 17:00 | Pasas por Fuente del Tritón | 10 min | 6 min | Pasas por aquí de camino: no hace falta pararse. |
+| 17:30 | Iglesia de San Ignacio de Loyola | 20 min | 13 min | Elegido según tus gustos: Arte y Museos. |
+| 17:55 | Palazzo Doria Pamphilj | 75 min | 3 min | Elegido según tus gustos: Arte y Museos. |
 
-- **Aperitivo y paseo por Centro Histórico** (85 min). Sugerencias: Iglesia del Gesù (4 min), Campo de' Fiori (12 min), Iglesia de Santa Maria sopra Minerva (4 min).
 - **Cena**: 20:00 en Centro Histórico (10 min andando desde la última parada).
 - **Nocturna**: ninguna.
 
@@ -765,7 +759,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 - **Aperitivo y paseo por Trevi** (47 min). Sugerencias: Largo di Torre Argentina (3 min), Elefantino de Bernini (5 min), Plaza Colonna (9 min).
 - **Cena**: 20:00 en Trevi (13 min andando desde la última parada).
 - **Nocturna**: 21:30 Panteón (noche).
-- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo.
+- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo; Mirador del Janículo — No te dio tiempo.
 
 ### Día 2
 
@@ -790,30 +784,26 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 - **Aperitivo y paseo por Trastevere** (61 min). Sugerencias: Boca de la Verdad (6 min), Plaza Trilussa (9 min).
 - **Cena**: 20:00 en Trastevere (9 min andando desde la última parada).
 - **Nocturna**: ninguna.
-- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo.
+- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo; Mirador del Janículo — No te dio tiempo.
 
 ### Día 3
 
 **Bloques**: mañana: Museos Vaticanos, San Pedro y la Cúpula (vaticano) · tarde: Del Castillo al Janículo y a cenar a Trastevere (vaticano_trastevere)
 
-> Hoy empezamos a las 08:00 para que te dé tiempo a ver la Plaza de San Pedro y Basílica de San Pedro
-> 🚌 Borgo Pio → Mirador del Janículo: ~25 min andando (con cuesta) · o el bus 115 si prefieres no subirla
+> 🚌 Basílica de San Pedro → Trastevere: ~25 min andando · o en bus o taxi
 | Hora | Parada | Duración | Andando | Por qué |
 |---|---|---|---|---|
-| 08:00 | Museos Vaticanos y Capilla Sixtina | 180 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
-| 11:30 | Plaza de San Pedro | 30 min | 11 min | Uno de los imprescindibles de Roma. |
-| 12:05 | Basílica de San Pedro | 75 min | 3 min | Uno de los imprescindibles de Roma. ⚠️ Miércoles, solo de 12:30 a 20:00. |
-| 13:30–15:30 | 🍝 **Comida**: Ristorante Arlù en Vaticano y Borgo | | | |
-| 15:30 | Pasas por Via della Conciliazione | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 15:45 | Pasas por Borgo Pio | 10 min | 3 min | Pasas por aquí de camino: no hace falta pararse. |
-| 16:30 | Mirador del Janículo 🌅 | 40 min | 26 min | Llegas justo a tiempo para ver el atardecer sobre Roma. |
-| 17:30 | San Pietro in Montorio y Tempietto de Bramante | 30 min | 15 min | Elegido según tus gustos: Arte y Museos. ⚠️ Cierra los lunes. |
-| 18:15 | Trastevere | 45 min | 8 min | Uno de tus favoritos. |
-| 19:05 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
+| 10:00 | Museos Vaticanos y Capilla Sixtina | 195 min | — | Uno de los imprescindibles de Roma. ⚠️ Cierra los domingos. |
+| 13:15–15:15 | 🍝 **Comida**: 200 Gradi en Vaticano y Borgo | | | |
+| 15:15 | Plaza de San Pedro | 30 min | 8 min | Uno de los imprescindibles de Roma. |
+| 15:50 | Basílica de San Pedro | 90 min | 3 min | Uno de los imprescindibles de Roma. |
+| 18:00 | Trastevere | 45 min | 26 min | Uno de tus favoritos. |
+| 18:50 | Iglesia de Santa Maria in Trastevere | 20 min | 1 min | Elegido según tus gustos: Arte y Museos. |
 
+- **Aperitivo y paseo por Trastevere** (45 min). Sugerencias: Plaza Trilussa (3 min), Fontana dell'Acqua Paola (12 min).
 - **Cena**: 20:00 en Trastevere (5 min andando desde la última parada).
 - **Nocturna**: ninguna.
-- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo.
+- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo; Mirador del Janículo — No te dio tiempo.
 
 ### Día 4
 
@@ -839,7 +829,7 @@ Los viajes de 1 día siguen con las rutas curadas de `short_trips` (con bloques 
 - **Aperitivo y paseo por Monti** (79 min).
 - **Cena**: 20:00 en Monti (1 min andando desde la última parada).
 - **Nocturna**: 19:00 Coliseo (noche) (antes de cenar).
-- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo.
+- **No incluido**: Parque de Villa Borghese — No te dio tiempo; Santa Maria del Popolo — No te dio tiempo; Mirador del Janículo — No te dio tiempo.
 
 ## 14. 5 días · septiembre · completo · Imprescindibles + Free Tour
 

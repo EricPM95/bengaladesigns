@@ -15,8 +15,9 @@ interface FreeTimeBlockProps {
       añade si quiere (pueden ser de pago). */
   suggestions?: { name: string; walkMinutes: number; requiresTicket: boolean }[]
   onPickSuggestion?: (name: string) => void
-  /** Hueco a mitad de día (no antes de cenar): minutos libres y la parada que viene después. */
-  midDay?: { minutes: number; before: string }
+  /** Hueco a mitad de día (no antes de cenar): minutos libres, la parada que viene después y, si no hay
+      sugerencias de lugares, una idea corta de la zona. */
+  midDay?: { minutes: number; before: string; hint?: string | null }
   /** 90 min o menos antes de cenar en un barrio con ambiente: "Aperitivo y paseo por {barrio}". */
   aperitivo?: { title: string; minutes: number }
 }
@@ -53,7 +54,8 @@ export function FreeTimeBlock({ hours, city, onOpenMap, suggestions, onPickSugge
       <div className="rounded-xl border border-dashed border-border px-3 py-2.5 text-small text-text-soft">
         <p className="font-semibold text-text">Tiempo libre</p>
         <p className="mt-0.5">
-          Tienes {midDay.minutes} min libres antes de la siguiente parada ({midDay.before}). Tómate algo o descansa un rato.
+          Tienes {midDay.minutes} min libres antes de la siguiente parada ({midDay.before}).{' '}
+          {midDay.hint ? `Una idea: ${midDay.hint}` : 'Tómate algo o descansa un rato.'}
         </p>
       </div>
     )
