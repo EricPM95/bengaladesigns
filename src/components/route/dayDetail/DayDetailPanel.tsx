@@ -996,6 +996,17 @@ export function DayDetailPanel({
       </div>
 
         <div className="space-y-2 pt-1">
+          {/* Regla de oro del pool: lo marcado que no ha cabido se dice aquí, en su día, con su motivo. */}
+          {(day.poolNotices ?? []).map((notice) => (
+            <div key={notice.name} className="mt-2 flex items-start gap-2.5 rounded-2xl border border-accent-gold/40 bg-accent-gold/10 px-3.5 py-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-gold" aria-hidden="true">
+                <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+              </svg>
+              <p className="min-w-0 flex-1 text-[13px] leading-[1.45] text-text">
+                No hemos podido incluir <span className="font-semibold">{notice.name}</span> porque {notice.reason.charAt(0).toLowerCase() + notice.reason.slice(1)}.
+              </p>
+            </div>
+          ))}
           {/* Prominente: el banner va ENCIMA de la ruta y no la quita — el viajero ve las dos cosas
               y elige. Se puede cerrar sin perder nada (regla 9). */}
           {/* El banner de excursiones de jornada completa no sale en un día que YA tiene una de

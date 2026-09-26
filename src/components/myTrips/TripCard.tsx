@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dayCountryCode } from '../../lib/flagColors'
 import type { SavedTrip } from '../../lib/tripPersistence'
 import { formatCompactDateRangeEs } from '../../lib/dateRange'
 import { FlagIcon } from '../ui/FlagIcon'
@@ -37,7 +38,7 @@ function dateSubtitle(trip: SavedTrip): string {
  */
 export function TripCard({ trip, onOpen, onDelete }: TripCardProps) {
   const [confirming, setConfirming] = useState(false)
-  const countryCode = trip.route.days[0]?.countryCode ?? null
+  const countryCode = dayCountryCode(trip.route.days[0]?.countryCode, trip.route.days[0]?.city)
 
   if (confirming) {
     return (

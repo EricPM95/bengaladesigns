@@ -179,7 +179,7 @@ export async function buildDayBlockV3(
     return day
   }
 
-  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, pace, experiencesPositive: experiencesPositive ?? [] })
+  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, pace, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
@@ -252,9 +252,16 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   day.not_included = [
     ...(trip.unplacedPool ?? []).map((item) => ({
       name: item.name,
+      // Lo marcado en el pool: se avisa en el día donde iba (`day_number`), nunca en silencio.
+      from_pool: true,
+      day_number: item.dayNumber ?? null,
       reason:
         item.reason === 'closed_every_day'
           ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
+          : item.reason === 'closed_on_day'
+            ? 'Ese día está cerrado'
+          : item.reason === 'no_room_day'
+            ? 'No cabía en ese día sin quitar ningún imprescindible'
           : item.reason === 'out_of_season'
             ? `Solo ${availabilityLabel(item.available)}`
             : item.reason === 'pool_afternoon_taken'
@@ -265,7 +272,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     // Lo que se queda solo con su nocturna no "falta": sale de noche.
     ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
-    ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo' })),
+    // (Si era del pool, se avisa como lo del pool: nunca desaparece en silencio.)
+    ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo', ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true, day_number: item.dayNumber ?? null } : {}) })),
   ]
   // El paseo nocturno curado: nombre propio y su texto (en la primera nocturna del día).
   if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {

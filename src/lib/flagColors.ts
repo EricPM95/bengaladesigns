@@ -235,3 +235,13 @@ export function countryNameEs(countryCode: string | null | undefined): string {
     return countryCode.toUpperCase()
   }
 }
+
+/** País de los destinos curados, para rutas guardadas antes de que los días llevaran su país (Roma → Italia). */
+const CURATED_DESTINATION_COUNTRY: Record<string, string> = { roma: 'it', rome: 'it' }
+
+/** El país de un día: el suyo, o el de su destino curado si la ruta es antigua. */
+export function dayCountryCode(countryCode: string | null | undefined, city: string | null | undefined): string | null {
+  if (countryCode) return countryCode.toLowerCase()
+  const key = (city ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase()
+  return CURATED_DESTINATION_COUNTRY[key] ?? null
+}

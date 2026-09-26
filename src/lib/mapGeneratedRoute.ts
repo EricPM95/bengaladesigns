@@ -222,6 +222,9 @@ interface GeneratedNotIncluded {
   name: string
   reason: string
   where_it_fits: string
+  /** Lo marcado en el pool que no ha cabido: se avisa en su día (`day_number`; sin él, el día 1). */
+  from_pool?: boolean
+  day_number?: number | null
   latitude?: number
   longitude?: number
 }
@@ -581,6 +584,7 @@ function mapDay(
   transportByDay: Map<number, TransportSegment>,
   didntMakeCut?: DidntMakeCutItem[],
   recommendedRevisitsByDay?: Map<number, RecommendedRevisit[]>,
+  poolNoticesByDay?: Map<number, { name: string; reason: string }[]>,
 ): DayPlan {
   return {
     id: `day-${generated.day_number}`,
@@ -595,6 +599,7 @@ function mapDay(
     meals: generated.meals.map((meal) => mapMeal(generated.day_number, meal)),
     excursions: excursionsByDay.get(generated.day_number),
     didntMakeCut: generated.day_number === 1 ? didntMakeCut : undefined,
+    poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
@@ -713,6 +718,17 @@ export function mapGeneratedRouteToRoute(
   recommendedRevisits: { name: string; day_number: number; reason: string }[] = [],
 ): Route {
   const didntMakeCut = mapDidntMakeCut(generated.not_included)
+  // Regla de oro del pool (2026-09-27): lo que el viajero marcó y no ha cabido NUNCA desaparece en silencio —
+  // se avisa en el día donde iba, con su motivo. Una vez por lugar (cada bloque del servidor repite la lista).
+  const poolNoticesByDay = new Map<number, { name: string; reason: string }[]>()
+  const firstDayNumber = generated.days[0]?.day_number ?? 1
+  const noticed = new Set<string>()
+  for (const item of generated.not_included ?? []) {
+    if (!item.from_pool || noticed.has(item.name)) continue
+    noticed.add(item.name)
+    const dayNumber = item.day_number ?? firstDayNumber
+    poolNoticesByDay.set(dayNumber, [...(poolNoticesByDay.get(dayNumber) ?? []), { name: item.name, reason: item.reason }])
+  }
   const excursionsByDay = mapExcursionsByDay(generated.excursions_available)
   const recommendedRevisitsByDay = new Map<number, RecommendedRevisit[]>()
   for (const entry of recommendedRevisits) {
@@ -736,7 +752,7 @@ export function mapGeneratedRouteToRoute(
   // añade el día de vuelta si con los días ya generados NO se alcanza el total pedido (evita
   // duplicar el +1 si algo más arriba cambia y ya llegan `answers.days` días completos).
   const mappedDays = generated.days.map((day) =>
-    mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay),
+    mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay, poolNoticesByDay),
   )
   dedupeFreeTour(mappedDays)
   const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays

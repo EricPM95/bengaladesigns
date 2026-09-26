@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import type {
@@ -693,7 +694,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   setRoute: (route) =>
     set({
-      route,
+      // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
+      route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
+        ? { ...route, days: route.days.map((day) => (day.countryCode ? day : { ...day, countryCode: dayCountryCode(null, day.city) })) }
+        : route,
       // null (no route.days[0] fallback) para que la pestaña DIAS arranque con todos los
       // acordeones cerrados — RouteView.tsx sigue resolviendo route.days[0] como fallback para el
       // mapa y otros usos que sí necesitan un día "activo" siempre.

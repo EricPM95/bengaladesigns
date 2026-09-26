@@ -9710,6 +9710,25 @@
   },
   "curated_pool": {
     "_nota": "Qué activa cada lugar del pool (sección 4). Lo que no está aquí va por la regla general: al día de la zona más cercana, con visita.",
+    "Cúpula de San Pedro": {
+      "_nota": "Siempre el día del Vaticano, justo después de la Basílica; también en tranquilo (2026-09-27).",
+      "dia": "D2",
+      "despues_de": "Basílica de San Pedro"
+    },
+    "Parque de Villa Borghese": {
+      "_nota": "Activa D4 como la Galería, también en invierno: el pool manda sobre la regla de temporada (2026-09-27).",
+      "dia": "D4"
+    },
+    "Boca de la Verdad": {
+      "_nota": "En D5 si el viaje lo lleva; si no, en D1 junto al Barrio Judío (2026-09-27).",
+      "si_viaje_tiene": "D5",
+      "si_no": { "dia": "D1", "despues_de": "Barrio Judío" }
+    },
+    "Ojo de la Cerradura del Aventino": {
+      "_nota": "En D5 si el viaje lo lleva; si no, en D1 justo después de la Boca de la Verdad, a 10 min andando (2026-09-27).",
+      "si_viaje_tiene": "D5",
+      "si_no": { "dia": "D1", "despues_de": "Boca de la Verdad" }
+    },
     "Galería Borghese": {
       "dia": "D4",
       "dos_dias": "pool_borghese"

@@ -295,6 +295,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // lo enseña por fuera (el Castillo desde el Puente).
     const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day)).map((stop) => stop.lugar)
     sections = { ...sections, manana: sections.manana.filter((stop) => stopApplies(stop, day)), tarde: sections.tarde.filter((stop) => stopApplies(stop, day)) }
+    // Lo marcado en el pool es una visita, nunca "de paso" (el Parque de Villa Borghese en la variante de invierno):
+    // el pool manda sobre la variante (2026-09-27).
+    const asVisit = (stop) => (inPool(stop.lugar) && stop.rol === 'de_paso' ? { ...stop, rol: 'parada' } : stop)
+    sections = { ...sections, manana: sections.manana.map(asVisit), tarde: sections.tarde.map(asVisit) }
     // Media jornada (la excursión se lleva la mañana): solo la tarde.
     if (day.halfDayExcursion) sections = { ...sections, manana: [], comida: null }
     return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB }
@@ -344,6 +348,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const dinnerOptions = dinnerZones(destData)
   const seen = new Set(hasFreeTour ? [...tourCovers] : [])
   const notEnoughTime = new Set()
+  /** En qué día se quedó sin hora cada uno (para avisarlo en ese día). */
+  const notEnoughDay = new Map()
   const days = []
   let resolvedIndex = 0
   for (const skeletonDay of skeleton) {
@@ -628,7 +634,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const closedAnchors = [...entry.closedAnchors, ...skipped.filter(({ source }) => joyaNames.has(source.name) && !source.pass_by).map(({ source }) => source.name)]
     for (const name of closedAnchors) notEnoughTime.add(name)
     // Lo del día que no ha llegado a su hora (sin lo de paso) va a "No te dio tiempo".
-    for (const { unit } of result.dropped) if (unit.role !== 'de_paso' && !unit.places.some((place) => place.isFreeTour)) for (const place of unit.places) notEnoughTime.add(place.name)
+    for (const { unit } of result.dropped) {
+      if (unit.role === 'de_paso' || unit.places.some((place) => place.isFreeTour)) continue
+      for (const place of unit.places) {
+        notEnoughTime.add(place.name)
+        if (!notEnoughDay.has(place.name)) notEnoughDay.set(place.name, day.dayNumber)
+      }
+    }
     for (const visit of result.visits) {
       seen.add(visit.place.name)
       for (const name of visit.place.outsideOf ?? []) seen.add(name)
@@ -660,12 +672,70 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   // ── 6a. El pool que ningún día trae: regla general ────────────────────────────────────────────
   const unplacedPool = []
   const cityPlanned = days.filter((day) => day.schedule)
-  for (const name of poolNames) {
+  // Lo que va detrás de otro lugar del pool (el Ojo de la Cerradura detrás de la Boca) se coloca después de él.
+  const anchorOf = (name) => poolRules[name]?.si_no?.despues_de ?? poolRules[name]?.despues_de ?? null
+  const poolOrder = [...poolNames.filter((name) => !poolNames.includes(anchorOf(name))), ...poolNames.filter((name) => poolNames.includes(anchorOf(name)))]
+  for (const name of poolOrder) {
     if (seen.has(name)) continue
     const place = placeByName.get(name)
     if (!place) continue
     if (poolBlocked.has(name)) {
       unplacedPool.push({ unitId: name, name, reason: 'pool_afternoon_taken', takenBy: poolBlocked.get(name), closedOn: place.closed_on ?? [] })
+      continue
+    }
+    // Meter el lugar del pool en `day`, detrás de la unidad `at - 1`. Si no cabe: fuera la parada de menos nivel que
+    // no sea nivel 1 (ni joya ni pool), de una en una. Solo vale si todo lo demás del día se sigue visitando (el Altar
+    // no se cae por meter Caracalla).
+    const placeIn = (day, at, slot) => {
+      const poolUnit = unitOf({ lugar: name, rol: 'parada' }, slot, 50, day.curatedDay.id, day)
+      if (!poolUnit || poolUnit.skipped) return false
+      let list = [...day.units.slice(0, at), poolUnit, ...day.units.slice(at)]
+      const before = new Set(day.schedule.visits.map((other) => other.unitId))
+      const removed = new Set()
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const result = day.rerun(list)
+        const intact = [...before].every((unitId) => removed.has(unitId) || result.visits.some((other) => other.unitId === unitId))
+        if (intact && result.visits.some((other) => other.unitId === poolUnit.id)) {
+          const { run, ...plain } = result
+          Object.assign(day, { units: result.kept, schedule: { ...plain, modeFallback: day.schedule.modeFallback } })
+          return true
+        }
+        const removable = list
+          .filter((unit) => unit !== poolUnit && !unit.places.some((p) => p.level === 1 || joyaNames.has(p.name) || inPool(p.name) || p.isFreeTour))
+          .sort((a, b) => (b.places[0].level ?? 3) - (a.places[0].level ?? 3) || Number(b.role === 'de_paso') - Number(a.role === 'de_paso'))[0]
+        if (!removable) return false
+        removed.add(removable.id)
+        list = list.filter((unit) => unit !== removable)
+      }
+      return false
+    }
+    // Día fijo del pool (`curated_pool`, decisión del 2026-09-27): su día y detrás de su parada — la Cúpula tras la
+    // Basílica en D2 (también en tranquilo); la Boca y el Ojo de la Cerradura en D5 si el viaje lo lleva y, si no,
+    // en D1 tras el Barrio Judío. Con día fijo no se va a otro día lejano: si ahí no cabe, se avisa en ese día.
+    const fixedRule = poolRules[name] ?? {}
+    const fixed = fixedRule.si_viaje_tiene
+      ? order.includes(fixedRule.si_viaje_tiene)
+        ? null
+        : fixedRule.si_no ?? null
+      : fixedRule.despues_de
+        ? { dia: fixedRule.dia, despues_de: fixedRule.despues_de }
+        : null
+    if (fixed?.dia) {
+      const day = cityPlanned.find((candidate) => candidate.curatedDay?.id === fixed.dia)
+      const anchor = day ? day.units.findIndex((unit) => unit.places.some((p) => p.name === fixed.despues_de)) : -1
+      const open = day && !closedThatDay(name, day)
+      // Detrás de su parada; si a esa hora ya no llega (la Cúpula cierra a las 17:00 en invierno y en tranquilo la
+      // Basílica acaba justo entonces), justo delante: se sube a la Cúpula y se baja dentro de la Basílica.
+      const ok = open && (placeIn(day, anchor >= 0 ? anchor + 1 : day.units.length, day.units[anchor]?.slot ?? 'tarde') || (anchor >= 0 && placeIn(day, anchor, day.units[anchor]?.slot ?? 'tarde')))
+      if (ok) seen.add(name)
+      else
+        unplacedPool.push({
+          unitId: name,
+          name,
+          reason: day && closedThatDay(name, day) ? 'closed_on_day' : 'no_room_day',
+          closedOn: place.closed_on ?? [],
+          dayNumber: day?.dayNumber ?? null,
+        })
       continue
     }
     // El día cuya zona queda más cerca (lo más cerca de alguna de sus paradas), abierto ese día.
@@ -719,6 +789,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         name,
         reason: outOfSeason ? 'out_of_season' : closedEvery ? 'closed_every_day' : 'no_room',
         closedOn: place.closed_on ?? [],
+        // El día donde se habría quedado (el de su zona): ahí se avisa.
+        dayNumber: candidates[0]?.day.dayNumber ?? null,
         ...(outOfSeason ? { available: Array.isArray(place.available) ? place.available[0] : place.available } : {}),
       })
     }
@@ -886,7 +958,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     joyaNames: [...joyaNames],
     pinnedMornings: [],
     rescueDetours: {},
-    notEnoughTime: [...notEnoughTime].filter((name) => !seen.has(name) && !unplacedEssentials.some((item) => item.name === name) && !unplacedPool.some((item) => item.name === name)).map((name) => ({ name, reason: 'no_time' })),
+    notEnoughTime: [...notEnoughTime].filter((name) => !seen.has(name) && !unplacedEssentials.some((item) => item.name === name) && !unplacedPool.some((item) => item.name === name)).map((name) => ({ name, reason: 'no_time', dayNumber: notEnoughDay.get(name) ?? null })),
     coreDays: destData.destination_config?.core_days ?? null,
     placedDay: new Map(),
     unplacedPool,

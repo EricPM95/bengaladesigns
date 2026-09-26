@@ -553,6 +553,8 @@ export interface DayPlan {
   meals: MealSlot[]
   excursions?: Excursion[]
   didntMakeCut?: DidntMakeCutItem[]
+  /** Lo marcado en el pool que no ha cabido en este día, con su motivo ("No hemos podido incluir X porque…"). */
+  poolNotices?: { name: string; reason: string }[]
   recommendedRevisits?: RecommendedRevisit[]
   rainPlanB?: RainPlanB
   isExcursionDay?: boolean
