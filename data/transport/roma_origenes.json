@@ -1,0 +1,226 @@
+{
+  "_nota": "Transporte curado a mano: 20 orígenes → Roma (revisado por el equipo, 2026-09-26/27). Para estos orígenes la app usa ESTA tabla, sin consultar a Claude y por encima de cualquier cálculo o caché. Sin precios, nunca. `tiempo` se muestra con '≈'. `vuelo`: 'directo' o 'con escala' (se muestra junto al tiempo del avión). Como mucho una opción `recomendada`. Barcelona es la única excepción a la regla 'ferry y coche nunca juntos': solo la aplica esta tabla.",
+  "destino": "Roma",
+  "origenes": [
+    {
+      "origen": "Madrid",
+      "alias": ["madrid"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 30", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false, "nota": "≈ 19 h: pasa el límite" }
+      }
+    },
+    {
+      "origen": "Barcelona",
+      "alias": ["barcelona"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "1 h 50", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": true, "tiempo": "20 h", "nota": "A Civitavecchia, con o sin coche o camper (si lo elige, se pregunta el vehículo)" },
+        "coche": { "apta": true, "tiempo": "13 h" }
+      }
+    },
+    {
+      "origen": "Valencia",
+      "alias": ["valencia", "valència"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false, "nota": "≈ 17 h: pasa el límite" }
+      }
+    },
+    {
+      "origen": "Sevilla",
+      "alias": ["sevilla", "seville"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 40", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Málaga",
+      "alias": ["malaga", "málaga"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 45", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Bilbao",
+      "alias": ["bilbao", "bilbo"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 20", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Palma",
+      "alias": ["palma", "palma de mallorca", "palma, mallorca"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "1 h 50", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false, "nota": "Origen isla, sin barco directo a Roma" },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Alicante",
+      "alias": ["alicante", "alacant"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 15", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Ciudad de México",
+      "alias": ["ciudad de mexico", "ciudad de méxico", "mexico city", "cdmx"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "12 h", "vuelo": "directo", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Buenos Aires",
+      "alias": ["buenos aires"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "13 h", "vuelo": "directo", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Zaragoza",
+      "alias": ["zaragoza"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h", "vuelo": "directo", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false, "nota": "≈ 16 h: al límite" }
+      }
+    },
+    {
+      "origen": "Santiago de Compostela",
+      "alias": ["santiago de compostela"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "4-5 h", "vuelo": "con escala", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Londres",
+      "alias": ["londres", "london"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h 30", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "París",
+      "alias": ["paris", "parís"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "2 h", "recomendada": true },
+        "tren": { "apta": false, "nota": "≈ 10-11 h con cambio en Milán: pasa el límite" },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": true, "tiempo": "14 h" }
+      }
+    },
+    {
+      "origen": "Lisboa",
+      "alias": ["lisboa", "lisbon"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "3 h", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Nueva York",
+      "alias": ["nueva york", "new york", "new york city", "nyc"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "8 h 30", "vuelo": "directo", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Miami",
+      "alias": ["miami"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "10 h", "vuelo": "directo", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Bogotá",
+      "alias": ["bogota", "bogotá"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "14-16 h", "vuelo": "con escala", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Lima",
+      "alias": ["lima"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "16-18 h", "vuelo": "con escala", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    },
+    {
+      "origen": "Santiago de Chile",
+      "alias": ["santiago de chile"],
+      "opciones": {
+        "avion": { "apta": true, "tiempo": "17-19 h", "vuelo": "con escala", "recomendada": true },
+        "tren": { "apta": false },
+        "autobus": { "apta": false },
+        "ferry": { "apta": false },
+        "coche": { "apta": false }
+      }
+    }
+  ]
+}

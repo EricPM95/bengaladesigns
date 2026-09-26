@@ -35,7 +35,8 @@ export function isTransportFullyResolved(
   if (!transportOption) return false
   if (archetype === 'roadtrip_exclusivo') return vehicleType !== null && vehicleOwnership !== null
   if (archetype === 'base_y_excursiones') return vehicleResolved && travelMode !== null
-  if (archetype === 'urbano_clasico') return transportOption.id === 'own_vehicle' ? vehicleResolved : !requiereCoche || vehicleResolved
+  // (En ferry también se pregunta si se lleva el vehículo, desde el formulario Trazo, 2026-09-27.)
+  if (archetype === 'urbano_clasico') return transportOption.id === 'own_vehicle' || transportOption.id === 'ferry' ? vehicleResolved : !requiereCoche || vehicleResolved
   if (archetype === 'multidestino_tren_o_vuelo') return !paseDominante || travelPassConfirmed !== null
   return true
 }

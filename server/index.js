@@ -1406,7 +1406,8 @@ function sanitizeFeasibilityLeg(leg) {
     // Nunca recomendada si no es viable, aunque Claude lo marque así por error.
     recommended: feasible && Boolean(leg?.recommended),
     duration_label: asLabel(leg?.duration_label),
-    price_label: asLabel(leg?.price_label),
+    // Decisión del 2026-09-27: nunca se muestran ni se guardan precios de transporte.
+    price_label: '',
   }
 }
 
@@ -1520,12 +1521,111 @@ Responde SOLO este JSON, sin texto ni markdown:
 Todas las duraciones son puerta a puerta y los precios son rangos realistas de mercado actual.`
 }
 
+// ── Transporte origen → destino sin Claude cuando se puede (decisión del 2026-09-27) ──────────
+// 1) Tabla curada a mano por destino (data/transport/{destino}_origenes.json): manda sobre todo.
+// 2) Caché por par origen→destino (place_content_cache, destino "transport:{destino}"): se consulta a
+//    Claude UNA vez por par y se guarda para siempre, sin precios.
+// 3) El tiempo en coche, de Mapbox (conducción), cuando el coche es apto.
+const transportTableCache = new Map()
+function transportTableFor(destinationKey) {
+  if (!destinationKey) return null
+  if (transportTableCache.has(destinationKey)) return transportTableCache.get(destinationKey)
+  let table = null
+  try {
+    table = JSON.parse(readFileSync(join(__dirname, '../data/transport', `${destinationKey}_origenes.json`), 'utf8'))
+  } catch {
+    table = null
+  }
+  transportTableCache.set(destinationKey, table)
+  return table
+}
+
+const normTransport = (value) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
+
+function feasibilityFromTable(entry) {
+  const leg = (option) => ({
+    feasible: Boolean(option?.apta),
+    recommended: Boolean(option?.apta && option?.recomendada),
+    duration_label: option?.apta && option?.tiempo ? option.tiempo : '',
+    price_label: '',
+  })
+  const o = entry.opciones ?? {}
+  return {
+    flight: { ...leg(o.avion), via_label: '', flight_type: o.avion?.vuelo ?? null },
+    ferry: { ...leg(o.ferry), route_label: o.ferry?.apta && o.ferry?.nota ? o.ferry.nota : '' },
+    train: { ...leg(o.tren), station_label: '' },
+    bus: { ...leg(o.autobus), station_label: '' },
+    roadtrip: { ...leg(o.coche), highlight: '' },
+    camper_access: { feasible: true, reason: '' },
+    source: 'tabla',
+  }
+}
+
+/** Horas de conducción de Mapbox (perfil driving), o null. */
+async function drivingHours(origin, destination) {
+  if (!MAPBOX_TOKEN) return null
+  try {
+    const a = origin.coordinates
+    const b = destination.coordinates
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=false&access_token=${MAPBOX_TOKEN}`
+    const response = await fetch(url)
+    if (!response.ok) return null
+    const data = await response.json()
+    const seconds = data?.routes?.[0]?.duration
+    return Number.isFinite(seconds) ? seconds / 3600 : null
+  } catch {
+    return null
+  }
+}
+
+function hoursLabel(hours) {
+  const minutes = Math.max(5, Math.round((hours * 60) / 5) * 5)
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return h ? `${h} h${m ? ` ${String(m).padStart(2, '0')}` : ''}` : `${m} min`
+}
+
 app.post('/api/transport-feasibility', async (req, res) => {
   const { origin, destination } = req.body ?? {}
 
   if (!origin?.name || !destination?.name || !origin?.coordinates || !destination?.coordinates) {
     res.status(400).json({ error: 'Se requieren origin y destination con name y coordinates.' })
     return
+  }
+
+  // 1) Tabla curada.
+  const destinationKey = findPipelineV2Key(destination.name) ?? null
+  const table = transportTableFor(destinationKey)
+  if (table) {
+    const names = [normTransport(origin.name), normTransport(String(origin.fullName ?? '').split(',')[0])]
+    const entry = (table.origenes ?? []).find((row) => (row.alias ?? [row.origen]).some((alias) => names.includes(normTransport(alias))))
+    if (entry) {
+      res.json(feasibilityFromTable(entry))
+      return
+    }
+  }
+
+  // 2) Caché por par (sin precios).
+  const cacheDestination = `transport:${destinationKey ?? normTransport(destination.name)}`
+  const cacheOrigin = `${normTransport(origin.name)}|${normTransport(origin.countryCode ?? '')}`
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin.from('place_content_cache').select('id, place_data, hit_count').eq('place_name', cacheOrigin).eq('destination', cacheDestination).maybeSingle()
+      if (error) throw error
+      if (data) {
+        supabaseAdmin
+          .from('place_content_cache')
+          .update({ hit_count: (data.hit_count ?? 1) + 1, last_used_at: new Date().toISOString() })
+          .eq('id', data.id)
+          .then(({ error: touchError }) => {
+            if (touchError) logAnthropicError('transport-feasibility (touch)', touchError)
+          })
+        res.json({ ...data.place_data, source: 'cache' })
+        return
+      }
+    } catch (error) {
+      logAnthropicError('transport-feasibility (read cache)', error)
+    }
   }
 
   try {
@@ -1541,7 +1641,17 @@ app.post('/api/transport-feasibility', async (req, res) => {
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    res.json(sanitizeTransportFeasibility(parsed))
+    const result = sanitizeTransportFeasibility(parsed)
+    // 3) En coche, el tiempo de Mapbox.
+    if (result.roadtrip.feasible) {
+      const hours = await drivingHours(origin, destination)
+      if (hours != null) result.roadtrip.duration_label = hoursLabel(hours)
+    }
+    if (supabaseAdmin) {
+      const { error: insertError } = await supabaseAdmin.from('place_content_cache').insert({ place_name: cacheOrigin, destination: cacheDestination, place_data: result })
+      if (insertError) logAnthropicError('transport-feasibility (write cache)', insertError)
+    }
+    res.json({ ...result, source: 'claude' })
   } catch (error) {
     logAnthropicError('transport-feasibility', error)
     res.status(502).json({ error: 'No se pudo calcular la viabilidad del trayecto con IA.' })
@@ -3855,7 +3965,9 @@ app.post('/api/destination-texts', (req, res) => {
   const { destination } = req.body ?? {}
   const data = destination ? findPipelineV2Data(destination) : null
   const pace = data?.destination_config?.pace_texts ?? null
-  res.json(pace ? { found: true, destination: data.destination ?? destination, pace } : { found: false })
+  // Paradas reales por día de cada ritmo, medidas con el motor (scripts/destino/paceStats.mjs).
+  const paceStats = data?.destination_config?.pace_stats ?? null
+  res.json(pace ? { found: true, destination: data.destination ?? destination, pace, pace_stats: paceStats } : { found: false })
 })
 
 app.post('/api/destination-places', (req, res) => {

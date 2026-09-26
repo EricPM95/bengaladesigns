@@ -1,0 +1,57 @@
+/* Formulario Trazo (prototipo "Trazo App" de Claude Design): animaciones y detalles que no caben en estilos en línea. */
+.trazo-root,
+.trazo-root button,
+.trazo-root input {
+  font-family: 'Geist', system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.trazo-root * {
+  box-sizing: border-box;
+}
+.trazo-root input::placeholder {
+  color: rgba(243, 238, 228, 0.32);
+}
+.trazo-root .trazo-hover:hover {
+  background: rgba(243, 238, 228, 0.06);
+}
+.trazo-root .trazo-press:active {
+  transform: scale(0.98);
+}
+.trazo-root .trazo-noscroll {
+  scrollbar-width: none;
+}
+.trazo-root .trazo-noscroll::-webkit-scrollbar {
+  display: none;
+}
+@keyframes trazo-fall {
+  from { transform: translateY(-30px); }
+  to { transform: translateY(960px); }
+}
+@keyframes trazo-rise {
+  0% { transform: translateY(900px); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+@keyframes trazo-sway {
+  0%, 100% { transform: translateX(-12px) rotate(0deg); }
+  50% { transform: translateX(12px) rotate(170deg); }
+}
+@keyframes trazo-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes trazo-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.22); opacity: 1; }
+}
+@keyframes trazo-pulseBar {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+@keyframes trazo-chipIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes trazo-dash {
+  to { stroke-dashoffset: -36; }
+}

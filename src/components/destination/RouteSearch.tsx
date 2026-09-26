@@ -25,6 +25,8 @@ interface RouteCandidate {
 
 interface RouteSearchProps {
   onConfirm: (route: ConfirmedRoute) => void
+  /** Abierto desde el principio (el formulario Trazo ya tiene su propio enlace). */
+  defaultOpen?: boolean
 }
 
 type Status = 'idle' | 'loading' | 'confirming' | 'not_found' | 'geocoding'
@@ -35,8 +37,8 @@ type Status = 'idle' | 'loading' | 'confirming' | 'not_found' | 'geocoding'
  * contra la lista curada (`curatedRoutes.ts`); si no hay coincidencia, recurre a Claude como
  * fallback. Nunca se asume automáticamente — siempre se muestra una tarjeta de confirmación.
  */
-export function RouteSearch({ onConfirm }: RouteSearchProps) {
-  const [open, setOpen] = useState(false)
+export function RouteSearch({ onConfirm, defaultOpen = false }: RouteSearchProps) {
+  const [open, setOpen] = useState(defaultOpen)
   const [text, setText] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [candidate, setCandidate] = useState<RouteCandidate | null>(null)

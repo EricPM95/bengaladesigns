@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=[];var B=false;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090E;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+input::placeholder{color:rgba(243,238,228,.32)}
+a{color:oklch(0.8 0.14 70)}a:hover{color:#F3EEE4}
+@keyframes fall{from{transform:translateY(-30px)}to{transform:translateY(960px)}}
+@keyframes rise{0%{transform:translateY(900px);opacity:0}20%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+@keyframes sway{0%,100%{transform:translateX(-12px) rotate(0deg)}50%{transform:translateX(12px) rotate(170deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.22);opacity:1}}
+@keyframes pulseBar{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+@keyframes chipIn{from{opacity:0;transform:translateY(6px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes dash{to{stroke-dashoffset:-36}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+<div style="min-height:100vh;--bg:{{ tBg }};--bgrgb:{{ tBgRgb }};--ink:{{ tInk }};--ink2:{{ tInk2 }};--acc:{{ tAcc }};--track:{{ tTrack }};--land:{{ tLand }};--landS:{{ tLandS }};--route:{{ tRoute }};background:radial-gradient(ellipse 70% 60% at 60% 40%,{{ tPage1 }} 0%,{{ tPage2 }} 70%);transition:background 1s;display:flex;align-items:center;justify-content:center;gap:88px;padding:{{ rootPad }};font-family:'Geist',system-ui,sans-serif;color:#F3EEE4">
+
+<sc-if value="{{ side }}" hint-placeholder-val="{{ true }}">
+<aside style="width:330px;color:var(--ink,#F3EEE4);display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:400 30px/1 'Instrument Serif',serif">Trazo</span>
+    <span style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2,rgba(243,238,228,.55))">rutas a medida</span>
+  </div>
+  <h2 style="margin:0;font:400 50px/1 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">Tu viaje se construye <em style="color:var(--acc,oklch(0.8 0.14 70))">mientras eliges.</em></h2>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <sc-for list="{{ stepsList }}" as="s" hint-placeholder-count="6">
+      <div style="display:flex;align-items:center;gap:14px;padding:9px 0;border-top:1px solid var(--track,rgba(243,238,228,.08))">
+        <span style="font:500 11px 'Geist Mono',monospace;color:{{ s.numC }};width:22px">{{ s.num }}</span>
+        <span style="font:400 15px 'Geist';color:{{ s.c }};flex:1;transition:color .4s">{{ s.n }}</span>
+        <span style="font:400 13px 'Geist';color:var(--ink2,rgba(243,238,228,.62));max-width:150px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.v }}</span>
+      </div>
+    </sc-for>
+  </div>
+</aside>
+</sc-if>
+
+<div style="zoom:{{ zoom }};flex:none">
+<div style="width:{{ pw }};height:{{ ph }};border-radius:{{ pr }};box-shadow:{{ psh }};position:relative;overflow:hidden;background:var(--bg,#0A0D14);transition:background 1s;isolation:isolate">
+
+  <svg viewBox="{{ vb }}" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;opacity:{{ mapO }};transition:opacity 1.2s ease;-webkit-mask-image:radial-gradient(ellipse 85% 62% at 50% 42%,#000 35%,transparent 100%);mask-image:radial-gradient(ellipse 85% 62% at 50% 42%,#000 35%,transparent 100%)">
+    <g style="transform:{{ mapT }};transform-origin:0 0;transition:transform 1.9s cubic-bezier(.65,0,.2,1)">
+      <path d="{{ landD }}" fill-rule="evenodd" stroke-width="0.8" vector-effect="non-scaling-stroke" style="fill:var(--land,transparent);stroke:var(--landS,transparent)"></path>
+      <sc-for list="{{ routes }}" as="r" hint-placeholder-count="0">
+        <path d="{{ r }}" fill="none" stroke-width="1.2" stroke-dasharray="3 6" stroke-linecap="round" vector-effect="non-scaling-stroke" style="stroke:var(--route,transparent);animation:dash 3s linear infinite"></path>
+      </sc-for>
+      {{ planesEl }}
+      <sc-for list="{{ grat }}" as="l" hint-placeholder-count="0">
+        <line x1="{{ l.x1 }}" y1="{{ l.y1 }}" x2="{{ l.x2 }}" y2="{{ l.y2 }}" stroke="rgba(243,238,228,.07)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+      </sc-for>
+      <sc-for list="{{ lights }}" as="p" hint-placeholder-count="0">
+        <circle cx="{{ p.x }}" cy="{{ p.y }}" r="{{ p.r }}" fill="{{ p.f }}"></circle>
+      </sc-for>
+      <path d="{{ arcFull }}" fill="none" stroke="rgba(242,181,68,.4)" stroke-width="1" stroke-dasharray="2 5" vector-effect="non-scaling-stroke"></path>
+      <path d="{{ arcPart }}" fill="none" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke" style="stroke:var(--acc,oklch(0.8 0.14 70))"></path>
+      <sc-for list="{{ ends }}" as="c" hint-placeholder-count="0">
+        <g>
+          <circle cx="{{ c.x }}" cy="{{ c.y }}" r="{{ c.halo }}" fill="oklch(0.8 0.14 70)" opacity=".18"></circle>
+          <circle cx="{{ c.x }}" cy="{{ c.y }}" r="{{ c.r }}" fill="{{ c.fill }}" stroke-width="1.5" vector-effect="non-scaling-stroke" style="stroke:var(--acc,oklch(0.8 0.14 70))"></circle>
+          <text x="{{ c.x }}" y="{{ c.ty }}" font-size="{{ c.fs }}" text-anchor="middle" style="fill:var(--ink,#F3EEE4)" font-family="Geist Mono, monospace" letter-spacing=".08em">{{ c.code }}</text>
+        </g>
+      </sc-for>
+      <sc-if value="{{ veh }}" hint-placeholder-val="{{ false }}">
+        <g>
+          <circle cx="{{ veh.x }}" cy="{{ veh.y }}" r="{{ veh.halo }}" fill="oklch(0.8 0.14 70)" opacity=".3"></circle>
+          <circle cx="{{ veh.x }}" cy="{{ veh.y }}" r="{{ veh.r }}" fill="#fff"></circle>
+        </g>
+      </sc-if>
+    </g>
+  </svg>
+
+  <sc-for list="{{ ambients }}" as="a" hint-placeholder-count="0">
+    <div style="position:absolute;inset:0;background:{{ a.g }};opacity:{{ a.o }};transition:opacity 1.3s ease;pointer-events:none"></div>
+  </sc-for>
+  <div style="position:absolute;inset:0;z-index:{{ fxZ }};opacity:{{ fxO }};transition:opacity 1.2s;pointer-events:none">{{ fx }}</div>
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgb(var(--bgrgb,10 13 20) / .7) 0%,rgb(var(--bgrgb,10 13 20) / 0) 26%,rgb(var(--bgrgb,10 13 20) / 0) 50%,rgb(var(--bgrgb,10 13 20) / .8) 100%);pointer-events:none"></div>
+
+  <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:9"></div>
+  </sc-if>
+
+  <div style="position:absolute;left:0;right:0;top:0;z-index:6;padding:{{ topPad }} 20px 0;display:flex;flex-direction:column;gap:12px;pointer-events:none">
+    <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+      <div style="height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 16px;font:600 15px 'Geist';color:var(--ink,#F3EEE4)">
+        <span>9:41</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;background:var(--ink,#F3EEE4);border-radius:1px"></span><span style="width:3px;height:6px;background:var(--ink,#F3EEE4);border-radius:1px"></span><span style="width:3px;height:8px;background:var(--ink,#F3EEE4);border-radius:1px"></span><span style="width:3px;height:11px;background:var(--ink,#F3EEE4);border-radius:1px"></span></span>
+          <span style="width:24px;height:12px;border:1px solid var(--ink2,rgba(243,238,228,.5));border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:var(--ink,#F3EEE4);border-radius:2px"></span></span>
+        </span>
+      </div>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:12px;pointer-events:auto">
+      <button onClick="{{ back }}" aria-label="Atrás" style="width:36px;height:36px;flex:none;border-radius:50%;border:1px solid rgba(243,238,228,.14);background:rgba(10,13,20,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#F3EEE4;font-size:16px;cursor:pointer;opacity:{{ backO }};pointer-events:{{ backPe }};transition:opacity .4s">←</button>
+      <div style="flex:1;display:flex;gap:4px">
+        <sc-for list="{{ segs }}" as="sg" hint-placeholder-count="6">
+          <div style="flex:1;height:3px;border-radius:3px;background:var(--track,rgba(243,238,228,.14));overflow:hidden"><div style="height:100%;width:{{ sg.w }};background:oklch(0.8 0.14 70);border-radius:3px;transition:width .6s cubic-bezier(.2,.8,.2,1)"></div></div>
+        </sc-for>
+      </div>
+      <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:var(--ink2,rgba(243,238,228,.7));min-width:30px;text-align:right">{{ stepLabel }}</span>
+    </div>
+    <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;height:28px;pointer-events:auto;-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)">
+      <sc-if value="{{ noChips }}" hint-placeholder-val="{{ true }}">
+        <span style="height:28px;display:inline-flex;align-items:center;font:400 12px 'Geist';color:var(--ink2,rgba(243,238,228,.5))">Tu viaje irá apareciendo aquí</span>
+      </sc-if>
+      <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="0">
+        <span style="flex:none;height:28px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:rgba(10,13,20,.6);border:1px solid rgba(243,238,228,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font:500 12px 'Geist';color:#F3EEE4;white-space:nowrap;animation:chipIn .55s cubic-bezier(.2,.8,.2,1) both"><span style="width:5px;height:5px;border-radius:50%;background:oklch(0.8 0.14 70)"></span>{{ ch }}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- 1 · Origen / destino -->
+  <div data-screen-label="01 Ruta" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc0.o }};transform:{{ sc0.t }};filter:{{ sc0.f }};pointer-events:{{ sc0.pe }}">
+    <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">01 — Ruta</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 44px/1 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">¿De dónde sales y <em style="color:var(--acc,oklch(0.8 0.14 70))">a dónde vas?</em></h1>
+    <div style="flex:1;position:relative;min-height:0">
+      <sc-if value="{{ showSug }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:10px;max-height:100%;overflow:auto;background:rgba(12,16,26,.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(243,238,228,.09);border-radius:22px;padding:8px;display:flex;flex-direction:column;animation:chipIn .35s ease both">
+          <div style="padding:8px 12px 6px;font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,238,228,.55)">{{ sugTitle }}</div>
+          <sc-for list="{{ sug }}" as="c" hint-placeholder-count="4">
+            <div onPointerDown="{{ c.pick }}" style="display:flex;align-items:center;gap:14px;padding:12px;min-height:48px;border-radius:14px;cursor:pointer" style-hover="background:rgba(243,238,228,.06)">
+              <span style="font:500 12px 'Geist Mono',monospace;letter-spacing:.06em;color:oklch(0.8 0.14 70);width:34px">{{ c.c }}</span>
+              <span style="font:400 16px 'Geist';flex:1">{{ c.n }}</span>
+              <span style="font:400 12px 'Geist';color:rgba(243,238,228,.55)">{{ c.p }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ sugEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px 12px;font:400 14px 'Geist';color:rgba(243,238,228,.6)">No encontramos esa ciudad todavía.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+    <div style="position:relative;background:rgba(12,16,26,.74);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(243,238,228,.1);border-radius:24px">
+      <div style="position:absolute;left:23px;top:40px;bottom:40px;border-left:1px dashed rgba(243,238,228,.3)"></div>
+      <label style="display:flex;align-items:center;gap:16px;padding:16px 70px 16px 18px;cursor:text">
+        <span style="width:11px;height:11px;border-radius:50%;border:2px solid #F3EEE4;flex:none;background:#0A0D14"></span>
+        <span style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,238,228,.55)">Origen</span>
+          <input value="{{ oVal }}" placeholder="Ciudad de salida" onFocus="{{ focusO }}" onBlur="{{ blur }}" onChange="{{ onQuery }}" style="background:transparent;border:none;outline:none;color:#F3EEE4;font:400 26px/1.1 'Instrument Serif',serif;padding:0;width:100%">
+        </span>
+      </label>
+      <div style="height:1px;background:rgba(243,238,228,.08);margin:0 18px 0 46px"></div>
+      <label style="display:flex;align-items:center;gap:16px;padding:16px 70px 16px 18px;cursor:text">
+        <span style="width:11px;height:11px;border-radius:50%;background:oklch(0.8 0.14 70);flex:none;box-shadow:0 0 0 4px rgba(242,181,68,.18)"></span>
+        <span style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,238,228,.55)">Destino</span>
+          <input ref="{{ dRef }}" value="{{ dVal }}" placeholder="¿A dónde?" onFocus="{{ focusD }}" onBlur="{{ blur }}" onChange="{{ onQuery }}" style="background:transparent;border:none;outline:none;color:#F3EEE4;font:400 26px/1.1 'Instrument Serif',serif;padding:0;width:100%">
+        </span>
+      </label>
+      <button onClick="{{ swap }}" aria-label="Intercambiar" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(243,238,228,.14);background:#141925;color:#F3EEE4;font-size:18px;cursor:pointer" style-hover="background:#1c2230">⇅</button>
+    </div>
+    <button onClick="{{ toLoad }}" style="margin-top:12px;height:58px;flex:none;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta0.o }};pointer-events:{{ cta0.pe }};transition:opacity .35s,transform .2s" style-active="transform:scale(.98)">Trazar ruta</button>
+  </div>
+
+  <!-- 2 · Calculando -->
+  <div data-screen-label="02 Calculando" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc1.o }};transform:{{ sc1.t }};filter:{{ sc1.f }};pointer-events:{{ sc1.pe }}">
+    <div style="display:flex;align-items:center;gap:8px;font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">{{ loadEyebrow }}</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 40px/1.02 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance"><sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">Conectando <em style="color:var(--acc,oklch(0.8 0.14 70))">{{ oName }}</em> con <em style="color:var(--acc,oklch(0.8 0.14 70))">{{ dName }}</em></sc-if><sc-if value="{{ loadDone }}" hint-placeholder-val="{{ false }}">¿Cómo quieres llegar a <em style="color:var(--acc,oklch(0.8 0.14 70))">{{ dName }}</em>?</sc-if></h1>
+    <div style="flex:1"></div>
+    <div style="background:rgba(12,16,26,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(243,238,228,.1);border-radius:24px;padding:18px 18px 12px;min-height:0;overflow:auto;scrollbar-width:none" ref="{{ mPanel }}">
+      <div style="display:flex;justify-content:space-between;font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,238,228,.55);padding-bottom:8px;border-bottom:1px solid rgba(243,238,228,.08)">
+        <span>Distancia</span><span style="color:#F3EEE4">{{ kmLabel }}</span>
+      </div>
+      <sc-if value="{{ showList }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;padding-top:4px">
+          <sc-for list="{{ modeRows }}" as="m" hint-placeholder-count="5">
+            <button onClick="{{ m.pick }}" disabled="{{ m.dis }}" style="width:calc(100% + 20px);margin:0 -10px;display:grid;grid-template-columns:112px minmax(0,1fr) 64px;align-items:center;gap:12px;padding:{{ m.pad }} 10px;min-height:44px;border:none;border-radius:14px;background:{{ m.bg }};color:#F3EEE4;text-align:left;cursor:{{ m.cur }};opacity:{{ m.op }};transition:opacity .4s,background .35s">
+              <span style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0">
+                <span style="font:500 15px 'Geist';color:{{ m.col }};transition:color .4s;white-space:nowrap">{{ m.k }}</span>
+                <sc-if value="{{ m.rec }}" hint-placeholder-val="{{ false }}"><span style="height:16px;padding:0 6px;display:inline-flex;align-items:center;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 9px 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase">Recomendado</span><span style="font:400 11px/1.25 'Geist';color:rgba(243,238,228,.7);white-space:normal">{{ m.why }}</span></sc-if>
+              </span>
+              <div style="height:4px;border-radius:4px;background:rgba(243,238,228,.08);overflow:hidden"><div style="height:100%;width:{{ m.w }};background:{{ m.bar }};border-radius:4px;transition:background .4s"></div></div>
+              <span style="font:500 12px 'Geist Mono',monospace;text-align:right;color:{{ m.col }};transition:color .4s;white-space:nowrap">{{ m.st }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasOnly }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 0 2px;font:400 13px/1.4 'Geist';color:rgba(243,238,228,.75);text-wrap:pretty">{{ onlyLine }}</div>
+      </sc-if>
+      <sc-for list="{{ mCards }}" as="c" hint-placeholder-count="0">
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;min-height:48px;border-radius:16px;background:rgba(242,181,68,.1);border:1px solid rgba(242,181,68,.35);animation:chipIn .45s cubic-bezier(.2,.8,.2,1) both">
+          <span style="flex:1;min-width:0;font:400 15px 'Geist';color:#F3EEE4">{{ c.label }}: <strong style="font-weight:600">{{ c.v }}</strong> <span style="color:oklch(0.8 0.14 70)">✓</span></span>
+          <sc-if value="{{ c.can }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ c.change }}" style="border:none;background:transparent;padding:6px 0;font:italic 400 17px 'Instrument Serif',serif;color:#F3EEE4;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+          </sc-if>
+        </div>
+      </sc-for>
+      <sc-if value="{{ q2Open }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(243,238,228,.08);display:flex;flex-direction:column;gap:2px;animation:chipIn .5s cubic-bezier(.2,.8,.2,1) both">
+          <div style="font:400 15px/1.4 'Geist';color:#F3EEE4;padding-bottom:6px;text-wrap:pretty">{{ q2Title }}</div>
+          <sc-for list="{{ q2Opts }}" as="q" hint-placeholder-count="2">
+            <button onClick="{{ q.pick }}" style="width:calc(100% + 20px);margin:0 -10px;display:flex;align-items:center;justify-content:space-between;padding:11px 10px;min-height:44px;border:none;border-radius:14px;background:{{ q.bg }};color:{{ q.col }};font:500 15px 'Geist';cursor:pointer;transition:background .35s,color .35s"><span>{{ q.n }}</span><span style="width:18px;height:18px;border-radius:50%;border:1.5px solid {{ q.rb }};background:{{ q.dot }};box-shadow:inset 0 0 0 3px #11151f;transition:background .3s,border-color .3s"></span></button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <div style="min-height:86px;flex:none;display:flex;flex-direction:column;justify-content:flex-end">
+      <sc-if value="{{ loadDone }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;animation:chipIn .6s cubic-bezier(.2,.8,.2,1) both">
+          <sc-if value="{{ camper }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:12px 4px 0;font:400 13px/1.45 'Geist';color:var(--ink,#F3EEE4);text-wrap:pretty;animation:chipIn .45s cubic-bezier(.2,.8,.2,1) both">{{ camperNote }}</p>
+          </sc-if>
+          <button onClick="{{ toDates }}" style="height:58px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ ctaM.o }};pointer-events:{{ ctaM.pe }};transition:opacity .35s" style-active="transform:scale(.98)">Ir en {{ ctaMode }} · Continuar</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <!-- 3 · Fechas -->
+  <div data-screen-label="03 Fechas" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc2.o }};transform:{{ sc2.t }};filter:{{ sc2.f }};pointer-events:{{ sc2.pe }}">
+    <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">03 — Fechas</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 40px/1.02 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">¿Cuándo llegas a <em style="color:var(--acc,oklch(0.8 0.14 70))">{{ dName }}</em>?</h1>
+    <div style="flex:1;min-height:12px"></div>
+    <div style="background:rgba(12,16,26,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(243,238,228,.1);border-radius:24px;padding:16px 14px 14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px">
+        <button onClick="{{ prevM }}" aria-label="Mes anterior" style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(243,238,228,.12);background:transparent;color:#F3EEE4;cursor:pointer;opacity:{{ prevO }}">‹</button>
+        <span style="font:400 26px 'Instrument Serif',serif">{{ monthLabel }}</span>
+        <button onClick="{{ nextM }}" aria-label="Mes siguiente" style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(243,238,228,.12);background:transparent;color:#F3EEE4;cursor:pointer">›</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;color:rgba(243,238,228,.5);text-align:center;padding-bottom:6px">
+        <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">
+        <sc-for list="{{ cells }}" as="d" hint-placeholder-count="35">
+          <button onClick="{{ d.click }}" disabled="{{ d.dis }}" style="height:42px;border:none;border-radius:{{ d.rad }};background:{{ d.bg }};color:{{ d.fg }};font:{{ d.fw }} 14px 'Geist';cursor:pointer;opacity:{{ d.op }};visibility:{{ d.vis }};transition:background .25s,color .25s">{{ d.label }}</button>
+        </sc-for>
+      </div>
+      <div style="margin-top:12px;padding:12px 4px 0;border-top:1px solid rgba(243,238,228,.08);font:400 14px 'Geist';color:{{ sumC }};display:flex;justify-content:space-between;gap:8px">
+        <span>{{ dateSummary }}</span><span style="font:500 12px 'Geist Mono',monospace;color:oklch(0.8 0.14 70)">{{ nightsLabel }}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button onClick="{{ noDates }}" style="flex:1;height:58px;border-radius:999px;border:1px solid rgba(243,238,228,.2);background:rgba(10,13,20,.5);color:#F3EEE4;font:500 15px 'Geist';cursor:pointer" style-hover="background:rgba(243,238,228,.08)">Aún no sé mis fechas</button>
+      <button onClick="{{ toSeason }}" style="flex:1;height:58px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta2.o }};pointer-events:{{ cta2.pe }};transition:opacity .35s">Continuar</button>
+    </div>
+  </div>
+
+  <!-- 5 · Compañía -->
+  <div data-screen-label="04 Compañía" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc3.o }};transform:{{ sc3.t }};filter:{{ sc3.f }};pointer-events:{{ sc3.pe }}">
+    <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">04 — Compañía</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 44px/1 'Instrument Serif',serif;letter-spacing:-.01em">¿Con quién <em style="color:var(--acc,oklch(0.8 0.14 70))">viajas?</em></h1>
+    <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,1fr);gap:10px;margin:22px 0 12px">
+      <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="4">
+        <button onClick="{{ g.pick }}" style="min-height:0;border-radius:24px;border:1px solid {{ g.bd }};background:{{ g.bg }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;flex-direction:column;padding:16px;cursor:pointer;text-align:left;color:#F3EEE4;transition:border-color .3s,background .3s,transform .2s" style-active="transform:scale(.97)">
+          <div style="flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px">{{ g.fig }}</div>
+          <div style="font:400 26px/1 'Instrument Serif',serif">{{ g.n }}</div>
+          <div style="margin-top:5px;font:400 12.5px/1.3 'Geist';color:rgba(243,238,228,.68)">{{ g.d }}</div>
+        </button>
+      </sc-for>
+    </div>
+    <button onClick="{{ toPace }}" style="height:58px;flex:none;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta4.o }};pointer-events:{{ cta4.pe }};transition:opacity .35s">Continuar</button>
+  </div>
+
+  <!-- 6 · Ritmo -->
+  <div data-screen-label="05 Ritmo" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc4.o }};transform:{{ sc4.t }};filter:{{ sc4.f }};pointer-events:{{ sc4.pe }}">
+    <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">05 — Ritmo</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 44px/1 'Instrument Serif',serif;letter-spacing:-.01em">¿Qué <em style="color:var(--acc,oklch(0.8 0.14 70))">ritmo</em> quieres?</h1>
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;margin:22px 0 12px">
+      <sc-for list="{{ paceCards }}" as="p" hint-placeholder-count="2">
+        <button onClick="{{ p.pick }}" style="flex:{{ p.flex }};min-height:0;transition:flex .8s cubic-bezier(.2,.8,.2,1),box-shadow .3s;border-radius:26px;border:none;box-shadow:{{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};padding:20px;text-align:left;position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column">
+          {{ p.fx }}
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+            <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:400 40px/1 'Instrument Serif',serif">{{ p.n }}</span><sc-if value="{{ p.rec }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;background:#17120a;color:oklch(0.8 0.14 70);font:600 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase">★ Recomendado</span></sc-if></span>
+            <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.8">{{ p.tag }}</span>
+          </div>
+          <div style="position:relative;margin-top:6px;font:400 14px/1.4 'Geist';opacity:.85">{{ p.d }}</div>
+          <div style="position:relative;margin-top:auto;padding-top:14px;display:flex;flex-direction:column;gap:8px;opacity:{{ p.lo }};transition:opacity .5s">
+            <div style="display:flex;justify-content:space-between;font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.75"><span>{{ p.range }}</span><span>{{ p.free }}</span></div>
+            <div style="position:relative;height:{{ p.bh }};transition:height .7s cubic-bezier(.2,.8,.2,1)">
+              <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed currentColor;opacity:.35"></div>
+              <span style="position:absolute;left:0;top:0;bottom:0;width:{{ p.offW }};border-radius:8px;background:repeating-linear-gradient(135deg,currentColor 0 1px,transparent 1px 6px);opacity:.18"></span>
+              <span style="position:absolute;top:-6px;bottom:-6px;left:{{ p.startL }};border-left:1.5px solid currentColor;opacity:.8"></span>
+              <span style="position:absolute;top:-6px;bottom:-6px;left:{{ p.endL }};border-left:1.5px solid currentColor;opacity:.8"></span>
+              <sc-for list="{{ p.blocks }}" as="b" hint-placeholder-count="3">
+                <span style="position:absolute;top:0;bottom:0;left:{{ b.l }};width:{{ b.w }};border-radius:8px;background:currentColor;opacity:{{ b.o }};transform:{{ b.t }};transform-origin:bottom;transition:transform .6s cubic-bezier(.3,1.4,.5,1) {{ b.d }}"></span>
+              </sc-for>
+            </div>
+            <div style="display:flex;justify-content:space-between;font:500 10px 'Geist Mono',monospace;opacity:.65"><span>08h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+    <button onClick="{{ toExp }}" style="height:58px;flex:none;border:none;border-radius:999px;background:#F3EEE4;color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta5.o }};pointer-events:{{ cta5.pe }};transition:opacity .35s">Continuar</button>
+  </div>
+
+  <!-- 7 · Experiencias -->
+  <div data-screen-label="06 Experiencias" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc5.o }};transform:{{ sc5.t }};filter:{{ sc5.f }};pointer-events:{{ sc5.pe }}">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">06 — Experiencias</span>
+      <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:var(--ink2,rgba(243,238,228,.7))">{{ expCount }}</span>
+    </div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 44px/1 'Instrument Serif',serif;letter-spacing:-.01em">Elige tus <em style="color:var(--acc,oklch(0.8 0.14 70))">3 favoritas</em></h1>
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;margin:18px 0 12px">
+      <sc-for list="{{ expRows }}" as="x" hint-placeholder-count="5">
+        <button onClick="{{ x.pick }}" style="opacity:{{ x.op }};pointer-events:{{ x.pe }};position:relative;overflow:hidden;flex:1;min-height:64px;max-height:104px;border-radius:20px;border:1px solid {{ x.bd }};background:rgba(10,13,20,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;gap:14px;padding:0 16px;text-align:left;cursor:pointer;color:{{ x.fg }};transition:color .45s,border-color .45s,opacity .4s" style-active="transform:scale(.98)">
+          <span style="position:absolute;inset:0;background:oklch(0.8 0.14 70);transform-origin:left center;transform:{{ x.fill }};transition:transform .65s cubic-bezier(.2,.8,.2,1)"></span>
+          <span style="position:relative;font:500 11px 'Geist Mono',monospace;opacity:.7;width:20px">{{ x.num }}</span>
+          <span style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <span style="font:400 25px/1 'Instrument Serif',serif">{{ x.n }}</span>
+            <span style="font:400 12.5px/1.3 'Geist';opacity:.78">{{ x.d }}</span>
+          </span>
+          <span style="position:relative;width:28px;height:28px;flex:none;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font:600 14px 'Geist';background:{{ x.dot }};color:oklch(0.8 0.14 70)">{{ x.mark }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <button onClick="{{ toMon }}" style="height:58px;flex:none;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta6.o }};pointer-events:{{ cta6.pe }};transition:opacity .35s">Continuar</button>
+  </div>
+
+  <!-- 8 · Monumentos (pool) -->
+  <div data-screen-label="07 Monumentos" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc6.o }};transform:{{ sc6.t }};filter:{{ sc6.f }};pointer-events:{{ sc6.pe }}">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">07 — Monumentos</span>
+      <button onClick="{{ monAll }}" style="border:none;background:transparent;padding:6px 0;font:500 12px 'Geist';color:var(--ink,#F3EEE4);text-decoration:underline;text-underline-offset:3px;cursor:pointer">{{ monAllLabel }}</button>
+    </div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 42px/1 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">Arma tu pool de <em style="color:var(--acc,oklch(0.8 0.14 70))">{{ dName }}</em></h1>
+    <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,1fr);gap:8px;margin:18px 0 10px">
+      <sc-for list="{{ monTiles }}" as="m" hint-placeholder-count="6">
+        <button onClick="{{ m.pick }}" style="position:relative;min-height:0;border-radius:20px;border:1px solid {{ m.bd }};background:{{ m.bg }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:space-between;padding:12px 13px;text-align:left;cursor:pointer;color:#F3EEE4;transform:{{ m.sc }};transition:border-color .35s,background .35s,transform .35s cubic-bezier(.3,1.6,.5,1)">
+          <span style="display:flex;justify-content:space-between;align-items:flex-start">
+            <span style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:{{ m.ib }};color:{{ m.ic }};transition:background .35s,color .35s">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ m.icon }}"></path></svg>
+            </span>
+            <span style="min-width:24px;height:24px;border-radius:12px;padding:0 7px;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace;background:{{ m.nb }};color:#17120a;opacity:{{ m.no }};transition:opacity .3s">{{ m.order }}</span>
+          </span>
+          <span style="display:flex;flex-direction:column;gap:3px">
+            <span style="font:400 19px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ m.n }}</span>
+            <span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(243,238,228,.6)">{{ m.tag }}</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="height:48px;flex:none;display:flex;align-items:center;gap:12px;padding:0 6px 0 4px">
+      <div style="display:flex;align-items:center">
+        <sc-for list="{{ tray }}" as="t" hint-placeholder-count="0">
+          <span style="width:34px;height:34px;border-radius:50%;margin-left:{{ t.ml }};background:oklch(0.8 0.14 70);color:#17120a;border:2px solid var(--bg,#0A0D14);display:flex;align-items:center;justify-content:center;animation:chipIn .45s cubic-bezier(.2,.8,.2,1) both">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg>
+          </span>
+        </sc-for>
+      </div>
+      <span style="font:400 13px 'Geist';color:var(--ink2,rgba(243,238,228,.75))">{{ trayLabel }}</span>
+    </div>
+    <button onClick="{{ toFinal }}" style="height:58px;flex:none;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ cta7.o }};pointer-events:{{ cta7.pe }};transition:opacity .35s">Crear mi ruta</button>
+  </div>
+
+  <!-- 9 · Resumen -->
+  <div data-screen-label="08 Tu viaje" style="position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;padding:{{ pt }} 20px 24px;transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .7s ease;opacity:{{ sc7.o }};transform:{{ sc7.t }};filter:{{ sc7.f }};pointer-events:{{ sc7.pe }}">
+    <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">Tu viaje</div>
+    <h1 style="color:var(--ink,#F3EEE4);margin:12px 0 0;font:400 44px/1 'Instrument Serif',serif;letter-spacing:-.01em">{{ finTitle }}</h1>
+    <div style="flex:1;min-height:12px"></div>
+    <div style="background:rgba(12,16,26,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(243,238,228,.1);border-radius:26px;overflow:hidden">
+      <div style="padding:20px 20px 18px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px">
+        <div><div style="font:400 50px/1 'Instrument Serif',serif">{{ oCode }}</div><div style="margin-top:4px;font:400 12px 'Geist';color:rgba(243,238,228,.62)">{{ oName }}</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:oklch(0.8 0.14 70)">{{ bestK }}</span><div style="width:100%;border-top:1px dashed rgba(243,238,228,.35)"></div></div>
+        <div style="text-align:right"><div style="font:400 50px/1 'Instrument Serif',serif;color:oklch(0.8 0.14 70)">{{ dCode }}</div><div style="margin-top:4px;font:400 12px 'Geist';color:rgba(243,238,228,.62)">{{ dName }}</div></div>
+      </div>
+      <div style="border-top:1px dashed rgba(243,238,228,.16);padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px 16px">
+        <sc-for list="{{ summary }}" as="f" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(243,238,228,.5)">{{ f.k }}</span><span style="font:400 15px 'Geist'">{{ f.v }}</span></div>
+        </sc-for>
+      </div>
+      <div style="padding:0 20px 18px;display:flex;flex-direction:column;gap:8px">
+        <div style="height:3px;border-radius:3px;background:rgba(243,238,228,.1);overflow:hidden"><div style="height:100%;width:{{ finW }};background:oklch(0.8 0.14 70)"></div></div>
+        <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(243,238,228,.62)">{{ finStatus }}</span>
+      </div>
+    </div>
+    <button onClick="{{ restart }}" style="margin-top:12px;height:58px;flex:none;border-radius:999px;border:1px solid rgba(243,238,228,.2);background:rgba(10,13,20,.5);color:#F3EEE4;font:500 15px 'Geist';cursor:pointer" style-hover="background:rgba(243,238,228,.08)">Diseñar otro viaje</button>
+  </div>
+
+  <!-- Sheet · días flexibles -->
+  <div style="position:absolute;inset:0;z-index:8;pointer-events:{{ sheetPe }}">
+    <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:{{ sheetBd }};opacity:{{ sheetO }};transition:opacity .45s,background .8s;transition:opacity .45s"></div>
+    <div data-screen-label="03b Días flexibles" style="--ink:#F3EEE4;--ink2:rgba(243,238,228,.7);--acc:oklch(0.8 0.14 70);color:#F3EEE4;position:absolute;left:0;right:0;bottom:0;background:{{ sheetBg }};backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:30px 30px 0 0;border-top:1px solid rgba(243,238,228,.12);padding:12px 20px 24px;transform:{{ sheetT }};transition:transform .6s cubic-bezier(.2,.8,.2,1)">
+      <div style="width:40px;height:4px;border-radius:4px;background:rgba(243,238,228,.2);margin:0 auto 18px"></div>
+      <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.14em;color:var(--acc,oklch(0.8 0.14 70));text-transform:uppercase">Fechas flexibles</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:10px">
+        <h2 style="margin:0;font:400 32px/1.02 'Instrument Serif',serif;max-width:190px">¿Cuántos días?</h2>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font:400 84px/.8 'Instrument Serif',serif;color:oklch(0.8 0.14 70)">{{ flexDays }}</span>
+          <span style="font:400 15px 'Geist';color:rgba(243,238,228,.75)">{{ flexUnit }}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:20px">
+        <sc-for list="{{ dayCells }}" as="c" hint-placeholder-count="31">
+          <button onClick="{{ c.pick }}" style="height:34px;border:none;border-radius:{{ c.rad }};background:{{ c.bg }};color:{{ c.fg }};font:{{ c.fw }} 14px 'Geist';cursor:pointer;transition:background .25s,color .25s">{{ c.n }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid rgba(243,238,228,.08)">
+        <h2 style="margin:0;font:400 26px/1 'Instrument Serif',serif">¿Qué mes?</h2>
+        <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:oklch(0.8 0.14 70)">{{ flexMonthLabel }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">
+        <sc-for list="{{ monthRows }}" as="r" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:92px repeat(3,minmax(0,1fr));gap:6px;align-items:center">
+            <span style="display:flex;align-items:center;gap:8px;font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ r.lc }};transition:color .3s">
+              <span style="width:10px;height:10px;border-radius:50%;flex:none;background:{{ r.sw }}"></span>{{ r.n }}
+            </span>
+            <sc-for list="{{ r.ms }}" as="m" hint-placeholder-count="3">
+              <button onClick="{{ m.pick }}" style="height:38px;border-radius:12px;border:1px solid {{ m.bd }};background:{{ m.bg }};color:{{ m.fg }};font:{{ m.fw }} 14px 'Geist';cursor:pointer;transition:background .25s,color .25s,border-color .25s">{{ m.n }}</button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button onClick="{{ closeSheet }}" style="flex:1;height:56px;border-radius:999px;border:1px solid rgba(243,238,228,.2);background:transparent;color:#F3EEE4;font:500 15px 'Geist';cursor:pointer">Cancelar</button>
+        <button onClick="{{ confirmDays }}" style="flex:1.4;height:56px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer;opacity:{{ ctaFlex.o }};pointer-events:{{ ctaFlex.pe }};transition:opacity .35s">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;loadingSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:3.6,&quot;min&quot;:1.5,&quot;max&quot;:8,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cinematográfico&quot;,&quot;Sutil&quot;],&quot;default&quot;:&quot;Cinematográfico&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;fondo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Noche&quot;,&quot;Día&quot;,&quot;Espacial&quot;],&quot;default&quot;:&quot;Noche&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;sidePanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const CITIES=[
+{n:'Madrid',c:'MAD',p:'España',la:40.42,lo:-3.70,r:'eu'},
+{n:'Barcelona',c:'BCN',p:'España',la:41.39,lo:2.17,r:'eu'},
+{n:'Sevilla',c:'SVQ',p:'España',la:37.39,lo:-5.98,r:'eu'},
+{n:'Valencia',c:'VLC',p:'España',la:39.47,lo:-0.38,r:'eu'},
+{n:'Lisboa',c:'LIS',p:'Portugal',la:38.72,lo:-9.14,r:'eu'},
+{n:'Oporto',c:'OPO',p:'Portugal',la:41.15,lo:-8.61,r:'eu'},
+{n:'París',c:'PAR',p:'Francia',la:48.86,lo:2.35,r:'eu'},
+{n:'Londres',c:'LON',p:'Reino Unido',la:51.51,lo:-0.13,r:'eu'},
+{n:'Ámsterdam',c:'AMS',p:'Países Bajos',la:52.37,lo:4.90,r:'eu'},
+{n:'Berlín',c:'BER',p:'Alemania',la:52.52,lo:13.40,r:'eu'},
+{n:'Roma',c:'ROM',p:'Italia',la:41.90,lo:12.50,r:'eu'},
+{n:'Florencia',c:'FLR',p:'Italia',la:43.77,lo:11.25,r:'eu'},
+{n:'Marrakech',c:'RAK',p:'Marruecos',la:31.63,lo:-8.00,r:'af'},
+{n:'Reikiavik',c:'REK',p:'Islandia',la:64.15,lo:-21.94,r:'is'},
+{n:'Nueva York',c:'NYC',p:'EE. UU.',la:40.71,lo:-74.0,r:'na'},
+{n:'Ciudad de México',c:'MEX',p:'México',la:19.43,lo:-99.13,r:'na'},
+{n:'Bogotá',c:'BOG',p:'Colombia',la:4.71,lo:-74.07,r:'sa'},
+{n:'Buenos Aires',c:'BUE',p:'Argentina',la:-34.60,lo:-58.38,r:'sa'},
+{n:'Tokio',c:'TYO',p:'Japón',la:35.68,lo:139.69,r:'jp'},
+{n:'Bangkok',c:'BKK',p:'Tailandia',la:13.75,lo:100.50,r:'as'},
+{n:'Tenerife',c:'TFN',p:'España',la:28.47,lo:-16.25,r:'can',land:'tfn',isl:true},
+{n:'Las Palmas',c:'LPA',p:'España',la:28.12,lo:-15.43,r:'can',land:'lpa',isl:true},
+{n:'Los Ángeles',c:'LAX',p:'EE. UU.',la:34.05,lo:-118.24,r:'na',car:true}];
+const LIGHTS=[[48.2,16.4],[50.1,14.4],[47.5,19.0],[52.2,21.0],[59.3,18.1],[59.9,10.7],[55.7,12.6],[60.2,24.9],[53.3,-6.3],[55.9,-3.2],[45.5,9.2],[45.4,12.3],[40.9,14.3],[43.3,5.4],[45.8,4.8],[50.8,4.4],[48.1,11.6],[50.1,8.7],[53.6,10.0],[37.98,23.7],[41.0,28.9],[44.4,26.1],[42.7,23.3],[43.3,-2.9],[36.7,-4.4],[39.6,2.6],[28.1,-15.4],[42.9,-8.5],[41.6,-0.9],[37.2,-3.6],[30.0,31.2],[33.6,-7.6],[36.8,10.2],[36.7,3.1],[6.5,3.4],[-1.3,36.8],[-33.9,18.4],[25.2,55.3],[31.8,35.2],[42.4,-71.1],[38.9,-77.0],[41.9,-87.6],[34.0,-118.2],[37.8,-122.4],[25.8,-80.2],[45.5,-73.6],[43.7,-79.4],[-23.5,-46.6],[-22.9,-43.2],[-12.0,-77.0],[-33.4,-70.6],[10.5,-66.9],[28.6,77.2],[19.1,72.9],[39.9,116.4],[31.2,121.5],[37.6,127.0],[22.3,114.2],[1.35,103.8],[-6.2,106.8],[14.6,121.0],[34.7,135.5],[-33.9,151.2],[-37.8,145.0],[55.8,37.6],[59.9,30.3],[50.4,30.5]];
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const AMBER='oklch(0.8 0.14 70)';
+const SEASONS=[
+{k:'primavera',n:'Primavera',m:'Mar — May',d:'Terrazas que despiertan, días cada vez más largos y ciudades en flor.',g:'linear-gradient(180deg,oklch(0.34 0.06 165) 0%,oklch(0.42 0.07 120) 45%,oklch(0.55 0.1 15) 100%)',sw:'linear-gradient(135deg,oklch(0.8 0.1 150),oklch(0.82 0.09 10))'},
+{k:'verano',n:'Verano',m:'Jun — Ago',d:'Luz hasta tarde, el mar cerca y noches al aire libre.',g:'linear-gradient(180deg,oklch(0.4 0.1 50) 0%,oklch(0.55 0.15 50) 50%,oklch(0.64 0.16 38) 100%)',sw:'linear-gradient(135deg,oklch(0.88 0.14 90),oklch(0.7 0.17 40))'},
+{k:'otono',n:'Otoño',m:'Sep — Nov',d:'Colores cálidos, menos gente y mesas de temporada.',g:'linear-gradient(180deg,oklch(0.28 0.05 40) 0%,oklch(0.38 0.09 45) 50%,oklch(0.5 0.13 42) 100%)',sw:'linear-gradient(135deg,oklch(0.72 0.15 55),oklch(0.45 0.1 30))'},
+{k:'invierno',n:'Invierno',m:'Dic — Feb',d:'Mercados, abrigo y cafés con los cristales empañados.',g:'linear-gradient(180deg,oklch(0.26 0.04 255) 0%,oklch(0.36 0.05 245) 50%,oklch(0.52 0.05 235) 100%)',sw:'linear-gradient(135deg,oklch(0.92 0.02 230),oklch(0.55 0.07 250))'}];
+const GROUPS=[
+{k:'solo',n:'Solo',d:'Tu ritmo, tus reglas',f:[74],gap:0},
+{k:'pareja',n:'En pareja',d:'Planes para dos',f:[70,64],gap:3},
+{k:'amigos',n:'Con amigos',d:'Planes compartidos',f:[60,70,56],gap:7},
+{k:'familia',n:'En familia',d:'Todos a bordo',f:[72,66,42,34],gap:4}];
+const PACES=[
+{k:'completo',n:'Completo',rec:true,tag:'5–6 planes al día',d:'Aprovechar cada hora: lo imprescindible y algo más.',bg:AMBER,fg:'#17120a',s0:8,s1:22,day:[[8,1.25],[9.5,2],[11.75,2],[14,1.25],[15.5,1.75],[17.5,1.5],[19.25,1.5],[21,1]]},
+{k:'relajado',n:'Relajado',tag:'2–3 planes al día',d:'Mañanas lentas, comidas largas y tiempo para quedarse.',bg:'oklch(0.3 0.045 200)',fg:'#F3EEE4',s0:10,s1:23,day:[[10,1.5],[12,1.5],[14,2.75],[20.5,2.5]]}];
+const EXPS=[
+{k:'imp',n:'Imprescindibles',d:'Lo que no te puedes perder'},
+{k:'museos',n:'Arte y Museos',d:'Colecciones, galerías y arquitectura'},
+{k:'barrios',n:'Barrios y Sabores',d:'Calles con vida propia y cocina local'},
+{k:'nat',n:'Naturaleza y Vistas',d:'Parques, miradores y paseos al aire libre'},
+{k:'free',n:'Free Tour',d:'Recorridos a pie con guías locales'},
+{k:'xmas',n:'Mercadillos navideños',d:'Puestos, luces y productos de temporada'}];
+const ICONS={
+tower:'M12 2v3M9 22l2-17h2l2 17M8 22h8M10 13h4',
+church:'M12 2v4M10 4h4M6 22V11l6-5 6 5v11M10 22v-5a2 2 0 0 1 4 0v5M3 22h18',
+museum:'M3 21h18M4 10h16M12 3l9 5H3zM6 10v9M10 10v9M14 10v9M18 10v9',
+bridge:'M2 15h20M4 15c0-4 3.6-7 8-7s8 3 8 7M4 15v5M20 15v5M9 15v-5M15 15v-5',
+park:'M12 22v-7M12 3c3.5 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.5-6 6-6z',
+castle:'M4 22V9h3V6h2v3h6V6h2v3h3v13M3 22h18M10 22v-5h4v5',
+plaza:'M12 3v6M8 7c1.5 0 2.5 1 4 2 1.5-1 2.5-2 4-2M5 13h14l-2 6H7zM4 21h16',
+temple:'M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18'};
+const TAGS={tower:'Torre',church:'Templo',museum:'Museo',bridge:'Puente',park:'Parque',castle:'Palacio',plaza:'Plaza',temple:'Monumento'};
+const MON={
+MAD:[['Palacio Real','castle'],['Museo del Prado','museum'],['Parque del Retiro','park'],['Plaza Mayor','plaza'],['Templo de Debod','temple'],['Puerta de Alcalá','temple']],
+BCN:[['Sagrada Família','church'],['Park Güell','park'],['Casa Batlló','castle'],['Catedral de Barcelona','church'],['La Pedrera','museum'],['Mercado de la Boqueria','plaza']],
+SVQ:[['Real Alcázar','castle'],['Catedral y Giralda','tower'],['Plaza de España','plaza'],['Setas de Sevilla','plaza'],['Torre del Oro','tower'],['Barrio de Santa Cruz','plaza']],
+VLC:[['Ciudad de las Artes y las Ciencias','museum'],['La Lonja','temple'],['Catedral y Miguelete','tower'],['Mercado Central','plaza'],['Torres de Serranos','castle'],['Jardín del Turia','park']],
+LIS:[['Torre de Belém','tower'],['Monasterio de los Jerónimos','church'],['Castillo de San Jorge','castle'],['Plaza del Comercio','plaza'],['Elevador de Santa Justa','tower'],['Puente 25 de Abril','bridge']],
+OPO:[['Puente Don Luis I','bridge'],['Librería Lello','museum'],['Torre de los Clérigos','tower'],['Estación de São Bento','temple'],['Palacio de la Bolsa','castle'],['Ribeira','plaza']],
+PAR:[['Torre Eiffel','tower'],['Museo del Louvre','museum'],['Notre-Dame','church'],['Arco del Triunfo','temple'],['Sacré-Cœur','church'],['Museo de Orsay','museum']],
+LON:[['Big Ben','tower'],['Torre de Londres','castle'],['British Museum','museum'],['Tower Bridge','bridge'],['Abadía de Westminster','church'],['Hyde Park','park']],
+AMS:[['Rijksmuseum','museum'],['Casa de Ana Frank','museum'],['Museo Van Gogh','museum'],['Vondelpark','park'],['Palacio Real','castle'],['Canales del Jordaan','bridge']],
+BER:[['Puerta de Brandeburgo','temple'],['Reichstag','castle'],['Isla de los Museos','museum'],['East Side Gallery','plaza'],['Torre de TV','tower'],['Checkpoint Charlie','plaza']],
+ROM:[['Coliseo','temple'],['Fontana di Trevi','plaza'],['Panteón','temple'],['Museos Vaticanos','museum'],['Foro Romano','temple'],['Plaza Navona','plaza']],
+FLR:[['Duomo','church'],['Galería Uffizi','museum'],['Ponte Vecchio','bridge'],['Palazzo Vecchio','castle'],['Galería de la Academia','museum'],['Piazzale Michelangelo','plaza']],
+RAK:[['Plaza Jemaa el-Fna','plaza'],['Jardín Majorelle','park'],['Mezquita Koutoubia','tower'],['Palacio de la Bahía','castle'],['Zocos de la Medina','plaza'],['Medersa Ben Youssef','temple']],
+REK:[['Hallgrímskirkja','church'],['Harpa','museum'],['Sun Voyager','plaza'],['Laguna Azul','park'],['Perlan','museum'],['Puerto Viejo','bridge']],
+NYC:[['Estatua de la Libertad','tower'],['Central Park','park'],['Empire State','tower'],['Puente de Brooklyn','bridge'],['The Met','museum'],['Times Square','plaza']],
+MEX:[['Zócalo','plaza'],['Palacio de Bellas Artes','castle'],['Museo de Antropología','museum'],['Teotihuacán','temple'],['Castillo de Chapultepec','castle'],['Casa Azul','museum']],
+BOG:[['Museo del Oro','museum'],['Monserrate','church'],['La Candelaria','plaza'],['Plaza de Bolívar','plaza'],['Museo Botero','museum'],['Catedral de Sal','church']],
+BUE:[['Obelisco','tower'],['Caminito','plaza'],['Teatro Colón','castle'],['Casa Rosada','castle'],['Cementerio de Recoleta','church'],['Puerto Madero','bridge']],
+TYO:[['Templo Senso-ji','temple'],['Tokyo Skytree','tower'],['Santuario Meiji','temple'],['Cruce de Shibuya','plaza'],['Palacio Imperial','castle'],['Museo Nacional','museum']],
+BKK:[['Gran Palacio','castle'],['Wat Arun','temple'],['Wat Pho','temple'],['Mercado flotante','plaza'],['Chinatown','plaza'],['Parque Lumpini','park']],
+TFN:[['Parque Nacional del Teide','park'],['Auditorio de Tenerife','museum'],['San Cristóbal de La Laguna','plaza'],['Playa de Las Teresitas','park'],['Acantilados de Los Gigantes','park'],['Pirámides de Güímar','temple']],
+LPA:[['Playa de Las Canteras','park'],['Barrio de Vegueta','plaza'],['Casa de Colón','museum'],['Catedral de Santa Ana','church'],['Roque Nublo','park'],['Jardín Canario','park']],
+LAX:[['Letrero de Hollywood','tower'],['Observatorio Griffith','museum'],['Getty Center','museum'],['Muelle de Santa Mónica','bridge'],['Paseo de la Fama','plaza'],['Venice Beach','park']]};
+const THEMES={
+'Noche':{k:'Noche',page1:'#152440',page2:'#0A1222',bg:'#0D1A2E',bgrgb:'13 26 46',ink:'#F3EEE4',inkrgb:'243,238,228',ink2:'rgba(243,238,228,.7)',acc:'oklch(0.8 0.14 70)',track:'rgba(243,238,228,.14)',land:'oklch(0.34 0.055 240)',landS:'rgba(243,238,228,.2)',route:'rgba(242,181,68,.5)',dot:'rgba(243,238,228,.35)',dot2:'rgba(243,238,228,.75)',grat:false,map:true,amb:.5},
+'Día':{k:'Día',page1:'#F1E8D6',page2:'#E0D3BA',bg:'#CFE3E9',bgrgb:'207 227 233',ink:'#1C2230',inkrgb:'28,34,48',ink2:'rgba(28,34,48,.72)',acc:'oklch(0.52 0.15 45)',track:'rgba(28,34,48,.14)',land:'#F7F0E1',landS:'rgba(120,96,64,.38)',route:'oklch(0.6 0.15 45 / .65)',dot:'rgba(28,34,48,.28)',dot2:'rgba(28,34,48,.6)',grat:false,map:true,amb:.3},
+'Espacial':{k:'Espacial',page1:'#10141f',page2:'#07090E',bg:'#0A0D14',bgrgb:'10 13 20',ink:'#F3EEE4',inkrgb:'243,238,228',ink2:'rgba(243,238,228,.7)',acc:'oklch(0.8 0.14 70)',track:'rgba(243,238,228,.14)',land:'transparent',landS:'transparent',route:'transparent',dot:'rgba(243,238,228,.3)',dot2:'rgba(243,238,228,.55)',grat:true,map:false,amb:.5}};
+let LAND='';
+function landPath(t){const[sx,sy]=t.transform.scale,[tx,ty]=t.transform.translate;
+  const arcs=t.arcs.map(a=>{let x=0,y=0;return a.map(([dx,dy])=>{x+=dx;y+=dy;return P(y*sy+ty,x*sx+tx);});});
+  const ring=r=>{let pts=[];r.forEach((i,k)=>{const a=i<0?arcs[~i].slice().reverse():arcs[i];pts=pts.concat(k?a.slice(1):a);});
+    const pieces=[[]];pts.forEach((p,i)=>{if(i&&Math.abs(p[0]-pts[i-1][0])>720)pieces.push([]);pieces[pieces.length-1].push(p);});
+    if(pieces.length>1){const last=pieces.pop();pieces[0]=last.concat(pieces[0]);}
+    return pieces.filter(q=>q.length>2).map(q=>'M'+q.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')+'Z').join('');};
+  let d='';t.objects.land.geometries.forEach(g=>{const polys=g.type==='Polygon'?[g.arcs]:g.type==='MultiPolygon'?g.arcs:[];polys.forEach(p=>p.forEach(r=>{d+=ring(r);}));});return d;}
+function arcD(A,B){const a=P(A.la,A.lo),b=P(B.la,B.lo);const vx=b[0]-a[0],vy=b[1]-a[1],len=Math.hypot(vx,vy)||1;let nx=-vy/len,ny=vx/len;if(ny>0){nx=-nx;ny=-ny;}
+  const c=[(a[0]+b[0])/2+nx*len*0.3,(a[1]+b[1])/2+ny*len*0.3];return `M${a[0]} ${a[1]} Q${c[0]} ${c[1]} ${b[0]} ${b[1]}`;}
+const e=React.createElement;
+const P=(la,lo)=>[(lo+180)*4,(90-la)*4];
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function km(a,b){const R=6371,t=Math.PI/180,dl=(b.la-a.la)*t,dn=(b.lo-a.lo)*t;const h=Math.sin(dl/2)**2+Math.cos(a.la*t)*Math.cos(b.la*t)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+function fmtA(h){const m=Math.max(5,Math.round(h*12)*5),H=Math.floor(m/60),M=m%60;return H?`≈ ${H} h${M?' '+String(M).padStart(2,'0'):''}`:`≈ ${M} min`;}
+function fmtH(h){let H=Math.floor(h),M=Math.round((h-H)*60);if(M===60){H++;M=0;}return `${H}h ${String(M).padStart(2,'0')}m`;}
+function seasonOf(m){return m>=2&&m<=4?'primavera':m>=5&&m<=7?'verano':m>=8&&m<=10?'otono':'invierno';}
+const CBY=c=>CITIES.find(x=>x.c===c);
+const ROUTES=[['MAD','NYC'],['LIS','BOG'],['LON','REK'],['RAK','ROM'],['BCN','BER'],['MEX','BUE'],['PAR','BKK'],['AMS','TYO'],['NYC','MEX'],['SVQ','LIS']].map(([a,b])=>arcD(CBY(a),CBY(b)));
+const GRAT=(()=>{const a=[];for(let lo=-180;lo<=180;lo+=15)a.push({x1:(lo+180)*4,y1:0,x2:(lo+180)*4,y2:720});for(let la=-75;la<=75;la+=15)a.push({x1:0,y1:(90-la)*4,x2:1440,y2:(90-la)*4});return a;})();
+
+class Component extends DCLogic {
+  constructor(p){super(p);const t=new Date();
+    this.state={step:0,origin:null,dest:null,focus:null,query:'',prog:0,loadDone:false,cy:t.getFullYear(),cm:t.getMonth(),start:null,end:null,noDates:false,season:null,seasonAuto:false,group:null,pace:null,exps:[],mons:[],sheet:false,flexDays:7,flexMonth:null,mode:null,modeConf:false,modeAuto:false,vehicle:null,rental:null,fin:0,vw:window.innerWidth,vh:window.innerHeight};
+    this.dRef=React.createRef();this.mPanel=React.createRef();
+    this.parts=Array.from({length:24},()=>[Math.random(),Math.random(),Math.random(),Math.random()]);
+    this.bars=Array.from({length:9},()=>Math.random());
+  }
+  componentDidMount(){if(!LAND)fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json').then(r=>r.json()).then(t=>{LAND=landPath(t);this.forceUpdate();}).catch(()=>{});this.onR=()=>this.setState({vw:window.innerWidth,vh:window.innerHeight});window.addEventListener('resize',this.onR);this.onR();requestAnimationFrame(this.onR);this.rt=setTimeout(this.onR,300);}
+  componentDidUpdate(pp,ps){const s=this.state;if(s.step===1&&(s.vehicle!==ps.vehicle||s.rental!==ps.rental||s.mode!==ps.mode)){const el=this.mPanel.current;if(el)setTimeout(()=>el.scrollTo({top:el.scrollHeight,behavior:'smooth'}),60);}}
+  componentWillUnmount(){window.removeEventListener('resize',this.onR);cancelAnimationFrame(this.raf);clearTimeout(this.bt);}
+  run(ms,key,done){cancelAnimationFrame(this.raf);const t0=performance.now();const tick=n=>{const p=Math.min(1,(n-t0)/ms);this.setState({[key]:p});if(p<1)this.raf=requestAnimationFrame(tick);else if(done)done();};this.raf=requestAnimationFrame(tick);}
+  go(n){
+    const s=this.state;const up={step:n,focus:null};
+    if(n===1){Object.assign(up,{prog:0,loadDone:false,mode:null,modeConf:false,modeAuto:false,vehicle:null,rental:null});clearTimeout(this.mt);this.setState(up);this.run((this.props.loadingSeconds??3.6)*1000,'prog',()=>{const M=this.modes();const one=M.av.length===1;this.setState({loadDone:true,mode:M.best.id,modeAuto:one});});return;}
+    cancelAnimationFrame(this.raf);
+    if(n===3&&s.start){up.season=seasonOf(new Date(s.start).getMonth());up.seasonAuto=true;}
+    this.setState(up);
+    if(n===7){this.setState({fin:0});setTimeout(()=>this.run(2600,'fin'),500);}
+  }
+  modes(){const{origin:o,dest:d}=this.state;if(!o||!d)return null;const k=km(o,d);
+    const ld=c=>c.land||c.r;const ground=ld(o)===ld(d);const isl=o.isl||d.isl;
+    const L=[
+      {id:'avion',why:'La opción más rápida para esta distancia',k:'Avión',en:'avión',t:k>250||isl?k/780+0.75:null,eff:k/780+3},
+      {id:'tren',why:'Más rápido de centro a centro',k:'Tren',en:'tren',t:ground&&!isl&&k<900?k/210:null,eff:k/210+0.6},
+      {id:'bus',why:'La opción más económica',k:'Autobús',en:'autobús',t:ground&&!isl&&k<1200?k/72:null,eff:k/72+0.4},
+      {id:'ferry',why:'Conexión directa entre islas',k:'Ferry',en:'ferry',t:o.r==='can'&&d.r==='can'?k/45+0.5:null,eff:k/45+1},
+      {id:'libre',why:'Sin horarios y a tu ritmo',k:'En tu coche',en:'tu coche',t:ground&&!isl&&k<3000?k/88:null,eff:k/88+0.2}];
+    const av=L.filter(m=>m.t!=null);const best=av.reduce((a,b)=>b.eff<a.eff?b:a,av[0]);
+    return {km:k,list:L,best,av};}
+  mapView(W,H){const{origin:o,dest:d}=this.state;let cx,cy,s;
+    if(o&&d){const a=P(o.la,o.lo),b=P(d.la,d.lo);const dx=Math.abs(a[0]-b[0])||1,dy=Math.abs(a[1]-b[1])||1;const len=Math.hypot(dx,dy);
+      s=Math.max(0.4,Math.min(W*0.6/dx,H*0.2/dy,10));cx=(a[0]+b[0])/2;cy=(a[1]+b[1])/2-len*0.1;}
+    else if(o||d){const c=o||d;[cx,cy]=P(c.la,c.lo);s=3.2;}
+    else{[cx,cy]=P(38,-8);s=1.3;}
+    return {s,tx:W/2-cx*s,ty:H*0.42-cy*s};}
+  arc(t){const{origin:o,dest:d}=this.state;if(!o||!d)return null;const a=P(o.la,o.lo),b=P(d.la,d.lo);
+    const vx=b[0]-a[0],vy=b[1]-a[1],len=Math.hypot(vx,vy)||1;let nx=-vy/len,ny=vx/len;if(ny>0){nx=-nx;ny=-ny;}
+    const c=[(a[0]+b[0])/2+nx*len*0.3,(a[1]+b[1])/2+ny*len*0.3];
+    const q=[a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t];const u=1-t;const bt=[u*u*a[0]+2*u*t*c[0]+t*t*b[0],u*u*a[1]+2*u*t*c[1]+t*t*b[1]];
+    return {full:`M${a[0]} ${a[1]} Q${c[0]} ${c[1]} ${b[0]} ${b[1]}`,part:t>0?`M${a[0]} ${a[1]} Q${q[0]} ${q[1]} ${bt[0]} ${bt[1]}`:'',pt:bt,a,b};}
+  pick(c){const f=this.state.focus;if(f==='o'){this.setState({origin:c,query:'',loadDone:false});if(!this.state.dest)setTimeout(()=>this.dRef.current&&this.dRef.current.focus(),30);}
+    else{this.setState({dest:c,query:'',focus:null,loadDone:false});this.dRef.current&&this.dRef.current.blur();}}
+  figs(g,active){const cols=['#F3EEE4',AMBER,'oklch(0.78 0.08 230)','oklch(0.76 0.12 25)'];
+    return e('div',{style:{display:'flex',alignItems:'flex-end',gap:active&&g.k==='pareja'?0:g.gap+4,opacity:active?1:.55,transition:'opacity .4s, gap .6s'}},g.f.map((h,i)=>e('div',{key:i,style:{display:'flex',flexDirection:'column',alignItems:'center',gap:h*0.06,animation:active?`bob ${1.1+i*0.17}s ease-in-out ${i*0.13}s infinite`:'none'}},[
+      e('div',{key:'h',style:{width:h*0.34,height:h*0.34,borderRadius:'50%',background:cols[i%4]}}),
+      e('div',{key:'b',style:{width:h*0.5,height:h*0.58,borderRadius:`${h*0.25}px ${h*0.25}px ${h*0.07}px ${h*0.07}px`,background:cols[i%4],opacity:.9}})])));}
+  fxLayer(k,vis){const ps=this.parts;let kids=[];
+    if(k==='invierno')kids=ps.map((r,i)=>e('div',{key:i,style:{position:'absolute',left:`${r[0]*100}%`,top:0,animation:`fall ${11+r[1]*9}s linear ${-r[2]*20}s infinite`}},e('div',{style:{width:2+r[3]*4,height:2+r[3]*4,borderRadius:'50%',background:'#fff',opacity:.45+r[3]*.45,animation:`sway ${3+r[1]*3}s ease-in-out infinite`}})));
+    if(k==='primavera')kids=ps.slice(0,16).map((r,i)=>e('div',{key:i,style:{position:'absolute',left:`${r[0]*100}%`,top:0,animation:`fall ${13+r[1]*8}s linear ${-r[2]*20}s infinite`}},e('div',{style:{width:7+r[3]*4,height:10+r[3]*4,borderRadius:'60% 40% 60% 40%',background:i%3?'oklch(0.88 0.06 10)':'oklch(0.93 0.04 90)',opacity:.75,animation:`sway ${4+r[1]*3}s ease-in-out infinite`}})));
+    if(k==='otono')kids=ps.slice(0,18).map((r,i)=>e('div',{key:i,style:{position:'absolute',left:`${r[0]*100}%`,top:0,animation:`fall ${9+r[1]*7}s linear ${-r[2]*16}s infinite`}},e('div',{style:{width:12+r[3]*6,height:8+r[3]*4,borderRadius:'0 100% 0 100%',background:['oklch(0.7 0.15 50)','oklch(0.6 0.14 35)','oklch(0.78 0.13 80)'][i%3],opacity:.85,animation:`sway ${2.5+r[1]*2.5}s ease-in-out infinite`}})));
+    if(k==='verano'){kids=ps.slice(0,18).map((r,i)=>e('div',{key:i,style:{position:'absolute',left:`${r[0]*100}%`,top:0,width:2+r[3]*3,height:2+r[3]*3,borderRadius:'50%',background:'oklch(0.95 0.08 90)',animation:`rise ${8+r[1]*8}s linear ${-r[2]*14}s infinite`}}));
+      kids.push(e('div',{key:'sun',style:{position:'absolute',right:-90,top:70,width:340,height:340,borderRadius:'50%',background:'radial-gradient(circle,oklch(0.92 0.12 85 / .6),transparent 65%)',animation:'breathe 7s ease-in-out infinite'}}));}
+    return e('div',{key:k,style:{position:'absolute',inset:0,overflow:'hidden',opacity:vis,transition:'opacity 1.2s'}},kids);}
+  paceFx(k,active){if(k==='relajado')return e('div',{style:{position:'absolute',right:-60,top:-60,width:230,height:230,borderRadius:'50%',background:'radial-gradient(circle,oklch(0.62 0.08 190 / .55),transparent 70%)',animation:'breathe 6s ease-in-out infinite',pointerEvents:'none'}});
+    return e('div',{style:{position:'absolute',right:20,top:58,display:'flex',alignItems:'flex-end',gap:4,height:22,opacity:.28,pointerEvents:'none'}},this.bars.map((r,i)=>e('div',{key:i,style:{width:3,height:8+r*14,background:'#17120a',borderRadius:2,transformOrigin:'bottom',animation:`pulseBar ${0.45+r*0.4}s ease-in-out ${i*0.07}s infinite alternate`}})));}
+  renderVals(){
+    const s=this.state,{step}=s;
+    const vw=s.vw||390,vhh=s.vh||844;
+    const desk=vw>=520,W=desk?390:vw,H=desk?844:vhh;
+    const side=desk&&vw>=980&&(this.props.sidePanel??true);
+    const zoom=desk?Math.max(.4,Math.min(1,(vhh-40)/844)):1;
+    const cine=(this.props.motion??'Cinematográfico')==='Cinematográfico';
+    const sc=i=>{const d=i-step;return{o:d===0?1:0,t:d===0?'none':d<0?(cine?'translateY(-28px) scale(1.04)':'translateY(-10px)'):(cine?'translateY(40px) scale(.97)':'translateY(12px)'),f:d===0||!cine?'none':'blur(10px)',pe:d===0?'auto':'none'};};
+    const cta=(ok,i)=>({o:ok?1:.3,pe:ok&&(i===undefined||i===step)?'auto':'none'});
+    const T=THEMES[this.props.fondo]||THEMES['Noche'];
+    const mv=this.mapView(W,H);
+    const at=step===0?0:step===1?s.prog:1;const A=this.arc(at);
+    const M=this.modes();const best=M&&M.best;
+    const o=s.origin,d=s.dest;
+    const ends=[o,d].filter(Boolean).map((c,i)=>{const[x,y]=P(c.la,c.lo);const isD=c===d;return{x,y,r:3.6/mv.s,halo:(isD?11:8)/mv.s,fill:isD?AMBER:T.bg,ty:y-12/mv.s,fs:10/mv.s,code:c.c};});
+    const lights=[...LIGHTS.map(([la,lo])=>{const[x,y]=P(la,lo);return{x,y,r:1.1/mv.s,f:T.dot};}),...CITIES.filter(c=>c!==o&&c!==d).map(c=>{const[x,y]=P(c.la,c.lo);return{x,y,r:1.8/mv.s,f:T.dot2};})];
+    const veh=step===1&&A?{x:A.pt[0],y:A.pt[1],r:3.2/mv.s,halo:10/mv.s}:null;
+    const mapO=step<=1?1:step===2?.5:step===7?.55:.18;
+    const flexS=s.sheet&&s.flexMonth!=null?seasonOf(s.flexMonth):(step===2&&s.start?seasonOf(new Date(s.start).getMonth()):null);const curS=flexS||s.season;
+    const ambV=k=>flexS===k?1:(!flexS&&s.season===k&&step>=3?T.amb:0);
+    const pk=1.5/mv.s;const planesEl=T.map?e('g',null,[0,3,6,9].map((ri,i)=>e('g',{key:ri},e('path',{d:'M5 0L-3.5-3.6-1.8 0-3.5 3.6Z',transform:`scale(${pk})`,style:{fill:T.acc}}),e('animateMotion',{dur:`${[16,11,19,9][i]}s`,begin:`${-i*3}s`,repeatCount:'indefinite',rotate:'auto',path:ROUTES[ri]})))):null;
+    const dk=THEMES['Noche'];const s3=T.k==='Día'&&!s.season?T:dk;
+    // suggestions
+    const other=s.focus==='o'?d:o;const q=norm(s.query||'');
+    const sugList=CITIES.filter(c=>c!==other&&(!q||norm(c.n).includes(q)||norm(c.c).includes(q))).slice(0,5);
+    // calendar
+    const today=new Date();today.setHours(0,0,0,0);
+    const first=new Date(s.cy,s.cm,1),off=(first.getDay()+6)%7,dim=new Date(s.cy,s.cm+1,0).getDate();
+    const cells=[];for(let i=0;i<off;i++)cells.push({label:'',vis:'hidden',dis:true,bg:'transparent',fg:'#F3EEE4',op:1,rad:'12px',fw:'400',click:null});
+    for(let i=1;i<=dim;i++){const ts=new Date(s.cy,s.cm,i).getTime();const past=ts<today.getTime();const isS=ts===s.start,isE=ts===s.end,inR=s.start&&s.end&&ts>s.start&&ts<s.end;
+      cells.push({label:String(i),vis:'visible',dis:past,op:past?.28:1,bg:isS||isE?AMBER:inR?'rgba(242,181,68,.16)':'transparent',fg:isS||isE?'#17120a':'#F3EEE4',fw:isS||isE?'600':'400',rad:inR?'6px':'12px',click:()=>this.setState(st=>{if(!st.start||st.end||ts<st.start)return{start:ts,end:null,noDates:false,season:st.seasonAuto?null:st.season};if(ts===st.start)return{};return{end:ts};})});}
+    const fd=t=>{const x=new Date(t);return `${x.getDate()} ${MS[x.getMonth()]}`;};
+    const nights=s.start&&s.end?Math.round((s.end-s.start)/864e5):0;
+    const dateSummary=s.start&&s.end?`${fd(s.start)} → ${fd(s.end)}`:s.start?`${fd(s.start)} → elige la vuelta`:'Toca el día de salida';
+    const atMin=s.cy===today.getFullYear()&&s.cm===today.getMonth();
+    const du=n=>`${n} ${n===1?'día':'días'}`;
+    const datesV=s.start&&s.end?`${fd(s.start)} – ${fd(s.end)}`:s.noDates?`${du(s.flexDays)} · ${s.flexMonth!=null?MONTHS[s.flexMonth]:'flexibles'}`:null;
+    const monList=d&&MON[d.c]?MON[d.c]:[];const monSel=s.mons.filter(n=>monList.some(m=>m[0]===n));const nMon=monSel.length;
+    const monLabel=nMon?`${nMon} ${nMon===1?'monumento':'monumentos'}`:'';
+    const chosen=s.loadDone&&M?M.list.find(x=>x.id===s.mode):null;
+    const q2type=!chosen?null:chosen.id==='libre'?'veh':d&&d.car?'rent':null;
+    const q2Ans=q2type==='veh'?s.vehicle:q2type==='rent'?s.rental:null;
+    const modeName=chosen?(chosen.id==='libre'&&s.vehicle?(s.vehicle==='camper'?'Camper':'Coche'):chosen.k):'';
+    const moveV=q2type==='veh'?(s.vehicle==='camper'?'Camper':'Coche'):s.rental?'Coche':'Sin vehículo';
+    const mCards=[];if(chosen&&s.modeConf)mCards.push({label:'Para llegar',v:chosen.k,can:!s.modeAuto,change:()=>this.setState({modeConf:false})});
+    if(q2type&&q2Ans!=null)mCards.push({label:'Para moverte',v:moveV,can:true,change:()=>this.setState(q2type==='veh'?{vehicle:null}:{rental:null})});
+    const tm=s.start?new Date(s.start).getMonth():s.noDates?s.flexMonth:null;const xmas=[10,11,0].includes(tm);
+    const expList=EXPS.filter(x=>x.k!=='xmas'||xmas);const exSel=s.exps.filter(k=>expList.some(x=>x.k===k));const full=exSel.length>=3;
+    const nExp=exSel.length;const expLabel=nExp?`${nExp} ${nExp===1?'experiencia':'experiencias'}`:'';
+    const SE=SEASONS.find(x=>x.k===s.season),GR=GROUPS.find(x=>x.k===s.group),PA=PACES.find(x=>x.k===s.pace);const openPace=s.pace||'completo';
+    const chips=[];if(o&&d)chips.push(`${o.c} → ${d.c}`);if(chosen)chips.push(modeName);if(datesV)chips.push(datesV);if(SE)chips.push(SE.n);if(GR)chips.push(GR.n);if(PA)chips.push(PA.n);if(nExp)chips.push(expLabel);if(nMon)chips.push(monLabel);
+    const days=nights?nights+1:s.noDates?s.flexDays:5;
+    const vals=[o&&d?`${o.c} → ${d.c}`:'',chosen?modeName:'',datesV||'',GR?GR.n:'',PA?PA.n:'',expLabel,monLabel];
+    const names=['Origen y destino','Transporte','Fechas','Compañía','Ritmo','Experiencias','Monumentos'];
+    return {
+      tBg:T.bg,tBgRgb:T.bgrgb,tInk:T.ink,tInk2:T.ink2,tAcc:T.acc,tTrack:T.track,tLand:T.land,tLandS:T.landS,tRoute:T.route,tPage1:T.page1,tPage2:T.page2,
+      s3Ink:s3.ink,s3Ink2:s3.ink2,s3Acc:s3.acc,landD:T.map?LAND:'',routes:T.map?ROUTES:[],planesEl,
+      rootPad:desk?'20px':'0',desk,side,zoom,pw:W+'px',ph:H+'px',pr:desk?'52px':'0',
+      psh:desk?'0 0 0 10px #151922,0 0 0 11px #2a2f3a,0 40px 120px rgba(0,0,0,.6)':'none',
+      topPad:desk?'12px':'14px',pt:desk?'150px':'112px',
+      vb:`0 0 ${W} ${H}`,mapT:`translate(${mv.tx}px,${mv.ty}px) scale(${mv.s})`,mapO,grat:T.grat?GRAT:[],lights,ends,
+      arcFull:A&&step===0?A.full:'',arcPart:A?A.part:'',veh,
+      ambients:SEASONS.map(x=>({g:x.g,o:ambV(x.k)})),
+      fx:e('div',{style:{position:'absolute',inset:0}},SEASONS.map(x=>this.fxLayer(x.k,curS===x.k?1:0))),
+      fxO:flexS?1:step>=3?.3:0,fxZ:flexS&&s.sheet?9:'auto',
+      sheetBd:s.flexMonth!=null?'rgba(5,7,12,.15)':'rgba(5,7,12,.62)',sheetBg:s.flexMonth!=null?'rgba(14,18,28,.8)':'#11151f',
+      back:()=>this.go(step===2?0:step-1),backO:step===0||(step===1&&!s.loadDone)?0:1,backPe:step===0?'none':'auto',
+      segs:Array.from({length:7},(_,i)=>({w:step>i?'100%':step===i?(i===1?`${Math.round(s.prog*100)}%`:'30%'):'0%'})),
+      stepLabel:step<7?`${step+1}/7`:'LISTO',chips,noChips:!chips.length,
+      stepsList:names.map((n,i)=>({num:String(i+1).padStart(2,'0'),n,v:vals[i],c:i===step?T.ink:i<step?`rgba(${T.inkrgb},.8)`:`rgba(${T.inkrgb},.45)`,numC:i===step?T.acc:`rgba(${T.inkrgb},.45)`})),
+      sc0:sc(0),sc1:sc(1),sc2:sc(2),sc3:sc(3),sc4:sc(4),sc5:sc(5),sc6:sc(6),sc7:sc(7),
+      showSug:!!s.focus&&step===0,sugTitle:q?'Resultados':s.focus==='o'?'¿Desde dónde sales?':'Destinos populares',sugEmpty:!sugList.length,
+      sug:sugList.map(c=>({...c,pick:ev=>{ev.preventDefault();this.pick(c);}})),
+      oVal:s.focus==='o'?s.query:(o?o.n:''),dVal:s.focus==='d'?s.query:(d?d.n:''),dRef:this.dRef,
+      focusO:()=>{clearTimeout(this.bt);this.setState({focus:'o',query:''});},
+      focusD:()=>{clearTimeout(this.bt);this.setState({focus:'d',query:''});},
+      blur:()=>{this.bt=setTimeout(()=>this.setState({focus:null,query:''}),140);},
+      onQuery:ev=>this.setState({query:ev.target.value}),
+      swap:()=>this.setState(st=>({origin:st.dest,dest:st.origin,loadDone:false})),
+      cta0:cta(o&&d,0),toLoad:()=>this.go(1),
+      oName:o?o.n:'',dName:d?d.n:'tu destino',oCode:o?o.c:'',dCode:d?d.c:'',
+      loadEyebrow:s.loadDone?'02 — Ruta encontrada':'02 — Calculando ruta…',
+      kmLabel:M?`${Math.round(M.km).toLocaleString('es-ES')} km`:'',
+      modeRows:M?M.list.map((m,i)=>{const loc=Math.max(0,Math.min(1,(s.prog-i*0.16)/0.36));const done=loc>=1;const win=s.loadDone&&m===best;
+        const av=m.t!=null,sel=s.loadDone&&m.id===s.mode;
+        return{k:m.k,rec:win,why:m.why,pad:q2type?'6px':'9px',w:av?`${Math.round(loc*Math.max(.18,Math.min(1,best.eff/m.eff))*100)}%`:'0%',bar:sel?AMBER:'rgba(243,238,228,.55)',col:sel?AMBER:'#F3EEE4',op:done&&!av?.38:1,st:!done?'···':av?fmtA(m.t):'Sin ruta',dis:!s.loadDone||!av,cur:s.loadDone&&av?'pointer':'default',bg:sel?'rgba(242,181,68,.08)':'transparent',
+          pick:()=>{if(!s.loadDone||!av)return;this.setState(st=>({mode:m.id,vehicle:st.mode===m.id?st.vehicle:null}));}};}):[],
+      showList:true,notDone:!s.loadDone,mPanel:this.mPanel,hasOnly:!!(chosen&&s.modeAuto),onlyLine:chosen?`Solo se puede llegar en ${chosen.en}: no hay conexión por tierra ni por mar.`:'',mCards:[],
+      q2Open:!!q2type,
+      q2Title:q2type==='veh'?'¿Qué tipo de vehículo tienes?':`El transporte público en ${d?d.n:''} es limitado — ¿te gustaría alquilar un coche para moverte con comodidad?`,
+      q2Opts:(q2type==='veh'?[['Coche','vehicle','coche'],['Camper','vehicle','camper']]:[['Sí','rental',true],['No','rental',false]]).map(([n,key,v])=>{const a=s[key]===v;return{n,bg:a?'rgba(242,181,68,.08)':'transparent',col:a?AMBER:'#F3EEE4',rb:a?AMBER:'rgba(243,238,228,.4)',dot:a?AMBER:'transparent',pick:()=>this.setState({[key]:v})};}),
+      camper:q2type==='veh'&&s.vehicle==='camper',camperNote:`En ${d?d.n:''} tu camper se quedará aparcada en una zona periférica con buena conexión — te recomendamos moverte por el centro a pie o en transporte público.`,
+      ctaM:cta(chosen&&(!q2type||q2Ans!=null),1),ctaMode:chosen?(chosen.id==='libre'?(s.vehicle==='camper'?'camper':s.vehicle==='coche'?'coche':'tu coche'):chosen.en):'',
+      loadDone:s.loadDone,bestK:modeName,toDates:()=>this.go(2),
+      monthLabel:`${MONTHS[s.cm]} ${s.cy}`,cells,dateSummary,nightsLabel:nights?`${nights} ${nights===1?'noche':'noches'}`:'',sumC:s.start?'#F3EEE4':'rgba(243,238,228,.6)',
+      prevO:atMin?.3:1,prevM:()=>{if(atMin)return;this.setState(st=>st.cm===0?{cm:11,cy:st.cy-1}:{cm:st.cm-1});},
+      nextM:()=>this.setState(st=>st.cm===11?{cm:0,cy:st.cy+1}:{cm:st.cm+1}),
+      noDates:()=>this.setState({sheet:true}),
+      sheetPe:s.sheet?'auto':'none',sheetO:s.sheet?1:0,sheetT:s.sheet?'none':'translateY(105%)',
+      closeSheet:()=>this.setState({sheet:false}),
+      confirmDays:()=>{if(s.flexMonth==null)return;this.setState({sheet:false,noDates:true,start:null,end:null,season:seasonOf(s.flexMonth),seasonAuto:true});setTimeout(()=>this.go(3),250);},
+      ctaFlex:cta(s.sheet&&s.flexMonth!=null),
+      flexMonthLabel:s.flexMonth!=null?`${MONTHS[s.flexMonth]} · ${SEASONS.find(x=>x.k===seasonOf(s.flexMonth)).n}`:'',
+      monthRows:[['invierno',[11,0,1]],['primavera',[2,3,4]],['verano',[5,6,7]],['otono',[8,9,10]]].map(([k,ms])=>{const S=SEASONS.find(x=>x.k===k);const on=ms.includes(s.flexMonth);
+        return{n:S.n,sw:S.sw,lc:on?'#F3EEE4':'rgba(243,238,228,.6)',ms:ms.map(m=>{const a=s.flexMonth===m;const nm=MS[m];return{n:nm[0].toUpperCase()+nm.slice(1),bg:a?AMBER:'rgba(243,238,228,.04)',fg:a?'#17120a':'#F3EEE4',fw:a?'600':'400',bd:a?AMBER:'rgba(243,238,228,.08)',pick:()=>this.setState({flexMonth:m})};})};}),
+      flexDays:String(s.flexDays),flexUnit:s.flexDays===1?'día':'días',
+      dayCells:Array.from({length:31},(_,i)=>{const n=i+1,sel=n===s.flexDays,under=n<s.flexDays;return{n:String(n),bg:sel?AMBER:under?'rgba(242,181,68,.16)':'rgba(243,238,228,.04)',fg:sel?'#17120a':'#F3EEE4',fw:sel?'600':'400',rad:sel?'50%':'10px',pick:()=>this.setState({flexDays:n})};}),
+      cta2:cta(s.start&&s.end,2),toSeason:()=>this.go(3),
+      seasonAuto:s.seasonAuto&&!!SE,seasonTitle:SE?SE.n:'¿Qué estación?',seasonFs:SE?'78px':'48px',
+      seasonDesc:SE?SE.d:'Cada estación cambia la ciudad. Elige cómo quieres vivirla.',
+      seasonTiles:SEASONS.map(x=>({n:x.n,m:x.m,sw:x.sw,bd:s.season===x.k?'rgba(243,238,228,.85)':'rgba(243,238,228,.12)',bg:s.season===x.k?'rgba(243,238,228,.16)':'rgba(10,13,20,.42)',pick:()=>this.setState({season:x.k,seasonAuto:false})})),
+      cta3:cta(!!SE,99),toGroup:()=>this.go(4),
+      groupCards:GROUPS.map(g=>{const a=s.group===g.k;return{n:g.n,d:g.d,fig:this.figs(g,a),bd:a?AMBER:'rgba(243,238,228,.1)',bg:a?'rgba(242,181,68,.12)':'rgba(10,13,20,.5)',pick:()=>this.setState({group:g.k})};}),
+      cta4:cta(!!GR,3),toPace:()=>this.go(4),
+      paceCards:PACES.map(p=>{const a=openPace===p.k,other=!a;const pc=h=>`${(h-8)/16*100}%`;const blocks=p.day.map(([h,du_],i)=>({l:pc(h),w:`calc(${du_/16*100}% - 3px)`,o:i%2?.75:.95,t:a?'scaleY(1)':'scaleY(.55)',d:`${i*0.06}s`}));const free=(p.s1-p.s0)-p.day.reduce((x,y)=>x+y[1],0);
+        return{n:p.n,rec:!!p.rec,tag:p.tag,d:p.d,bg:p.bg,fg:p.fg,blocks,offW:pc(p.s0),startL:pc(p.s0),endL:pc(p.s1),range:p.k==='relajado'?`El día empieza a las ${p.s0}:00`:`De ${String(p.s0).padStart(2,'0')}:00 a ${p.s1}:00`,bh:a?'46px':'26px',free:free<1?'Día completo':`${Math.round(free)} h libres`,fx:this.paceFx(p.k,a),flex:a?'2.3':'1',lo:other?0:1,ring:a?`0 0 0 2px ${T.bg},0 0 0 4px ${p.k==='completo'?AMBER:'#F3EEE4'}`:'none',pick:()=>this.setState({pace:p.k})};}),
+      cta5:cta(true,4),toExp:()=>{if(!s.pace)this.setState({pace:openPace});this.go(5);},
+      expCount:`${nExp}/3`,
+      expRows:expList.map((x,i)=>{const a=exSel.includes(x.k);return{n:x.n,d:x.k==='imp'&&d?`Lo que no te puedes perder en ${d.n}`:x.d,num:String(i+1).padStart(2,'0'),fill:a?'scaleX(1)':'scaleX(0)',fg:a?'#17120a':'#F3EEE4',bd:a?AMBER:'rgba(243,238,228,.1)',mark:a?'✓':'',dot:a?'#17120a':'transparent',op:!a&&full?.35:1,pe:step!==5||(!a&&full)?'none':'auto',pick:()=>this.setState(st=>{const cur=st.exps.filter(k=>expList.some(y=>y.k===k));return{exps:cur.includes(x.k)?cur.filter(k=>k!==x.k):cur.length<3?[...cur,x.k]:cur};})};}),
+      cta6:cta(nExp>0,5),toMon:()=>this.go(6),
+      monTiles:monList.map(([n,t])=>{const idx=monSel.indexOf(n),a=idx>=0;return{n,tag:TAGS[t],icon:ICONS[t],order:a?String(idx+1):'',no:a?1:0,nb:'#F3EEE4',bd:a?AMBER:'rgba(243,238,228,.1)',bg:a?'rgba(242,181,68,.14)':'rgba(10,13,20,.5)',ib:a?AMBER:'rgba(243,238,228,.08)',ic:a?'#17120a':'#F3EEE4',sc:a?'scale(1)':'scale(.985)',
+        pick:()=>this.setState(st=>({mons:st.mons.includes(n)?st.mons.filter(k=>k!==n):[...st.mons,n]}))};}),
+      monAllLabel:nMon===monList.length&&nMon?'Quitar todos':'Añadir todos',
+      monAll:()=>this.setState({mons:nMon===monList.length?[]:monList.map(m=>m[0])}),
+      tray:monSel.map((n,i)=>({icon:ICONS[(monList.find(m=>m[0]===n)||[])[1]],ml:i?'-10px':'0'})),
+      trayLabel:nMon?`${monLabel} en tu pool`:'Toca para añadir a tu pool',
+      cta7:cta(nMon>0,6),toFinal:()=>this.go(7),
+      finTitle:s.fin>=1?'Tu viaje está listo.':'Trazando tu ruta…',finW:`${Math.round(s.fin*100)}%`,
+      finStatus:s.fin>=1?`${days} días · ${days*(s.pace==='completo'?5:2)} planes a tu medida`:s.fin>.66?'Ajustando al ritmo elegido…':s.fin>.33?`Buscando planes para ${GR?GR.n.toLowerCase():'ti'}…`:'Cruzando fechas y estación…',
+      summary:[{k:'Transporte',v:chosen?modeName+(q2type==='rent'&&s.rental?' + coche':''):'—'},{k:'Fechas',v:datesV||'—'},{k:'Estación',v:SE?SE.n:'—'},{k:'Compañía',v:GR?GR.n:'—'},{k:'Ritmo',v:PA?PA.n:'—'},{k:'Duración',v:du(days)},{k:'Monumentos',v:monLabel||'—'},{k:'Experiencias',v:nExp?EXPS.filter(x=>exSel.includes(x.k)).map(x=>x.n).join(' · '):'—'}],
+      restart:()=>{cancelAnimationFrame(this.raf);this.setState({step:0,origin:null,dest:null,start:null,end:null,noDates:false,season:null,seasonAuto:false,group:null,pace:null,exps:[],mons:[],sheet:false,flexDays:7,flexMonth:null,mode:null,modeConf:false,modeAuto:false,vehicle:null,rental:null,loadDone:false,prog:0,fin:0});}
+    };
+  }
+}
+</script>
+</body>
+</html>

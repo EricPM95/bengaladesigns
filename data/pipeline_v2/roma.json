@@ -6977,7 +6977,24 @@
       "gastronomia",
       "arte_cultura",
       "paisajes_miradores"
-    ]
+    ],
+    "pace_stats": {
+      "_nota": "Paradas reales por día de cada ritmo (sin lo de paso, nocturnas ni pausas), sacadas del motor con scripts/destino/paceStats.mjs. Rango = cuartiles 25-75 %. Lo enseña la pantalla de ritmo.",
+      "completo": {
+        "min": 7,
+        "max": 9,
+        "media": 8,
+        "dias_medidos": 96,
+        "inicio": "08:00"
+      },
+      "tranquilo": {
+        "min": 5,
+        "max": 6,
+        "media": 5.9,
+        "dias_medidos": 96,
+        "inicio": "10:00"
+      }
+    }
   },
   "museos_de_pago": {
     "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",

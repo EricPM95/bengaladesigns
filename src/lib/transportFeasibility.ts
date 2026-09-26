@@ -10,13 +10,16 @@ import type { Place, TransportOption } from './types'
  * terrestre completo — ver el prompt en el backend).
  */
 export interface TransportFeasibility {
-  flight: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; via_label: string }
+  /** `flight_type`: "directo" / "con escala" cuando lo sabemos (tabla curada de orígenes). */
+  flight: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; via_label: string; flight_type?: string | null }
   ferry: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; route_label: string }
   train: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; station_label: string }
   bus: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; station_label: string }
   roadtrip: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; highlight: string }
   /** Característica del destino, no del origen: si sus carreteras admiten circular con camper/autocaravana. */
   camper_access: { feasible: boolean; reason: string }
+  /** De dónde sale: nuestra tabla curada, la caché por par o una consulta nueva. */
+  source?: 'tabla' | 'cache' | 'claude'
 }
 
 /** Copy neutra — no presupone nada sobre cómo se mueve el viajero tras aterrizar. */
