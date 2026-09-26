@@ -3791,6 +3791,12 @@ app.post('/api/destination-seasonal', (req, res) => {
   res.json({ destination: data?.destination ?? destination ?? null, experiences })
 })
 
+/** La experiencia nocturna del JSON de un lugar ("Coliseo" → "Coliseo (noche)"), o null. */
+function nightExperienceOf(data, placeName) {
+  const night = (data?.night_experiences ?? []).find((entry) => entry.name === `${placeName} (noche)`)
+  return night ? { name: night.name, duration_min: night.duration ?? null, description: night.description ?? null } : null
+}
+
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
   if (!destination) {
@@ -3839,6 +3845,10 @@ app.post('/api/destination-places', (req, res) => {
       available: place.available ?? null,
       reservation: place.reservation ?? null,
       ticket_info: Array.isArray(place.ticket_info) ? place.ticket_info : null,
+      // Se puede ver de noche: añadido después de cenar entra como experiencia nocturna (con la
+      // nocturna del JSON si la hay: "Coliseo (noche)", su duración y su texto).
+      night_experience: Boolean(place.night_experience) || nightExperienceOf(data, place.name) !== null,
+      night: nightExperienceOf(data, place.name),
     }))
 
   // Los restaurantes viven en su propio array (`restaurants`), FUERA de `places`, porque no son

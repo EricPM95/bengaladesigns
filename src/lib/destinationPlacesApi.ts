@@ -44,6 +44,10 @@ export interface DestinationPlace {
   hours_card?: string | null
   /** "obligatoria" | "recomendada" | "no". */
   reservation?: string | null
+  /** Se puede ver de noche: añadido después de cenar entra como experiencia nocturna. */
+  night_experience?: boolean
+  /** La nocturna del JSON del destino ("Coliseo (noche)"), si la hay. */
+  night?: { name: string; duration_min: number | null; description: string | null } | null
   /** Precio y condiciones de entrada (pestaña Tickets). */
   ticket_info?: string[] | null
   /** Nombres alternativos con los que alguien buscaría este lugar (nombre antiguo, original en

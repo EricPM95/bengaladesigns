@@ -902,7 +902,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           // Igual que addStop pero en una posición concreta: hora para la que entra, calculada desde la
           // parada que le queda justo delante; las de detrás solo se mueven si se pisan (hacia delante).
           const stops = [...day.stops]
-          stops.splice(index, 0, { ...stop, time: timeForStopAfter(day.stops[index - 1], stop.time) })
+          // Una experiencia nocturna trae su hora (después de cenar): no se encadena a la última parada.
+          stops.splice(index, 0, stop.isNightExperience ? stop : { ...stop, time: timeForStopAfter(day.stops[index - 1], stop.time) })
           return { ...day, stops: pushOverlapsForward(stops) }
         }),
       }

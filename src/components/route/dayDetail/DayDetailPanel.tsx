@@ -12,7 +12,7 @@ import {
   buildSingleDayLine,
   buildSingleDayMarkers,
 } from '../../../lib/routeMapMarkers'
-import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour } from '../../../lib/time'
+import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../../../lib/time'
 import { parseOpeningMinutes } from '../../../lib/stopHoursTag'
 import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
@@ -100,6 +100,12 @@ const LONG_WALK_MINUTES = 20
 const DAY_START_MINUTES = 9 * 60
 /** Minutos a pie entre dos paradas cuando el conector no trae un `walkMinutes` real todavía (ni mock ni refinado por Mapbox) — mismo valor de reserva que `retimeStops` en useRouteStore.ts, para que el horario calculado aquí no se desvíe del que ya usa Modo Hoy. */
 const DEFAULT_WALK_MINUTES = 15
+/** Una nocturna añadida a mano empieza esto después de la hora de la cena (20:00 → 21:30, como el motor). */
+const NIGHT_AFTER_DINNER_MINUTES = 90
+/** Entre dos nocturnas seguidas. */
+const NIGHT_GAP_MINUTES = 10
+/** Duración de una nocturna sin la suya en el JSON. */
+const NIGHT_DEFAULT_MINUTES = 30
 
 /** Clave de un conector: el par de paradas que une (la primera, la llegada del día), no su posición. */
 function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
@@ -317,6 +323,8 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  // El "+" que se ha pulsado está después de la cena: lo que se puede ver de noche entra como nocturna.
+  const [insertAfterDinner, setInsertAfterDinner] = useState(false)
   /** Dónde centrar "Añadir parada" cuando se abre desde el bloque de tiempo libre: donde está el viajero. */
   const [addStopFocus, setAddStopFocus] = useState<Coordinates | null>(null)
   /** Precarga del buscador de AddStopScreen cuando se abre desde el botón "Añadir como parada" de una tarjeta de segunda visita recomendada (ver day.recommendedRevisits) — undefined = buscador vacío, comportamiento normal del "+". */
@@ -508,8 +516,9 @@ export function DayDetailPanel({
   const addStopAfter = insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null
   const addStopSubtitle = addStopBefore && addStopAfter ? `Entre ${addStopBefore} y ${addStopAfter}` : addStopBefore ? `Después de ${addStopBefore}` : addStopAfter ? `Antes de ${addStopAfter}` : day.city
 
-  const addPickedStop = (newStop: Stop) => {
+  const addPickedStop = (picked: Stop) => {
     if (day.stops.length === 0) seedDayStops(day.id, realStops)
+    const newStop = insertAfterDinner && insertAt !== null ? asNightExperience(picked, insertAt) : picked
     // La primera parada de una tarde que arranca tras una excursión de medio día empieza a las
     // 16:00, no a la hora de siempre: el viajero está volviendo hasta entonces. A partir de ahí el
     // store encadena las demás desde esta, como en cualquier otro día.
@@ -519,12 +528,38 @@ export function DayDetailPanel({
         : newStop
     if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
     setInsertAt(null)
+    setInsertAfterDinner(false)
     setAddStopInitialQuery(undefined)
     setAddStopFocus(null)
   }
 
+  /**
+   * Bug del 2026-09-26: un lugar que se puede ver de noche (el Coliseo, la Fontana de Trevi) añadido
+   * después de la cena entraba como una parada normal, encadenada a la última de la tarde. Ahora entra
+   * como su experiencia nocturna (la del JSON si la hay), después de cenar o de la nocturna anterior.
+   */
+  const asNightExperience = (stop: Stop, index: number): Stop => {
+    const place = curatedPool.find((candidate) => candidate.name === stop.name)
+    if (!place?.night_experience) return stop
+    const dinner = day.meals.find((meal) => meal.mealTime === 'dinner')
+    const dinnerStart = dinner ? parseTimeToMinutes(dinner.time) : NaN
+    const afterDinner = (Number.isNaN(dinnerStart) ? dinnerWindowFor(day)[0] : dinnerStart) + NIGHT_AFTER_DINNER_MINUTES
+    const previousNight = [...realStops.slice(0, index)].reverse().find((candidate) => candidate.isNightExperience)
+    const previousNightEnd = previousNight ? parseTimeToMinutes(previousNight.time) + previousNight.durationMinutes + NIGHT_GAP_MINUTES : NaN
+    const start = roundUpToQuarterHour(Number.isNaN(previousNightEnd) ? afterDinner : Math.max(afterDinner, previousNightEnd))
+    return {
+      ...stop,
+      name: place.night?.name ?? `${stop.name} (noche)`,
+      durationMinutes: place.night?.duration_min ?? NIGHT_DEFAULT_MINUTES,
+      time: minutesToTime(start),
+      hours: null,
+      isNightExperience: true,
+    }
+  }
+
   const closeAddStop = () => {
     setInsertAt(null)
+    setInsertAfterDinner(false)
     setAddStopInitialQuery(undefined)
     setAddStopFocus(null)
   }
@@ -607,6 +642,7 @@ export function DayDetailPanel({
     fromName: string,
     toName: string,
     addStopIndex: number,
+    afterDinner = false,
   ) => {
     const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? defaultModeFor(connector)
     return (
@@ -622,7 +658,10 @@ export function DayDetailPanel({
           setDayDefaultMode(selected)
           setModeOverrides({})
         }}
-        onAddStop={() => setInsertAt(addStopIndex)}
+        onAddStop={() => {
+          setInsertAt(addStopIndex)
+          setInsertAfterDinner(afterDinner)
+        }}
       />
     )
   }
@@ -1017,7 +1056,7 @@ export function DayDetailPanel({
                       información de desplazamiento (ver renderGap). Única excepción: un paseo que el
                       viajero ya ha quitado no deja ni rastro — ni tarjeta ni su "+ Añadir parada",
                       que si no quedarían dos seguidos. */}
-                  {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index)}
+                  {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex)}
                   {realStops[index]?.isZoneWalk ? (
                     walkDismissed ? null : (
                       <ZoneWalkCard
@@ -1140,7 +1179,7 @@ export function DayDetailPanel({
               que no tiene ninguna parada a la vista. */}
           {muestraParadas &&
             stops.length > 0 &&
-            renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length)}
+            renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)}
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
