@@ -13,6 +13,11 @@
 
 **Pregunta nueva:** L'Arcangelo, ¿abre a mediodía en invierno? Si es así, pasa a `ambos`.
 
+## Ajustes — Parte C, prueba concreta (2026-09-26)
+
+- **2 días, tranquilo, Free Tour, diciembre (el 15) y con fechas 16-17 de diciembre:** día 1, Free Tour 10:00-12:30, comida a las 13:00, Museos Vaticanos 14:45-17:45, Plaza de San Pedro 18:00-18:30 y **Basílica 18:35-19:50**, cena a las 20:30. Para que quepa, la comida se acorta a 60 min (sin el extra de tranquilo) y el día lo dice: "Hoy la comida es más corta para que te dé tiempo a ver la Basílica de San Pedro". No se quita nada.
+- **Miércoles con fechas:** el Vaticano ya no va por la mañana el miércoles si hay otro día (la Basílica no abre hasta las 12:30). Probado con salidas del 14, 15 y 16 de diciembre: el Vaticano cae martes, jueves y jueves, con la Basílica a las 12:05. Si el miércoles es el único día posible (Pascua de 2027: domingo y lunes cerrado), la Basílica va justo después de comer, pegada a la Plaza de San Pedro.
+
 Notas de `docs/PROMPT_MANANAS_Y_TARDES.md`. Reglas en `docs/INVARIANTES_MOTOR.md` (123-130 Parte A, 131-141 Parte B).
 
 ## Parte B — resumen
