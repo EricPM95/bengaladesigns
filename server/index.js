@@ -1551,7 +1551,7 @@ function feasibilityFromTable(entry) {
   })
   const o = entry.opciones ?? {}
   return {
-    flight: { ...leg(o.avion), via_label: '', flight_type: o.avion?.vuelo ?? null },
+    flight: { ...leg(o.avion), via_label: '' },
     ferry: { ...leg(o.ferry), route_label: o.ferry?.apta && o.ferry?.nota ? o.ferry.nota : '' },
     train: { ...leg(o.tren), station_label: '' },
     bus: { ...leg(o.autobus), station_label: '' },

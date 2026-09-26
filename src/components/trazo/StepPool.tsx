@@ -48,7 +48,8 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
     ? curatedPool.map((place) => ({
         key: place.name,
         name: place.name,
-        tag: [place.category, place.duration_min ? `~${place.duration_min} min` : null].filter(Boolean).join(' · '),
+        // Espacios duros: "~90 min" nunca se parte en dos líneas.
+        tag: [place.category, place.duration_min ? `~${place.duration_min}\u00a0min` : null].filter(Boolean).join('\u00a0· '),
       }))
     : suggested.map((place) => ({ key: place.id, name: place.name, tag: place.isMainAttraction ? 'Imprescindible' : '' }))
   const selected = curated ? curatedNames : selectedIds
@@ -183,7 +184,8 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
       </div>
       <div style={{ height: 48, flex: 'none', display: 'flex', alignItems: 'center', gap: 12, padding: '0 6px 0 4px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {selected.map((key, i) => (
+          {/* Como mucho cinco fotos y "+N": con el tope de 10 no se sale por la derecha. */}
+          {selected.slice(0, 5).map((key, i) => (
             <span
               key={key}
               title={nameOf(key)}
@@ -198,8 +200,27 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
               }}
             />
           ))}
+          {selected.length > 5 && (
+            <span
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                marginLeft: -10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: AMBER,
+                color: DARK,
+                font: `600 11px ${MONO}`,
+                border: `2px solid ${AMBER}`,
+              }}
+            >
+              +{selected.length - 5}
+            </span>
+          )}
         </div>
-        <span style={{ font: "400 13px 'Geist'", color: 'rgba(243,238,228,.75)' }}>{trayLabel}</span>
+        <span style={{ font: "400 13px 'Geist'", color: 'rgba(243,238,228,.75)', minWidth: 0 }}>{trayLabel}</span>
       </div>
       <Cta onClick={onNext} enabled={canCreate}>
         {canCreate ? 'Crear mi ruta' : 'Cargando lugares…'}

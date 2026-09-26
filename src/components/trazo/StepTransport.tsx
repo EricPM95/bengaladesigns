@@ -268,7 +268,6 @@ export function StepTransport({ active, origin, destination, destinationName, on
                 </div>
                 <span style={{ font: `500 12px ${MONO}`, textAlign: 'right', color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap' }}>
                   {!done ? '···' : row.apt ? row.time || '—' : 'Sin ruta'}
-                  {done && row.flightType && <span style={{ display: 'block', font: "400 10px 'Geist'", color: 'rgba(243,238,228,.62)', marginTop: 2 }}>{row.flightType}</span>}
                 </span>
               </button>
             )

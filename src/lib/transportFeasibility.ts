@@ -10,8 +10,7 @@ import type { Place, TransportOption } from './types'
  * terrestre completo — ver el prompt en el backend).
  */
 export interface TransportFeasibility {
-  /** `flight_type`: "directo" / "con escala" cuando lo sabemos (tabla curada de orígenes). */
-  flight: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; via_label: string; flight_type?: string | null }
+  flight: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; via_label: string }
   ferry: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; route_label: string }
   train: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; station_label: string }
   bus: { feasible: boolean; recommended: boolean; duration_label: string; price_label: string; station_label: string }

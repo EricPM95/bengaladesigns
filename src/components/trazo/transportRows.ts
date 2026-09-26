@@ -12,8 +12,6 @@ export interface TransportRow {
   recommended: boolean
   /** "≈ 2 h 30", o '' si no hay tiempo. */
   time: string
-  /** "directo" / "con escala" (solo avión, cuando lo tenemos). */
-  flightType: string | null
   /** Horas aproximadas (para la barra), o null. */
   hours: number | null
   option: TransportOption | null
@@ -82,7 +80,7 @@ export function formatTime(label: string): string {
  */
 export function buildTransportRows(feasibility: TransportFeasibility | null, archetype: DestinationArchetype | null, origin: Place | null): TransportRow[] {
   const rows: TransportRow[] = ROWS.map(({ id, key, label, en }) => {
-    const leg = feasibility?.[key] as (TransportFeasibility[typeof key] & { flight_type?: string | null }) | undefined
+    const leg = feasibility?.[key] as TransportFeasibility[typeof key] | undefined
     const apt = Boolean(leg?.feasible) && allowedByArchetype(archetype, id)
     const option = !feasibility || !apt ? null : buildOption(id, feasibility, origin)
     return {
@@ -92,7 +90,6 @@ export function buildTransportRows(feasibility: TransportFeasibility | null, arc
       apt,
       recommended: apt && Boolean(leg?.recommended),
       time: apt ? formatTime(leg?.duration_label ?? '') : '',
-      flightType: id === 'flight' && apt ? leg?.flight_type ?? null : null,
       hours: apt ? parseHours(leg?.duration_label ?? '') : null,
       option,
     }

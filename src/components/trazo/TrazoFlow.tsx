@@ -265,7 +265,11 @@ export function TrazoFlow() {
           filter: d === 0 ? 'none' : 'blur(10px)',
           pointerEvents: d === 0 ? 'auto' : 'none',
           visibility: Math.abs(d) > 1 ? 'hidden' : 'visible',
+          // Móviles bajos: si algo no cabe, la pantalla se desplaza en vez de cortarse.
+          overflowY: 'auto',
+          overflowX: 'hidden',
         }}
+        className="trazo-noscroll"
         aria-hidden={d !== 0}
       >
         {content}

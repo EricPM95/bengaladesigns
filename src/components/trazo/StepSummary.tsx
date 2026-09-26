@@ -91,7 +91,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
     status === 'error'
       ? errorMessage ?? 'No se pudo generar la ruta.'
       : status === 'done' && stops !== null
-        ? `${days} ${days === 1 ? 'día' : 'días'} · ${stops} paradas a tu medida`
+        ? `${days} ${days === 1 ? 'día' : 'días'} · ${stops} planes a tu medida`
         : progress > 0.66
           ? 'Ajustando al ritmo elegido…'
           : progress > 0.3

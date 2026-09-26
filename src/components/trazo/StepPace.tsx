@@ -37,7 +37,7 @@ function dayBlocks(stops: number, startHour: number): [number, number][] {
 
 /**
  * 05 — Ritmo: "Completo" (Recomendado) y "Tranquilo". Textos del destino (destinationTextsApi) y "≈ N
- * paradas al día" con la media real del motor para todos los viajes con ese ritmo (pace_stats). La barra
+ * planes al día" con la media real del motor para todos los viajes con ese ritmo (pace_stats). La barra
  * de horas empieza a la hora real de cada ritmo (Completo 08:00, Tranquilo 10:00).
  */
 export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
@@ -109,10 +109,21 @@ export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
                     </span>
                   )}
                 </span>
-                <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.8, whiteSpace: 'nowrap' }}>≈ {stops} paradas al día</span>
+                <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.8, whiteSpace: 'nowrap' }}>≈ {stops} planes al día</span>
               </div>
-              <div style={{ position: 'relative', marginTop: 6, font: "400 14px/1.4 'Geist'", opacity: 0.85 }}>{card.text}</div>
-              <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 8, opacity: active ? 1 : 0, transition: 'opacity .5s' }}>
+              {/* Plegada: el texto en dos líneas con "…", nunca cortado a media línea. */}
+              <div
+                style={{
+                  position: 'relative',
+                  marginTop: 6,
+                  font: "400 14px/1.4 'Geist'",
+                  opacity: 0.85,
+                  ...(active ? {} : { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }),
+                }}
+              >
+                {card.text}
+              </div>
+              <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 14, display: active ? 'flex' : 'none', flexDirection: 'column', gap: 8, animation: 'trazo-chipIn .5s ease both' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.75 }}>
                   <span>El día empieza a las {card.stat.inicio}</span>
                   <span>Comida y cena incluidas</span>
