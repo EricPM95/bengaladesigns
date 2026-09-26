@@ -3906,6 +3906,11 @@ const CURATED_POOL_MAX_PLACES = 20
  */
 function buildCuratedPoolV2(destData) {
   const places = destData.places ?? []
+  // Lista a mano del destino (`pool_lista`, decisión del 2026-09-27): manda, tal cual y en su orden.
+  const handPicked = destData.pool_lista?.lugares
+  if (Array.isArray(handPicked) && handPicked.length > 0) {
+    return handPicked.map((name) => places.find((place) => place.name === name)).filter(Boolean)
+  }
   const pool = places.filter((place) => place.level === 1)
   const pending = Object.keys(destData.zones ?? {}).map((zone) =>
     places.filter((place) => place.level === 2 && place.zone === zone).sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)),

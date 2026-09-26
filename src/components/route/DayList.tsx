@@ -3,7 +3,8 @@ import { closestCenter, DndContext, PointerSensor, TouchSensor, useSensor, useSe
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { DayPlan, Route, Stop, TripPace } from '../../lib/types'
-import { addDaysToIso, formatShortDateEs } from '../../lib/dateRange'
+import { addDaysToIso } from '../../lib/dateRange'
+import { KIND_STYLE, numberedStopsOf, stopKindOf } from '../../lib/stopKind'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
@@ -12,7 +13,7 @@ import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
 import { orderStopsGeographically } from '../../lib/geographicStopOrder'
 import { useRouteStore } from '../../store/useRouteStore'
 import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
-import { DayDetailPanel } from './dayDetail/DayDetailPanel'
+import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
@@ -24,6 +25,20 @@ interface DayListProps {
   route: Route
   activeDayId: string | null
   onSelectDay: (dayId: string | null) => void
+  /** Ver DayDetailPanel: lo que el día abierto enseña en el mapa de arriba, y si hay una pantalla encima. */
+  onDayMapChange?: (map: DayMapView | null) => void
+  onDayOverlayChange?: (open: boolean) => void
+  showAllDaysOnMap?: boolean
+}
+
+const WEEKDAYS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
+const MONTHS = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC']
+
+/** "DÍA 3 · JUE 16 JUL" (sin fechas, "DÍA 3"). */
+function dayLabel(dayNumber: number, dateIso: string | null): string {
+  if (!dateIso) return `Día ${dayNumber}`
+  const date = new Date(`${dateIso}T00:00:00`)
+  return `Día ${dayNumber} · ${WEEKDAYS[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()]}`
 }
 
 function ChevronIcon() {
@@ -35,9 +50,9 @@ function ChevronIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-4 w-4 shrink-0 text-text-muted"
+      className="h-[18px] w-[18px] shrink-0"
     >
-      <polyline points="9 6 15 12 9 18" />
+      <path d="M9 6l6 6-6 6" />
     </svg>
   )
 }
@@ -53,7 +68,7 @@ function ChevronIcon() {
  * contenedor con scroll (antes vivía fuera, en RouteView.tsx, por lo que quedaba fijo en pantalla
  * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
-export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
+export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
   const regenerateDayStops = useRouteStore((state) => state.regenerateDayStops)
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const reorderDays = useRouteStore((state) => state.reorderDays)
@@ -142,7 +157,7 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
   }
 
   return (
-    <div className="flex-1 space-y-2 overflow-y-auto bg-bg-hover p-3">
+    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-10 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -160,40 +175,49 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
         const travel = computeDayTravelInfo(route, index)
         const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
         const expanded = activeDayId === day.id
+        // Título real del día curado ("Roma Antigua y el centro barroco"); de viaje, el trayecto.
+        const title = travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
+        const numbered = numberedStopsOf(day)
+        const toggle = () => onSelectDay(expanded ? null : day.id)
 
         return (
           <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index)}>
             {(dragHandle) => (
-          <div>
+          <div
+            className={`relative rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+          >
             <div
               role="button"
               tabIndex={0}
-              onClick={() => onSelectDay(day.id)}
+              onClick={toggle}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
-                  onSelectDay(day.id)
+                  toggle()
                 }
               }}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-xl bg-bg-card px-4 py-4 text-left transition-colors hover:bg-bg-card/80"
+              className="flex min-h-20 w-full cursor-pointer items-center gap-3.5 py-3 pl-4 pr-3 text-left"
             >
-              <div className="relative flex h-7 w-7 shrink-0 items-center justify-center">
-                {index > 0 && <span className="absolute bottom-full left-1/2 h-4 w-px -translate-x-1/2 bg-border" />}
-                <span className="z-10 flex h-7 w-7 items-center justify-center rounded-md border border-text-muted/30 bg-bg-hover text-small font-semibold text-text">
-                  {day.dayNumber}
-                </span>
-                {index < route.days.length - 1 && <span className="absolute top-full left-1/2 h-4 w-px -translate-x-1/2 bg-border" />}
-              </div>
+              <span
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
+              >
+                {day.dayNumber}
+              </span>
 
-              <div className="min-w-0 flex-1 space-y-0.5">
-                <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">
-                  {dateIso ? formatShortDateEs(dateIso) : `Día ${day.dayNumber}`}
-                </p>
-                <p className="truncate text-body font-semibold text-text">{travel ? `${travel.fromCity} → ${travel.toCity}` : day.city}</p>
-                {travel && (
-                  <p className="text-caption font-medium" style={{ color: '#E24C4C' }}>
-                    Día de viaje
-                  </p>
+              <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
+                <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                {travel && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
+                {/* Cerrado: un puntito por parada, del color de su tipo, y cuántas son. */}
+                {!expanded && numbered.length > 0 && (
+                  <span className="mt-1 flex flex-wrap items-center gap-1">
+                    {numbered.map((stop) => (
+                      <span key={stop.id} className="h-[7px] w-[7px] rounded-full" style={{ background: KIND_STYLE[stopKindOf(stop)].color }} />
+                    ))}
+                    <span className="ml-1 text-[12px] text-text/55">
+                      {numbered.length} parada{numbered.length === 1 ? '' : 's'}
+                    </span>
+                  </span>
                 )}
               </div>
 
@@ -205,7 +229,9 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                 </span>
               )}
 
-              <ChevronIcon />
+              <span className="flex w-[22px] justify-center text-text/45 transition-transform duration-[400ms]" style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>
+                <ChevronIcon />
+              </span>
             </div>
 
             {expanded && (
@@ -226,7 +252,9 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
                 isFirstDayOfTrip={index === 0}
                 showCamperBlock={isCamper && hasRentalVehicle}
                 showRentalCarBlock={!isCamper && hasRentalVehicle}
-                onBack={() => onSelectDay(null)}
+                onMapChange={onDayMapChange}
+                onOverlayChange={onDayOverlayChange}
+                showAllDaysOnMap={showAllDaysOnMap}
               />
             )}
           </div>

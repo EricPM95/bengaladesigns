@@ -34,6 +34,12 @@ export function useRouteGeneration(enabled: boolean) {
 
   const finalizeRoute = async (finalCheckpoint: GenerationResumeState, params: GenerationParams) => {
     const mapped = mapGeneratedRouteToRoute(finalCheckpoint.generated, params.destination, params.answers, params.transportContext)
+    // El país del destino: el motor de los destinos curados no lo manda, pero el lugar que eligió el viajero
+    // sí lo trae (para la bandera de la pestaña RUTA).
+    const destinationCountry = useRouteStore.getState().destinationPlace?.countryCode ?? null
+    if (destinationCountry) {
+      for (const day of mapped.days) if (!day.countryCode) day.countryCode = destinationCountry.toLowerCase()
+    }
     // El motor v3 ya trae las horas definitivas; los demás, el horario real por parada (stopScheduling.ts).
     const scheduled = finalCheckpoint.skeleton?.times_are_final ? mapped : await applyRealStopSchedule(mapped, params.answers.pace ?? 'balanced')
     await enrichRoutePhotos(scheduled).catch(() => {})

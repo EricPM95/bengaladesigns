@@ -8,6 +8,7 @@ import { Header } from '../layout/Header'
 import { FloatingBudget } from '../layout/FloatingBudget'
 import { StopsMapView, type StopsMapMarker } from '../map/StopsMapView'
 import { DayList } from './DayList'
+import type { DayMapView } from './dayDetail/DayDetailPanel'
 import { ExplorePanel } from './ExplorePanel'
 import { FloatingCombinedMapButton } from './FloatingCombinedMapButton'
 import { MapDestinationHeader } from './MapDestinationHeader'
@@ -62,13 +63,21 @@ export function RouteView() {
   // todo esto — mismo motivo que dayDetailOpen más abajo: mientras esté abierta, el mapa compartido
   // de aquí no se monta, o se cuela por encima del overlay que se supone que lo tapa.
   const [exploreFullScreen, setExploreFullScreen] = useState(false)
+  // DIAS con un día abierto (acordeón, diseño "Trazo Itinerario"): el mapa de aquí arriba enseña lo
+  // que publica ese día (DayDetailPanel), y se desmonta mientras una pantalla suya con mapa propio
+  // (ficha, comida, llegada, añadir parada) está abierta encima.
+  const [dayMap, setDayMap] = useState<DayMapView | null>(null)
+  const [dayOverlayOpen, setDayOverlayOpen] = useState(false)
+  // "Ver todo": todos los días a la vez en vez de solo el abierto (Ronda 9, Mejora 1C).
+  const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
   // fila y el ancho se controla con panelSplit/handleDragStart). Por defecto cerca del mínimo — el
   // panel inferior (contenido real) es el protagonista; arrastrar el tirador hacia abajo agranda el
   // mapa si hace falta.
-  const [mobileMapVh, setMobileMapVh] = useState(MOBILE_MAP_MIN_VH + 3)
+  // Diseño "Trazo Itinerario": el mapa abierto mide ~270 px en un móvil de 812 (un tercio de pantalla).
+  const [mobileMapVh, setMobileMapVh] = useState(33)
 
   useEffect(() => {
     if (window.innerWidth >= 768 && window.innerWidth < 1024) setPanelSplit(40)
@@ -107,7 +116,7 @@ export function RouteView() {
   // mapa de encima SÍ debe seguir viéndose; aquí, como no debe verse nada del mapa de abajo en
   // absoluto, la solución robusta es no renderizarlo mientras el día esté abierto).
   const dayDetailOpen = mode === 'days' && activeDayId !== null
-  const mapHidden = (canCollapseMap && mapCollapsed) || dayDetailOpen || (mode === 'explore' && exploreFullScreen)
+  const mapHidden = (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen)
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
@@ -171,6 +180,19 @@ export function RouteView() {
               </>
             ) : mode === 'explore' && exploreMarkers !== null ? (
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
+            ) : dayDetailOpen && dayMap ? (
+              <>
+                <StopsMapView markers={dayMap.markers} lines={dayMap.lines} center={dayMap.center} activeStopId={activeStopId} onSelectStop={setActiveStopId} />
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+                {/* Alterna "solo este día" (por defecto) y todos los días a la vez. */}
+                <button
+                  type="button"
+                  onClick={() => setShowAllDaysOnMap((prev) => !prev)}
+                  className="absolute bottom-8 left-3 z-10 rounded-full border border-text/10 bg-bg-card/90 px-3 py-1.5 text-[12px] font-medium text-text/60 shadow-sm backdrop-blur-sm transition-colors hover:text-text"
+                >
+                  {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
+                </button>
+              </>
             ) : (
               <>
                 <StopsMapView
@@ -190,7 +212,7 @@ export function RouteView() {
                 onClick={() => setMapCollapsed(true)}
                 aria-label="Ocultar mapa"
                 title="Ocultar mapa"
-                className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-md transition-colors hover:bg-bg-hover"
+                className="absolute right-3.5 top-[22px] z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
               >
                 <CollapseMapIcon />
               </button>
@@ -202,12 +224,14 @@ export function RouteView() {
           <div onMouseDown={handleDragStart} className="hidden w-1.5 shrink-0 cursor-col-resize bg-border transition-colors hover:bg-accent md:block" />
         )}
 
-        <div className={`relative flex min-h-0 flex-1 flex-col overflow-hidden ${mapHidden ? 'md:w-full' : 'md:w-[var(--split-w)]'}`}>
+        <div
+          className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden bg-bg ${mapHidden ? 'md:w-full' : 'max-md:-mt-[22px] max-md:rounded-t-[26px] max-md:shadow-[0_-10px_30px_-18px_rgba(28,34,48,.3)] md:w-[var(--split-w)]'}`}
+        >
           {mapHidden ? (
             <button
               type="button"
               onClick={() => setMapCollapsed(false)}
-              className="mx-4 mt-3 flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full border-2 border-accent bg-bg-card px-3 py-1.5 text-caption font-semibold text-text shadow-sm transition-colors hover:bg-bg-hover"
+              className="mx-4 mt-3 flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-[12.5px] font-semibold text-text shadow-sm transition-colors hover:bg-bg-hover"
             >
               <ExpandMapIcon />
               Mostrar mapa
@@ -215,9 +239,9 @@ export function RouteView() {
           ) : (
             <div
               onPointerDown={handleMobilePanelDragStart}
-              className="flex shrink-0 cursor-row-resize touch-none items-center justify-center py-2 md:hidden"
+              className="flex h-5 shrink-0 cursor-row-resize touch-none items-center justify-center md:hidden"
             >
-              <span className="h-1.5 w-10 rounded-full bg-border" />
+              <span className="h-1 w-[42px] rounded-full bg-text/20" />
             </div>
           )}
           <ModeSwitcher showToday={hasTripDates} />
@@ -244,7 +268,17 @@ export function RouteView() {
                   🚧 Las rutas generadas por IA llegan muy pronto — esto es una vista previa con datos de ejemplo.
                 </div>
               )}
-              <DayList route={route} activeDayId={activeDayId} onSelectDay={setActiveDayId} />
+              <DayList
+                route={route}
+                activeDayId={activeDayId}
+                onSelectDay={(dayId) => {
+                  setActiveDayId(dayId)
+                  if (dayId === null) setDayMap(null)
+                }}
+                onDayMapChange={setDayMap}
+                onDayOverlayChange={setDayOverlayOpen}
+                showAllDaysOnMap={showAllDaysOnMap}
+              />
             </>
           )}
         </div>

@@ -24,8 +24,8 @@ interface StepPoolProps {
 
 /**
  * 07 — Pool: los lugares del destino con NUESTRAS fotos, en las baldosas del prototipo. Lo marcado entra
- * seguro en la ruta (must_include_places). Tope por duración (poolSelectionLimit: 5 hasta 2 días, 7 de
- * 3 a 5, 10 desde 6) con contador visible; sin "Añadir todos". Destino curado: pool del JSON; no curado:
+ * seguro en la ruta (must_include_places). Tope por duración (poolSelectionLimit: 3 hasta 2 días, 5 de
+ * 3 a 5, 7 desde 6) con contador visible; sin "Añadir todos". Destino curado: pool del JSON; no curado:
  * lo que sugiere /api/suggest-places, como siempre.
  */
 export function StepPool({ destinationName, days, curatedPool, experiences, onNext }: StepPoolProps) {
@@ -97,11 +97,11 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
           {selected.length}/{limit}
         </span>
       </div>
-      <Title size={42}>
-        Arma tu pool de <Em>{destinationName}</Em>
+      <Title size={36}>
+        Elige lo que siempre soñaste ver en <Em>{destinationName}</Em>
       </Title>
       <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(243,238,228,.72)' }}>
-        {atLimit ? 'Ya tienes tu lista: estos entran seguro en tu ruta.' : 'Marca los que te apetezcan: esos entran seguro, el resto lo elegimos nosotros.'}
+        Elige tus imprescindibles. Nosotros nos encargamos del resto.
       </p>
       <div className="trazo-noscroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', margin: '14px 0 8px' }}>
         {waiting && <p style={{ font: "400 14px 'Geist'", color: 'rgba(243,238,228,.65)' }}>Viendo qué lugares hay en {destinationName}…</p>}

@@ -42,8 +42,10 @@ export default {
         'onb-dark': '#1A1A1A',
       },
       fontFamily: {
-        display: ['Plus Jakarta Sans', 'sans-serif'],
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        // Diseño "Trazo": títulos en Instrument Serif, texto en Geist, datos (horas, etiquetas) en Geist Mono.
+        display: ['"Instrument Serif"', 'Georgia', 'serif'],
+        sans: ['Geist', 'system-ui', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
         // Solo para el formulario de creación de ruta rediseñado (ver index.css) — nunca usadas
         // fuera de esas pantallas, el resto de la app se queda con Plus Jakarta Sans.
         playfair: ['"Playfair Display"', 'Georgia', 'serif'],

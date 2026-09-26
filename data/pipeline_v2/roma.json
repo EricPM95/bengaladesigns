@@ -9683,6 +9683,31 @@
       ]
     }
   },
+  "pool_lista": {
+    "_nota": "Lista del pool del formulario (\"Elige lo que siempre soñaste ver en Roma\"), a mano y en este orden (decisión del 2026-09-27). Sustituye a la fórmula automática (buildCuratedPoolV2) solo en esta pantalla: lo que no está aquí sigue existiendo en las rutas y en Añadir parada.",
+    "lugares": [
+      "Coliseo",
+      "Foro Romano y Palatino",
+      "Fontana de Trevi",
+      "Panteón",
+      "Museos Vaticanos y Capilla Sixtina",
+      "Basílica de San Pedro",
+      "Cúpula de San Pedro",
+      "Piazza Navona",
+      "Plaza de España",
+      "Trastevere",
+      "Galería Borghese",
+      "Castillo de Sant'Angelo",
+      "Boca de la Verdad",
+      "Parque de Villa Borghese",
+      "Ojo de la Cerradura del Aventino",
+      "Arco de Constantino",
+      "Altar de la Patria",
+      "Museos Capitolinos",
+      "Termas de Caracalla",
+      "Basílica de San Juan de Letrán"
+    ]
+  },
   "curated_pool": {
     "_nota": "Qué activa cada lugar del pool (sección 4). Lo que no está aquí va por la regla general: al día de la zona más cercana, con visita.",
     "Galería Borghese": {

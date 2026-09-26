@@ -2,6 +2,10 @@ import type { Coordinates, DayPlan } from './types'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../components/map/StopsMapView'
 import { dayColor, dayColorPastel, dayColorStrong } from './dayColors'
 import { hasRealCoordinates } from './distanceMock'
+import { KIND_STYLE, numberedStopsOf, stopKindOf } from './stopKind'
+
+/** La línea del día abierto: terracota y punteada, como el diseño "Trazo Itinerario". */
+const DAY_LINE_COLOR = 'rgb(182 78 16)'
 
 /** Opacidad de los PINES de un día NO activo en "Ver todo" (Ronda 9, Mejora 1C) — atenuado, nunca
     oculto, conservando el color propio del día en vez de neutralizarlo. Ronda 10: era 0.4, y a esa
@@ -55,8 +59,12 @@ function spreadOverlappingCoords<T extends { coordinates: Coordinates }>(items: 
 // Prompt 6: un paseo por barrio no es un punto concreto — se pasea por una zona entera. Si se
 // pintara su pin (el centro del barrio) la ruta del día se doblaría hacia allí de forma artificial.
 function realStops(day: DayPlan) {
-  // La pausa (el desayuno romano) no es un lugar: sin marcador, como la comida.
-  return day.stops.filter((stop) => !stop.isZoneWalk && !stop.isBreak && hasRealCoordinates(stop.coordinates))
+  // La pausa (el desayuno romano) no es un lugar: sin marcador, como la comida. Tampoco "de paso" ni
+  // el tiempo libre. Mismo orden (de hora) y misma lista que los números de las tarjetas de DIAS
+  // (ver numberedStopsOf): el pin 3 es siempre la tarjeta 3.
+  return numberedStopsOf(day)
+    .map((stop, index) => ({ stop, number: index + 1 }))
+    .filter(({ stop }) => hasRealCoordinates(stop.coordinates))
 }
 
 /**
@@ -65,14 +73,15 @@ function realStops(day: DayPlan) {
  * (dayColorPastel/dayColorStrong, mismo criterio que el círculo numerado de StopAccordion.tsx),
  * opacidad completa siempre — para eso es la vista "solo este día".
  */
-export function buildSingleDayMarkers(day: DayPlan, dayIndex: number): StopsMapMarker[] {
-  return realStops(day).map((stop, stopIndex) => ({
+export function buildSingleDayMarkers(day: DayPlan, _dayIndex?: number): StopsMapMarker[] {
+  // Día abierto: cada pin en el color de su tipo de parada, el mismo que la franja de su tarjeta.
+  return realStops(day).map(({ stop, number }) => ({
     id: stop.id,
     name: stop.name,
     coordinates: stop.coordinates,
-    number: stopIndex + 1,
-    bg: dayColorPastel(dayIndex),
-    text: dayColorStrong(dayIndex),
+    number,
+    bg: KIND_STYLE[stopKindOf(stop)].color,
+    text: '#FFFFFF',
     photoUrl: stop.photoUrl,
   }))
 }
@@ -117,10 +126,10 @@ export function buildExcursionDayLines(dayId: string, dayIndex: number, base: Co
 }
 
 /** Línea recta uniendo las paradas de un día en orden — ver `buildSingleDayMarkers`. */
-export function buildSingleDayLine(day: DayPlan, dayIndex: number): StopsMapMarkerLine[] {
-  const coordinates = realStops(day).map((stop) => stop.coordinates)
+export function buildSingleDayLine(day: DayPlan, _dayIndex?: number): StopsMapMarkerLine[] {
+  const coordinates = realStops(day).map(({ stop }) => stop.coordinates)
   if (coordinates.length < 2) return []
-  return [{ id: day.id, coordinates, color: dayColor(dayIndex), width: 3 }]
+  return [{ id: day.id, coordinates, color: DAY_LINE_COLOR, width: 3, dashed: true }]
 }
 
 /**
@@ -141,11 +150,11 @@ export function buildCombinedDaysMarkers(days: DayPlan[], highlightDayId?: strin
     .flatMap((day, dayIndex) => {
       const isHighlighted = !highlightDayId || day.id === highlightDayId
       return realStops(day).map(
-        (stop, stopIndex): StopsMapMarker => ({
+        ({ stop, number }): StopsMapMarker => ({
           id: stop.id,
           name: stop.name,
           coordinates: stop.coordinates,
-          number: stopIndex + 1,
+          number,
           bg: dayColorPastel(dayIndex),
           text: dayColorStrong(dayIndex),
           photoUrl: stop.photoUrl,
@@ -164,7 +173,7 @@ export function buildCombinedDaysLines(days: DayPlan[], highlightDayId?: string 
   return days
     .filter((day) => !day.isReturnLeg)
     .flatMap((day, dayIndex) => {
-      const coordinates = realStops(day).map((stop) => stop.coordinates)
+      const coordinates = realStops(day).map(({ stop }) => stop.coordinates)
       if (coordinates.length < 2) return []
       const isHighlighted = !highlightDayId || day.id === highlightDayId
       return [{ id: day.id, coordinates, color: dayColor(dayIndex), opacity: isHighlighted ? 1 : DIMMED_LINE_OPACITY, width: isHighlighted ? 4 : 2.5 }]

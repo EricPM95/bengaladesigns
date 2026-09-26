@@ -19,8 +19,19 @@ interface StepTransportProps {
   onNext: () => void
 }
 
-/** Lo mínimo que dura la animación "Conectando X con Y" aunque la respuesta llegue al instante. */
-const MIN_ANIMATION_MS = 1400
+/**
+ * "Conectando X con Y", como el prototipo (Trazo App, paso 2, loadingSeconds = 3,6): la animación dura
+ * SIEMPRE 3,6 s aunque los datos lleguen al instante (caché). Cada fila crece en su tramo del reloj —la
+ * fila i empieza en ROW_STAGGER·i y tarda ROW_SPAN—, una detrás de otra.
+ */
+const ANIMATION_MS = 3600
+const ROW_STAGGER = 0.16
+const ROW_SPAN = 0.36
+/** Sin datos todavía, el reloj se para aquí (antes de que termine ninguna fila) y sigue cuando llegan. */
+const HOLD_WITHOUT_DATA = 0.12
+/** Suave al empezar y al terminar. */
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+const prefersReducedMotion = () => typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
 
 /**
  * 02 — Transporte. Siempre las cinco filas (Avión, Tren, Autobús, Ferry, En tu coche): activas solo las
@@ -52,44 +63,38 @@ export function StepTransport({ active, origin, destination, destinationName, on
   const { loading, error, feasibility } = useTransportFeasibility(active || transportOption ? origin : null, active || transportOption ? destination : null)
   const dataReady = !loading && (Boolean(feasibility) || error)
 
-  // Animación de "Conectando": avanza sola hasta el 90 % y termina en cuanto hay respuesta.
+  // El reloj de la animación (0 → 1 en ANIMATION_MS). Si los datos tardan, espera en HOLD_WITHOUT_DATA
+  // y, en cuanto llegan, sigue al mismo ritmo hasta el final: termina suave, sin saltar.
   const [prog, setProg] = useState(transportOption ? 1 : 0)
-  const startRef = useRef<number | null>(null)
+  const dataReadyRef = useRef(dataReady)
+  dataReadyRef.current = dataReady
+  const reduceMotion = useMemo(prefersReducedMotion, [])
   useEffect(() => {
     if (!active) return
     if (transportOption) {
       setProg(1)
       return
     }
-    startRef.current = performance.now()
+    // "Reducir movimiento": sin animación, directamente el resultado en cuanto hay datos.
+    if (reduceMotion) return
     let raf = 0
+    let value = 0
+    let last = performance.now()
     const tick = (now: number) => {
-      const elapsed = now - (startRef.current ?? now)
-      const timeShare = Math.min(1, elapsed / MIN_ANIMATION_MS)
-      const next = dataReadyRef.current ? timeShare : Math.min(0.9, timeShare * 0.9)
-      setProg(next)
-      if (next < 1) raf = requestAnimationFrame(tick)
+      const cap = dataReadyRef.current ? 1 : HOLD_WITHOUT_DATA
+      if (value < cap) value = Math.min(cap, value + (now - last) / ANIMATION_MS)
+      last = now
+      setProg(value)
+      if (value < 1) raf = requestAnimationFrame(tick)
     }
+    setProg(0)
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active])
-  const dataReadyRef = useRef(dataReady)
-  dataReadyRef.current = dataReady
   useEffect(() => {
-    if (!active || !dataReady || prog >= 1) return
-    let raf = 0
-    const from = prog
-    const t0 = performance.now()
-    const tick = (now: number) => {
-      const p = Math.min(1, from + (now - t0) / 500)
-      setProg(p)
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataReady, active])
+    if (active && reduceMotion && dataReady) setProg(1)
+  }, [active, reduceMotion, dataReady])
   useEffect(() => {
     if (active) onProgress(prog)
   }, [prog, active, onProgress])
@@ -213,7 +218,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
 
         <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
           {effectiveRows.map((row, i) => {
-            const local = Math.max(0, Math.min(1, (prog - i * 0.16) / 0.36))
+            const local = Math.max(0, Math.min(1, (prog - i * ROW_STAGGER) / ROW_SPAN))
             const done = local >= 1 && dataReady
             const selected = loadDone && chosenRow?.id === row.id
             const barShare = row.apt ? Math.max(0.18, Math.min(1, row.hours && Number.isFinite(bestHours) ? bestHours / row.hours : 1)) : 0
@@ -230,8 +235,8 @@ export function StepTransport({ active, origin, destination, destinationName, on
                   gridTemplateColumns: '112px minmax(0,1fr) auto',
                   alignItems: 'center',
                   gap: 12,
-                  padding: `${flow.question ? 6 : 9}px 10px`,
-                  minHeight: 44,
+                  padding: '0 10px',
+                  height: 52,
                   border: 'none',
                   borderRadius: 14,
                   background: selected ? 'rgba(242,181,68,.08)' : 'transparent',
@@ -242,32 +247,57 @@ export function StepTransport({ active, origin, destination, destinationName, on
                   transition: 'opacity .4s,background .35s',
                 }}
               >
-                <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, minWidth: 0 }}>
+                <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', minWidth: 0 }}>
                   <span style={{ font: "500 15px 'Geist'", color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap' }}>{row.label}</span>
-                  {loadDone && row.recommended && !onlyOne && (
+                  {/* Al final, "Recomendado": crece desde 0 de alto dentro de la fila (que no cambia de tamaño). */}
+                  {row.recommended && !onlyOne && (
                     <span
                       style={{
-                        height: 16,
-                        padding: '0 6px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        borderRadius: 999,
-                        background: AMBER,
-                        color: '#17120a',
-                        font: `600 9px ${MONO}`,
-                        letterSpacing: '.08em',
-                        textTransform: 'uppercase',
+                        height: loadDone ? 20 : 0,
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        transition: reduceMotion ? 'none' : 'height .45s cubic-bezier(.2,.8,.2,1)',
                       }}
                     >
-                      Recomendado
+                      <span
+                        style={{
+                          height: 16,
+                          padding: '0 6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          borderRadius: 999,
+                          background: AMBER,
+                          color: '#17120a',
+                          font: `600 9px ${MONO}`,
+                          letterSpacing: '.08em',
+                          textTransform: 'uppercase',
+                          opacity: loadDone ? 1 : 0,
+                          transform: loadDone ? 'none' : 'translateY(4px) scale(.92)',
+                          transition: reduceMotion ? 'none' : 'opacity .45s ease .05s, transform .55s cubic-bezier(.2,.8,.2,1) .05s',
+                        }}
+                      >
+                        Recomendado
+                      </span>
                     </span>
                   )}
                 </span>
                 <div style={{ height: 4, borderRadius: 4, background: 'rgba(243,238,228,.08)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${Math.round(local * barShare * 100)}%`, background: selected ? AMBER : 'rgba(243,238,228,.55)', borderRadius: 4, transition: 'background .4s' }} />
+                  <div
+                    style={{
+                      height: '100%',
+                      width: `${(easeInOut(local) * barShare * 100).toFixed(2)}%`,
+                      background: selected ? AMBER : 'rgba(243,238,228,.55)',
+                      borderRadius: 4,
+                      transition: 'background .4s',
+                    }}
+                  />
                 </div>
-                <span style={{ font: `500 12px ${MONO}`, textAlign: 'right', color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap' }}>
-                  {!done ? '···' : row.apt ? row.time || '—' : 'Sin ruta'}
+                <span style={{ font: `500 12px ${MONO}`, textAlign: 'right', color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap', minWidth: 64 }}>
+                  {/* Mientras crece, "···"; al terminar su fila, el tiempo o "Sin ruta" entran con un fundido. */}
+                  <span key={done ? 'done' : 'wait'} style={{ display: 'inline-block', animation: done && !reduceMotion ? 'trazo-chipIn .45s cubic-bezier(.2,.8,.2,1) both' : 'none' }}>
+                    {!done ? '···' : row.apt ? row.time || '—' : 'Sin ruta'}
+                  </span>
                 </span>
               </button>
             )
@@ -275,7 +305,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
         </div>
 
         {loadDone && onlyOne && chosenRow && (
-          <div style={{ padding: '12px 0 2px', font: "400 13px/1.4 'Geist'", color: 'rgba(243,238,228,.75)', textWrap: 'pretty' }}>
+          <div style={{ padding: '12px 0 2px', font: "400 13px/1.4 'Geist'", color: 'rgba(243,238,228,.75)', textWrap: 'pretty', overflow: 'hidden', animation: reduceMotion ? 'none' : 'trazo-growIn .7s cubic-bezier(.2,.8,.2,1) both' }}>
             Desde {origin?.name} solo tiene sentido llegar en {chosenRow.en}.
           </div>
         )}
@@ -303,7 +333,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
       </div>
       <div style={{ minHeight: 86, flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         {loadDone && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: 'trazo-chipIn .6s cubic-bezier(.2,.8,.2,1) both' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: reduceMotion ? 'none' : 'trazo-chipIn .6s cubic-bezier(.2,.8,.2,1) .35s both' }}>
             {vehicleType === 'camper' && (
               <p style={{ margin: '12px 4px 0', font: "400 13px/1.45 'Geist'", color: INK, textWrap: 'pretty' }}>
                 En {destinationName} tu camper se quedará aparcada en una zona periférica con buena conexión — te recomendamos moverte por el centro a pie o en transporte público.

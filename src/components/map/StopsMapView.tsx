@@ -89,6 +89,9 @@ interface StopsMapViewProps {
  * que este componente no necesite saber nada de "día" ni de la forma de la ruta. Sustituye a
  * MapPlaceholder/AllDaysMapPlaceholder (fondo estático de picsum) en esos dos sitios.
  */
+/** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
+const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
+
 export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -175,7 +178,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         // Ronda 10: h-6/h-5 en vez de h-7 fijo — los pines numerados tapaban demasiado mapa. El
         // borde blanco se mantiene en ring-2 (y el número en font-bold) también en el tamaño
         // pequeño: es justo lo que hacía ilegibles los días no activos de "Ver todo".
-        inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-caption font-bold shadow-md ring-2 ring-white transition-transform`
+        inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-[11px] font-semibold shadow-[0_6px_14px_-4px_rgba(28,34,48,.5)] ring-2 ring-white transition-transform`
         inner.textContent = marker.icon ?? String(marker.number)
         root.appendChild(inner)
         root.addEventListener('click', (event) => {
@@ -230,7 +233,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       if (focusCenter) {
         map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: 15 })
       } else if (toFit.length > 1) {
-        map.fitBounds(computeBounds(toFit), { padding: 56, maxZoom: 15 })
+        map.fitBounds(computeBounds(toFit), { padding: FIT_PADDING, maxZoom: 15 })
       }
     })
 
@@ -277,7 +280,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       map.flyTo({ center: [toFit[0].coordinates.lng, toFit[0].coordinates.lat], zoom: 9, duration: 800 })
       return
     }
-    map.fitBounds(computeBounds(toFit), { padding: 56, maxZoom: 15, duration: 800 })
+    map.fitBounds(computeBounds(toFit), { padding: FIT_PADDING, maxZoom: 15, duration: 800 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitKey, markersKey])
 

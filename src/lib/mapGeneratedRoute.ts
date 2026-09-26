@@ -81,6 +81,10 @@ interface GeneratedStop {
   experience?: string | null
   /** Por qué está en la ruta — Stop.why. */
   why?: string | null
+  /** Mirador del atardecer: la hora de la puesta de sol a la que se ajusta — Stop.isSunset. */
+  sunset_minutes?: number | null
+  /** Mirador que llega ya de noche: la ciudad iluminada — Stop.isNightView. */
+  night_view?: boolean
   /** Precio y condiciones de entrada — Stop.ticketInfo. */
   ticket_info?: string[] | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
@@ -141,6 +145,8 @@ export interface GeneratedDay {
   country_code?: string
   /** Solo multidestino_mixto_o_circuito — ver buildArchetypeContext en server/index.js. */
   phase_type?: string
+  /** Día curado del destino (motor v3): su nombre es el título del día ("Roma Antigua y el centro barroco"). */
+  curated_day?: { id: string; name: string } | null
   stops: GeneratedStop[]
   meals: GeneratedMeal[]
   rainy_alternative?: string
@@ -372,6 +378,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
         }
       : {}),
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
+    // Atardecer y mirador de noche: los marca el motor (formatDayV3); la tarjeta del día los pinta aparte.
+    ...(generated.night_view ? { isNightView: true } : generated.sunset_minutes != null ? { isSunset: true } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),
@@ -581,6 +589,7 @@ function mapDay(
     countryCode: generated.country_code ? generated.country_code.toLowerCase() : null,
     phaseType: asPhaseType(generated.phase_type),
     title: generated.title,
+    ...(generated.curated_day?.name ? { curatedTitle: generated.curated_day.name } : {}),
     transport: transportByDay.get(generated.day_number),
     stops: generated.stops.map((stop) => mapStop(generated.day_number, stop)),
     meals: generated.meals.map((meal) => mapMeal(generated.day_number, meal)),

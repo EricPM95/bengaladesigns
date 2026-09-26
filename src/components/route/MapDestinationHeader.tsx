@@ -41,17 +41,17 @@ export function MapDestinationHeader({ destination, dateRange, onChangeDateRange
   }
 
   return (
-    <div className="absolute left-1/2 top-3 z-10 -translate-x-1/2">
+    <div className="absolute left-1/2 top-3.5 z-10 -translate-x-1/2">
       <button
         type="button"
         onClick={() => setShowCalendar((value) => !value)}
-        className="rounded-full border-2 border-accent bg-bg-card px-4 py-2 text-center shadow-md transition-colors hover:bg-bg-hover"
+        className="flex flex-col items-center gap-[3px] rounded-[22px] border-[1.5px] border-accent bg-bg-card px-[22px] pb-[10px] pt-[9px] text-center shadow-[0_10px_28px_-10px_rgba(28,34,48,.35)] transition-colors hover:bg-bg-hover"
       >
-        <p className="text-body font-bold leading-tight text-text">{destination}</p>
+        <p className="whitespace-nowrap font-display text-[26px] leading-none text-text">{destination}</p>
         {dateRange ? (
-          <p className="text-caption text-text-soft">{formatHeaderDateRangeEs(dateRange.start, dateRange.end)}</p>
+          <p className="whitespace-nowrap text-[12px] font-medium text-accent">{formatHeaderDateRangeEs(dateRange.start, dateRange.end)}</p>
         ) : (
-          <p className="text-caption font-medium text-accent">Añadir fechas</p>
+          <p className="text-[12px] font-medium text-accent">Añadir fechas</p>
         )}
       </button>
 

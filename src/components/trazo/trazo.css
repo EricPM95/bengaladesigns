@@ -55,3 +55,26 @@
 @keyframes trazo-dash {
   to { stroke-dashoffset: -36; }
 }
+
+/* "Reducir movimiento" en el móvil: el formulario, sin animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .trazo-root *,
+  .trazo-root *::before,
+  .trazo-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Algo que aparece dentro de un panel: crece desde 0 de alto (el panel se estira suave, sin saltar). */
+@keyframes trazo-growIn {
+  from {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+  }
+  to {
+    max-height: 80px;
+    opacity: 1;
+  }
+}

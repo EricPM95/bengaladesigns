@@ -265,6 +265,10 @@ export interface Stop {
   freeTourTips?: string[]
   /** true solo para paradas de "experiencia nocturna" del pipeline v2 (ver night_experience en routeAlgorithm.js — un lugar ya visitado de día, revisitado de noche otro día del viaje). StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado (gradiente noche + icono de luna) en vez de la tarjeta normal. */
   isNightExperience?: boolean
+  /** Mirador del atardecer (el motor lo ajusta a la puesta de sol): tarjeta melocotón en DIAS. */
+  isSunset?: boolean
+  /** Mirador que llega ya de noche ("Roma iluminada a tus pies"): tarjeta azul noche en DIAS. */
+  isNightView?: boolean
   /** Ronda 5: categorías temáticas del lugar (ver `tags` en data/pipeline_v2/roma.json — "museo", "mirador", "iglesia"...) — solo el pipeline v2 las trae hoy; StopAccordion/StopDetailSheet las pintan como píldoras de color (ver tagColors.ts). Ausente/vacío no oculta nada más, solo no hay píldoras. */
   tags?: string[]
   /** Ronda 5: horario de apertura tal cual lo trae el JSON curado (p.ej. "Lun-Sáb 09:00-19:00, Dom 09:00-18:00") — distinto de `hours` (rango calculado para ESTA visita); es informativo, general del lugar, y siempre se muestra con el disclaimer "orientativo" (ver StopDetailSheet). Solo el pipeline v2 lo trae hoy. */
@@ -541,6 +545,8 @@ export interface DayPlan {
   /** Solo multidestino_mixto_o_circuito: tipo de la fase actual — condiciona qué transporte se ofrece hacia la siguiente y el copy de movilidad local (Grab, etc.). */
   phaseType?: PhaseType
   title: string
+  /** Nombre del día curado del destino ("Roma Antigua y el centro barroco") — el título en DIAS. */
+  curatedTitle?: string
   transport?: TransportSegment
   hotel?: HotelSection
   stops: Stop[]

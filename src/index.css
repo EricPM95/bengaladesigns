@@ -10,41 +10,58 @@
 @tailwind utilities;
 
 :root {
-  /* Light mode — cada variable es un triplete RGB "R G B" (sin rgb() ni comas) para que
-     Tailwind pueda aplicar modificadores de opacidad (bg-accent-red/10, etc.) vía rgb(var(--x) / <alpha-value>). */
-  --bg: 250 249 249;
-  --bg-card: 255 255 255;
-  --bg-hover: 245 245 244;
-  --accent: 13 148 136;
-  --accent-hover: 15 118 110;
-  --accent-soft: 204 251 241;
-  --accent-warm: 249 112 102;
-  --accent-gold: 245 158 11;
-  --accent-red: 220 38 38;
-  --accent-lilac: 237 231 246;
-  --text: 24 24 27;
-  --text-soft: 113 113 122;
-  --text-muted: 161 161 170;
-  --border: 228 228 231;
-  --border-accent: 153 246 228;
+  /* Diseño "Trazo Itinerario" (2026-09-27): papel crema, tinta azul noche y acento terracota — la
+     paleta de TODA la app por dentro. Cada variable es un triplete RGB "R G B" (sin rgb() ni comas)
+     para que Tailwind pueda aplicar modificadores de opacidad (bg-accent-red/10, etc.) vía
+     rgb(var(--x) / <alpha-value>). */
+  --bg: 245 239 228;
+  --bg-card: 255 253 248;
+  --bg-hover: 241 234 220;
+  --accent: 182 78 16;
+  --accent-hover: 151 57 0;
+  --accent-soft: 250 228 212;
+  --accent-warm: 214 112 80;
+  --accent-gold: 236 150 40;
+  --accent-red: 204 39 46;
+  --accent-lilac: 236 226 250;
+  --text: 28 34 48;
+  --text-soft: 106 108 114;
+  --text-muted: 150 146 139;
+  --border: 223 218 210;
+  --border-accent: 232 190 160;
 }
 
 .dark {
-  --bg: 9 9 11;
-  --bg-card: 24 24 27;
-  --bg-hover: 39 39 42;
-  --accent: 45 212 191;
-  --accent-hover: 94 234 212;
-  --accent-soft: 4 47 46;
-  --accent-warm: 251 113 133;
-  --accent-gold: 245 158 11;
+  /* Modo noche: el azul noche del formulario Trazo. */
+  --bg: 16 20 30;
+  --bg-card: 24 30 44;
+  --bg-hover: 34 41 58;
+  --accent: 231 138 69;
+  --accent-hover: 247 172 77;
+  --accent-soft: 66 37 24;
+  --accent-warm: 240 128 100;
+  --accent-gold: 247 172 77;
   --accent-red: 248 113 113;
   --accent-lilac: 46 38 64;
-  --text: 250 250 250;
-  --text-soft: 161 161 170;
-  --text-muted: 113 113 122;
-  --border: 39 39 42;
-  --border-accent: 19 78 74;
+  --text: 243 238 228;
+  --text-soft: 190 184 172;
+  --text-muted: 140 136 128;
+  --border: 46 52 68;
+  --border-accent: 110 60 30;
+}
+
+/* Los títulos van en Instrument Serif, que solo tiene un peso: sin negrita inventada por el navegador. */
+.font-display {
+  font-weight: 400 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Los mapas, en tono papel como el diseño (solo el fondo del mapa: los pines no llevan filtro). */
+.mapboxgl-canvas {
+  filter: sepia(0.28) saturate(0.7) brightness(1.04) contrast(0.95);
+}
+.dark .mapboxgl-canvas {
+  filter: none;
 }
 
 * {
@@ -75,7 +92,7 @@ body {
   margin: 0;
   background-color: rgb(var(--bg));
   color: rgb(var(--text));
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Geist', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -132,4 +149,16 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   overflow-x: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Diseño "Trazo Itinerario": entrada suave del contenido de un día al abrirlo. */
+@keyframes trazo-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

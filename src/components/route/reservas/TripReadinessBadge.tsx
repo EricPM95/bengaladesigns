@@ -23,10 +23,10 @@ export function TripReadinessBadge() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 items-center gap-1.5 rounded-full bg-bg-hover px-3 text-caption font-semibold transition-colors hover:bg-border"
+        className="flex h-[34px] items-center gap-[7px] rounded-full border border-text/[.08] bg-bg-card px-3 font-mono text-[13px] font-semibold transition-colors hover:bg-bg-hover"
         title="Ver resumen de tu viaje listo"
       >
-        <span aria-hidden="true" className={`h-2 w-2 shrink-0 rounded-full ${state.dot}`} />
+        <span aria-hidden="true" className={`h-[7px] w-[7px] shrink-0 rounded-full ${state.dot}`} />
         <span className={state.text}>{readiness.percent}%</span>
       </button>
       <TripReadinessQuickPanel open={open} onClose={() => setOpen(false)} percent={readiness.percent} items={readiness.items} route={readiness.route} />

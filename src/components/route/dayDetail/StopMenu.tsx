@@ -16,7 +16,10 @@ interface StopMenuProps {
 
 type MenuView = 'menu' | 'remove' | 'move-day' | 'change-time'
 
-const menuItemClass = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-text hover:bg-bg-hover disabled:cursor-not-allowed disabled:opacity-40'
+/** Menú oscuro del diseño "Trazo Itinerario". */
+const menuItemClass = 'flex h-[42px] w-full items-center rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
+/** Lista de días de "Mover a…", dentro de la cajita clara. */
+const lightItemClass = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-text hover:bg-bg-hover disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
  * Menú "..." por parada — Cambiar / Quitar / Mover a otro día / Mover antes / Mover después /
@@ -79,9 +82,10 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
           setOpen((value) => !value)
         }}
         title="Más opciones"
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card text-text-muted shadow-sm hover:bg-bg-hover"
+        aria-label="Opciones de la parada"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
       >
-        ⋯
+        ···
       </button>
 
       {open && (
@@ -89,33 +93,33 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
           <div className="fixed inset-0 z-20" onClick={(event) => (event.stopPropagation(), close())} />
           <div
             onClick={(event) => event.stopPropagation()}
-            className="absolute right-0 top-7 z-30 w-60 rounded-xl border border-border bg-bg-card p-2 shadow-md"
+            className="absolute right-0 top-[34px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
             {view === 'menu' && (
               <div className="space-y-0.5">
                 <button type="button" onClick={() => setPickerOpen(true)} className={menuItemClass}>
-                  🔄 Cambiar
+                  Cambiar parada
                 </button>
                 <button type="button" onClick={() => setView('remove')} className={menuItemClass}>
-                  ✕ Quitar
+                  <span className="text-[oklch(0.75_0.15_25)]">Quitar parada</span>
                 </button>
                 <button type="button" onClick={() => setView('move-day')} disabled={otherDays.length === 0} className={menuItemClass}>
-                  📅 Mover a otro día
+                  Mover a otro día
                 </button>
                 <button type="button" onClick={() => handleReorder('before')} disabled={index === 0} className={menuItemClass}>
-                  ↑ Mover antes
+                  Mover antes
                 </button>
                 <button type="button" onClick={() => handleReorder('after')} disabled={index === realStops.length - 1} className={menuItemClass}>
-                  ↓ Mover después
+                  Mover después
                 </button>
                 <button type="button" onClick={() => setView('change-time')} className={menuItemClass}>
-                  ⏱ Cambiar hora
+                  Cambiar hora
                 </button>
               </div>
             )}
 
             {view === 'remove' && (
-              <div className="p-1">
+              <div className="rounded-xl bg-bg-card p-1">
                 <ConfirmDeleteButton
                   itemLabel={`"${stop.name}"`}
                   onConfirm={() => {
@@ -128,10 +132,10 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
             )}
 
             {view === 'move-day' && (
-              <div className="space-y-1 p-1">
+              <div className="space-y-1 rounded-xl bg-bg-card p-1">
                 <p className="px-1 text-caption font-semibold uppercase tracking-wide text-text-muted">Mover a</p>
                 {otherDays.map((day) => (
-                  <button key={day.id} type="button" onClick={() => handleMoveToDay(day.id)} className={menuItemClass}>
+                  <button key={day.id} type="button" onClick={() => handleMoveToDay(day.id)} className={lightItemClass}>
                     Día {day.dayNumber} — {day.city}
                   </button>
                 ))}
@@ -139,7 +143,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
             )}
 
             {view === 'change-time' && (
-              <div className="space-y-2 p-1">
+              <div className="space-y-2 rounded-xl bg-bg-card p-1">
                 <input
                   type="time"
                   value={time}

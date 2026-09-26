@@ -4,7 +4,8 @@ interface DayMenuProps {
   onRegenerate: () => void
 }
 
-const menuItemClass = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-text hover:bg-bg-hover'
+/** Menú oscuro del diseño "Trazo Itinerario". */
+const menuItemClass = 'flex h-[42px] w-full items-center rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
  * Menú "..." de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada) —
@@ -26,9 +27,9 @@ export function DayMenu({ onRegenerate }: DayMenuProps) {
         }}
         title="Más opciones del día"
         aria-label="Más opciones del día"
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card text-text-muted shadow-sm hover:bg-bg-hover"
+        className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[14px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
       >
-        ⋯
+        ···
       </button>
 
       {open && (
@@ -36,7 +37,7 @@ export function DayMenu({ onRegenerate }: DayMenuProps) {
           <div className="fixed inset-0 z-20" onClick={(event) => (event.stopPropagation(), close())} />
           <div
             onClick={(event) => event.stopPropagation()}
-            className="absolute right-0 top-8 z-30 w-56 rounded-xl border border-border bg-bg-card p-2 shadow-md"
+            className="absolute right-0 top-[44px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
             <button
               type="button"
@@ -46,7 +47,7 @@ export function DayMenu({ onRegenerate }: DayMenuProps) {
               }}
               className={menuItemClass}
             >
-              🔄 Regenerar este día
+              Regenerar este día
             </button>
           </div>
         </>

@@ -1,9 +1,8 @@
-import { Fragment, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
-import { dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
-import { addDaysToIso, formatShortDateEs } from '../../../lib/dateRange'
+import { addDaysToIso } from '../../../lib/dateRange'
 import {
   buildCombinedDaysLines,
   buildCombinedDaysMarkers,
@@ -24,7 +23,9 @@ import {
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { StopsMapView } from '../../map/StopsMapView'
+import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
+import { KIND_ICON, periodFor, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
+import { PeriodHeader, TrazoCard } from './TrazoCards'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -44,7 +45,6 @@ import { ZoneWalkCard } from './ZoneWalkCard'
 import { DndContext, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableStop } from './SortableStop'
-import { MapDestinationHeader } from '../MapDestinationHeader'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -83,8 +83,37 @@ interface DayDetailPanelProps {
   showCamperBlock: boolean
   /** vehicle_type car + vehicle_ownership rental — aparece ADEMÁS de AccommodationBlock (logística de vehículo aparte del alojamiento). */
   showRentalCarBlock: boolean
-  /** Vuelve a la lista de días (DayList) — este panel es ahora una pantalla completa de navegación, no un acordeón inline. */
-  onBack: () => void
+  /** Día abierto como acordeón en la lista (diseño "Trazo Itinerario", 2026-09-27): el mapa es el
+      compartido de RouteView, que enseña lo que este panel le publica aquí (null al cerrarse). */
+  onMapChange?: (map: DayMapView | null) => void
+  /** true mientras hay una pantalla completa con su propio mapa encima (ficha, comida, llegada,
+      añadir parada): RouteView desmonta el suyo mientras tanto (ver dayDetailOpen en RouteView.tsx). */
+  onOverlayChange?: (open: boolean) => void
+  /** "Ver todo" del mapa compartido: todos los días a la vez en vez de solo este. */
+  showAllDaysOnMap?: boolean
+}
+
+/** Lo que el día abierto enseña en el mapa compartido de RouteView. */
+export interface DayMapView {
+  markers: StopsMapMarker[]
+  lines: StopsMapMarkerLine[]
+  center: Coordinates | null
+}
+
+/** Un elemento de la línea del día, en orden: parada, comida, cena, tiempo libre o el hueco final. */
+type TimelineItem =
+  | { type: 'stop'; index: number }
+  | { type: 'free'; index: number; entry: FreeTimeEntry }
+  | { type: 'lunch'; index: number }
+  | { type: 'dinnerFree'; index: number }
+  | { type: 'dinner'; index: number; withGap: boolean }
+  | { type: 'end' }
+
+interface PlacedItem {
+  item: TimelineItem
+  period: DayPeriod
+  start: number
+  end: number
 }
 
 const DEFAULT_MODE: TransportMode = 'walking'
@@ -111,20 +140,14 @@ const NIGHT_DEFAULT_MINUTES = 30
 function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
   return index === 0 || !stops[index - 1] || !stops[index] ? `${dayId}-connector-${index}` : `${dayId}-${stops[index - 1].id}>${stops[index].id}`
 }
-// Mismos límites/valor por defecto que el tirador de mapa de StopDetailSheet.tsx/ArrivalDetailSheet.tsx — ninguno de los dos lados puede llegar a desaparecer del todo.
 /** El otro extremo de un tiempo libre cuando es la comida (lo que manda el motor v3). */
 const LUNCH_FREE_LABEL = 'la comida'
 type FreeTimeEntry = NonNullable<DayPlan['freeTime']>
 /** Los huecos con nombre del día: la lista nueva o, de rutas guardadas antes, el único que había. */
 const freeTimesOf = (day: DayPlan): FreeTimeEntry[] => day.freeTimes ?? (day.freeTime ? [day.freeTime] : [])
 
-const MAP_MIN_VH = 15
-const MAP_MAX_VH = 75
-const DEFAULT_MAP_VH = 28
-
 type TimeSlot = 'mañana' | 'tarde' | 'noche'
 
-const SLOT_LABELS: Record<TimeSlot, string> = { mañana: 'Mañana', tarde: 'Tarde', noche: 'Noche' }
 
 interface StopSchedule {
   slot: TimeSlot
@@ -181,31 +204,6 @@ function formatActivityDuration(totalMinutes: number): string {
   if (totalMinutes < 60) return `${totalMinutes} min`
   const hours = Math.round((totalMinutes / 60) * 2) / 2
   return `${Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')}h`
-}
-
-function BackIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  )
-}
-
-/** Apunta hacia arriba (mapa visible, tocar para colapsar) o hacia abajo (mapa colapsado, tocar para expandir) — mismo icono, solo rotado. */
-function MapToggleIcon({ mapVisible }: { mapVisible: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`h-4 w-4 transition-transform ${mapVisible ? '' : 'rotate-180'}`}
-    >
-      <polyline points="18 15 12 9 6 15" />
-    </svg>
-  )
 }
 
 /** Los 3 iconos de la fila resumen (paradas/km a pie/horas de actividad) — mismo estilo lineal fino, sin relleno, y se pintan todos del mismo verde oscuro (text-accent-hover) desde quien los usa, ver el JSX del resumen más abajo. */
@@ -281,7 +279,9 @@ export function DayDetailPanel({
   isFirstDayOfTrip,
   showCamperBlock,
   showRentalCarBlock,
-  onBack,
+  onMapChange,
+  onOverlayChange,
+  showAllDaysOnMap = false,
 }: DayDetailPanelProps) {
   const accommodationResolved = useRouteStore((state) => (stay ? Boolean(state.accommodationSelections[stay.segmentDayId]) : false))
   const tonightHotel = useRouteStore((state) => (nightSegmentDayId ? state.accommodationSelections[nightSegmentDayId] : undefined))
@@ -303,7 +303,6 @@ export function DayDetailPanel({
   const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
   const addBlankDayExcursion = useRouteStore((state) => state.addBlankDayExcursion)
   const route = useRouteStore((state) => state.route)
-  const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
   const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
@@ -336,12 +335,6 @@ export function DayDetailPanel({
   /** Precarga del buscador de AddStopScreen cuando se abre desde el botón "Añadir como parada" de una tarjeta de segunda visita recomendada (ver day.recommendedRevisits) — undefined = buscador vacío, comportamiento normal del "+". */
   const [addStopInitialQuery, setAddStopInitialQuery] = useState<string | undefined>(undefined)
   const [dismissedRevisits, setDismissedRevisits] = useState<Set<string>>(new Set())
-  const [mapCollapsed, setMapCollapsed] = useState(false)
-  // Ronda 9 (Mejora 1A/1C): por defecto el mapa muestra SOLO el día que se está viendo — antes
-  // siempre mostraba todos los días a la vez (con el activo resaltado y el resto atenuado a gris),
-  // sin ninguna forma de aislar uno. "Ver todo" alterna a esa vista combinada bajo demanda.
-  const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
-  const [mapVh, setMapVh] = useState(DEFAULT_MAP_VH)
   // Distancias/tiempos reales (Directions API de Mapbox) que van sustituyendo al mock inicial de
   // cada conector parada→parada en cuanto resuelven — ver el useEffect más abajo y
   // refineConnectorWithRealDistance en mockDayDetail.ts. Empieza vacío: el primer render siempre
@@ -460,8 +453,8 @@ export function DayDetailPanel({
     // la tercera hereda el hueco de la tercera, no se lleva su hora antigua a otro sitio del día.
     reorderStops(day.id, next)
   }
-  const stopCircleBg = dayColorPastel(dayIndex)
-  const stopCircleText = dayColorStrong(dayIndex)
+  // El número de cada tarjeta es el de su pin en el mapa: misma lista y mismo orden de hora (stopNumbersOf).
+  const stopNumbers = stopNumbersOf(day)
   const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
 
   const tripStartIso = route?.answers.dateRange?.start
@@ -498,7 +491,8 @@ export function DayDetailPanel({
 
   // Prompt 6: un paseo por barrio es una sugerencia para un hueco, no un lugar que el viaje
   // incluya — no se cuenta ni en "N paradas" ni en el mapa (ver realStops en routeMapMarkers.ts).
-  const visitCount = stops.reduce((count, _stop, index) => (realStops[index]?.isZoneWalk || realStops[index]?.isBreak ? count : count + 1), 0)
+  // Las mismas que llevan número (sin pausas, paseos, "de paso" ni tiempo libre): igual que la tarjeta cerrada del día.
+  const visitCount = stopNumbers.size
   // Los metros hasta el paseo tampoco cuentan: su conector ni siquiera se pinta (no se va a un
   // barrio, se pasea por él), así que sumarlos falsearía el "a pie" de la cabecera.
   const totalWalkMeters =
@@ -677,9 +671,10 @@ export function DayDetailPanel({
   // pinta el de ANTES de la tarjeta dorada — el de después ya lo cubre el hueco que abre la
   // siguiente parada (o el de fin de día si la comida cierra el día), y pintar los dos dejaría dos
   // botones pegados.
-  const renderFreeTime = (entry: FreeTimeEntry, index: number) => (
-    <div key={`free-${entry.after}-${entry.before}`} className="pt-2">
+  const renderFreeTime = (entry: FreeTimeEntry, index: number, time: string | null) => (
+    <div key={`free-${entry.after}-${entry.before}`}>
       <FreeTimeBlock
+        time={time}
         hours={0}
         city={day.city}
         midDay={{ minutes: entry.minutes, before: entry.before, hint: entry.hint }}
@@ -699,23 +694,6 @@ export function DayDetailPanel({
     </div>
   )
   const renderMealGap = (insertIndex: number) => renderGap(`${day.id}-meal-gap-${insertIndex}`, null, '', '', insertIndex)
-
-  // Mismo patrón de tirador arrastrable que StopDetailSheet.tsx/ArrivalDetailSheet.tsx — agranda/encoge el mini-mapa, clamped entre MAP_MIN_VH y MAP_MAX_VH.
-  const handleMapDragStart = (event: ReactPointerEvent) => {
-    event.preventDefault()
-    const startY = event.clientY
-    const startVh = mapVh
-    const vhUnit = window.innerHeight / 100
-    const clampedVh = (clientY: number) => Math.min(MAP_MAX_VH, Math.max(MAP_MIN_VH, startVh + (clientY - startY) / vhUnit))
-    const onPointerMove = (moveEvent: PointerEvent) => setMapVh(clampedVh(moveEvent.clientY))
-    const onPointerUp = (upEvent: PointerEvent) => {
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('pointerup', onPointerUp)
-      setMapVh(clampedVh(upEvent.clientY))
-    }
-    window.addEventListener('pointermove', onPointerMove)
-    window.addEventListener('pointerup', onPointerUp)
-  }
 
   // StopDetailSheet/ArrivalDetailSheet abren su PROPIO mapa encima de este mismo panel — dos
   // canvas WebGL de Mapbox GL montados a la vez arriesgan que el de abajo se "filtre" por encima
@@ -780,107 +758,244 @@ export function DayDetailPanel({
   // Un día libre sin montar no tiene pines: el mapa enseña la ciudad y ya.
   const dayMapCenter = dayMarkers.length === 0 ? cityBaseCoords : null
 
-  return (
-    <div className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
-      {mapCollapsed || mapHiddenBySheet ? (
-        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card p-3">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Volver"
-            title="Volver"
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-sm transition-colors hover:bg-bg-hover"
-          >
-            <BackIcon />
-          </button>
-          <button
-            type="button"
-            onClick={() => setMapCollapsed(false)}
-            aria-label="Mostrar mapa"
-            title="Mostrar mapa"
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-sm transition-colors hover:bg-bg-hover"
-          >
-            <MapToggleIcon mapVisible={false} />
-          </button>
+  // ── Mapa compartido (RouteView): lo que enseña mientras este día está abierto ───────────────
+  const mapKey = JSON.stringify([
+    dayMarkers.map((marker) => [marker.id, marker.number, marker.bg, marker.coordinates.lat, marker.coordinates.lng, marker.opacity ?? 1, marker.icon ?? '']),
+    dayMapLines.map((line) => [line.id, line.coordinates.length, line.color, line.opacity ?? 1]),
+    dayMapCenter,
+  ])
+  useEffect(() => {
+    onMapChange?.({ markers: dayMarkers, lines: dayMapLines, center: dayMapCenter })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapKey])
+  useEffect(() => {
+    onOverlayChange?.(mapHiddenBySheet)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapHiddenBySheet])
+  useEffect(
+    () => () => {
+      onMapChange?.(null)
+      onOverlayChange?.(false)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
+
+  // ── La línea del día, por franjas (Mañana, Mediodía, Tarde, Atardecer, Noche) ───────────────
+  // Todo lo que pasa en el día en orden, cada cosa con su hora; la franja sale de la hora y nunca
+  // retrocede (ver periodFor), así que las franjas van SIEMPRE en orden de hora.
+  const dinnerStartMinutes = parseTimeToMinutes(day.meals.find((meal) => meal.mealTime === 'dinner')?.time ?? '')
+  const lunchEndMinutes = lunchMeal?.windowEnd ? parseTimeToMinutes(lunchMeal.windowEnd) : NaN
+  const dinnerFreeMinutes = (index: number): number | null => {
+    const lastEnd = schedule[index]?.endMinutes
+    if (Number.isNaN(dinnerStartMinutes) || lastEnd == null || schedule[0] == null) return null
+    const free = dinnerStartMinutes - lastEnd - (day.dinnerWalkMinutes ?? 0)
+    return free < FREE_TIME_MIN_MINUTES ? null : free
+  }
+  const timeline: TimelineItem[] = []
+  if (muestraParadas) {
+    stops.forEach((_stop, index) => {
+      timeline.push({ type: 'stop', index })
+      for (const entry of freeTimesOf(day)) {
+        if (realStops[index]?.name === entry.after && entry.before !== LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index, entry })
+      }
+      if (lunchInsertionIndex === index) {
+        for (const entry of freeTimesOf(day)) {
+          if (realStops[index]?.name === entry.after && entry.before === LUNCH_FREE_LABEL) timeline.push({ type: 'free', index, entry })
+        }
+        timeline.push({ type: 'lunch', index })
+        for (const entry of freeTimesOf(day)) {
+          if (entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index: -1 - index, entry })
+        }
+      }
+      if (dinnerInsertionIndex === index) {
+        const hasFree = dinnerFreeMinutes(index) !== null
+        if (hasFree) timeline.push({ type: 'dinnerFree', index })
+        timeline.push({ type: 'dinner', index, withGap: !hasFree })
+      }
+    })
+    if (stops.length > 0) timeline.push({ type: 'end' })
+  }
+  const placed: PlacedItem[] = []
+  for (const item of timeline) {
+    const floor = placed.length > 0 ? placed[placed.length - 1].period : null
+    let start = floor ? placed[placed.length - 1].end : DAY_START_MINUTES
+    let end = start
+    let flags: { sunset?: boolean; night?: boolean } = {}
+    if (item.type === 'stop') {
+      start = schedule[item.index]?.startMinutes ?? start
+      end = schedule[item.index]?.endMinutes ?? start
+      const realStop = realStops[item.index]
+      flags = { sunset: Boolean(realStop?.isSunset), night: Boolean(realStop?.isNightExperience || realStop?.isNightView) }
+    } else if (item.type === 'free') {
+      // Índice negativo = el hueco de DESPUÉS de la comida (empieza al acabar la franja de comer).
+      const after = item.index < 0 ? -1 - item.index : item.index
+      start = item.index < 0 && !Number.isNaN(lunchEndMinutes) ? lunchEndMinutes : (schedule[after]?.endMinutes ?? start)
+      end = start + item.entry.minutes
+    } else if (item.type === 'lunch') {
+      start = Number.isNaN(lunchStart) ? (schedule[item.index]?.endMinutes ?? start) : lunchStart
+      end = Number.isNaN(lunchEndMinutes) ? start + 75 : lunchEndMinutes
+    } else if (item.type === 'dinnerFree') {
+      start = schedule[item.index]?.endMinutes ?? start
+      end = start + (dinnerFreeMinutes(item.index) ?? 0)
+    } else if (item.type === 'dinner') {
+      start = Number.isNaN(dinnerStartMinutes) ? start : dinnerStartMinutes
+      end = start + 90
+      flags = { night: true }
+    }
+    placed.push({ item, period: item.type === 'end' && floor ? floor : periodFor(start, flags, floor), start, end })
+  }
+  const periodGroups: { period: DayPeriod; range: string; items: PlacedItem[] }[] = []
+  for (const entry of placed) {
+    const last = periodGroups[periodGroups.length - 1]
+    if (last && last.period === entry.period) last.items.push(entry)
+    else periodGroups.push({ period: entry.period, range: '', items: [entry] })
+  }
+  for (const group of periodGroups) {
+    const timed = group.items.filter((entry) => entry.item.type !== 'end')
+    if (timed.length === 0) continue
+    const from = Math.min(...timed.map((entry) => entry.start))
+    const to = Math.max(...timed.map((entry) => entry.end))
+    group.range = `${minutesToTime(roundToNearestQuarterHour(from))} — ${minutesToTime(roundToNearestQuarterHour(to))}`
+  }
+
+  /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
+  const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean) => {
+    if (item.type === 'end') {
+      return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)
+    }
+    if (item.type === 'free') {
+      const index = item.index < 0 ? -1 - item.index : item.index
+      return renderFreeTime(item.entry, index, minutesToTime(start))
+    }
+    if (item.type === 'lunch') {
+      const index = item.index
+      return (
+        <div key={`lunch-${index}`}>
+          {renderMealGap(index + 1)}
+          <MealTimeAccordion
+            destino={destino}
+            city={day.city}
+            coordinates={lunchCoordinates ?? realStops[index].coordinates}
+            curatedZone={lunchCuratedZone}
+            curatedZoneDisplay={lunchCuratedZoneDisplay}
+            franja="comida"
+            timeRange={lunchTimeRange}
+            onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
+          />
         </div>
-      ) : (
-        <div className="relative shrink-0" style={{ height: `${mapVh}vh` }}>
-          <StopsMapView markers={dayMarkers} lines={dayMapLines} center={dayMapCenter} />
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Volver"
-            title="Volver"
-            className="absolute left-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
-          >
-            <BackIcon />
-          </button>
-          {/* Ronda 10: la cabecera destino + fechas va también aquí, arriba centrada — el sitio que
-              ocupaba "Ver todo" hasta ahora. Misma cabecera y mismo calendario que en RUTA y DIAS,
-              para que el destino y las fechas del viaje se vean desde cualquier mapa de la app. */}
-          {route && (
-            <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+      )
+    }
+    if (item.type === 'dinnerFree') {
+      const index = item.index
+      const lastEnd = schedule[index]?.endMinutes ?? 0
+      const firstStart = schedule[0]?.startMinutes ?? lastEnd
+      return (
+        <div key={`dinner-free-${index}`}>
+          {renderMealGap(index + 1)}
+          <FreeTimeBlock
+            time={minutesToTime(lastEnd)}
+            hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
+            city={day.city}
+            onOpenMap={() => {
+              const here = realStops[index]?.coordinates
+              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+              setInsertAt(index + 1)
+            }}
+            suggestions={day.aperitivo?.suggestions ?? day.freeAfternoon?.suggestions}
+            aperitivo={day.aperitivo ? { title: day.aperitivo.title, minutes: day.aperitivo.minutes } : undefined}
+            onPickSuggestion={(name) => {
+              const here = realStops[index]?.coordinates
+              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+              setAddStopInitialQuery(name)
+              setInsertAt(index + 1)
+            }}
+          />
+        </div>
+      )
+    }
+    if (item.type === 'dinner') {
+      const index = item.index
+      return (
+        <div key={`dinner-${index}`}>
+          {item.withGap && renderMealGap(index + 1)}
+          <MealTimeAccordion
+            destino={destino}
+            city={day.city}
+            coordinates={realStops[index].coordinates}
+            curatedZone={dinnerCuratedZone}
+            curatedZoneDisplay={dinnerCuratedZoneDisplay}
+            franja="cena"
+            timeRange={Number.isNaN(dinnerStartMinutes) ? null : minutesToTime(dinnerStartMinutes)}
+            onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
+          />
+        </div>
+      )
+    }
+    // Una parada.
+    const index = item.index
+    const stop = stops[index]
+    const realStop = realStops[index]
+    const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
+    const { startMinutes } = schedule[index]
+    // La primera parada del día no lleva el conector de relleno genérico; sí el real desde el
+    // alojamiento de anoche. Al abrir franja tampoco (la cabecera ya separa). El paseo por barrio no
+    // lleva conector: "6 min · 540 m" hasta un barrio entero no significa nada.
+    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : !firstInPeriod
+    const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
+    return (
+      // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
+      <SortableStop key={stop.id} id={realStop?.id ?? stop.id} disabled={Boolean(realStop?.isZoneWalk)}>
+        <div>
+          {/* El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector`
+              decide solo si además lleva el trayecto. Un paseo quitado no deja ni rastro. */}
+          {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex)}
+          {realStop?.isZoneWalk ? (
+            walkDismissed ? null : (
+              <ZoneWalkCard stop={stop} startTime={minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
+            )
+          ) : (
+            <StopAccordion
+              number={realStop ? (stopNumbers.get(realStop.id) ?? null) : null}
+              stop={stop}
+              startTime={minutesToTime(startMinutes)}
+              onOpen={() => setDetailIndex(index)}
+              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />}
+            />
           )}
-          {/* Ronda 9 (Mejora 1C): alterna entre "solo este día" (por defecto) y "Ver todo" — texto
-              en vez de icono a propósito, es un cambio de MODO del mapa, no una acción puntual como
-              el resto de botones circulares de esta cabecera. Ronda 10: abajo a la izquierda y en
-              gris discreto — es un ajuste de la vista, no un protagonista de la pantalla, y arriba
-              estorbaba a la cabecera del viaje. */}
-          <button
-            type="button"
-            onClick={() => setShowAllDaysOnMap((prev) => !prev)}
-            className="absolute bottom-3 left-3 z-10 rounded-full border border-border bg-bg-card/90 px-3 py-1.5 text-caption font-medium text-text-soft shadow-sm backdrop-blur-sm transition-colors hover:bg-bg-hover hover:text-text"
-          >
-            {showAllDaysOnMap ? 'Solo este día' : 'Ver todo'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setMapCollapsed(true)}
-            aria-label="Ocultar mapa"
-            title="Ocultar mapa"
-            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text-soft shadow-md transition-colors hover:bg-bg-hover"
-          >
-            <MapToggleIcon mapVisible />
-          </button>
         </div>
-      )}
+      </SortableStop>
+    )
+  }
 
-      {!mapCollapsed && (
-        <div onPointerDown={handleMapDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center bg-bg-card py-2">
-          <span className="h-1.5 w-10 rounded-full bg-border" />
-        </div>
-      )}
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-4 pt-4">
-          <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">
-            Día {day.dayNumber}
-            {dateIso ? ` · ${formatShortDateEs(dateIso).toUpperCase()}` : ''}
-          </p>
-          <h1 className="font-display text-h1 font-bold text-text">{day.city}</h1>
-          {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
-              decisión que haya que tomar. */}
-          {showsRoute && day.paceNotice && <p className="mt-0.5 text-small text-text-muted">{day.paceNotice}</p>}
-          {showsRoute && day.transferNotice && <p className="mt-0.5 whitespace-pre-line text-small text-text-muted">{day.transferNotice}</p>}
-          <div className={`mt-2.5 mb-4 items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft ${showsRoute && stops.length > 0 ? 'flex' : 'hidden'}`}>
-            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
-              <SummaryPinIcon className="text-accent-hover" />
+  return (
+    // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
+    // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
+    <div className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
+      <div className="pt-3">
+        {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
+            decisión que haya que tomar. */}
+        {showsRoute && day.paceNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.paceNotice}</p>}
+        {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
+        {showsRoute && stops.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 pt-1 text-[12px] text-text/60">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <SummaryPinIcon />
               {visitCount} parada{visitCount === 1 ? '' : 's'}
             </span>
-            <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
-            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
-              <SummaryWalkIcon className="text-accent-hover" />
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <SummaryWalkIcon />
               {formatWalkKm(totalWalkMeters)} a pie
             </span>
-            <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
-            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
-              <SummaryClockIcon className="text-accent-hover" />
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <SummaryClockIcon />
               {formatActivityDuration(totalActivityMinutes)} actividad
             </span>
           </div>
-        </div>
+        )}
+      </div>
 
-        <div className="space-y-2 px-3 pb-3">
+        <div className="space-y-2 pt-1">
           {/* Prominente: el banner va ENCIMA de la ruta y no la quita — el viajero ve las dos cosas
               y elige. Se puede cerrar sin perder nada (regla 9). */}
           {/* El banner de excursiones de jornada completa no sale en un día que YA tiene una de
@@ -970,20 +1085,11 @@ export function DayDetailPanel({
 
           {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
 
+          {/* Llegada o vuelta: la misma tarjeta, en azul petróleo, sin número (no es una parada). */}
           {arrivalDetail && (
-            <button
-              type="button"
-              onClick={() => setArrivalSheetOpen(true)}
-              className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg-card p-3 text-left transition-colors hover:bg-bg-hover"
-            >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-hover text-white" aria-hidden="true">
-                ✈
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-body font-semibold text-text">{arrivalDetail.headline}</p>
-                <p className="truncate text-caption text-text-soft">{arrivalDetail.subtitle}</p>
-              </div>
-            </button>
+            <div className="pt-2">
+              <TrazoCard kind="transporte" iconPath={KIND_ICON.plane} name={arrivalDetail.headline} sub={arrivalDetail.subtitle} noPhoto onOpen={() => setArrivalSheetOpen(true)} />
+            </div>
           )}
 
           {/* Un día de EXCURSIÓN guarda su ruta para poder volver a ella, pero no la enseña. Un día
@@ -1038,163 +1144,19 @@ export function DayDetailPanel({
           {muestraParadas && (
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
-          {stops.map((stop, index) => {
-            const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
-            const { slot, startMinutes } = schedule[index]
-            const showSlotHeader = index === 0 || slot !== schedule[index - 1].slot
-            // La primera parada del día nunca lleva el conector de relleno genérico ("Después de
-            // instalarte...", "Buen momento para parar a comer algo..." — ver TEXT_ONLY_CONNECTORS
-            // en mockDayDetail.ts): el viajero decide por su cuenta cómo llegar desde el alojamiento,
-            // la ruta empieza directamente en el lugar 1. SÍ se muestra cuando el conector es real
-            // (viene del alojamiento de anoche, con distancia/tiempo real) — ese es información útil,
-            // no relleno.
-            // El paseo por barrio no lleva conector: "6 min · 540 m" hasta un barrio entero no
-            // significa nada — el paseo empieza donde acabó la parada anterior.
-            const showConnector = realStops[index]?.isZoneWalk ? false : index === 0 ? fromAccommodation : slot === schedule[index - 1].slot
-            const walkDismissed = Boolean(realStops[index]?.isZoneWalk) && dismissedWalks.has(stop.name)
-            const showLunchAccordion = lunchInsertionIndex === index
-            const showDinnerAccordion = dinnerInsertionIndex === index
-
-            // Rango horario de la franja completa (ej. "09:00 — 13:30") — busca hasta dónde llega
-            // esta misma franja (mismo criterio que `showConnector`: mientras el slot no cambie) para
-            // usar el fin de la ÚLTIMA parada de la franja, no solo el de esta.
-            let slotRangeLabel = ''
-            if (showSlotHeader) {
-              let lastIndexInSlot = index
-              while (lastIndexInSlot + 1 < schedule.length && schedule[lastIndexInSlot + 1].slot === slot) lastIndexInSlot++
-              // Redondeo hacia arriba al cuarto de hora en los dos extremos del rango — el de inicio
-              // ya suele venir redondeado desde el propio `schedule`, pero el de fin es fin+duración
-              // (no necesariamente un cuarto de hora exacto), así que se redondea aquí explícitamente.
-              slotRangeLabel = `${minutesToTime(roundToNearestQuarterHour(startMinutes))} — ${minutesToTime(roundToNearestQuarterHour(schedule[lastIndexInSlot].endMinutes))}`
-            }
-
-            return (
-              <Fragment key={stop.id}>
-                {/* El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia
-                    para un hueco concreto — moverla de sitio no significa nada. */}
-                <SortableStop id={realStops[index]?.id ?? stop.id} disabled={Boolean(realStops[index]?.isZoneWalk)}>
-                <div>
-                  {showSlotHeader && (
-                    <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
-                      {SLOT_LABELS[slot]} · {slotRangeLabel}
-                    </p>
-                  )}
-                  {/* El hueco SIEMPRE se pinta; `showConnector` decide solo si además lleva la
-                      información de desplazamiento (ver renderGap). Única excepción: un paseo que el
-                      viajero ya ha quitado no deja ni rastro — ni tarjeta ni su "+ Añadir parada",
-                      que si no quedarían dos seguidos. */}
-                  {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex)}
-                  {realStops[index]?.isZoneWalk ? (
-                    walkDismissed ? null : (
-                      <ZoneWalkCard
-                        stop={stop}
-                        startTime={minutesToTime(startMinutes)}
-                        onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))}
-                      />
-                    )
-                  ) : (
-                    <StopAccordion
-                      // El número, como en el mapa: sin contar las pausas (el desayuno) ni los paseos por barrio.
-                      index={realStops.slice(0, index).filter((other) => !other.isBreak && !other.isZoneWalk).length}
-                      stop={stop}
-                      circleBg={stopCircleBg}
-                      circleText={stopCircleText}
-                      startTime={minutesToTime(startMinutes)}
-                      onOpen={() => setDetailIndex(index)}
-                      menu={<StopMenu dayId={day.id} city={day.city} stop={realStops[index]} index={index} realStops={realStops} otherDays={otherDays} />}
-                    />
-                  )}
-                </div>
-                </SortableStop>
-                {/* Todos los huecos de más de 30 min, con nombre (decisión del 2026-09-26): entre dos paradas y,
-                    con la comida en medio, el de antes de comer aquí y el de después tras la comida. */}
-                {freeTimesOf(day)
-                  .filter((entry) => realStops[index]?.name === entry.after && (entry.before === LUNCH_FREE_LABEL ? showLunchAccordion : realStops[index + 1]?.name === entry.before))
-                  .map((entry) => renderFreeTime(entry, index))}
-                {showLunchAccordion && (
-                  <>
-                    {renderMealGap(index + 1)}
-                    <div className="pt-2">
-                      <MealTimeAccordion
-                        destino={destino}
-                        city={day.city}
-                        coordinates={lunchCoordinates ?? realStops[index].coordinates}
-                        curatedZone={lunchCuratedZone}
-                        curatedZoneDisplay={lunchCuratedZoneDisplay}
-                        franja="comida"
-                        timeRange={lunchTimeRange}
-                        onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
-                      />
-                    </div>
-                    {freeTimesOf(day)
-                      .filter((entry) => entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before)
-                      .map((entry) => renderFreeTime(entry, index))}
-                  </>
-                )}
-                {showDinnerAccordion && (
-                  <>
-                    {renderMealGap(index + 1)}
-                    {(() => {
-                      // Tiempo libre antes de cenar, recalculado con las horas de ahora (si el viajero
-                      // añade o quita paradas, cambia). El paseo hasta la cena lo sabe el motor.
-                      const dinnerAt = parseTimeToMinutes(day.meals.find((meal) => meal.mealTime === 'dinner')?.time ?? '')
-                      const lastEnd = schedule[index]?.endMinutes
-                      const firstStart = schedule[0]?.startMinutes
-                      if (Number.isNaN(dinnerAt) || lastEnd == null || firstStart == null) return null
-                      const free = dinnerAt - lastEnd - (day.dinnerWalkMinutes ?? 0)
-                      if (free < FREE_TIME_MIN_MINUTES) return null
-                      return (
-                        <div className="pt-2">
-                          <FreeTimeBlock
-                            hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
-                            city={day.city}
-                            onOpenMap={() => {
-                              const here = realStops[index]?.coordinates
-                              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-                              setInsertAt(index + 1)
-                            }}
-                            suggestions={day.aperitivo?.suggestions ?? day.freeAfternoon?.suggestions}
-                            aperitivo={day.aperitivo ? { title: day.aperitivo.title, minutes: day.aperitivo.minutes } : undefined}
-                            onPickSuggestion={(name) => {
-                              const here = realStops[index]?.coordinates
-                              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-                              setAddStopInitialQuery(name)
-                              setInsertAt(index + 1)
-                            }}
-                          />
-                        </div>
-                      )
-                    })()}
-                    <div className="pt-2">
-                      <MealTimeAccordion
-                        destino={destino}
-                        city={day.city}
-                        coordinates={realStops[index].coordinates}
-                        curatedZone={dinnerCuratedZone}
-                        curatedZoneDisplay={dinnerCuratedZoneDisplay}
-                        franja="cena"
-                        onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
-                      />
-                    </div>
-                  </>
-                )}
-              </Fragment>
-            )
-          })}
+          {periodGroups.map((group, groupIndex) => (
+            <div key={`${group.period}-${groupIndex}`}>
+              <PeriodHeader period={group.period} range={group.range} />
+              {/* La línea punteada del día; las tarjetas cuelgan de ella. */}
+              <div className="relative flex flex-col pl-[26px]">
+                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
+                {group.items.map((entry, itemIndex) => renderTimelineItem(entry, itemIndex === 0))}
+              </div>
+            </div>
+          ))}
           </SortableContext>
           </DndContext>
           )}
-
-          {/* Hueco de fin de día: también se pinta siempre, aunque todavía no se sepa dónde se
-              duerme (sin alojamiento elegido no hay `finalConnector` que mostrar, pero sí tiene que
-              poder añadirse una parada al final del día). */}
-          {/* Solo si el día ESTÁ enseñando sus paradas. Un día de excursión resuelve `stops` a la
-              plantilla mock aunque no la pinte, así que con la condición puesta solo en
-              `stops.length` aparecía un "Fin del día · + Añadir parada" suelto al final de un día
-              que no tiene ninguna parada a la vista. */}
-          {muestraParadas &&
-            stops.length > 0 &&
-            renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)}
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
@@ -1296,7 +1258,6 @@ export function DayDetailPanel({
             />
           )}
         </div>
-      </div>
 
       <StopDetailSheet
         stop={detailIndex !== null ? stops[detailIndex] : null}

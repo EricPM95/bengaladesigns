@@ -43,7 +43,8 @@ function sanitizePlace(raw: unknown): PoolPlace | null {
 // lugares") a un solo bloque de ~20 lugares ('pool'). La clave lleva el nivel, así que una caché v2
 // de Nivel 1 no se confundiría con la nueva, pero subirlo evita arrastrar niveles 2/3 huérfanos en
 // localStorage de todos los navegadores que ya los tenían.
-const CACHE_VERSION = 3
+// v4 (2026-09-27): Roma pasa a su lista del pool a mano (`pool_lista`), distinta de la calculada.
+const CACHE_VERSION = 4
 
 /** Ronda 10: 'pool' es el bloque único que usa la app; 1|2|3 siguen existiendo para depurar. */
 export type PoolLevel = 'pool' | 1 | 2 | 3

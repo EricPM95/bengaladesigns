@@ -219,6 +219,9 @@ export interface MockStopDetail {
   freeTourTips?: string[]
   /** Ver Stop.isNightExperience en types.ts — StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado. */
   isNightExperience?: boolean
+  /** Ver Stop.isSunset / Stop.isNightView: mirador del atardecer y mirador de noche. */
+  isSunset?: boolean
+  isNightView?: boolean
   /** Ver Stop.tags en types.ts — píldoras de color en StopAccordion/StopDetailSheet (ver tagColors.ts). */
   tags?: string[]
   /** Ver Stop.scheduleText en types.ts. */
@@ -460,6 +463,8 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     freeTourHighlights: stop.freeTourHighlights,
     freeTourTips: stop.freeTourTips,
     isNightExperience: stop.isNightExperience,
+    isSunset: stop.isSunset,
+    isNightView: stop.isNightView,
     tags: stop.tags,
     scheduleText: stop.scheduleText,
     hoursCard: stop.hoursCard ?? null,
@@ -559,6 +564,8 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       isRevisit: detail.isRevisit,
       revisitReason: detail.revisitReason,
       isNightExperience: detail.isNightExperience,
+      isSunset: detail.isSunset,
+      isNightView: detail.isNightView,
     }
   })
 }

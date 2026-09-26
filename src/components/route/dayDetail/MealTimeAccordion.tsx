@@ -1,8 +1,6 @@
 import type { Coordinates } from '../../../lib/types'
 import { useZonaTuristica } from '../../../lib/useZonaTuristica'
-
-const GOLD_BG = '#FDF3E2'
-const GOLD_BORDER = '#F3DDA9'
+import { TrazoCard } from './TrazoCards'
 
 interface MealTimeAccordionProps {
   /** Nombre del destino — usado para resolver el nombre de zona turístico (useZonaTuristica). */
@@ -42,20 +40,16 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
   // en el fallback geocodificado en vivo hace falta anteponerle el conector "en" aquí.
   const zoneText = curatedZoneDisplay ?? (zonaMostrada ? `en ${zonaMostrada}` : null)
 
+  // Diseño "Trazo Itinerario": la misma tarjeta alargada que las paradas, en terracota, sin número
+  // (la comida no es un pin del mapa) y sin foto (no hay restaurante elegido todavía).
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="flex w-full items-center gap-3 rounded-xl border p-3 text-left"
-      style={{ backgroundColor: GOLD_BG, borderColor: GOLD_BORDER }}
-    >
-      <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-body" style={{ backgroundColor: GOLD_BORDER }}>
-        🍽️
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-body font-semibold text-text">{zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}</p>
-        <p className="text-caption text-text-soft">{subtitle ?? (timeRange ? `${timeRange} · Restaurantes cerca` : 'Recomendaciones de restaurantes cerca')}</p>
-      </div>
-    </button>
+    <TrazoCard
+      kind="comida"
+      time={timeRange ?? null}
+      name={zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}
+      sub={subtitle ?? 'Recomendaciones de restaurantes cerca'}
+      noPhoto
+      onOpen={onOpen}
+    />
   )
 }

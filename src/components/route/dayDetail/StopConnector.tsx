@@ -34,7 +34,7 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
     <button
       type="button"
       onClick={onAddStop}
-      className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-caption text-text-muted opacity-60 transition-opacity hover:bg-bg-hover hover:opacity-100"
+      className="ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text"
     >
       + Añadir parada
     </button>
@@ -66,21 +66,20 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
     selectedOption && selectedOption.mode !== 'walking' ? (connector?.modeOptions?.find((option) => option.mode === 'walking') ?? null) : null
 
   return (
-    <div className="flex items-center gap-2 py-1 pl-4">
-      <span className="h-6 w-px shrink-0 border-l border-dashed border-text-muted" />
-
-      {connector && !selectedOption && <span className="text-caption text-text-muted">{connector.label}</span>}
+    // Diseño "Trazo Itinerario": la línea punteada del día la pinta el contenedor; aquí solo la fila.
+    <div className="flex min-h-[44px] items-center gap-1.5 text-[12.5px] text-text/60">
+      {connector && !selectedOption && <span className="text-[12.5px] text-text/55">{connector.label}</span>}
 
       {connector && selectedOption && (
         <>
           <button
             type="button"
             onClick={() => setModeSheetOpen(true)}
-            className="flex flex-col items-start gap-0.5 text-caption text-text-muted hover:text-text-soft"
+            className="flex flex-col items-start gap-0.5 text-text/60 hover:text-text"
           >
             <span className="flex items-center gap-1.5">
-              <TransportModeIcon mode={selectedOption.mode} className="h-3.5 w-3.5 shrink-0" />
-              <span>
+              <TransportModeIcon mode={selectedOption.mode} className="h-[15px] w-[15px] shrink-0" />
+              <span className="font-mono text-[12px] font-medium">
                 {selectedOption.durationLabel} · {selectedOption.mode === 'walking' ? selectedOption.distanceLabel : MODE_LABEL[selectedOption.mode]}
               </span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
@@ -94,7 +93,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
           <button
             type="button"
             onClick={() => setMapsSheetOpen(true)}
-            className="text-caption font-medium text-accent-hover underline underline-offset-2 hover:text-accent"
+            className="ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
           >
             Rutas
           </button>

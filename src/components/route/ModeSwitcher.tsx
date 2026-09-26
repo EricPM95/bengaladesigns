@@ -21,7 +21,7 @@ function AlertDot() {
     <span
       aria-label="Quedan reservas importantes pendientes"
       title="Quedan reservas importantes pendientes"
-      className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-gold text-[10px] font-bold leading-none text-white"
+      className="flex h-[17px] w-[17px] items-center justify-center rounded-full bg-accent-gold text-[11px] font-bold leading-none text-white"
     >
       !
     </span>
@@ -36,7 +36,7 @@ export function ModeSwitcher({ showToday }: ModeSwitcherProps) {
   const modes = showToday ? [{ id: 'today' as const, label: 'Hoy' }, ...BASE_MODES] : BASE_MODES
 
   return (
-    <div className="flex items-center border-b border-border bg-bg-card px-2">
+    <nav className="grid shrink-0 border-b border-text/[.09] px-2" style={{ gridTemplateColumns: `repeat(${modes.length}, minmax(0, 1fr))` }}>
       {modes.map((item) => {
         const active = mode === item.id
 
@@ -45,15 +45,19 @@ export function ModeSwitcher({ showToday }: ModeSwitcherProps) {
             key={item.id}
             type="button"
             onClick={() => setMode(item.id)}
-            className={`flex flex-1 items-center justify-center gap-0.5 border-b-2 px-2 py-3 text-small font-medium transition-colors ${
-              active ? 'border-accent text-accent' : 'border-transparent text-text-soft hover:text-text'
-            }`}
+            className={`relative flex h-[46px] items-center justify-center gap-1.5 text-[15px] transition-colors ${active ? 'font-semibold text-text' : 'font-normal text-text/55 hover:text-text'}`}
           >
             {item.label}
             {item.id === 'bookings' && showBookingsAlert && <AlertDot />}
+            {/* Subrayado terracota que crece desde el centro (diseño "Trazo Itinerario"). */}
+            <span
+              aria-hidden="true"
+              className="absolute bottom-[-1px] left-[14%] right-[14%] h-[2.5px] rounded-full bg-accent transition-transform duration-300"
+              style={{ transform: active ? 'scaleX(1)' : 'scaleX(0)', transitionTimingFunction: 'cubic-bezier(.2,.8,.2,1)' }}
+            />
           </button>
         )
       })}
-    </div>
+    </nav>
   )
 }

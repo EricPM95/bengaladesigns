@@ -11,10 +11,11 @@ import { fetchPlacePhoto } from '../../lib/placePhoto'
  * desactivan: sin alertas, sin popups, simplemente no se pueden marcar más.
  */
 export function poolSelectionLimit(days: number | undefined): number {
-  if (days === undefined) return 7
-  if (days <= 2) return 5
-  if (days <= 5) return 7
-  return 10
+  // 2026-09-27: 3 / 5 / 7 (antes 5 / 7 / 10).
+  if (days === undefined) return 5
+  if (days <= 2) return 3
+  if (days <= 5) return 5
+  return 7
 }
 
 interface CuratedPlacesPoolProps {
