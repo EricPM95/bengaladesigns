@@ -118,20 +118,16 @@ de zona.
 
 ### Queda por decidir
 
-Apuntado mientras el usuario no estaba (2026-09-26). No se ha tomado ninguna de estas decisiones: está
-hecho lo que no las necesitaba.
+1. **Lo mejor primero** (2026-09-26). El semáforo ya lo comprueba (`primero`) y sale en rojo en casi
+   todos los viajes de 3+ días: el reparto de mañanas pone el Coliseo el día 1, el Vaticano el 2 y el
+   centro (Trevi, Panteón) el 3 o más tarde. Para cumplirlo hay que cambiar ese reparto. ¿Se hace?
 
-1. **Quitar parada: ¿y si el tramo nuevo es más corto?** Hoy la siguiente parada solo se mueve si ya no
-   se llega a su hora. Si se llega antes, las horas se quedan y sale un rato libre, como decía LA REGLA
-   del store: quitar una parada no adelanta el día. ¿Se queda así, o la siguiente parada se adelanta?
-2. **"Entradas" y "Excursiones" en ciudades sin catálogo.** En destinos curados (Roma), el "+" de DIAS ya
-   usa la misma pantalla que EXPLORAR, con los dos filtros y el mismo comportamiento: no ha hecho falta
-   cambiar nada. En una ciudad sin JSON, "Añadir parada" es el buscador de Mapbox: no sabe qué lleva
-   entrada y no tiene excursiones. ¿Se dejan fuera ahí, o hace falta otra fuente de datos?
-3. **Nocturnas añadidas a mano.**
-   - Entran a las 21:30 (hora de la cena + 90 min, como el motor), o detrás de la nocturna anterior.
-   - Piazza Navona tiene `night_experience` pero no una entrada en `night_experiences`. Entra como
-     "Piazza Navona (noche)", 30 min, sin texto propio. ¿Se le escribe su nocturna en el JSON?
+Resuelto (2026-09-26):
+- Quitar parada: la siguiente no se adelanta, salvo que el hueco pase de 45 min (entonces solo ella, sin
+  pasar de su hora de apertura).
+- Ciudades sin catálogo: sin "Entradas" ni "Excursiones" en Añadir parada. El buscador de Mapbox ya no
+  los tenía: no ha hecho falta cambiar nada.
+- Nocturna de Piazza Navona: escrita en `night_experiences` con el texto del usuario (30 min).
 
 ---
 

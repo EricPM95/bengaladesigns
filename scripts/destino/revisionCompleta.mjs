@@ -82,6 +82,7 @@ const legOf = (a, b) => (a && b && a.latitude != null && b.latitude != null ? tr
 const expsLabel = (exps) => (exps.length ? exps.map((e) => EXP[e]).join(' + ') : 'sin experiencias')
 const nombreBloque = (id) => [...(D.morning_flows ?? []), ...(D.afternoon_flows ?? [])].find((b) => b.id === id)?.nombre ?? id
 const imprescindibles = (D.places ?? []).filter((place) => place.level === 1).map((place) => place.name)
+const joyas = (D.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name)
 
 const indice = []
 const out = []
@@ -151,10 +152,18 @@ for (const [index, viaje] of VIAJES.entries()) {
     }
     if (day.pace_notice) {
       out.push(`- ⚠️ ${cell(day.pace_notice)}`)
-      if (/empezamos a las 08:00/i.test(day.pace_notice)) patron(`Se madruga (08:00) con ritmo ${viaje.ritmo}: "${cell(day.pace_notice)}"`, `viaje ${numero} día ${n}`)
-      else raro(n, `aviso del día: "${cell(day.pace_notice)}".`)
+      const madrugar = /empezamos a las (\d\d:\d\d) para que te dé tiempo a ver (.*)$/i.exec(day.pace_notice)
+      if (madrugar) {
+        // Solo se madruga por un imprescindible de nivel 1 (decisión del 2026-09-26): lo demás es raro.
+        const porQue = imprescindibles.filter((name) => madrugar[2].includes(name) || madrugar[2].includes(name.split(' y ')[0]))
+        if (porQue.length === 0) raro(n, `se madruga (${madrugar[1]}) por algo que no es nivel 1: "${cell(day.pace_notice)}".`)
+        else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(day.pace_notice)}"`, `viaje ${numero} día ${n}`)
+      } else raro(n, `aviso del día: "${cell(day.pace_notice)}".`)
     }
-    if (day.transfer_notice) out.push(`- 🚌 ${cell(day.transfer_notice)}`)
+    for (const line of String(day.transfer_notice ?? '').split('\n').filter(Boolean)) out.push(`- 🚌 ${cell(line)}`)
+    // Ritmo tranquilo: nunca antes de las 10:00 sin su aviso.
+    const primera = day.stops.find((stop) => !stop.is_night_experience)
+    if (viaje.ritmo === 'tranquilo' && !day.half_day_excursion && primera && t2m(primera.suggested_time) < 10 * 60 && !day.pace_notice) raro(n, `ritmo tranquilo que empieza a las ${primera.suggested_time} sin aviso.`)
     out.push('')
 
     const lunch = day.meals?.find((m) => m.time === 'lunch')
@@ -169,7 +178,6 @@ for (const [index, viaje] of VIAJES.entries()) {
     let previousEnd = null
     let lunchShown = false
     let paradasDeVerdad = 0
-    const tramos = []
     const filaComida = () => {
       const restaurante = lunch.restaurant ? cell(lunch.restaurant) : 'sin restaurante elegido'
       out.push(`| ${lunch.suggested_time} | ${lunch.window_end ?? ''} | | 🍝 **Comida**: ${restaurante} | ${cell(lunch.zone_display ?? lunch.zone ?? '')} | |`)
@@ -177,10 +185,8 @@ for (const [index, viaje] of VIAJES.entries()) {
     for (const stop of dayStops) {
       const start = t2m(stop.suggested_time)
       if (lunch && !lunchShown && stop.suggested_time >= lunch.suggested_time) {
-        const walkToLunch = previous && lunch.latitude != null ? legOf(previous, lunch) : null
         filaComida()
         lunchShown = true
-        if (walkToLunch != null && walkToLunch > SALTO_GRANDE) raro(n, `${walkToLunch} min andando de ${previous.name} a la comida (${cell(lunch.restaurant ?? lunch.zone)}).`)
         previous = lunch.latitude != null ? { latitude: lunch.latitude, longitude: lunch.longitude, name: 'la comida' } : previous
         previousEnd = lunch.window_end ? t2m(lunch.window_end) : previousEnd
       }
@@ -189,7 +195,6 @@ for (const [index, viaje] of VIAJES.entries()) {
         out.push(`| | | ${day.free_time.minutes} min | 🕐 **Tiempo libre** | antes de ${cell(day.free_time.before)} | |`)
       }
       const walk = previous ? legOf(previous, stop) : null
-      if (walk != null) tramos.push(walk)
       const notas = []
       if (stop.pass_through || stop.is_pass_by) notas.push('de paso')
       if (stop.instead_of_visit) notas.push('por fuera, en vez de la visita')
@@ -204,7 +209,8 @@ for (const [index, viaje] of VIAJES.entries()) {
       out.push(`| ${stop.suggested_time} | ${m2t(end)} | ${stop.duration_minutes} min | ${cell(stop.name)} | ${cell(notas.join(' · '))} | ${traslado} |`)
       if (!stop.pass_through && !stop.is_pass_by) paradasDeVerdad++
       // Lo raro: saltos grandes, horarios que no dan y esperas largas (la comida no cuenta).
-      if (walk != null && walk > SALTO_GRANDE) raro(n, `salto de ${walk} min andando hasta ${cell(stop.name)}${previous?.name ? ` (desde ${cell(previous.name)})` : ''}.`)
+      // Un traslado largo no es un fallo (decisión del 2026-09-26), pero tiene que llevar su aviso.
+      if (walk != null && walk > SALTO_GRANDE && !String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`)) raro(n, `traslado de ${walk} min andando hasta ${cell(stop.name)} sin aviso de transporte.`)
       // Tras la comida no se mira: su franja ya lleva el paseo hasta la primera parada de la tarde.
       if (previousEnd != null && walk != null && previous?.name !== 'la comida') {
         const holgura = start - previousEnd - walk
@@ -225,7 +231,6 @@ for (const [index, viaje] of VIAJES.entries()) {
     if (dinner) {
       const walk = day.dinner_walk_minutes ?? null
       out.push(`| ${dinner.suggested_time} | | | 🍷 **Cena**: ${dinner.restaurant ? cell(dinner.restaurant) : 'sin restaurante elegido (el motor elige el barrio)'} | ${cell(dinner.zone_display ?? dinner.zone ?? '')} | ${walk != null && walk > TRASLADO_VISIBLE ? `🚶 ${walk} min` : ''} |`)
-      if (walk != null && walk > SALTO_GRANDE) raro(n, `${walk} min andando hasta la cena (${cell(dinner.zone)}).`)
     }
     for (const night of nights) {
       out.push(`| ${night.suggested_time} | ${m2t(t2m(night.suggested_time) + night.duration_minutes)} | ${night.duration_minutes} min | 🌙 ${cell(night.name)} | experiencia nocturna${night.before_dinner ? ', antes de cenar' : ''} | |`)
@@ -236,11 +241,6 @@ for (const [index, viaje] of VIAJES.entries()) {
     }
     out.push('')
 
-    // El aviso de transporte se calcula desde donde acaba la mañana; si delante se ha metido algo, el
-    // salto de verdad puede ser más largo que lo que dice el aviso.
-    const avisado = Number(/~(\d+)/.exec(day.transfer_notice ?? '')?.[1] ?? NaN)
-    const mayorSalto = Math.max(0, ...tramos)
-    if (!Number.isNaN(avisado) && mayorSalto > avisado + 5) raro(n, `el aviso de transporte dice ~${avisado} min, pero el salto más largo del día es de ${mayorSalto} min andando.`)
     const esUltimo = n === viaje.dias
     if (!esUltimo && !day.half_day_excursion && paradasDeVerdad < DIA_FLOJO[viaje.ritmo]) raro(n, `día flojo: ${paradasDeVerdad} paradas (sin contar lo de paso).`)
     const ultima = dayStops.at(-1)
@@ -259,6 +259,16 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push(`- **Imprescindibles que no salen**: ${nunca.length ? nunca.join(', ') : 'ninguno'}.${soloNoche.length ? ` Solo de noche: ${soloNoche.join(', ')}.` : ''}`)
   out.push('')
   if (viaje.dias >= 2 && nunca.length) raro(null, `imprescindibles que no salen: ${nunca.join(', ')}.`)
+  // Lo mejor primero (decisión del 2026-09-26): las joyas en los días 1-2 y el nivel 1 antes del día 4.
+  if (viaje.dias >= 2) {
+    const tarde = [
+      ...joyas.filter((name) => !vistosDeDia.has(name) || vistosDeDia.get(name) > 2).map((name) => `joya ${name} ${vistosDeDia.has(name) ? `el día ${vistosDeDia.get(name)}` : 'no sale'}`),
+      ...imprescindibles.filter((name) => !joyas.includes(name) && vistosDeDia.has(name) && vistosDeDia.get(name) > 3).map((name) => `${name} el día ${vistosDeDia.get(name)}`),
+    ]
+    out.push(`- **Lo mejor primero** (joyas en los días 1-2, nivel 1 antes del día 4): ${tarde.length ? `🔴 ${tarde.join(', ')}` : '🟢 sí'}.`)
+    out.push('')
+    if (tarde.length) raro(null, `lo mejor primero, en rojo: ${tarde.join(', ')}.`)
+  }
 
   const clave = firma.join('|')
   if (firmas.has(clave)) raro(null, `la ruta es igual que la del viaje ${firmas.get(clave)}.`)
@@ -288,7 +298,7 @@ const head = [
 const tail = [
   '## Lo que parece raro (para decidir; no se ha arreglado nada)',
   '',
-  `Sacado de las rutas de arriba con estos criterios: traslados de más de ${SALTO_GRANDE} min, horarios que no dan (se llega tarde andando; tras la comida no se mira, su franja ya lleva el paseo), esperas de más de ${ESPERA_LARGA} min entre paradas (sin la comida), días flojos (menos de ${DIA_FLOJO.completo} paradas en completo o ${DIA_FLOJO.tranquilo} en tranquilo, sin el último día), días que acaban antes de las 17:00, tardes libres, avisos del día, un lugar de día y de noche el mismo día, lugares repetidos, imprescindibles que no salen y rutas iguales.`,
+  `Sacado de las rutas de arriba con estos criterios: traslados de más de ${SALTO_GRANDE} min sin su aviso (con aviso no son un fallo), ritmo tranquilo antes de las 10:00 sin aviso o por algo que no es nivel 1, lo mejor primero (joyas en los días 1-2 y nivel 1 antes del día 4), horarios que no dan (se llega tarde andando; tras la comida no se mira, su franja ya lleva el paseo), esperas de más de ${ESPERA_LARGA} min entre paradas (sin la comida), días flojos (menos de ${DIA_FLOJO.completo} paradas en completo o ${DIA_FLOJO.tranquilo} en tranquilo, sin el último día), días que acaban antes de las 17:00, tardes libres, avisos del día, un lugar de día y de noche el mismo día, lugares repetidos, imprescindibles que no salen y rutas iguales.`,
   '',
   '### Patrones que se repiten',
   '',

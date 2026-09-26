@@ -114,9 +114,13 @@ function withoutStop(stops: Stop[], stopId: string): Stop[] {
   return rest
 }
 
+/** Hueco a partir del cual, al quitar una parada, la siguiente se adelanta. */
+const GAP_TO_PULL_FORWARD_MINUTES = 45
+
 /**
- * El tramo recalculado solo mueve la siguiente parada si ya no se llega a su hora; y detrás de ella,
- * solo las que entonces se pisen. Si se llega antes, las horas se quedan (ver LA REGLA).
+ * El tramo recalculado mueve la siguiente parada si ya no se llega a su hora (y detrás de ella, solo
+ * las que entonces se pisen). Si se llega antes, las horas se quedan (ver LA REGLA), salvo un hueco de
+ * más de 45 min: entonces se adelanta la siguiente, y solo ella.
  */
 function withLegToNext(stops: Stop[], stopId: string, minutes: number): Stop[] {
   const index = stops.findIndex((stop) => stop.id === stopId)
@@ -125,6 +129,20 @@ function withLegToNext(stops: Stop[], stopId: string, minutes: number): Stop[] {
   updated[index] = { ...stops[index], walkingTimeToNextMinutes: minutes, nextLegPending: undefined }
   // Lo que se retrasa cada parada; cada una lo absorbe con el margen que ya tenía antes de la
   // siguiente, y en cuanto queda en cero no se toca nada más. Las nocturnas no se mueven.
+  // Si el tramo nuevo deja un hueco de más de 45 min antes de la siguiente, esa (solo esa) se adelanta a
+  // cuando se llega, sin pasar de su hora de apertura (decisión del 2026-09-26). Las demás no se mueven.
+  const following = updated[index + 1]
+  const previousStart = parseTimeToMinutes(stops[index].time)
+  if (following && !following.isNightExperience && !Number.isNaN(previousStart)) {
+    const arrival = roundUpToQuarterHour(previousStart + stops[index].durationMinutes + minutes)
+    const start = parseTimeToMinutes(following.time)
+    const opensAt = parseTimeToMinutes(/\d{1,2}:\d{2}/.exec(following.hours ?? '')?.[0] ?? '')
+    const earliest = Number.isNaN(opensAt) ? arrival : Math.max(arrival, opensAt)
+    if (!Number.isNaN(start) && start - arrival > GAP_TO_PULL_FORWARD_MINUTES && earliest < start) {
+      updated[index + 1] = { ...following, time: minutesToTime(earliest) }
+      return updated
+    }
+  }
   let delay = 0
   for (let next = index + 1; next < updated.length; next++) {
     const previous = updated[next - 1]

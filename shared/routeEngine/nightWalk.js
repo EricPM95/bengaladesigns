@@ -150,6 +150,10 @@ export function planNightWalks(destData, plan) {
       return conflictDay === undefined || conflictDay !== day.dayNumber
     })
     if (available.length === 0) continue
+    // Viaje de 1-2 días (decisión del 2026-09-26): lo visto de día esa misma noche solo si no hay otra
+    // nocturna posible; si la hay, van solo las otras (y la del lugar visto puede ir otra noche).
+    const sameDay = (entry) => !entry.same_day_as_visit && (entry.conflicts_with ?? []).some((name) => dayVisited.get(name) === day.dayNumber)
+    if (shortTrip && available.some((entry) => !sameDay(entry))) available.splice(0, available.length, ...available.filter((entry) => !sameDay(entry)))
 
     // Desde el restaurante hacia fuera, vecino más cercano. Cuando el viaje tenga alojamiento
     // elegido, ese punto sesgará el orden; mientras no lo haya, el paseo encadena lo más cercano.

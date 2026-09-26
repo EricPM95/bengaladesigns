@@ -144,6 +144,20 @@
       "allow_same_day": true,
       "tip": "Rodea el Palazzo Senatorio por la derecha, por Via del Campidoglio, hasta la barandilla: la vista se abre de golpe.",
       "same_day_as_visit": true
+    },
+    {
+      "name": "Piazza Navona (noche)",
+      "duration": 30,
+      "description": "De noche Navona cambia: se van los grupos, se encienden las farolas sobre las fuentes y los artistas callejeros llenan la plaza. Date una vuelta entera despacio, empezando por la Fuente de los Cuatro Ríos de Bernini, y si te apetece, con un helado en la mano.",
+      "coordinates": [
+        41.8992,
+        12.473
+      ],
+      "zone": "centro_historico",
+      "conflicts_with": [
+        "Piazza Navona"
+      ],
+      "allow_same_day": true
     }
   ],
   "closed_on": {
@@ -1458,7 +1472,11 @@
       "search_en_keywords": [
         "gianicolo",
         "janiculum"
-      ]
+      ],
+      "uphill": {
+        "transit": "el bus 115",
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      }
     },
     {
       "name": "Galería Borghese",
@@ -2977,6 +2995,10 @@
         "fuente": "https://www.turismoroma.it/en/places/savello-park-or-orange-garden",
         "nota": "Web oficial de turismo de Roma Capitale. Cambia a primeros de mes, no con el cambio de hora. Septiembre abre hasta las 20:00 (antes el JSON decía 18:00 todo el otoño).",
         "fecha": "2026-09-25"
+      },
+      "uphill": {
+        "transit": null,
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
       }
     },
     {
@@ -3110,7 +3132,11 @@
         "keyhole",
         "aventine",
         "malta"
-      ]
+      ],
+      "uphill": {
+        "transit": null,
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      }
     },
     {
       "name": "Pirámide Cestia",
@@ -3360,7 +3386,11 @@
       ],
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "uphill": {
+        "transit": null,
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      }
     },
     {
       "name": "Basílica de San Juan de Letrán",
@@ -3715,7 +3745,11 @@
       "is_free_access": true,
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "uphill": {
+        "transit": "el bus 115",
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      }
     },
     {
       "name": "Fontana dell'Acqua Paola",
@@ -3748,7 +3782,11 @@
       ],
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "uphill": {
+        "transit": "el bus 115",
+        "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      }
     },
     {
       "name": "Basílica de Santa Cecilia in Trastevere",

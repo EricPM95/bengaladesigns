@@ -120,6 +120,10 @@ for (const members of GROUPS.values()) members.sort((a, b) => (a.group_order ?? 
 
 const DINNER_ZONES = dinnerZones(D)
 const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) => place.name)
+const JOYA_NAMES = D.places.filter((place) => place.tier === 'joya').map((place) => place.name)
+/** Lo mejor primero (decisión del 2026-09-26): las joyas en los días 1-2 y el nivel 1 antes del día 4. */
+const JOYA_LAST_DAY = 2
+const LEVEL1_LAST_DAY = 3
 
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
 function outOfHours(stop) {
@@ -363,7 +367,12 @@ function measureTrip(trip, pace, exps) {
       : null
     const measured = measureDay(day, pace, interestTags, planned)
     // v3: lo que no ha cabido en ningún día viaja en not_included, con su motivo.
-    if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) measured.dropped = (day.not_included ?? []).map((item) => item.name)
+    // "No te dio tiempo" (lo de un bloque que no llegó a su hora: ya no se madruga por lo que no es nivel 1,
+    // decisión del 2026-09-26) va aparte, en amarillo: "fuera" es el pool y el nivel 1 que no caben.
+    if (trip.motor === 'v3' && measured.kind === 'ciudad' && index === 0) {
+      measured.dropped = (day.not_included ?? []).filter((item) => item.reason !== 'No te dio tiempo').map((item) => item.name)
+      measured.noTime = (day.not_included ?? []).filter((item) => item.reason === 'No te dio tiempo').map((item) => item.name)
+    }
     return { dayNumber: index + 1, isLastDay: index === trip.days.length - 1, untypedHalves: day?.untyped_halves ?? 0, reorderedBlocks: day?.reordered_blocks ?? [], ...measured }
   })
 
@@ -428,7 +437,16 @@ function measureTrip(trip, pace, exps) {
   const defaultTime = D.default_free_tour?.default_time ?? null
   const freeTourOffTime = trip.hasFreeTour ? dayMetrics.filter((d) => d.freeTourStart && d.freeTourStart !== defaultTime).length : 0
 
-  return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime }
+  // Lo mejor primero, en viajes de 2+ días: una joya que no sale en los días 1-2 (o no sale), o un
+  // imprescindible que sale el día 4 o después. Lo que no sale del nivel 1 ya lo cuenta "nivel1".
+  const bestLate = trip.days.length >= 2
+    ? [
+        ...JOYA_NAMES.filter((name) => !dayOf.has(name) || dayOf.get(name) > JOYA_LAST_DAY).map((name) => `joya ${name} ${dayOf.has(name) ? `el día ${dayOf.get(name)}` : 'no sale'}`),
+        ...LEVEL1_NAMES.filter((name) => !JOYA_NAMES.includes(name) && dayOf.has(name) && dayOf.get(name) > LEVEL1_LAST_DAY).map((name) => `${name} el día ${dayOf.get(name)}`),
+      ]
+    : []
+
+  return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }
 
 // ── Variantes ───────────────────────────────────────────────────────────────────────────────
@@ -589,6 +607,7 @@ const SEMAFORO_CRITERIOS = [
   },
   // En 1-2 días no cabe todo por diseño: lo que se queda fuera sale en "No te dio tiempo".
   { id: 'nivel1', label: 'Viajes de 3+ días sin algún imprescindible', limite: '0', applies: (n) => n >= 3, value: (rows) => rows.filter((r) => r.missingLevel1.length > 0).length, ok: (v) => v === 0 },
+  { id: 'primero', label: 'Lo mejor primero: joyas en los días 1-2 y nivel 1 antes del día 4 (viajes de 2+ días)', limite: '0', applies: (n) => n >= 2, value: (rows) => rows.filter((r) => r.bestLate.length > 0).length, ok: (v) => v === 0 },
   { id: 'fuera', label: 'Lugares que no caben, viajes de 3+ días', limite: '0', applies: (n) => n >= 3, value: (rows, days) => sum(days, (d) => d.dropped.length), ok: (v) => v === 0 },
   {
     id: 'huecos',
@@ -597,6 +616,7 @@ const SEMAFORO_CRITERIOS = [
     value: (rows, days, pace) => sum(days, (d) => d.gaps.filter((g) => !g.toFixedTime && g.idle > REF.gapTolerance[pace]).length),
     ok: (v) => v === 0,
   },
+  { id: 'sinTiempo', warnOnly: true, label: 'Paradas de bloque que van a "No te dio tiempo" (viajes de 3+ días)', limite: '—', applies: (n) => n >= 3, value: (rows, days) => sum(days, (d) => d.noTime?.length ?? 0), ok: (v) => v === 0 },
   { id: 'zigzag', label: 'Tardes que andan más de 400 m de más frente al mínimo', limite: '0', value: (rows, days) => days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.4).length, ok: (v) => v === 0 },
   {
     id: 'tardeKm',
@@ -676,7 +696,7 @@ function printSemaforo(motor) {
       for (const row of rows.filter((r) => r.pace === cell.pace && r.days.length === cell.n)) {
         const days = row.days.filter((d) => d.kind === 'ciudad')
         if (cell.criterio.ok(cell.criterio.value([row], days, cell.pace))) continue
-        const detail = cell.criterio.id === 'grupos' ? row.brokenGroups.join(' | ') : cell.criterio.id === 'nivel1' ? row.missingLevel1.join(', ') : cell.criterio.id === 'muertas' ? days.filter((d) => !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).map((d) => `D${d.dayNumber} ${d.deadMax} min`).join(', ') : cell.criterio.id === 'reorden' ? days.filter((d) => d.reorderedBlocks?.length).map((d) => `D${d.dayNumber} ${d.reorderedBlocks.join(',')}`).join(', ') : cell.criterio.id === 'zigzag' || cell.criterio.id === 'tardeKm' ? days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.05).map((d) => `D${d.dayNumber} ${d.afternoonKm.toFixed(2)}/${d.afternoonMinKm.toFixed(2)} km`).join(', '): cell.criterio.id === 'fuera' ? days.flatMap((d) => d.dropped ?? []).join(', ') : ''
+        const detail = cell.criterio.id === 'grupos' ? row.brokenGroups.join(' | ') : cell.criterio.id === 'nivel1' ? row.missingLevel1.join(', ') : cell.criterio.id === 'primero' ? row.bestLate.join(', ') : cell.criterio.id === 'muertas' ? days.filter((d) => !d.isLastDay && d.deadMax > DEAD_HOURS_MINUTES).map((d) => `D${d.dayNumber} ${d.deadMax} min`).join(', ') : cell.criterio.id === 'reorden' ? days.filter((d) => d.reorderedBlocks?.length).map((d) => `D${d.dayNumber} ${d.reorderedBlocks.join(',')}`).join(', ') : cell.criterio.id === 'zigzag' || cell.criterio.id === 'tardeKm' ? days.filter((d) => d.afternoonKm !== null && d.afternoonKm - d.afternoonMinKm > 0.05).map((d) => `D${d.dayNumber} ${d.afternoonKm.toFixed(2)}/${d.afternoonMinKm.toFixed(2)} km`).join(', '): cell.criterio.id === 'fuera' ? days.flatMap((d) => d.dropped ?? []).join(', ') : cell.criterio.id === 'sinTiempo' ? days.flatMap((d) => d.noTime ?? []).join(', ') : ''
         console.log(`  [${cell.criterio.id}] ${cell.pace} ${cell.n}d ${row.exps.join('+') || '—'}: ${detail}`)
       }
     }

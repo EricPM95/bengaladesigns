@@ -104,8 +104,6 @@ const SUNSET_PASS_COST = 40
 const SUNSET_SKIP_COST = 120
 /** Comida acortada para no perder un imprescindible: 60 min comiendo, 75 con el paseo. */
 const SHORT_LUNCH_MINUTES = 60
-/** Paradas de la mañana del bloque que no llegan antes de comer a partir de las cuales se madruga. */
-const MORNING_STOPS_TO_WAKE_EARLY = 2
 /** Un imprescindible de una mañana tiene que abrir, como tarde, a esta hora para que esa mañana vaya ese día. */
 const MORNING_OPENS_BY = 11 * 60
 const SHORT_LUNCH_BLOCK_MINUTES = 75
@@ -378,6 +376,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   const blockSummary = []
   let untypedHalves = 0
   const unplacedPool = []
+  const droppedForTime = new Set()
   const allUnits = buildUnits(destData, hasFreeTour)
   const plannedNames = new Set([...morningOf.values()].flatMap((block) => block.paradas.map((stop) => stop.lugar)))
 
@@ -503,33 +502,37 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       })
     const essential = (unit) => unit.places.some((place) => place.level === 1 || joyaNames.has(place.name))
     const lost = (result) => result.dropped.filter(({ unit }) => essential(unit)).length
-    // Lo imprescindible de la mañana del bloque que se ha ido detrás de la comida (el Foro, después
-    // del Coliseo): la mañana tipo no se hace como dice.
+    // La mañana del bloque: lo suyo que se va detrás de la comida (el Foro, después del Coliseo) no se
+    // hace como dice.
     const morningIds = new Set(units.filter((unit) => unit.slot === 'manana').map((unit) => unit.id))
-    const slid = (result) => result.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && essential(unit))
-    // Dos paradas o más de la mañana del bloque que no llegan antes de comer (el Aventino en tranquilo):
-    // también se madruga, antes que quedarse sin lo que da sentido a la mañana.
-    const slidStops = (result) => result.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && unit.role !== 'de_paso')
     let result = run(mode)
     let modeFallback = null
     let shortenedLunch = null
-    // Madrugar solo si hace falta (revisión 16), y con el motivo de lo que se recupera.
-    if (hasPlanB && morning && (lost(result) > 0 || slid(result).length > 0 || slidStops(result).length >= MORNING_STOPS_TO_WAKE_EARLY)) {
+    // Madrugar solo para no perder un imprescindible de nivel 1 (decisión del 2026-09-26): ni por las
+    // joyas ni porque se deslicen paradas normales (antes bastaban 2, y el ritmo tranquilo empezaba a las
+    // 08:00 casi todos los días). Lo demás que no llega va de paso o a "No te dio tiempo". Se probó madrugar
+    // lo justo (09:00, 09:30) y descolocaba el resto del día (el Altar detrás del Ghetto): a las 08:00.
+    const levelOne = (unit) => unit.places.some((place) => place.level === 1)
+    const lostLevelOne = (candidate) =>
+      candidate.dropped.filter(({ unit }) => levelOne(unit)).length + candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && levelOne(unit)).length
+    if (hasPlanB && morning && lostLevelOne(result) > 0) {
       const alt = run(normalMode)
-      if (lost(alt) < lost(result) || (lost(alt) === lost(result) && (slid(alt).length < slid(result).length || (slid(alt).length === slid(result).length && slidStops(alt).length < slidStops(result).length && slidStops(result).length >= MORNING_STOPS_TO_WAKE_EARLY)))) {
-        const recovered = [
-          ...result.dropped.filter(({ unit }) => !alt.dropped.some((d) => d.unit.id === unit.id)).map(({ unit }) => unit.id),
-          ...slidStops(result).filter((unit) => !slidStops(alt).some((other) => other.id === unit.id)).map((unit) => unit.id),
-        ]
+      if (lostLevelOne(alt) < lostLevelOne(result)) {
+        const startedAt = normalMode.dayStart
+        const lostUnits = (candidate) => [
+          ...candidate.dropped.map(({ unit }) => unit),
+          ...candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde'),
+        ].filter(levelOne)
+        const recovered = lostUnits(result).filter((unit) => !lostUnits(alt).some((other) => other.id === unit.id)).map((unit) => unit.id)
         // El aviso nombra lo que se recupera de la MAÑANA (madrugar es por ella), no lo que cambia por la tarde.
-        modeFallback = { recoveredUnitIds: [...new Set(recovered)].filter((id) => morningIds.has(id) && units.find((unit) => unit.id === id)?.role !== 'de_paso'), startedAt: normalMode.dayStart }
+        modeFallback = { recoveredUnitIds: [...new Set(recovered)].filter((id) => morningIds.has(id) && units.find((unit) => unit.id === id)?.role !== 'de_paso'), startedAt, dayStart: startedAt }
         result = alt
       }
     }
     // Si aún se pierde un imprescindible, se acorta la comida (60 min comiendo, como mínimo) antes que
     // quitarlo (ajustes C: la Basílica con el Vaticano por la tarde en tranquilo).
     if (lost(result) > 0) {
-      const base = modeFallback ? normalMode : mode
+      const base = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
       const shortLunch = { ...base, mealMinutes: Math.min(base.mealMinutes, SHORT_LUNCH_MINUTES), lunchBlockMinutes: Math.min(base.lunchBlockMinutes, SHORT_LUNCH_BLOCK_MINUTES), visitDurationBonus: 0 }
       const alt = run(shortLunch)
       if (lost(alt) < lost(result)) {
@@ -542,7 +545,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // de camino). La tarde empieza donde dice su bloque.
     const overflowOf = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde')
     if (overflowOf(result).length > 0) {
-      const dayMode = modeFallback ? normalMode : mode
+      const dayMode = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
       const seenFromStreet = (unit) => unit.places.every((place) => place.passThrough || place.type === 'exterior' || place.visible_from_outside || place.pass_by)
       // Con su grupo del JSON entero: si la Cerradura no llega, el Aventino (Boca, Naranjos, Cerradura) va junto.
       // Salvo que en el grupo haya un ancla o un imprescindible (el Vaticano: la Basílica sola va a la tarde).
@@ -564,6 +567,36 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       result = { ...trial, dropped: [...trial.dropped, ...left] }
     }
     return { ...result, modeFallback, ...(shortenedLunch ? { shortenedLunch } : {}) }
+  }
+
+  /**
+   * La comida solo se acorta si sin acortarla la parada no cabe ese día (decisión del 2026-09-26). Con el
+   * día ya montado (rellenos, orden final), se prueba con la comida normal: tal cual y, si no, quitando
+   * rellenos del final hacia atrás. Si así la parada sigue cabiendo, la comida vuelve a su duración: un
+   * relleno (Largo di Torre Argentina) no justifica comer deprisa.
+   */
+  function lunchBackToNormal(day, current, dinner) {
+    const needed = current.shortenedLunch ?? []
+    if (needed.length === 0) return null
+    // Con la comida normal, lo que hizo acortarla tiene que seguir entrando, y nada del día (salvo los
+    // rellenos que se quitan aquí) puede caerse.
+    const fits = (list, result) =>
+      !result.shortenedLunch &&
+      needed.every((name) => result.visits.some((visit) => visit.place.name === name)) &&
+      list.every((unit) => result.kept.some((other) => other.id === unit.id))
+    const attempt = (list) => {
+      const result = schedule(day, list, dinner, { morning: !day.halfDayExcursion })
+      return fits(list, result) ? result : null
+    }
+    let list = [...current.kept]
+    let result = attempt(list)
+    const fillers = list.filter((unit) => unit.role === 'extra')
+    while (!result && fillers.length > 0) {
+      const filler = fillers.pop()
+      list = list.filter((unit) => unit !== filler)
+      result = attempt(list)
+    }
+    return result ? { list, result: { ...result, dropped: current.dropped } } : null
   }
 
   /**
@@ -660,14 +693,27 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
    * 38 min a pie): se quedan como excepción, pero si el traslado pasa de 25 min andando el día lo dice,
    * con cómo moverse si el bloque lo trae (`traslados[acaba_en]`); si no, "bus o metro".
    */
-  function transferNoticeOf(morningBlock, afternoonBlock, result) {
-    if (!morningBlock || !afternoonBlock) return null
-    const last = [...result.visits].reverse().find((visit) => String(visit.unitId).startsWith(`${morningBlock.id}:`))
-    const first = result.visits.find((visit) => String(visit.unitId).startsWith(`${afternoonBlock.id}:`))
-    if (!last || !first) return null
-    const minutes = travel.leg(last.place.end_coordinates ?? last.place.coordinates, first.place.coordinates)?.minutes ?? 0
-    if (minutes <= TRANSFER_NOTICE_MINUTES) return null
-    return { minutes, from: last.place.name, to: first.place.name, how: afternoonBlock.traslados?.[morningBlock.acaba_en] ?? null }
+  function longWalksOf(day) {
+    const flowById = new Map([...(destData.morning_flows ?? []), ...(destData.afternoon_flows ?? [])].map((block) => [block.id, block]))
+    const morningBlock = flowById.get(day.blocks?.find((block) => block.slot === 'manana')?.id) ?? null
+    const afternoonBlock = flowById.get(day.blocks?.find((block) => block.slot === 'tarde')?.id) ?? null
+    const visits = day.schedule?.visits ?? []
+    const lunch = (day.schedule?.meals ?? []).find((meal) => meal.type === 'lunch')
+    const firstAfternoon = afternoonBlock ? visits.find((visit) => String(visit.unitId).startsWith(`${afternoonBlock.id}:`)) : null
+    const walks = []
+    for (let i = 1; i < visits.length; i++) {
+      const visit = visits[i]
+      const previous = visits[i - 1]
+      // Con la comida en medio, se sale del restaurante.
+      const fromLunch = lunch?.coordinates && lunch.start >= previous.end && lunch.start < visit.start
+      const from = fromLunch ? lunch.coordinates : previous.place.end_coordinates ?? previous.place.coordinates
+      const minutes = travel.leg(from, visit.place.coordinates)?.minutes ?? 0
+      if (minutes <= TRANSFER_NOTICE_MINUTES) continue
+      const place = placeByName.get(visit.place.name)
+      const blockHow = visit === firstAfternoon && morningBlock ? afternoonBlock.traslados?.[morningBlock.acaba_en] ?? null : null
+      walks.push({ minutes, from: fromLunch ? 'la comida' : previous.place.name, to: visit.place.name, uphill: Boolean(place?.uphill), how: blockHow ?? place?.uphill?.transit ?? null })
+    }
+    return walks
   }
 
   /**
@@ -1212,6 +1258,11 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
 
     experienceOnTheWay(day, chosen, morningBlock, otherMorningNames)
     polishExtras(day, chosen)
+    const normalLunch = lunchBackToNormal(day, chosen.result, chosen.dinner)
+    if (normalLunch) {
+      chosen.units = normalLunch.list
+      chosen.result = normalLunch.result
+    }
     if (!morningBlock && !day.halfDayExcursion) untypedHalves++
     if (chosen.block) {
       usedAfternoons.add(chosen.block.id)
@@ -1224,6 +1275,12 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
         const partner = chosen.result.visits.find((visit) => visit.place.group === place.group)
         if (partner) partner.place = { ...partner.place, outsideOf: [...new Set([...(partner.place.outsideOf ?? []), place.name])] }
       }
+    }
+    // Lo de un bloque que no ha cabido ese día (sin madrugar: ya no se madruga por él) va a "No te dio
+    // tiempo", salvo que salga otro día.
+    for (const { unit } of chosen.result.dropped ?? []) {
+      if (!unit.blockId || String(unit.blockId).startsWith('sin_tipo') || unit.role === 'de_paso' || unit.role === 'extra') continue
+      for (const place of unit.places) if (!place.passThrough && !place.isFreeTour) droppedForTime.add(place.name)
     }
     // Lo que se ha visto de verdad (lo que el programador mantiene) cuenta para el resto del viaje.
     for (const unit of chosen.result.kept) {
@@ -1255,8 +1312,6 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       untypedAfternoon: !chosen.block,
       // Bloques cuyo orden no es el del JSON (ajustes B.8: tiene que ser 0; el semáforo lo marca en rojo).
       reorderedBlocks: reorderedBlocks([morningBlock, chosen.block].filter(Boolean), chosen.result),
-      // Traslado largo entre la mañana y la tarde (más de 25 min andando): se avisa, con cómo moverse.
-      transferNotice: transferNoticeOf(morningBlock, chosen.block, chosen.result),
       curated: null,
     })
   }
@@ -1413,6 +1468,17 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     }
   }
 
+  // El rescate puede haber acortado una comida para meter un imprescindible; si con el día ya montado
+  // cabe con la comida normal (sin algún relleno), vuelve a su duración.
+  for (const day of days.filter((d) => d.schedule?.shortenedLunch?.length)) {
+    const normalLunch = lunchBackToNormal(day, day.schedule, day.dinnerCoords ? { coordinates: day.dinnerCoords } : null)
+    if (normalLunch) Object.assign(day, { units: normalLunch.list, schedule: normalLunch.result })
+  }
+
+  // Traslados largos (más de 25 min andando), con el día ya montado: lo de paso que ha metido el rescate
+  // también cuenta (decisión del 2026-09-26). No son un fallo: se dicen, andando primero y con la alternativa.
+  for (const day of days.filter((d) => d.schedule)) day.longWalks = longWalksOf(day)
+
   // Joyas e imprescindibles que no han salido en ningún día.
   // Lo de un grupo que no se visita en todo el viaje se ve por fuera desde su compañero (el Castillo de
   // Sant'Angelo desde el Puente: una visita grande al día, y ese día ya es el Vaticano).
@@ -1429,9 +1495,14 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name))
     .map((place) => ({ unitId: place.name, name: place.name, reason: 'no_room' }))
 
+  // Lo que se cayó por tiempo y no ha salido en ningún otro día (ni está ya en otra lista).
+  const listed = new Set([...unplacedPool.map((item) => item.name), ...unplacedEssentials.map((item) => item.name)])
+  const notEnoughTime = [...droppedForTime].filter((name) => !seen.has(name) && !tourCovers.has(name) && !listed.has(name)).map((name) => ({ name, reason: 'no_time' }))
+
   return {
     mode,
     days,
+    notEnoughTime,
     coreDays: destData.destination_config?.core_days ?? null,
     placedDay: new Map(),
     unplacedPool,

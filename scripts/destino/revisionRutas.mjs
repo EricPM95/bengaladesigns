@@ -58,6 +58,11 @@ let sinTipo = 0
 const reordenados = []
 const huecosRojos = []
 const faltanPorFuera = []
+// Lo mejor primero (decisión del 2026-09-26): en viajes de 2+ días, las joyas en los días 1-2 y el nivel 1
+// antes del día 4.
+const mejorPrimero = []
+const JOYAS = (D.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name)
+const NIVEL1 = (D.places ?? []).filter((place) => place.level === 1).map((place) => place.name)
 const t2m = (hhmm) => {
   const [h, m] = String(hhmm).split(':').map(Number)
   return h * 60 + m
@@ -96,6 +101,7 @@ for (const [index, viaje] of VIAJES.entries()) {
   const experiencesPositive = ['imprescindibles', ...viaje.exps.filter((e) => e !== 'imprescindibles')]
   const pace = viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo'
   const vistos = new Set()
+  const primerDia = new Map()
   const huecos = []
   for (let n = 1; n <= viaje.dias; n++) {
     const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha ?? null, viaje.pool ?? [], viaje.exps.length ? experiencesPositive : [], {
@@ -139,7 +145,13 @@ for (const [index, viaje] of VIAJES.entries()) {
       out.push('')
       continue
     }
-    for (const stop of day.stops) for (const name of [stop.place_name ?? stop.name, ...(stop.free_tour_covers ?? []), ...(stop.outside_of ?? []), ...(stop.pass_by_includes ?? [])]) vistos.add(name)
+    for (const stop of day.stops) {
+      if (stop.is_night_experience) continue
+      for (const name of [stop.place_name ?? stop.name, ...(stop.free_tour_covers ?? []), ...(stop.outside_of ?? []), ...(stop.pass_by_includes ?? [])]) {
+        vistos.add(name)
+        if (!primerDia.has(name)) primerDia.set(name, n)
+      }
+    }
     for (const id of day.reordered_blocks ?? []) reordenados.push(`viaje ${index + 1}, día ${n}: ${id}`)
     huecos.push({ n, minutos: maxHueco(day) })
     if (day.pace_notice) out.push(`> ${day.pace_notice}`)
@@ -179,6 +191,13 @@ for (const [index, viaje] of VIAJES.entries()) {
   }
   // El último día de ciudad no cuenta (la tarde libre del último día es amarilla, no roja).
   for (const { n, minutos } of huecos.slice(0, -1)) if (minutos > 90) huecosRojos.push(`viaje ${index + 1}, día ${n}: ${minutos} min`)
+  if (viaje.dias >= 2) {
+    const tarde = [
+      ...JOYAS.filter((name) => !primerDia.has(name) || primerDia.get(name) > 2).map((name) => `joya ${name} ${primerDia.has(name) ? `el día ${primerDia.get(name)}` : 'no sale'}`),
+      ...NIVEL1.filter((name) => !JOYAS.includes(name) && primerDia.has(name) && primerDia.get(name) > 3).map((name) => `${name} el día ${primerDia.get(name)}`),
+    ]
+    if (tarde.length) mejorPrimero.push(`viaje ${index + 1}: ${tarde.join(', ')}`)
+  }
   if (viaje.dias >= 2) for (const place of porFuera) if (!vistos.has(place.name)) faltanPorFuera.push(`viaje ${index + 1}: ${place.name}`)
 }
 
@@ -188,6 +207,7 @@ head.push('')
 head.push(`- Bloques reordenados respecto al JSON: **${reordenados.length}**${reordenados.length ? ` (${reordenados.join('; ')})` : ''}.`)
 head.push(`- Medios días sin tipo (ningún bloque encaja y el motor improvisa): **${sinTipo}**.`)
 head.push(`- Huecos rojos (más de 90 min parado en mitad del viaje): **${huecosRojos.length}**${huecosRojos.length ? ` (${huecosRojos.join('; ')})` : ''}.`)
+head.push(`- ${mejorPrimero.length ? "🔴" : "🟢"} Lo mejor primero (joyas en los días 1-2, nivel 1 antes del día 4; viajes de 2+ días): **${mejorPrimero.length}** viajes en rojo${mejorPrimero.length ? ` (${mejorPrimero.join('; ')})` : ''}.`)
 head.push(`- Imprescindibles que se ven desde la calle y faltan (viajes de 2+ días): **${faltanPorFuera.length}**${faltanPorFuera.length ? ` (${faltanPorFuera.join('; ')})` : ''}.`)
 head.push('')
 head.push(`Los viajes de 1 día siguen con las rutas curadas de \`short_trips\` (con bloques salían peor).`)

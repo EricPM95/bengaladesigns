@@ -231,18 +231,23 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     ...(trip.unplacedEssentials ?? []).map((item) => ({ name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+    // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
+    ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo' })),
   ]
   // Mañanas y tardes tipo (Parte B): qué bloque lleva cada medio día; sin bloque, "medio día sin tipo".
   if (Array.isArray(tripDay.blocks)) {
     day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))
     day.untyped_halves = tripDay.blocks.filter((block) => block.id == null).length
     day.reordered_blocks = tripDay.reorderedBlocks ?? []
-    // Traslado largo entre la mañana y la tarde: "Traslado de ~38 min: mejor en bus 492 (unos 20 min) o taxi".
-    if (tripDay.transferNotice) {
-      const { minutes, how } = tripDay.transferNotice
-      day.transfer_notice = `Traslado de ~${Math.round(minutes / 5) * 5} min: mejor en ${how ?? 'bus o metro'}`
-    }
   }
+  // Traslados largos (más de 25 min andando), cada uno en su línea, andando primero y luego la alternativa
+  // (decisión del 2026-09-26): "Puente Sant'Angelo → Mirador del Janículo: ~30 min andando (con cuesta) ·
+  // o el bus 115 si prefieres no subirla". Sin dato de transporte, "bus o taxi".
+  const notices = (tripDay.longWalks ?? []).map(({ minutes, from, to, uphill, how }) => {
+    const walk = `${from === 'la comida' ? 'Desde la comida' : from} → ${to}: ~${Math.round(minutes / 5) * 5} min andando`
+    return uphill ? `${walk} (con cuesta) · o ${how ?? 'en bus o taxi'} si prefieres no subirla` : `${walk} · o en ${how ?? 'bus o taxi'}`
+  })
+  if (notices.length > 0) day.transfer_notice = notices.join('\n')
   // "Aperitivo y paseo por {barrio}" (ajustes B.7): 90 min o menos antes de cenar en un barrio de cena.
   const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames)
   if (aperitivo) day.aperitivo = aperitivo

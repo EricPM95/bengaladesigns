@@ -834,7 +834,7 @@ export function DayDetailPanel({
           {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
               decisión que haya que tomar. */}
           {showsRoute && day.paceNotice && <p className="mt-0.5 text-small text-text-muted">{day.paceNotice}</p>}
-          {showsRoute && day.transferNotice && <p className="mt-0.5 text-small text-text-muted">{day.transferNotice}</p>}
+          {showsRoute && day.transferNotice && <p className="mt-0.5 whitespace-pre-line text-small text-text-muted">{day.transferNotice}</p>}
           <div className={`mt-2.5 mb-4 items-center gap-2.5 overflow-x-auto rounded-xl bg-bg-hover px-3 py-2.5 text-small text-text-soft ${showsRoute && stops.length > 0 ? 'flex' : 'hidden'}`}>
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
               <SummaryPinIcon className="text-accent-hover" />
