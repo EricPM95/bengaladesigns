@@ -1,0 +1,136 @@
+{
+  "zone": "testaccio",
+  "places": [
+    {
+      "name": "Mercado de Testaccio",
+      "description": "El mercado donde compra el barrio: una nave moderna con puestos de fruta, carnicerías y queserías, y entre ellos algunos de los bocadillos más famosos de Roma. Se construyó en 2012 sobre restos de almacenes romanos, que se ven bajo el suelo de cristal.",
+      "what_to_see": [
+        "Los puestos de comida preparada, donde se come de pie como los del barrio",
+        "Los restos de los almacenes romanos, visibles bajo el suelo de cristal",
+        "Los puestos de producto: quesos, embutidos, fruta de temporada y pescado"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–Sáb",
+            "hours": "07:00–15:30"
+          }
+        ],
+        "notes": "Cerrado los domingos. Muchos puestos de comida cierran antes de la hora de cierre."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Piramide",
+          "note": "10 min caminando"
+        },
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 3",
+          "stop": "Via Marmorata"
+        }
+      ],
+      "extras": {
+        "address": "Via Beniamino Franklin, 00153 Roma"
+      },
+      "tips": [
+        "Ven a la hora de comer, pero antes de las 14:00: a última hora muchos puestos ya han cerrado.",
+        "Mordi e Vai es el puesto más famoso: bocadillos de la cocina romana de siempre, como la ternera guisada (allesso di scottona).",
+        "Es un mercado de barrio de verdad: pagar en efectivo en algunos puestos todavía es lo normal."
+      ],
+      "secrets": [
+        "A cinco minutos está el Monte Testaccio, una colina artificial hecha con millones de ánforas romanas rotas que se amontonaron durante siglos junto al puerto del Tíber."
+      ]
+    },
+    {
+      "name": "Cementerio Protestante",
+      "description": "El Cimitero Acattolico: un jardín de cipreses y lápidas junto a la muralla Aureliana y la Pirámide Cestia, donde desde el siglo XVIII se entierra a quien no era católico. Aquí descansan los poetas Keats y Shelley. Es el rincón más silencioso de Roma, a dos pasos del bullicio de Testaccio.",
+      "what_to_see": [
+        "La tumba de John Keats en la parte antigua, con la Pirámide Cestia detrás",
+        "La tumba de Percy Bysshe Shelley, junto a la muralla",
+        "El Ángel del Dolor, la escultura de William Wetmore Story sobre la tumba de su mujer",
+        "La tumba de Antonio Gramsci",
+        "Los gatos que viven entre los cipreses"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–sáb",
+            "hours": "09:00–17:00 (última entrada 16:30)"
+          },
+          {
+            "dates": "Domingos y festivos",
+            "hours": "09:00–13:00 (última entrada 12:30)"
+          }
+        ],
+        "notes": "Cerrado el 1 y 6 de enero; 8, 24, 25, 26 y 31 de diciembre; y unas dos semanas a mediados de agosto."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Piramide",
+          "note": "5 min caminando"
+        },
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 3",
+          "stop": "Piramide"
+        }
+      ],
+      "extras": {
+        "address": "Via Caio Cestio 6, 00153 Roma",
+        "official_url": "https://www.cemeteryrome.it"
+      },
+      "tips": [
+        "La entrada es gratis, con un donativo voluntario que ayuda a mantener el cementerio.",
+        "La Pirámide Cestia queda justo al lado: la mejor vista de ella es desde dentro del cementerio.",
+        "Es un lugar de recogimiento: se visita en silencio."
+      ],
+      "secrets": [
+        "En la lápida de Keats no aparece su nombre. Solo pone «Aquí yace alguien cuyo nombre fue escrito en el agua», como él mismo pidió."
+      ]
+    },
+    {
+      "name": "Testaccio",
+      "description": "El barrio obrero de Roma: sin monumentos famosos y casi sin turistas, pero con el mercado, las trattorias de toda la vida y la Piazza Testaccio como salón del barrio. Aquí estaba el matadero de la ciudad, y de ahí nace la cocina romana del «quinto quarto»: la coda alla vaccinara, la trippa o los rigatoni con pajata.",
+      "what_to_see": [
+        "La Piazza Testaccio, con su fuente de las ánforas y los vecinos charlando",
+        "El Mercado de Testaccio, con sus puestos de comida",
+        "El Monte Testaccio, una colina hecha de ánforas romanas rotas",
+        "El antiguo Matadero (Mattatoio), hoy espacio cultural"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Piramide",
+          "note": "10 min caminando"
+        },
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 3",
+          "stop": "Via Marmorata"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Testaccio, 00153 Roma"
+      },
+      "tips": [
+        "Siéntate en la Piazza Testaccio a media tarde: es donde se juntan los vecinos, y el aperitivo aquí es de verdad.",
+        "Es el barrio para probar la cocina romana de siempre: coda alla vaccinara, cacio e pepe y carciofi.",
+        "Combínalo con el Cementerio Protestante y la Pirámide Cestia, que quedan al lado."
+      ],
+      "secrets": [
+        "El Monte Testaccio mide unos 35 metros y está hecho con millones de ánforas de aceite rotas que se tiraron aquí durante siglos, junto al antiguo puerto del Tíber. Hoy tiene restaurantes excavados en su base."
+      ]
+    }
+  ]
+}

@@ -84,7 +84,7 @@
         },
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 3 y 19",
           "stop": "Bioparco / Belle Arti"
         }
@@ -141,7 +141,7 @@
       "transport": [
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 3 y 19",
           "stop": "Bioparco"
         },
@@ -196,7 +196,7 @@
       "transport": [
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 3 y 19",
           "stop": "Galleria Arte Moderna"
         },
@@ -306,6 +306,82 @@
         "Los 228 bustos de la Passeggiata son una enciclopedia del nacionalismo italiano del siglo XIX: cada busto representa a un héroe de la historia italiana, desde Dante hasta contemporáneos de la unificación. Muchos están tan erosionados que son irreconocibles, pero el paseo entre ellos al atardecer tiene un romanticismo decadente irresistible.",
         "Napoleón III ordenó remodelar los jardines del Pincio en estilo francés durante la ocupación de Roma (1849-1870). Los romanos aceptaron los jardines pero no al emperador — cuando se fue, mantuvieron el diseño pero quitaron su nombre de todo."
       ]
+    },
+    {
+      "name": "Quartiere Coppedè",
+      "description": "Un rincón que no se parece a nada más en Roma: dos manzanas proyectadas por Gino Coppedè en los años veinte, donde se mezclan torres medievales, art nouveau, barroco y un toque de cuento. Se entra por un gran arco con una lámpara de forja colgando y se llega a una plaza con una fuente de ranas.",
+      "what_to_see": [
+        "El arco de entrada de Via Dora, con la enorme lámpara de hierro forjado colgando en el centro",
+        "La Fontana delle Rane (Fuente de las Ranas), en Piazza Mincio",
+        "El Villino delle Fate, la casa de las hadas, con frescos de Florencia, Roma y Venecia en la fachada",
+        "El Palazzo del Ragno, con la araña dorada sobre la puerta"
+      ],
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 3 y 19",
+          "stop": "Piazza Buenos Aires",
+          "note": "5 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza Mincio, 00198 Roma"
+      },
+      "tips": [
+        "Se ve entero en 20-30 minutos: entra por el arco de Via Dora y date una vuelta por Piazza Mincio y las calles de alrededor.",
+        "Es una zona residencial: se visita desde la calle, ningún edificio se puede visitar por dentro.",
+        "Queda lejos del centro, así que encaja mejor combinado con Villa Borghese o Villa Torlonia."
+      ],
+      "secrets": [
+        "Cuenta la leyenda que los Beatles se bañaron vestidos en la Fuente de las Ranas en 1965, después de su concierto en Roma.",
+        "Dario Argento rodó aquí escenas de sus películas de terror: el barrio tiene un punto inquietante al atardecer."
+      ]
+    },
+    {
+      "name": "Santa Maria del Popolo",
+      "description": "La iglesia de la Piazza del Popolo es un museo escondido: en la capilla Cerasi hay dos Caravaggio, la Conversión de San Pablo y la Crucifixión de San Pedro, y la capilla Chigi la diseñó Rafael. Pinturicchio, Bernini y Annibale Carracci completan una de las iglesias con más arte por metro cuadrado de Roma.",
+      "what_to_see": [
+        "Los dos Caravaggio de la capilla Cerasi, a la izquierda del altar mayor",
+        "La capilla Chigi, de Rafael, con las tumbas en forma de pirámide y las estatuas de Bernini",
+        "Los frescos de Pinturicchio en el ábside y en la capilla della Rovere",
+        "La Asunción de Annibale Carracci, sobre el altar de la capilla Cerasi"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Laborables",
+            "hours": "08:30–09:45, 10:30–12:00 y 16:00–18:00"
+          },
+          {
+            "dates": "Festivos",
+            "hours": "16:30–18:00"
+          }
+        ],
+        "notes": "No se hacen visitas durante las misas."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "Flaminio",
+          "note": "3 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza del Popolo 12, 00187 Roma",
+        "official_url": "https://www.santamariadelpopoloroma.it"
+      },
+      "tips": [
+        "La entrada a la capilla Cerasi (la de los dos Caravaggio) está controlada por aforo, y dentro no se pueden hacer fotos ni vídeo.",
+        "Ve por la mañana entre semana: cierra a mediodía y los festivos solo abre por la tarde.",
+        "La entrada es gratis."
+      ],
+      "secrets": [
+        "Según la leyenda, la iglesia se levantó en 1099 sobre la tumba de Nerón para acabar con su fantasma, que según los romanos rondaba por la zona."
+      ],
+      "_fuente": "Horario de visitas y normas de la capilla Cerasi: https://santamariadelpopoloroma.it y https://santamariadelpopoloroma.it/condizioni-per-le-visite/ (consultado el 2026-09-26). La web oficial no dice nada de luces con monedas: se ha quitado."
     }
   ]
 }

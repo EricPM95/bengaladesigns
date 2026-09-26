@@ -629,7 +629,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                         ))}
                         {nearbyTransit.bus.map((entry, index) => (
                           <p key={`bus-${index}`} className="flex items-center gap-1.5 text-small text-text-soft">
-                            <BusIcon />
+                            {entry.kind === 'tram' ? <span aria-hidden="true">🚋</span> : <BusIcon />}
                             {entry.linea ? `${entry.linea} · ${entry.parada}` : entry.parada}
                           </p>
                         ))}

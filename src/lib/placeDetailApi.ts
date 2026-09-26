@@ -158,7 +158,7 @@ export function toNearbyTransit(detail: PlaceDetail): NearbyTransit {
     if (!entry?.stop) continue
     const linea = entry.line ?? (entry.lines?.length ? entry.lines.join(', ') : '')
     const parada = entry.note ? `${entry.stop} · ${entry.note}` : entry.stop
-    ;(entry.type === 'metro' ? metro : bus).push({ linea, parada })
+    ;(entry.type === 'metro' ? metro : bus).push({ linea, parada, ...(entry.type === 'tram' ? { kind: 'tram' as const } : {}) })
   }
   return { metro, bus }
 }

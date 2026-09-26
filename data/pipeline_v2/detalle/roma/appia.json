@@ -1,0 +1,88 @@
+{
+  "zone": "appia",
+  "places": [
+    {
+      "name": "Via Appia Antica",
+      "description": "La «reina de las calzadas»: la carretera que salía de Roma hacia el sur en el 312 a. C., con su empedrado original entre pinos, tumbas y campo abierto. A pocos kilómetros del centro, se camina o se pedalea por una Roma de hace dos mil años sin apenas coches.",
+      "what_to_see": [
+        "El empedrado original de grandes losas de basalto, con las marcas de las ruedas de los carros",
+        "El mausoleo de Cecilia Metela, la tumba redonda más famosa de la vía",
+        "La hilera de pinos y cipreses a los lados, con restos de tumbas y villas romanas",
+        "La iglesia del Domine Quo Vadis, al principio del parque"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "118"
+          ],
+          "stop": "Via Appia Antica",
+          "note": "desde Piramide o Circo Massimo"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "660"
+          ],
+          "stop": "Cecilia Metella",
+          "note": "desde el metro A Colli Albani"
+        }
+      ],
+      "extras": {
+        "address": "Via Appia Antica 58, 00179 Roma (punto de información del parque)",
+        "official_url": "https://www.parcoappiaantica.it"
+      },
+      "tips": [
+        "Ve en domingo si puedes: se cierra al tráfico y la vía se queda para peatones y bicis.",
+        "El tramo más bonito empieza en la tumba de Cecilia Metela y sigue hacia el sur: el empedrado original entre pinos.",
+        "Se alquilan bicicletas (también eléctricas) junto al punto de información: el empedrado es duro, lleva calzado cómodo y agua."
+      ],
+      "secrets": [
+        "En la iglesia del Domine Quo Vadis, según la tradición, San Pedro se encontró con Jesús cuando huía de Roma y decidió volver para morir en la ciudad."
+      ]
+    },
+    {
+      "name": "Catacumbas de San Calixto",
+      "description": "El cementerio cristiano subterráneo más grande e importante de Roma: unos 20 km de galerías en cuatro niveles, excavadas en la toba desde el siglo II. Aquí se enterraron medio millón de cristianos y, en la Cripta de los Papas, nueve papas del siglo III.",
+      "what_to_see": [
+        "La Cripta de los Papas, con las lápidas originales de varios papas del siglo III",
+        "La cripta de Santa Cecilia, su primera tumba, con una copia de la escultura de Maderno",
+        "Las galerías con los nichos excavados en la roca, uno sobre otro",
+        "Los cubículos de los sacramentos, con algunas de las pinturas cristianas más antiguas"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Jue–mar",
+            "hours": "09:00–12:00 y 14:00–17:00"
+          }
+        ],
+        "notes": "Solo con visita guiada (unos 40 min, salidas cada 30 min en varios idiomas). Cerrado los miércoles, 1 de enero, Pascua, 25 de diciembre y de mediados de enero a mediados de febrero."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "118"
+          ],
+          "stop": "Catacombe di San Callisto"
+        }
+      ],
+      "extras": {
+        "address": "Via Appia Antica 110/126, 00179 Roma",
+        "official_url": "https://www.catacombe.roma.it"
+      },
+      "tips": [
+        "Solo se entra con visita guiada: al llegar te asignan la siguiente salida en español, así que puede tocar esperar un rato.",
+        "Abajo hace fresco todo el año (unos 15 grados): lleva algo de abrigo incluso en verano.",
+        "No se pueden hacer fotos dentro."
+      ],
+      "secrets": [
+        "Las catacumbas no eran escondites para huir de las persecuciones, como se suele creer: eran cementerios, y los cristianos las usaban para enterrar y recordar a sus muertos."
+      ]
+    }
+  ]
+}

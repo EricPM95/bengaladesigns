@@ -63,7 +63,7 @@
       "transport": [
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 8",
           "stop": "Belli",
           "note": "A 5 min caminando por Viale di Trastevere"
@@ -146,7 +146,7 @@
         },
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 8",
           "stop": "Belli",
           "note": "A 3 min caminando"
@@ -162,6 +162,170 @@
       "secrets": [
         "Trilussa (Carlo Alberto Salustri) fue el poeta más popular de Roma a principios del siglo XX — escribía en dialecto romanesco y sus poemas satíricos sobre la clase política siguen siendo citados hoy. 'Er politico' de Trilussa es el equivalente romano de un tweet viral.",
         "Ponte Sisto (el puente que conecta la plaza con el centro) fue el primer puente peatonal de Roma moderna, construido por el Papa Sixto IV en 1473. El agujero circular en el centro no es decorativo: es un ojo de buey para dejar pasar el agua en caso de crecida del Tíber."
+      ]
+    },
+    {
+      "name": "San Pietro in Montorio y Tempietto de Bramante",
+      "description": "En lo alto del Janículo, en el patio de la iglesia de San Pietro in Montorio, está el Tempietto de Bramante: un pequeño templo redondo de 1502 que se convirtió en el modelo del Renacimiento romano. Se levantó donde, según la tradición, crucificaron a San Pedro, y lo pagaron los Reyes Católicos.",
+      "what_to_see": [
+        "El Tempietto, un templete circular con columnas dóricas: pequeño, pero perfecto en sus proporciones",
+        "La cripta bajo el Tempietto, sobre el lugar tradicional de la crucifixión de San Pedro",
+        "Dentro de la iglesia, la Flagelación de Sebastiano del Piombo, con dibujos de Miguel Ángel",
+        "La vista sobre Roma desde la plaza de la iglesia"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Mar–dom",
+            "hours": "10:00–18:00 (última entrada 17:30)"
+          }
+        ],
+        "notes": "Cerrado los lunes. La iglesia tiene su propio horario, con cierre a mediodía."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "115",
+            "870"
+          ],
+          "stop": "Gianicolo"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di San Pietro in Montorio 2, 00153 Roma"
+      },
+      "tips": [
+        "Queda de camino entre el Mirador del Janículo y Trastevere: se ve bajando, en diez minutos.",
+        "La entrada al patio del Tempietto es gratis.",
+        "Desde Trastevere se sube andando por las escaleras de Via Garibaldi (unos 15 minutos de cuesta)."
+      ],
+      "secrets": [
+        "El conjunto pertenece a España desde hace siglos: hoy es sede de la Real Academia de España en Roma."
+      ]
+    },
+    {
+      "name": "Fontana dell'Acqua Paola",
+      "description": "El Fontanone, como lo llaman los romanos: una fuente monumental de 1612 en lo alto del Janículo, construida por el papa Pablo V para celebrar la llegada del agua a Trastevere. Delante, una barandilla con una de las mejores vistas sobre los tejados de Roma.",
+      "what_to_see": [
+        "La fachada de mármol, parecida a un arco de triunfo, con el agua cayendo en el gran estanque",
+        "La vista desde la barandilla de enfrente: cúpulas, campanarios y tejados de toda Roma",
+        "La fuente iluminada al anochecer"
+      ],
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "115",
+            "870"
+          ],
+          "stop": "Gianicolo"
+        }
+      ],
+      "extras": {
+        "address": "Via Garibaldi, 00153 Roma"
+      },
+      "tips": [
+        "Queda a 5 minutos del Tempietto y a 10 del Mirador del Janículo: se ven juntos.",
+        "Bajando por las escaleras de Via Garibaldi llegas a Trastevere en 10 minutos.",
+        "Al atardecer y de noche, con la fuente iluminada, es cuando más impresiona."
+      ],
+      "secrets": [
+        "Es la fuente que abre La gran belleza de Paolo Sorrentino.",
+        "Parte del mármol se sacó del Foro de Nerva, de las ruinas de un templo romano."
+      ]
+    },
+    {
+      "name": "Basílica de Santa Cecilia in Trastevere",
+      "description": "La basílica de la patrona de la música, levantada sobre la casa donde, según la tradición, vivió y murió Santa Cecilia. Bajo el altar está su escultura de mármol de Stefano Maderno; debajo, una cripta sobre casas romanas; y en el coro de las monjas, el Juicio Final de Pietro Cavallini, uno de los grandes frescos medievales de Roma.",
+      "what_to_see": [
+        "La escultura de Santa Cecilia de Maderno (1600), tumbada bajo el altar",
+        "El mosaico del ábside, del siglo IX",
+        "La cripta, con restos de casas romanas (entrada aparte)",
+        "El Juicio Final de Cavallini, en el coro de las monjas (entrada aparte, solo por la mañana)"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun–sáb",
+            "hours": "10:00–12:30 y 16:30–18:30"
+          },
+          {
+            "dates": "Domingos y festivos",
+            "hours": "11:30–12:30 y 16:30–18:00"
+          }
+        ],
+        "notes": "La cripta y el fresco de Cavallini se visitan aparte; el fresco, solo por la mañana."
+      },
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 8",
+          "stop": "Belli",
+          "note": "7 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "23",
+            "280"
+          ],
+          "stop": "Lungotevere Ripa"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Santa Cecilia 22, 00153 Roma"
+      },
+      "tips": [
+        "Si te interesa el fresco de Cavallini, ven por la mañana: por la tarde solo se ve la iglesia.",
+        "La iglesia es gratis; la cripta y el fresco tienen una entrada pequeña.",
+        "El patio de entrada, con su jardín y la fuente, es uno de los rincones más tranquilos de Trastevere."
+      ],
+      "secrets": [
+        "Maderno esculpió a Santa Cecilia tal como dicen que apareció su cuerpo al abrir la tumba en 1599: tumbada de lado, con la cabeza girada y la marca del corte en el cuello."
+      ]
+    },
+    {
+      "name": "Trastevere",
+      "description": "El barrio «al otro lado del Tíber»: callejuelas empedradas, fachadas color ocre con hiedra, ropa tendida entre balcones y trattorias a cada paso. De día es un pueblo dentro de Roma; al caer la tarde se llena de romanos y se convierte en el barrio con más ambiente de la ciudad.",
+      "what_to_see": [
+        "La Piazza di Santa Maria in Trastevere, con su fuente y la basílica de los mosaicos dorados",
+        "Las calles de Via della Lungaretta, Via della Scala y Vicolo del Cinque",
+        "La Plaza Trilussa y el Ponte Sisto, con vistas al río",
+        "Los rincones con hiedra de Via della Paglia y Vicolo del Piede"
+      ],
+      "transport": [
+        {
+          "type": "tram",
+          "icon": "🚋",
+          "line": "Línea 8",
+          "stop": "Belli / Trastevere-Mastai"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "H",
+            "23",
+            "280"
+          ],
+          "stop": "Lungotevere / Viale di Trastevere"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di Santa Maria in Trastevere, 00153 Roma"
+      },
+      "tips": [
+        "Piérdete sin mapa: lo mejor del barrio está en las calles pequeñas, no en las plazas grandes.",
+        "Desconfía de los restaurantes con menú de fotos en la plaza: dos calles más allá se come mejor y más barato.",
+        "El domingo por la mañana se monta el mercadillo de Porta Portese, en la parte sur del barrio."
+      ],
+      "secrets": [
+        "En julio el barrio celebra la Festa de' Noantri («de nosotros»): los trasteverinos siempre se han considerado un pueblo aparte del resto de Roma."
       ]
     }
   ]

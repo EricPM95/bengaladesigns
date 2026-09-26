@@ -130,6 +130,10 @@ Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CA
 Roma cerrada (2026-09-26): revisión V2 sin rojos tras los tres ajustes finales (reglas 219-223). El motor v3 con
 días curados es el de por defecto para Roma, también en producción (`engineFor` con `curated_days`).
 
+Fichas de Roma completas (2026-09-26): los 74 lugares tienen ficha en data/pipeline_v2/detalle/roma (dos archivos
+nuevos: testaccio.json y appia.json; Coppedè en villa_borghese.json). Tranvías con tipo "tram" y 🚋. Horarios del
+Doria Pamphilj y del claustro de Letrán y normas de la capilla Cerasi comprobados en sus webs (`_fuente`).
+
 Llamadas a Claude en Roma (2026-09-26, reglas 229-230): cuestionario sin clasificar ni sugerir con Claude; fichas de
 nocturnas, Free Tour y "visto desde" con la de su lugar; descripción en caché. Pendiente: decidir el transporte
 (FLUJO_TRANSPORTE.md no da datos para tren, bus, ferry, carretera "disfrutable", la recomendada ni las etiquetas) y

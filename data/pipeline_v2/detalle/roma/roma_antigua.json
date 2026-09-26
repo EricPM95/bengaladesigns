@@ -51,7 +51,7 @@
         },
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 3",
           "stop": "Colosseo"
         },
@@ -600,6 +600,96 @@
       "secrets": [
         "La escultura ha generado debate durante siglos — la expresión de Santa Teresa es tan ambigua que muchos la interpretan como éxtasis religioso y otros como algo mucho más terrenal. Bernini lo hizo a propósito.",
         "La luz dorada que ilumina la escultura viene de una ventana oculta diseñada por Bernini — los rayos de bronce dorado amplifican el efecto. Es puro teatro barroco."
+      ]
+    },
+    {
+      "name": "Basílica de San Juan de Letrán",
+      "description": "La catedral de Roma, no San Pedro: aquí tiene su sede el Papa como obispo de la ciudad, y por eso se la llama «madre y cabeza de todas las iglesias del mundo». Fundada por Constantino en el siglo IV, fue la primera gran basílica cristiana. Lo que ves hoy es la nave barroca de Borromini y la fachada de Galilei, con quince estatuas colosales asomadas a la plaza.",
+      "what_to_see": [
+        "La nave central de Borromini, con las doce estatuas gigantes de los apóstoles en sus hornacinas",
+        "Las puertas de bronce de la entrada principal: son las de la Curia del Foro Romano, el antiguo Senado",
+        "El claustro cosmatesco del siglo XIII, con columnas retorcidas y mosaicos de mármol (entrada aparte)",
+        "El baptisterio octogonal, el más antiguo de Roma, a un lado de la basílica",
+        "El obelisco de la plaza, el más alto de los que quedan en pie de la Antigüedad"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Basílica, todos los días",
+            "hours": "07:00–18:30"
+          },
+          {
+            "dates": "Claustro, lun–sáb",
+            "hours": "09:00–17:00"
+          },
+          {
+            "dates": "Baptisterio, todos los días",
+            "hours": "09:00–19:00"
+          }
+        ],
+        "notes": "El claustro cierra los domingos y festivos. Durante las misas se restringe la visita a la nave."
+      },
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea A",
+          "stop": "San Giovanni",
+          "note": "5 min caminando"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "85",
+            "87"
+          ],
+          "stop": "Piazza di San Giovanni in Laterano"
+        }
+      ],
+      "extras": {
+        "address": "Piazza di San Giovanni in Laterano 4, 00184 Roma",
+        "official_url": "https://www.basilicasangiovanni.va"
+      },
+      "tips": [
+        "La entrada a la basílica es gratis; el claustro se paga aparte y merece la pena por su tranquilidad.",
+        "Justo enfrente está la Scala Santa: la escalera que, según la tradición, subió Jesús en casa de Pilato. Los peregrinos la suben de rodillas.",
+        "De aquí a Santa María la Mayor son 15 minutos andando por Via Merulana: se ven juntas."
+      ],
+      "secrets": [
+        "Las puertas de bronce de la fachada tienen unos 2.000 años: se trajeron en el siglo XVII desde la Curia Julia, el edificio del Senado en el Foro Romano.",
+        "En el altar papal se guarda, según la tradición, parte de la mesa de madera en la que San Pedro celebraba misa."
+      ],
+      "_fuente": "Horarios de basílica, claustro y baptisterio: https://www.basilicasangiovanni.va/it/info-e-orari.html (consultado el 2026-09-26)"
+    },
+    {
+      "name": "Monti",
+      "description": "El barrio más antiguo de Roma, a dos pasos del Coliseo y de los Foros: cuestas empedradas, tiendas de diseño y vintage, vinotecas y trattorias de barrio. La fuente de la Piazza della Madonna dei Monti es el punto de encuentro de los vecinos, sobre todo al caer la tarde.",
+      "what_to_see": [
+        "La Piazza della Madonna dei Monti y su fuente, el salón del barrio",
+        "Las calles Via del Boschetto, Via dei Serpenti y Via Panisperna, con tiendas pequeñas y talleres",
+        "La vista del Coliseo al final de Via dei Serpenti",
+        "Las vinotecas y bares de aperitivo alrededor de la plaza"
+      ],
+      "transport": [
+        {
+          "type": "metro",
+          "icon": "🚇",
+          "line": "Línea B",
+          "stop": "Cavour",
+          "note": "3 min caminando"
+        }
+      ],
+      "extras": {
+        "address": "Piazza della Madonna dei Monti, 00184 Roma"
+      },
+      "tips": [
+        "Siéntate un rato en la fuente de la plaza con un helado o una cerveza: es donde se juntan los del barrio.",
+        "Es la mejor zona para cenar después de un día en el Coliseo y los Foros: está a cinco minutos.",
+        "Los fines de semana hay un mercado de diseño y vintage en el barrio."
+      ],
+      "secrets": [
+        "Monti es la antigua Suburra, el barrio popular (y de mala fama) de la Roma imperial, donde creció Julio César. El gran muro del Foro de Augusto se levantó en parte para separarlo de los foros."
       ]
     }
   ]

@@ -249,7 +249,7 @@
         },
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 8",
           "stop": "Largo di Torre Argentina"
         }
@@ -507,7 +507,7 @@
         },
         {
           "type": "tram",
-          "icon": "🚊",
+          "icon": "🚋",
           "line": "Línea 8",
           "stop": "Largo di Torre Argentina",
           "note": "A 5 min caminando"
@@ -736,6 +736,62 @@
         "El Palazzo Farnese se puede visitar por dentro (solo con reserva, visitas limitadas a través de la embajada de Francia). Los frescos de Annibale Carracci en la Galleria son considerados una de las cumbres del arte barroco, al nivel de la Capilla Sixtina.",
         "Miguel Ángel diseñó el tercer piso y la espectacular cornisa del palazzo — el resto es de Antonio da Sangallo el Joven. Fíjate en cómo el piso superior es sutilmente diferente: más grandioso, más muscular. Eso es Miguel Ángel."
       ]
+    },
+    {
+      "name": "Palazzo Doria Pamphilj",
+      "description": "Una colección de arte privada que sigue en la casa de la familia que la reunió, en plena Via del Corso. Las salas están como en el siglo XVIII: cuadros de suelo a techo, espejos dorados y muebles de época. El retrato del papa Inocencio X de Velázquez es la joya.",
+      "what_to_see": [
+        "El retrato de Inocencio X de Velázquez, en su propia sala, junto al busto del mismo papa hecho por Bernini",
+        "La Galería de los Espejos, un salón dorado en enfilada",
+        "Dos Caravaggio: el Descanso en la huida a Egipto y la Magdalena penitente",
+        "Los apartamentos privados, con la decoración original de la familia"
+      ],
+      "schedule": {
+        "periods": [
+          {
+            "dates": "Lun, mar y jue",
+            "hours": "09:00–19:00 (última entrada 18:00)"
+          },
+          {
+            "dates": "Vie–dom",
+            "hours": "10:00–20:00 (última entrada 19:00)"
+          }
+        ],
+        "notes": "Cerrado todos los miércoles, 1 de enero, Pascua y 25 de diciembre. Reserva recomendada: sin ella no se asegura la entrada."
+      },
+      "transport": [
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "64"
+          ],
+          "stop": "Piazza Venezia",
+          "note": "100 m por Via del Corso"
+        },
+        {
+          "type": "bus",
+          "icon": "🚌",
+          "lines": [
+            "85"
+          ],
+          "stop": "Via del Corso / Via dei SS. Apostoli",
+          "note": "la entrada queda enfrente"
+        }
+      ],
+      "extras": {
+        "address": "Via del Corso 305, 00186 Roma",
+        "official_url": "https://www.doriapamphilj.it"
+      },
+      "tips": [
+        "La audioguía está incluida en la entrada (también en español), hasta agotar existencias.",
+        "Suele haber poca gente incluso en temporada alta: es una buena alternativa si los grandes museos están llenos.",
+        "Calcula entre una hora y hora y media."
+      ],
+      "secrets": [
+        "Cuentan que cuando Inocencio X vio el retrato de Velázquez exclamó «¡Troppo vero!» (demasiado real): el pintor no disimuló nada de su carácter."
+      ],
+      "_fuente": "Horario, cierres, audioguía y cómo llegar: https://www.doriapamphilj.it/roma/la-visita/ (consultado el 2026-09-26)"
     }
   ]
 }
