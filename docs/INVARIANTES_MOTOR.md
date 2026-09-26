@@ -1068,3 +1068,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     (Piazza Navona); nunca la que salga buscando "Free Tour".
 228. **D5 tarde B en verano** (`si_sobra`): con más de 60 min antes de cenar y atardecer desde las 20:00, la tarde
     acaba con la Via dei Fori Imperiali y la Columna de Trajano al atardecer, y el rato de antes se queda en Monti.
+229. **Cuestionario sin Claude en destinos curados**: `/api/classify-destination` y `/api/suggest-experiences`
+    responden con `destination_config.classification` y `destination_config.experience_ids` del JSON. El transporte
+    (`/api/transport-feasibility`) sigue con Claude hasta decidir los casos que FLUJO_TRANSPORTE.md no cubre.
+230. **Fichas sin Claude**: `/api/place-detail` da la ficha del lugar al que pertenece lo que no es un lugar del
+    catálogo: la nocturna (su `conflicts_with`), el Free Tour (su punto de encuentro) y "X visto desde Y" (X). El Free
+    Tour saca de ahí su transporte cercano. `/api/describe-stop` se guarda en `place_content_cache` (destino
+    `describe:{destino}`): se paga una sola vez por lugar.

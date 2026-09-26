@@ -260,6 +260,21 @@ app.post('/api/classify-destination', async (req, res) => {
     return
   }
 
+  // Destino curado (Roma): ya está clasificado en su JSON (`destination_config.classification`), sin Claude.
+  const curatedClassification = findPipelineV2Data(destination)?.destination_config?.classification
+  if (curatedClassification?.archetype && DESTINATION_ARCHETYPES.has(curatedClassification.archetype)) {
+    res.json({
+      archetype: curatedClassification.archetype,
+      is_region: Boolean(curatedClassification.is_region),
+      ambiguous: false,
+      requiere_coche: curatedClassification.archetype === 'urbano_clasico' && Boolean(curatedClassification.requiere_coche),
+      pase_dominante: curatedClassification.pase_dominante ?? null,
+      vehiculo_altamente_recomendado: Boolean(curatedClassification.vehiculo_altamente_recomendado),
+      curated: true,
+    })
+    return
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -373,6 +388,13 @@ app.post('/api/suggest-experiences', async (req, res) => {
     return
   }
 
+  // Destino curado (Roma): las experiencias son las nuestras (`destination_config.experience_ids`), sin Claude.
+  const curatedExperiences = findPipelineV2Data(destination)?.destination_config?.experience_ids
+  if (Array.isArray(curatedExperiences) && curatedExperiences.length > 0) {
+    res.json({ experience_ids: sanitizeExperienceIds(curatedExperiences), curated: true })
+    return
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -448,6 +470,29 @@ app.post('/api/describe-stop', async (req, res) => {
     return
   }
 
+  // En caché como el resto de fichas (misma tabla que poi-content, con su propio "destino" para no mezclar
+  // formatos): la descripción se paga una sola vez por lugar, no en cada sesión.
+  const cacheDestination = `describe:${findPipelineV2Key(city) ?? String(city).trim().toLowerCase()}`
+  if (supabaseAdmin) {
+    try {
+      const { data, error } = await supabaseAdmin.from('place_content_cache').select('id, place_data, hit_count').eq('place_name', name).eq('destination', cacheDestination).maybeSingle()
+      if (error) throw error
+      if (data) {
+        supabaseAdmin
+          .from('place_content_cache')
+          .update({ hit_count: (data.hit_count ?? 1) + 1, last_used_at: new Date().toISOString() })
+          .eq('id', data.id)
+          .then(({ error: touchError }) => {
+            if (touchError) logAnthropicError('describe-stop (touch)', touchError)
+          })
+        res.json({ ...data.place_data, cached: true })
+        return
+      }
+    } catch (error) {
+      logAnthropicError('describe-stop (read cache)', error)
+    }
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: MODEL,
@@ -468,6 +513,11 @@ app.post('/api/describe-stop', async (req, res) => {
     const parsed = JSON.parse(extractJsonText(textBlock.text))
     const result = sanitizeStopDescription(parsed)
     if (!result.description) throw new Error('Respuesta de Claude sin descripción válida')
+    if (supabaseAdmin) {
+      // El cliente de Supabase no lanza en un error de Postgrest: se mira `error`.
+      const { error: insertError } = await supabaseAdmin.from('place_content_cache').insert({ place_name: name, destination: cacheDestination, place_data: result })
+      if (insertError) logAnthropicError('describe-stop (write cache)', insertError)
+    }
     res.json(result)
   } catch (error) {
     logAnthropicError('describe-stop', error)
@@ -3957,6 +4007,26 @@ function loadPlaceDetail(destinationKey) {
   return byName
 }
 
+/**
+ * El lugar cuya ficha vale para algo que no es un lugar del catálogo: una nocturna ("Fontana de Trevi (noche)"
+ * → Fontana de Trevi), el Free Tour (su punto de encuentro, la Plaza de España) y una parada vista por fuera
+ * ("Foro Romano visto desde Via dei Fori Imperiali" → el lugar de ese `pass_by`). Así no se pregunta a Claude.
+ */
+function detailNameFor(destinationKey, name) {
+  const data = findPipelineV2Data(destinationKey)
+  if (!data) return name
+  const night = (data.night_experiences ?? []).find((entry) => entry.name === name)
+  if (night?.conflicts_with?.[0]) return night.conflicts_with[0]
+  if (data.default_free_tour?.name === name && data.default_free_tour.meeting_point) return data.default_free_tour.meeting_point
+  const seenFrom = /^(.+?) visto desde /.exec(name)
+  if (seenFrom) {
+    const label = stripAccentsLowerServer(seenFrom[1])
+    const place = (data.places ?? []).find((candidate) => stripAccentsLowerServer(candidate.pass_by?.label ?? '').replace(/^(el|la|los|las) /, '') === label.replace(/^(el|la|los|las) /, '') || stripAccentsLowerServer(candidate.name) === label)
+    if (place) return place.name
+  }
+  return name
+}
+
 function stripAccentsLowerServer(value) {
   return typeof value === 'string'
     ? value
@@ -3982,7 +4052,8 @@ app.post('/api/place-detail', (req, res) => {
     res.json({ found: false })
     return
   }
-  const detail = loadPlaceDetail(destinationKey).get(stripAccentsLowerServer(name))
+  const byName = loadPlaceDetail(destinationKey)
+  const detail = byName.get(stripAccentsLowerServer(name)) ?? byName.get(stripAccentsLowerServer(detailNameFor(destinationKey, name)))
   res.json(detail ? { found: true, detail } : { found: false })
 })
 

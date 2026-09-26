@@ -256,6 +256,16 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
       setNearbyTransit({ metro: [], bus: [] })
       return
     }
+    // El Free Tour: el transporte de su punto de encuentro (el servidor da la ficha de ese lugar), sin Claude.
+    if (stop.isFreeTour) {
+      let cancelledTour = false
+      fetchPlaceDetail(city, stop.name).then((detail) => {
+        if (!cancelledTour) setNearbyTransit(detail ? toNearbyTransit(detail) : { metro: [], bus: [] })
+      })
+      return () => {
+        cancelledTour = true
+      }
+    }
     // La ficha curada trae las líneas y paradas reales escritas a mano — no hace falta preguntar.
     if (curated) {
       setNearbyTransit(toNearbyTransit(curated))

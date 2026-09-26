@@ -6964,7 +6964,20 @@
         "12-26": "San Esteban"
       }
     },
-    "sunset_text": "🌅 El momento perfecto para ver el atardecer"
+    "sunset_text": "🌅 El momento perfecto para ver el atardecer",
+    "classification": {
+      "archetype": "urbano_clasico",
+      "is_region": false,
+      "requiere_coche": false,
+      "pase_dominante": null,
+      "vehiculo_altamente_recomendado": false
+    },
+    "experience_ids": [
+      "atracciones",
+      "gastronomia",
+      "arte_cultura",
+      "paisajes_miradores"
+    ]
   },
   "museos_de_pago": {
     "_que_es": "Museos de pago que no son joya ni imprescindible (tag museo). Cuántos caben por viaje, además de las joyas y los imprescindibles. Lo que el viajero pone en su pool entra siempre.",

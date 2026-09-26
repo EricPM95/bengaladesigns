@@ -130,6 +130,11 @@ Revisión: docs/REVISION_RUTAS_V2.md (días curados) y docs/REVISION_RUTAS_V2_CA
 Roma cerrada (2026-09-26): revisión V2 sin rojos tras los tres ajustes finales (reglas 219-223). El motor v3 con
 días curados es el de por defecto para Roma, también en producción (`engineFor` con `curated_days`).
 
+Llamadas a Claude en Roma (2026-09-26, reglas 229-230): cuestionario sin clasificar ni sugerir con Claude; fichas de
+nocturnas, Free Tour y "visto desde" con la de su lugar; descripción en caché. Pendiente: decidir el transporte
+(FLUJO_TRANSPORTE.md no da datos para tren, bus, ferry, carretera "disfrutable", la recomendada ni las etiquetas) y
+revisar los 14 borradores de docs/borradores/detalle_roma_14.md.
+
 Ajustes de la app (2026-09-26, reglas 224-228): desayuno como pausa, etiquetas de atardecer y de noche, nombre
 del paseo nocturno, foto del Free Tour y tarde B de verano. Pendiente: la foto propia del Free Tour
 (`default_free_tour.photo_url` en roma.json).
