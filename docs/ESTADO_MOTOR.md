@@ -118,17 +118,13 @@ de zona.
 
 ### Queda por decidir
 
-1. **Lo mejor primero** (2026-09-26, comprobación ajustada). Sigue en rojo en los viajes de 3 y 4 días
-   (17 de los 30 de la revisión completa, 8 de los 16): una joya (el Vaticano, o Trevi y el Panteón) solo
-   sale el último día. Propuesta del cambio mínimo, sin aplicar:
-   - Sin Free Tour: en viajes de 3-4 días, la tarde del día 1 detrás de la mañana del Coliseo es
-     \`centro_barroco\` (Panteón, Navona) en lugar de \`campidoglio_ghetto\`, que pasa a una tarde posterior.
-     La Fontana de Trevi entra de paso por el rescate, como ya pasa en los viajes de 2 días (viaje 1). El
-     Vaticano sigue el día 2. Las 4 joyas, en los días 1-2.
-   - Con Free Tour (día 1 por la mañana, enseña Trevi y el Panteón por fuera): el Vaticano por la tarde del
-     día 1 (\`vaticano_por_la_tarde\`, como en los viajes de 2 días) y el Coliseo el día 2.
-   - Cómo: una preferencia en la elección de la tarde, para viajes de 3+ días. Entre las tardes que encajan,
-     gana la que trae una joya que si no saldría el último día. No es una regla nueva de reparto.
+1. **Lo mejor primero, lo que queda en rojo** (2026-09-26, con la propuesta ya aplicada):
+   - 3 días con Free Tour: el Vaticano sigue el día 3. Pasarlo a la tarde del día 1 deja la mañana del día 3
+     sin nada (el tour ya enseña el centro y las demás mañanas piden 4 días). ¿Se permite una mañana de 4
+     días (Trastevere, Caracalla) en 3 días con Free Tour, o se deja esa mañana libre?
+   - Pool que va primero (viajes 13 y 26 de la revisión completa): lo elegido por el viajero ocupa el día 1
+     y alguna joya cae el último día. ¿Pesa más el orden del pool o lo mejor primero?
+   - 4 días desde el domingo de Pascua: el Vaticano cierra el domingo y el lunes, y sale el día 4.
 
 Resuelto (2026-09-26):
 - Quitar parada: la siguiente no se adelanta, salvo que el hueco pase de 45 min (entonces solo ella, sin

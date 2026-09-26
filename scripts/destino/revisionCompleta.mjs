@@ -105,6 +105,9 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push('')
   out.push(`Del ${fechaCorta(viaje.fecha)} al ${fechaCorta(addDays(viaje.fecha, viaje.dias - 1))} de ${fechaDe(viaje.fecha).getUTCFullYear()}.`)
   out.push('')
+  // El banner de contexto (va con el primer día de ciudad).
+  const bannerAt = out.length
+  out.push('> **Banner**: ninguno.\n')
 
   const raro = (dia, texto) => raros.push(`- **Viaje ${numero}${dia ? `, día ${dia}` : ''}** (${viaje.dias} d, ${viaje.ritmo}, ${MESES[mes]}): ${texto}`)
   const vistosDeDia = new Map()
@@ -116,6 +119,7 @@ for (const [index, viaje] of VIAJES.entries()) {
   for (let n = 1; n <= viaje.dias; n++) {
     const fecha = addDays(viaje.fecha, n - 1)
     const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha, pool, experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
+    if (day?.context_banner) out[bannerAt] = `> **Banner**: ${cell(day.context_banner)}\n`
     const sunset = sunsetFor(D, { dateIso: fecha })
     out.push(`### Día ${n} — ${fechaCorta(fecha)} · ${cell(day?.title ?? '')}`)
     out.push('')
@@ -276,6 +280,36 @@ for (const [index, viaje] of VIAJES.entries()) {
   else firmas.set(clave, numero)
 }
 
+// Tranquilo frente a completo (decisión del 2026-09-26: tranquilo es la ruta completa con menos cosas):
+// cada viaje en los dos ritmos, paradas por día (sin lo de paso ni las nocturnas).
+const comparacion = []
+let sumas = { completo: 0, tranquilo: 0, dias: 0 }
+for (const [index, viaje] of VIAJES.entries()) {
+  const paradas = {}
+  for (const ritmo of ['completo', 'tranquilo']) {
+    const pace = ritmo === 'completo' ? 'nonstop' : 'tranquilo'
+    const experiencesPositive = viaje.exps.length ? ['imprescindibles', ...viaje.exps] : []
+    let total = 0
+    let dias = 0
+    const porDia = []
+    for (let n = 1; n <= viaje.dias; n++) {
+      const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha, viaje.pool ?? [], experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
+      const count = (day?.stops ?? []).filter((stop) => !stop.is_night_experience && !stop.pass_through && !stop.is_pass_by).length
+      if (day?.stops?.length) {
+        total += count
+        dias++
+      }
+      porDia.push(day?.stops?.length ? count : '—')
+    }
+    paradas[ritmo] = { total, dias, porDia }
+  }
+  sumas.completo += paradas.completo.total
+  sumas.tranquilo += paradas.tranquilo.total
+  sumas.dias += paradas.completo.dias
+  const media = (p) => (p.dias ? (p.total / p.dias).toFixed(1) : '—')
+  comparacion.push(`| ${index + 1} | ${viaje.dias} | ${paradas.completo.porDia.join(' · ')} (${media(paradas.completo)}) | ${paradas.tranquilo.porDia.join(' · ')} (${media(paradas.tranquilo)}) | ${paradas.completo.total - paradas.tranquilo.total} |`)
+}
+
 const path = process.argv[2] ?? 'docs/REVISION_RUTAS_COMPLETAS.md'
 const head = [
   '# Revisión completa de rutas de Roma',
@@ -288,6 +322,14 @@ const head = [
   `- **Traslado**: solo los de más de ${TRASLADO_VISIBLE} min andando, con los minutos (matriz del destino). El aviso de transporte del día (🚌) va arriba del día.`,
   '- 🍝 comida con su restaurante y barrio; 🍷 cena con su barrio (el motor elige el barrio de la cena, no el restaurante); 🌙 experiencia nocturna.',
   '- Al final de cada viaje, lo que no entró; al final del documento, **lo que parece raro**, para decidir.',
+  '',
+  '## Tranquilo frente a completo',
+  '',
+  `Los mismos 30 viajes hechos en los dos ritmos: paradas por día (sin lo de paso ni las nocturnas) y, entre paréntesis, la media. En total, completo ${sumas.completo} paradas y tranquilo ${sumas.tranquilo} (${(sumas.completo / Math.max(1, sumas.dias)).toFixed(1)} frente a ${(sumas.tranquilo / Math.max(1, sumas.dias)).toFixed(1)} por día).`,
+  '',
+  '| Viaje | Días | Completo | Tranquilo | De menos |',
+  '|---|---|---|---|---|',
+  ...comparacion,
   '',
   '## Índice',
   '',

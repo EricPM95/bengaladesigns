@@ -6818,6 +6818,28 @@
       "primavera": "19:45",
       "verano": "20:40",
       "otono": "18:15"
+    },
+    "context_banners": {
+      "nota": "Banner de contexto (decisión del 2026-09-26): uno solo, encima del Día 1, del caso más importante al menos: invierno_corto, invierno, corto, tranquilo. Invierno = de noviembre a febrero; corto = 1-2 días. Variables: {dias}, {atardecer} (el del mes, redondeado al cuarto de hora siguiente), {lugar} y {cierre} (el nivel 1 de la ruta que cierra antes, con su artículo), {madrugar} (solo si algún día empieza antes de su hora), {n}, {n_dias} y {lugares} (los días de tranquilo que empiezan antes y lo que se salva). \"_1\": para un viaje de un día.",
+      "meses_invierno": [
+        11,
+        12,
+        1,
+        2
+      ],
+      "invierno_corto": "{dias} días en Roma en invierno son un reto: los días son cortos y muchos monumentos cierran pronto. Lo hemos organizado para que veas lo máximo posible sin carreras: lo imprescindible primero y los paseos cuando cae la tarde. Si prefieres otro plan, cambia cualquier parada desde los tres puntos.",
+      "invierno_corto_1": "Un día en Roma en invierno es un reto: los días son cortos y muchos monumentos cierran pronto. Lo hemos organizado para que veas lo máximo posible sin carreras: lo imprescindible primero y los paseos cuando cae la tarde. Si prefieres otro plan, cambia cualquier parada desde los tres puntos.",
+      "invierno": "En invierno Roma madruga y cierra pronto: anochece antes de las {atardecer} y lugares como {lugar} cierran a las {cierre}. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero{madrugar}. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.",
+      "invierno_sin_cierre": "En invierno Roma madruga y cierra pronto: anochece antes de las {atardecer}. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero{madrugar}. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.",
+      "madrugar": " y algún día empieza un poco antes",
+      "corto": "{dias} días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
+      "corto_1": "Un día en Roma da para mucho si se aprovecha bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
+      "tranquilo": "Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.",
+      "tranquilo_antes": " Solo {n} {n_dias} antes, para que no te quedes sin ver {lugares}.",
+      "n_dias": {
+        "uno": "día empieza",
+        "varios": "días empiezan"
+      }
     }
   },
   "museos_de_pago": {

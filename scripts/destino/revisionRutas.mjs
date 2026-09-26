@@ -97,6 +97,9 @@ for (const [index, viaje] of VIAJES.entries()) {
   const cuando = viaje.fecha ? `del ${fechaLarga(viaje.fecha)} al ${fechaLarga(addDays(viaje.fecha, viaje.dias - 1))}` : MESES[viaje.mes - 1]
   out.push(`## ${index + 1}. ${viaje.dias} ${viaje.dias === 1 ? 'día' : 'días'} · ${cuando} · ${viaje.ritmo} · ${exps}${viaje.pool ? ` · pool: ${viaje.pool.join(', ')}` : ''}${viaje.nota ? ` (${viaje.nota})` : ''}`)
   out.push('')
+  // El banner de contexto (va con el primer día de ciudad).
+  const bannerAt = out.length
+  out.push('> **Banner**: ninguno.\n')
   const experiencesPositive = ['imprescindibles', ...viaje.exps.filter((e) => e !== 'imprescindibles')]
   const pace = viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo'
   const vistos = new Set()
@@ -108,6 +111,7 @@ for (const [index, viaje] of VIAJES.entries()) {
       scheduler: 'v3',
       month: viaje.fecha ? null : viaje.mes - 1,
     })
+    if (day?.context_banner) out[bannerAt] = `> **Banner**: ${cell(day.context_banner)}\n`
     const fecha = viaje.fecha ? ` — ${fechaLarga(addDays(viaje.fecha, n - 1))}` : ''
     out.push(`### Día ${n}${fecha}`)
     out.push('')

@@ -15,6 +15,7 @@ import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayDetailPanel } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
+import { ContextBanner } from './ContextBanner'
 
 /** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
 const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
@@ -151,6 +152,8 @@ export function DayList({ route, activeDayId, onSelectDay }: DayListProps) {
           </button>
         </div>
       )}
+      {/* Por qué la ruta es como es: uno solo, encima del Día 1. */}
+      <ContextBanner route={route} />
       <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleDayDragEnd}>
       <SortableContext items={route.days.map((day) => day.id)} strategy={verticalListSortingStrategy}>
       {route.days.map((day, index) => {

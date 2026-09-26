@@ -639,4 +639,8 @@ export interface Route {
   defaultTransport?: TripDefaultTransport
   /** Nombres de las anclas (Paso 1 del pipeline, /api/generate-anchors) usadas para generar esta ruta — permite a StopDetailSheet saber si una parada es una "ancla" (lugar obligatorio del destino, con tip cacheado + búsqueda web en tips_anclas) o una parada normal del pool (tip simple, sin caché). Vacío en rutas dev/manuales, que no pasan por ese paso. */
   anchorNames?: string[]
+  /** Motor v3: el banner de contexto de la ruta (por qué es como es), ya rellenado — ContextBanner.tsx. */
+  contextBanner?: string | null
+  /** El viajero lo cerró con la X: no vuelve a salir en este viaje. */
+  contextBannerDismissed?: boolean
 }

@@ -894,7 +894,7 @@ function simulate(sequence, ctx) {
     idleBeforeDinner = at - cursor - walkToDinner
     // Hasta la tolerancia del ritmo es caminar tranquilo, un helado; por encima, una tarde vacía.
     dinnerIdlePenalty = Math.max(0, idleBeforeDinner - mode.gapTolerance) * DINNER_IDLE_PENALTY_PER_MINUTE
-    meals.push({ type: 'dinner', start: at, end: at + mode.mealMinutes, coordinates: dinnerPoint ?? position, walkMinutes: walkToDinner })
+    meals.push({ type: 'dinner', start: at, end: at + (mode.dinnerMinutes ?? mode.mealMinutes), coordinates: dinnerPoint ?? position, walkMinutes: walkToDinner })
   }
 
   // El mirador del atardecer va SIEMPRE en su sitio del recorrido (decisión del 2026-09-25): nada del

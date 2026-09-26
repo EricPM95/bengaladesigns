@@ -28,7 +28,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
-import { earliestVisitStart, effectiveSchedule, lastEntryMinutes, seasonKey } from '../../../shared/routeEngine/openingHours.js'
+import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, seasonKey } from '../../../shared/routeEngine/openingHours.js'
+import { weekdayForDay } from '../../../shared/routeEngine/tripSkeleton.js'
 import { tripCalendar } from '../../../shared/routeEngine/tripCalendar.js'
 import { roundUpToQuarter } from '../../../shared/routeEngine/time.js'
 import { dinnerZones } from '../../../shared/routeEngine/dinnerZones.js'
@@ -123,6 +124,7 @@ const LEVEL1_NAMES = D.places.filter((place) => place.level === 1).map((place) =
 const JOYA_NAMES = D.places.filter((place) => place.tier === 'joya').map((place) => place.name)
 /** Lo mejor primero (decisión del 2026-09-26): en 3+ días, las joyas como muy tarde este día. */
 const JOYA_LAST_DAY = 3
+const addDaysIso = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 
 /** ¿Está abierto de `start` a `start + duration`? Con `last_entry` si el lugar lo trae (campo opcional). */
 function outOfHours(stop) {
@@ -439,7 +441,19 @@ function measureTrip(trip, pace, exps) {
   // Lo mejor primero (ajustado el 2026-09-26): en 2 días, las 4 joyas dentro de los 2 días; en 3+ días,
   // como muy tarde el día 3 y ninguna solo el último día del viaje.
   const lastDay = trip.days.length
-  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !dayOf.has(name) || (lastDay >= 3 && (dayOf.get(name) > JOYA_LAST_DAY || dayOf.get(name) === lastDay))).map((name) => `joya ${name} ${dayOf.has(name) ? `el día ${dayOf.get(name)}${dayOf.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
+  // Lo que no se puede: una joya cerrada todos los días que le tocaban (el Vaticano el domingo de Pascua
+  // y el lunes siguiente) no cuenta. Solo con fechas.
+  const placeOf = (name) => D.places.find((place) => place.name === name)
+  const closedUntil = (name, until) => Boolean(FECHA) && Array.from({ length: Math.max(0, until) }, (_, i) => i + 1).every((n) => closedOnDay(placeOf(name), weekdayForDay(FECHA, n), addDaysIso(FECHA, n - 1)))
+  const deadline = (name) => (lastDay >= 3 ? Math.min(JOYA_LAST_DAY, lastDay - 1) : lastDay)
+  // El primer día de verdad: lo que enseña el Free Tour el día 1 cuenta aunque se visite otro día.
+  const firstDay = new Map()
+  trip.days.forEach((day, index) => {
+    for (const stop of (day?.stops ?? []).filter((candidate) => !candidate.is_night_experience)) {
+      for (const name of [stop.place_name ?? stop.name, ...(stop.outside_of ?? []), ...(stop.free_tour_covers ?? [])]) if (!firstDay.has(name)) firstDay.set(name, index + 1)
+    }
+  })
+  const bestLate = lastDay >= 2 ? JOYA_NAMES.filter((name) => !closedUntil(name, deadline(name))).filter((name) => !firstDay.has(name) || (lastDay >= 3 && (firstDay.get(name) > JOYA_LAST_DAY || firstDay.get(name) === lastDay))).map((name) => `joya ${name} ${firstDay.has(name) ? `el día ${firstDay.get(name)}${firstDay.get(name) === lastDay ? ' (el último)' : ''}` : 'no sale'}`) : []
 
   return { days: dayMetrics, brokenGroups, missingLevel1, freeTourOffTime, bestLate }
 }

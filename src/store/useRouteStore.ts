@@ -358,6 +358,8 @@ interface RouteStoreState {
   resetQuestionnaire: () => void
 
   setRoute: (route: Route) => void
+  /** Cierra el banner de contexto del viaje (ContextBanner.tsx): no vuelve a salir en este viaje. */
+  dismissContextBanner: () => void
   /** Restaura un viaje ya guardado (TripSync.tsx, al abrir la app) — a diferencia de `setRoute`, no resetea reservas/wishlist ni recalcula el modo inicial: repone exactamente lo que había. */
   hydrateTrip: (payload: TripPayload) => void
   /** Ronda 9 (Mejora 2): añade/cambia las fechas exactas del viaje YA generado desde la cabecera del
@@ -685,6 +687,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       selected_place_ids: [],
       selected_curated_place_names: [],
     }),
+
+  dismissContextBanner: () =>
+    set((state) => (state.route ? { route: { ...state.route, contextBannerDismissed: true } } : state)),
 
   setRoute: (route) =>
     set({

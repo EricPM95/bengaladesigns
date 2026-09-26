@@ -830,6 +830,25 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     mañanas aún no lo busca.
 174. **Tiempo libre sin sugerencias**: una idea corta de la zona (el paseo de `zone_walks`, en una
     frase), sin más paradas: la espera al atardecer del Pincio con todo visto.
+175. **Tranquilo = la ruta completa con menos cosas** (decisión del 2026-09-26): mismos bloques, orden y
+    duraciones de visita (sin `visitDurationBonus`); empieza a las 10:00, come 90 min y cena a la misma
+    hora que completo (la cena dura 60 en los dos: `dinnerMinutes`). Para que quepa, se cae en este orden:
+    los rellenos, el nivel 3, el nivel 2 y lo de paso (`dropByLevel`); nunca un nivel 1 ni una joya.
+    Si un nivel 1 se queda fuera del día, se empieza antes lo justo (de media en media hora), con aviso.
+176. **Lo mejor primero, aplicado**: en viajes de 3+ días, una tarde de un día temprano (hasta el 3, y no
+    el último) puede traer una joya que si no saldría tarde aunque su mañana vaya otro día (el centro
+    barroco con el Panteón detrás del Coliseo), siempre que a esa mañana, si no es del último día, le
+    queden 3 paradas propias. Una joya que se ve desde la calle y sale tarde (Trevi) entra además de paso
+    en un día temprano. La reparación prueba a mover (o quitar) la mañana que deja una joya para el final;
+    una joya tardía cuesta 60 (menos que algo del pool o un día muerto). Con Free Tour y 3+ días, el
+    Vaticano va por la tarde del día del tour si eso no deja un medio día sin tipo. El Free Tour nunca se
+    quita en una reparación: solo se mueve de día.
+177. **Comida acortada**: nunca por debajo de 60 min comiendo, y siempre con aviso en el día (si no se
+    sabe nombrar lo que salva, "todo lo de hoy"). Un madrugón tampoco va nunca en silencio.
+178. **Banner de contexto**: uno solo, con el primer día de ciudad (`context_banner`), elegido y rellenado
+    por el motor desde las plantillas de `destination_config.context_banners`: invierno corto, invierno,
+    corto, tranquilo. En invierno, "y algún día empieza un poco antes" solo si algún día empieza antes de
+    su hora.
 
 **Checklist del Paso 7 (añadidos)**
 - Cada experiencia elegida añade entre su mínimo y su máximo, sin contar imprescindibles.

@@ -145,6 +145,8 @@ export interface GeneratedDay {
   pace_notice?: string | null
   /** Motor v3: traslados largos del día (más de 25 min andando), uno por línea — ver DayPlan.transferNotice. */
   transfer_notice?: string | null
+  /** Motor v3, solo en el primer día de ciudad: el banner de contexto de toda la ruta. */
+  context_banner?: string | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
@@ -706,5 +708,6 @@ export function mapGeneratedRouteToRoute(
     createdAt: new Date().toISOString(),
     defaultTransport: generated.default_transport,
     anchorNames,
+    contextBanner: generated.days.find((day) => day.context_banner)?.context_banner ?? null,
   }
 }

@@ -201,16 +201,21 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       return (main.length > 0 ? main : [...places].sort((a, b) => (b.duration_minutes ?? 0) - (a.duration_minutes ?? 0)).slice(0, 1)).map((place) => placeWithArticle(place))
     }),
     // Madrugar pedido por la reparación del viaje: lo que se recupera es un imprescindible del viaje.
+    // Solo lo que de verdad entra hoy (la reparación pasa la lista entera de lo que faltaba).
     ...(schedule.modeFallback?.recoveredNames ?? [])
+      .filter((name) => schedule.visits.some((visit) => visit.place.name === name))
       .map((name) => destData.places?.find((place) => place.name === name))
       .filter(Boolean)
       .map((place) => placeWithArticle(place)),
   ].filter(Boolean)
-  // La comida acortada para no perder un imprescindible (ajustes C): se dice, con lo que se salva.
-  const savedByLunch = (schedule.shortenedLunch ?? [])
+  // La comida acortada para no perder un imprescindible (ajustes C): se dice SIEMPRE (decisión del
+  // 2026-09-26), con lo que se salva; si no se sabe nombrarlo, "todo lo de hoy". Nunca baja de 60 min.
+  const shortened = schedule.shortenedLunch ?? []
+  const namedByLunch = shortened
     .map((name) => destData.places?.find((place) => place.name === name))
     .filter(Boolean)
     .map((place) => placeWithArticle(place))
+  const savedByLunch = namedByLunch.length > 0 ? namedByLunch : shortened.length > 0 ? ['todo lo de hoy'] : []
   // Las dos cosas a la vez (madrugar y comer más corto) se dicen las dos: ninguna va en silencio.
   const paceNotice =
     recovered.length > 0 && savedByLunch.length > 0
@@ -219,7 +224,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
         ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a ver ${joinSpanish(recovered)}`
         : savedByLunch.length > 0
           ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}`
-          : null
+          : // Se madruga y lo que se salva no se puede nombrar hoy: se dice igual (nunca un madrugón en silencio).
+            schedule.modeFallback?.startedAt != null
+            ? `Hoy empezamos a las ${toHHMM(schedule.modeFallback.startedAt)} para que te dé tiempo a verlo todo`
+            : null
 
   const mediaJornada = tripDay.halfDayExcursion ?? null
   // El paseo nocturno: antes de cenar si ya es de noche y la tarde deja sitio (Estaciones, Parte 3).

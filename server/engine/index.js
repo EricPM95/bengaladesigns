@@ -28,7 +28,9 @@ import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
-import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
+import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
+import { MODES_V3 } from '../../shared/routeEngine/modes.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -97,7 +99,7 @@ export async function buildDayBlockV3(
     })
     const tripDay = trip.days.find((day) => day.dayNumber === dayNumber)
     if (!tripDay) return null
-    const day = buildCityDayV3(destData, trip, tripDay, options)
+    const day = buildCityDayV3(destData, trip, tripDay, { ...options, pace })
     day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
     day.night_hint = tripDay.nightHint ?? null
     return day
@@ -159,7 +161,7 @@ export async function buildDayBlockV3(
     return day
   }
 
-  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [] })
+  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, pace, experiencesPositive: experiencesPositive ?? [] })
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
@@ -255,7 +257,73 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (freeAfternoon) day.free_afternoon = freeAfternoon
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
+  // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
+  const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
+  if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)
   return day
+}
+
+const HHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+
+/**
+ * Banner de contexto (decisión del 2026-09-26): uno solo al principio de la ruta, que explica por qué es
+ * como es. Las plantillas viven en el JSON del destino (`destination_config.context_banners`); aquí solo
+ * se elige el caso, del más al menos importante (invierno corto, invierno, corto, tranquilo), y se rellenan
+ * los datos. Null si no toca ninguno.
+ */
+export function contextBannerFor(destData, trip, options = {}) {
+  const templates = destData.destination_config?.context_banners
+  if (!templates) return null
+  const cityDays = trip.days.filter((day) => day.schedule)
+  const days = trip.days.length
+  const firstIso = cityDays.find((day) => day.hours?.dateIso)?.hours.dateIso ?? null
+  const month = firstIso ? Number(firstIso.slice(5, 7)) : Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : Number.isInteger(options.month) ? options.month + 1 : null
+  const winter = month !== null && (templates.meses_invierno ?? []).includes(month)
+  const short = days <= 2
+  const tranquilo = (options.pace ?? '') === 'tranquilo'
+  const usualStart = tranquilo ? MODES_V3.tranquilo.dayStart : MODES_V3.completo.dayStart
+  // Los días que empiezan antes de su hora, y lo que salvan.
+  const early = cityDays.filter((day) => day.schedule.modeFallback && (day.schedule.modeFallback.startedAt ?? usualStart) < usualStart)
+  const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
+  // Solo lo que de verdad entra ese día (la reparación pasa la lista entera de lo que faltaba).
+  const savedNames = [...new Set(early.flatMap((day) => [
+    ...(day.schedule.modeFallback.recoveredNames ?? []),
+    ...(day.schedule.modeFallback.recoveredUnitIds ?? []).map((id) => String(id).split(':').slice(1).join(':') || String(id)),
+  ].filter((name) => (day.schedule.visits ?? []).some((visit) => visit.place.name === name))))].filter((name) => placeByName.get(name)?.level === 1)
+  const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => (values[key] ?? match))
+
+  if (short && winter) return fill(days === 1 ? templates.invierno_corto_1 : templates.invierno_corto, { dias: days })
+  if (winter) {
+    const sunset = cityDays.map((day) => day.hours?.sunset).find((value) => value != null)
+    const atardecer = sunset != null ? HHMM(Math.ceil(sunset / 15) * 15) : null
+    // El nivel 1 de la ruta que cierra antes (el Foro, a las 16:30).
+    let closing = null
+    for (const day of cityDays) {
+      for (const visit of day.schedule.visits ?? []) {
+        const place = placeByName.get(visit.place.name)
+        if (!place || place.level !== 1 || visit.place.passThrough) continue
+        const close = parseClosingMinutes(effectiveSchedule(place, day.hours ?? {}))
+        if (close !== null && close < 24 * 60 && (!closing || close < closing.close)) closing = { place, close }
+      }
+    }
+    const madrugar = early.length > 0 ? templates.madrugar ?? '' : ''
+    if (!atardecer) return null
+    return closing
+      ? fill(templates.invierno, { atardecer, lugar: placeWithArticle(closing.place), cierre: HHMM(closing.close), madrugar })
+      : fill(templates.invierno_sin_cierre ?? templates.invierno, { atardecer, madrugar })
+  }
+  if (short) return fill(days === 1 ? templates.corto_1 : templates.corto, { dias: days })
+  if (tranquilo) {
+    const antes = early.length > 0 && savedNames.length > 0
+      ? fill(templates.tranquilo_antes ?? '', {
+          n: early.length,
+          n_dias: early.length === 1 ? templates.n_dias?.uno ?? 'día empieza' : templates.n_dias?.varios ?? 'días empiezan',
+          lugares: joinSpanish(savedNames.map((name) => placeWithArticle(placeByName.get(name)))),
+        })
+      : ''
+    return `${templates.tranquilo}${antes}`
+  }
+  return null
 }
 
 /**

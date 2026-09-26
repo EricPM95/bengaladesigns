@@ -6,9 +6,15 @@
  *   - Comida 13:00-14:00 y cena 20:00-21:00 en los DOS ritmos. La cena del tranquilo se había bajado
  *     a 19:30 para tapar una hora muerta antes de cenar; eso era síntoma de que faltaba planificar
  *     la tarde hacia la cena, y se arregla ahí, no moviendo la cena.
- *   - Comer: 60 min en completo, 90 en tranquilo (con sobremesa).
+ *   - Comer: 60 min en completo, 90 en tranquilo (con sobremesa). Cenar: 60 min en los dos.
  *   - El día acaba CON la cena hacia las 21:30. De ahí sale la última hora a la que se puede
- *     empezar a cenar: 20:30 en completo, 20:00 en tranquilo. Las nocturnas van aparte, después.
+ *     empezar a cenar: 20:30 en los dos ritmos (decisión del 2026-09-26: la cena a la misma hora).
+ *     Las nocturnas van aparte, después.
+ *
+ * Decisión del 2026-09-26: "tranquilo" no es otra ruta, es la completa con menos cosas. Mismos bloques,
+ * mismo orden y mismas duraciones de visita (sin `visitDurationBonus`); empieza a las 10:00 y come 90 min.
+ * Para que quepa se quita, en este orden, el nivel 3, el nivel 2 y lo de paso (`dropByLevel`); nunca un
+ * nivel 1 ni una joya.
  *   - "Visita larga" = 180 min o más (Vaticano, Coliseo+Foro). Las de 120 min comparten día con una
  *     larga si el programador confirma que cabe.
  *   - Dentro de un grupo, o a menos de 3 min a pie, se encadena sin redondear.
@@ -26,6 +32,7 @@ const SHARED = {
   lunchWindow: [HHMM('13:00'), HHMM('13:30')],
   dinnerWindow: [HHMM('20:00'), HHMM('21:00')],
   dayEndWithDinner: HHMM('21:30'),
+  dinnerMinutes: 60,
   chainMaxWalkMinutes: 3,
   longVisitMinutes: 180,
   // Día con excursión de medio día: la mañana (08:00-14:00) es la excursión, 14:00-16:00 es volver
@@ -51,7 +58,8 @@ export const MODES_V3 = {
     dayStart: HHMM('10:00'),
     mealMinutes: 90,
     lunchBlockMinutes: 120,
-    visitDurationBonus: 15,
+    visitDurationBonus: 0,
+    dropByLevel: true,
     gapTolerance: 60,
     targetStops: [5, 7],
     fillLevels: [1, 2],
@@ -72,5 +80,5 @@ export const LATE_DINNER_START = HHMM('21:00')
 
 /** Última hora a la que se puede empezar a cenar sin pasarse del fin del día. */
 export function latestDinnerStart(mode) {
-  return Math.min(mode.dinnerWindow[1], mode.dayEndWithDinner - mode.mealMinutes)
+  return Math.min(mode.dinnerWindow[1], mode.dayEndWithDinner - (mode.dinnerMinutes ?? mode.mealMinutes))
 }
