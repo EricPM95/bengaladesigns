@@ -116,6 +116,23 @@ de zona.
   3. `validar.mjs` en rojo si una pareja declarada (`encaja_despues_de`) no baja de 20 min en ningún medio.
   Detalle en `docs/MANANAS_Y_TARDES_NOTAS.md`.
 
+### Queda por decidir
+
+Apuntado mientras el usuario no estaba (2026-09-26). No se ha tomado ninguna de estas decisiones: está
+hecho lo que no las necesitaba.
+
+1. **Quitar parada: ¿y si el tramo nuevo es más corto?** Hoy la siguiente parada solo se mueve si ya no
+   se llega a su hora. Si se llega antes, las horas se quedan y sale un rato libre, como decía LA REGLA
+   del store: quitar una parada no adelanta el día. ¿Se queda así, o la siguiente parada se adelanta?
+2. **"Entradas" y "Excursiones" en ciudades sin catálogo.** En destinos curados (Roma), el "+" de DIAS ya
+   usa la misma pantalla que EXPLORAR, con los dos filtros y el mismo comportamiento: no ha hecho falta
+   cambiar nada. En una ciudad sin JSON, "Añadir parada" es el buscador de Mapbox: no sabe qué lleva
+   entrada y no tiene excursiones. ¿Se dejan fuera ahí, o hace falta otra fuente de datos?
+3. **Nocturnas añadidas a mano.**
+   - Entran a las 21:30 (hora de la cena + 90 min, como el motor), o detrás de la nocturna anterior.
+   - Piazza Navona tiene `night_experience` pero no una entrada en `night_experiences`. Entra como
+     "Piazza Navona (noche)", 30 min, sin texto propio. ¿Se le escribe su nocturna en el JSON?
+
 ---
 
 ## Decisiones tomadas por el usuario
