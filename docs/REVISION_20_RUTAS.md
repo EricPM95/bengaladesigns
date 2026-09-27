@@ -1507,6 +1507,6 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 - **Filas con "Por qué aquí" genérico**: 0 ✅
 - **Notas internas que se ven**: 0 ✅
-- **"Gratis" fuera de Tickets**: 0 ✅
+- **Cifras y precios fuera de Tickets**: 0 ✅
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅

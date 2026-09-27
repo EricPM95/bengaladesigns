@@ -60,7 +60,7 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 // Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
 const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
-const recuento = { genericos: [], notas: [], gratis: [], caminoLargo: [], tramosLargos: [] }
+const recuento = { genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
 const sinEmoji = (text) => String(text ?? '').replace(/^[^\p{L}\p{N}¡¿"«(]+/u, '')
 
 /** Domingo de Pascua (algoritmo anónimo gregoriano). */
@@ -255,10 +255,10 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push('')
 }
 
-// "gratis" en todo lo que se ve (Parte A.3): se busca en el propio documento, que es lo que lee el viajero.
-for (const [index, line] of out.entries()) if (/gratis|gratuit/i.test(line)) recuento.gratis.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
+// Cifras y precios en lo que se ve (Parte A.3; "gratis" sí se puede decir cuando suma): en el propio documento.
+for (const [index, line] of out.entries()) if (/€|\beuros?\b|\bEUR\b/i.test(line)) recuento.precios.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
-out.push('## Recuento (Parte D)', '', ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('"Gratis" fuera de Tickets', recuento.gratis), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '')
+out.push('## Recuento (Parte D)', '', ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '')
 console.log(JSON.stringify(Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length]))))
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'

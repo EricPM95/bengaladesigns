@@ -122,7 +122,7 @@ export function formatScheduleDetail(schedule: PlaceDetailSchedule | undefined):
     lines.push(period.dates ? `${period.dates}: ${period.hours}${lastEntry}` : `${period.hours}${lastEntry}`)
   }
   if (schedule.closed?.length) lines.push(`Cerrado: ${schedule.closed.join('; ')}`)
-  // Los días de entrada sin coste van en Tickets, nunca en el horario (PROMPT_AJUSTES_20_RUTAS A.3: sin precios fuera de Tickets).
+  if (schedule.free_days?.length) lines.push(`Entrada gratuita: ${schedule.free_days.join('; ')}`)
   if (schedule.notes) lines.push(schedule.notes)
   return lines.length > 0 ? lines.join('\n') : null
 }

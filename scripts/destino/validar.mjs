@@ -24,7 +24,7 @@
  *      que salen y las zonas a las que les falta poco, y cada zona de imprescindibles sin barrio de
  *      cena a 15 min o menos.
  *  10. Fechas especiales: lo que tiene `verificar: true` (lista para revisar), `horario_especial` sin fuente o sin
- *      confirmar, y los textos que no siguen la regla de oro (35 palabras, sin precios, acaban con "Hemos…").
+ *      confirmar, y los textos que no siguen la regla de oro (35 palabras, sin cifras ni precios, acaban con "Hemos…").
  *   7. Coordenadas contra Wikipedia: rojo si se separan más de 200 m. Mapbox solo como segunda
  *      opinión (amarillo) cuando Wikipedia no encuentra el sitio: su buscador devuelve tiendas y
  *      bares que se llaman como el monumento (medido en Roma: 27 de 67 a más de 200 m, ninguno
@@ -48,6 +48,8 @@ if (!destino || destino.startsWith('--')) {
   process.exit(2)
 }
 const SIN_RED = process.argv.includes('--sin-red')
+/** Una cifra o un precio en un texto que se lee (fuera de Tickets): el símbolo, la palabra o el código. "Gratis" no. */
+const PRECIO_VISIBLE = /€|\beuros?\b|\bEUR\b/i
 const D = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/${destino}.json`), 'utf8'))
 
 /** Lugares de nivel 1 y joyas que pide el motor (decisión del 2026-09-23). */
@@ -341,7 +343,7 @@ const section = (title) => {
     if (!/^(\d{2}-\d{2}|easter([+-]\d+)?)$/.test(String(entry.fecha ?? ''))) s.red.push(`${id}: fecha "${entry.fecha}" no se lee (MM-DD o easter±N)`)
     const palabras = String(entry.texto ?? '').split(/\s+/).filter(Boolean).length
     if (palabras > 35) s.red.push(`${id}: el texto tiene ${palabras} palabras (35 como mucho)`)
-    if (/€|\beuros?\b|\bgratis\b|\bgratuit/i.test(entry.texto ?? '')) s.red.push(`${id}: el texto habla de precios`)
+    if (PRECIO_VISIBLE.test(entry.texto ?? '')) s.red.push(`${id}: el texto lleva una cifra o un precio`)
     if (!/\b[Hh]emos\b[^.]*\.\s*$/.test(String(entry.texto ?? '').trim())) s.warn.push(`${id}: el texto no acaba con lo que hemos hecho ("Hemos…")`)
     const horario = entry.horario_especial
     if (horario) {
@@ -356,8 +358,9 @@ const section = (title) => {
 
 // ── 11. Lo que lee el viajero ───────────────────────────────────────────────────────────────
 // PROMPT_AJUSTES_20_RUTAS A: cada parada de los días curados (y sus variantes) lleva su `por_que` (sin él, la app
-// cae al texto genérico); y ningún texto que se ve habla de "gratis" (salvo `ticket_info`, que es la pestaña Tickets,
-// y lo interno: notas, fuentes y el formato).
+// cae al texto genérico); y ningún texto que se ve lleva cifras ni precios (€, euros, importes) fuera de la pestaña
+// Tickets (`ticket_info`) y de lo interno (notas, fuentes, formato). "Gratis" SÍ se puede decir cuando suma
+// ("…y la entrada es gratis: una joya que mucha gente se salta"): nunca se marca (decisión del usuario, 2026-09-27).
 {
   const s = section('Lo que lee el viajero')
   const sinPorQue = new Set()
@@ -368,11 +371,12 @@ const section = (title) => {
     }
   }
   for (const item of sinPorQue) s.warn.push(`sin por_que (sale el texto genérico): ${item}`)
-  const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days'])
-  const gratis = []
+  // Los campos de precio estructurados (el restaurante: € y precio medio) son datos, como `ticket_info`: no son texto.
+  const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days', 'price_range', 'avg_price_person'])
+  const precios = []
   const buscar = (valor, ruta) => {
     if (typeof valor === 'string') {
-      if (/\bgratis\b|\bgratuit[oa]s?\b/i.test(valor)) gratis.push(ruta)
+      if (PRECIO_VISIBLE.test(valor)) precios.push(`${ruta}: «${valor.match(/.{0,40}(€|euros?|EUR).{0,20}/i)?.[0] ?? ''}»`)
     } else if (valor && typeof valor === 'object') {
       for (const [clave, hijo] of Object.entries(valor)) if (!INTERNO.has(clave) && !clave.startsWith('_')) buscar(hijo, `${ruta}.${clave}`)
     }
@@ -381,8 +385,8 @@ const section = (title) => {
   buscar(visible, destino)
   const detalleDir = join(ROOT, `data/pipeline_v2/detalle/${destino}`)
   if (existsSync(detalleDir)) for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json'))) buscar(JSON.parse(readFileSync(join(detalleDir, file), 'utf8')), `detalle/${file}`)
-  for (const ruta of gratis) s.red.push(`"gratis" en un texto que ve el viajero: ${ruta}`)
-  s.info.push(`${sinPorQue.size} paradas curadas sin por_que; ${gratis.length} "gratis" a la vista`)
+  for (const ruta of precios) s.red.push(`cifra o precio en un texto que ve el viajero: ${ruta}`)
+  s.info.push(`${sinPorQue.size} paradas curadas sin por_que; ${precios.length} precios a la vista`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────

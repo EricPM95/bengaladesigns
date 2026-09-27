@@ -5825,7 +5825,7 @@
       "price_range": "€€",
       "avg_price_person": "10-15€",
       "what_to_order": "Spritz, negroni, o cualquiera de sus cócteles de autor. El buffet de aperitivo está incluido con la bebida.",
-      "tip": "Antiguo taller mecánico convertido en el bar más cool de Trastevere. A las 19:00 sacan el buffet de aperitivo, que va con la consumición. Terraza animadísima.",
+      "tip": "Antiguo taller mecánico convertido en el bar más cool de Trastevere. A las 19:00 sacan el buffet de aperitivo gratuito con la consumición. Terraza animadísima.",
       "hours": "Todos los días 18:00-02:00.",
       "best_for": "El aperitivo más animado de Trastevere",
       "coordinates_checked": {
@@ -6791,7 +6791,7 @@
         12.4787
       ],
       "description": "El barrio más tranquilo de Roma. Calles arboladas, monasterios, jardines escondidos y cero turismo de masas.",
-      "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera."
+      "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera y es gratis."
     },
     {
       "name": "Pasear por Testaccio",
@@ -6856,7 +6856,7 @@
         12.508
       ],
       "description": "Un barrio residencial de principios del siglo XX, con villas, jardines y una de las mayores rarezas arquitectónicas de la ciudad.",
-      "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
+      "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público y gratuito con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
     }
   ],
   "destination_config": {
@@ -10382,7 +10382,7 @@
       "recorrido": [
         "Foro Romano desde el Campidoglio (noche)"
       ],
-      "texto": "Detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado aparece a tus pies. Probablemente la mejor vista nocturna de Roma, a dos minutos de donde acaba la tarde."
+      "texto": "Detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado aparece a tus pies. Probablemente la mejor vista nocturna de Roma, gratis y a dos minutos de donde acaba la tarde."
     },
     "trastevere_sublicio": {
       "nombre": "Trastevere de noche",

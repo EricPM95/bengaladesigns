@@ -77,7 +77,7 @@
         "Tu entrada incluye SIEMPRE Foro Romano + Palatino — y puedes usarla 24h antes o después del Coliseo. Estrategia: visita el Foro por la tarde (menos gente, mejor luz) y el Coliseo a primera hora del día siguiente.",
         "La opción Full Experience (arena + subterráneos) merece MUCHO la pena — es lo más espectacular y lo que menos gente ve.",
         "Compra la entrada ONLINE con semanas de antelación — se agotan. Si llegas sin entrada, la cola puede ser de 2-3 horas.",
-        "El primer domingo de cada mes hay colas brutales y no hay acceso a la arena ni a los subterráneos. No compensa."
+        "El primer domingo de cada mes la entrada es gratuita — pero las colas son brutales y no hay acceso a arena ni subterráneos. No compensa."
       ],
       "secrets": [
         "Hay visitas nocturnas los martes y jueves (20:00-00:00, de mayo a octubre) — el Coliseo iluminado por dentro con casi nadie es una experiencia irrepetible. Se reservan en la web oficial y se agotan rápido.",
@@ -159,7 +159,7 @@
       "description": "Un antiguo disco de mármol con cara de tritón que según la leyenda muerde la mano a quien dice mentiras. Está en el pórtico de la iglesia de Santa Maria in Cosmedin, una de las más bonitas y menos visitadas de Roma. Se hizo famosa por la película 'Vacaciones en Roma' con Audrey Hepburn y Gregory Peck.",
       "tips": [
         "Cola de 10-15 minutos habitual para meter la mano. Ponle cara de susto — la foto clásica.",
-        "No te vayas sin entrar a Santa Maria in Cosmedin: tiene un interior medieval precioso con el suelo cosmati original del siglo XII.",
+        "No te vayas sin entrar a Santa Maria in Cosmedin — es gratis y tiene un interior medieval precioso con suelo cosmati original del siglo XII.",
         "La Bocca probablemente era una tapa de alcantarilla romana del siglo I — nada romántico, pero funciona como detector de mentiras desde hace 2.000 años."
       ]
     },
@@ -167,7 +167,7 @@
       "name": "Circo Máximo",
       "description": "El estadio más grande de la antigua Roma — aquí cabían 250.000 espectadores viendo carreras de cuadrigas. Hoy es un enorme espacio verde donde se intuye la forma del circuito original. Es el lugar perfecto para un descanso si vienes del calor del Foro y el Palatino.",
       "tips": [
-        "Siempre abierto. Es un parque público: la gente viene a correr, pasear perros y hacer pícnic.",
+        "Gratis, siempre abierto. Es un parque público — la gente viene a correr, pasear perros y hacer pícnic.",
         "Hay una visita subterránea (Circo Maximo Experience) con realidad virtual que muestra cómo era en época romana — merece la pena si te gustan las ruinas.",
         "Desde el lado del Palatino se ve mejor la forma ovalada del circo — y se entiende la escala brutal del lugar."
       ]
@@ -179,15 +179,15 @@
         "La Tumba del Soldado Desconocido con su llama eterna y guardia permanente",
         "La terraza panorámica (ascensor acristalado) — las mejores vistas 360° de Roma",
         "Las cuadrigas de bronce en la parte superior — cada una pesa 50 toneladas",
-        "El interior del monumento, con salas de exposiciones temporales"
+        "El interior del monumento — salas gratuitas con exposiciones temporales"
       ],
       "tips": [
         "La terraza del ascensor panorámico tiene las mejores vistas 360° de Roma — ves el Coliseo, el Foro, San Pedro, todo. La subida merece mucho la pena.",
-        "Se entra al monumento sin reserva; a la terraza superior se sube en ascensor, que va aparte.",
+        "La entrada al monumento es gratuita — solo el ascensor a la terraza superior tiene un coste (una tasa, no una entrada como tal).",
         "Es un par inseparable con Plaza Venecia — están literalmente pegados. Siempre se visitan juntos."
       ],
       "secrets": [
-        "Dentro del monumento está el Museo del Risorgimento, sobre la unificación de Italia: casi nadie entra y es fascinante.",
+        "Dentro del monumento hay un museo gratuito (Museo del Risorgimento) sobre la unificación de Italia — casi nadie entra y es fascinante.",
         "La terraza es mejor al atardecer que al mediodía — la luz dorada sobre los tejados de Roma es espectacular y hay menos gente que en el Pincio.",
         "El mármol blanco del Vittoriano viene de Brescia (norte de Italia) y no de Roma — por eso desentona con el travertino dorado del resto de la ciudad. Los romanos lo aman y lo odian a partes iguales."
       ]
@@ -214,7 +214,7 @@
       "description": "La avenida monumental que conecta Plaza Venecia con el Coliseo, con los Foros Imperiales a ambos lados. Mussolini la mandó construir en 1932 demoliendo todo un barrio medieval sobre las ruinas. Hoy es peatonal los domingos y la perspectiva con el Coliseo al fondo es la postal más repetida de Roma.",
       "tips": [
         "Los domingos cierran al tráfico — puedes caminar por el centro de la avenida sin coches. El mejor momento para la foto.",
-        "Desde los miradores elevados a ambos lados se ven los restos de los Foros de Augusto, Nerva y Trajano, sin entrar a ningún sitio.",
+        "Desde los miradores elevados a ambos lados se ven los restos de los Foros de Augusto, Nerva y Trajano — todo gratis, sin entrar a ningún sitio.",
         "No te limites a ir recto — baja a los miradores laterales que se asoman sobre las ruinas excavadas."
       ]
     },
@@ -268,7 +268,7 @@
       "description": "La plaza diseñada por Miguel Ángel en la cima del Capitolio — geometría perfecta renacentista con la estatua ecuestre de Marco Aurelio en el centro (la original está dentro de los Museos Capitolinos). Desde la terraza trasera hay unas vistas espectaculares del Foro Romano.",
       "tips": [
         "Sube por la escalinata de la Cordonata — es la entrada más dramática. Al llegar arriba, la plaza se abre como un escenario.",
-        "Ve a la terraza trasera (detrás del Palazzo Senatorio): la vista del Foro Romano desde ahí es espectacular.",
+        "Ve a la terraza trasera (detrás del Palazzo Senatorio) — la vista del Foro Romano desde ahí es GRATIS y espectacular.",
         "La estatua de Marco Aurelio del centro es una copia — la original (del año 176 d.C.) está protegida dentro de los Museos Capitolinos."
       ]
     },
@@ -371,7 +371,7 @@
         "address": "Via Labicana 95, 00184 Roma"
       },
       "tips": [
-        "Los niveles subterráneos tienen entrada aparte de la basílica, pero son una de las experiencias más impactantes de Roma.",
+        "La basílica superior es gratis. Los niveles subterráneos tienen entrada aparte — pero es una de las experiencias más impactantes de Roma.",
         "Baja hasta el tercer nivel: oirás el agua de un arroyo subterráneo que fluye bajo Roma desde la época romana.",
         "Es húmedo y algo claustrofóbico abajo — no recomendable si te agobias en espacios cerrados."
       ],
@@ -384,7 +384,7 @@
       "name": "Iglesia de San Pietro in Vincoli",
       "description": "Una iglesia que esconde el Moisés de Miguel Ángel — una escultura tan poderosa y realista que dicen que Miguel Ángel le golpeó la rodilla y le gritó '¡Habla!'. También guarda las cadenas (vincoli) con las que supuestamente encadenaron a San Pedro en Jerusalén.",
       "tips": [
-        "El Moisés está al fondo, a la derecha del altar: lo verás nada más entrar.",
+        "Gratis. El Moisés está al fondo a la derecha del altar — lo verás nada más entrar.",
         "Fíjate en los cuernos de Moisés — es una traducción errónea del hebreo ('rayos de luz' se tradujo como 'cuernos') que Miguel Ángel tomó literalmente.",
         "Está cuesta arriba desde el Coliseo (5 min) — merece el desvío. Poca gente la visita comparada con lo que tiene dentro."
       ],
@@ -490,7 +490,7 @@
       "name": "Jardín de los Naranjos",
       "description": "Un jardín de naranjos amargos en la colina del Aventino con una de las mejores vistas panorámicas de Roma — desde la cúpula de San Pedro hasta el Tíber. Pequeño, tranquilo y romántico, es el mirador favorito de los romanos para ver el atardecer.",
       "tips": [
-        "Abierto hasta el anochecer (de octubre a marzo cierra a las 18:00; de abril a septiembre, a las 21:00).",
+        "Gratis, abierto hasta el anochecer (octubre-marzo cierra a las 18:00, abril-septiembre a las 21:00).",
         "Mejor al atardecer. La vista con el sol bajando sobre el Vaticano es una de las mejores de Roma.",
         "Después baja a la Cerradura del Aventino, que está a 3 minutos cuesta abajo por la misma calle."
       ],
@@ -534,7 +534,7 @@
         "address": "Piazza di Santa Maria Maggiore, 00185 Roma"
       },
       "tips": [
-        "El museo y la loggia superior (con los mosaicos originales más de cerca) tienen entrada aparte de la basílica.",
+        "La basílica es gratis. El museo y la loggia superior (con los mosaicos originales más de cerca) tienen entrada aparte.",
         "Código de vestimenta: hombros y rodillas cubiertos, como en todas las iglesias papales de Roma.",
         "Está algo alejada del centro turístico — combinada bien con una visita a San Pietro in Vincoli (10 min andando)."
       ],
@@ -593,7 +593,7 @@
       "name": "Iglesia de Santa Maria della Vittoria",
       "description": "Una pequeña iglesia que esconde el Éxtasis de Santa Teresa de Bernini — la escultura barroca más famosa del mundo, donde una santa parece flotar mientras un ángel le atraviesa el corazón con una flecha dorada.",
       "tips": [
-        "El Éxtasis está en la Capilla Cornaro (a la izquierda del altar).",
+        "Gratis. El Éxtasis está en la Capilla Cornaro (a la izquierda del altar).",
         "Fíjate en los 'espectadores' esculpidos en los palcos laterales — son miembros de la familia Cornaro que observan la escena como si estuvieran en un teatro.",
         "Está a 5 minutos de Piazza della Repubblica y a 10 de Termini — fácil de combinar si llegas o sales en tren."
       ],
@@ -652,7 +652,7 @@
         "official_url": "https://www.basilicasangiovanni.va"
       },
       "tips": [
-        "El claustro tiene entrada aparte de la basílica y merece la pena por su tranquilidad.",
+        "La entrada a la basílica es gratis; el claustro se paga aparte y merece la pena por su tranquilidad.",
         "Justo enfrente está la Scala Santa: la escalera que, según la tradición, subió Jesús en casa de Pilato. Los peregrinos la suben de rodillas.",
         "De aquí a Santa María la Mayor son 15 minutos andando por Via Merulana: se ven juntas."
       ],

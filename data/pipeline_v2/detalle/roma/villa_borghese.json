@@ -3,7 +3,7 @@
   "places": [
     {
       "name": "Galería Borghese",
-      "description": "La colección de arte más concentrada de Roma: en solo 20 salas tienes esculturas de Bernini que parecen respirar, pinturas de Caravaggio que te clavan al suelo, Tiziano, Rafael y Canova. El edificio en sí es una obra maestra: una villa del siglo XVII rodeada de jardines, con frescos en los techos y mármoles de colores en los suelos. La visita dura exactamente 2 horas (te piden salir cuando se cumple el tiempo), lo que la hace intensísima: cada minuto cuenta. Reserva obligatoria SIEMPRE: no se puede entrar sin reserva.",
+      "description": "La colección de arte más concentrada de Roma: en solo 20 salas tienes esculturas de Bernini que parecen respirar, pinturas de Caravaggio que te clavan al suelo, Tiziano, Rafael y Canova. El edificio en sí es una obra maestra — una villa del siglo XVII rodeada de jardines con frescos en los techos y mármoles de colores en los suelos. La visita dura exactamente 2 horas (te piden salir cuando se cumple el tiempo), lo que la hace intensísima: cada minuto cuenta. Reserva obligatoria SIEMPRE — no se puede entrar sin reserva, ni siquiera con entrada gratuita.",
       "what_to_see": [
         "Apolo y Dafne de Bernini — ella se convierte en árbol mientras él la toca. El mármol parece corteza, hojas, piel. Es imposible que sea piedra",
         "El Rapto de Proserpina de Bernini — los dedos de Plutón se hunden en el muslo de Proserpina. El mármol parece carne",
@@ -25,7 +25,7 @@
           "25 de diciembre",
           "1 de enero"
         ],
-        "notes": "Visita de 2 horas exactas (te piden salir al cumplirse). Turnos cada hora desde las 09:00 hasta las 17:45. Máximo 180 personas por turno. RESERVA OBLIGATORIA siempre."
+        "notes": "Visita de 2 horas exactas (te piden salir al cumplirse). Turnos cada hora desde las 09:00 hasta las 17:45. Máximo 180 personas por turno. RESERVA OBLIGATORIA siempre, incluso con entrada gratuita."
       },
       "transport": [
         {
@@ -66,7 +66,7 @@
     },
     {
       "name": "Parque de Villa Borghese",
-      "description": "El pulmón verde de Roma: 80 hectáreas de jardines, lagos, senderos bajo pinos centenarios y rincones escondidos que los romanos usan como su salón al aire libre. No es un parque cualquiera: tiene un lago con un templo griego en medio (se puede ir en barca), un reloj que funciona con agua, un anfiteatro de caballos, un teatro shakespeariano y vistas a media Roma desde sus terrazas. Abierto 24 horas. Es el contrapunto perfecto después de un museo o una mañana de monumentos.",
+      "description": "El pulmón verde de Roma: 80 hectáreas de jardines, lagos, senderos bajo pinos centenarios y rincones escondidos que los romanos usan como su salón de estar al aire libre. No es un parque cualquiera — tiene un lago con un templo griego en medio (se puede ir en barca), un reloj que funciona con agua, un anfiteatro de caballos, un teatro shakespeariano y vistas a media Roma desde sus terrazas. Abierto 24 horas, gratis. Es el contrapunto perfecto después de un museo o una mañana de monumentos.",
       "what_to_see": [
         "El Laghetto con el Tempio di Esculapio — un lago artificial con un templo griego neoclásico en una islita. Se alquilan barcas de remos",
         "El Reloj de Agua del Pincio (1867) — un reloj que funciona enteramente con agua, escondido entre los árboles. Una rareza de ingeniería del siglo XIX",
@@ -228,7 +228,7 @@
     },
     {
       "name": "Piazza del Popolo",
-      "description": "La gran puerta norte de Roma: una plaza monumental con un obelisco egipcio de 3.200 años en el centro, dos iglesias gemelas que enmarcan la entrada a las tres calles principales de Roma (el 'Tridente'), una fuente con leones y la iglesia de Santa Maria del Popolo, que por dentro es un museo con dos Caravaggio, frescos de Pinturicchio y una capilla de Rafael. Todo al aire libre, salvo la iglesia.",
+      "description": "La gran puerta norte de Roma: una plaza monumental con un obelisco egipcio de 3.200 años en el centro, dos iglesias gemelas que enmarcan la entrada a las tres calles principales de Roma (el 'Tridente'), una fuente con leones y la iglesia de Santa Maria del Popolo — que por dentro es un museo gratuito con dos Caravaggios, frescos de Pinturicchio y una capilla de Rafael. Todo gratis y al aire libre (excepto la iglesia, que también es gratis).",
       "what_to_see": [
         "El Obelisco Flaminio — obelisco egipcio de Ramsés II (1200 a.C.) traído por Augusto y colocado aquí por Sixto V en 1589",
         "Las iglesias gemelas: Santa Maria in Montesanto (1675) y Santa Maria dei Miracoli (1678) — parecen idénticas pero tienen cúpulas de forma diferente",
@@ -262,7 +262,7 @@
         "address": "Piazza del Popolo, 00187 Roma"
       },
       "tips": [
-        "No te pierdas Santa Maria del Popolo: tiene dos Caravaggio que en cualquier otro sitio tendrían cola de 2 horas. Muchos turistas cruzan la plaza sin entrar. Error.",
+        "No te pierdas Santa Maria del Popolo: es GRATIS y tiene dos Caravaggios que en cualquier otro contexto tendrían cola de 2 horas. Muchos turistas cruzan la plaza sin entrar. Error.",
         "Los Caravaggios están en la Capilla Cerasi, al fondo a la izquierda de la nave. Lleva monedas de 1€ para encender la luz (como en San Luigi dei Francesi). Sin luz, ves poco.",
         "La iglesia cierra a mediodía (12:00-16:00), así que planifica la visita a primera hora (09:00-11:30) o a partir de las 16:00.",
         "Desde la plaza, sube las escaleras a la Terraza del Pincio al atardecer — es la transición más espectacular de Roma.",
@@ -375,7 +375,8 @@
       },
       "tips": [
         "La entrada a la capilla Cerasi (la de los dos Caravaggio) está controlada por aforo, y dentro no se pueden hacer fotos ni vídeo.",
-        "Ve por la mañana entre semana: cierra a mediodía y los festivos solo abre por la tarde."
+        "Ve por la mañana entre semana: cierra a mediodía y los festivos solo abre por la tarde.",
+        "La entrada es gratis."
       ],
       "secrets": [
         "Según la leyenda, la iglesia se levantó en 1099 sobre la tumba de Nerón para acabar con su fantasma, que según los romanos rondaba por la zona."

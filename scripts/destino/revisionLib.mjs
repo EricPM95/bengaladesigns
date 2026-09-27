@@ -279,7 +279,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       if (viaje.ritmo === 'completo') {
         const verano = [5, 6, 7].includes(fechaDe(fecha).getUTCMonth())
         const largos = [
-          ...libres.filter((entry) => entry.minutes > 90 && !(verano && dayStops.some((stop) => (stop.place_name ?? stop.name) === entry.before && stop.sunset_minutes != null))).map((entry) => `${entry.minutes} min antes de ${entry.before === LUNCH_LABEL ? 'comer' : entry.before}`),
+          ...libres.filter((entry) => entry.minutes > 90 && !(verano && entry.minutes <= 150 && dayStops.some((stop) => (stop.place_name ?? stop.name) === entry.before && stop.sunset_minutes != null))).map((entry) => `${entry.minutes} min antes de ${entry.before === LUNCH_LABEL ? 'comer' : entry.before}`),
           // Invierno (B3.1): el paseo iluminado y aperitivo de hasta 2 h es amarillo como mucho; más de 2 h, rojo.
           ...(day.aperitivo && day.aperitivo.minutes > (day.aperitivo.winter ? 120 : 90) ? [`${day.aperitivo.minutes} min de aperitivo antes de cenar`] : []),
           ...(day.free_afternoon && day.free_afternoon.minutes > (day.free_afternoon.winter ? 120 : 90) ? [`${day.free_afternoon.minutes} min de tarde libre antes de cenar`] : []),

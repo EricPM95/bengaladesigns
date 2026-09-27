@@ -1168,3 +1168,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 261. **Horario especial "probable"** (`horario_especial.confirmado: "probable"`, el 2 de junio): el horario NO se aplica,
     pero el reparto evita poner ese día lo que lleva esos lugares (coste 400: menos que un cierre, más que el orden).
     Con `confirmado: true`, además se aplica el horario (regla 251).
+262. **"Gratis" sí, cifras y precios no** (decisión del usuario, 2026-09-27; sustituye a la regla 255): "gratis" se
+    puede decir cuando suma, dentro de una frase con valor ("…y la entrada es gratis: una joya que mucha gente se
+    salta"), también en la ficha de lugar y en su horario ("Entrada gratuita: …"). Lo prohibido fuera de la pestaña
+    Tickets son las cifras y los precios (€, euros, importes): `validar.mjs` los marca en rojo, nunca la palabra
+    "gratis". Los campos de precio estructurados (`ticket_info`, `price_range`, `avg_price_person`) son datos, no texto.
+263. **Verano, tiempo libre antes del atardecer**: con nombre y hasta 150 min no es hueco (regla 259); de más, sí.

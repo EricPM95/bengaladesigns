@@ -9,6 +9,8 @@ const D = findPipelineV2Data('Roma')
 const t2m = (s) => { const [h, m] = String(s).split(':').map(Number); return h * 60 + m }
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const lvl1 = (D.places ?? []).filter((p) => p.level === 1).map((p) => p.name)
+/** Verano: el tiempo libre con nombre antes del atardecer no es hueco hasta aquí; de más, sí (decisión del 2026-09-27). */
+const VERANO_ANTES_DEL_SOL_MAX = 150
 const EXPS = { ninguna: [], arte: ['arte_museos'], naturaleza: ['naturaleza_vistas'], barrios: ['barrios_sabores'] }
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.split('=')))
 const DIAS = (args.dias ?? '2,3,4,5,6,7').split(',').map(Number)
@@ -45,7 +47,7 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
       // Invierno (B3.1): paseo iluminado y aperitivo de hasta 2 h, amarillo; de más, pendiente (Parte C.1).
       // Verano: el tiempo libre con nombre antes del atardecer (lo que no cabe en las estirables, con su tope) no es
       // un hueco (PROMPT_AJUSTES_20_RUTAS B.4), igual que en la revisión.
-      const antesDelSol = [5, 6, 7].includes(mes) && stops.some((s) => (s.place_name ?? s.name) === f.before && s.sunset_minutes != null)
+      const antesDelSol = f.m <= VERANO_ANTES_DEL_SOL_MAX && [5, 6, 7].includes(mes) && stops.some((s) => (s.place_name ?? s.name) === f.before && s.sunset_minutes != null)
       const tipo = f.winter ? (f.m <= 120 ? 'aperitivo_invierno' : 'aperitivo_invierno_largo') : antesDelSol ? 'libre_atardecer_verano' : 'hueco'
       trip.problemas.push({ n, d: cd, tipo, txt: `${f.m} min antes de ${f.before}`, m: f.m })
     }
