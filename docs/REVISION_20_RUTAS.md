@@ -11,15 +11,15 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
 |---|---|---|---|---|---|---|---|
-| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 24 abr 2027 · domingo Vaticano cerrado + 25 de abril | Domingo 25 de abril · Museos Vaticanos |
+| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 24 abr 2027 · domingo Vaticano cerrado + 25 de abril | 25 de abril · Fiesta de la Liberación |
 | [2](#ruta-2) | 2 | completo | sí | sin experiencias | — | sábado 26 jun 2027 | Domingo 27 de junio · Museos Vaticanos |
-| [3](#ruta-3) | 3 | completo | no | Arte | — | viernes 26 mar 2027 · Pascua el domingo 28 | Domingo 28 de marzo · Museos Vaticanos |
+| [3](#ruta-3) | 3 | completo | no | Arte | — | viernes 26 mar 2027 · Pascua el domingo 28 | Viernes Santo · Via Crucis en el Coliseo · Domingo de Pascua |
 | [4](#ruta-4) | 3 | completo | no | sin experiencias | — | sábado 17 jul 2027 · verano | Sábado 17 de julio · Misa en el Panteón · Domingo 18 de julio · Museos Vaticanos |
 | [5](#ruta-5) | 3 | completo | sí | Barrios | — | sábado 9 oct 2027 | Domingo 10 de octubre · Museos Vaticanos |
-| [6](#ruta-6) | 3 | completo | no | Naturaleza | Castillo de Sant'Angelo | lunes 28 jun 2027 · Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro | Lunes 28 de junio · Castillo de Sant'Angelo · Martes 29 de junio · Museos Vaticanos · Miércoles 30 de junio · Audiencia papal |
-| [7](#ruta-7) | 4 | completo | no | sin experiencias | — | viernes 30 abr 2027 · 1 de mayo | Sábado 1 de mayo · Museos Vaticanos |
+| [6](#ruta-6) | 3 | completo | no | Naturaleza | Castillo de Sant'Angelo | lunes 28 jun 2027 · Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro | Lunes 28 de junio · Castillo de Sant'Angelo · 29 de junio · San Pedro y San Pablo · Miércoles 30 de junio · Audiencia papal |
+| [7](#ruta-7) | 4 | completo | no | sin experiencias | — | viernes 30 abr 2027 · 1 de mayo | 1 de mayo · Día del Trabajo |
 | [8](#ruta-8) | 4 | completo | sí | Arte | — | sábado 4 dic 2027 · invierno, domingo | Domingo 5 de diciembre · Museos Vaticanos |
-| [9](#ruta-9) | 4 | completo | no | Barrios | — | lunes 1 nov 2027 · Todos los Santos, lunes | — |
+| [9](#ruta-9) | 4 | completo | no | Barrios | — | lunes 1 nov 2027 · Todos los Santos, lunes | 1 de noviembre · Todos los Santos |
 | [10](#ruta-10) | 4 | completo | no | sin experiencias | — | viernes 24 dic 2027 · Navidad | Navidad en Roma |
 | [11](#ruta-11) | 5 | completo | no | sin experiencias | — | sábado 22 may 2027 · 26 may: audiencia papal (miércoles por la mañana) | Sábado 22 de mayo · Misa en el Panteón · Domingo 23 de mayo · Museos Vaticanos |
 | [12](#ruta-12) | 5 | completo | sí | Naturaleza | — | sábado 18 sep 2027 · 22 sep: audiencia papal (miércoles por la mañana) | Domingo 19 de septiembre · Museos Vaticanos |
@@ -29,7 +29,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | [16](#ruta-16) | 2 | tranquilo | no | sin experiencias | — | sábado 16 ene 2027 | Domingo 17 de enero · Museos Vaticanos |
 | [17](#ruta-17) | 3 | tranquilo | sí | sin experiencias | — | sábado 13 feb 2027 | Domingo 14 de febrero · Museos Vaticanos |
 | [18](#ruta-18) | 3 | tranquilo | no | Barrios | — | sábado 23 oct 2027 | Sábado 23 de octubre · Misa en el Panteón · Domingo 24 de octubre · Museos Vaticanos |
-| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada | — |
+| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada | 8 de diciembre · La Inmaculada |
 | [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | Galería Borghese | sábado 20 nov 2027 | Domingo 21 de noviembre · Museos Vaticanos |
 
 <a id="ruta-1"></a>
@@ -38,8 +38,9 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 25 de abril · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 2
+- **25 de abril · Fiesta de la Liberación** · etiqueta «Fiesta de la Liberación» en el día 2
   - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 24.
+  - Festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
@@ -64,7 +65,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**domingo 25 abr 2027** · 🎉 Fiesta de la Liberación · 🏷️ Último domingo de mes · 🌅 atardecer 20:02 · día curado D1
+**domingo 25 abr 2027** · 🎉 Fiesta de la Liberación · 🏷️ Fiesta de la Liberación · 🌅 atardecer 20:02 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -146,12 +147,15 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 ## 3. 3 días · completo · sin Free Tour · Arte · desde el viernes 26 mar 2027
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 28 de marzo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Viernes Santo · Via Crucis en el Coliseo** · etiqueta «Via Crucis en el Coliseo» en el día 1
+  - Por la noche el Papa preside el Via Crucis junto al Coliseo y la zona se corta desde la tarde. Hemos puesto el Coliseo por la mañana.
+- **Domingo de Pascua** · etiqueta «Domingo de Pascua» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 27 para que no los pierdas.
+  - A las 12:00 el Papa da la bendición Urbi et Orbi en la Plaza de San Pedro y hay muchísima gente. Hemos preparado tu día para que puedas verla si quieres: llega con margen.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
-**viernes 26 mar 2027** · 🎉 Viernes Santo · 🌅 atardecer 18:28 · día curado D1
+**viernes 26 mar 2027** · 🎉 Viernes Santo · 🏷️ Via Crucis en el Coliseo · 🌅 atardecer 18:28 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -197,7 +201,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 3 — Trevi sin gente, el Popolo y la Borghese
 
-**domingo 28 mar 2027** · 🎉 Domingo de Pascua · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 19:31 · día curado D4 (domingo)
+**domingo 28 mar 2027** · 🎉 Domingo de Pascua · 🏷️ Domingo de Pascua · 🌅 atardecer 19:31 · día curado D4 (domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -377,8 +381,9 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 **Avisos de fechas** (ventana al entrar en la ruta): 
 - **Lunes 28 de junio · Castillo de Sant'Angelo** · etiqueta «Castillo de Sant'Angelo cerrado» en el día 1
   - Los lunes el Castillo de Sant'Angelo cierra. Hemos puesto tu visita el miércoles 30 para que no lo pierdas.
-- **Martes 29 de junio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **29 de junio · San Pedro y San Pablo** · etiqueta «San Pedro y San Pablo» en el día 2
   - El 29 de junio los Museos Vaticanos cierran por San Pedro y San Pablo. Hemos puesto tu visita el miércoles 30 para que no los pierdas.
+  - Son los patronos de Roma: los Museos Vaticanos cierran y por la noche el Castillo de Sant'Angelo se ilumina con la Girandola, fuegos que se hacen desde el siglo XV. Hemos movido tu visita al Vaticano a otro día.
 - **Miércoles 30 de junio · Audiencia papal** · etiqueta «Audiencia papal» en el día 3
   - Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto.
 
@@ -410,7 +415,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**martes 29 jun 2027** · 🎉 San Pedro y San Pablo (patrón de Roma) · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:49 · día curado D4M
+**martes 29 jun 2027** · 🎉 San Pedro y San Pablo (patrón de Roma) · 🏷️ San Pedro y San Pablo · 🌅 atardecer 20:49 · día curado D4M
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -462,8 +467,9 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 ## 7. 4 días · completo · sin Free Tour · sin experiencias · desde el viernes 30 abr 2027
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Sábado 1 de mayo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **1 de mayo · Día del Trabajo** · etiqueta «Día del Trabajo» en el día 2
   - El 1 de mayo los Museos Vaticanos cierran por el Día del Trabajo. Hemos puesto tu visita el lunes 3 para que no los pierdas.
+  - Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde hay un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -492,7 +498,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
-**sábado 1 may 2027** · 🎉 Día del Trabajo · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:08 · día curado D4
+**sábado 1 may 2027** · 🎉 Día del Trabajo · 🏷️ Día del Trabajo · 🌅 atardecer 20:08 · día curado D4
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -618,11 +624,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 17:15 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
 
-**Avisos de fechas** (ventana al entrar en la ruta): ninguno.
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **1 de noviembre · Todos los Santos** · etiqueta «Todos los Santos» en el día 1
+  - Es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
-**lunes 1 nov 2027** · 🎉 Todos los Santos · 🌅 atardecer 17:05 · día curado D1
+**lunes 1 nov 2027** · 🎉 Todos los Santos · 🏷️ Todos los Santos · 🌅 atardecer 17:05 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -984,11 +992,34 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
 - **2 de junio · Fiesta de la República** · etiqueta «Fiesta de la República» en el día 1
-  - Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. El Coliseo y el Foro abren más tarde: hemos pasado su visita a la tarde u otro día.
+  - Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto.
+  - Fiesta de la República: por la mañana hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web oficial). Hemos puesto su visita otro día para ir sobre seguro.
 
-### Día 1 — Roma Antigua y el centro barroco
+### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**miércoles 2 jun 2027** · 🎉 Fiesta de la República · 🏷️ Fiesta de la República · 🌅 atardecer 20:39 · día curado D1
+**miércoles 2 jun 2027** · 🎉 Fiesta de la República · 🏷️ Fiesta de la República · 🌅 atardecer 20:39 · día curado D2 (miercoles)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada | — | Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible. |
+| 11:15 | Borgo Pio | 5 min | Por el camino | 10 min andando | La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre. |
+| 11:30 | Tiempo libre antes de la comida | 37 min | 🕐 Tiempo libre |  | ideas: Via della Conciliazione |
+| 12:00 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 3 min andando | en Vaticano y Borgo |
+| 13:15 | Plaza de San Pedro | 25 min | Parada | 7 min andando | La plaza de Bernini, justo al salir de los Museos. |
+| 13:45 | Basílica de San Pedro | 75 min | Parada | 3 min andando | La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini. |
+| 15:00 | Cúpula de San Pedro | 35 min | Parada | 1 min andando | Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies. |
+| 16:00 | Puente Sant'Angelo | 15 min | Parada | 11 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere. · se ve por fuera: Castillo de Sant'Angelo |
+| 16:45 | Iglesia de Santa Maria in Trastevere | 25 min | Parada | 22 min andando | Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere. |
+| 17:15 | Trastevere | 80 min | Parada | 1 min andando | Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador. |
+| 18:45 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (a esta hora ya ha cerrado) | 9 min andando | El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo. |
+| 19:00 | Fontana dell'Acqua Paola | 25 min | Parada | 5 min andando | El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante. |
+| 20:00 | Mirador del Janículo | 44 min | 🌅 Atardecer | 16 min andando | El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 21:00 | Cena en Trastevere |  | 🍷 Cena | 21 min andando | en Trastevere |
+| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+### Día 2 — Roma Antigua y el centro barroco
+
+**jueves 3 jun 2027** · 🌅 atardecer 20:40 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1011,27 +1042,6 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
 | 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
-
-### Día 2 — Vaticano, Castillo y Trastevere al atardecer
-
-**jueves 3 jun 2027** · 🌅 atardecer 20:40 · día curado D2
-
-| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
-|---|---|---|---|---|---|
-| 08:00 | Museos Vaticanos y Capilla Sixtina | 180 min | Parada | — | Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible. |
-| 11:15 | Plaza de San Pedro | 25 min | Parada | 11 min andando | La plaza de Bernini, justo al salir de los Museos. |
-| 11:45 | Basílica de San Pedro | 75 min | Parada | 3 min andando | La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini. |
-| 13:00 | Cúpula de San Pedro | 35 min | Parada | 1 min andando | Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies. |
-| 13:45 | Comida: Borghiciana Pastificio Artigianale | 90 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
-| 15:15 | Borgo Pio | 5 min | Por el camino | 3 min andando | La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre. |
-| 15:30 | Puente Sant'Angelo | 20 min | Parada | 9 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere. · se ve por fuera: Castillo de Sant'Angelo |
-| 16:15 | Iglesia de Santa Maria in Trastevere | 25 min | Parada | 22 min andando | Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere. |
-| 16:45 | Trastevere | 110 min | Parada | 1 min andando | Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador. |
-| 18:45 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (a esta hora ya ha cerrado) | 9 min andando | El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo. |
-| 19:00 | Fontana dell'Acqua Paola | 25 min | Parada | 5 min andando | El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante. |
-| 20:00 | Mirador del Janículo | 45 min | 🌅 Atardecer | 16 min andando | El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 21:30 | Cena en Trastevere |  | 🍷 Cena | 21 min andando | en Trastevere |
-| 22:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 3 — Trevi sin gente, el Pincio y la tarde en Monti
 
@@ -1377,7 +1387,9 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 16:45 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
 
-**Avisos de fechas** (ventana al entrar en la ruta): ninguno.
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **8 de diciembre · La Inmaculada** · etiqueta «La Inmaculada» en el día 3
+  - Por la tarde el Papa va a la Plaza de España a rendir homenaje a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita a otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -1418,7 +1430,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Excursión
 
-**miércoles 8 dic 2027** · 🎉 la Inmaculada · 🌅 atardecer 16:39
+**miércoles 8 dic 2027** · 🎉 la Inmaculada · 🏷️ La Inmaculada · 🌅 atardecer 16:39
 
 Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento**. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren.
 
