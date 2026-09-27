@@ -194,7 +194,9 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         }
         const walk = previous ? legOf(previous, stop) : null
         const notas = []
-        if (stop.pass_through || stop.is_pass_by) notas.push('de paso')
+        // B2: lo de acera va "por el camino"; un monumento que no se visita, "por fuera" con su motivo.
+        if (stop.outside) notas.push(`por fuera (${stop.outside_reason ?? 'hoy no toca entrar'})`)
+        else if (stop.pass_through || stop.is_pass_by) notas.push('por el camino')
         if (stop.instead_of_visit) notas.push('por fuera, en vez de la visita')
         if (stop.night_view) {
           notas.push('🌃 vistas de noche (el atardecer ya pasó)')
@@ -382,7 +384,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
     '',
     'Cómo leerlo:',
     '- **Llega / Sale**: la hora a la que se llega a la parada y a la que se sale; **Dura**: el tiempo en ella.',
-    '- **Nota**: "de paso" (se pasa por delante, sin pararse), 🌅 el mirador del atardecer, 🔒 cerrado ese día (con su aviso), "tiempo libre", y los avisos de horario.',
+    '- **Nota**: "por el camino" (se pasa por delante, sin pararse: calles, plazas, fuentes), "por fuera" (un monumento que ese día no se visita, con el motivo), 🌅 el mirador del atardecer, 🔒 cerrado ese día (con su aviso), "tiempo libre", y los avisos de horario.',
     `- **Traslado**: solo los de más de ${TRASLADO_VISIBLE} min andando, con los minutos (matriz del destino). El aviso de transporte del día (🚌) va arriba del día.`,
     '- 🕐 tiempo libre (todo hueco de más de 30 min, con sugerencias); 🍝 comida con su restaurante y barrio; 🍷 cena con su barrio (el motor elige el barrio de la cena, no el restaurante); 🌙 experiencia nocturna, en su hora.',
     '- Al final de cada viaje, lo que no entró; al final del documento, **lo que parece raro**, para decidir.',

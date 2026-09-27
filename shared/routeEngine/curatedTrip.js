@@ -396,7 +396,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // Cerrado ese día: lo imprescindible se enseña por fuera (su `pass_by`, con aviso); lo demás que se ve desde la
     // calle va de paso; lo que no, se salta.
     let closedSkip = false
-    if (!source.isFreeTour && closedThatDay(stop.lugar, day)) {
+    const closedToday = !source.isFreeTour && closedThatDay(stop.lugar, day)
+    if (closedToday) {
       if (source.level === 1 && (source.pass_by || source.type === 'exterior' || source.visible_from_outside)) role = 'de_paso'
       else if (source.type === 'exterior' || source.visible_from_outside) role = 'de_paso'
       else closedSkip = true
@@ -410,6 +411,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         coordinates: passBy?.coordinates ?? source.coordinates,
         duration_minutes: passBy ? passBy.minutes ?? OUTSIDE_MINUTES : Math.min(source.duration_minutes ?? PASS_THROUGH_MINUTES, PASS_THROUGH_MINUTES),
         ...(passBy?.includes?.length ? { outsideOf: passBy.includes } : {}),
+        // Por qué no se entra (B2.3): lo dice la tarjeta "Por fuera" si es un monumento (tiene interior).
+        outsideReason: closedToday ? 'cerrado hoy' : stop.si_cerrado ? 'a esta hora ya ha cerrado' : 'hoy no toca entrar',
         windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (role === 'atardecer' && hours.sunset != null) ready = { ...ready, sunset: hours.sunset }

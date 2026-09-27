@@ -85,6 +85,9 @@ interface GeneratedStop {
   sunset_minutes?: number | null
   /** Mirador que llega ya de noche: la ciudad iluminada — Stop.isNightView. */
   night_view?: boolean
+  /** Monumento que ese día no se visita: "Por fuera" con su motivo — Stop.outsideReason. */
+  outside?: boolean
+  outside_reason?: string | null
   /** Precio y condiciones de entrada — Stop.ticketInfo. */
   ticket_info?: string[] | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
@@ -383,6 +386,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
     // Atardecer y mirador de noche: los marca el motor (formatDayV3); la tarjeta del día los pinta aparte.
     ...(generated.night_view ? { isNightView: true } : generated.sunset_minutes != null ? { isSunset: true } : {}),
+    ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'hoy no toca entrar' } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),

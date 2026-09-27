@@ -1094,3 +1094,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     su parada (o justo delante si detrás ya no llega). Lo marcado nunca va "de paso" y nunca desaparece en silencio:
     si no cabe, `not_included` con `from_pool` y `day_number`, y la app lo avisa en ese día ("No hemos podido
     incluir X porque…").
+238. **Horas redondas** (B2.1): las horas que se enseñan van en :00, :15, :30 o :45. El motor calcula con los minutos
+    exactos y el formateador (quarterHourStops) enseña el cuarto de hora MÁS CERCANO de la llegada y la salida (nunca
+    siempre hacia arriba); la visita dura lo que cuadra entre las dos. Lo de paso conserva sus minutos.
+239. **"Por el camino" y "Por fuera"** (B2.2-3): lo de paso de acera (calles, plazas, fuentes, ruinas: `type: exterior`)
+    sale "Por el camino: …" entre dos paradas, con foto pequeña y ficha. Un monumento (`type: interior`) nunca va por
+    el camino: sale "Por fuera" con `outside_reason` ("hoy no toca entrar", "a esta hora ya ha cerrado", "cerrado hoy").

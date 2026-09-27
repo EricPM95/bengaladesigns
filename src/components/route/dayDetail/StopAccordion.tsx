@@ -33,12 +33,22 @@ const RESERVATION_NOTE: Record<string, string> = {
 export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAccordionProps) {
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} />
-  // Una calle no es una parada (Parte A): una línea "Pasas por…", sin número ni foto.
+  // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
+  // (calles, plazas, fuentes, ruinas que se ven desde la acera). Un monumento que ese día no se visita sale
+  // "Por fuera" con su motivo (PROMPT_RUTAS_CURADAS B2).
   if (stop.passThrough) {
     return (
       <div className="relative pr-8">
-        <TimelineNote time={startTime} onClick={onOpen}>
-          Pasas por <span className="font-medium text-text">{displayStopName(stop.name)}</span>
+        <TimelineNote time={startTime} onClick={onOpen} photoUrl={stop.photoUrl}>
+          {stop.outsideReason ? (
+            <>
+              Por fuera: <span className="font-medium text-text">{displayStopName(stop.name)}</span> · {stop.outsideReason}
+            </>
+          ) : (
+            <>
+              Por el camino: <span className="font-medium text-text">{displayStopName(stop.name)}</span>
+            </>
+          )}
         </TimelineNote>
         {menu && <div className="absolute right-0 top-1 z-20">{menu}</div>}
       </div>

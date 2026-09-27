@@ -15,6 +15,28 @@ import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
 import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
+
+/** "10:07" → "10:00": el cuarto de hora más cercano (nunca siempre hacia arriba: el día acabaría con retraso). */
+function nearestQuarter(hhmm) {
+  const minutes = toMinutes(hhmm)
+  return Number.isFinite(minutes) ? toHHMM(Math.round(minutes / 15) * 15) : hhmm
+}
+
+/**
+ * Horas redondas (PROMPT_RUTAS_CURADAS B2.1): el motor calcula con los minutos exactos y aquí se enseña el cuarto de
+ * hora más cercano de la llegada y de la salida; la visita dura lo que cuadra entre las dos. El redondeo al más cercano
+ * no cambia el orden, así que dos paradas nunca se pisan. Lo "de paso" conserva sus minutos.
+ */
+function quarterHourStops(stops) {
+  return stops.map((stop) => {
+    const start = toMinutes(stop.suggested_time)
+    if (!Number.isFinite(start)) return stop
+    const roundedStart = Math.round(start / 15) * 15
+    if (stop.pass_through) return { ...stop, suggested_time: toHHMM(roundedStart) }
+    const roundedEnd = Math.round((start + (stop.duration_minutes ?? 0)) / 15) * 15
+    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: roundedEnd > roundedStart ? roundedEnd - roundedStart : stop.duration_minutes }
+  })
+}
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
@@ -234,6 +256,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // Un imprescindible cerrado ese día que se enseña por fuera (decisión del 2026-09-26): con su motivo.
     const sourcePlace = destData.places?.find((candidate) => candidate.name === visit.place.name)
+    // Un monumento (lo que tiene interior: el Altar, el Tempietto, el Castillo) nunca va "por el camino": sale
+    // "Por fuera" y dice por qué (PROMPT_RUTAS_CURADAS B2.3). Lo de acera (plazas, fuentes, ruinas) sí es camino.
+    if (stop.pass_through && sourcePlace?.type === 'interior') {
+      stop.outside = true
+      stop.outside_reason = visit.place.outsideReason ?? 'hoy no toca entrar'
+    }
     if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
@@ -354,8 +382,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     day_number: tripDay.dayNumber,
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
-    stops: [...stops, ...(nightChain.length > 0 ? nightStopsFor(nightChain, dayVisitedNames, nightTimingInput) : [])],
-    meals,
+    stops: quarterHourStops([...stops, ...(nightChain.length > 0 ? nightStopsFor(nightChain, dayVisitedNames, nightTimingInput) : [])]),
+    meals: meals.map((meal) => ({ ...meal, suggested_time: nearestQuarter(meal.suggested_time), ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end) } : {}) })),
     not_included: [],
     times_are_final: true,
     dinner_zone: tripDay.dinnerZone ?? dinnerZone,

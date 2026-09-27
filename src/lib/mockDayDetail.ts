@@ -222,6 +222,7 @@ export interface MockStopDetail {
   /** Ver Stop.isSunset / Stop.isNightView: mirador del atardecer y mirador de noche. */
   isSunset?: boolean
   isNightView?: boolean
+  outsideReason?: string | null
   /** Ver Stop.tags en types.ts — píldoras de color en StopAccordion/StopDetailSheet (ver tagColors.ts). */
   tags?: string[]
   /** Ver Stop.scheduleText en types.ts. */
@@ -465,6 +466,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     isNightExperience: stop.isNightExperience,
     isSunset: stop.isSunset,
     isNightView: stop.isNightView,
+    outsideReason: stop.outsideReason ?? null,
     tags: stop.tags,
     scheduleText: stop.scheduleText,
     hoursCard: stop.hoursCard ?? null,
@@ -566,6 +568,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       isNightExperience: detail.isNightExperience,
       isSunset: detail.isSunset,
       isNightView: detail.isNightView,
+      outsideReason: detail.outsideReason ?? null,
     }
   })
 }
