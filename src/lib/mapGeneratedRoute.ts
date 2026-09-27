@@ -85,6 +85,10 @@ interface GeneratedStop {
   sunset_minutes?: number | null
   /** Mirador que llega ya de noche: la ciudad iluminada — Stop.isNightView. */
   night_view?: boolean
+  /** "Roma iluminada desde el Janículo" — Stop.nightViewTitle. */
+  night_view_title?: string | null
+  /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("🚌 Bus 118, unos 25 min"). */
+  transit?: { icon: string; label: string; minutes: number; detail?: string | null } | null
   /** Monumento que ese día no se visita: "Por fuera" con su motivo — Stop.outsideReason. */
   outside?: boolean
   outside_reason?: string | null
@@ -386,6 +390,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
     // Atardecer y mirador de noche: los marca el motor (formatDayV3); la tarjeta del día los pinta aparte.
     ...(generated.night_view ? { isNightView: true } : generated.sunset_minutes != null ? { isSunset: true } : {}),
+    ...(generated.night_view && generated.night_view_title ? { nightViewTitle: generated.night_view_title } : {}),
+    ...(generated.transit ? { transitLabel: `${generated.transit.icon} ${generated.transit.label}` } : {}),
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'hoy no toca entrar' } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),

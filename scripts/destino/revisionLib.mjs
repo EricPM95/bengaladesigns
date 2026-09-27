@@ -198,10 +198,8 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         if (stop.outside) notas.push(`por fuera (${stop.outside_reason ?? 'hoy no toca entrar'})`)
         else if (stop.pass_through || stop.is_pass_by) notas.push('por el camino')
         if (stop.instead_of_visit) notas.push('por fuera, en vez de la visita')
-        if (stop.night_view) {
-          notas.push('🌃 vistas de noche (el atardecer ya pasó)')
-          patron('Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)', `viaje ${numero} día ${n} (${cell(stop.name)} a las ${stop.suggested_time})`)
-        }
+        // El mirador que llega de noche es una experiencia nocturna aceptada (2026-09-27): se anota, no es raro.
+        if (stop.night_view) notas.push(`🌙 ${stop.night_view_title ?? 'Roma iluminada'}`)
         if (stop.sunset_minutes != null) notas.push(`🌅 atardecer ${m2t(stop.sunset_minutes)}`)
         if (stop.outside_of?.length) notas.push(`se ve por fuera: ${stop.outside_of.join(', ')}`)
         if (stop.free_tour_covers?.length) notas.push(`recorre: ${stop.free_tour_covers.join(', ')}`)
@@ -212,16 +210,16 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         if (stop.notice) notas.push(`ℹ️ ${stop.notice}`)
         if (stop.hours_warning) notas.push(`⚠️ ${stop.hours_warning}`)
         if (stop.season_notice) notas.push(`⚠️ ${stop.season_notice}`)
-        const traslado = walk != null && walk > TRASLADO_VISIBLE ? `🚶 ${walk} min${previous?.name ? ` desde ${cell(previous.name)}` : ''}` : ''
+        const traslado = stop.transit ? `${stop.transit.icon} ${stop.transit.label}` : walk != null && walk > TRASLADO_VISIBLE ? `🚶 ${walk} min${previous?.name ? ` desde ${cell(previous.name)}` : ''}` : ''
         const end = start + stop.duration_minutes
         out.push(`| ${stop.suggested_time} | ${m2t(end)} | ${stop.duration_minutes} min | ${cell(stop.name)} | ${cell(notas.join(' · '))} | ${traslado} |`)
         if (!stop.pass_through && !stop.is_pass_by) paradasDeVerdad++
         aparece(nombre)
         if (pool.includes(nombre)) poolVisto.set(nombre, poolVisto.get(nombre) === 'visita' || !(stop.pass_through || stop.is_pass_by) ? 'visita' : 'de paso')
-        if (walk != null && walk > SALTO_GRANDE && !String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`)) raro(n, `traslado de ${walk} min andando hasta ${cell(stop.name)} sin aviso de transporte.`)
+        if (!stop.transit && walk != null && walk > SALTO_GRANDE && !String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`)) raro(n, `traslado de ${walk} min andando hasta ${cell(stop.name)} sin aviso de transporte.`)
         // (Si el tramo lleva aviso de transporte —el metro B hasta San Clemente—, se cuenta en metro, no andando.)
         const enTransporte = String(day.transfer_notice ?? '').includes(`→ ${stop.name}:`) && /metro|bus|tranv/i.test(String(day.transfer_notice))
-        if (previousEnd != null && walk != null && previous?.name !== LUNCH_LABEL && !enTransporte) {
+        if (previousEnd != null && walk != null && previous?.name !== LUNCH_LABEL && !enTransporte && !stop.transit) {
           const holgura = start - previousEnd - walk
           if (holgura < 0) raro(n, `horario apretado: a ${cell(stop.name)} (${stop.suggested_time}) se llega ${-holgura} min tarde andando ${walk} min.`)
           const conNombre = libres.some((item) => item.before === nombre)

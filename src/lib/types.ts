@@ -269,6 +269,10 @@ export interface Stop {
   isSunset?: boolean
   /** Mirador que llega ya de noche ("Roma iluminada a tus pies"): tarjeta azul noche en DIAS. */
   isNightView?: boolean
+  /** Su nombre de experiencia nocturna: "Roma iluminada desde el Janículo". */
+  nightViewTitle?: string
+  /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
+  transitLabel?: string
   /** Monumento que ese día no se visita (va de paso por delante): sale "Por fuera" con este motivo ("hoy no toca
       entrar", "a esta hora ya ha cerrado", "cerrado hoy"). Sin él, lo de paso es "Por el camino". */
   outsideReason?: string | null

@@ -290,7 +290,6 @@ Del jueves 10 de junio al sábado 12 de junio de 2027.
 
 - **Día curado**: D5C · El Aventino, Testaccio, las basílicas y el Coliseo de noche
 - **Atardecer**: 20:45
-- 🚌 Desde la comida → Basílica de San Clemente: ~35 min andando · o en el metro B (Piramide → Colosseo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -301,12 +300,12 @@ Del jueves 10 de junio al sábado 12 de junio de 2027.
 | 11:00 | 11:35 | 35 min | Cementerio Protestante |  |  |
 | 11:45 | 12:20 | 35 min | Testaccio |  |  |
 | | | 39 min | 🕐 **Tiempo libre** | antes de comer · Pasear por Testaccio: el barrio obrero convertido en el más auténtico de Roma. | |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:15 | 45 min | Basílica de San Clemente |  | 🚶 33 min desde la comida |
-| 15:30 | 16:00 | 30 min | Basílica de San Juan de Letrán |  |  |
-| 16:30 | 17:00 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
-| 17:15 | 17:40 | 25 min | Iglesia de San Pietro in Vincoli |  |  |
-| 17:45 | 19:35 | 110 min | Monti |  |  |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:30 | 45 min | Basílica de San Clemente |  | 🚇 Metro B, unos 20 min |
+| 15:45 | 16:15 | 30 min | Basílica de San Juan de Letrán |  |  |
+| 16:45 | 17:15 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
+| 17:30 | 17:55 | 25 min | Iglesia de San Pietro in Vincoli |  |  |
+| 18:00 | 19:35 | 95 min | Monti |  |  |
 | 20:00 | 20:45 | 45 min | Via dei Fori Imperiali | 🌅 atardecer 20:45 |  |
 | 21:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 | 22:00 | 22:45 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado» | |
@@ -581,8 +580,6 @@ Del lunes 12 de julio al viernes 16 de julio de 2027.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia
 - **Atardecer**: 20:43
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Circo Máximo: ~55 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -591,10 +588,10 @@ Del lunes 12 de julio al viernes 16 de julio de 2027.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 17:10 | 100 min | Via Appia Antica |  |  |
-| 17:45 | 19:35 | 110 min | Circo Máximo |  | 🚶 54 min desde Via Appia Antica |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 17:25 | 100 min | Via Appia Antica |  |  |
+| 18:00 | 19:35 | 95 min | Circo Máximo |  | 🚌 Bus 118, unos 30 min |
 | 20:00 | 20:43 | 43 min | Plaza del Campidoglio | 🌅 atardecer 20:43 |  |
 | 21:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
@@ -683,8 +680,6 @@ Del lunes 18 de octubre al viernes 22 de octubre de 2027.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia · variantes: invierno
 - **Atardecer**: 18:19
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Plaza del Campidoglio: ~65 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -693,12 +688,12 @@ Del lunes 18 de octubre al viernes 22 de octubre de 2027.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 16:25 | 55 min | Via Appia Antica |  |  |
-| 17:00 | 17:20 | 20 min | Plaza del Campidoglio |  | 🚶 67 min desde Via Appia Antica |
-| 17:30 | 18:30 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
-| | | 71 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti | Iglesia del Gesù, Largo di Torre Argentina, Monti | |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 16:40 | 55 min | Via Appia Antica |  |  |
+| 17:15 | 17:35 | 20 min | Plaza del Campidoglio |  | 🚌 Bus 118, unos 30 min |
+| 17:45 | 18:45 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
+| | | 56 min | 🕐 **Tiempo libre**: Aperitivo y paseo por Monti | Iglesia del Gesù, Largo di Torre Argentina, Plaza Venecia | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
 #### Lo que quedó fuera
@@ -796,8 +791,6 @@ Del lunes 5 de abril al sábado 10 de abril de 2027.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia
 - **Atardecer**: 19:44
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Circo Máximo: ~55 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -806,10 +799,10 @@ Del lunes 5 de abril al sábado 10 de abril de 2027.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 17:10 | 100 min | Via Appia Antica |  |  |
-| 17:45 | 18:35 | 50 min | Circo Máximo |  | 🚶 54 min desde Via Appia Antica |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 17:25 | 100 min | Via Appia Antica |  |  |
+| 18:00 | 18:35 | 35 min | Circo Máximo |  | 🚌 Bus 118, unos 30 min |
 | 19:00 | 19:44 | 44 min | Plaza del Campidoglio | 🌅 atardecer 19:44 |  |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
@@ -916,8 +909,6 @@ Del lunes 2 de agosto al sábado 7 de agosto de 2027.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia
 - **Atardecer**: 20:23
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Circo Máximo: ~55 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -926,10 +917,10 @@ Del lunes 2 de agosto al sábado 7 de agosto de 2027.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 17:10 | 100 min | Via Appia Antica |  |  |
-| 17:45 | 19:10 | 85 min | Circo Máximo |  | 🚶 54 min desde Via Appia Antica |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 17:25 | 100 min | Via Appia Antica |  |  |
+| 18:00 | 19:10 | 70 min | Circo Máximo |  | 🚌 Bus 118, unos 30 min |
 | 19:45 | 20:28 | 43 min | Plaza del Campidoglio | 🌅 atardecer 20:23 |  |
 | 21:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
@@ -1044,8 +1035,6 @@ Del lunes 21 de junio al domingo 27 de junio de 2027.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia
 - **Atardecer**: 20:49
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Circo Máximo: ~55 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1054,10 +1043,10 @@ Del lunes 21 de junio al domingo 27 de junio de 2027.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 17:10 | 100 min | Via Appia Antica |  |  |
-| 17:45 | 19:30 | 105 min | Circo Máximo |  | 🚶 54 min desde Via Appia Antica |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 17:25 | 100 min | Via Appia Antica |  |  |
+| 18:00 | 19:30 | 90 min | Circo Máximo |  | 🚌 Bus 118, unos 30 min |
 | 20:00 | 20:44 | 44 min | Plaza del Campidoglio | 🌅 atardecer 20:49 |  |
 | 21:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
@@ -1178,8 +1167,6 @@ Del lunes 7 de diciembre al domingo 13 de diciembre de 2026.
 
 - **Día curado**: D5 · El sur de Roma: el Aventino, Testaccio y la Via Appia · variantes: invierno
 - **Atardecer**: 16:39
-- 🚌 Desde la comida → Catacumbas de San Calixto: ~55 min andando · o en el bus 118 (desde la Pirámide)
-- 🚌 Via Appia Antica → Plaza del Campidoglio: ~65 min andando · o en el bus 118 (hasta el Circo Máximo)
 
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
@@ -1188,12 +1175,12 @@ Del lunes 7 de diciembre al domingo 13 de diciembre de 2026.
 | 11:00 | 11:25 | 25 min | Jardín de los Naranjos |  |  |
 | 11:30 | 11:35 | 5 min | Ojo de la Cerradura del Aventino |  |  |
 | 11:45 | 12:30 | 45 min | Testaccio |  |  |
-| 13:00 | 14:30 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
-| 14:30 | 15:20 | 50 min | Catacumbas de San Calixto |  | 🚶 57 min desde la comida |
-| 15:30 | 16:25 | 55 min | Via Appia Antica |  |  |
-| 17:00 | 17:20 | 20 min | Plaza del Campidoglio |  | 🚶 67 min desde Via Appia Antica |
-| 17:30 | 18:30 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
-| | | 71 min | 🕐 **Tiempo libre**: Paseo por Monti y los Foros iluminados y aperitivo | Iglesia del Gesù, Largo di Torre Argentina, Plaza Venecia | |
+| 13:00 | 14:15 | | 🍝 **Comida**: Felice a Testaccio | en Testaccio | |
+| 14:45 | 15:35 | 50 min | Catacumbas de San Calixto |  | 🚌 Bus 118, unos 25 min |
+| 15:45 | 16:40 | 55 min | Via Appia Antica |  |  |
+| 17:15 | 17:35 | 20 min | Plaza del Campidoglio | 🌙 Roma iluminada desde el Campidoglio | 🚌 Bus 118, unos 30 min |
+| 17:45 | 18:45 | 60 min | Altar de la Patria | se ve por fuera: Plaza Venecia |  |
+| | | 56 min | 🕐 **Tiempo libre**: Paseo por Monti y los Foros iluminados y aperitivo | Iglesia del Gesù, Largo di Torre Argentina, Plaza Venecia | |
 | 20:00 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti | 🚶 19 min |
 
 ### Día 6 — sábado 12 de diciembre · Roma — día 6
@@ -1208,7 +1195,7 @@ Del lunes 7 de diciembre al domingo 13 de diciembre de 2026.
 | 18:00 | 18:30 | 30 min | Basílica de Santa María la Mayor |  | 🚶 21 min desde Basílica de San Juan de Letrán |
 | 18:45 | 18:55 | 10 min | Iglesia de San Pietro in Vincoli | por fuera (a esta hora ya ha cerrado) |  |
 | 19:00 | 19:35 | 35 min | Monti |  |  |
-| 19:45 | 19:55 | 10 min | Via dei Fori Imperiali | 🌃 vistas de noche (el atardecer ya pasó) |  |
+| 19:45 | 19:55 | 10 min | Via dei Fori Imperiali | 🌙 Roma iluminada desde los Foros |  |
 | 20:30 | | | 🍷 **Cena**: sin restaurante elegido (el motor elige el barrio) | en Monti |  |
 | 21:30 | 22:15 | 45 min | 🌙 Coliseo (noche) | paseo nocturno «El Coliseo iluminado» | |
 
@@ -1220,7 +1207,7 @@ Del lunes 7 de diciembre al domingo 13 de diciembre de 2026.
 | Llega | Sale | Dura | Parada | Nota | Traslado desde lo anterior |
 |---|---|---|---|---|---|
 | 16:00 | 17:10 | 70 min | Castillo de Sant'Angelo |  |  |
-| 17:15 | 17:35 | 20 min | Puente Sant'Angelo | 🌃 vistas de noche (el atardecer ya pasó) |  |
+| 17:15 | 17:35 | 20 min | Puente Sant'Angelo | 🌙 Roma iluminada desde el Puente Sant'Angelo |  |
 | 18:00 | 18:35 | 35 min | Piazza Navona |  |  |
 | 18:45 | 19:10 | 25 min | Campo de' Fiori |  |  |
 | 19:15 | 19:25 | 10 min | Plaza Farnese | por el camino |  |
@@ -1260,7 +1247,6 @@ Sacado de las rutas de arriba con estos criterios: traslados de más de 25 min s
 ### Patrones que se repiten
 
 - **Plaza de España: de día y de noche el mismo día, excepción aprobada del día curado** — 8 veces: viaje 5 día 4; viaje 6 día 4; viaje 7 día 3; viaje 8 día 3; viaje 9 día 3; viaje 10 día 3; viaje 11 día 3; viaje 12 día 3.
-- **Mirador del atardecer que llega de noche (sale como vistas de Roma iluminada)** — 2 veces: viaje 12 día 6 (Via dei Fori Imperiali a las 19:45); viaje 12 día 7 (Puente Sant'Angelo a las 17:15).
 
 ### Caso a caso
 

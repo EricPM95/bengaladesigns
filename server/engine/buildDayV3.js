@@ -182,6 +182,18 @@ function wakeNoticeFor(destData, tripDay, places, startedAt) {
   return `Hoy empezamos a las ${toHHMM(startedAt)} para que te dé tiempo a ver ${lugar}`
 }
 
+/**
+ * El tramo en transporte de una parada: "el bus 118 (desde la Pirámide)" → "Bus 118, unos 25 min" con 🚌; el metro
+ * con 🚇 y el tranvía con 🚊. Lo de entre paréntesis (desde dónde) se queda en `detail`.
+ */
+function transitFields({ how, minutes }) {
+  const text = String(how).replace(/^(el|la)\s+/i, '')
+  const detail = text.match(/\(([^)]*)\)/)?.[1] ?? null
+  const line = text.replace(/\s*\([^)]*\)/, '').trim()
+  const icon = /metro/i.test(line) ? '🚇' : /tranv/i.test(line) ? '🚊' : '🚌'
+  return { icon, label: `${line.charAt(0).toUpperCase()}${line.slice(1)}, unos ${minutes} min`, minutes, detail }
+}
+
 /** "Cierre temprano": lo que cierra antes de esta hora (el Foro, a las 16:30 en invierno). */
 const EARLY_CLOSING_MINUTES = 18 * 60
 
@@ -217,7 +229,13 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.nightView || (sunsetMirador && visit.place.sunset == null && sunsetToday != null && visit.start > sunsetToday + 30)) {
       stop.night_view = true
       stop.why = destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
+      // Sale como experiencia nocturna, con su nombre: "Roma iluminada desde el Janículo" (decisión del 2026-09-27).
+      const desde = destData.destination_config?.night_view_names?.[visit.place.name]
+      const template = destData.destination_config?.night_view_title
+      if (desde && template) stop.night_view_title = template.replace('{desde}', desde)
     }
+    // El tramo en bus o metro hasta aquí (`traslado_min`): "🚌 Bus 118, unos 25 min".
+    if (visit.place.transit) stop.transit = transitFields(visit.place.transit)
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // La foto del Free Tour: la propia del destino (`photo_url`) cuando la haya; mientras, la de un lugar que ya

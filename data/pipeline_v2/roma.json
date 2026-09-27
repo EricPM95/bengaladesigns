@@ -7006,6 +7006,15 @@
       "testaccio": "Testaccio y la Pirámide iluminados",
       "prati": "Via della Conciliazione y el Castillo iluminados",
       "vaticano": "Via della Conciliazione y el Castillo iluminados"
+    },
+    "night_view_title": "Roma iluminada desde {desde}",
+    "night_view_names": {
+      "Mirador del Janículo": "el Janículo",
+      "Terraza del Pincio": "el Pincio",
+      "Plaza del Campidoglio": "el Campidoglio",
+      "Via dei Fori Imperiali": "los Foros",
+      "Puente Sant'Angelo": "el Puente Sant'Angelo",
+      "Jardín de los Naranjos": "el Aventino"
     }
   },
   "museos_de_pago": {
@@ -8084,6 +8093,12 @@
         "pool_borghese": {
           "tarde": [
             {
+              "lugar": "Altar de la Patria",
+              "rol": "parada",
+              "minutos": 30,
+              "nota": "Por dentro es gratis; sube a la terraza panorámica."
+            },
+            {
               "lugar": "Fontana de Trevi",
               "rol": "parada"
             },
@@ -8097,7 +8112,7 @@
               "rol": "parada",
               "hora": "15:00",
               "pago": true,
-              "nota": "Turno de las 15:00, con reserva."
+              "nota": "Entrada por turnos cada 2 horas, con reserva."
             },
             {
               "lugar": "Terraza del Pincio",
@@ -8108,7 +8123,14 @@
             "texto": "Tridente o Spagna",
             "barrio": "tridente"
           },
-          "noche": "centro_iluminado"
+          "noche": "centro_iluminado",
+          "comida": {
+            "texto": "Monti o los Foros",
+            "restaurantes": [
+              "La Taverna dei Fori Imperiali",
+              "La Boccaccia"
+            ]
+          }
         },
         "pool_caracalla": {
           "tarde": [
@@ -8466,7 +8488,61 @@
               "nota": "Bajar de noche callejeando."
             }
           ],
-          "atardecer_antes_de": "18:20"
+          "atardecer_antes_de": "18:20",
+          "si_espera": {
+            "_nota": "Más de 60 min de espera antes del atardecer en el Janículo (4 días desde el 13 de marzo): Trastevere antes, estirado (decisión del 2026-09-27).",
+            "minutos": 60,
+            "tarde": [
+              {
+                "lugar": "Borgo Pio",
+                "rol": "de_paso"
+              },
+              {
+                "lugar": "Castillo de Sant'Angelo",
+                "rol": "parada",
+                "pago": true,
+                "solo": [
+                  {
+                    "pool": true
+                  },
+                  {
+                    "experiencia": "arte_museos",
+                    "min_dias": 5
+                  }
+                ]
+              },
+              {
+                "lugar": "Puente Sant'Angelo",
+                "rol": "parada",
+                "nota": "Y por el Lungotevere, junto al río, hasta Trastevere."
+              },
+              {
+                "lugar": "Iglesia de Santa Maria in Trastevere",
+                "rol": "parada"
+              },
+              {
+                "lugar": "Trastevere",
+                "rol": "parada",
+                "estirar": true,
+                "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte."
+              },
+              {
+                "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                "rol": "parada",
+                "si_cerrado": "de_paso",
+                "nota": "Antes de las 18:00; si ya cerró, de paso."
+              },
+              {
+                "lugar": "Fontana dell'Acqua Paola",
+                "rol": "parada"
+              },
+              {
+                "lugar": "Mirador del Janículo",
+                "rol": "atardecer",
+                "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo."
+              }
+            ]
+          }
         },
         "tranquilo": {
           "manana": [
@@ -9664,6 +9740,14 @@
               "lugar": "Plaza del Campidoglio",
               "rol": "atardecer",
               "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "parada",
+              "solo": {
+                "estacion": "invierno"
+              },
+              "nota": "La terraza panorámica abre hasta las 19:30 (taquilla hasta las 18:45): Roma iluminada."
             }
           ]
         },

@@ -258,7 +258,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const variant = cfg.variantes?.[name]
       if (!variant) return
       applied.push(name)
-      for (const key of ['manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
+      for (const key of ['manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra', 'si_espera']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
       if (variant.tarde_antes) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar)), tarde: [...variant.tarde_antes, ...sections.tarde.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar))] }
       for (const insert of variant.insertar ?? []) {
@@ -435,7 +435,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (stop.minutos) ready = { ...ready, duration_minutes: stop.minutos }
     // `traslado_min`: se llega en transporte y el tramo no pasa de esos minutos (el metro B de Piramide a Colosseo
     // en la tarde B de D5, 20 min puerta a puerta frente a 30 andando).
-    if (stop.traslado_min) ready = { ...ready, transitMinutes: stop.traslado_min }
+    if (stop.traslado_min) ready = { ...ready, transitMinutes: stop.traslado_min, ...(stop.traslado ? { transitHow: stop.traslado } : {}) }
     if (stop.aviso) ready = { ...ready, stopNotice: stop.aviso }
     if (stop.nota) ready = { ...ready, curatedNote: stop.nota }
     const [scheduled] = placesForScheduler({ id: stop.lugar, places: [ready] }, destData, tour?.default_time ?? null)
@@ -620,6 +620,32 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId)) && added.every((unit) => trial.visits.some((visit) => visit.unitId === unit.id))) {
         units = list
         result = trial
+      }
+    }
+    // `si_espera` (D2 en invierno): si antes del atardecer se esperan más de esos minutos, la tarde de `si_espera`
+    // (Trastevere antes del Janículo), que se queda ese rato en su `estirar`. Solo si no se pierde nada y llega al sol.
+    const waitRule = sections.si_espera
+    const sunsetIndex = result.visits.findIndex((visit) => visit.place.sunset != null)
+    if (waitRule?.tarde && sunsetIndex > 0) {
+      const wait = result.visits[sunsetIndex].start - result.visits[sunsetIndex - 1].end - (result.visits[sunsetIndex].walkMinutes ?? 0)
+      if (wait > (waitRule.minutos ?? 60)) {
+        const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
+        const tarde = waitRule.tarde.filter((stop) => stopApplies(stop, day) && !morningNames.has(stop.lugar))
+        let list = [...units.filter((unit) => unit.slot === 'manana'), ...build(tarde, 'tarde')]
+        let trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        // Lo que así llega cerrado y el día quiere de paso (el Tempietto después de su última entrada), de paso.
+        const nowClosed = new Set(trial.dropped.filter(({ unit, reason }) => unit.passIfClosed && HOURS_REASONS.has(reason)).map(({ unit }) => unit.id))
+        if (nowClosed.size > 0) {
+          list = list.map((unit) => (nowClosed.has(unit.id) ? unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit : unit))
+          trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        }
+        const names = (candidate) => new Set(candidate.visits.map((visit) => visit.place.name))
+        const had = names(result)
+        const has = names(trial)
+        if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null)) {
+          units = list
+          result = trial
+        }
       }
     }
     // El tiempo que sobra antes del atardecer se queda en la parada marcada `estirar` (callejear Trastevere), no
@@ -970,6 +996,12 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (minutes <= TRANSFER_NOTICE_MINUTES) continue
       const place = placeByName.get(visit.place.name)
       const how = stops.find((stop) => stop.lugar === visit.place.name && stop.traslado)?.traslado ?? place?.uphill?.transit ?? null
+      // El tramo que el día hace en transporte (`traslado_min`: el bus 118 a las catacumbas) es un tramo propio
+      // ("🚌 Bus 118, unos 25 min"), no un aviso de "57 min andando" (decisión del 2026-09-27).
+      if (visit.place.transitMinutes && how) {
+        visit.place = { ...visit.place, transit: { how, minutes: visit.place.transitMinutes } }
+        continue
+      }
       day.longWalks.push({ minutes, from: fromLunch ? 'la comida' : previous.place.name, to: visit.place.name, uphill: Boolean(place?.uphill), how })
     }
     delete day.rerun

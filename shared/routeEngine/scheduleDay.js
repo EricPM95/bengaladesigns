@@ -714,7 +714,7 @@ function simulate(sequence, ctx) {
   }
 
   /** Dónde se come y cuánto se anda: de donde acabó la mañana al restaurante y de ahí a `next`. */
-  const resolveLunch = (next) => {
+  const resolveLunch = (next, nextPlace = null) => {
     const { meal, from } = pendingLunch
     pendingLunch = null
     const choice = ctx.lunchSpots?.length ? chooseLunchSpot(from, next, ctx.lunchSpots, travel) : null
@@ -726,6 +726,19 @@ function simulate(sequence, ctx) {
       meal.spot = { name: choice.spot.name, zone: choice.spot.zone }
     }
     meal.eatStart = meal.start + toMinutes
+    // Después de comer se coge el bus o el metro (`transitMinutes`: el 118 a las catacumbas): la comida acaba al
+    // comer y andar a la parada (1 h y 15 min), y el trayecto es un tramo aparte que suma a la llegada (comida hasta
+    // las 14:15 → catacumbas hacia las 14:45; decisión del 2026-09-27).
+    if (nextPlace?.transitMinutes) {
+      meal.end = meal.start + Math.min(meal.end - meal.start, mode.mealMinutes + 15)
+      meal.transitAfter = nextPlace.transitMinutes
+      return {
+        walkMinutes: toMinutes + nextPlace.transitMinutes,
+        meters: choice ? choice.toMeters : 0,
+        arriveAfter: meal.end - meal.start + nextPlace.transitMinutes,
+        source: 'transit',
+      }
+    }
     return {
       walkMinutes: toMinutes + fromMinutes,
       meters: choice ? choice.toMeters + choice.fromMeters : (direct?.meters ?? 0),
@@ -768,7 +781,7 @@ function simulate(sequence, ctx) {
 
       // Primera parada después de comer: se llega desde el restaurante y nunca antes de que acabe la
       // franja; el rato que sobre dentro de la franja es parte de ella, no una espera.
-      const afterLunch = pendingLunch ? resolveLunch(place.coordinates) : null
+      const afterLunch = pendingLunch ? resolveLunch(place.coordinates, place) : null
       if (tourPoint && elementIndex < tourIndex && !place.isFreeTour && (travel.leg(place.coordinates, tourPoint)?.minutes ?? Infinity) > BEFORE_TOUR_MAX_WALK_MINUTES) {
         return { ok: false, reason: 'far_before_tour', unitId: unit.id }
       }

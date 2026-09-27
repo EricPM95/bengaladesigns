@@ -643,12 +643,14 @@ export function DayDetailPanel({
     toName: string,
     addStopIndex: number,
     afterDinner = false,
+    transitLabel: string | null = null,
   ) => {
     const resolvedMode = modeOverrides[connectorKey] ?? dayDefaultMode ?? defaultModeFor(connector)
     return (
       <StopConnector
         key={connectorKey}
         connector={hiddenConnectors.has(connectorKey) ? null : connector}
+        transitLabel={transitLabel}
         fromName={fromName}
         toName={toName}
         mode={resolvedMode}
@@ -949,7 +951,7 @@ export function DayDetailPanel({
         <div>
           {/* El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector`
               decide solo si además lleva el trayecto. Un paseo quitado no deja ni rastro. */}
-          {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex)}
+          {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
               <ZoneWalkCard stop={stop} startTime={minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />

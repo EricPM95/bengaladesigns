@@ -107,7 +107,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
       variant={variant}
       number={number}
       time={startTime ? (stop.isNightExperience && endTime ? `${startTime} – ${endTime}` : startTime) : null}
-      name={displayStopName(stop.name)}
+      name={stop.nightViewTitle ?? displayStopName(stop.name)}
       sub={sub}
       meta={meta}
       tags={tags}

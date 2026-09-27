@@ -301,6 +301,15 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (notices.length > 0) day.transfer_notice = notices.join('\n')
   // "Aperitivo y paseo por {barrio}" (ajustes B.7): 90 min o menos antes de cenar en un barrio de cena.
   // El paseo nocturno que va antes de cenar (en invierno) ocupa ese rato: no es tiempo libre (DIAS_CURADOS_ROMA.md, 2b).
+  // Invierno (el sol antes de las 18:00) con más de 2 h antes de cenar: lo que sobra se queda en el paseo nocturno
+    // de antes de cenar (la bajada por la escalinata en D4), de 15 en 15 y como mucho 45 min más; nunca un relleno
+    // (PROMPT_RUTAS_CURADAS C.1, decisión del 2026-09-27).
+    const nightStops = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner)
+    if ((tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE && nightStops.length > 0) {
+      const busy = nightStops.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
+      const over = (tripDay.schedule?.idleBeforeDinner ?? 0) - busy - APERITIVO_MAX_MINUTES
+      if (over > 0 && over <= WINTER_NIGHT_STRETCH_MAX) nightStops.at(-1).duration_minutes += Math.ceil(over / 15) * 15
+    }
   const nightBeforeDinner = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner).reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
   const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (aperitivo) day.aperitivo = aperitivo
@@ -473,6 +482,8 @@ const APERITIVO_MIN_MINUTES = 45
 const APERITIVO_MAX_MINUTES = 120
 /** Con el sol antes de esta hora, el rato antes de cenar es de noche: paseo iluminado y aperitivo (PROMPT_RUTAS_CURADAS B3.1). */
 const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
+/** Lo más que se alarga el paseo nocturno de antes de cenar en invierno para no pasar de 2 h (C.1). */
+const WINTER_NIGHT_STRETCH_MAX = 45
 
 /**
  * "Aperitivo y paseo por {barrio}" (PROMPT_AJUSTES_BLOQUES B.7): el tiempo libre de 90 min o menos justo

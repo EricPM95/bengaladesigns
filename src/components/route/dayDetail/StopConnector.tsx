@@ -18,6 +18,8 @@ interface StopConnectorProps {
   onSetDefaultForDay: (mode: TransportMode) => void
   /** "+ Añadir parada" — en línea con el resto de la fila, pegado al extremo derecho. */
   onAddStop: () => void
+  /** El tramo lo hace el día en bus o metro ("🚌 Bus 118, unos 25 min"): se enseña eso, no el paseo. */
+  transitLabel?: string | null
 }
 
 /** Cómo se lee el modo en la fila cuando NO se va andando — el sitio de la distancia lo ocupa el
@@ -53,7 +55,7 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
  * quedaba sin su botón y no había forma de insertar nada justo ahí. Lo que se muestra dentro del
  * hueco es opcional; el hueco no.
  */
-export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop }: StopConnectorProps) {
+export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel }: StopConnectorProps) {
   const [modeSheetOpen, setModeSheetOpen] = useState(false)
   const [mapsSheetOpen, setMapsSheetOpen] = useState(false)
 
@@ -68,9 +70,11 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
   return (
     // Diseño "Trazo Itinerario": la línea punteada del día la pinta el contenedor; aquí solo la fila.
     <div className="flex min-h-[44px] items-center gap-1.5 text-[12.5px] text-text/60">
-      {connector && !selectedOption && <span className="text-[12.5px] text-text/55">{connector.label}</span>}
+      {transitLabel && <span className="font-mono text-[12px] font-medium text-text/60">{transitLabel}</span>}
 
-      {connector && selectedOption && (
+      {!transitLabel && connector && !selectedOption && <span className="text-[12.5px] text-text/55">{connector.label}</span>}
+
+      {!transitLabel && connector && selectedOption && (
         <>
           <button
             type="button"

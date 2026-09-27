@@ -52,6 +52,7 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
       if (!s.pass_through && !s.is_pass_by) seenDay.add(name)
       for (const x of [...(s.free_tour_covers ?? []), ...(s.outside_of ?? [])]) seenDay.add(x)
       if (s.pass_through || s.is_pass_by) seenDay.add(name)
+      // El mirador que llega de noche sale como experiencia nocturna (decisión del 2026-09-27): se apunta, no es fallo.
       if (s.night_view && ![11, 0, 1].includes(mes)) trip.problemas.push({ n, d: cd, tipo: 'mirador_noche', txt: `${name} ${s.suggested_time}` })
     }
     for (const s of day.stops.filter((s) => s.is_night_experience)) { const l = String(s.place_name ?? s.name).replace(/\s*\(noche\)$/, ''); count.set(l, (count.get(l) ?? 0) + 1); seenDay.add(l) }
@@ -71,5 +72,5 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
 writeFileSync(args.out ?? join(tmpdir(), 'sweep.json'), JSON.stringify(out))
 const tipos = {}
 for (const t of out) for (const p of t.problemas) tipos[p.tipo] = (tipos[p.tipo] ?? 0) + 1
-const limpios = out.filter((t) => !t.problemas.some((p) => ['hueco', 'pierde_nivel1', 'falta_nivel1', 'error', 'mirador_noche', 'acaba_pronto'].includes(p.tipo))).length
+const limpios = out.filter((t) => !t.problemas.some((p) => ['hueco', 'pierde_nivel1', 'falta_nivel1', 'error', 'acaba_pronto'].includes(p.tipo))).length
 console.log(JSON.stringify({ viajes: out.length, limpios, tipos }))

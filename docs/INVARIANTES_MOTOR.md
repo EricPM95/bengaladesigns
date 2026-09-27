@@ -1111,3 +1111,19 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 242. **Lo del pool sin su día propio** (San Clemente sin D6): va en la variante de su nombre (`curated_pool.antes`:
     `pool_san_clemente`) de cualquier día que la tenga y no sea el de las variantes de pool (D1/D1-FT); en D5, San
     Clemente en lugar de la Via Appia.
+243. **El Altar siempre se entra** (2026-09-27): es un monumento, nunca "por fuera". D1 con la Galería Borghese lo lleva
+    al principio de la tarde (30 min, comiendo por los Foros) y de ahí a Trevi; en completo ya va por la mañana y la
+    tarde no lo repite. Su taquilla cierra a las 18:45 (`last_entry`): la terraza de noche solo en invierno
+    (`solo: {estacion: invierno}`, D5 con San Clemente después del Campidoglio), nunca como atardecer en verano.
+244. **El transporte es un tramo propio** (2026-09-27): la parada con `traslado_min` y `traslado` sale con
+    `transit` ("🚌 Bus 118, unos 25 min"; 🚇 el metro, 🚊 el tranvía) y no con "57 min andando" ni aviso de traslado.
+    Después de comer, la comida acaba al comer y andar a la parada (1 h 15 min) y el trayecto suma a la llegada
+    (comida hasta las 14:15 → catacumbas hacia las 14:45).
+245. **El mirador que llega de noche es una experiencia nocturna** (2026-09-27): `night_view_title` ("Roma iluminada
+    desde el Janículo", de `destination_config.night_view_title` + `night_view_names`), con su texto. En sweep.mjs se
+    apunta (`mirador_noche`) pero no es fallo, y la revisión no lo cuenta como raro.
+246. **Invierno, más de 2 h antes de cenar** (C.1): lo que pasa de 120 min se queda en el paseo nocturno de antes de
+    cenar (la bajada por la escalinata de D4), de 15 en 15 y como mucho 45 min más. Nunca un relleno.
+247. **`si_espera`** (D2 en invierno): si antes del atardecer se esperan más de `minutos` (60), la tarde de `si_espera`
+    (Trastevere antes del Janículo, que se estira); lo que así llega cerrado y quiere de paso (el Tempietto), de paso.
+    Solo si no se pierde nada y el mirador llega a su atardecer.
