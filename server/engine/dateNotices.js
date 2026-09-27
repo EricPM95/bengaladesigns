@@ -106,7 +106,9 @@ export function dateNoticesFor(destData, trip, options = {}) {
     const place = placeByName.get(name)
     return Boolean(place) && (place.level === 1 || joyas.has(name) || poolNames.has(name))
   }
-  const specials = (destData.fechas_especiales?.fechas ?? []).filter((entry) => !entry.verificar)
+  // Todas salen: `verificar: true` ya no las esconde, las cuenta con prudencia ("es posible que…", "compruébalo en la
+  // web oficial"), que es como está escrito su texto (decisión del usuario, 2026-09-27).
+  const specials = destData.fechas_especiales?.fechas ?? []
   const days = (trip.days ?? []).filter((day) => day.hours?.dateIso)
 
   // ── Sin fechas (solo el mes): solo lo de temporada y las fechas fijas del mes, con "Si tu viaje coincide…" ──

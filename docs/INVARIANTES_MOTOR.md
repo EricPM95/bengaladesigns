@@ -1162,3 +1162,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     pase va a la otra estirable del día y, si aún sobra, queda como tiempo libre con nombre antes del atardecer (que en
     verano no cuenta como hueco). Sin atardecer en la tarde, lo que pase de 90 min (120 en tranquilo) antes de cenar
     se reparte igual entre las estirables.
+260. **`verificar: true` sale, con prudencia** (decisión del usuario, 2026-09-27): el dato exacto cambia cada año, pero
+    avisar ya tiene valor. El texto lo dice con cuidado ("es posible que…", "suele…", "compruébalo en la web oficial");
+    `validar.mjs` avisa si no. Sustituye a la regla 248 en esto: ya no se esconde ninguna fecha.
+261. **Horario especial "probable"** (`horario_especial.confirmado: "probable"`, el 2 de junio): el horario NO se aplica,
+    pero el reparto evita poner ese día lo que lleva esos lugares (coste 400: menos que un cierre, más que el orden).
+    Con `confirmado: true`, además se aplica el horario (regla 251).

@@ -19,7 +19,8 @@ import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
-import { closedOnDay, effectiveSchedule, parseClosingMinutes } from './openingHours.js'
+import { closedOnDay, effectiveSchedule, matchesDateRange, parseClosingMinutes } from './openingHours.js'
+import { specialHoursToAvoid } from './specialDates.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
@@ -35,6 +36,8 @@ const OUTSIDE_MINUTES = 15
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
 const MIRADOR_LATE_MINUTES = 30
+/** Un día con horario especial para lo que lleva (el Coliseo el 2 de junio): menos que un cierre, más que el orden. */
+const SPECIAL_HOURS_COST = 400
 /** Sin atardecer en la tarde: más que esto antes de cenar se lo llevan las paradas estirables (completo; tranquilo, 120). */
 const DINNER_IDLE_MAX = { completo: 90, tranquilo: 120 }
 /** Madrugar lo justo: de media en media hora. */
@@ -201,6 +204,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       return false
     })
   }
+  const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
   if (chosen.length > 1) {
     let best = null
@@ -215,6 +219,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // Las joyas del día cerradas ese día (festivos): la que no se ve por fuera (los Museos Vaticanos) pesa más
         // que las que sí (el Coliseo y el Panteón, por fuera con aviso). El 24-25 de diciembre, el Vaticano va el 24.
         for (const joya of cfg.joyas ?? []) if (closedThatDay(joya, day)) cost += placeByName.get(joya)?.pass_by ? 300 : 2000
+        // Una fecha especial que puede dejar sin mañana lo que el día lleva (el Coliseo el 2 de junio, desfile):
+        // otro día si se puede (`horario_especial` confirmado o "probable").
+        for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(cfg, name))) cost += SPECIAL_HOURS_COST
         // Un día de joyas no va en un día de media jornada (se perdería la mañana).
         if (day.halfDayExcursion && (cfg.joyas ?? []).length > 0) cost += 500
         // Lo mejor primero: las joyas como muy tarde el día 3 y nunca solo el último (3+ días).

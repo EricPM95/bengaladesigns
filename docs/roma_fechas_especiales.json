@@ -8,7 +8,8 @@
     "texto": "2-3 líneas de tú a tú. Sin precios (ni 'gratis'). Dice qué pasa y qué hemos hecho o qué te recomendamos.",
     "sugerencia": "opcional: una parada o nocturna con hora que el motor puede ofrecer ese día (no la mete sola: sale como botón 'Añadir a mi ruta').",
     "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true.",
-    "fuente": "de dónde sale el dato"
+    "fuente": "de dónde sale el dato",
+    "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app."
   },
   "fechas": [
     {
@@ -108,9 +109,9 @@
       "tipo": "evento",
       "icono": "bandera",
       "titulo": "2 de junio · Fiesta de la República",
-      "texto": "Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. El Coliseo y el Foro abren más tarde: hemos pasado su visita a la tarde u otro día.",
+      "texto": "Fiesta de la República: por la mañana hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web oficial). Hemos puesto su visita otro día para ir sobre seguro.",
       "horario_especial": {
-        "confirmado": false,
+        "confirmado": "probable",
         "lugares": {
           "Coliseo": {
             "windows": [
@@ -123,7 +124,7 @@
             ]
           }
         },
-        "_nota": "En 2026 abrieron a las 14:15; en 2016, al acabar el desfile (hacia las 11:00). Cambia cada año: confirmar en cultura.gov.it / colosseo.it y poner confirmado: true."
+        "_nota": "Probable, no confirmado: en 2026 abrieron a las 14:15 y en 2016 hacia las 11:00. El motor evita la mañana si puede y el aviso lo dice con prudencia."
       },
       "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016"
     },

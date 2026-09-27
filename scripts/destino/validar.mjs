@@ -333,7 +333,11 @@ const section = (title) => {
   const nombres = new Set(places.map((place) => place.name))
   for (const entry of fechas) {
     const id = entry.id ?? entry.titulo ?? '?'
-    if (entry.verificar) s.warn.push(`${id}: verificar: true — no sale hasta confirmarlo${entry.fuente ? ` (fuente: ${entry.fuente})` : ''}`)
+    if (entry.verificar) {
+      // verificar: true = el dato exacto cambia cada año; sale igual, dicho con prudencia (decisión del 2026-09-27).
+      if (!/posible|suele|compru[eé]balo|a confirmar|web oficial/i.test(entry.texto ?? '')) s.warn.push(`${id}: verificar: true y el texto no lo dice con prudencia ("es posible que…", "compruébalo en la web oficial")`)
+      else s.info.push(`${id}: dato que cambia cada año, dicho con prudencia`)
+    }
     if (!/^(\d{2}-\d{2}|easter([+-]\d+)?)$/.test(String(entry.fecha ?? ''))) s.red.push(`${id}: fecha "${entry.fecha}" no se lee (MM-DD o easter±N)`)
     const palabras = String(entry.texto ?? '').split(/\s+/).filter(Boolean).length
     if (palabras > 35) s.red.push(`${id}: el texto tiene ${palabras} palabras (35 como mucho)`)
@@ -342,11 +346,12 @@ const section = (title) => {
     const horario = entry.horario_especial
     if (horario) {
       if (!entry.fuente) s.red.push(`${id}: horario_especial sin fuente`)
-      if (!horario.confirmado) s.warn.push(`${id}: horario_especial sin confirmar — el motor sigue con el horario de siempre`)
+      if (horario.confirmado === 'probable') s.info.push(`${id}: horario_especial probable — el reparto evita ese día para ${Object.keys(horario.lugares ?? {}).join(' y ')}, sin aplicar el horario`)
+      else if (horario.confirmado !== true) s.warn.push(`${id}: horario_especial sin confirmar — el motor sigue con el horario de siempre`)
       for (const name of Object.keys(horario.lugares ?? {})) if (!nombres.has(name)) s.red.push(`${id}: horario_especial de "${name}", que no está en places`)
     }
   }
-  s.info.push(`${fechas.length} fechas, ${fechas.filter((entry) => !entry.verificar).length} se enseñan`)
+  s.info.push(`${fechas.length} fechas, todas se enseñan (${fechas.filter((entry) => entry.verificar).length} con prudencia)`)
 }
 
 // ── 11. Lo que lee el viajero ───────────────────────────────────────────────────────────────

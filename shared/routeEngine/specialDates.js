@@ -41,6 +41,17 @@ export function specialDatesOfMonth(entries, month) {
 }
 
 /**
+ * Los lugares que una fecha especial puede dejar sin mañana (`horario_especial` confirmado o `"probable"`: el
+ * Coliseo y el Foro el 2 de junio). El reparto evita ponerlos ese día si puede.
+ * @returns {{ fecha: string, hasta: string|null, lugares: string[], confirmado: true|'probable' }[]}
+ */
+export function specialHoursToAvoid(destData) {
+  return (destData?.fechas_especiales?.fechas ?? [])
+    .filter((entry) => entry.horario_especial && (entry.horario_especial.confirmado === true || entry.horario_especial.confirmado === 'probable'))
+    .map((entry) => ({ fecha: entry.fecha, hasta: entry.hasta ?? null, lugares: Object.keys(entry.horario_especial.lugares ?? {}), confirmado: entry.horario_especial.confirmado }))
+}
+
+/**
  * Pone en cada lugar sus horarios especiales confirmados (`special_hours`), para que el programador y la app los
  * lean como un horario más. Solo `confirmado: true`: sin confirmar, el motor sigue con el horario de siempre.
  */
@@ -48,7 +59,8 @@ export function attachSpecialHours(destData) {
   const byName = new Map((destData?.places ?? []).map((place) => [place.name, place]))
   for (const entry of destData?.fechas_especiales?.fechas ?? []) {
     const rule = entry.horario_especial
-    if (!rule?.confirmado) continue
+    // Solo `confirmado: true`: con "probable" el horario no se aplica (el reparto solo evita ese día, specialHoursToAvoid).
+    if (rule?.confirmado !== true) continue
     for (const [name, hours] of Object.entries(rule.lugares ?? {})) {
       const place = byName.get(name)
       if (!place || !Array.isArray(hours.windows)) continue
