@@ -80,6 +80,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
   if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
   if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
   if (stop.closedNotice) meta.push({ text: stop.closedNotice })
+  // Free Tour: dónde acaba (y que la comida es por esa zona).
+  if (stop.freeTourEnd) meta.push({ icon: 'pin', text: stop.freeTourEnd })
 
   // Por qué está en la ruta (Paso 6) o por qué merece la pena volver.
   const sub =

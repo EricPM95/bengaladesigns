@@ -29,6 +29,9 @@ function nearestQuarter(hhmm) {
  * así la hora de salida más el paseo da la llegada a la siguiente (también lo de paso). Lo que no tiene siguiente se queda
  * con sus minutos; una visita nunca baja de la mitad de lo que dura (entonces, sus minutos de siempre).
  */
+/** Lo más que dura un "Por el camino" (B.1): lo que merece más es una parada. */
+const ON_THE_WAY_MAX_MINUTES = 10
+
 function quarterHourStops(stops) {
   const exact = stops.map((stop) => toMinutes(stop.suggested_time))
   return stops.map((stop, index) => {
@@ -39,7 +42,11 @@ function quarterHourStops(stops) {
     if (!Number.isFinite(next)) return { ...stop, suggested_time: toHHMM(roundedStart) }
     const gap = next - (start + (stop.duration_minutes ?? 0))
     const duration = Math.round(next / 15) * 15 - gap - roundedStart
-    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes }
+    const rounded = duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes
+    // "Por el camino" dura 10 min como mucho: el sobrante del redondeo no se mete ahí, se queda esperando la hora de
+    // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
+    const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.outside && !stop.instead_of_visit
+    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : rounded }
   })
 }
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
@@ -289,9 +296,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
     }
-    // El aviso y la nota del día curado ("a esta hora ya hay gente; si puedes, pásate temprano").
+    // El aviso del día curado ("a esta hora ya hay gente; si puedes, pásate temprano"). La `nota` es INTERNA
+    // (instrucciones para nosotros y el motor): nunca sale (PROMPT_AJUSTES_20_RUTAS A.2).
     if (visit.place.stopNotice) stop.notice = visit.place.stopNotice
-    if (visit.place.curatedNote) stop.note = visit.place.curatedNote
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
@@ -320,6 +327,23 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.schedule = daySchedule
       const warning = hoursWarning(visit.place, visit.start, visit.end, hours)
       if (warning) stop.hours_warning = warning
+    }
+    // "Por qué aquí" curado de la parada (`por_que` del día curado): manda sobre el texto genérico, que solo queda
+    // de reserva. Salvo el mirador que llega de noche, que se cuenta como la ciudad iluminada (A.1).
+    if (visit.place.curatedWhy && !stop.night_view) {
+      stop.why = visit.place.curatedWhy
+      stop.why_source = 'curado'
+    }
+    // Dónde acaba lo que no acaba donde empieza (el Free Tour, en Piazza Navona): el tramo siguiente sale de ahí.
+    if (visit.place.end_coordinates) {
+      stop.end_latitude = visit.place.end_coordinates[0]
+      stop.end_longitude = visit.place.end_coordinates[1]
+    }
+    // El Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona (B.2).
+    if (visit.place.isFreeTour && tour?.ends_at?.name) {
+      const lunch = schedule.meals.find((meal) => meal.type === 'lunch')
+      const lunchNext = lunch && lunch.start >= visit.end && !schedule.visits.some((other) => other.start >= visit.end && other.start < lunch.start)
+      stop.free_tour_end = lunchNext ? `El tour acaba en ${tour.ends_at.name}: te hemos buscado la comida por esa zona para que aproveches el día.` : `El tour acaba en ${tour.ends_at.name}.`
     }
     return stop
   })

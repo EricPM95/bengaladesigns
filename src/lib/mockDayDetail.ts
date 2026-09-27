@@ -223,6 +223,7 @@ export interface MockStopDetail {
   isSunset?: boolean
   isNightView?: boolean
   nightViewTitle?: string
+  freeTourEnd?: string
   outsideReason?: string | null
   /** Ver Stop.tags en types.ts — píldoras de color en StopAccordion/StopDetailSheet (ver tagColors.ts). */
   tags?: string[]
@@ -468,6 +469,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     isSunset: stop.isSunset,
     isNightView: stop.isNightView,
     nightViewTitle: stop.nightViewTitle,
+    freeTourEnd: stop.freeTourEnd,
     outsideReason: stop.outsideReason ?? null,
     tags: stop.tags,
     scheduleText: stop.scheduleText,
@@ -571,6 +573,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       isSunset: detail.isSunset,
       isNightView: detail.isNightView,
       nightViewTitle: detail.nightViewTitle,
+      freeTourEnd: detail.freeTourEnd,
       outsideReason: detail.outsideReason ?? null,
     }
   })

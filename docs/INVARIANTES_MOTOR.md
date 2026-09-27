@@ -1151,3 +1151,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 255. **Sin "gratis" en lo que se lee** (A.3), fuera de la pestaña Tickets (`ticket_info` sigue igual hasta las APIs;
     `pago: true` del motor, también). Ni en la ficha de lugar (los días sin coste ya no van en el horario).
     `validar.mjs` en rojo si aparece.
+256. **"Por el camino" dura 10 min como mucho** (B.1): el sobrante del redondeo a cuartos no se mete ahí; se queda
+    esperando la hora de la siguiente parada. Lo que merece más (un monumento, la Fontana de Trevi) es una parada.
+257. **Dónde acaba el Free Tour** (B.2): `default_free_tour.ends_at` { name, coordinates }, curado por nosotros (si la
+    API de actividades lo trae como dato, manda ese). El tramo siguiente sale de ahí (`end_latitude/end_longitude` en la
+    parada) y la tarjeta lo dice: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…".
+258. **El transporte es del tramo** (B.3): si una parada con `traslado` se salta (cerrada ese día), la siguiente
+    hereda su bus o su metro y sale con su "🚌 Bus 118, unos 25 min".
+259. **Tope de estirado** (B.4): `estirar_max` en la parada (el Circo Máximo, un prado: 30; la Via Appia: 150). Lo que
+    pase va a la otra estirable del día y, si aún sobra, queda como tiempo libre con nombre antes del atardecer (que en
+    verano no cuenta como hueco). Sin atardecer en la tarde, lo que pase de 90 min (120 en tranquilo) antes de cenar
+    se reparte igual entre las estirables.

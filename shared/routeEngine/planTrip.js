@@ -176,7 +176,9 @@ export function placesForScheduler(unit, destData, freeTourTime) {
   const joined = (a, b) => pairs.some((pair) => pair.includes(a) && pair.includes(b))
   // El Free Tour acaba en el último sitio de su recorrido, no en el punto de encuentro: lo siguiente
   // del día se mide desde allí.
-  const tourEnd = destData.places?.find((p) => p.name === (destData.default_free_tour?.covers ?? []).at(-1))?.coordinates ?? null
+  // Dónde acaba el tour: `ends_at` del destino (curado; si la API de actividades lo trae como dato, manda ese); si no,
+  // el último lugar que recorre.
+  const tourEnd = destData.default_free_tour?.ends_at?.coordinates ?? destData.places?.find((p) => p.name === (destData.default_free_tour?.covers ?? []).at(-1))?.coordinates ?? null
   return unit.places.map((place, index) => {
     const next = unit.places[index + 1]
     return {

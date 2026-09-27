@@ -35,6 +35,8 @@ const OUTSIDE_MINUTES = 15
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
 const MIRADOR_LATE_MINUTES = 30
+/** Sin atardecer en la tarde: más que esto antes de cenar se lo llevan las paradas estirables (completo; tranquilo, 120). */
+const DINNER_IDLE_MAX = { completo: 90, tranquilo: 120 }
 /** Madrugar lo justo: de media en media hora. */
 const WAKE_EARLY_STEP = 30
 /** Comida acortada para no perder un imprescindible (D3 tranquilo: 75 min con aviso). */
@@ -385,6 +387,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   }
 
   let lunchOverride = null
+  let whyByPlace = null
   const toMin = (hhmm) => {
     const [h, m] = String(hhmm).split(':').map(Number)
     return h * 60 + m
@@ -409,6 +412,25 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       continue
     }
     days.push(planDay(entry, skeletonDay))
+  }
+
+  /** El `por_que` más habitual de un lugar en los días curados (para las paradas que no traen el suyo). */
+  function curatedWhyOf(name) {
+    if (!whyByPlace) {
+      const counts = new Map()
+      for (const cfg of destData.curated_days ?? []) {
+        for (const section of [cfg, ...Object.values(cfg.variantes ?? {})]) {
+          for (const item of [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]) {
+            if (!item?.por_que) continue
+            const byText = counts.get(item.lugar) ?? new Map()
+            byText.set(item.por_que, (byText.get(item.por_que) ?? 0) + 1)
+            counts.set(item.lugar, byText)
+          }
+        }
+      }
+      whyByPlace = new Map([...counts].map(([lugar, byText]) => [lugar, [...byText].sort((a, b) => b[1] - a[1])[0][0]]))
+    }
+    return whyByPlace.get(name) ?? null
   }
 
   function unitOf(stop, slot, index, dayId, day) {
@@ -456,6 +478,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (stop.traslado_min) ready = { ...ready, transitMinutes: stop.traslado_min, ...(stop.traslado ? { transitHow: stop.traslado } : {}) }
     if (stop.aviso) ready = { ...ready, stopNotice: stop.aviso }
     if (stop.nota) ready = { ...ready, curatedNote: stop.nota }
+    // El "Por qué aquí" que ve el viajero (`por_que`); la `nota` es interna. Lo que añade el pool sin su texto, el
+    // más habitual de ese lugar en los días curados.
+    const why = stop.por_que ?? curatedWhyOf(stop.lugar)
+    if (why) ready = { ...ready, curatedWhy: why }
     const [scheduled] = placesForScheduler({ id: stop.lugar, places: [ready] }, destData, tour?.default_time ?? null)
     const level = source.level ?? 3
     const dropRank = joyaNames.has(source.name) || level === 1 ? DROP_RANK.joya : inPool(source.name) ? DROP_RANK.pool : tranquilo ? (role === 'de_paso' ? DROP_RANK_BY_LEVEL.de_paso : DROP_RANK_BY_LEVEL[level] ?? DROP_RANK_BY_LEVEL[3]) : DROP_RANK[role] ?? DROP_RANK.parada
@@ -473,7 +499,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       poolIndex: inPool(source.name) ? poolNames.indexOf(source.name) : null,
       ...(theme && level !== 1 ? { experienceTheme: theme } : {}),
       // `estirar`: aquí va el tiempo que sobre antes del atardecer (Trastevere en D2, nunca arriba en el monte).
-      ...(stop.estirar ? { stretch: true } : {}),
+      // `estirar_max`: hasta cuántos minutos se puede estirar (el Circo Máximo, un prado: 30).
+      ...(stop.estirar ? { stretch: true, stretchMax: stop.estirar_max ?? null } : {}),
       // `si_abre`: solo si está abierta al llegar; si hay que esperar a que abra, no entra (Santa Cecilia).
       ...(stop.si_abre ? { onlyIfOpenNow: true } : {}),
       // `si_cerrado: de_paso`: si a esa hora ya cerró, se ve de paso (el Tempietto).
@@ -564,13 +591,23 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const hours = hoursOf(day)
     const morning = !day.halfDayExcursion
     const skipped = []
-    const build = (stops, slot) =>
-      stops
-        .map((stop, index) => unitOf(stop, slot, index, dayId, day))
-        .filter((unit) => {
-          if (unit?.skipped) skipped.push(unit)
-          return unit && !unit.skipped
-        })
+    // El transporte es del TRAMO, no de la parada (B.3): si una parada con `traslado` se salta (las catacumbas en
+    // miércoles), la siguiente hereda su bus o su metro.
+    const build = (stops, slot) => {
+      const units = []
+      let carry = null
+      stops.forEach((stop, index) => {
+        const unit = unitOf(carry && !stop.traslado_min ? { ...stop, traslado: carry.traslado, traslado_min: carry.traslado_min } : stop, slot, index, dayId, day)
+        if (unit?.skipped) {
+          skipped.push(unit)
+          if (stop.traslado_min) carry = { traslado: stop.traslado, traslado_min: stop.traslado_min }
+          return
+        }
+        carry = null
+        if (unit) units.push(unit)
+      })
+      return units
+    }
     let units = [...build(sections.manana, 'manana'), ...build(sections.tarde, 'tarde')]
     // La comida en su barrio (los restaurantes que dice el día); la cena, en su barrio de cena.
     const named = new Set(sections.comida?.restaurantes ?? [])
@@ -667,14 +704,34 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
     }
     // El tiempo que sobra antes del atardecer se queda en la parada marcada `estirar` (callejear Trastevere), no
-    // arriba en el mirador: se alarga de 15 en 15 min mientras no se caiga nada.
+    // arriba en el mirador: se alarga de 15 en 15 min mientras no se caiga nada. Cada una hasta su `estirar_max`
+    // (el Circo Máximo, un prado: 30 min); lo que pase, a la otra estirable del día (la Via Appia) y, si aún sobra,
+    // se queda como tiempo libre con nombre antes del atardecer (PROMPT_AJUSTES_20_RUTAS B.4).
     const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
-    const stretchVisit = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().find((visit) => units.find((unit) => unit.id === visit.unitId)?.stretch) : null
+    const stretchVisits = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().filter((visit) => units.find((unit) => unit.id === visit.unitId)?.stretch) : []
+    const stretchVisit = stretchVisits[0] ?? null
     if (stretchVisit) {
       const before = result.visits[sunsetAt - 1]
       const wait = result.visits[sunsetAt].start - before.end - (result.visits[sunsetAt].walkMinutes ?? 0)
+      /** Cuánto se lleva cada estirable de `extra`, de la última a la primera, sin pasar su tope. */
+      const shares = (extra) => {
+        const out = new Map()
+        let left = extra
+        for (const visit of stretchVisits) {
+          const unit = units.find((other) => other.id === visit.unitId)
+          const base = unit.places.reduce((sum, place) => sum + (place.duration_minutes ?? 30), 0)
+          const room = unit.stretchMax != null ? Math.max(0, unit.stretchMax - base) : Infinity
+          const give = Math.min(left, room)
+          if (give > 0) out.set(unit.id, give)
+          left -= give
+          if (left <= 0) break
+        }
+        return out
+      }
       for (let extra = Math.floor((wait - 10) / 15) * 15; extra >= 15; extra -= 15) {
-        let list = units.map((unit) => (unit.id === stretchVisit.unitId ? { ...unit, places: unit.places.map((place) => ({ ...place, duration_minutes: (place.duration_minutes ?? 30) + extra })) } : unit))
+        const give = shares(extra)
+        if (give.size === 0) break
+        let list = units.map((unit) => (give.has(unit.id) ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + give.get(unit.id) } : place)) } : unit))
         let trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         // Lo que así llega cerrado y el día quiere de paso (el Tempietto después de las 18:00), de paso.
         const nowClosed = new Set(trial.dropped.filter(({ unit, reason }) => unit.passIfClosed && HOURS_REASONS.has(reason)).map(({ unit }) => unit.id))
@@ -684,6 +741,32 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         }
         const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
         if (keepsAll && trial.visits.some((visit) => visit.place.sunset != null)) {
+          units = list
+          result = trial
+          break
+        }
+      }
+    }
+    // Sin atardecer en la tarde (D5 en invierno: el Campidoglio ya de noche, luego el Altar): lo que pase del rato de
+    // aperitivo antes de cenar se lo llevan las estirables del día (la Via Appia), cada una hasta su `estirar_max`.
+    const idleMax = tranquilo ? DINNER_IDLE_MAX.tranquilo : DINNER_IDLE_MAX.completo
+    if (!result.visits.some((visit) => visit.place.sunset != null) && (result.idleBeforeDinner ?? 0) > idleMax) {
+      const stretchables = [...result.visits].reverse().map((visit) => units.find((unit) => unit.id === visit.unitId)).filter((unit) => unit?.stretch)
+      for (let extra = Math.ceil(((result.idleBeforeDinner ?? 0) - idleMax) / 15) * 15; extra >= 15 && stretchables.length > 0; extra -= 15) {
+        const give = new Map()
+        let left = extra
+        for (const unit of stretchables) {
+          const base = unit.places.reduce((sum, place) => sum + (place.duration_minutes ?? 30), 0)
+          const room = unit.stretchMax != null ? Math.max(0, unit.stretchMax - base) : Infinity
+          const share = Math.min(left, room)
+          if (share > 0) give.set(unit.id, share)
+          left -= share
+          if (left <= 0) break
+        }
+        if (give.size === 0) break
+        const list = units.map((unit) => (give.has(unit.id) ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + give.get(unit.id) } : place)) } : unit))
+        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))) {
           units = list
           result = trial
           break
@@ -1013,7 +1096,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const minutes = travel.leg(from, visit.place.coordinates)?.minutes ?? 0
       if (minutes <= TRANSFER_NOTICE_MINUTES) continue
       const place = placeByName.get(visit.place.name)
-      const how = stops.find((stop) => stop.lugar === visit.place.name && stop.traslado)?.traslado ?? place?.uphill?.transit ?? null
+      const how = visit.place.transitHow ?? stops.find((stop) => stop.lugar === visit.place.name && stop.traslado)?.traslado ?? place?.uphill?.transit ?? null
       // El tramo que el día hace en transporte (`traslado_min`: el bus 118 a las catacumbas) es un tramo propio
       // ("🚌 Bus 118, unos 25 min"), no un aviso de "57 min andando" (decisión del 2026-09-27).
       if (visit.place.transitMinutes && how) {

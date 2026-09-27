@@ -271,6 +271,8 @@ export interface Stop {
   isNightView?: boolean
   /** Su nombre de experiencia nocturna: "Roma iluminada desde el Janículo". */
   nightViewTitle?: string
+  /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
+  freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
   transitLabel?: string
   /** Monumento que ese día no se visita (va de paso por delante): sale "Por fuera" con este motivo ("hoy no toca

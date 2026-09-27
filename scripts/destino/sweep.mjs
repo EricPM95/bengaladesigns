@@ -43,7 +43,10 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
     for (const f of libres) {
       if (f.m <= lim) continue
       // Invierno (B3.1): paseo iluminado y aperitivo de hasta 2 h, amarillo; de más, pendiente (Parte C.1).
-      const tipo = f.winter ? (f.m <= 120 ? 'aperitivo_invierno' : 'aperitivo_invierno_largo') : 'hueco'
+      // Verano: el tiempo libre con nombre antes del atardecer (lo que no cabe en las estirables, con su tope) no es
+      // un hueco (PROMPT_AJUSTES_20_RUTAS B.4), igual que en la revisión.
+      const antesDelSol = [5, 6, 7].includes(mes) && stops.some((s) => (s.place_name ?? s.name) === f.before && s.sunset_minutes != null)
+      const tipo = f.winter ? (f.m <= 120 ? 'aperitivo_invierno' : 'aperitivo_invierno_largo') : antesDelSol ? 'libre_atardecer_verano' : 'hueco'
       trip.problemas.push({ n, d: cd, tipo, txt: `${f.m} min antes de ${f.before}`, m: f.m })
     }
     for (const s of stops) {
