@@ -1187,3 +1187,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     lo deja pasar: la tasa de la balaustrada de Trevi bien explicada (no es una entrada: la fuente es gratis y solo se
     paga por bajar junto al agua de 9:00 a 22:00), los 3.000 € diarios y el millón para Cáritas. Un `por_que`
     `{ texto, temprano }` puede traer `temprano_antes` ("09:00") si su umbral no es el de siempre (09:30).
+267. **Una cifra que evita una sorpresa se explica, nunca se quita** (decisión del usuario, 2026-09-27): la tasa de 2 €
+    de Trevi no es una entrada (la fuente se ve gratis desde la plaza a cualquier hora; solo se paga por bajar junto
+    al agua de 9:00 a 22:00, algunos laborables desde las 11:30). Va en la ficha, en la nocturna de las fuentes y en el
+    `por_que` de Trevi (con `temprano_antes: "09:00"`: a las 9:15 ya no se baja sin pagar), todo con `cifra_ok: true`.
+268. **`hora_ok: true` en la parada** (scripts/destino/textChecks.mjs, validar.mjs y el recuento de la revisión): un
+    `por_que` con hora está bien si la hora es un DATO DEL SITIO (abre, cierra, hora fija: la bendición Urbi et Orbi,
+    Santa Maria del Popolo, Santa Cecilia) o si dice cuándo llega el viajero y coincide con la ruta con 30 min de margen
+    como mucho (medido: el Vaticano de D3 entra a las 14:45 en todas; "con la última luz" en Via dei Fori Imperiali, en
+    el atardecer las 178 veces). Si no coincide, `{ texto, temprano }` o se reescribe. "Casi siempre sin gente" no habla
+    de horas y no cuenta.

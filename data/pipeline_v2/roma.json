@@ -8163,8 +8163,10 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "por_que": {
-                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "temprano_antes": "09:00",
+                "cifra_ok": true
               }
             },
             {
@@ -8362,7 +8364,8 @@
               "hora": "12:00",
               "fija": true,
               "nota": "Opcional.",
-              "por_que": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles."
+              "por_que": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles.",
+              "hora_ok": true
             }
           ],
           "comida": {
@@ -8893,7 +8896,8 @@
               "rol": "parada",
               "si_abre": true,
               "nota": "Si abre.",
-              "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30."
+              "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30.",
+              "hora_ok": true
             }
           ],
           "comida": {
@@ -8988,8 +8992,10 @@
           },
           "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena.",
+            "temprano_antes": "09:00",
+            "cifra_ok": true
           }
         },
         {
@@ -9022,7 +9028,8 @@
           "rol": "parada",
           "hora": "14:30",
           "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00.",
-          "por_que": "Por la tarde hay menos cola que a media mañana: entras hacia las 14:30."
+          "por_que": "Por la tarde hay menos cola que a media mañana: entras hacia las 14:30.",
+          "hora_ok": true
         },
         {
           "lugar": "Plaza de San Pedro",
@@ -9138,7 +9145,8 @@
           },
           "si_abre": true,
           "nota": "Abre a las 16:30.",
-          "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30."
+          "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30.",
+          "hora_ok": true
         },
         {
           "lugar": "Trastevere",
@@ -9331,8 +9339,10 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+            "temprano_antes": "09:00",
+            "cifra_ok": true
           }
         },
         {
@@ -9385,7 +9395,8 @@
           "rol": "parada",
           "antes_de": "12:00",
           "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00.",
-          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+          "hora_ok": true
         },
         {
           "lugar": "Piazza del Popolo",
@@ -9449,8 +9460,10 @@
               "hora": "08:00",
               "nota": "A las 08:00, sin gente.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "temprano_antes": "09:00",
+                "cifra_ok": true
               }
             },
             {
@@ -9544,7 +9557,8 @@
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
               "nota": "En invierno, por la tarde (abre de 16:00 a 18:00), antes de subir al Pincio. Los dos Caravaggio.",
-              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+              "hora_ok": true
             },
             {
               "lugar": "Terraza del Pincio",
@@ -9582,7 +9596,8 @@
               "rol": "parada",
               "antes_de": "12:00",
               "nota": "Los dos Caravaggio. Se llega bajando por Via Sistina y Via del Babuino.",
-              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+              "hora_ok": true
             },
             {
               "lugar": "Piazza del Popolo",
@@ -9676,8 +9691,10 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "temprano_antes": "09:00",
+                "cifra_ok": true
               }
             },
             {
@@ -9703,7 +9720,8 @@
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
                 "nota": "El domingo solo abre de 16:30 a 18:00.",
-                "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+                "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+                "hora_ok": true
               }
             }
           ]
@@ -9729,8 +9747,10 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+            "temprano_antes": "09:00",
+            "cifra_ok": true
           }
         },
         {
@@ -9773,7 +9793,8 @@
           "rol": "parada",
           "antes_de": "12:00",
           "nota": "Los dos Caravaggio, gratis. Cierra a las 12:00.",
-          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+          "hora_ok": true
         },
         {
           "lugar": "Piazza del Popolo",
@@ -9832,7 +9853,8 @@
           "rol": "atardecer",
           "no_calle": true,
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
-          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo.",
+          "hora_ok": true
         }
       ],
       "cena": {
@@ -9853,8 +9875,10 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "temprano_antes": "09:00",
+                "cifra_ok": true
               }
             },
             {
@@ -9867,7 +9891,8 @@
               "rol": "parada",
               "antes_de": "12:00",
               "minutos": 20,
-              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+              "hora_ok": true
             },
             {
               "lugar": "Piazza del Popolo",
@@ -10256,7 +10281,8 @@
           "rol": "atardecer",
           "no_calle": true,
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
-          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo.",
+          "hora_ok": true
         }
       ],
       "cena": {
@@ -10318,7 +10344,8 @@
           "rol": "atardecer",
           "no_calle": true,
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
-          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo.",
+          "hora_ok": true
         }
       ],
       "cena": {
@@ -10429,8 +10456,9 @@
           "Plaza de España (noche)"
         ]
       },
-      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma.",
-      "maximo_tranquilo": 2
+      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
+      "maximo_tranquilo": 2,
+      "cifra_ok": true
     },
     "trastevere": {
       "nombre": "Trastevere de noche",

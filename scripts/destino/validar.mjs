@@ -37,6 +37,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
+import { curatedStops, textosConHora } from './textChecks.mjs'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZonesOf, restaurantZonesNamedIn, servesDinner, zonesOfLabel } from '../../shared/routeEngine/dinnerZones.js'
@@ -49,8 +50,6 @@ if (!destino || destino.startsWith('--')) {
 }
 const SIN_RED = process.argv.includes('--sin-red')
 /** Una cifra o un precio en un texto que se lee (fuera de Tickets): el símbolo, la palabra o el código. "Gratis" no. */
-/** Lo que solo es verdad a una hora (PROMPT_AJUSTES_20_RUTAS): sin "temprano", aviso. */
-const DEPENDE_DE_LA_HORA = /primera hora|a la apertura|sin gente|\b\d{1,2}[:.]\d{2}\b|\ba las \d{1,2}\b/i
 const PRECIO_VISIBLE = /€|\beuros?\b|\bEUR\b/i
 const D = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/${destino}.json`), 'utf8'))
 
@@ -365,24 +364,11 @@ const section = (title) => {
 // ("…y la entrada es gratis: una joya que mucha gente se salta"): nunca se marca (decisión del usuario, 2026-09-27).
 {
   const s = section('Lo que lee el viajero')
-  const sinPorQue = new Set()
-  const conHora = new Set()
-  for (const cfg of D.curated_days ?? []) {
-    for (const [nombre, section] of [['base', cfg], ...Object.entries(cfg.variantes ?? {})]) {
-      const paradas = [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? []), ...(section.insertar ?? []).map((item) => item.parada), ...(section.si_espera?.tarde ?? []), ...(section.si_sobra?.anadir ?? [])]
-      for (const parada of paradas) {
-        if (!parada) continue
-        const donde = `${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${parada.lugar}`
-        if (!parada.por_que) sinPorQue.add(donde)
-        // Lo que depende de la hora va como { texto, temprano }: un texto sin "temprano" no puede hablar de "primera
-        // hora", "a la apertura", "sin gente" ni de una hora concreta (la ruta puede ponerlo a las 10:00 o por la tarde).
-        const texto = typeof parada.por_que === 'string' ? parada.por_que : parada.por_que?.temprano ? null : parada.por_que?.texto
-        if (texto && DEPENDE_DE_LA_HORA.test(texto)) conHora.add(`${donde} — «${texto.match(DEPENDE_DE_LA_HORA)[0]}»`)
-      }
-    }
-  }
+  const sinPorQue = new Set(curatedStops(D).filter(({ parada }) => !parada.por_que).map(({ donde }) => donde))
   for (const item of sinPorQue) s.warn.push(`sin por_que (sale el texto genérico): ${item}`)
-  for (const item of conHora) s.warn.push(`por_que que depende de la hora sin su "temprano": ${item}`)
+  // Lo que depende de la hora va como { texto, temprano } o con `hora_ok: true` (dato del sitio, o coincide con la
+  // hora real de la ruta con 30 min de margen): textChecks.mjs, el mismo recuento que la revisión de las 20 rutas.
+  for (const item of textosConHora(D)) s.warn.push(`por_que que depende de la hora sin "temprano" ni hora_ok: ${item}`)
   // Los campos de precio estructurados (el restaurante: € y precio medio) son datos, como `ticket_info`: no son texto.
   const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days', 'price_range', 'avg_price_person'])
   const precios = []

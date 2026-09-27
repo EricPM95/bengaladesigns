@@ -86,7 +86,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Aperitivo y paseo por Centro Histórico | 55 min | 🕐 Tiempo libre |  | ideas: Iglesia del Gesù, Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 **Lo que quedó fuera**: nada.
@@ -106,7 +106,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena. |
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena. |
 | 09:00 | Desayuno romano | 50 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min. |
 | 10:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España. · El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona para que aproveches el día. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
 | 13:00 | Comida: Supplizio | 90 min | 🍝 Comida | 8 min andando | en Centro Histórico |
@@ -176,7 +176,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Aperitivo y paseo por Centro Histórico | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
@@ -205,7 +205,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. · experiencia: Arte |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -255,7 +255,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | 19:00 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto. |
 | 19:15 | Aperitivo y paseo por Centro Histórico | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Venecia, Plaza Farnese, Teatro de Marcelo |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 10 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
@@ -264,7 +264,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -317,7 +317,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena. |
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena. |
 | 09:00 | Desayuno romano | 50 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min. |
 | 10:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España. · El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona para que aproveches el día. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
 | 13:00 | Comida: Supplizio | 90 min | 🍝 Comida | 8 min andando | en Centro Histórico |
@@ -410,7 +410,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Aperitivo y paseo por Centro Histórico | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
@@ -419,7 +419,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -494,7 +494,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Aperitivo y paseo por Centro Histórico | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
@@ -502,7 +502,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -560,7 +560,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena. |
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena. |
 | 09:00 | Desayuno romano | 50 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min. |
 | 10:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España. · El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona para que aproveches el día. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
 | 13:00 | Comida: Supplizio | 90 min | 🍝 Comida | 8 min andando | en Centro Histórico |
@@ -651,7 +651,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Paseo por Piazza Navona y el Panteón iluminados y aperitivo | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
@@ -688,7 +688,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 40 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:15 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:30 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -740,7 +740,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Paseo por Piazza Navona y el Panteón iluminados y aperitivo | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
@@ -748,7 +748,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 40 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:15 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:30 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -827,7 +827,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 19:00 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto. |
 | 19:15 | Aperitivo y paseo por Centro Histórico | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Venecia, Plaza Farnese, Teatro de Marcelo |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 10 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
@@ -835,7 +835,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -910,7 +910,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena. |
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena. |
 | 09:00 | Desayuno romano | 50 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min. |
 | 10:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España. · El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona para que aproveches el día. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
 | 13:00 | Comida: Supplizio | 90 min | 🍝 Comida | 8 min andando | en Centro Histórico |
@@ -1040,7 +1040,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Campo de' Fiori | 10 min | Por el camino | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:00 | Aperitivo y paseo por Centro Histórico | 55 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Plaza Trilussa |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 ### Día 3 — Trevi sin gente, el Pincio y la tarde en Monti
@@ -1049,7 +1049,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante. |
+| 08:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). |
 | 08:30 | Desayuno romano | 55 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día. |
 | 09:30 | Iglesia de San Ignacio de Loyola | 10 min | Parada | 3 min andando | Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás. |
 | 09:45 | Plaza Colonna | 10 min | Por el camino | 4 min andando | La columna de Marco Aurelio, delante del palacio del Gobierno. |
@@ -1091,7 +1091,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 12:30 | Plaza del Campidoglio | 20 min | Parada | 14 min andando | La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies. |
 | 13:00 | Altar de la Patria | 60 min | Parada | 7 min andando | Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies. · se ve por fuera: Plaza Venecia |
 | 14:00 | Comida: La Taverna dei Fori Imperiali | 75 min | 🍝 Comida | 7 min andando | en Monti y Fori Imperiali |
-| 15:30 | Fontana de Trevi | 35 min | Parada | 14 min andando | La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma. |
+| 15:30 | Fontana de Trevi | 35 min | Parada | 14 min andando | La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. |
 | 16:15 | Plaza de España | 10 min | Por el camino | 10 min andando | La escalinata más famosa del mundo y, arriba, Trinità dei Monti. |
 | 16:45 | Galería Borghese | 120 min | Parada | 16 min andando | La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva. · experiencia: Arte |
 | 19:15 | Terraza del Pincio | 20 min | 🌅 Atardecer | 17 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. |
@@ -1135,7 +1135,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena. |
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena. |
 | 09:00 | Desayuno romano | 50 min | ☕ Pausa | 3 min andando | Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min. |
 | 10:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España. · El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona para que aproveches el día. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
 | 13:00 | Comida: Supplizio | 90 min | 🍝 Comida | 8 min andando | en Centro Histórico |
@@ -1239,7 +1239,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Campo de' Fiori | 25 min | Parada | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:15 | Plaza Farnese | 10 min | Por el camino | 1 min andando | La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas. |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 **Lo que quedó fuera**: nada.
@@ -1340,7 +1340,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 17:15 | Altar de la Patria | 30 min | Parada | 18 min andando | Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies. · se ve por fuera: Plaza Venecia |
 | 17:45 | Aperitivo y paseo por Centro Histórico | 118 min | 🕐 Tiempo libre |  | ideas: Barrio Judío, Campo de' Fiori, Iglesia del Gesù |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 17 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
@@ -1349,7 +1349,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 10:00 | Fontana de Trevi | 35 min | Parada | — | La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma. |
+| 10:00 | Fontana de Trevi | 35 min | Parada | — | La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. |
 | 10:45 | Plaza de España | 25 min | Parada | 10 min andando | La escalinata más famosa del mundo y, arriba, Trinità dei Monti. |
 | 11:30 | Piazza del Popolo | 30 min | Parada | 12 min andando | La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas. |
 | 12:00 | Tiempo libre antes de la comida | 55 min | 🕐 Tiempo libre |  | ideas: Terraza del Pincio, Via Condotti |
@@ -1409,7 +1409,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Campo de' Fiori | 25 min | Parada | 7 min andando | Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar. |
 | 19:15 | Plaza Farnese | 10 min | Por el camino | 1 min andando | La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas. |
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
@@ -1440,7 +1440,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 10:00 | Fontana de Trevi | 35 min | Parada | — | La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma. |
+| 10:00 | Fontana de Trevi | 35 min | Parada | — | La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. |
 | 10:45 | Plaza de España | 25 min | Parada | 10 min andando | La escalinata más famosa del mundo y, arriba, Trinità dei Monti. |
 | 11:30 | Piazza del Popolo | 30 min | Parada | 12 min andando | La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas. |
 | 12:00 | Comida: Edy | 60 min | 🍝 Comida | 5 min andando | en Tridente y Spagna |
@@ -1493,7 +1493,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 12:00 | Foro Romano y Palatino | 105 min | Parada | 9 min andando | Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día. |
 | 13:45 | Comida: La Taverna dei Fori Imperiali | 75 min | 🍝 Comida | 5 min andando | en Monti y Fori Imperiali |
 | 15:00 | Altar de la Patria | 30 min | Parada | 7 min andando | Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies. · se ve por fuera: Plaza Venecia |
-| 15:45 | Fontana de Trevi | 35 min | Parada | 14 min andando | La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma. |
+| 15:45 | Fontana de Trevi | 35 min | Parada | 14 min andando | La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. |
 | 16:30 | Plaza de España | 10 min | Por el camino | 10 min andando | La escalinata más famosa del mundo y, arriba, Trinità dei Monti. |
 | 17:00 | Galería Borghese | 120 min | Parada | 16 min andando | La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva. |
 | 19:30 | Roma iluminada desde el Pincio | 20 min | 🌙 Noche | 17 min andando | Roma iluminada a tus pies |
@@ -1505,6 +1505,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ## Recuento (Parte D)
 
+- **Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)**: 0 ✅
 - **Filas con "Por qué aquí" genérico**: 0 ✅
 - **Notas internas que se ven**: 0 ✅
 - **Cifras y precios fuera de Tickets**: 0 ✅
