@@ -20,6 +20,7 @@ import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
+import { dateNoticesFor } from './dateNotices.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
@@ -324,6 +325,9 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
   if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)
+  // Los avisos de fechas especiales (PROMPT_AVISO_FECHAS), una vez por viaje y con el primer día de ciudad: la app
+  // los enseña en una ventana al entrar en la ruta y deja una etiqueta en cada día afectado.
+  if (tripDay.dayNumber === firstCityDay) day.date_notices = dateNoticesFor(destData, trip, options)
   return day
 }
 

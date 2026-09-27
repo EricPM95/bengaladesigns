@@ -227,6 +227,24 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     order = best.candidate
   }
+  // Avisos de fecha (PROMPT_AVISO_FECHAS): lo que otro día del viaje no podía llevar (una joya o lo del pool que ese
+  // día cierra, o su `no_en`) y el orden ha puesto en este. Con fechas; sin ellas no hay días de la semana.
+  const dateMoves = []
+  if (calendar.hasDates) {
+    order.forEach((id, index) => {
+      const cfg = curatedById.get(id)
+      const placed = cityDays[index]
+      const noEn = (other, name) => (cfg.no_en ?? []).some((rule) => rule.dia_semana && hoursOf(other).weekday && norm(hoursOf(other).weekday) === norm(rule.dia_semana) && (rule.si_lleva ? rule.si_lleva === name && carries(cfg, name) : (cfg.joyas ?? []).includes(name)))
+      const names = [...new Set([...(cfg.joyas ?? []), ...poolNames.filter((name) => carries(cfg, name)), ...(cfg.no_en ?? []).filter((rule) => rule.si_lleva && carries(cfg, rule.si_lleva)).map((rule) => rule.si_lleva)])]
+      for (const name of names) {
+        if (closedThatDay(name, placed)) continue
+        for (const other of cityDays) {
+          if (other === placed || !(closedThatDay(name, other) || noEn(other, name))) continue
+          dateMoves.push({ name, dayId: id, blockedDayNumber: other.dayNumber, blockedDateIso: hoursOf(other).dateIso, placedDayNumber: placed.dayNumber, placedDateIso: hoursOf(placed).dateIso })
+        }
+      }
+    })
+  }
 
   // ── 3 y 4. Variante y paradas de cada día ─────────────────────────────────────────────────────
   // ¿Va esta parada? (`solo`: una condición o una lista de condiciones, basta con una). Lo del pool va siempre.
@@ -1035,5 +1053,6 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     blockSummary: days.filter((day) => day.curatedDay).map((day) => ({ dayNumber: day.dayNumber, morning: day.curatedDay.id, afternoon: day.curatedDay.id, lateDinner: false })),
     untypedHalves: 0,
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
+    dateMoves,
   }
 }

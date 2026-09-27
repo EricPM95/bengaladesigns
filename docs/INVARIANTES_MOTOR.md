@@ -1127,3 +1127,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 247. **`si_espera`** (D2 en invierno): si antes del atardecer se esperan más de `minutos` (60), la tarde de `si_espera`
     (Trastevere antes del Janículo, que se estira); lo que así llega cerrado y quiere de paso (el Tempietto), de paso.
     Solo si no se pierde nada y el mirador llega a su atardecer.
+248. **Avisos de fechas especiales** (PROMPT_AVISO_FECHAS, 2026-09-27): el primer día de ciudad lleva `date_notices`,
+    una tarjeta por día `{ id, day_number, date_iso, icon, title, tag, texts, kind }` (server/engine/dateNotices.js).
+    Automáticos (lo que el motor YA ha hecho, solo joyas, nivel 1 y pool): día movido (`dateMoves` del planificador:
+    lo que otro día del viaje cierra o su `no_en`), por fuera (cerrado ese día y visitado), cerrado todo el viaje,
+    horario especial confirmado y la variante del día de la semana con `aviso_fecha`. Curados: `fechas_especiales`
+    sin `verificar: true`. El mismo día (o el mismo rango: Navidad) van en una tarjeta: primero lo hecho, luego lo curado.
+249. **Regla de oro de los avisos**: primero el dato y al final lo que hemos hecho ("Hemos puesto…", "Hemos movido…"),
+    35 palabras como mucho, de tú a tú y sin precios. Vale para las plantillas del motor y para los textos curados.
+250. **Sin fechas (solo el mes)**: solo lo de temporada y las fechas fijas de ese mes, con "Si tu viaje coincide con
+    …:". Nunca los de día de la semana ni los de Pascua (sin año no se sabe el mes).
+251. **Horario especial** (`fechas_especiales[].horario_especial`): solo con `confirmado: true`; el cargador lo pone
+    en el lugar (`special_hours`) y va por delante de `last_sunday`, `by_day` y `by_period`, por detrás de los cierres.
+252. **`aviso_fecha` en una variante** (`{ icono, etiqueta, texto }`): el aviso de lo que esa variante del día de la
+    semana cambia de un imprescindible (la audiencia de los miércoles, el Panteón del sábado). Nunca un aviso genérico
+    de "el fin de semana hay más gente".

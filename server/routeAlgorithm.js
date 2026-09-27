@@ -14,6 +14,7 @@
 
 import { readFileSync, readdirSync } from 'node:fs'
 import { nextOpenMinutes, parseClosingMinutes, parseHoursSessions } from '../shared/routeEngine/openingHours.js'
+import { attachSpecialHours } from '../shared/routeEngine/specialDates.js'
 // Una sola tabla de experiencias->tags para los dos motores (ver engine/experienceTags.js).
 import { TAG_INTEREST_MAP, interestTagsFor } from './engine/experienceTags.js'
 import { fullDayExcursions } from './engine/excursions.js'
@@ -30,7 +31,8 @@ try {
   for (const file of readdirSync(dir)) {
     if (!file.endsWith('.json')) continue
     const key = file.replace(/\.json$/, '')
-    PIPELINE_V2_DATA[key] = JSON.parse(readFileSync(join(dir, file), 'utf8'))
+    // Con sus horarios especiales confirmados (`fechas_especiales`) ya puestos en cada lugar.
+    PIPELINE_V2_DATA[key] = attachSpecialHours(JSON.parse(readFileSync(join(dir, file), 'utf8')))
   }
   console.log(`[pipeline-v2] cargados ${Object.keys(PIPELINE_V2_DATA).length} destinos con algoritmo JS puro: ${Object.keys(PIPELINE_V2_DATA).join(', ')}`)
   for (const [key, data] of Object.entries(PIPELINE_V2_DATA)) validateZoneCoverage(key, data)
