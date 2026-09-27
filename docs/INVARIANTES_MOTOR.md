@@ -1100,3 +1100,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 239. **"Por el camino" y "Por fuera"** (B2.2-3): lo de paso de acera (calles, plazas, fuentes, ruinas: `type: exterior`)
     sale "Por el camino: …" entre dos paradas, con foto pequeña y ficha. Un monumento (`type: interior`) nunca va por
     el camino: sale "Por fuera" con `outside_reason` ("hoy no toca entrar", "a esta hora ya ha cerrado", "cerrado hoy").
+240. **Invierno: paseo iluminado y aperitivo de hasta 2 h** (B3.1): con el sol antes de las 18:00, el rato entre la
+    última parada y la cena puede llegar a 120 min. Sale con nombre ("Paseo por Via del Corso y Via Condotti iluminadas
+    y aperitivo", de `destination_config.paseo_iluminado` por barrio de cena) y sugerencias abiertas a esa hora, y
+    lleva `winter`. En el semáforo y en sweep.mjs es amarillo como mucho; más de 120 min sigue siendo rojo.
+241. **El transporte público está permitido** (B3.2), en todos los destinos: si la ruta es natural y la que haría un
+    local (el bus 118 a la Via Appia, el metro B a San Clemente, el 115 al Janículo), no es un fallo. Solo cuenta como
+    fallo un salto de más de 25 min andando sin su aviso de transporte.

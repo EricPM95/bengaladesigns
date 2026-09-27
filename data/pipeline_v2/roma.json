@@ -6994,6 +6994,18 @@
         "dias_medidos": 96,
         "inicio": "10:00"
       }
+    },
+    "paseo_iluminado": {
+      "_nota": "Invierno, rato antes de cenar (B3.1): \"Paseo por {esto} y aperitivo\". Por barrio de cena (dinnerZones).",
+      "tridente": "Via del Corso y Via Condotti iluminadas",
+      "trevi": "la Fontana de Trevi y Via del Corso iluminadas",
+      "centro_historico": "Piazza Navona y el Panteón iluminados",
+      "monti": "Monti y los Foros iluminados",
+      "coliseo": "el Coliseo iluminado",
+      "trastevere": "Trastevere iluminado",
+      "testaccio": "Testaccio y la Pirámide iluminados",
+      "prati": "Via della Conciliazione y el Castillo iluminados",
+      "vaticano": "Via della Conciliazione y el Castillo iluminados"
     }
   },
   "museos_de_pago": {

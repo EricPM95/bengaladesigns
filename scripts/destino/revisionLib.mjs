@@ -282,9 +282,11 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         const verano = [5, 6, 7].includes(fechaDe(fecha).getUTCMonth())
         const largos = [
           ...libres.filter((entry) => entry.minutes > 90 && !(verano && dayStops.some((stop) => (stop.place_name ?? stop.name) === entry.before && stop.sunset_minutes != null))).map((entry) => `${entry.minutes} min antes de ${entry.before === LUNCH_LABEL ? 'comer' : entry.before}`),
-          ...(day.aperitivo && day.aperitivo.minutes > 90 ? [`${day.aperitivo.minutes} min de aperitivo antes de cenar`] : []),
-          ...(day.free_afternoon && day.free_afternoon.minutes > 90 ? [`${day.free_afternoon.minutes} min de tarde libre antes de cenar`] : []),
+          // Invierno (B3.1): el paseo iluminado y aperitivo de hasta 2 h es amarillo como mucho; más de 2 h, rojo.
+          ...(day.aperitivo && day.aperitivo.minutes > (day.aperitivo.winter ? 120 : 90) ? [`${day.aperitivo.minutes} min de aperitivo antes de cenar`] : []),
+          ...(day.free_afternoon && day.free_afternoon.minutes > (day.free_afternoon.winter ? 120 : 90) ? [`${day.free_afternoon.minutes} min de tarde libre antes de cenar`] : []),
         ]
+        if (day.aperitivo?.winter && day.aperitivo.minutes > 90 && day.aperitivo.minutes <= 120) raro(n, `🟡 paseo iluminado y aperitivo de invierno de ${day.aperitivo.minutes} min (hasta 2 h está permitido).`)
         for (const texto of largos) {
           cuenta.libres90++
           raro(n, `🔴 tiempo libre de más de 90 min en completo: ${cell(texto)}.`)

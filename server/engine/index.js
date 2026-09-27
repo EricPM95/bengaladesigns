@@ -457,6 +457,7 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, bus
   const dinner = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
   return {
     minutes: idle,
+    ...((tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE ? { winter: true } : {}),
     suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates, {
       startMinutes: last.end,
       endMinutes: dinner ? dinner.start - (dinner.walkMinutes ?? 0) : null,
@@ -470,6 +471,8 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, bus
 const APERITIVO_MIN_MINUTES = 45
 /** Hasta aquí, el rato antes de cenar es aperitivo (decisión del 2026-09-26: los 99 min de 6 días en invierno). */
 const APERITIVO_MAX_MINUTES = 120
+/** Con el sol antes de esta hora, el rato antes de cenar es de noche: paseo iluminado y aperitivo (PROMPT_RUTAS_CURADAS B3.1). */
+const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 
 /**
  * "Aperitivo y paseo por {barrio}" (PROMPT_AJUSTES_BLOQUES B.7): el tiempo libre de 90 min o menos justo
@@ -485,10 +488,15 @@ function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMin
   if (!zone) return null
   const barrio = String(zone.label).replace(/\s*\/\s*/g, ' y ')
   const dinner = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
+  // Invierno (el sol antes de las 18:00): ya es de noche, así que es un paseo iluminado y aperitivo, de hasta 2 h
+  // (B3.1). El paseo de cada barrio de cena, del JSON del destino (`destination_config.paseo_iluminado`).
+  const winter = (tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE
+  const lit = destData.destination_config?.paseo_iluminado?.[zone.id] ?? null
   return {
-    title: `Aperitivo y paseo por ${barrio}`,
+    title: winter ? `Paseo por ${lit ?? `${barrio} de noche`} y aperitivo` : `Aperitivo y paseo por ${barrio}`,
     barrio,
     minutes: idle,
+    ...(winter ? { winter: true } : {}),
     suggestions: nearbySuggestions(destData, trip, options, dayVisitedNames, last.place.end_coordinates ?? last.place.coordinates, {
       startMinutes: last.end,
       endMinutes: dinner ? dinner.start - (dinner.walkMinutes ?? 0) : null,

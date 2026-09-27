@@ -39,8 +39,13 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
     const stops = day.stops.filter((s) => !s.is_night_experience)
     const last = n === dias
     const lim = ritmo === 'completo' ? 90 : 120
-    const libres = [...(day.free_times ?? []).map((f) => ({ m: f.minutes, before: f.before })), ...(day.aperitivo ? [{ m: day.aperitivo.minutes, before: 'cena (aperitivo)' }] : []), ...(day.free_afternoon ? [{ m: day.free_afternoon.minutes, before: 'cena (tarde libre)' }] : [])]
-    for (const f of libres) if (f.m > lim) trip.problemas.push({ n, d: cd, tipo: 'hueco', txt: `${f.m} min antes de ${f.before}`, m: f.m })
+    const libres = [...(day.free_times ?? []).map((f) => ({ m: f.minutes, before: f.before })), ...(day.aperitivo ? [{ m: day.aperitivo.minutes, before: 'cena (aperitivo)', winter: day.aperitivo.winter }] : []), ...(day.free_afternoon ? [{ m: day.free_afternoon.minutes, before: 'cena (tarde libre)', winter: day.free_afternoon.winter }] : [])]
+    for (const f of libres) {
+      if (f.m <= lim) continue
+      // Invierno (B3.1): paseo iluminado y aperitivo de hasta 2 h, amarillo; de más, pendiente (Parte C.1).
+      const tipo = f.winter ? (f.m <= 120 ? 'aperitivo_invierno' : 'aperitivo_invierno_largo') : 'hueco'
+      trip.problemas.push({ n, d: cd, tipo, txt: `${f.m} min antes de ${f.before}`, m: f.m })
+    }
     for (const s of stops) {
       const name = s.place_name ?? s.name
       count.set(name, (count.get(name) ?? 0) + 1)
