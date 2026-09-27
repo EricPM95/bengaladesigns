@@ -1095,8 +1095,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     si no cabe, `not_included` con `from_pool` y `day_number`, y la app lo avisa en ese día ("No hemos podido
     incluir X porque…").
 238. **Horas redondas** (B2.1): las horas que se enseñan van en :00, :15, :30 o :45. El motor calcula con los minutos
-    exactos y el formateador (quarterHourStops) enseña el cuarto de hora MÁS CERCANO de la llegada y la salida (nunca
-    siempre hacia arriba); la visita dura lo que cuadra entre las dos. Lo de paso conserva sus minutos.
+    exactos y el formateador (quarterHourStops) enseña el cuarto de hora MÁS CERCANO de cada llegada (nunca siempre
+    hacia arriba). Lo que hay hasta la siguiente parada (paseo, comida, espera) se queda con sus minutos exactos y la
+    visita dura lo que cuadra; así la salida más el paseo da la llegada a la siguiente.
 239. **"Por el camino" y "Por fuera"** (B2.2-3): lo de paso de acera (calles, plazas, fuentes, ruinas: `type: exterior`)
     sale "Por el camino: …" entre dos paradas, con foto pequeña y ficha. Un monumento (`type: interior`) nunca va por
     el camino: sale "Por fuera" con `outside_reason` ("hoy no toca entrar", "a esta hora ya ha cerrado", "cerrado hoy").
@@ -1107,3 +1108,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 241. **El transporte público está permitido** (B3.2), en todos los destinos: si la ruta es natural y la que haría un
     local (el bus 118 a la Via Appia, el metro B a San Clemente, el 115 al Janículo), no es un fallo. Solo cuenta como
     fallo un salto de más de 25 min andando sin su aviso de transporte.
+242. **Lo del pool sin su día propio** (San Clemente sin D6): va en la variante de su nombre (`curated_pool.antes`:
+    `pool_san_clemente`) de cualquier día que la tenga y no sea el de las variantes de pool (D1/D1-FT); en D5, San
+    Clemente en lugar de la Via Appia.

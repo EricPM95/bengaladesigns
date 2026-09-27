@@ -24,17 +24,22 @@ function nearestQuarter(hhmm) {
 
 /**
  * Horas redondas (PROMPT_RUTAS_CURADAS B2.1): el motor calcula con los minutos exactos y aquí se enseña el cuarto de
- * hora más cercano de la llegada y de la salida; la visita dura lo que cuadra entre las dos. El redondeo al más cercano
- * no cambia el orden, así que dos paradas nunca se pisan. Lo "de paso" conserva sus minutos.
+ * hora más cercano de cada llegada (nunca siempre hacia arriba: el día acabaría con retraso). Lo que hay hasta la
+ * siguiente parada (el paseo, la comida, una espera) se queda con sus minutos exactos, y la visita dura lo que cuadra:
+ * así la hora de salida más el paseo da la llegada a la siguiente (también lo de paso). Lo que no tiene siguiente se queda
+ * con sus minutos; una visita nunca baja de la mitad de lo que dura (entonces, sus minutos de siempre).
  */
 function quarterHourStops(stops) {
-  return stops.map((stop) => {
-    const start = toMinutes(stop.suggested_time)
+  const exact = stops.map((stop) => toMinutes(stop.suggested_time))
+  return stops.map((stop, index) => {
+    const start = exact[index]
     if (!Number.isFinite(start)) return stop
     const roundedStart = Math.round(start / 15) * 15
-    if (stop.pass_through) return { ...stop, suggested_time: toHHMM(roundedStart) }
-    const roundedEnd = Math.round((start + (stop.duration_minutes ?? 0)) / 15) * 15
-    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: roundedEnd > roundedStart ? roundedEnd - roundedStart : stop.duration_minutes }
+    const next = index + 1 < stops.length && !stops[index + 1].is_night_experience && !stop.is_night_experience ? exact[index + 1] : NaN
+    if (!Number.isFinite(next)) return { ...stop, suggested_time: toHHMM(roundedStart) }
+    const gap = next - (start + (stop.duration_minutes ?? 0))
+    const duration = Math.round(next / 15) * 15 - gap - roundedStart
+    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes }
   })
 }
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'

@@ -298,6 +298,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       apply(variant)
     }
     if (tardeB && inPool('Basílica de San Clemente') && !order.includes('D6')) apply(poolRules['Basílica de San Clemente']?.d5_tarde_b ?? 'tarde_b_san_clemente')
+    // Rutas curadas (PROMPT_RUTAS_CURADAS, D5): lo del pool sin su día propio en el viaje (San Clemente sin D6) va en la
+    // variante con su nombre del día que la tenga (`pool_san_clemente` de D5) si no es el día de las variantes de pool
+    // (D1/D1-FT, ya resuelto arriba).
+    for (const [name, rule] of Object.entries(poolRules)) {
+      if (!inPool(name) || !rule?.antes || index === order.indexOf(poolDay) || !cfg.variantes?.[rule.antes]) continue
+      if (rule.dia && order.includes(rule.dia)) continue
+      if (!applied.includes(rule.antes)) apply(rule.antes)
+    }
     // Sin Caracalla (no toca, cierra ese día o la quita el tope de museos): la mañana de D5 empieza en la Boca.
     const sinCaracalla = cfg.variantes?.sin_caracalla
     if (sinCaracalla) {
