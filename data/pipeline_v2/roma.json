@@ -10428,7 +10428,7 @@
         "tipo": "festivo",
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
-        "texto": "Roma empieza el año con calma: el Coliseo, el Foro, el Panteón y los Museos Vaticanos cierran. Hemos colocado tu ruta para que los veas otro día y hoy te llevamos por plazas y fuentes.",
+        "texto": "Roma empieza el año con calma: hoy cierran el Coliseo, el Foro, el Panteón y los Museos Vaticanos. Hemos puesto sus visitas otro día y hoy te llevamos por plazas, fuentes e iglesias abiertas.",
         "fuente": "closed_dates de roma.json"
       },
       {
@@ -10437,7 +10437,7 @@
         "tipo": "religioso",
         "icono": "navidad",
         "titulo": "6 de enero · Reyes (la Befana)",
-        "texto": "Último día del mercadillo navideño de Piazza Navona, donde los romanos celebran la Befana. Los Museos Vaticanos cierran. Hemos puesto tu visita otro día.",
+        "texto": "Último día del mercadillo navideño de Piazza Navona, donde los romanos celebran la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente"
       },
@@ -10447,7 +10447,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Viernes Santo · Via Crucis en el Coliseo",
-        "texto": "Por la noche, hacia las 21:15, el Papa preside el Via Crucis junto al Coliseo, y la zona se corta desde la tarde. Hemos dejado el Coliseo para la mañana.",
+        "texto": "Por la noche el Papa preside el Via Crucis junto al Coliseo y la zona se corta desde la tarde. Hemos puesto el Coliseo por la mañana.",
         "sugerencia": {
           "lugar": "Coliseo (noche)",
           "nota": "Via Crucis con el Papa (hacia las 21:15)"
@@ -10461,7 +10461,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Domingo de Pascua",
-        "texto": "A las 12:00 el Papa da la bendición Urbi et Orbi en la Plaza de San Pedro y hay muchísima gente. Para verla, llega hacia las 11:30. Hemos preparado tu día para que puedas acercarte.",
+        "texto": "A las 12:00 el Papa da la bendición Urbi et Orbi en la Plaza de San Pedro y hay muchísima gente. Hemos preparado tu día para que puedas verla si quieres: llega con margen.",
         "sugerencia": {
           "lugar": "Plaza de San Pedro",
           "hora": "11:30",
@@ -10485,7 +10485,7 @@
         "tipo": "evento",
         "icono": "luz",
         "titulo": "21 de abril · Roma cumple años",
-        "texto": "Es el Natale di Roma: desfile de legionarios en el Circo Máximo y el sol entra por el óculo del Panteón y cae sobre la puerta. Hemos apuntado la hora: pásate hacia las 12:00.",
+        "texto": "Es el cumpleaños de Roma: desfile de legionarios en el Circo Máximo y, a mediodía, el sol entra por el óculo del Panteón y cae sobre la puerta. Hemos preparado tu día para que puedas pasar por allí hacia las 12:00.",
         "sugerencia": {
           "lugar": "Panteón",
           "hora": "11:45",
@@ -10499,7 +10499,7 @@
         "tipo": "festivo",
         "icono": "bandera",
         "titulo": "25 de abril · Fiesta de la Liberación",
-        "texto": "Festivo nacional: hay actos oficiales y mucha gente en el centro. Hemos preparado tu ruta para este día.",
+        "texto": "Festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar"
       },
@@ -10509,7 +10509,7 @@
         "tipo": "festivo",
         "icono": "musica",
         "titulo": "1 de mayo · Día del Trabajo",
-        "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde hay un gran concierto en San Juan de Letrán. Hemos colocado tu visita a los dos en otro día.",
+        "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde hay un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json; concierto a confirmar cada año"
       },
@@ -10519,7 +10519,7 @@
         "tipo": "evento",
         "icono": "bandera",
         "titulo": "2 de junio · Fiesta de la República",
-        "texto": "Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. Hemos preparado tu ruta para que puedas verlo.",
+        "texto": "Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. El Coliseo y el Foro abren más tarde: hemos pasado su visita a la tarde u otro día.",
         "horario_especial": {
           "confirmado": false,
           "lugares": {
@@ -10544,7 +10544,7 @@
         "tipo": "evento",
         "icono": "fuegos",
         "titulo": "29 de junio · San Pedro y San Pablo",
-        "texto": "Son los patronos de Roma. Por la noche el Castillo de Sant'Angelo se ilumina con la Girandola, fuegos del siglo XV: acércate al puente hacia las 21:30. Hemos movido tu visita al Vaticano, que cierra.",
+        "texto": "Son los patronos de Roma: los Museos Vaticanos cierran y por la noche el Castillo de Sant'Angelo se ilumina con la Girandola, fuegos que se hacen desde el siglo XV. Hemos movido tu visita al Vaticano a otro día.",
         "sugerencia": {
           "lugar": "Puente Sant'Angelo (noche)",
           "hora": "21:30",
@@ -10560,7 +10560,7 @@
         "tipo": "festivo",
         "icono": "calma",
         "titulo": "Ferragosto",
-        "texto": "Mitad de agosto: los romanos se van a la playa y Roma está más tranquila que nunca, aunque algunos restaurantes cierran por vacaciones. Hemos preparado tu ruta con lo que abre estos días.",
+        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; los Museos Vaticanos cierran y algunos restaurantes también. Hemos ajustado tu ruta a lo que sí abre.",
         "fuente": "closed_dates de roma.json"
       },
       {
@@ -10569,7 +10569,7 @@
         "tipo": "festivo",
         "icono": "religioso",
         "titulo": "1 de noviembre · Todos los Santos",
-        "texto": "Es festivo en toda Italia: hay misas especiales y el centro está animado. Hemos revisado los horarios de ese día para que tu ruta no choque con ningún cierre.",
+        "texto": "Es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)"
       },
@@ -10579,7 +10579,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "8 de diciembre · La Inmaculada",
-        "texto": "Por la tarde el Papa va a la Plaza de España a rendir homenaje a la Virgen y la plaza se llena. Los Museos Vaticanos cierran. Hemos movido tu visita.",
+        "texto": "Por la tarde el Papa va a la Plaza de España a rendir homenaje a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita a otro día.",
         "verificar": true,
         "fuente": "Tradición anual; hora a confirmar en vatican.va"
       },
@@ -10590,7 +10590,7 @@
         "tipo": "religioso",
         "icono": "navidad",
         "titulo": "Navidad en Roma",
-        "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Piazza Navona. El 25 cierran el Coliseo, el Foro, el Panteón y el Vaticano. Hemos preparado tu ruta para esos días.",
+        "texto": "Belenes en las iglesias, el árbol de la Plaza de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. El Coliseo, el Foro, el Panteón y el Vaticano cierran el 25: hemos colocado tu ruta para que no te pierdas nada.",
         "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'"
       },
       {
@@ -10599,7 +10599,7 @@
         "tipo": "evento",
         "icono": "fuegos",
         "titulo": "31 de diciembre · Nochevieja",
-        "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena: reserva la cena con tiempo. Hemos preparado tu día para que llegues descansado.",
+        "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
         "verificar": true,
         "fuente": "Programa a confirmar cada año en comune.roma.it"
       }

@@ -707,7 +707,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 - **Navidad en Roma** · etiqueta «Navidad en Roma» en el día 1
   - El 25 de diciembre el Coliseo y el Panteón cierran por Navidad. Hemos puesto tu visita el viernes 24 para que no los pierdas.
   - El 25 de diciembre los Museos Vaticanos cierran por Navidad. Hemos puesto tu visita el lunes 27 para que no los pierdas.
-  - Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Piazza Navona. El 25 cierran el Coliseo, el Foro, el Panteón y el Vaticano. Hemos preparado tu ruta para esos días.
+  - Belenes en las iglesias, el árbol de la Plaza de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. El Coliseo, el Foro, el Panteón y el Vaticano cierran el 25: hemos colocado tu ruta para que no te pierdas nada.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -989,7 +989,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
 - **2 de junio · Fiesta de la República** · etiqueta «Fiesta de la República» en el día 1
-  - Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. Hemos preparado tu ruta para que puedas verlo.
+  - Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. El Coliseo y el Foro abren más tarde: hemos pasado su visita a la tarde u otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -1122,7 +1122,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Avisos de fechas** (ventana al entrar en la ruta): 
 - **Ferragosto** · etiqueta «Ferragosto» en el día 2
   - El 14 de agosto los Museos Vaticanos cierran por Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
-  - Mitad de agosto: los romanos se van a la playa y Roma está más tranquila que nunca, aunque algunos restaurantes cierran por vacaciones. Hemos preparado tu ruta con lo que abre estos días.
+  - Los romanos se van a la playa y la ciudad está más tranquila que nunca; los Museos Vaticanos cierran y algunos restaurantes también. Hemos ajustado tu ruta a lo que sí abre.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
