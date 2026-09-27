@@ -1197,3 +1197,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     como mucho (medido: el Vaticano de D3 entra a las 14:45 en todas; "con la última luz" en Via dei Fori Imperiali, en
     el atardecer las 178 veces). Si no coincide, `{ texto, temprano }` o se reescribe. "Casi siempre sin gente" no habla
     de horas y no cuenta.
+269. **Títulos del día que prometen una hora** (textChecks.mjs, `tituloQueNoSeCumple`): si el título dice "sin gente" o
+    "a primera hora" de una parada, esa parada tiene que empezar antes de las 09:30; si dice "al atardecer", ese día una
+    parada tiene que ser la del atardecer. Si una variante lo rompe, la variante lleva su propio `nombre` (sin la
+    promesa). Roma: D4 y D4M en tranquilo ("Trevi, el Popolo y la Borghese", "Trevi, el Pincio y la tarde en Monti"),
+    D1-FT en invierno y en tranquilo ("Roma Antigua, el Ghetto y Trastevere") y D2 en tranquilo de invierno ("Vaticano,
+    Castillo y Trastevere"): rompían el 100 % de las veces. D3 nunca (Trevi antes de las 09:30 también en tranquilo).
+    El barrido lo apunta como `titulo_hora` (amarillo, no es fallo); la revisión lo cuenta.

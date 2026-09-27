@@ -34,3 +34,34 @@ export function textosConHora(D) {
   }
   return [...avisos.values()]
 }
+
+/** Lo que un título promete de hora: "sin gente" / "a primera hora" (antes de las 09:30) o "al atardecer". */
+const PROMESA_TEMPRANO = /\b(sin gente|a primera hora)\b/i
+const PROMESA_ATARDECER = /\bal atardecer\b/i
+/** Antes de esta hora, "sin gente" y "a primera hora" se cumplen (la misma franja que el "temprano" de los por_que). */
+export const TEMPRANO_ANTES_MIN = 9 * 60 + 30
+const toMin = (hhmm) => {
+  const [h, m] = String(hhmm).split(':').map(Number)
+  return h * 60 + m
+}
+
+/**
+ * ¿Promete el título del día algo de hora que ese día no se cumple? Un aviso por promesa rota (amarillo), o [].
+ * La parada de la que habla es la que nombra el trozo del título ("Trevi sin gente" → la Fontana de Trevi): "sin gente"
+ * y "a primera hora", si empieza a las 09:30 o después; "al atardecer", si ese día ninguna parada es la del atardecer.
+ * @param {object} day  un día del motor (curated_day.name, stops)
+ */
+export function tituloQueNoSeCumple(day) {
+  const titulo = day?.curated_day?.name ?? ''
+  const paradas = (day?.stops ?? []).filter((stop) => !stop.is_night_experience)
+  const avisos = []
+  for (const trozo of titulo.split(/,| y /)) {
+    if (PROMESA_TEMPRANO.test(trozo)) {
+      const sujeto = trozo.replace(PROMESA_TEMPRANO, '').trim()
+      const parada = sujeto ? paradas.find((stop) => String(stop.place_name ?? stop.name).includes(sujeto)) : null
+      if (parada && toMin(parada.suggested_time) >= TEMPRANO_ANTES_MIN) avisos.push(`«${trozo.trim()}»: ${parada.place_name ?? parada.name} a las ${parada.suggested_time}`)
+    }
+    if (PROMESA_ATARDECER.test(trozo) && !paradas.some((stop) => stop.sunset_minutes != null)) avisos.push(`«${trozo.trim()}»: ese día ninguna parada es la del atardecer`)
+  }
+  return avisos
+}

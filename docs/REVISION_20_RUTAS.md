@@ -571,7 +571,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 20:30 | Cena en Vaticano |  | 🍷 Cena | 7 min andando | en Vaticano |
 | 21:30 | Puente Sant'Angelo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Castillo y el Tíber» · A cinco minutos de la cena tienes el Puente Sant'Angelo: los ángeles de Bernini iluminados y el Castillo reflejado en el Tíber. Crúzalo despacio y vuelve por la orilla del río, que a esta hora está tranquila. |
 
-### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
+### Día 2 — Roma Antigua, el Ghetto y Trastevere
 
 **domingo 5 dic 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 16:39 · día curado D1-FT (invierno)
 
@@ -1204,7 +1204,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 - **Domingo 17 de enero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 16 para que no los pierdas.
 
-### Día 1 — Vaticano, Castillo y Trastevere al atardecer
+### Día 1 — Vaticano, Castillo y Trastevere
 
 **sábado 16 ene 2027** · 🌅 atardecer 17:05 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
 
@@ -1270,7 +1270,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 20:30 | Cena en Vaticano |  | 🍷 Cena | 7 min andando | en Vaticano |
 | 21:30 | Puente Sant'Angelo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Castillo y el Tíber» · A cinco minutos de la cena tienes el Puente Sant'Angelo: los ángeles de Bernini iluminados y el Castillo reflejado en el Tíber. Crúzalo despacio y vuelve por la orilla del río, que a esta hora está tranquila. |
 
-### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
+### Día 2 — Roma Antigua, el Ghetto y Trastevere
 
 **domingo 14 feb 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 17:41 · día curado D1-FT (invierno, tranquilo)
 
@@ -1343,7 +1343,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 | 22:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
 
-### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
+### Día 2 — Trevi, el Pincio y la tarde en Monti
 
 **domingo 24 oct 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 18:16 · día curado D4M (tranquilo, domingo)
 
@@ -1363,7 +1363,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 20:00 | Cena en Monti |  | 🍷 Cena | 11 min andando | en Monti |
 | 21:30 | Coliseo (noche) | 45 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado» · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
 
-### Día 3 — Vaticano, Castillo y Trastevere al atardecer
+### Día 3 — Vaticano, Castillo y Trastevere
 
 **lunes 25 oct 2027** · 🌅 atardecer 18:14 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
 
@@ -1411,7 +1411,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 20:00 | Cena en Centro Histórico |  | 🍷 Cena | 5 min andando | en Centro Histórico |
 | 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
-### Día 2 — Vaticano, Castillo y Trastevere al atardecer
+### Día 2 — Vaticano, Castillo y Trastevere
 
 **martes 7 dic 2027** · 🌅 atardecer 16:39 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
 
@@ -1434,7 +1434,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento**. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren.
 
-### Día 4 — Trevi sin gente, el Popolo y la Borghese
+### Día 4 — Trevi, el Popolo y la Borghese
 
 **jueves 9 dic 2027** · 🌅 atardecer 16:39 · día curado D4 (invierno, tranquilo)
 
@@ -1463,7 +1463,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 - **Domingo 21 de noviembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 20 para que no los pierdas.
 
-### Día 1 — Vaticano, Castillo y Trastevere al atardecer
+### Día 1 — Vaticano, Castillo y Trastevere
 
 **sábado 20 nov 2027** · 🌅 atardecer 16:46 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
 
@@ -1506,8 +1506,21 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ## Recuento (Parte D)
 
 - **Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)**: 0 ✅
+- **Títulos del día que prometen una hora que no se cumple**: 0 ✅
 - **Filas con "Por qué aquí" genérico**: 0 ✅
 - **Notas internas que se ven**: 0 ✅
 - **Cifras y precios fuera de Tickets**: 0 ✅
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅
+
+### Cifras con permiso (`cifra_ok: true`)
+
+Cada texto distinto una sola vez: lo que se queda con cifra a propósito.
+
+- (en la ruta) A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.
+- (en la ruta) A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena.
+- (en la ruta) A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).
+- (en la ruta) La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.
+- (ficha de Fontana de Trevi) La fuente más famosa del mundo. 26 metros de altura, 50 de ancho — un escenario barroco tallado en la fachada de un palacio donde Neptuno domina las aguas desde su carro tirado por tritones y caballos marinos. Cada día se recogen unos 3.000€ en monedas del fondo, que se donan a Cáritas para proyectos sociales en Roma. La tradición: tira una moneda con la mano derecha por encima del hombro izquierdo y volverás a Roma.
+- (ficha de Fontana de Trevi) La fuente se ve gratis desde la plaza a cualquier hora. Solo se paga por bajar a la zona junto al agua: una tasa de 2 € de 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, se baja libremente.
+- (ficha de Fontana de Trevi) La tradición original no era una moneda, sino beber agua de la fuente. La costumbre de la moneda viene de la película 'Tres monedas en la fuente' (1954) — y ahora genera más de 1 millón de euros al año para Cáritas.

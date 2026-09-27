@@ -271,7 +271,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
     )
   }
-  const sectionsOf = (cfg) => ({ manana: cfg.manana ?? [], comida: cfg.comida ?? null, tarde: cfg.tarde ?? [], cena: cfg.cena ?? null, noche: cfg.noche ?? null })
+  // `nombre`: el título del día; una variante que mueve la parada que el título promete trae el suyo ("Trevi sin gente" en
+  // ritmo tranquilo, con Trevi a las 10:00, pasa a "Trevi, el Pincio y la tarde en Monti").
+  const sectionsOf = (cfg) => ({ nombre: cfg.nombre, manana: cfg.manana ?? [], comida: cfg.comida ?? null, tarde: cfg.tarde ?? [], cena: cfg.cena ?? null, noche: cfg.noche ?? null })
   const namesOf = (sections) => [...sections.manana, ...sections.tarde].map((stop) => stop.lugar)
   // La variante de cada día, en este orden: tarde A/B (D5), invierno, tranquilo, Free Tour (después del ritmo: con
   // tour, D4 no enseña Trevi ni la Plaza de España aunque sea tranquilo), día de la semana, "Museos cerrados", las
@@ -285,7 +287,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const variant = cfg.variantes?.[name]
       if (!variant) return
       applied.push(name)
-      for (const key of ['manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra', 'si_espera']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
+      for (const key of ['nombre', 'manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra', 'si_espera']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
       if (variant.tarde_antes) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar)), tarde: [...variant.tarde_antes, ...sections.tarde.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar))] }
       for (const insert of variant.insertar ?? []) {
@@ -824,10 +826,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       dinnerCoords: dinnerPoint,
       nightNames: null,
       blocks: [
-        ...(morning ? [{ id: dayId, slot: 'manana', label: cfg.nombre }] : []),
-        { id: dayId, slot: 'tarde', label: cfg.nombre },
+        ...(morning ? [{ id: dayId, slot: 'manana', label: sections.nombre ?? cfg.nombre }] : []),
+        { id: dayId, slot: 'tarde', label: sections.nombre ?? cfg.nombre },
       ],
-      curatedDay: { id: dayId, nombre: cfg.nombre, variantes: entry.applied, noche: sections.noche },
+      curatedDay: { id: dayId, nombre: sections.nombre ?? cfg.nombre, variantes: entry.applied, noche: sections.noche },
       untypedAfternoon: false,
       reorderedBlocks: [],
       closedAnchors: closedAnchors.map((name) => ({ name, blockId: dayId, dates: [hours.dateIso].filter(Boolean) })),

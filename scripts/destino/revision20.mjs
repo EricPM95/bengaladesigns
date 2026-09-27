@@ -11,7 +11,8 @@ import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
-import { curatedStops, textosConHora } from './textChecks.mjs'
+import { curatedStops, textosConHora, tituloQueNoSeCumple } from './textChecks.mjs'
+import { readFileSync, readdirSync } from 'node:fs'
 
 const VIAJES = [
   // COMPLETO
@@ -61,7 +62,7 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 // Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
 const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
-const recuento = { genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
+const recuento = { titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
 const sinEmoji = (text) => String(text ?? '').replace(/^[^\p{L}\p{N}¡¿"«(]+/u, '')
 
 /** Domingo de Pascua (algoritmo anónimo gregoriano). */
@@ -152,6 +153,8 @@ for (const [index, viaje] of VIAJES.entries()) {
     const iso = addDays(viaje.fecha, i)
     const sunset = sunsetFor(D, { dateIso: iso })
     const fiesta = festivo(iso)
+    // El título que promete una hora que ese día no se cumple ("Trevi sin gente" con Trevi a las 10:00): aviso amarillo.
+    for (const aviso of tituloQueNoSeCumple(day)) recuento.titulos.push(`ruta ${numero}, día ${n}: ${aviso}`)
     const titulo = day?.curated_day?.name ?? (day?.type === 'excursion' || (day?.excursion_options?.length && !day?.stops?.length) ? 'Excursión' : day?.title ?? '')
     out.push(`### Día ${n} — ${cell(titulo)}`)
     out.push('')
@@ -262,9 +265,22 @@ const CIFRA_OK = [
   ...curatedStops(D).filter(({ parada }) => parada.por_que?.cifra_ok).flatMap(({ parada }) => [parada.por_que.texto, parada.por_que.temprano]),
   ...Object.values(D.night_walks ?? {}).filter((walk) => walk.cifra_ok).map((walk) => walk.texto),
 ].filter(Boolean).map(cell)
+// "Cifras con permiso": cada texto distinto una vez (el de la revisión y los de las fichas), para ver de un vistazo que
+// no se cuela ninguna.
+const conPermiso = new Map()
+for (const line of out) for (const text of CIFRA_OK) if (/€|\beuros?\b|\bEUR\b/i.test(text) && line.includes(text)) conPermiso.set(text, 'en la ruta')
+const detalleDir = new URL('../../data/pipeline_v2/detalle/roma/', import.meta.url)
+for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json'))) {
+  const recorrer = (valor, permitido, lugar) => {
+    if (typeof valor === 'string') {
+      if (permitido && /€|\beuros?\b|\bEUR\b/i.test(valor)) conPermiso.set(cell(valor), `ficha de ${lugar}`)
+    } else if (valor && typeof valor === 'object') for (const [clave, hijo] of Object.entries(valor)) if (clave !== 'ticket_info') recorrer(hijo, permitido || valor.cifra_ok === true, valor.name ?? lugar)
+  }
+  recorrer(JSON.parse(readFileSync(new URL(file, detalleDir), 'utf8')), false, file)
+}
 for (const [index, line] of out.entries()) if (/€|\beuros?\b|\bEUR\b/i.test(line) && !CIFRA_OK.some((text) => line.includes(text))) recuento.precios.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
-out.push('## Recuento (Parte D)', '', ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '')
+out.push('## Recuento (Parte D)', '', ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
 console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length])) }))
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'

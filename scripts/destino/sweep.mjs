@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
+import { tituloQueNoSeCumple } from './textChecks.mjs'
 const D = findPipelineV2Data('Roma')
 const t2m = (s) => { const [h, m] = String(s).split(':').map(Number); return h * 60 + m }
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
@@ -62,6 +63,7 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
     }
     for (const s of day.stops.filter((s) => s.is_night_experience)) { const l = String(s.place_name ?? s.name).replace(/\s*\(noche\)$/, ''); count.set(l, (count.get(l) ?? 0) + 1); seenDay.add(l) }
     const u = stops.at(-1)
+    for (const aviso of tituloQueNoSeCumple(day)) trip.problemas.push({ n, d: cd, tipo: 'titulo_hora', txt: aviso })
     if (!last && !day.half_day_excursion && u && t2m(u.suggested_time) + u.duration_minutes < 17 * 60) trip.problemas.push({ n, d: cd, tipo: 'acaba_pronto', txt: `${u.suggested_time}` })
     if (day.pace_notice && /comida es más corta/.test(day.pace_notice)) trip.problemas.push({ n, d: cd, tipo: 'comida_corta', txt: day.pace_notice.slice(0, 90) })
   }

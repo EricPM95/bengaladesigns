@@ -8776,7 +8776,8 @@
               "nota": "Callejear de noche hasta la cena.",
               "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
-          ]
+          ],
+          "nombre": "Vaticano, Castillo y Trastevere"
         },
         "miercoles": {
           "manana": [
@@ -9187,7 +9188,8 @@
       "noche": "trastevere",
       "variantes": {
         "invierno": {
-          "noche": "roma_desde_arriba"
+          "noche": "roma_desde_arriba",
+          "nombre": "Roma Antigua, el Ghetto y Trastevere"
         },
         "pool_caracalla": {
           "manana": [
@@ -9314,7 +9316,8 @@
               "rol": "parada",
               "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
-          ]
+          ],
+          "nombre": "Roma Antigua, el Ghetto y Trastevere"
         }
       },
       "no_en": [
@@ -9707,7 +9710,8 @@
               "rol": "parada",
               "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             }
-          ]
+          ],
+          "nombre": "Trevi, el Popolo y la Borghese"
         },
         "domingo": {
           "quitar": [
@@ -9899,7 +9903,8 @@
               "rol": "parada",
               "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             }
-          ]
+          ],
+          "nombre": "Trevi, el Pincio y la tarde en Monti"
         }
       },
       "no_en": []
