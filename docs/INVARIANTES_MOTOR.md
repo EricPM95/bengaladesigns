@@ -1204,3 +1204,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     D1-FT en invierno y en tranquilo ("Roma Antigua, el Ghetto y Trastevere") y D2 en tranquilo de invierno ("Vaticano,
     Castillo y Trastevere"): rompían el 100 % de las veces. D3 nunca (Trevi antes de las 09:30 también en tranquilo).
     El barrido lo apunta como `titulo_hora` (amarillo, no es fallo); la revisión lo cuenta.
+270. **Un monumento no va nunca escondido en el texto de otra parada** (decisión del usuario, 2026-09-27; como el
+    Altar): lo de su grupo que ese día no se visita (cerrado, no toca este viaje, el tope de museos de pago, o que no
+    llega a su hora) y lo que un lugar tiene delante (`pass_by.includes`: la Plaza Venecia desde el Altar) sale en su
+    propia línea junto a su compañero: "Por fuera" con su motivo si es un monumento, "Por el camino" si no. Se ve desde
+    el compañero: en su mismo punto, 5 min que salen de la visita del compañero (el día no se alarga), antes o después
+    de él según el día curado. Su texto, `por_fuera` si lo trae (`{ texto, por_fuera }`, el Castillo); lo que no es
+    parada curada toma el suyo de `por_que_lugares`. "Por fuera" tampoco se rellena con el redondeo (10 min como mucho).
+    Si su línea no cabe sin perder nada, queda nombrado en el compañero como antes (7 casos sueltos en el barrido).
+271. **La parada que se estira también devuelve tiempo**: antes de dar un atardecer por perdido, el callejeo (`estirar`,
+    Trastevere) se acorta 15 o 30 min, nunca por debajo de 20. Así cabe lo que va de camino (Via della Conciliazione,
+    "Por el camino" en D2 y todas sus variantes, antes del Castillo) sin perder el sol.

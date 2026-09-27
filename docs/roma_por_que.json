@@ -21,8 +21,10 @@
     "Campo de' Fiori": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar.",
     "Plaza Farnese": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas.",
     "Fontana de Trevi": {
-      "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-      "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+      "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+      "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+      "temprano_antes": "09:00",
+      "cifra_ok": true
     },
     "Desayuno romano": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día.",
     "Iglesia de San Ignacio de Loyola": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás.",
@@ -42,7 +44,10 @@
     "Basílica de San Pedro": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
     "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies.",
     "Borgo Pio": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre.",
-    "Castillo de Sant'Angelo": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+    "Castillo de Sant'Angelo": {
+      "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+      "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+    },
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere.",
     "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes.",
     "Trastevere": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador.",
@@ -81,13 +86,17 @@
     "Museos Capitolinos": "Los museos más antiguos del mundo, en la plaza de Miguel Ángel.",
     "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España.",
     "Bendición Urbi et Orbi": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles.",
-    "Columna de Trajano": "La columna que cuenta en espiral las guerras de Trajano."
+    "Columna de Trajano": "La columna que cuenta en espiral las guerras de Trajano.",
+    "Via della Conciliazione": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada.",
+    "Plaza Venecia": "La gran plaza a los pies del Altar de la Patria, con el Palazzo Venezia a un lado: el cruce de caminos del centro de Roma."
   },
   "por_dia": {
     "D3": {
       "Fontana de Trevi": {
-        "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
-        "temprano": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
+        "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00.",
+        "temprano": "A primera hora casi no hay nadie y puedes bajar hasta el agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour y estará llena.",
+        "temprano_antes": "09:00",
+        "cifra_ok": true
       },
       "Desayuno romano": "Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min.",
       "Museos Vaticanos y Capilla Sixtina": "Por la tarde hay menos cola que a media mañana: entras hacia las 14:30."
@@ -116,5 +125,16 @@
     }
   },
   "_gratis": "Cuando un sitio es de entrada libre (ticket_info 'Gratis.'), el texto puede decirlo si suma: 'y la entrada es gratis'. Nunca importes ni precios con cifra.",
-  "_temprano": "Si un texto es {texto, temprano}: 'temprano' se usa cuando la parada empieza antes de las 09:30; si no, 'texto'. Así un texto nunca dice 'a primera hora' cuando la ruta pone la parada a las 10:00 (tranquilo) o por la tarde (variantes de pool)."
+  "_temprano": "Si un texto es {texto, temprano}: 'temprano' se usa cuando la parada empieza antes de 'temprano_antes' (por defecto 09:30); si no, 'texto'. La Fontana de Trevi usa 09:00, que es cuando empieza la tasa de la zona de abajo.",
+  "trevi_ficha": {
+    "_para": "Ficha de la Fontana de Trevi, sección Horario (sustituye la línea de la tasa).",
+    "texto": "No es una entrada: la fuente se ve gratis desde la plaza a cualquier hora. Para bajar a la zona junto al agua hay una tasa de 2 € de 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, libre. Los residentes en Roma y los niños pequeños no pagan. Compruébalo en la web del Ayuntamiento.",
+    "cifra_ok": true,
+    "fuente": "comune.roma.it (Biglietto d'ingresso per visitare la Fontana di Trevi); romapop.it; statoquotidiano.it, febrero de 2026"
+  },
+  "trevi_noche": {
+    "_para": "Texto de la nocturna 'Fontana de Trevi (noche)' y del paseo 'La Roma de las fuentes'.",
+    "añadir": "A partir de las 22:00 puedes bajar junto al agua sin pagar."
+  },
+  "_por_fuera": "Si un texto es {texto, por_fuera}: 'por_fuera' se usa cuando la parada sale 'Por fuera' (un monumento que ese día no se visita por dentro); si no, 'texto'."
 }

@@ -36,6 +36,11 @@ const OUTSIDE_MINUTES = 15
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
 const MIRADOR_LATE_MINUTES = 30
+/** Lo que se ve desde el compañero (la Plaza Venecia desde el Altar): su propia línea, en un momento. */
+const SEEN_FROM_MINUTES = 5
+/** Lo que devuelve la parada que se estira para no perder el atardecer, y su mínimo (el callejeo por Trastevere). */
+const STRETCH_GIVE_BACK_MINUTES = 15
+const STRETCH_MIN_MINUTES = 20
 /** Un día con horario especial para lo que lleva (el Coliseo el 2 de junio): menos que un cierre, más que el orden. */
 const SPECIAL_HOURS_COST = 400
 /** Sin atardecer en la tarde: más que esto antes de cenar se lo llevan las paradas estirables (completo; tranquilo, 120). */
@@ -440,7 +445,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
       whyByPlace = new Map([...counts].map(([lugar, byText]) => [lugar, JSON.parse([...byText].sort((a, b) => b[1] - a[1])[0][0])]))
     }
-    return whyByPlace.get(name) ?? null
+    return whyByPlace.get(name) ?? destData.por_que_lugares?.[name] ?? null
   }
 
   function unitOf(stop, slot, index, dayId, day) {
@@ -455,7 +460,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // calle va de paso; lo que no, se salta.
     let closedSkip = false
     const closedToday = !source.isFreeTour && closedThatDay(stop.lugar, day)
-    if (closedToday) {
+    if (closedToday && stop.por_fuera) role = 'de_paso'
+    else if (closedToday) {
       if (source.level === 1 && (source.pass_by || source.type === 'exterior' || source.visible_from_outside)) role = 'de_paso'
       else if (source.type === 'exterior' || source.visible_from_outside) role = 'de_paso'
       else closedSkip = true
@@ -619,12 +625,68 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       return units
     }
     let units = [...build(sections.manana, 'manana'), ...build(sections.tarde, 'tarde')]
+    // Un monumento no va nunca escondido en el texto de otra parada (decisión del usuario, 2026-09-27): lo de su grupo
+    // que ese día no se visita (cerrado, no toca este viaje, el tope de museos de pago) y lo que un lugar tiene delante
+    // (`pass_by.includes`: la Plaza Venecia desde el Altar) sale en su propia línea, junto a su compañero: "Por fuera"
+    // con su motivo si es un monumento, "Por el camino" si no. Donde el día curado lo pone si lo nombra (el Castillo,
+    // antes del Puente); si no, justo después del compañero.
+    const groupOf = (name) => placeByName.get(name)?.group ?? null
+    const curatedOrder = [...sectionsOf(cfg).manana, ...sectionsOf(cfg).tarde, ...Object.values(cfg.variantes ?? {}).flatMap((variant) => [...(variant.manana ?? []), ...(variant.tarde_antes ?? []), ...(variant.tarde ?? [])])].map((stop) => stop.lugar)
+    /** Mete en `list` la línea propia de cada lugar de `wanted` (nombre → unidad del compañero). */
+    const withOutsideLines = (list, wanted) => {
+      for (let [name, host] of wanted) {
+        const hostName = host.places[0].name
+        const before = curatedOrder.indexOf(name) >= 0 && curatedOrder.indexOf(name) < curatedOrder.indexOf(hostName)
+        let unit = unitOf({ lugar: name, rol: 'de_paso', por_fuera: true }, host.slot, (host.curatedIndex ?? 0) % CURATED_AFTERNOON_OFFSET + (before ? -0.5 : 0.5), dayId, day)
+        if (!unit || unit.skipped) continue
+        // Se ve DESDE el compañero (la Plaza Venecia desde el Altar, el Castillo desde el Puente): desde su mismo punto
+        // y en un momento, sin andar. Antes o después de él según lo pone el día curado.
+        const from = before ? host.places[0] : host.places.at(-1)
+        unit = { ...unit, places: unit.places.map((place) => ({ ...place, coordinates: before ? from.coordinates : from.end_coordinates ?? from.coordinates, duration_minutes: Math.min(place.duration_minutes ?? SEEN_FROM_MINUTES, SEEN_FROM_MINUTES) })) }
+        // Esos minutos salen de la visita del compañero (se ve desde allí): el día no se alarga.
+        if ((from.duration_minutes ?? 0) > SEEN_FROM_MINUTES * 3) {
+          const shorter = { ...host, places: host.places.map((place) => (place === from ? { ...place, duration_minutes: place.duration_minutes - SEEN_FROM_MINUTES } : place)) }
+          list = list.map((other) => (other === host ? shorter : other))
+          for (const [other, otherHost] of wanted) if (otherHost === host) wanted.set(other, shorter)
+          host = shorter
+        }
+        unit = { ...unit, outsidePartner: true }
+        const at = list.indexOf(host)
+        if (at < 0) continue
+        list = [...list.slice(0, before ? at : at + 1), unit, ...list.slice(before ? at : at + 1)]
+      }
+      return list
+    }
+    {
+      const names = () => new Set(units.flatMap((unit) => unit.places.map((place) => place.name)))
+      const wanted = new Map()
+      for (const name of [...skipped.map(({ source }) => source?.name), ...(entry.notToday ?? [])]) {
+        if (!name || !groupOf(name) || names().has(name)) continue
+        const host = units.find((unit) => unit.places.some((place) => groupOf(place.name) === groupOf(name)))
+        if (host && !wanted.has(name)) wanted.set(name, host)
+      }
+      for (const unit of units) {
+        for (const place of unit.places) {
+          for (const name of placeByName.get(place.name)?.pass_by?.includes ?? []) {
+            if (groupOf(name) && groupOf(name) === groupOf(place.name) && !names().has(name) && !wanted.has(name)) wanted.set(name, unit)
+          }
+        }
+      }
+      units = withOutsideLines(units, wanted)
+    }
     // La comida en su barrio (los restaurantes que dice el día); la cena, en su barrio de cena.
     const named = new Set(sections.comida?.restaurantes ?? [])
     const spots = named.size > 0 ? allLunchSpots.filter((spot) => named.has(spot.name)) : allLunchSpots
     const dinner = dinnerOptions.find((zone) => zone.id === sections.cena?.barrio) ?? null
     const dinnerPoint = dinner?.coordinates ?? units.at(-1)?.places.at(-1)?.coordinates ?? null
     let result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+    // Si la línea propia de lo de su grupo no cabe (se come la franja de la comida), fuera: se queda nombrado en su
+    // compañero, como antes.
+    const lostPartners = new Set(result.dropped.filter(({ unit }) => unit.outsidePartner).map(({ unit }) => unit.id))
+    if (lostPartners.size > 0) {
+      units = units.filter((unit) => !lostPartners.has(unit.id))
+      result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+    }
 
     // Lo que solo entra si está abierto al llegar (`si_abre`): si cierra o hay que esperar más de 30 min, fuera.
     const waitsToOpen = (candidate) => candidate.visits.filter((visit, index) => {
@@ -652,8 +714,23 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       units = units.map((unit) => (ids.has(unit.id) ? { ...unit, role: 'parada', places: unit.places.map(({ sunset, ...place }) => place) } : unit))
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     }
+    // Antes de dar el atardecer por perdido, la parada que se estira (el callejeo por Trastevere) devuelve tiempo: 15 o
+    // 30 min, nunca por debajo de 20. Así cabe lo que va de camino (Via della Conciliazione) sin perder el sol.
+    let missed = result.dropped.filter(({ unit, reason }) => unit.role === 'atardecer' && reason === 'missed_sunset')
+    if (missed.length > 0 && units.some((unit) => unit.stretch)) {
+      for (const cut of [STRETCH_GIVE_BACK_MINUTES, STRETCH_GIVE_BACK_MINUTES * 2]) {
+        const list = units.map((unit) => (unit.stretch ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: Math.max(STRETCH_MIN_MINUTES, (place.duration_minutes ?? 30) - cut) } : place)) } : unit))
+        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
+        if (keepsAll && trial.visits.some((visit) => visit.place.sunset != null)) {
+          units = list
+          result = trial
+          missed = []
+          break
+        }
+      }
+    }
     // El mirador que no llega a su atardecer (se llega de noche): en su sitio, como vistas de Roma iluminada.
-    const missed = result.dropped.filter(({ unit, reason }) => unit.role === 'atardecer' && reason === 'missed_sunset')
     if (missed.length > 0) {
       units = units.map((unit) => (missed.some(({ unit: other }) => other.id === unit.id) ? { ...unit, role: 'parada', places: unit.places.map(({ sunset, ...place }) => ({ ...place, nightView: true })) } : unit))
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
@@ -783,6 +860,42 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         }
       }
     }
+    // Lo que no ha llegado a su hora y tiene a su compañero de grupo en el día (el Castillo sin tiempo, el Puente): en
+    // su propia línea, visto desde él, si así cabe sin perder nada. Si era una visita de verdad, sigue en "No te dio
+    // tiempo" (por dentro no se ha visto).
+    {
+      const droppedUnits = result.dropped.filter(({ unit }) => unit.role !== 'de_paso' && !unit.outsidePartner && !unit.places.some((place) => place.isFreeTour))
+      const wanted = new Map()
+      for (const { unit } of droppedUnits) {
+        for (const place of unit.places) {
+          const hostVisit = result.visits.find((visit) => visit.place.name !== place.name && groupOf(visit.place.name) && groupOf(visit.place.name) === groupOf(place.name))
+          const host = hostVisit ? units.find((other) => other.id === hostVisit.unitId) : null
+          if (host && !wanted.has(place.name)) wanted.set(place.name, host)
+        }
+      }
+      if (wanted.size > 0) {
+        const dropIds = new Set(droppedUnits.filter(({ unit }) => unit.places.some((place) => wanted.has(place.name))).map(({ unit }) => unit.id))
+        let list = withOutsideLines(units.filter((unit) => !dropIds.has(unit.id)), new Map(wanted))
+        let trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        const hadSunset = result.visits.some((visit) => visit.place.sunset != null)
+        // Si así se pierde el atardecer, la parada que se estira (Trastevere) devuelve 15 min, nunca por debajo de 20.
+        if (hadSunset && !trial.visits.some((visit) => visit.place.sunset != null) && list.some((unit) => unit.stretch)) {
+          list = list.map((unit) => (unit.stretch ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: Math.max(STRETCH_MIN_MINUTES, (place.duration_minutes ?? 30) - STRETCH_GIVE_BACK_MINUTES) } : place)) } : unit))
+          trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        }
+        const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
+        const shown = [...wanted.keys()].every((name) => trial.visits.some((visit) => visit.place.name === name))
+        if (keepsAll && shown && trial.visits.some((visit) => visit.place.sunset != null) === hadSunset) {
+          for (const name of wanted.keys()) {
+            if (placeByName.get(name)?.type !== 'interior') continue
+            notEnoughTime.add(name)
+            if (!notEnoughDay.has(name)) notEnoughDay.set(name, day.dayNumber)
+          }
+          units = list
+          result = trial
+        }
+      }
+    }
     // Lo de su grupo que se ha saltado por cierre (el Castillo el lunes) o que no toca este viaje (sin pool) se ve
     // por fuera desde el compañero; y lo que un lugar visitado tiene delante (`pass_by.includes`: la Plaza Venecia
     // desde el Altar), también: los pares inseparables no se parten.
@@ -794,7 +907,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // (Y lo que no ha llegado a su hora: el Castillo que no cabe se ve igual desde el Puente.)
     const droppedPlaces = result.dropped.filter(({ unit }) => unit.role !== 'de_paso').flatMap(({ unit }) => unit.places.map((place) => placeByName.get(place.name))).filter(Boolean)
     for (const source of [...skipped.map(({ source }) => source), ...(entry.notToday ?? []).map((name) => placeByName.get(name)).filter(Boolean), ...droppedPlaces]) {
-      if (!source.group) continue
+      // (Lo que ya sale en su propia línea, no: "El Castillo, visto por fuera" no va además dentro del Puente.)
+      if (!source.group || result.visits.some((visit) => visit.place.name === source.name)) continue
       const partner = result.visits.find((visit) => placeByName.get(visit.place.name)?.group === source.group)
       if (partner) partner.place = { ...partner.place, outsideOf: [...new Set([...(partner.place.outsideOf ?? []), source.name])] }
     }

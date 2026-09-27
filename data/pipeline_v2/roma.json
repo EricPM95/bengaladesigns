@@ -57,7 +57,7 @@
     {
       "name": "Fontana de Trevi (noche)",
       "duration": 45,
-      "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
+      "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma. A partir de las 22:00 puedes bajar junto al agua sin pagar.",
       "coordinates": [
         41.9009,
         12.4833
@@ -8163,8 +8163,8 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -8511,6 +8511,13 @@
           "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
         },
         {
+          "lugar": "Via della Conciliazione",
+          "rol": "de_paso",
+          "minutos": 10,
+          "nota": "De San Pedro al Castillo: el camino del viajero.",
+          "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+        },
+        {
           "lugar": "Castillo de Sant'Angelo",
           "rol": "parada",
           "pago": true,
@@ -8523,7 +8530,10 @@
               "min_dias": 5
             }
           ],
-          "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+          "por_que": {
+            "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+            "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+          }
         },
         {
           "lugar": "Puente Sant'Angelo",
@@ -8576,6 +8586,13 @@
               "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
             },
             {
+              "lugar": "Via della Conciliazione",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "De San Pedro al Castillo: el camino del viajero.",
+              "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
@@ -8588,7 +8605,10 @@
                   "min_dias": 5
                 }
               ],
-              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+              "por_que": {
+                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+              }
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8636,6 +8656,13 @@
                 "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
               },
               {
+                "lugar": "Via della Conciliazione",
+                "rol": "de_paso",
+                "minutos": 10,
+                "nota": "De San Pedro al Castillo: el camino del viajero.",
+                "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+              },
+              {
                 "lugar": "Castillo de Sant'Angelo",
                 "rol": "parada",
                 "pago": true,
@@ -8648,7 +8675,10 @@
                     "min_dias": 5
                   }
                 ],
-                "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+                "por_que": {
+                  "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                  "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+                }
               },
               {
                 "lugar": "Puente Sant'Angelo",
@@ -8712,13 +8742,23 @@
               "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
+              "lugar": "Via della Conciliazione",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "De San Pedro al Castillo: el camino del viajero.",
+              "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
               "solo": {
                 "pool": true
               },
-              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+              "por_que": {
+                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+              }
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8751,13 +8791,23 @@
               "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
+              "lugar": "Via della Conciliazione",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "De San Pedro al Castillo: el camino del viajero.",
+              "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
               "solo": {
                 "pool": true
               },
-              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+              "por_que": {
+                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+              }
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8834,6 +8884,13 @@
               "por_que": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies."
             },
             {
+              "lugar": "Via della Conciliazione",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "De San Pedro al Castillo: el camino del viajero.",
+              "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
@@ -8846,7 +8903,10 @@
                   "min_dias": 5
                 }
               ],
-              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+              "por_que": {
+                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+              }
             }
           ],
           "aviso_fecha": {
@@ -8875,11 +8935,21 @@
               "por_que": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies."
             },
             {
+              "lugar": "Via della Conciliazione",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "De San Pedro al Castillo: el camino del viajero.",
+              "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
               "nota": "Si abre ese día.",
-              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
+              "por_que": {
+                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+              }
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8993,8 +9063,8 @@
           },
           "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-            "temprano": "A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena.",
+            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00.",
+            "temprano": "A primera hora casi no hay nadie y puedes bajar hasta el agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour y estará llena.",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9342,8 +9412,8 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9463,8 +9533,8 @@
               "hora": "08:00",
               "nota": "A las 08:00, sin gente.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -9694,8 +9764,8 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -9751,8 +9821,8 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9879,8 +9949,8 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
-                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
+                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -10461,9 +10531,8 @@
           "Plaza de España (noche)"
         ]
       },
-      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
-      "maximo_tranquilo": 2,
-      "cifra_ok": true
+      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. A partir de las 22:00 puedes bajar junto al agua sin pagar.",
+      "maximo_tranquilo": 2
     },
     "trastevere": {
       "nombre": "Trastevere de noche",
@@ -11021,5 +11090,94 @@
         "fuente": "Programa a confirmar cada año en comune.roma.it"
       }
     ]
+  },
+  "por_que_lugares": {
+    "Coliseo": {
+      "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+      "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+    },
+    "Arco de Constantino": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro.",
+    "Foro Romano y Palatino": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día.",
+    "Plaza del Campidoglio": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies.",
+    "Altar de la Patria": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
+    "Barrio Judío": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía.",
+    "Fuente de las Tortugas": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto.",
+    "Largo di Torre Argentina": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos.",
+    "Panteón": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie.",
+    "Elefantino de Bernini": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón.",
+    "Iglesia de Santa Maria sopra Minerva": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel.",
+    "Iglesia de San Luigi dei Francesi": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así.",
+    "Piazza Navona": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini.",
+    "Campo de' Fiori": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar.",
+    "Plaza Farnese": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas.",
+    "Fontana de Trevi": {
+      "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
+      "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+      "temprano_antes": "09:00",
+      "cifra_ok": true
+    },
+    "Desayuno romano": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día.",
+    "Iglesia de San Ignacio de Loyola": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás.",
+    "Plaza Colonna": "La columna de Marco Aurelio, delante del palacio del Gobierno.",
+    "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata.",
+    "Plaza de España": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti.",
+    "Santa Maria del Popolo": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
+    "Piazza del Popolo": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas.",
+    "Terraza del Pincio": "Roma desde arriba, sobre la Piazza del Popolo.",
+    "Galería Borghese": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva.",
+    "Parque de Villa Borghese": "El gran parque de Roma: el lago con su templete, y barca o bici si te apetece.",
+    "Museos Vaticanos y Capilla Sixtina": {
+      "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+      "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+    },
+    "Plaza de San Pedro": "La plaza de Bernini, con las columnas que abrazan a los peregrinos.",
+    "Basílica de San Pedro": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
+    "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies.",
+    "Borgo Pio": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre.",
+    "Castillo de Sant'Angelo": {
+      "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
+      "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
+    },
+    "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere.",
+    "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes.",
+    "Trastevere": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador.",
+    "San Pietro in Montorio y Tempietto de Bramante": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis.",
+    "Fontana dell'Acqua Paola": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante.",
+    "Mirador del Janículo": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo.",
+    "Isla Tiberina": "La única isla del Tíber, con el puente romano más antiguo que sigue en pie.",
+    "Basílica de Santa Cecilia in Trastevere": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30.",
+    "Teatro de Marcelo": "Parece un Coliseo pequeño: un teatro romano con casas construidas encima.",
+    "Termas de Caracalla": {
+      "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+      "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+    },
+    "Circo Máximo": "Donde corrían los carros romanos, con el Palatino delante.",
+    "Boca de la Verdad": {
+      "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+      "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+    },
+    "Jardín de los Naranjos": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas.",
+    "Ojo de la Cerradura del Aventino": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada.",
+    "Pirámide Cestia": "Una pirámide romana de verdad, pegada a la muralla.",
+    "Cementerio Protestante": "Un cementerio jardín, precioso y tranquilo, donde descansan Keats y Shelley.",
+    "Testaccio": "El barrio más romano de Roma: aquí comen los de aquí. Baja callejeando hasta el mercado.",
+    "Catacumbas de San Calixto": "Las catacumbas más importantes de Roma, con visita guiada de unos 45 min.",
+    "Via Appia Antica": "La calzada romana con sus losas originales, entre pinos y tumbas. A pie o en bici, hasta la tumba de Cecilia Metella.",
+    "Iglesia de Santa Maria della Vittoria": "El Éxtasis de Santa Teresa de Bernini, gratis y casi siempre sin gente. Una obra maestra que muchos se pierden.",
+    "Fuente del Tritón": "La fuente de Bernini en la Plaza Barberini.",
+    "Basílica de Santa María la Mayor": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V. Entrar es gratis.",
+    "Iglesia de San Pietro in Vincoli": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti.",
+    "Monti": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti.",
+    "Via dei Fori Imperiali": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo.",
+    "Basílica de San Clemente": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada.",
+    "Basílica de San Juan de Letrán": "La catedral de Roma, más antigua que San Pedro, y con entrada gratis.",
+    "Ara Pacis": "El altar de la paz de Augusto, en un edificio moderno junto al Tíber.",
+    "Mercados de Trajano": "El centro comercial de la Roma imperial, con vistas a los Foros.",
+    "Museos Capitolinos": "Los museos más antiguos del mundo, en la plaza de Miguel Ángel.",
+    "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España.",
+    "Bendición Urbi et Orbi": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles.",
+    "Columna de Trajano": "La columna que cuenta en espiral las guerras de Trajano.",
+    "Via della Conciliazione": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada.",
+    "Plaza Venecia": "La gran plaza a los pies del Altar de la Patria, con el Palazzo Venezia a un lado: el cruce de caminos del centro de Roma."
   }
 }

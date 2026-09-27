@@ -59,7 +59,8 @@ function quarterHourStops(stops) {
     const rounded = duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes
     // "Por el camino" dura 10 min como mucho: el sobrante del redondeo no se mete ahí, se queda esperando la hora de
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
-    const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.outside && !stop.instead_of_visit
+    // (Y un monumento "Por fuera" en su propia línea, que se ve desde su compañero: tampoco se rellena.)
+    const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.instead_of_visit
     return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : rounded }
   })
 }
@@ -344,8 +345,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // "Por qué aquí" curado de la parada (`por_que` del día curado): manda sobre el texto genérico, que solo queda
     // de reserva. Salvo el mirador que llega de noche, que se cuenta como la ciudad iluminada (A.1).
+    // Un monumento por fuera usa su `por_fuera` si lo trae (el Castillo: "Hoy lo ves por fuera para llegar al
+    // atardecer del Janículo…").
     if (visit.place.curatedWhy && !stop.night_view) {
-      stop.why = curatedWhyAt(visit.place.curatedWhy, visit.start)
+      const why = visit.place.curatedWhy
+      stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : curatedWhyAt(why, visit.start)
       stop.why_source = 'curado'
     }
     // Dónde acaba lo que no acaba donde empieza (el Free Tour, en Piazza Navona): el tramo siguiente sale de ahí.
