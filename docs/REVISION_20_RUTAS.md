@@ -9,33 +9,37 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ## Índice
 
-| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza |
-|---|---|---|---|---|---|---|
-| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 24 abr 2027 · domingo Vaticano cerrado + 25 de abril |
-| [2](#ruta-2) | 2 | completo | sí | sin experiencias | — | sábado 26 jun 2027 |
-| [3](#ruta-3) | 3 | completo | no | Arte | — | viernes 26 mar 2027 · Pascua el domingo 28 |
-| [4](#ruta-4) | 3 | completo | no | sin experiencias | — | sábado 17 jul 2027 · verano |
-| [5](#ruta-5) | 3 | completo | sí | Barrios | — | sábado 9 oct 2027 |
-| [6](#ruta-6) | 3 | completo | no | Naturaleza | Castillo de Sant'Angelo | lunes 28 jun 2027 · Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro |
-| [7](#ruta-7) | 4 | completo | no | sin experiencias | — | viernes 30 abr 2027 · 1 de mayo |
-| [8](#ruta-8) | 4 | completo | sí | Arte | — | sábado 4 dic 2027 · invierno, domingo |
-| [9](#ruta-9) | 4 | completo | no | Barrios | — | lunes 1 nov 2027 · Todos los Santos, lunes |
-| [10](#ruta-10) | 4 | completo | no | sin experiencias | — | viernes 24 dic 2027 · Navidad |
-| [11](#ruta-11) | 5 | completo | no | sin experiencias | — | sábado 22 may 2027 · 26 may: audiencia papal (miércoles por la mañana) |
-| [12](#ruta-12) | 5 | completo | sí | Naturaleza | — | sábado 18 sep 2027 · 22 sep: audiencia papal (miércoles por la mañana) |
-| [13](#ruta-13) | 3 | completo | no | sin experiencias | — | miércoles 2 jun 2027 · Fiesta de la República + audiencia papal |
-| [14](#ruta-14) | 2 | completo | no | Arte | Galería Borghese | domingo 26 sep 2027 · domingo + lunes con la Galería cerrada |
-| [15](#ruta-15) | 4 | completo | sí | sin experiencias | — | viernes 13 ago 2027 · Ferragosto |
-| [16](#ruta-16) | 2 | tranquilo | no | sin experiencias | — | sábado 16 ene 2027 |
-| [17](#ruta-17) | 3 | tranquilo | sí | sin experiencias | — | sábado 13 feb 2027 |
-| [18](#ruta-18) | 3 | tranquilo | no | Barrios | — | sábado 23 oct 2027 |
-| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada |
-| [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | Galería Borghese | sábado 20 nov 2027 |
+| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
+|---|---|---|---|---|---|---|---|
+| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 24 abr 2027 · domingo Vaticano cerrado + 25 de abril | Domingo 25 de abril · Museos Vaticanos |
+| [2](#ruta-2) | 2 | completo | sí | sin experiencias | — | sábado 26 jun 2027 | Domingo 27 de junio · Museos Vaticanos |
+| [3](#ruta-3) | 3 | completo | no | Arte | — | viernes 26 mar 2027 · Pascua el domingo 28 | Domingo 28 de marzo · Museos Vaticanos |
+| [4](#ruta-4) | 3 | completo | no | sin experiencias | — | sábado 17 jul 2027 · verano | Sábado 17 de julio · Misa en el Panteón · Domingo 18 de julio · Museos Vaticanos |
+| [5](#ruta-5) | 3 | completo | sí | Barrios | — | sábado 9 oct 2027 | Domingo 10 de octubre · Museos Vaticanos |
+| [6](#ruta-6) | 3 | completo | no | Naturaleza | Castillo de Sant'Angelo | lunes 28 jun 2027 · Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro | Lunes 28 de junio · Castillo de Sant'Angelo · Martes 29 de junio · Museos Vaticanos · Miércoles 30 de junio · Audiencia papal |
+| [7](#ruta-7) | 4 | completo | no | sin experiencias | — | viernes 30 abr 2027 · 1 de mayo | Sábado 1 de mayo · Museos Vaticanos |
+| [8](#ruta-8) | 4 | completo | sí | Arte | — | sábado 4 dic 2027 · invierno, domingo | Domingo 5 de diciembre · Museos Vaticanos |
+| [9](#ruta-9) | 4 | completo | no | Barrios | — | lunes 1 nov 2027 · Todos los Santos, lunes | — |
+| [10](#ruta-10) | 4 | completo | no | sin experiencias | — | viernes 24 dic 2027 · Navidad | Navidad en Roma |
+| [11](#ruta-11) | 5 | completo | no | sin experiencias | — | sábado 22 may 2027 · 26 may: audiencia papal (miércoles por la mañana) | Sábado 22 de mayo · Misa en el Panteón · Domingo 23 de mayo · Museos Vaticanos |
+| [12](#ruta-12) | 5 | completo | sí | Naturaleza | — | sábado 18 sep 2027 · 22 sep: audiencia papal (miércoles por la mañana) | Domingo 19 de septiembre · Museos Vaticanos |
+| [13](#ruta-13) | 3 | completo | no | sin experiencias | — | miércoles 2 jun 2027 · Fiesta de la República + audiencia papal | 2 de junio · Fiesta de la República |
+| [14](#ruta-14) | 2 | completo | no | Arte | Galería Borghese | domingo 26 sep 2027 · domingo + lunes con la Galería cerrada | Domingo 26 de septiembre · Museos Vaticanos |
+| [15](#ruta-15) | 4 | completo | sí | sin experiencias | — | viernes 13 ago 2027 · Ferragosto | Ferragosto |
+| [16](#ruta-16) | 2 | tranquilo | no | sin experiencias | — | sábado 16 ene 2027 | Domingo 17 de enero · Museos Vaticanos |
+| [17](#ruta-17) | 3 | tranquilo | sí | sin experiencias | — | sábado 13 feb 2027 | Domingo 14 de febrero · Museos Vaticanos |
+| [18](#ruta-18) | 3 | tranquilo | no | Barrios | — | sábado 23 oct 2027 | Sábado 23 de octubre · Misa en el Panteón · Domingo 24 de octubre · Museos Vaticanos |
+| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada | — |
+| [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | Galería Borghese | sábado 20 nov 2027 | Domingo 21 de noviembre · Museos Vaticanos |
 
 <a id="ruta-1"></a>
 ## 1. 2 días · completo · sin Free Tour · sin experiencias · desde el sábado 24 abr 2027
 
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 25 de abril · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 2
+  - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 24.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
@@ -60,7 +64,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**domingo 25 abr 2027** · 🎉 Fiesta de la Liberación · 🌅 atardecer 20:02 · día curado D1
+**domingo 25 abr 2027** · 🎉 Fiesta de la Liberación · 🏷️ Último domingo de mes · 🌅 atardecer 20:02 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -91,6 +95,10 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 27 de junio · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 2
+  - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 26.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **sábado 26 jun 2027** · 🌅 atardecer 20:49 · día curado D3
@@ -110,7 +118,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
-**domingo 27 jun 2027** · 🌅 atardecer 20:49 · día curado D1-FT
+**domingo 27 jun 2027** · 🏷️ Último domingo de mes · 🌅 atardecer 20:49 · día curado D1-FT
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -136,6 +144,10 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 <a id="ruta-3"></a>
 ## 3. 3 días · completo · sin Free Tour · Arte · desde el viernes 26 mar 2027
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 28 de marzo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 27 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -185,7 +197,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 3 — Trevi sin gente, el Popolo y la Borghese
 
-**domingo 28 mar 2027** · 🎉 Domingo de Pascua · 🌅 atardecer 19:31 · día curado D4 (domingo)
+**domingo 28 mar 2027** · 🎉 Domingo de Pascua · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 19:31 · día curado D4 (domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -210,9 +222,15 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 <a id="ruta-4"></a>
 ## 4. 3 días · completo · sin Free Tour · sin experiencias · desde el sábado 17 jul 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Sábado 17 de julio · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 1
+  - El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
+- **Domingo 18 de julio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el lunes 19 para que no los pierdas.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**sábado 17 jul 2027** · 🌅 atardecer 20:43 · día curado D1 (sabado)
+**sábado 17 jul 2027** · 🏷️ Misa en el Panteón · 🌅 atardecer 20:43 · día curado D1 (sabado)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -238,7 +256,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**domingo 18 jul 2027** · 🌅 atardecer 20:42 · día curado D4M (domingo)
+**domingo 18 jul 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:42 · día curado D4M (domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -285,6 +303,10 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 <a id="ruta-5"></a>
 ## 5. 3 días · completo · Free Tour · Barrios · desde el sábado 9 oct 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 10 de octubre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 9 para que no los pierdas.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **sábado 9 oct 2027** · 🌅 atardecer 18:39 · día curado D3
@@ -304,7 +326,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
-**domingo 10 oct 2027** · 🌅 atardecer 18:37 · día curado D1-FT
+**domingo 10 oct 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 18:37 · día curado D1-FT
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -352,9 +374,17 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 <a id="ruta-6"></a>
 ## 6. 3 días · completo · sin Free Tour · Naturaleza · pool: Castillo de Sant'Angelo · desde el lunes 28 jun 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Lunes 28 de junio · Castillo de Sant'Angelo** · etiqueta «Castillo de Sant'Angelo cerrado» en el día 1
+  - Los lunes el Castillo de Sant'Angelo cierra. Hemos puesto tu visita el miércoles 30 para que no lo pierdas.
+- **Martes 29 de junio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - El 29 de junio los Museos Vaticanos cierran por San Pedro y San Pablo. Hemos puesto tu visita el miércoles 30 para que no los pierdas.
+- **Miércoles 30 de junio · Audiencia papal** · etiqueta «Audiencia papal» en el día 3
+  - Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**lunes 28 jun 2027** · 🌅 atardecer 20:49 · día curado D1
+**lunes 28 jun 2027** · 🏷️ Castillo de Sant'Angelo cerrado · 🌅 atardecer 20:49 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -380,7 +410,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**martes 29 jun 2027** · 🎉 San Pedro y San Pablo (patrón de Roma) · 🌅 atardecer 20:49 · día curado D4M
+**martes 29 jun 2027** · 🎉 San Pedro y San Pablo (patrón de Roma) · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:49 · día curado D4M
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -405,7 +435,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 3 — Vaticano, Castillo y Trastevere al atardecer
 
-**miércoles 30 jun 2027** · 🎉 audiencia papal (miércoles por la mañana) · 🌅 atardecer 20:49 · día curado D2 (miercoles)
+**miércoles 30 jun 2027** · 🎉 audiencia papal (miércoles por la mañana) · 🏷️ Audiencia papal · 🌅 atardecer 20:49 · día curado D2 (miercoles)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -430,6 +460,10 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 <a id="ruta-7"></a>
 ## 7. 4 días · completo · sin Free Tour · sin experiencias · desde el viernes 30 abr 2027
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Sábado 1 de mayo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - El 1 de mayo los Museos Vaticanos cierran por el Día del Trabajo. Hemos puesto tu visita el lunes 3 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -458,7 +492,7 @@ Motor v3 con los días curados, generado el 2026-09-27 con `node scripts/destino
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
-**sábado 1 may 2027** · 🎉 Día del Trabajo · 🌅 atardecer 20:08 · día curado D4
+**sábado 1 may 2027** · 🎉 Día del Trabajo · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:08 · día curado D4
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -510,6 +544,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 16:45 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 5 de diciembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 4 para que no los pierdas.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **sábado 4 dic 2027** · 🌅 atardecer 16:39 · día curado D3
@@ -529,7 +567,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
-**domingo 5 dic 2027** · 🌅 atardecer 16:39 · día curado D1-FT (invierno)
+**domingo 5 dic 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 16:39 · día curado D1-FT (invierno)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -579,6 +617,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ## 9. 4 días · completo · sin Free Tour · Barrios · desde el lunes 1 nov 2027
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 17:15 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
+
+**Avisos de fechas** (ventana al entrar en la ruta): ninguno.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -663,9 +703,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 16:45 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Navidad en Roma** · etiqueta «Navidad en Roma» en el día 1
+  - El 25 de diciembre el Coliseo y el Panteón cierran por Navidad. Hemos puesto tu visita el viernes 24 para que no los pierdas.
+  - El 25 de diciembre los Museos Vaticanos cierran por Navidad. Hemos puesto tu visita el lunes 27 para que no los pierdas.
+  - Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Piazza Navona. El 25 cierran el Coliseo, el Foro, el Panteón y el Vaticano. Hemos preparado tu ruta para esos días.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**viernes 24 dic 2027** · 🎉 Nochebuena · 🌅 atardecer 16:43 · día curado D1
+**viernes 24 dic 2027** · 🎉 Nochebuena · 🏷️ Navidad en Roma · 🌅 atardecer 16:43 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -744,9 +790,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-11"></a>
 ## 11. 5 días · completo · sin Free Tour · sin experiencias · desde el sábado 22 may 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Sábado 22 de mayo · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 1
+  - El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
+- **Domingo 23 de mayo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el lunes 24 para que no los pierdas.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**sábado 22 may 2027** · 🌅 atardecer 20:30 · día curado D1 (sabado)
+**sábado 22 may 2027** · 🏷️ Misa en el Panteón · 🌅 atardecer 20:30 · día curado D1 (sabado)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -771,7 +823,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
-**domingo 23 may 2027** · 🌅 atardecer 20:31 · día curado D4 (domingo)
+**domingo 23 may 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 20:31 · día curado D4 (domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -842,6 +894,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-12"></a>
 ## 12. 5 días · completo · Free Tour · Naturaleza · desde el sábado 18 sep 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 19 de septiembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 18 para que no los pierdas.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **sábado 18 sep 2027** · 🌅 atardecer 19:15 · día curado D3
@@ -861,7 +917,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
-**domingo 19 sep 2027** · 🌅 atardecer 19:13 · día curado D4 (con_free_tour, domingo)
+**domingo 19 sep 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 19:13 · día curado D4 (con_free_tour, domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -931,9 +987,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-13"></a>
 ## 13. 3 días · completo · sin Free Tour · sin experiencias · desde el miércoles 2 jun 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **2 de junio · Fiesta de la República** · etiqueta «Fiesta de la República» en el día 1
+  - Por la mañana hay un desfile militar en Via dei Fori Imperiali y las Frecce Tricolori pintan el cielo con la bandera. Hemos preparado tu ruta para que puedas verlo.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**miércoles 2 jun 2027** · 🎉 Fiesta de la República · 🌅 atardecer 20:39 · día curado D1
+**miércoles 2 jun 2027** · 🎉 Fiesta de la República · 🏷️ Fiesta de la República · 🌅 atardecer 20:39 · día curado D1
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1010,9 +1070,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 26 de septiembre · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 1
+  - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el lunes 27.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**domingo 26 sep 2027** · 🌅 atardecer 19:01 · día curado D1 (pool_borghese)
+**domingo 26 sep 2027** · 🏷️ Último domingo de mes · 🌅 atardecer 19:01 · día curado D1 (pool_borghese)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1055,6 +1119,11 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-15"></a>
 ## 15. 4 días · completo · Free Tour · sin experiencias · desde el viernes 13 ago 2027
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Ferragosto** · etiqueta «Ferragosto» en el día 2
+  - El 14 de agosto los Museos Vaticanos cierran por Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
+  - Mitad de agosto: los romanos se van a la playa y Roma está más tranquila que nunca, aunque algunos restaurantes cierran por vacaciones. Hemos preparado tu ruta con lo que abre estos días.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **viernes 13 ago 2027** · 🌅 atardecer 20:14 · día curado D3
@@ -1074,7 +1143,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Popolo y la Borghese
 
-**sábado 14 ago 2027** · 🌅 atardecer 20:12 · día curado D4 (con_free_tour)
+**sábado 14 ago 2027** · 🏷️ Ferragosto · 🌅 atardecer 20:12 · día curado D4 (con_free_tour)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1126,6 +1195,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: 2 días en Roma en invierno son un reto: los días son cortos y muchos monumentos cierran pronto. Lo hemos organizado para que veas lo máximo posible sin carreras: lo imprescindible primero y los paseos cuando cae la tarde. Si prefieres otro plan, cambia cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 17 de enero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 16 para que no los pierdas.
+
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
 **sábado 16 ene 2027** · 🌅 atardecer 17:05 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
@@ -1145,7 +1218,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**domingo 17 ene 2027** · 🌅 atardecer 17:06 · día curado D1 (tranquilo)
+**domingo 17 ene 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 17:06 · día curado D1 (tranquilo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1171,6 +1244,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 17:45 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 14 de febrero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 13 para que no los pierdas.
+
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
 **sábado 13 feb 2027** · 🌅 atardecer 17:40 · día curado D3
@@ -1190,7 +1267,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
-**domingo 14 feb 2027** · 🌅 atardecer 17:41 · día curado D1-FT (invierno, tranquilo)
+**domingo 14 feb 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 17:41 · día curado D1-FT (invierno, tranquilo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1234,9 +1311,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas. Solo 1 día empieza antes, para que no te quedes sin ver el Panteón.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Sábado 23 de octubre · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 1
+  - El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
+- **Domingo 24 de octubre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el lunes 25 para que no los pierdas.
+
 ### Día 1 — Roma Antigua y el centro barroco
 
-**sábado 23 oct 2027** · 🌅 atardecer 18:17 · día curado D1 (tranquilo, sabado, tranquilo_sabado)
+**sábado 23 oct 2027** · 🏷️ Misa en el Panteón · 🌅 atardecer 18:17 · día curado D1 (tranquilo, sabado, tranquilo_sabado)
 
 - ⚠️ Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las 09:30: así te da tiempo a ver el Panteón sin prisas. El resto del día sigue a tu ritmo.
 
@@ -1257,7 +1340,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**domingo 24 oct 2027** · 🌅 atardecer 18:16 · día curado D4M (tranquilo, domingo)
+**domingo 24 oct 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 18:16 · día curado D4M (tranquilo, domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1298,6 +1381,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ## 19. 4 días · tranquilo · sin Free Tour · sin experiencias · desde el lunes 6 dic 2027
 
 > **Banner del viaje**: En invierno Roma madruga y cierra pronto: anochece antes de las 16:45 y lugares como el Coliseo cierran a las 16:30. Hemos ajustado tu ruta para que aproveches cada hora de luz y no te pierdas nada importante: lo mejor va primero. ¿Te apetece otro plan? Cambia cualquier parada desde los tres puntos.
+
+**Avisos de fechas** (ventana al entrar en la ruta): ninguno.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -1367,6 +1452,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 > **Banner del viaje**: 2 días en Roma en invierno son un reto: los días son cortos y muchos monumentos cierran pronto. Lo hemos organizado para que veas lo máximo posible sin carreras: lo imprescindible primero y los paseos cuando cae la tarde. Si prefieres otro plan, cambia cualquier parada desde los tres puntos.
 
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 21 de noviembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 20 para que no los pierdas.
+
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
 **sábado 20 nov 2027** · 🌅 atardecer 16:46 · día curado D2 (invierno, tranquilo, tranquilo_invierno)
@@ -1386,7 +1475,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**domingo 21 nov 2027** · 🌅 atardecer 16:45 · día curado D1 (tranquilo, pool_borghese)
+**domingo 21 nov 2027** · 🏷️ Museos Vaticanos cerrados · 🌅 atardecer 16:45 · día curado D1 (tranquilo, pool_borghese)
 
 - ⚠️ Hoy la comida es más corta para que te dé tiempo a ver la Galería Borghese
 

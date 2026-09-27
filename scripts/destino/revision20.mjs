@@ -115,7 +115,8 @@ for (const [index, viaje] of VIAJES.entries()) {
   const expTexto = viaje.exps.length ? viaje.exps.map((e) => EXP[e]).join(' + ') : 'sin experiencias'
   const festivosViaje = Array.from({ length: viaje.dias }, (_, i) => addDays(viaje.fecha, i)).map((iso) => [iso, festivo(iso)]).filter(([, f]) => f)
   const notaFecha = viaje.nota ?? festivosViaje.map(([iso, f]) => `${fechaDe(iso).getUTCDate()} ${MESES[fechaDe(iso).getUTCMonth()]}: ${f}`).join('; ')
-  indice.push(`| [${numero}](#ruta-${numero}) | ${viaje.dias} | ${viaje.ritmo} | ${viaje.ft ? 'sí' : 'no'} | ${expTexto} | ${pool.length ? pool.join(', ') : '—'} | ${fechaLarga(viaje.fecha)}${notaFecha ? ` · ${notaFecha}` : ''} |`)
+  const filaIndice = (avisos) => `| [${numero}](#ruta-${numero}) | ${viaje.dias} | ${viaje.ritmo} | ${viaje.ft ? 'sí' : 'no'} | ${expTexto} | ${pool.length ? pool.join(', ') : '—'} | ${fechaLarga(viaje.fecha)}${notaFecha ? ` · ${notaFecha}` : ''} | ${avisos} |`
+  const indiceAt = indice.push(filaIndice('')) - 1
 
   out.push(`<a id="ruta-${numero}"></a>`)
   out.push(`## ${numero}. ${viaje.dias} días · ${viaje.ritmo} · ${viaje.ft ? 'Free Tour' : 'sin Free Tour'} · ${expTexto}${pool.length ? ` · pool: ${pool.join(', ')}` : ''} · desde el ${fechaLarga(viaje.fecha)}`)
@@ -128,6 +129,15 @@ for (const [index, viaje] of VIAJES.entries()) {
   }
   const banner = days.find((day) => day?.context_banner)?.context_banner
   if (banner) out.push(`> **Banner del viaje**: ${cell(banner)}`, '')
+  // Los avisos de fechas especiales: la ventana que sale al entrar en la ruta (PROMPT_AVISO_FECHAS).
+  const notices = days.find((day) => day?.date_notices)?.date_notices ?? []
+  out.push(`**Avisos de fechas** (ventana al entrar en la ruta): ${notices.length ? '' : 'ninguno.'}`)
+  for (const notice of notices) {
+    out.push(`- **${cell(notice.title)}**${notice.day_number ? ` · etiqueta «${cell(notice.tag)}» en el día ${notice.day_number}` : ''}`)
+    for (const text of notice.texts) out.push(`  - ${cell(text)}`)
+  }
+  out.push('')
+  indice[indiceAt] = filaIndice(notices.length ? notices.map((notice) => cell(notice.title)).join(' · ') : '—')
 
   for (const [i, day] of days.entries()) {
     const n = i + 1
@@ -137,7 +147,8 @@ for (const [index, viaje] of VIAJES.entries()) {
     const titulo = day?.curated_day?.name ?? (day?.type === 'excursion' || (day?.excursion_options?.length && !day?.stops?.length) ? 'Excursión' : day?.title ?? '')
     out.push(`### Día ${n} — ${cell(titulo)}`)
     out.push('')
-    out.push(`**${fechaLarga(iso)}**${fiesta ? ` · 🎉 ${fiesta}` : ''} · 🌅 atardecer ${sunset != null ? m2t(sunset) : '—'}${day?.curated_day ? ` · día curado ${day.curated_day.id}${day.curated_day.variants?.length ? ` (${day.curated_day.variants.join(', ')})` : ''}` : ''}`)
+    const tags = (days.find((d) => d?.date_notices)?.date_notices ?? []).filter((notice) => notice.day_number === n).map((notice) => `🏷️ ${notice.tag}`)
+    out.push(`**${fechaLarga(iso)}**${fiesta ? ` · 🎉 ${fiesta}` : ''}${tags.length ? ` · ${tags.join(' · ')}` : ''} · 🌅 atardecer ${sunset != null ? m2t(sunset) : '—'}${day?.curated_day ? ` · día curado ${day.curated_day.id}${day.curated_day.variants?.length ? ` (${day.curated_day.variants.join(', ')})` : ''}` : ''}`)
     out.push('')
     if (!day) {
       out.push('_(sin día)_', '')
@@ -241,8 +252,8 @@ writeFileSync(path, [
   '',
   '## Índice',
   '',
-  '| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza |',
-  '|---|---|---|---|---|---|---|',
+  '| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |',
+  '|---|---|---|---|---|---|---|---|',
   ...indice,
   '',
   ...out,
