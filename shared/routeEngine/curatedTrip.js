@@ -430,12 +430,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
           for (const item of [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]) {
             if (!item?.por_que) continue
             const byText = counts.get(item.lugar) ?? new Map()
-            byText.set(item.por_que, (byText.get(item.por_que) ?? 0) + 1)
+            const key = JSON.stringify(item.por_que)
+            byText.set(key, (byText.get(key) ?? 0) + 1)
             counts.set(item.lugar, byText)
           }
         }
       }
-      whyByPlace = new Map([...counts].map(([lugar, byText]) => [lugar, [...byText].sort((a, b) => b[1] - a[1])[0][0]]))
+      whyByPlace = new Map([...counts].map(([lugar, byText]) => [lugar, JSON.parse([...byText].sort((a, b) => b[1] - a[1])[0][0])]))
     }
     return whyByPlace.get(name) ?? null
   }

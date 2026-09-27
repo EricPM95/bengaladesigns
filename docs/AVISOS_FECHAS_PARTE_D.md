@@ -16,35 +16,35 @@ Capturas: [móvil](diseno/avisos_fechas/navidad-movil.png) · [ordenador](diseno
 1. **Navidad en Roma** · icono `navidad` · etiqueta del día: «Navidad en Roma» en el día 1 · mixto
    > Los Museos Vaticanos cierran el sábado 25 (Navidad) y el domingo 26 (San Esteban). Hemos puesto tu visita el viernes 24 para que no los pierdas.
    > El 25 de diciembre el Coliseo y el Panteón cierran por Navidad. Hemos puesto tu visita el domingo 26 para que no los pierdas.
-   > Belenes en las iglesias, el árbol de la Plaza de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. El Coliseo, el Foro, el Panteón y el Vaticano cierran el 25: hemos colocado tu ruta para que no te pierdas nada.
+   > Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.
 
 ## 2 días desde el viernes 13 de agosto de 2027 (Ferragosto, cerrado todo el viaje)
 
 1. **Ferragosto** · icono `calma` · etiqueta del día: «Ferragosto» en el día 2 · mixto
    > El 14 de agosto los Museos Vaticanos cierran por Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
    > El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
-   > Los romanos se van a la playa y la ciudad está más tranquila que nunca; los Museos Vaticanos cierran y algunos restaurantes también. Hemos ajustado tu ruta a lo que sí abre.
+   > Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.
 
 ## 3 días desde el martes 1 de junio de 2027 (2 de junio y audiencia del miércoles)
 
 1. **2 de junio · Fiesta de la República** · icono `bandera` · etiqueta del día: «Fiesta de la República» en el día 2 · mixto
    > Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto.
-   > Fiesta de la República: por la mañana hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web oficial). Hemos puesto su visita otro día para ir sobre seguro.
+   > Hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web). Hemos puesto su visita otro día.
 
 ## 3 días desde el viernes 26 de marzo de 2027 (Pascua y Pasquetta)
 
 1. **Viernes Santo · Via Crucis en el Coliseo** · icono `religioso` · etiqueta del día: «Via Crucis en el Coliseo» en el día 1 · curado
-   > Por la noche el Papa preside el Via Crucis junto al Coliseo y la zona se corta desde la tarde. Hemos puesto el Coliseo por la mañana.
+   > Por la noche el Papa suele presidir el Via Crucis junto al Coliseo y la zona se corta por la tarde (compruébalo en vatican.va). Hemos puesto el Coliseo por la mañana.
 2. **Domingo de Pascua** · icono `religioso` · etiqueta del día: «Domingo de Pascua» en el día 3 · mixto
    > Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 27 para que no los pierdas.
-   > A las 12:00 el Papa da la bendición Urbi et Orbi en la Plaza de San Pedro y hay muchísima gente. Hemos preparado tu día para que puedas verla si quieres: llega con margen.
+   > A las 12:00 el Papa suele dar la bendición Urbi et Orbi en la Plaza de San Pedro, con muchísima gente. Hemos dejado tu día preparado para que puedas ir si quieres.
 
 ## 2 días sin fechas, mes de diciembre (solo los de temporada)
 
 1. **8 de diciembre · La Inmaculada** · icono `religioso` · etiqueta del día: — (sin fechas) · curado
-   > Si tu viaje coincide con el 8 de diciembre: por la tarde el Papa va a la Plaza de España a rendir homenaje a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita a otro día.
+   > Si tu viaje coincide con el 8 de diciembre: por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.
 2. **Navidad en Roma** · icono `navidad` · etiqueta del día: — (sin fechas) · curado
-   > Si tu viaje coincide con los días del 24 al 26 de diciembre: belenes en las iglesias, el árbol de la Plaza de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. El Coliseo, el Foro, el Panteón y el Vaticano cierran el 25: hemos colocado tu ruta para que no te pierdas nada.
+   > Si tu viaje coincide con los días del 24 al 26 de diciembre: belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.
 3. **31 de diciembre · Nochevieja** · icono `fuegos` · etiqueta del día: — (sin fechas) · curado
    > Si tu viaje coincide con el 31 de diciembre: Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.
 
@@ -55,5 +55,5 @@ Capturas: [móvil](diseno/avisos_fechas/navidad-movil.png) · [ordenador](diseno
 - **Pascua desde el 26 de marzo (3 días)**: el viaje acaba el domingo 28, así que Pasquetta (29) no cae dentro. Ahora salen también el Viernes Santo y el Domingo de Pascua, que llevan `verificar: true`.
 - **2 de junio**: con el horario `"probable"`, el motor pone el Coliseo otro día. En este viaje el Coliseo va el 3, así que la frase "Hemos puesto su visita otro día" es verdad.
 - **Sin fechas (diciembre)**: salen las fechas fijas del mes con "Si tu viaje coincide con…" (la Inmaculada, Navidad y Nochevieja). No hay ninguna de `tipo: temporada`.
-- **Textos de más de 35 palabras** (validar.mjs, en rojo): natale_di_roma (41), fiesta_republica (43), san_pedro_pablo (39), navidad (47).
-- **`verificar: true` sin prudencia en el texto** (validar.mjs, en amarillo): reyes, viernes_santo, pascua, liberacion, primero_mayo, san_pedro_pablo, todos_los_santos, inmaculada, nochevieja.
+- Todos los textos tienen 35 palabras o menos.
+- **`verificar: true` sin prudencia en el texto** (validar.mjs, en amarillo): liberacion, todos_los_santos, nochevieja.

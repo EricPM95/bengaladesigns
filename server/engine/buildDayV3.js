@@ -29,6 +29,18 @@ function nearestQuarter(hhmm) {
  * así la hora de salida más el paseo da la llegada a la siguiente (también lo de paso). Lo que no tiene siguiente se queda
  * con sus minutos; una visita nunca baja de la mitad de lo que dura (entonces, sus minutos de siempre).
  */
+/** Antes de esta hora, el "Por qué aquí" que depende de la hora usa su versión `temprano` ("a primera hora, sin gente"). */
+const EARLY_WHY_BEFORE = 9 * 60 + 30
+
+/**
+ * El `por_que` de la parada: un texto, o { texto, temprano } si depende de la hora. `temprano` solo si la parada empieza
+ * antes de las 09:30; si no, `texto` (nunca "a primera hora" a las 10:00 en tranquilo o por la tarde con el pool).
+ */
+function curatedWhyAt(why, startMinutes) {
+  if (typeof why === 'string') return why
+  return startMinutes < EARLY_WHY_BEFORE && why?.temprano ? why.temprano : why?.texto ?? why?.temprano ?? null
+}
+
 /** Lo más que dura un "Por el camino" (B.1): lo que merece más es una parada. */
 const ON_THE_WAY_MAX_MINUTES = 10
 
@@ -331,7 +343,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // "Por qué aquí" curado de la parada (`por_que` del día curado): manda sobre el texto genérico, que solo queda
     // de reserva. Salvo el mirador que llega de noche, que se cuenta como la ciudad iluminada (A.1).
     if (visit.place.curatedWhy && !stop.night_view) {
-      stop.why = visit.place.curatedWhy
+      stop.why = curatedWhyAt(visit.place.curatedWhy, visit.start)
       stop.why_source = 'curado'
     }
     // Dónde acaba lo que no acaba donde empieza (el Free Tour, en Piazza Navona): el tramo siguiente sale de ahí.

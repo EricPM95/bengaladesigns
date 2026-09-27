@@ -49,6 +49,8 @@ if (!destino || destino.startsWith('--')) {
 }
 const SIN_RED = process.argv.includes('--sin-red')
 /** Una cifra o un precio en un texto que se lee (fuera de Tickets): el símbolo, la palabra o el código. "Gratis" no. */
+/** Lo que solo es verdad a una hora (PROMPT_AJUSTES_20_RUTAS): sin "temprano", aviso. */
+const DEPENDE_DE_LA_HORA = /primera hora|a la apertura|sin gente|\b\d{1,2}[:.]\d{2}\b|\ba las \d{1,2}\b/i
 const PRECIO_VISIBLE = /€|\beuros?\b|\bEUR\b/i
 const D = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/${destino}.json`), 'utf8'))
 
@@ -364,21 +366,34 @@ const section = (title) => {
 {
   const s = section('Lo que lee el viajero')
   const sinPorQue = new Set()
+  const conHora = new Set()
   for (const cfg of D.curated_days ?? []) {
     for (const [nombre, section] of [['base', cfg], ...Object.entries(cfg.variantes ?? {})]) {
       const paradas = [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? []), ...(section.insertar ?? []).map((item) => item.parada), ...(section.si_espera?.tarde ?? []), ...(section.si_sobra?.anadir ?? [])]
-      for (const parada of paradas) if (parada && !parada.por_que) sinPorQue.add(`${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${parada.lugar}`)
+      for (const parada of paradas) {
+        if (!parada) continue
+        const donde = `${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${parada.lugar}`
+        if (!parada.por_que) sinPorQue.add(donde)
+        // Lo que depende de la hora va como { texto, temprano }: un texto sin "temprano" no puede hablar de "primera
+        // hora", "a la apertura", "sin gente" ni de una hora concreta (la ruta puede ponerlo a las 10:00 o por la tarde).
+        const texto = typeof parada.por_que === 'string' ? parada.por_que : parada.por_que?.temprano ? null : parada.por_que?.texto
+        if (texto && DEPENDE_DE_LA_HORA.test(texto)) conHora.add(`${donde} — «${texto.match(DEPENDE_DE_LA_HORA)[0]}»`)
+      }
     }
   }
   for (const item of sinPorQue) s.warn.push(`sin por_que (sale el texto genérico): ${item}`)
+  for (const item of conHora) s.warn.push(`por_que que depende de la hora sin su "temprano": ${item}`)
   // Los campos de precio estructurados (el restaurante: € y precio medio) son datos, como `ticket_info`: no son texto.
   const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days', 'price_range', 'avg_price_person'])
   const precios = []
-  const buscar = (valor, ruta) => {
+  // `cifra_ok` en un lugar (lista de frases): las curiosidades con cifra que no son precios ("unos 3.000€ en monedas"
+  // que se recogen cada día en la Fontana de Trevi) se quedan; valen para los textos de ese lugar.
+  const buscar = (valor, ruta, permitidas = []) => {
     if (typeof valor === 'string') {
-      if (PRECIO_VISIBLE.test(valor)) precios.push(`${ruta}: «${valor.match(/.{0,40}(€|euros?|EUR).{0,20}/i)?.[0] ?? ''}»`)
+      if (PRECIO_VISIBLE.test(valor) && !permitidas.some((frase) => valor.includes(frase))) precios.push(`${ruta}: «${valor.match(/.{0,40}(€|euros?|EUR).{0,20}/i)?.[0] ?? ''}»`)
     } else if (valor && typeof valor === 'object') {
-      for (const [clave, hijo] of Object.entries(valor)) if (!INTERNO.has(clave) && !clave.startsWith('_')) buscar(hijo, `${ruta}.${clave}`)
+      const aqui = Array.isArray(valor.cifra_ok) ? [...permitidas, ...valor.cifra_ok] : permitidas
+      for (const [clave, hijo] of Object.entries(valor)) if (!INTERNO.has(clave) && !clave.startsWith('_') && clave !== 'cifra_ok') buscar(hijo, `${ruta}.${clave}`, aqui)
     }
   }
   const { museos_de_pago: _pago, principios_local: _principios, ...visible } = D

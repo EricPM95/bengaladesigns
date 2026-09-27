@@ -1174,3 +1174,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     Tickets son las cifras y los precios (€, euros, importes): `validar.mjs` los marca en rojo, nunca la palabra
     "gratis". Los campos de precio estructurados (`ticket_info`, `price_range`, `avg_price_person`) son datos, no texto.
 263. **Verano, tiempo libre antes del atardecer**: con nombre y hasta 150 min no es hueco (regla 259); de más, sí.
+264. **Todo lo que lee el viajero va curado en el JSON del destino** (regla general, decisión del usuario 2026-09-27):
+    nunca de una llamada a la API. Si un texto depende de la hora, va como `{ texto, temprano }`: `temprano` solo si la
+    parada empieza antes de las 09:30 (`curatedWhyAt`, buildDayV3.js); si no, `texto`. `validar.mjs` avisa del texto
+    sin `temprano` que habla de "primera hora", "a la apertura", "sin gente" o de una hora concreta. Plantilla en
+    `docs/kit/plantilla_por_que.json`.
+265. **`cifra_ok`** (en un lugar de la ficha, lista de frases): las curiosidades con cifra que no son precios ("unos
+    3.000€ en monedas" que se recogen cada día en la Fontana de Trevi) se quedan y `validar.mjs` las deja pasar. Un
+    precio (la tasa de la balaustrada, una multa, "monedas de 1 €") nunca: va sin cifra o a Tickets con las APIs.

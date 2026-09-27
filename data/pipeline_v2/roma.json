@@ -7887,7 +7887,10 @@
           "rol": "parada",
           "hora": "08:30",
           "nota": "A la apertura: menos cola y menos calor.",
-          "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+          "por_que": {
+            "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+            "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+          }
         },
         {
           "lugar": "Arco de Constantino",
@@ -7910,7 +7913,7 @@
           "lugar": "Altar de la Patria",
           "rol": "parada",
           "nota": "Por dentro es gratis; sube a la terraza panorámica. Se come después, en el Ghetto.",
-          "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
         }
       ],
       "comida": {
@@ -7957,13 +7960,13 @@
           "solo": {
             "ritmo": "completo"
           },
-          "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
+          "por_que": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
         },
         {
           "lugar": "Iglesia de San Luigi dei Francesi",
           "rol": "parada",
           "nota": "Los Caravaggio; reabre a las 14:30.",
-          "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+          "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
         },
         {
           "lugar": "Piazza Navona",
@@ -7989,7 +7992,10 @@
               "lugar": "Coliseo",
               "rol": "parada",
               "nota": "A las 10:00.",
-              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              "por_que": {
+                "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+                "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              }
             },
             {
               "lugar": "Arco de Constantino",
@@ -8021,7 +8027,7 @@
               "rol": "parada",
               "minutos": 30,
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             },
             {
               "lugar": "Panteón",
@@ -8031,7 +8037,7 @@
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
               "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
             },
             {
               "lugar": "Piazza Navona",
@@ -8070,12 +8076,12 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
+              "por_que": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
               "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
             },
             {
               "lugar": "Piazza Navona",
@@ -8123,7 +8129,7 @@
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
               "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
             },
             {
               "lugar": "Piazza Navona",
@@ -8135,7 +8141,7 @@
               "rol": "parada",
               "minutos": 30,
               "nota": "A última hora, la terraza con la luz de la tarde.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             }
           ],
           "aviso_fecha": {
@@ -8151,12 +8157,15 @@
               "rol": "parada",
               "minutos": 30,
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             },
             {
               "lugar": "Fontana de Trevi",
               "rol": "parada",
-              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              "por_que": {
+                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              }
             },
             {
               "lugar": "Plaza de España",
@@ -8202,12 +8211,18 @@
               "lugar": "Termas de Caracalla",
               "rol": "parada",
               "pago": true,
-              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              "por_que": {
+                "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+                "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              }
             },
             {
               "lugar": "Boca de la Verdad",
               "rol": "parada",
-              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              "por_que": {
+                "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+                "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              }
             },
             {
               "lugar": "Jardín de los Naranjos",
@@ -8232,7 +8247,10 @@
               "rol": "parada",
               "hora": "10:00",
               "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino.",
-              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              "por_que": {
+                "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+                "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              }
             },
             {
               "lugar": "Foro Romano y Palatino",
@@ -8249,7 +8267,7 @@
             {
               "lugar": "Altar de la Patria",
               "rol": "de_paso",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             },
             {
               "lugar": "Barrio Judío",
@@ -8287,12 +8305,12 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
+              "por_que": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
               "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
             },
             {
               "lugar": "Piazza Navona",
@@ -8316,7 +8334,10 @@
               "rol": "parada",
               "hora": "10:00",
               "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino.",
-              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              "por_que": {
+                "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+                "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+              }
             },
             {
               "lugar": "Foro Romano y Palatino",
@@ -8333,7 +8354,7 @@
             {
               "lugar": "Altar de la Patria",
               "rol": "de_paso",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             },
             {
               "lugar": "Bendición Urbi et Orbi",
@@ -8361,7 +8382,7 @@
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
               "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
             },
             {
               "lugar": "Panteón",
@@ -8379,7 +8400,7 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
+              "por_que": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Largo di Torre Argentina",
@@ -8417,7 +8438,7 @@
               "rol": "parada",
               "hora": "14:00",
               "nota": "Las tres iglesias superpuestas.",
-              "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
+              "por_que": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada."
             }
           ]
         }
@@ -8443,7 +8464,10 @@
           "rol": "parada",
           "hora": "08:00",
           "nota": "Primer turno.",
-          "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+          "por_que": {
+            "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+            "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+          }
         },
         {
           "lugar": "Plaza de San Pedro",
@@ -8453,7 +8477,7 @@
         {
           "lugar": "Basílica de San Pedro",
           "rol": "parada",
-          "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+          "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
         },
         {
           "lugar": "Cúpula de San Pedro",
@@ -8507,7 +8531,7 @@
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
           "rol": "parada",
-          "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+          "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
         },
         {
           "lugar": "Trastevere",
@@ -8521,7 +8545,7 @@
           "rol": "parada",
           "si_cerrado": "de_paso",
           "nota": "Antes de las 18:00; si ya cerró, de paso.",
-          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
+          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -8584,12 +8608,12 @@
               "rol": "parada",
               "si_cerrado": "de_paso",
               "nota": "Si se llega antes de las 18:00.",
-              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
+              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
               "rol": "parada",
-              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
             },
             {
               "lugar": "Trastevere",
@@ -8632,7 +8656,7 @@
               {
                 "lugar": "Iglesia de Santa Maria in Trastevere",
                 "rol": "parada",
-                "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+                "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
               },
               {
                 "lugar": "Trastevere",
@@ -8646,7 +8670,7 @@
                 "rol": "parada",
                 "si_cerrado": "de_paso",
                 "nota": "Antes de las 18:00; si ya cerró, de paso.",
-                "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
+                "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
               },
               {
                 "lugar": "Fontana dell'Acqua Paola",
@@ -8667,7 +8691,10 @@
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
               "rol": "parada",
-              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              "por_que": {
+                "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+                "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              }
             }
           ],
           "tarde": [
@@ -8679,7 +8706,7 @@
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+              "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8718,7 +8745,7 @@
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+              "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8738,7 +8765,7 @@
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
               "rol": "parada",
-              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
             },
             {
               "lugar": "Trastevere",
@@ -8755,7 +8782,10 @@
               "rol": "parada",
               "hora": "08:00",
               "nota": "Primer turno.",
-              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              "por_que": {
+                "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+                "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              }
             },
             {
               "lugar": "Borgo Pio",
@@ -8784,7 +8814,7 @@
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
               "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
-              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+              "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -8833,7 +8863,7 @@
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+              "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -8856,14 +8886,14 @@
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
               "rol": "parada",
-              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
             },
             {
               "lugar": "Basílica de Santa Cecilia in Trastevere",
               "rol": "parada",
               "si_abre": true,
               "nota": "Si abre.",
-              "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. Abre a las 16:30."
+              "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30."
             }
           ],
           "comida": {
@@ -8882,7 +8912,7 @@
               "lugar": "San Pietro in Montorio y Tempietto de Bramante",
               "rol": "parada",
               "si_cerrado": "de_paso",
-              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
+              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
             },
             {
               "lugar": "Fontana dell'Acqua Paola",
@@ -8902,7 +8932,10 @@
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
               "rol": "parada",
-              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              "por_que": {
+                "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+                "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+              }
             }
           ],
           "comida": {
@@ -8923,7 +8956,7 @@
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
               "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
-              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+              "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             }
           ],
           "aviso_fecha": {
@@ -8954,7 +8987,10 @@
             "ritmo": "completo"
           },
           "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
-          "por_que": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
+          "por_que": {
+            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+            "temprano": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
+          }
         },
         {
           "lugar": "Desayuno romano",
@@ -8996,7 +9032,7 @@
         {
           "lugar": "Basílica de San Pedro",
           "rol": "parada",
-          "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
+          "por_que": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini."
         },
         {
           "lugar": "Borgo Pio",
@@ -9028,7 +9064,10 @@
           "rol": "parada",
           "hora": "08:30",
           "nota": "A la apertura: menos cola y menos calor.",
-          "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+          "por_que": {
+            "texto": "Hoy toca la Roma antigua: lo más grande de Roma, y con la misma entrada el Foro y el Palatino.",
+            "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+          }
         },
         {
           "lugar": "Arco de Constantino",
@@ -9059,7 +9098,7 @@
           "lugar": "Altar de la Patria",
           "rol": "parada",
           "nota": "Por dentro es gratis; la terraza panorámica, en ascensor.",
-          "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
         }
       ],
       "comida": {
@@ -9099,7 +9138,7 @@
           },
           "si_abre": true,
           "nota": "Abre a las 16:30.",
-          "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. Abre a las 16:30."
+          "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30."
         },
         {
           "lugar": "Trastevere",
@@ -9111,7 +9150,7 @@
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
           "rol": "parada",
-          "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
+          "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -9121,7 +9160,7 @@
             "estacion": "no_invierno"
           },
           "nota": "Subiendo por Via Garibaldi.",
-          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
+          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
         },
         {
           "lugar": "Mirador del Janículo",
@@ -9149,7 +9188,10 @@
               "rol": "parada",
               "hora": "08:30",
               "nota": "A la apertura: menos cola y menos calor.",
-              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+              "por_que": {
+                "texto": "Hoy toca la Roma antigua: lo más grande de Roma, y con la misma entrada el Foro y el Palatino.",
+                "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+              }
             },
             {
               "lugar": "Arco de Constantino",
@@ -9166,7 +9208,7 @@
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             }
           ],
           "tarde": [
@@ -9179,12 +9221,18 @@
               "lugar": "Termas de Caracalla",
               "rol": "parada",
               "pago": true,
-              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              "por_que": {
+                "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+                "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              }
             },
             {
               "lugar": "Boca de la Verdad",
               "rol": "parada",
-              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              "por_que": {
+                "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+                "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              }
             },
             {
               "lugar": "Jardín de los Naranjos",
@@ -9220,7 +9268,10 @@
               "lugar": "Coliseo",
               "rol": "parada",
               "nota": "A las 10:00.",
-              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+              "por_que": {
+                "texto": "Hoy toca la Roma antigua: lo más grande de Roma, y con la misma entrada el Foro y el Palatino.",
+                "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+              }
             },
             {
               "lugar": "Arco de Constantino",
@@ -9238,7 +9289,7 @@
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             },
             {
               "lugar": "Barrio Judío",
@@ -9279,7 +9330,10 @@
           "rol": "parada",
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
-          "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+          "por_que": {
+            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+            "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+          }
         },
         {
           "lugar": "Desayuno romano",
@@ -9298,7 +9352,7 @@
             "ritmo": "completo"
           },
           "nota": "La cúpula falsa; abre a las 09:00.",
-          "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
+          "por_que": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás."
         },
         {
           "lugar": "Plaza Colonna",
@@ -9331,7 +9385,7 @@
           "rol": "parada",
           "antes_de": "12:00",
           "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00.",
-          "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
         },
         {
           "lugar": "Piazza del Popolo",
@@ -9394,7 +9448,10 @@
               "rol": "parada",
               "hora": "08:00",
               "nota": "A las 08:00, sin gente.",
-              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              "por_que": {
+                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              }
             },
             {
               "lugar": "Desayuno romano",
@@ -9413,7 +9470,7 @@
                 "ritmo": "completo"
               },
               "nota": "La cúpula falsa; abre a las 09:00.",
-              "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
+              "por_que": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás."
             },
             {
               "lugar": "Plaza Colonna",
@@ -9487,7 +9544,7 @@
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
               "nota": "En invierno, por la tarde (abre de 16:00 a 18:00), antes de subir al Pincio. Los dos Caravaggio.",
-              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Terraza del Pincio",
@@ -9513,7 +9570,7 @@
               "lugar": "Iglesia de Santa Maria della Vittoria",
               "rol": "parada",
               "nota": "El Éxtasis de Santa Teresa de Bernini, gratis y sin cola.",
-              "por_que": "El Éxtasis de Santa Teresa de Bernini, en una iglesia pequeña donde casi nunca hay gente."
+              "por_que": "El Éxtasis de Santa Teresa de Bernini, gratis y casi siempre sin gente. Una obra maestra que muchos se pierden."
             },
             {
               "lugar": "Fuente del Tritón",
@@ -9525,7 +9582,7 @@
               "rol": "parada",
               "antes_de": "12:00",
               "nota": "Los dos Caravaggio. Se llega bajando por Via Sistina y Via del Babuino.",
-              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Piazza del Popolo",
@@ -9618,7 +9675,10 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
-              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              "por_que": {
+                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              }
             },
             {
               "lugar": "Plaza de España",
@@ -9643,7 +9703,7 @@
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
                 "nota": "El domingo solo abre de 16:30 a 18:00.",
-                "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+                "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
               }
             }
           ]
@@ -9668,7 +9728,10 @@
           "rol": "parada",
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
-          "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+          "por_que": {
+            "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+            "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+          }
         },
         {
           "lugar": "Desayuno romano",
@@ -9687,7 +9750,7 @@
             "ritmo": "completo"
           },
           "nota": "La cúpula falsa; abre a las 09:00.",
-          "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
+          "por_que": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás."
         },
         {
           "lugar": "Plaza Colonna",
@@ -9710,7 +9773,7 @@
           "rol": "parada",
           "antes_de": "12:00",
           "nota": "Los dos Caravaggio, gratis. Cierra a las 12:00.",
-          "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+          "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
         },
         {
           "lugar": "Piazza del Popolo",
@@ -9743,19 +9806,19 @@
           "lugar": "Iglesia de Santa Maria della Vittoria",
           "rol": "parada",
           "nota": "El Éxtasis de Santa Teresa de Bernini, gratis. Abre a las 16:00.",
-          "por_que": "El Éxtasis de Santa Teresa de Bernini, en una iglesia pequeña donde casi nunca hay gente."
+          "por_que": "El Éxtasis de Santa Teresa de Bernini, gratis y casi siempre sin gente. Una obra maestra que muchos se pierden."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
           "rol": "parada",
-          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V. Entrar es gratis."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
           "nota": "El Moisés de Miguel Ángel.",
-          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
+          "por_que": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
@@ -9789,7 +9852,10 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
-              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              "por_que": {
+                "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+              }
             },
             {
               "lugar": "Plaza de España",
@@ -9801,7 +9867,7 @@
               "rol": "parada",
               "antes_de": "12:00",
               "minutos": 20,
-              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
+              "por_que": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Piazza del Popolo",
@@ -9831,12 +9897,18 @@
               "min_dias": 4
             }
           ],
-          "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+          "por_que": {
+            "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+            "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+          }
         },
         {
           "lugar": "Boca de la Verdad",
           "rol": "parada",
-          "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+          "por_que": {
+            "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+            "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+          }
         },
         {
           "lugar": "Jardín de los Naranjos",
@@ -9913,7 +9985,10 @@
               "rol": "parada",
               "hora": "09:30",
               "nota": "A la apertura, sin cola.",
-              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              "por_que": {
+                "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+                "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              }
             },
             {
               "lugar": "Jardín de los Naranjos",
@@ -9961,12 +10036,18 @@
                 }
               ],
               "nota": "A las 10:00.",
-              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              "por_que": {
+                "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+                "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+              }
             },
             {
               "lugar": "Boca de la Verdad",
               "rol": "parada",
-              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              "por_que": {
+                "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+                "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+              }
             },
             {
               "lugar": "Jardín de los Naranjos",
@@ -10003,14 +10084,14 @@
               "traslado": "el metro B (Piramide → Colosseo)",
               "traslado_min": 20,
               "nota": "Las tres iglesias superpuestas.",
-              "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
+              "por_que": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada."
             },
             {
               "lugar": "Iglesia de San Pietro in Vincoli",
               "rol": "parada",
               "si_cerrado": "de_paso",
               "nota": "El Moisés de Miguel Ángel.",
-              "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
+              "por_que": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti."
             },
             {
               "lugar": "Monti",
@@ -10032,7 +10113,7 @@
                 "estacion": "invierno"
               },
               "nota": "La terraza panorámica abre hasta las 19:30 (taquilla hasta las 18:45): Roma iluminada.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             }
           ]
         },
@@ -10069,7 +10150,7 @@
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "La terraza panorámica abre hasta las 19:30: Roma iluminada.",
-              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
             }
           ]
         }
@@ -10091,7 +10172,10 @@
           "rol": "parada",
           "hora": "09:30",
           "nota": "A la apertura, sin cola.",
-          "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+          "por_que": {
+            "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+            "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+          }
         },
         {
           "lugar": "Jardín de los Naranjos",
@@ -10138,7 +10222,7 @@
           "traslado": "el metro B (Piramide → Colosseo)",
           "traslado_min": 20,
           "nota": "Desde las 14:00; las tres iglesias superpuestas.",
-          "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
+          "por_que": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada."
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
@@ -10146,19 +10230,19 @@
           "solo": {
             "ritmo": "completo"
           },
-          "por_que": "La catedral de Roma, más antigua que San Pedro."
+          "por_que": "La catedral de Roma, más antigua que San Pedro, y con entrada gratis."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
           "rol": "parada",
-          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V. Entrar es gratis."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
           "nota": "El Moisés de Miguel Ángel.",
-          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
+          "por_que": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
@@ -10203,24 +10287,24 @@
           "lugar": "Basílica de San Clemente",
           "rol": "parada",
           "nota": "Las tres iglesias superpuestas; última entrada a las 17:30.",
-          "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
+          "por_que": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada."
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
           "rol": "parada",
-          "por_que": "La catedral de Roma, más antigua que San Pedro."
+          "por_que": "La catedral de Roma, más antigua que San Pedro, y con entrada gratis."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
           "rol": "parada",
-          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V. Entrar es gratis."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
           "nota": "El Moisés de Miguel Ángel.",
-          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
+          "por_que": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
@@ -10728,7 +10812,7 @@
         "tipo": "festivo",
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
-        "texto": "Roma empieza el año con calma: hoy cierran el Coliseo, el Foro, el Panteón y los Museos Vaticanos. Hemos puesto sus visitas otro día y hoy te llevamos por plazas, fuentes e iglesias abiertas.",
+        "texto": "Roma empieza el año con calma: hoy cierran el Coliseo, el Foro, el Panteón y los Museos Vaticanos. Hemos colocado sus visitas en otro día de tu viaje.",
         "fuente": "closed_dates de roma.json"
       },
       {
@@ -10737,7 +10821,7 @@
         "tipo": "religioso",
         "icono": "navidad",
         "titulo": "6 de enero · Reyes (la Befana)",
-        "texto": "Último día del mercadillo navideño de Piazza Navona, donde los romanos celebran la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
+        "texto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente"
       },
@@ -10747,7 +10831,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Viernes Santo · Via Crucis en el Coliseo",
-        "texto": "Por la noche el Papa preside el Via Crucis junto al Coliseo y la zona se corta desde la tarde. Hemos puesto el Coliseo por la mañana.",
+        "texto": "Por la noche el Papa suele presidir el Via Crucis junto al Coliseo y la zona se corta por la tarde (compruébalo en vatican.va). Hemos puesto el Coliseo por la mañana.",
         "sugerencia": {
           "lugar": "Coliseo (noche)",
           "nota": "Via Crucis con el Papa (hacia las 21:15)"
@@ -10761,7 +10845,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Domingo de Pascua",
-        "texto": "A las 12:00 el Papa da la bendición Urbi et Orbi en la Plaza de San Pedro y hay muchísima gente. Hemos preparado tu día para que puedas verla si quieres: llega con margen.",
+        "texto": "A las 12:00 el Papa suele dar la bendición Urbi et Orbi en la Plaza de San Pedro, con muchísima gente. Hemos dejado tu día preparado para que puedas ir si quieres.",
         "sugerencia": {
           "lugar": "Plaza de San Pedro",
           "hora": "11:30",
@@ -10785,7 +10869,7 @@
         "tipo": "evento",
         "icono": "luz",
         "titulo": "21 de abril · Roma cumple años",
-        "texto": "Es el cumpleaños de Roma: desfile de legionarios en el Circo Máximo y, a mediodía, el sol entra por el óculo del Panteón y cae sobre la puerta. Hemos preparado tu día para que puedas pasar por allí hacia las 12:00.",
+        "texto": "Roma cumple años: desfile de legionarios en el Circo Máximo y, a mediodía, el sol del óculo del Panteón cae sobre la puerta. Hemos dejado tu día listo para verlo hacia las 12:00.",
         "sugerencia": {
           "lugar": "Panteón",
           "hora": "11:45",
@@ -10799,7 +10883,7 @@
         "tipo": "festivo",
         "icono": "bandera",
         "titulo": "25 de abril · Fiesta de la Liberación",
-        "texto": "Festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.",
+        "texto": "Fiesta de la Liberación: festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar"
       },
@@ -10809,7 +10893,7 @@
         "tipo": "festivo",
         "icono": "musica",
         "titulo": "1 de mayo · Día del Trabajo",
-        "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde hay un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
+        "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde suele haber un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json; concierto a confirmar cada año"
       },
@@ -10819,7 +10903,7 @@
         "tipo": "evento",
         "icono": "bandera",
         "titulo": "2 de junio · Fiesta de la República",
-        "texto": "Fiesta de la República: por la mañana hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web oficial). Hemos puesto su visita otro día para ir sobre seguro.",
+        "texto": "Hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web). Hemos puesto su visita otro día.",
         "horario_especial": {
           "confirmado": "probable",
           "lugares": {
@@ -10844,7 +10928,7 @@
         "tipo": "evento",
         "icono": "fuegos",
         "titulo": "29 de junio · San Pedro y San Pablo",
-        "texto": "Son los patronos de Roma: los Museos Vaticanos cierran y por la noche el Castillo de Sant'Angelo se ilumina con la Girandola, fuegos que se hacen desde el siglo XV. Hemos movido tu visita al Vaticano a otro día.",
+        "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos movido tu visita al Vaticano.",
         "sugerencia": {
           "lugar": "Puente Sant'Angelo (noche)",
           "hora": "21:30",
@@ -10860,7 +10944,7 @@
         "tipo": "festivo",
         "icono": "calma",
         "titulo": "Ferragosto",
-        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; los Museos Vaticanos cierran y algunos restaurantes también. Hemos ajustado tu ruta a lo que sí abre.",
+        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
         "fuente": "closed_dates de roma.json"
       },
       {
@@ -10869,7 +10953,7 @@
         "tipo": "festivo",
         "icono": "religioso",
         "titulo": "1 de noviembre · Todos los Santos",
-        "texto": "Es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que tu ruta no choque con ningún cierre.",
+        "texto": "Todos los Santos es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)"
       },
@@ -10879,7 +10963,7 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "8 de diciembre · La Inmaculada",
-        "texto": "Por la tarde el Papa va a la Plaza de España a rendir homenaje a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita a otro día.",
+        "texto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.",
         "verificar": true,
         "fuente": "Tradición anual; hora a confirmar en vatican.va"
       },
@@ -10890,7 +10974,7 @@
         "tipo": "religioso",
         "icono": "navidad",
         "titulo": "Navidad en Roma",
-        "texto": "Belenes en las iglesias, el árbol de la Plaza de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. El Coliseo, el Foro, el Panteón y el Vaticano cierran el 25: hemos colocado tu ruta para que no te pierdas nada.",
+        "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
         "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'"
       },
       {

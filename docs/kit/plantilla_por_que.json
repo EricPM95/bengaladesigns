@@ -1,0 +1,20 @@
+{
+  "_que_es": "Plantilla de los textos 'Por qué aquí' de un destino nuevo (como docs/roma_por_que.json). Regla general: TODO lo que lee el viajero va curado en el JSON del destino, nunca de una llamada a la API. Estos textos se copian a cada parada de los días curados como `por_que`; la `nota` de la parada es interna y no se enseña nunca.",
+  "_como_se_aplica": "Para cada parada de un día curado (y de sus variantes): si existe por_dia[día][lugar], ese texto; si no y la parada es 'atardecer' en un mirador con texto propio en por_dia, ese; si no, por_lugar[lugar]. Se guarda como `por_que` en la parada.",
+  "_temprano": "Si un texto depende de la hora, va como { texto, temprano }: 'temprano' se usa cuando la parada empieza antes de las 09:30; si no, 'texto'. Un texto sin 'temprano' no puede hablar de 'primera hora', 'a la apertura', 'sin gente' ni de una hora concreta: validar.mjs avisa.",
+  "_gratis": "Se puede decir 'gratis' cuando suma ('y la entrada es gratis: una joya que mucha gente se salta'). Nunca cifras ni precios fuera de la pestaña Tickets: validar.mjs los marca en rojo.",
+  "_estilo": "De tú a tú, una o dos frases: qué es y por qué merece la pena aquí y ahora. Nada de 'uno de los imprescindibles' ni 'te pilla de camino'.",
+  "por_lugar": {
+    "Nombre exacto del lugar": "Qué es y por qué merece la pena, en una o dos frases.",
+    "Lugar que depende de la hora": {
+      "texto": "Lo que vale a cualquier hora.",
+      "temprano": "Lo que solo es verdad antes de las 09:30: a la apertura, sin gente."
+    }
+  },
+  "por_dia": {
+    "D1": {
+      "Nombre exacto del lugar": "El texto de ese lugar en ese día, si cambia (bajas del bus aquí, luego pasarás con el tour…)."
+    }
+  },
+  "_cifras": "Ninguna cifra ni precio en lo que se lee (tasas, multas, \"monedas de 1 €\"): sin cifra o a Tickets. Las curiosidades con cifra que no son precios se marcan en la ficha del lugar con cifra_ok: [\"la frase\"] y validar.mjs las deja pasar."
+}

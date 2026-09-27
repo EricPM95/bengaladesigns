@@ -2,50 +2,65 @@
   "_que_es": "Textos 'Por qué aquí' que ve el viajero en cada parada de los días curados de Roma (2026-09-27). La 'nota' de las paradas es interna (para nosotros y el motor) y no se enseña nunca.",
   "_como_se_aplica": "Para cada parada de un día curado (y de sus variantes): si existe por_dia[día][lugar], ese texto; si no y la parada es 'atardecer' en el Campidoglio o el Pincio, el de por_dia D5/D4; si no, por_lugar[lugar]. Se guarda como 'por_que' en la parada.",
   "por_lugar": {
-    "Coliseo": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma.",
+    "Coliseo": {
+      "texto": "Lo más grande de Roma, y con la misma entrada ves luego el Foro y el Palatino.",
+      "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
+    },
     "Arco de Constantino": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro.",
     "Foro Romano y Palatino": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día.",
     "Plaza del Campidoglio": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies.",
-    "Altar de la Patria": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante.",
+    "Altar de la Patria": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
     "Barrio Judío": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía.",
     "Fuente de las Tortugas": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto.",
     "Largo di Torre Argentina": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos.",
     "Panteón": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie.",
     "Elefantino de Bernini": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón.",
-    "Iglesia de Santa Maria sopra Minerva": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel.",
-    "Iglesia de San Luigi dei Francesi": "Tres Caravaggio en una capilla, a dos pasos de Navona.",
+    "Iglesia de Santa Maria sopra Minerva": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel.",
+    "Iglesia de San Luigi dei Francesi": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así.",
     "Piazza Navona": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini.",
     "Campo de' Fiori": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar.",
     "Plaza Farnese": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas.",
-    "Fontana de Trevi": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante.",
+    "Fontana de Trevi": {
+      "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+      "temprano": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
+    },
     "Desayuno romano": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día.",
-    "Iglesia de San Ignacio de Loyola": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco.",
+    "Iglesia de San Ignacio de Loyola": "Entrada gratis y uno de los trucos más bonitos de Roma: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás.",
     "Plaza Colonna": "La columna de Marco Aurelio, delante del palacio del Gobierno.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata.",
     "Plaza de España": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti.",
-    "Santa Maria del Popolo": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00.",
+    "Santa Maria del Popolo": "Dos Caravaggio y una capilla de Rafael, y la entrada es gratis: una joya que mucha gente se salta. Por la mañana cierra a las 12:00.",
     "Piazza del Popolo": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas.",
     "Terraza del Pincio": "Roma desde arriba, sobre la Piazza del Popolo.",
     "Galería Borghese": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva.",
     "Parque de Villa Borghese": "El gran parque de Roma: el lago con su templete, y barca o bici si te apetece.",
-    "Museos Vaticanos y Capilla Sixtina": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible.",
+    "Museos Vaticanos y Capilla Sixtina": {
+      "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma: es la visita del día.",
+      "temprano": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
+    },
     "Plaza de San Pedro": "La plaza de Bernini, con las columnas que abrazan a los peregrinos.",
-    "Basílica de San Pedro": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
+    "Basílica de San Pedro": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
     "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies.",
     "Borgo Pio": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre.",
     "Castillo de Sant'Angelo": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere.",
-    "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere.",
+    "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes.",
     "Trastevere": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador.",
-    "San Pietro in Montorio y Tempietto de Bramante": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo.",
+    "San Pietro in Montorio y Tempietto de Bramante": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis.",
     "Fontana dell'Acqua Paola": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante.",
     "Mirador del Janículo": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo.",
     "Isla Tiberina": "La única isla del Tíber, con el puente romano más antiguo que sigue en pie.",
-    "Basílica de Santa Cecilia in Trastevere": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. Abre a las 16:30.",
+    "Basílica de Santa Cecilia in Trastevere": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. La iglesia es gratis; abre a las 16:30.",
     "Teatro de Marcelo": "Parece un Coliseo pequeño: un teatro romano con casas construidas encima.",
-    "Termas de Caracalla": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora.",
+    "Termas de Caracalla": {
+      "texto": "Las termas más espectaculares de Roma: enormes y casi siempre tranquilas.",
+      "temprano": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
+    },
     "Circo Máximo": "Donde corrían los carros romanos, con el Palatino delante.",
-    "Boca de la Verdad": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola.",
+    "Boca de la Verdad": {
+      "texto": "La máscara de 'Vacaciones en Roma': mete la mano, si te atreves.",
+      "temprano": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
+    },
     "Jardín de los Naranjos": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas.",
     "Ojo de la Cerradura del Aventino": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada.",
     "Pirámide Cestia": "Una pirámide romana de verdad, pegada a la muralla.",
@@ -53,14 +68,14 @@
     "Testaccio": "El barrio más romano de Roma: aquí comen los de aquí. Baja callejeando hasta el mercado.",
     "Catacumbas de San Calixto": "Las catacumbas más importantes de Roma, con visita guiada de unos 45 min.",
     "Via Appia Antica": "La calzada romana con sus losas originales, entre pinos y tumbas. A pie o en bici, hasta la tumba de Cecilia Metella.",
-    "Iglesia de Santa Maria della Vittoria": "El Éxtasis de Santa Teresa de Bernini, en una iglesia pequeña donde casi nunca hay gente.",
+    "Iglesia de Santa Maria della Vittoria": "El Éxtasis de Santa Teresa de Bernini, gratis y casi siempre sin gente. Una obra maestra que muchos se pierden.",
     "Fuente del Tritón": "La fuente de Bernini en la Plaza Barberini.",
-    "Basílica de Santa María la Mayor": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V.",
-    "Iglesia de San Pietro in Vincoli": "El Moisés de Miguel Ángel, a dos pasos de Monti.",
+    "Basílica de Santa María la Mayor": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V. Entrar es gratis.",
+    "Iglesia de San Pietro in Vincoli": "El Moisés de Miguel Ángel, gratis y a dos pasos de Monti.",
     "Monti": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti.",
     "Via dei Fori Imperiali": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo.",
-    "Basílica de San Clemente": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano.",
-    "Basílica de San Juan de Letrán": "La catedral de Roma, más antigua que San Pedro.",
+    "Basílica de San Clemente": "Tres iglesias una encima de otra. La basílica de arriba es gratis; para bajar hasta el templo romano hace falta entrada.",
+    "Basílica de San Juan de Letrán": "La catedral de Roma, más antigua que San Pedro, y con entrada gratis.",
     "Ara Pacis": "El altar de la paz de Augusto, en un edificio moderno junto al Tíber.",
     "Mercados de Trajano": "El centro comercial de la Roma imperial, con vistas a los Foros.",
     "Museos Capitolinos": "Los museos más antiguos del mundo, en la plaza de Miguel Ángel.",
@@ -70,7 +85,10 @@
   },
   "por_dia": {
     "D3": {
-      "Fontana de Trevi": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena.",
+      "Fontana de Trevi": {
+        "texto": "La fuente más famosa del mundo. Tira la moneda de espaldas: dicen que así vuelves a Roma.",
+        "temprano": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
+      },
       "Desayuno romano": "Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min.",
       "Museos Vaticanos y Capilla Sixtina": "Por la tarde hay menos cola que a media mañana: entras hacia las 14:30."
     },
@@ -91,7 +109,12 @@
       "Plaza de San Pedro": "La plaza de Bernini, justo al salir de los Museos."
     },
     "D1-FT": {
-      "Coliseo": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+      "Coliseo": {
+        "texto": "Hoy toca la Roma antigua: lo más grande de Roma, y con la misma entrada el Foro y el Palatino.",
+        "temprano": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
+      }
     }
-  }
+  },
+  "_gratis": "Cuando un sitio es de entrada libre (ticket_info 'Gratis.'), el texto puede decirlo si suma: 'y la entrada es gratis'. Nunca importes ni precios con cifra.",
+  "_temprano": "Si un texto es {texto, temprano}: 'temprano' se usa cuando la parada empieza antes de las 09:30; si no, 'texto'. Así un texto nunca dice 'a primera hora' cuando la ruta pone la parada a las 10:00 (tranquilo) o por la tarde (variantes de pool)."
 }
