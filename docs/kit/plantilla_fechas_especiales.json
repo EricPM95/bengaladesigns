@@ -1,0 +1,49 @@
+{
+  "_que_es": "Plantilla de `fechas_especiales` para un destino nuevo (PROMPT_AVISO_FECHAS). Va en el JSON del destino como bloque `fechas_especiales: { fechas: [...] }`. Cada fecha sale en la ventana de bienvenida de la ruta si el viaje cae en ella. Todas empiezan con `verificar: true`: no se enseñan hasta que alguien confirme el dato de ese año con su fuente y lo quite.",
+  "_formato": {
+    "id": "único, en minúsculas y con guiones bajos",
+    "fecha": "MM-DD, o 'easter' / 'easter+1' / 'easter-2' (Pascua cambia cada año)",
+    "hasta": "opcional, MM-DD: rango incluido (Navidad del 24 al 26)",
+    "tipo": "festivo (cierra cosas) · evento (algo que ver ese día) · religioso · temporada (sale también con solo el mes)",
+    "icono": "fiesta · religioso · fuegos · luz · navidad · bandera · musica · calma",
+    "titulo": "Lo que sale en grande. Corto: '1 de noviembre · Todos los Santos'. Lo que va después del ' · ' es la etiqueta del día.",
+    "texto": "De tú a tú, 35 palabras como mucho, sin precios (ni 'gratis'). Primero el dato y al final lo que hemos hecho: 'Hemos puesto…', 'Hemos movido…', 'Hemos preparado…'. Una sugerencia con hora va dentro del texto ('pásate hacia las 12:00'): no hay botón.",
+    "horario_especial": "opcional: { confirmado: false, lugares: { '<lugar>': { windows: ['HH:MM-HH:MM'], last_entry?: 'HH:MM' } } }. El motor lo usa solo con confirmado: true.",
+    "verificar": "true hasta confirmar el dato de ese año; mientras, el aviso no sale",
+    "fuente": "de dónde sale el dato (obligatorio)"
+  },
+  "fechas": [
+    {
+      "id": "ejemplo_festivo",
+      "fecha": "MM-DD",
+      "tipo": "festivo",
+      "icono": "fiesta",
+      "titulo": "D de mes · Nombre del festivo",
+      "texto": "Qué pasa ese día y qué cierra. Hemos puesto tu visita a lo que cierra otro día de tu viaje.",
+      "verificar": true,
+      "fuente": ""
+    },
+    {
+      "id": "ejemplo_evento_con_horario",
+      "fecha": "MM-DD",
+      "tipo": "evento",
+      "icono": "bandera",
+      "titulo": "D de mes · Nombre del evento",
+      "texto": "Qué se puede ver y a qué hora. Hemos preparado tu ruta para que puedas verlo.",
+      "horario_especial": { "confirmado": false, "lugares": { "Nombre exacto del lugar": { "windows": ["14:00-19:00"] } } },
+      "verificar": true,
+      "fuente": ""
+    },
+    {
+      "id": "ejemplo_temporada",
+      "fecha": "12-01",
+      "hasta": "01-06",
+      "tipo": "temporada",
+      "icono": "navidad",
+      "titulo": "Nombre de la temporada",
+      "texto": "Qué hay esos días. Hemos preparado tu ruta para que lo veas.",
+      "verificar": true,
+      "fuente": ""
+    }
+  ]
+}

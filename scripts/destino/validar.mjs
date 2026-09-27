@@ -23,6 +23,8 @@
  *      barrios de cena salen solos (3+ restaurantes que sirven cenas en la misma zona). Se listan los
  *      que salen y las zonas a las que les falta poco, y cada zona de imprescindibles sin barrio de
  *      cena a 15 min o menos.
+ *  10. Fechas especiales: lo que tiene `verificar: true` (lista para revisar), `horario_especial` sin fuente o sin
+ *      confirmar, y los textos que no siguen la regla de oro (35 palabras, sin precios, acaban con "Hemos…").
  *   7. Coordenadas contra Wikipedia: rojo si se separan más de 200 m. Mapbox solo como segunda
  *      opinión (amarillo) cuando Wikipedia no encuentra el sitio: su buscador devuelve tiendas y
  *      bares que se llaman como el monumento (medido en Roma: 27 de 67 a más de 200 m, ninguno
@@ -318,6 +320,33 @@ const section = (title) => {
     const nearest = Math.min(...zones.map((zone) => straightLineMeters(place.coordinates, zone.coordinates)))
     if (!(nearest <= 1100)) s.warn.push(`${place.name}: el barrio de cena más cercano está a ${Math.round(nearest)} m`)
   }
+}
+
+// ── 10. Fechas especiales ───────────────────────────────────────────────────────────────────
+// PROMPT_AVISO_FECHAS: lo marcado `verificar: true` no sale hasta confirmarlo (se lista para revisar), un
+// `horario_especial` sin fuente no vale, el lugar del horario tiene que existir y el texto sigue la regla de oro
+// (35 palabras como mucho, sin precios, acaba con lo que hemos hecho).
+{
+  const s = section('Fechas especiales')
+  const fechas = D.fechas_especiales?.fechas ?? []
+  if (fechas.length === 0) s.warn.push('Sin `fechas_especiales`: la ventana de bienvenida solo contará los cierres (plantilla en docs/kit/plantilla_fechas_especiales.json)')
+  const nombres = new Set(places.map((place) => place.name))
+  for (const entry of fechas) {
+    const id = entry.id ?? entry.titulo ?? '?'
+    if (entry.verificar) s.warn.push(`${id}: verificar: true — no sale hasta confirmarlo${entry.fuente ? ` (fuente: ${entry.fuente})` : ''}`)
+    if (!/^(\d{2}-\d{2}|easter([+-]\d+)?)$/.test(String(entry.fecha ?? ''))) s.red.push(`${id}: fecha "${entry.fecha}" no se lee (MM-DD o easter±N)`)
+    const palabras = String(entry.texto ?? '').split(/\s+/).filter(Boolean).length
+    if (palabras > 35) s.red.push(`${id}: el texto tiene ${palabras} palabras (35 como mucho)`)
+    if (/€|\beuros?\b|\bgratis\b|\bgratuit/i.test(entry.texto ?? '')) s.red.push(`${id}: el texto habla de precios`)
+    if (!/\b[Hh]emos\b[^.]*\.\s*$/.test(String(entry.texto ?? '').trim())) s.warn.push(`${id}: el texto no acaba con lo que hemos hecho ("Hemos…")`)
+    const horario = entry.horario_especial
+    if (horario) {
+      if (!entry.fuente) s.red.push(`${id}: horario_especial sin fuente`)
+      if (!horario.confirmado) s.warn.push(`${id}: horario_especial sin confirmar — el motor sigue con el horario de siempre`)
+      for (const name of Object.keys(horario.lugares ?? {})) if (!nombres.has(name)) s.red.push(`${id}: horario_especial de "${name}", que no está en places`)
+    }
+  }
+  s.info.push(`${fechas.length} fechas, ${fechas.filter((entry) => !entry.verificar).length} se enseñan`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────
