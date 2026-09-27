@@ -386,13 +386,13 @@ const section = (title) => {
   // Los campos de precio estructurados (el restaurante: € y precio medio) son datos, como `ticket_info`: no son texto.
   const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days', 'price_range', 'avg_price_person'])
   const precios = []
-  // `cifra_ok` en un lugar (lista de frases): las curiosidades con cifra que no son precios ("unos 3.000€ en monedas"
-  // que se recogen cada día en la Fontana de Trevi) se quedan; valen para los textos de ese lugar.
-  const buscar = (valor, ruta, permitidas = []) => {
+  // `cifra_ok: true` en un objeto (un lugar de la ficha, una nocturna, un texto { texto, cifra_ok }): lo que se queda
+  // con cifra a propósito (la tasa de la balaustrada de Trevi, bien explicada; los 3.000 € diarios para Cáritas) pasa.
+  const buscar = (valor, ruta, permitido = false) => {
     if (typeof valor === 'string') {
-      if (PRECIO_VISIBLE.test(valor) && !permitidas.some((frase) => valor.includes(frase))) precios.push(`${ruta}: «${valor.match(/.{0,40}(€|euros?|EUR).{0,20}/i)?.[0] ?? ''}»`)
+      if (!permitido && PRECIO_VISIBLE.test(valor)) precios.push(`${ruta}: «${valor.match(/.{0,40}(€|euros?|EUR).{0,20}/i)?.[0] ?? ''}»`)
     } else if (valor && typeof valor === 'object') {
-      const aqui = Array.isArray(valor.cifra_ok) ? [...permitidas, ...valor.cifra_ok] : permitidas
+      const aqui = permitido || valor.cifra_ok === true
       for (const [clave, hijo] of Object.entries(valor)) if (!INTERNO.has(clave) && !clave.startsWith('_') && clave !== 'cifra_ok') buscar(hijo, `${ruta}.${clave}`, aqui)
     }
   }

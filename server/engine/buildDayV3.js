@@ -38,7 +38,9 @@ const EARLY_WHY_BEFORE = 9 * 60 + 30
  */
 function curatedWhyAt(why, startMinutes) {
   if (typeof why === 'string') return why
-  return startMinutes < EARLY_WHY_BEFORE && why?.temprano ? why.temprano : why?.texto ?? why?.temprano ?? null
+  // `temprano_antes` ("09:00"): el umbral de ESE texto, si no es el de siempre (la Fontana de Trevi: antes de la tasa).
+  const before = why?.temprano_antes ? toMinutes(why.temprano_antes) : EARLY_WHY_BEFORE
+  return startMinutes < before && why?.temprano ? why.temprano : why?.texto ?? why?.temprano ?? null
 }
 
 /** Lo más que dura un "Por el camino" (B.1): lo que merece más es una parada. */

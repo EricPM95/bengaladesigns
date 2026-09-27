@@ -1182,3 +1182,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 265. **`cifra_ok`** (en un lugar de la ficha, lista de frases): las curiosidades con cifra que no son precios ("unos
     3.000€ en monedas" que se recogen cada día en la Fontana de Trevi) se quedan y `validar.mjs` las deja pasar. Un
     precio (la tasa de la balaustrada, una multa, "monedas de 1 €") nunca: va sin cifra o a Tickets con las APIs.
+266. **`cifra_ok: true`** (sustituye a la lista de la regla 265): lo que se queda con cifra a propósito lleva
+    `cifra_ok: true` en su objeto (el lugar de la ficha, la nocturna o el texto `{ texto, cifra_ok }`) y `validar.mjs`
+    lo deja pasar: la tasa de la balaustrada de Trevi bien explicada (no es una entrada: la fuente es gratis y solo se
+    paga por bajar junto al agua de 9:00 a 22:00), los 3.000 € diarios y el millón para Cáritas. Un `por_que`
+    `{ texto, temprano }` puede traer `temprano_antes` ("09:00") si su umbral no es el de siempre (09:30).
