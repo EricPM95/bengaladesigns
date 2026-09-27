@@ -62,7 +62,7 @@
         "Reserva SIEMPRE online con semanas de antelación — sin reserva la cola puede ser de 3-4 horas en temporada alta, y se agotan.",
         "Entra a las 08:00 en punto y ve DIRECTO a la Capilla Sixtina (salta las galerías e indicaciones normales — pide a un guardia el camino corto). A las 08:15 la tienes casi vacía. Luego recorre el resto hacia atrás.",
         "El viernes noche (en temporada) es la experiencia premium: el museo semivacío, con música en vivo en los patios y un ambiente completamente diferente al caos diurno.",
-        "El último domingo del mes es gratis pero NO compensa: colas de 2-3 horas, museo atestado, experiencia pésima. Paga la entrada y ven entre semana a primera hora.",
+        "El último domingo del mes NO compensa: colas de 2-3 horas y el museo atestado. Ven entre semana a primera hora.",
         "Código de vestimenta obligatorio: hombros y rodillas cubiertas. Llevan un pañuelo por si acaso — te rechazan en la puerta."
       ],
       "secrets": [
@@ -88,7 +88,7 @@
             "hours": "07:00–20:00"
           }
         ],
-        "notes": "Entrada gratuita. Código de vestimenta estricto: hombros y rodillas cubiertas (te rechazan sin excepciones). La cola del control de seguridad puede ser de 30-60 min en temporada alta — madruga."
+        "notes": "Código de vestimenta estricto: hombros y rodillas cubiertos (te rechazan sin excepciones). La cola del control de seguridad puede ser de 30-60 min en temporada alta: madruga."
       },
       "transport": [
         {
@@ -114,7 +114,7 @@
         "address": "Piazza San Pietro, 00120 Città del Vaticano"
       },
       "tips": [
-        "Gratis. La cola es para el control de seguridad, no para comprar entrada. Madruga (07:00-08:00) o ven a última hora (17:00+) para evitar esperas.",
+        "La cola es para el control de seguridad, no para comprar entrada. Madruga (07:00-08:00) o ven a última hora (17:00 en adelante) para evitar esperas.",
         "La Pietà está nada más entrar a la derecha — mucha gente se la salta yendo directa al fondo. Es la primera parada obligatoria.",
         "Fíjate en las marcas doradas en el suelo de la nave central: muestran la longitud de otras catedrales famosas comparadas con San Pedro. Ninguna llega ni a la mitad.",
         "Si quieres subir a la cúpula, la entrada es separada (fuera de la basílica, a la derecha). Ve ANTES de entrar a la basílica — la cola de la cúpula crece a lo largo del día."
@@ -122,7 +122,7 @@
       "secrets": [
         "El pie derecho de la estatua de bronce de San Pedro (nave central, pilar derecho) está desgastado por los millones de fieles que lo tocan desde hace siglos. Fíjate: el pie original tenía dedos individuales, hoy es una superficie lisa.",
         "El Baldaquino de Bernini está hecho con bronce arrancado del pórtico del Panteón por orden del Papa Barberini. Los romanos dijeron: 'Lo que no hicieron los bárbaros, lo hicieron los Barberini' — el dicho sigue vivo 400 años después.",
-        "Las Grutas Vaticanas (accesibles desde dentro de la basílica, gratis) son el cementerio papal más impresionante del mundo. La tumba de Juan Pablo II suele tener flores frescas dejadas por peregrinos polacos."
+        "Las Grutas Vaticanas (se entra desde dentro de la basílica) son el cementerio papal más impresionante del mundo. La tumba de Juan Pablo II suele tener flores frescas dejadas por peregrinos polacos."
       ]
     },
     {
@@ -158,7 +158,7 @@
       },
       "tips": [
         "Busca los dos discos de pórfido rojo en el suelo (entre el obelisco y cada fuente): si te pones encima, las 4 filas de columnas se alinean en una sola columna perfecta. Es el truco de Bernini más famoso.",
-        "Los miércoles por la mañana el Papa celebra audiencia general en la plaza (gratis, con entrada que se pide online). Los domingos a las 12:00, el Ángelus desde la ventana del apartamento papal.",
+        "Los miércoles por la mañana el Papa celebra la audiencia general en la plaza (con entrada que se pide online). Los domingos a las 12:00, el Ángelus desde la ventana del apartamento papal.",
         "La mejor hora para la foto es al atardecer, con la luz dorada bañando la fachada de la basílica."
       ],
       "secrets": [
@@ -295,7 +295,7 @@
         "address": "Lungotevere Castello 50, 00193 Roma"
       },
       "tips": [
-        "Compra entrada online — en temporada alta la cola puede ser de 1-2 horas. El primer domingo de cada mes es gratis (pero masificado).",
+        "Compra la entrada online: en temporada alta la cola puede ser de 1-2 horas. El primer domingo de cada mes está masificado.",
         "Sube directamente a la terraza superior — la vista desde arriba con San Pedro al fondo y el Tíber abajo es la recompensa. Luego baja explorando cada nivel.",
         "Combínalo con Puente Sant'Angelo (justo al lado) y Via della Conciliazione — es la ruta natural hacia el Vaticano.",
         "A primera hora (09:00) o última hora (17:00+) hay mucha menos gente."

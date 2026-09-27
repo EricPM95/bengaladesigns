@@ -24,7 +24,14 @@
     ],
     "area_del": "del centro histórico",
     "photo_url": null,
-    "photo_from": "Piazza Navona"
+    "photo_from": "Piazza Navona",
+    "ends_at": {
+      "name": "Piazza Navona",
+      "coordinates": [
+        41.8992,
+        12.473
+      ]
+    }
   },
   "joyas": [
     "Coliseo",
@@ -5818,7 +5825,7 @@
       "price_range": "€€",
       "avg_price_person": "10-15€",
       "what_to_order": "Spritz, negroni, o cualquiera de sus cócteles de autor. El buffet de aperitivo está incluido con la bebida.",
-      "tip": "Antiguo taller mecánico convertido en el bar más cool de Trastevere. A las 19:00 sacan el buffet de aperitivo gratuito con la consumición. Terraza animadísima.",
+      "tip": "Antiguo taller mecánico convertido en el bar más cool de Trastevere. A las 19:00 sacan el buffet de aperitivo, que va con la consumición. Terraza animadísima.",
       "hours": "Todos los días 18:00-02:00.",
       "best_for": "El aperitivo más animado de Trastevere",
       "coordinates_checked": {
@@ -6784,7 +6791,7 @@
         12.4787
       ],
       "description": "El barrio más tranquilo de Roma. Calles arboladas, monasterios, jardines escondidos y cero turismo de masas.",
-      "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera y es gratis."
+      "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera."
     },
     {
       "name": "Pasear por Testaccio",
@@ -6849,7 +6856,7 @@
         12.508
       ],
       "description": "Un barrio residencial de principios del siglo XX, con villas, jardines y una de las mayores rarezas arquitectónicas de la ciudad.",
-      "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público y gratuito con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
+      "tips": "El Quartiere Coppedè se ve en veinte minutos, pero bajando por Via Nomentana llegas a Villa Torlonia: parque público con la Casina delle Civette, una casita de vidrieras y búhos que no se parece a nada."
     }
   ],
   "destination_config": {
@@ -7879,26 +7886,31 @@
           "lugar": "Coliseo",
           "rol": "parada",
           "hora": "08:30",
-          "nota": "A la apertura: menos cola y menos calor."
+          "nota": "A la apertura: menos cola y menos calor.",
+          "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
         },
         {
           "lugar": "Arco de Constantino",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro."
         },
         {
           "lugar": "Foro Romano y Palatino",
           "rol": "parada",
-          "nota": "Se sale por el lado del Campidoglio."
+          "nota": "Se sale por el lado del Campidoglio.",
+          "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
         },
         {
           "lugar": "Plaza del Campidoglio",
           "rol": "parada",
-          "nota": "La vista del Foro desde arriba."
+          "nota": "La vista del Foro desde arriba.",
+          "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
         },
         {
           "lugar": "Altar de la Patria",
           "rol": "parada",
-          "nota": "Por dentro es gratis; sube a la terraza panorámica. Se come después, en el Ghetto."
+          "nota": "Por dentro es gratis; sube a la terraza panorámica. Se come después, en el Ghetto.",
+          "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
         }
       ],
       "comida": {
@@ -7913,47 +7925,56 @@
       "tarde": [
         {
           "lugar": "Barrio Judío",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
         },
         {
           "lugar": "Fuente de las Tortugas",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto."
         },
         {
           "lugar": "Largo di Torre Argentina",
           "rol": "de_paso",
           "solo": {
             "ritmo": "completo"
-          }
+          },
+          "por_que": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos."
         },
         {
           "lugar": "Panteón",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
         },
         {
           "lugar": "Elefantino de Bernini",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón."
         },
         {
           "lugar": "Iglesia de Santa Maria sopra Minerva",
           "rol": "parada",
           "solo": {
             "ritmo": "completo"
-          }
+          },
+          "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
         },
         {
           "lugar": "Iglesia de San Luigi dei Francesi",
           "rol": "parada",
-          "nota": "Los Caravaggio; reabre a las 14:30."
+          "nota": "Los Caravaggio; reabre a las 14:30.",
+          "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
         },
         {
           "lugar": "Piazza Navona",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
         },
         {
           "lugar": "Campo de' Fiori",
           "rol": "de_paso",
-          "nota": "Para el aperitivo."
+          "nota": "Para el aperitivo.",
+          "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
         }
       ],
       "cena": {
@@ -7967,16 +7988,19 @@
             {
               "lugar": "Coliseo",
               "rol": "parada",
-              "nota": "A las 10:00."
+              "nota": "A las 10:00.",
+              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
             },
             {
               "lugar": "Arco de Constantino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro."
             },
             {
               "lugar": "Foro Romano y Palatino",
               "rol": "parada",
-              "nota": "Antes de su última entrada: no hace falta madrugar ni en invierno."
+              "nota": "Antes de su última entrada: no hace falta madrugar ni en invierno.",
+              "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             }
           ],
           "comida": {
@@ -7989,34 +8013,41 @@
           "tarde": [
             {
               "lugar": "Plaza del Campidoglio",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
             },
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "minutos": 30,
-              "nota": "Por dentro es gratis; sube a la terraza panorámica."
+              "nota": "Por dentro es gratis; sube a la terraza panorámica.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             },
             {
               "lugar": "Panteón",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
             },
             {
               "lugar": "Piazza Navona",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Campo de' Fiori",
               "rol": "parada",
-              "nota": "Aperitivo en la plaza."
+              "nota": "Aperitivo en la plaza.",
+              "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
             },
             {
               "lugar": "Plaza Farnese",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas."
             }
           ]
         },
@@ -8025,45 +8056,54 @@
             {
               "lugar": "Panteón",
               "rol": "parada",
-              "nota": "El sábado cierra a las 16:00: lo primero después de comer."
+              "nota": "El sábado cierra a las 16:00: lo primero después de comer.",
+              "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
             },
             {
               "lugar": "Elefantino de Bernini",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón."
             },
             {
               "lugar": "Iglesia de Santa Maria sopra Minerva",
               "rol": "parada",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
             },
             {
               "lugar": "Piazza Navona",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Campo de' Fiori",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
             },
             {
               "lugar": "Largo di Torre Argentina",
               "rol": "de_paso",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos."
             },
             {
               "lugar": "Barrio Judío",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
             },
             {
               "lugar": "Fuente de las Tortugas",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto."
             }
           ],
           "aviso_fecha": {
@@ -8077,21 +8117,25 @@
             {
               "lugar": "Panteón",
               "rol": "parada",
-              "nota": "El sábado cierra a las 16:00: lo primero después de comer."
+              "nota": "El sábado cierra a las 16:00: lo primero después de comer.",
+              "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
             },
             {
               "lugar": "Piazza Navona",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "minutos": 30,
-              "nota": "A última hora, la terraza con la luz de la tarde."
+              "nota": "A última hora, la terraza con la luz de la tarde.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             }
           ],
           "aviso_fecha": {
@@ -8106,27 +8150,32 @@
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "minutos": 30,
-              "nota": "Por dentro es gratis; sube a la terraza panorámica."
+              "nota": "Por dentro es gratis; sube a la terraza panorámica.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             },
             {
               "lugar": "Fontana de Trevi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
             },
             {
               "lugar": "Plaza de España",
               "rol": "de_paso",
-              "nota": "De camino."
+              "nota": "De camino.",
+              "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
             },
             {
               "lugar": "Galería Borghese",
               "rol": "parada",
               "hora": "15:00",
               "pago": true,
-              "nota": "Entrada por turnos cada 2 horas, con reserva."
+              "nota": "Entrada por turnos cada 2 horas, con reserva.",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva."
             },
             {
               "lugar": "Terraza del Pincio",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo."
             }
           ],
           "cena": {
@@ -8146,20 +8195,24 @@
           "tarde": [
             {
               "lugar": "Circo Máximo",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Donde corrían los carros romanos, con el Palatino delante."
             },
             {
               "lugar": "Termas de Caracalla",
               "rol": "parada",
-              "pago": true
+              "pago": true,
+              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
             },
             {
               "lugar": "Boca de la Verdad",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
             },
             {
               "lugar": "Jardín de los Naranjos",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
             }
           ],
           "cena": {
@@ -8178,29 +8231,35 @@
               "lugar": "Coliseo",
               "rol": "parada",
               "hora": "10:00",
-              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino."
+              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino.",
+              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
             },
             {
               "lugar": "Foro Romano y Palatino",
               "rol": "parada",
-              "nota": "Desde Via dei Fori Imperiali."
+              "nota": "Desde Via dei Fori Imperiali.",
+              "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             },
             {
               "lugar": "Plaza del Campidoglio",
               "rol": "parada",
-              "nota": "Por fuera: los museos cierran hoy."
+              "nota": "Por fuera: los museos cierran hoy.",
+              "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
             },
             {
               "lugar": "Altar de la Patria",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             },
             {
               "lugar": "Barrio Judío",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
             },
             {
               "lugar": "Fuente de las Tortugas",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto."
             }
           ],
           "tarde": [
@@ -8209,34 +8268,41 @@
               "rol": "de_paso",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos."
             },
             {
               "lugar": "Panteón",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
             },
             {
               "lugar": "Elefantino de Bernini",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón."
             },
             {
               "lugar": "Iglesia de Santa Maria sopra Minerva",
               "rol": "parada",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
             },
             {
               "lugar": "Piazza Navona",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Campo de' Fiori",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
             }
           ]
         },
@@ -8249,28 +8315,33 @@
               "lugar": "Coliseo",
               "rol": "parada",
               "hora": "10:00",
-              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino."
+              "nota": "Hoy cierra: se ve por fuera, con el Arco de Constantino.",
+              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Empiezas el día por lo más grande de Roma."
             },
             {
               "lugar": "Foro Romano y Palatino",
               "rol": "parada",
-              "nota": "Desde Via dei Fori Imperiali."
+              "nota": "Desde Via dei Fori Imperiali.",
+              "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             },
             {
               "lugar": "Plaza del Campidoglio",
               "rol": "de_paso",
-              "nota": "Por fuera: los museos cierran hoy."
+              "nota": "Por fuera: los museos cierran hoy.",
+              "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
             },
             {
               "lugar": "Altar de la Patria",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             },
             {
               "lugar": "Bendición Urbi et Orbi",
               "rol": "parada",
               "hora": "12:00",
               "fija": true,
-              "nota": "Opcional."
+              "nota": "Opcional.",
+              "por_que": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles."
             }
           ],
           "comida": {
@@ -8284,41 +8355,49 @@
           "tarde": [
             {
               "lugar": "Piazza Navona",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona."
             },
             {
               "lugar": "Panteón",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
             },
             {
               "lugar": "Elefantino de Bernini",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "El elefante con obelisco de Bernini, en la plaza de al lado del Panteón."
             },
             {
               "lugar": "Iglesia de Santa Maria sopra Minerva",
               "rol": "parada",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Detrás del Panteón: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
             },
             {
               "lugar": "Largo di Torre Argentina",
               "rol": "de_paso",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Templos romanos en mitad del tráfico, donde mataron a Julio César. Hoy los cuida una colonia de gatos."
             },
             {
               "lugar": "Barrio Judío",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
             },
             {
               "lugar": "Fuente de las Tortugas",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto."
             }
           ]
         },
@@ -8337,7 +8416,8 @@
               "lugar": "Basílica de San Clemente",
               "rol": "parada",
               "hora": "14:00",
-              "nota": "Las tres iglesias superpuestas."
+              "nota": "Las tres iglesias superpuestas.",
+              "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
             }
           ]
         }
@@ -8362,15 +8442,18 @@
           "lugar": "Museos Vaticanos y Capilla Sixtina",
           "rol": "parada",
           "hora": "08:00",
-          "nota": "Primer turno."
+          "nota": "Primer turno.",
+          "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
         },
         {
           "lugar": "Plaza de San Pedro",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La plaza de Bernini, justo al salir de los Museos."
         },
         {
           "lugar": "Basílica de San Pedro",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
         },
         {
           "lugar": "Cúpula de San Pedro",
@@ -8382,7 +8465,8 @@
             {
               "experiencia": "naturaleza_vistas"
             }
-          ]
+          ],
+          "por_que": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies."
         }
       ],
       "comida": {
@@ -8396,7 +8480,8 @@
       "tarde": [
         {
           "lugar": "Borgo Pio",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -8410,37 +8495,44 @@
               "experiencia": "arte_museos",
               "min_dias": 5
             }
-          ]
+          ],
+          "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
         },
         {
           "lugar": "Puente Sant'Angelo",
           "rol": "parada",
-          "nota": "Y por el Lungotevere, junto al río, hasta Trastevere."
+          "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
+          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
         },
         {
           "lugar": "Trastevere",
           "rol": "parada",
           "estirar": true,
-          "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte."
+          "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte.",
+          "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "rol": "parada",
           "si_cerrado": "de_paso",
-          "nota": "Antes de las 18:00; si ya cerró, de paso."
+          "nota": "Antes de las 18:00; si ya cerró, de paso.",
+          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante."
         },
         {
           "lugar": "Mirador del Janículo",
           "rol": "atardecer",
-          "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo."
+          "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo.",
+          "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
         }
       ],
       "cena": {
@@ -8453,7 +8545,8 @@
           "tarde": [
             {
               "lugar": "Borgo Pio",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8467,35 +8560,42 @@
                   "experiencia": "arte_museos",
                   "min_dias": 5
                 }
-              ]
+              ],
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Mirador del Janículo",
               "rol": "atardecer",
-              "nota": "~30 min andando con cuesta, o el bus 115."
+              "nota": "~30 min andando con cuesta, o el bus 115.",
+              "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
             },
             {
               "lugar": "Fontana dell'Acqua Paola",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante."
             },
             {
               "lugar": "San Pietro in Montorio y Tempietto de Bramante",
               "rol": "parada",
               "si_cerrado": "de_paso",
-              "nota": "Si se llega antes de las 18:00."
+              "nota": "Si se llega antes de las 18:00.",
+              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
             },
             {
               "lugar": "Trastevere",
               "rol": "parada",
-              "nota": "Bajar de noche callejeando."
+              "nota": "Bajar de noche callejeando.",
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
           ],
           "atardecer_antes_de": "18:20",
@@ -8505,7 +8605,8 @@
             "tarde": [
               {
                 "lugar": "Borgo Pio",
-                "rol": "de_paso"
+                "rol": "de_paso",
+                "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
               },
               {
                 "lugar": "Castillo de Sant'Angelo",
@@ -8519,37 +8620,44 @@
                     "experiencia": "arte_museos",
                     "min_dias": 5
                   }
-                ]
+                ],
+                "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
               },
               {
                 "lugar": "Puente Sant'Angelo",
                 "rol": "parada",
-                "nota": "Y por el Lungotevere, junto al río, hasta Trastevere."
+                "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
+                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
               },
               {
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "rol": "parada"
+                "rol": "parada",
+                "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
               },
               {
                 "lugar": "Trastevere",
                 "rol": "parada",
                 "estirar": true,
-                "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte."
+                "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte.",
+                "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
               },
               {
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
                 "rol": "parada",
                 "si_cerrado": "de_paso",
-                "nota": "Antes de las 18:00; si ya cerró, de paso."
+                "nota": "Antes de las 18:00; si ya cerró, de paso.",
+                "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
               },
               {
                 "lugar": "Fontana dell'Acqua Paola",
-                "rol": "parada"
+                "rol": "parada",
+                "por_que": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante."
               },
               {
                 "lugar": "Mirador del Janículo",
                 "rol": "atardecer",
-                "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo."
+                "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo.",
+                "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
               }
             ]
           }
@@ -8558,17 +8666,20 @@
           "manana": [
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
             }
           ],
           "tarde": [
             {
               "lugar": "Plaza de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza de Bernini, justo al salir de los Museos."
             },
             {
               "lugar": "Basílica de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8576,20 +8687,24 @@
               "pago": true,
               "solo": {
                 "pool": true
-              }
+              },
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Trastevere",
               "rol": "parada",
-              "estirar": true
+              "estirar": true,
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             },
             {
               "lugar": "Mirador del Janículo",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
             }
           ]
         },
@@ -8597,11 +8712,13 @@
           "tarde": [
             {
               "lugar": "Plaza de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza de Bernini, justo al salir de los Museos."
             },
             {
               "lugar": "Basílica de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8609,21 +8726,25 @@
               "pago": true,
               "solo": {
                 "pool": true
-              }
+              },
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
-              "nota": "Y por el río hasta Trastevere."
+              "nota": "Y por el río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
             },
             {
               "lugar": "Trastevere",
               "rol": "parada",
-              "nota": "Callejear de noche hasta la cena."
+              "nota": "Callejear de noche hasta la cena.",
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
           ]
         },
@@ -8633,13 +8754,15 @@
               "lugar": "Museos Vaticanos y Capilla Sixtina",
               "rol": "parada",
               "hora": "08:00",
-              "nota": "Primer turno."
+              "nota": "Primer turno.",
+              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
             },
             {
               "lugar": "Borgo Pio",
               "rol": "parada",
               "minutos": 30,
-              "nota": "Callejear por el Borgo mientras acaba la audiencia del Papa."
+              "nota": "Callejear por el Borgo mientras acaba la audiencia del Papa.",
+              "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
             }
           ],
           "comida": {
@@ -8654,12 +8777,14 @@
           "tarde_antes": [
             {
               "lugar": "Plaza de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza de Bernini, justo al salir de los Museos."
             },
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "nota": "El miércoles abre a las 12:30, tras la audiencia papal."
+              "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
+              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -8671,7 +8796,8 @@
                 {
                   "experiencia": "naturaleza_vistas"
                 }
-              ]
+              ],
+              "por_que": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8685,7 +8811,8 @@
                   "experiencia": "arte_museos",
                   "min_dias": 5
                 }
-              ]
+              ],
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             }
           ],
           "aviso_fecha": {
@@ -8700,36 +8827,43 @@
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "nota": "El Ángelus es a las 12:00 los domingos, si el Papa está en Roma."
+              "nota": "El Ángelus es a las 12:00 los domingos, si el Papa está en Roma.",
+              "por_que": "La plaza de Bernini, justo al salir de los Museos."
             },
             {
               "lugar": "Basílica de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             },
             {
               "lugar": "Cúpula de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
-              "nota": "Si abre ese día."
+              "nota": "Si abre ese día.",
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
-              "nota": "Y por el río hasta Trastevere."
+              "nota": "Y por el río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
             },
             {
               "lugar": "Basílica de Santa Cecilia in Trastevere",
               "rol": "parada",
               "si_abre": true,
-              "nota": "Si abre."
+              "nota": "Si abre.",
+              "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. Abre a las 16:30."
             }
           ],
           "comida": {
@@ -8741,20 +8875,24 @@
               "lugar": "Trastevere",
               "rol": "parada",
               "estirar": true,
-              "nota": "Callejear."
+              "nota": "Callejear.",
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             },
             {
               "lugar": "San Pietro in Montorio y Tempietto de Bramante",
               "rol": "parada",
-              "si_cerrado": "de_paso"
+              "si_cerrado": "de_paso",
+              "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
             },
             {
               "lugar": "Fontana dell'Acqua Paola",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante."
             },
             {
               "lugar": "Mirador del Janículo",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
             }
           ],
           "sin": "Museos Vaticanos y Capilla Sixtina"
@@ -8763,7 +8901,8 @@
           "manana": [
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Con el primer turno de la mañana: la Capilla Sixtina con la menor gente posible."
             }
           ],
           "comida": {
@@ -8777,12 +8916,14 @@
           "tarde_antes": [
             {
               "lugar": "Plaza de San Pedro",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La plaza de Bernini, justo al salir de los Museos."
             },
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "nota": "El miércoles abre a las 12:30, tras la audiencia papal."
+              "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
+              "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
             }
           ],
           "aviso_fecha": {
@@ -8812,7 +8953,8 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena."
+          "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
+          "por_que": "A primera hora casi no hay nadie: la ves tranquila. Luego pasarás con el tour a media mañana y estará llena."
         },
         {
           "lugar": "Desayuno romano",
@@ -8821,12 +8963,14 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "Cappuccino y cornetto de pie en la barra, como un local, antes de ir al punto de encuentro (Plaza de España, a 10 min)."
+          "nota": "Cappuccino y cornetto de pie en la barra, como un local, antes de ir al punto de encuentro (Plaza de España, a 10 min).",
+          "por_que": "Cappuccino y cornetto de pie en la barra, antes de ir al punto de encuentro del tour, a 10 min."
         },
         {
           "lugar": "Free Tour Centro Histórico",
           "rol": "parada",
-          "nota": "De 10:00 a 12:30. Sale de la Plaza de España."
+          "nota": "De 10:00 a 12:30. Sale de la Plaza de España.",
+          "por_que": "Dos horas y media por el centro con un guía que te cuenta la historia de todo lo que ves. Sale de la Plaza de España."
         }
       ],
       "comida": {
@@ -8841,19 +8985,23 @@
           "lugar": "Museos Vaticanos y Capilla Sixtina",
           "rol": "parada",
           "hora": "14:30",
-          "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00."
+          "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00.",
+          "por_que": "Por la tarde hay menos cola que a media mañana: entras hacia las 14:30."
         },
         {
           "lugar": "Plaza de San Pedro",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La plaza de Bernini, con las columnas que abrazan a los peregrinos."
         },
         {
           "lugar": "Basílica de San Pedro",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La iglesia más grande del mundo: la Piedad de Miguel Ángel y el baldaquino de Bernini."
         },
         {
           "lugar": "Borgo Pio",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
         }
       ],
       "cena": {
@@ -8879,33 +9027,39 @@
           "lugar": "Coliseo",
           "rol": "parada",
           "hora": "08:30",
-          "nota": "A la apertura: menos cola y menos calor."
+          "nota": "A la apertura: menos cola y menos calor.",
+          "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
         },
         {
           "lugar": "Arco de Constantino",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro."
         },
         {
           "lugar": "Foro Romano y Palatino",
           "rol": "parada",
-          "nota": "Se sale por el lado del Campidoglio."
+          "nota": "Se sale por el lado del Campidoglio.",
+          "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
         },
         {
           "lugar": "Plaza del Campidoglio",
           "rol": "parada",
-          "nota": "La plaza de Miguel Ángel y, por detrás, el Foro desde arriba."
+          "nota": "La plaza de Miguel Ángel y, por detrás, el Foro desde arriba.",
+          "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
         },
         {
           "lugar": "Museos Capitolinos",
           "rol": "parada",
           "solo": {
             "pool": true
-          }
+          },
+          "por_que": "Los museos más antiguos del mundo, en la plaza de Miguel Ángel."
         },
         {
           "lugar": "Altar de la Patria",
           "rol": "parada",
-          "nota": "Por dentro es gratis; la terraza panorámica, en ascensor."
+          "nota": "Por dentro es gratis; la terraza panorámica, en ascensor.",
+          "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
         }
       ],
       "comida": {
@@ -8919,19 +9073,23 @@
       "tarde": [
         {
           "lugar": "Barrio Judío",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
         },
         {
           "lugar": "Fuente de las Tortugas",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "Una fuente pequeña y preciosa del Renacimiento, escondida en una plaza del Ghetto."
         },
         {
           "lugar": "Teatro de Marcelo",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "Parece un Coliseo pequeño: un teatro romano con casas construidas encima."
         },
         {
           "lugar": "Isla Tiberina",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La única isla del Tíber, con el puente romano más antiguo que sigue en pie."
         },
         {
           "lugar": "Basílica de Santa Cecilia in Trastevere",
@@ -8940,17 +9098,20 @@
             "ritmo": "completo"
           },
           "si_abre": true,
-          "nota": "Abre a las 16:30."
+          "nota": "Abre a las 16:30.",
+          "por_que": "La iglesia de la patrona de la música, con su estatua de mármol tumbada. Abre a las 16:30."
         },
         {
           "lugar": "Trastevere",
           "rol": "parada",
           "estirar": true,
-          "nota": "Callejear y aperitivo: aquí va el tiempo que sobre antes del atardecer."
+          "nota": "Callejear y aperitivo: aquí va el tiempo que sobre antes del atardecer.",
+          "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Los mosaicos dorados más bonitos de Roma, en la plaza que es el corazón de Trastevere."
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -8959,7 +9120,8 @@
           "solo": {
             "estacion": "no_invierno"
           },
-          "nota": "Subiendo por Via Garibaldi."
+          "nota": "Subiendo por Via Garibaldi.",
+          "por_que": "El pequeño templo de Bramante, una joya del Renacimiento, subiendo al Janículo."
         },
         {
           "lugar": "Mirador del Janículo",
@@ -8967,7 +9129,8 @@
           "solo": {
             "estacion": "no_invierno"
           },
-          "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo."
+          "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo.",
+          "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
         }
       ],
       "cena": {
@@ -8985,47 +9148,56 @@
               "lugar": "Coliseo",
               "rol": "parada",
               "hora": "08:30",
-              "nota": "A la apertura: menos cola y menos calor."
+              "nota": "A la apertura: menos cola y menos calor.",
+              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
             },
             {
               "lugar": "Arco de Constantino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro."
             },
             {
               "lugar": "Foro Romano y Palatino",
               "rol": "parada",
-              "nota": "Se sale por el lado del Campidoglio."
+              "nota": "Se sale por el lado del Campidoglio.",
+              "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             },
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
-              "nota": "Por dentro es gratis; sube a la terraza panorámica."
+              "nota": "Por dentro es gratis; sube a la terraza panorámica.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             }
           ],
           "tarde": [
             {
               "lugar": "Circo Máximo",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Donde corrían los carros romanos, con el Palatino delante."
             },
             {
               "lugar": "Termas de Caracalla",
               "rol": "parada",
-              "pago": true
+              "pago": true,
+              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
             },
             {
               "lugar": "Boca de la Verdad",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
             },
             {
               "lugar": "Jardín de los Naranjos",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
             },
             {
               "lugar": "Ojo de la Cerradura del Aventino",
               "rol": "parada",
               "solo": {
                 "cierra_antes_del_atardecer": "Jardín de los Naranjos"
-              }
+              },
+              "por_que": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada."
             },
             {
               "lugar": "Trastevere",
@@ -9033,7 +9205,8 @@
               "solo": {
                 "cierra_antes_del_atardecer": "Jardín de los Naranjos"
               },
-              "nota": "Bajar por el Ponte Sublicio y callejear: aperitivo en el barrio."
+              "nota": "Bajar por el Ponte Sublicio y callejear: aperitivo en el barrio.",
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
           ],
           "cena": {
@@ -9046,34 +9219,41 @@
             {
               "lugar": "Coliseo",
               "rol": "parada",
-              "nota": "A las 10:00."
+              "nota": "A las 10:00.",
+              "por_que": "A la apertura, a las 8:30: menos cola y todavía fresco. Hoy toca la Roma antigua."
             },
             {
               "lugar": "Arco de Constantino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Pegado al Coliseo: el arco triunfal mejor conservado de Roma, de camino al Foro."
             },
             {
               "lugar": "Foro Romano y Palatino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             }
           ],
           "tarde": [
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
-              "nota": "Por dentro es gratis; sube a la terraza panorámica."
+              "nota": "Por dentro es gratis; sube a la terraza panorámica.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             },
             {
               "lugar": "Barrio Judío",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "El barrio más antiguo de Roma y el sitio para probar las alcachofas a la judía."
             },
             {
               "lugar": "Isla Tiberina",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La única isla del Tíber, con el puente romano más antiguo que sigue en pie."
             },
             {
               "lugar": "Trastevere",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
             }
           ]
         }
@@ -9098,7 +9278,8 @@
           "lugar": "Fontana de Trevi",
           "rol": "parada",
           "hora": "08:00",
-          "nota": "A las 08:00, sin gente."
+          "nota": "A las 08:00, sin gente.",
+          "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
         },
         {
           "lugar": "Desayuno romano",
@@ -9107,7 +9288,8 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "Cappuccino y cornetto de pie en la barra, como un local."
+          "nota": "Cappuccino y cornetto de pie en la barra, como un local.",
+          "por_que": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día."
         },
         {
           "lugar": "Iglesia de San Ignacio de Loyola",
@@ -9115,20 +9297,24 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "La cúpula falsa; abre a las 09:00."
+          "nota": "La cúpula falsa; abre a las 09:00.",
+          "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
         },
         {
           "lugar": "Plaza Colonna",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La columna de Marco Aurelio, delante del palacio del Gobierno."
         },
         {
           "lugar": "Via Condotti",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La calle de las grandes marcas, que desemboca justo en la escalinata."
         },
         {
           "lugar": "Plaza de España",
           "rol": "parada",
-          "nota": "Y la escalinata."
+          "nota": "Y la escalinata.",
+          "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
         },
         {
           "lugar": "Ara Pacis",
@@ -9137,17 +9323,20 @@
           "solo": {
             "experiencia": "arte_museos",
             "min_dias": 5
-          }
+          },
+          "por_que": "El altar de la paz de Augusto, en un edificio moderno junto al Tíber."
         },
         {
           "lugar": "Santa Maria del Popolo",
           "rol": "parada",
           "antes_de": "12:00",
-          "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00."
+          "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00.",
+          "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
         },
         {
           "lugar": "Piazza del Popolo",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
         }
       ],
       "comida": {
@@ -9175,18 +9364,21 @@
               "min_dias": 4
             }
           ],
-          "nota": "Turno de las 15:00 (contando desde el atardecer; nunca el de las 17:00), con reserva."
+          "nota": "Turno de las 15:00 (contando desde el atardecer; nunca el de las 17:00), con reserva.",
+          "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva."
         },
         {
           "lugar": "Parque de Villa Borghese",
           "rol": "parada",
           "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
           "minutos": 30,
-          "estirar": true
+          "estirar": true,
+          "por_que": "Cruzas el parque hasta el Pincio: el lago y el templete por el camino."
         },
         {
           "lugar": "Terraza del Pincio",
-          "rol": "atardecer"
+          "rol": "atardecer",
+          "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo."
         }
       ],
       "cena": {
@@ -9201,7 +9393,8 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "hora": "08:00",
-              "nota": "A las 08:00, sin gente."
+              "nota": "A las 08:00, sin gente.",
+              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
             },
             {
               "lugar": "Desayuno romano",
@@ -9210,7 +9403,8 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "nota": "Cappuccino y cornetto de pie en la barra, como un local."
+              "nota": "Cappuccino y cornetto de pie en la barra, como un local.",
+              "por_que": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día."
             },
             {
               "lugar": "Iglesia de San Ignacio de Loyola",
@@ -9218,20 +9412,24 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "nota": "La cúpula falsa; abre a las 09:00."
+              "nota": "La cúpula falsa; abre a las 09:00.",
+              "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
             },
             {
               "lugar": "Plaza Colonna",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La columna de Marco Aurelio, delante del palacio del Gobierno."
             },
             {
               "lugar": "Via Condotti",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La calle de las grandes marcas, que desemboca justo en la escalinata."
             },
             {
               "lugar": "Plaza de España",
               "rol": "parada",
-              "nota": "Y la escalinata."
+              "nota": "Y la escalinata.",
+              "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
             },
             {
               "lugar": "Ara Pacis",
@@ -9240,11 +9438,13 @@
               "solo": {
                 "experiencia": "arte_museos",
                 "min_dias": 5
-              }
+              },
+              "por_que": "El altar de la paz de Augusto, en un edificio moderno junto al Tíber."
             },
             {
               "lugar": "Piazza del Popolo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             }
           ],
           "comida": {
@@ -9275,20 +9475,24 @@
                   "min_dias": 4
                 }
               ],
-              "nota": "Turno de las 13:00, con reserva."
+              "nota": "Turno de las 13:00, con reserva.",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva."
             },
             {
               "lugar": "Parque de Villa Borghese",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Cruzas el parque hasta el Pincio: el lago y el templete por el camino."
             },
             {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
-              "nota": "En invierno, por la tarde (abre de 16:00 a 18:00), antes de subir al Pincio. Los dos Caravaggio."
+              "nota": "En invierno, por la tarde (abre de 16:00 a 18:00), antes de subir al Pincio. Los dos Caravaggio.",
+              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Terraza del Pincio",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo."
             }
           ]
         },
@@ -9302,26 +9506,31 @@
               "solo": {
                 "ritmo": "completo"
               },
-              "nota": "Sin prisas, que ayer fue un día largo: cappuccino y cornetto de pie en la barra."
+              "nota": "Sin prisas, que ayer fue un día largo: cappuccino y cornetto de pie en la barra.",
+              "por_que": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día."
             },
             {
               "lugar": "Iglesia de Santa Maria della Vittoria",
               "rol": "parada",
-              "nota": "El Éxtasis de Santa Teresa de Bernini, gratis y sin cola."
+              "nota": "El Éxtasis de Santa Teresa de Bernini, gratis y sin cola.",
+              "por_que": "El Éxtasis de Santa Teresa de Bernini, en una iglesia pequeña donde casi nunca hay gente."
             },
             {
               "lugar": "Fuente del Tritón",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La fuente de Bernini en la Plaza Barberini."
             },
             {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
               "antes_de": "12:00",
-              "nota": "Los dos Caravaggio. Se llega bajando por Via Sistina y Via del Babuino."
+              "nota": "Los dos Caravaggio. Se llega bajando por Via Sistina y Via del Babuino.",
+              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Piazza del Popolo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             },
             {
               "lugar": "Ara Pacis",
@@ -9330,7 +9539,8 @@
               "solo": {
                 "experiencia": "arte_museos",
                 "min_dias": 5
-              }
+              },
+              "por_que": "El altar de la paz de Augusto, en un edificio moderno junto al Tíber."
             }
           ],
           "comida": {
@@ -9362,7 +9572,8 @@
                   "estacion": "invierno"
                 }
               ],
-              "nota": "Turno de las 13:00, con reserva (en invierno, para llegar al Pincio con luz)."
+              "nota": "Turno de las 13:00, con reserva (en invierno, para llegar al Pincio con luz).",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva."
             },
             {
               "lugar": "Galería Borghese",
@@ -9383,18 +9594,21 @@
                   "estacion": "no_invierno"
                 }
               ],
-              "nota": "Turno de las 15:00, con reserva."
+              "nota": "Turno de las 15:00, con reserva.",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en una villa. Se entra por turnos, con reserva."
             },
             {
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
               "minutos": 30,
               "estirar": true,
-              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete."
+              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete.",
+              "por_que": "Cruzas el parque hasta el Pincio: el lago y el templete por el camino."
             },
             {
               "lugar": "Terraza del Pincio",
-              "rol": "atardecer"
+              "rol": "atardecer",
+              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo."
             }
           ]
         },
@@ -9403,15 +9617,18 @@
             {
               "lugar": "Fontana de Trevi",
               "rol": "parada",
-              "aviso": "A esta hora ya hay gente; si puedes, pásate temprano."
+              "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
+              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
             },
             {
               "lugar": "Plaza de España",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
             },
             {
               "lugar": "Piazza del Popolo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             }
           ]
         },
@@ -9425,7 +9642,8 @@
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
-                "nota": "El domingo solo abre de 16:30 a 18:00."
+                "nota": "El domingo solo abre de 16:30 a 18:00.",
+                "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
               }
             }
           ]
@@ -9449,7 +9667,8 @@
           "lugar": "Fontana de Trevi",
           "rol": "parada",
           "hora": "08:00",
-          "nota": "A las 08:00, sin gente."
+          "nota": "A las 08:00, sin gente.",
+          "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
         },
         {
           "lugar": "Desayuno romano",
@@ -9458,7 +9677,8 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "Cappuccino y cornetto de pie en la barra, como un local."
+          "nota": "Cappuccino y cornetto de pie en la barra, como un local.",
+          "por_que": "Cappuccino y cornetto de pie en la barra, como un romano antes de empezar el día."
         },
         {
           "lugar": "Iglesia de San Ignacio de Loyola",
@@ -9466,35 +9686,42 @@
           "solo": {
             "ritmo": "completo"
           },
-          "nota": "La cúpula falsa; abre a las 09:00."
+          "nota": "La cúpula falsa; abre a las 09:00.",
+          "por_que": "Mira el techo: la cúpula es falsa, está pintada en plano. Ponte en el disco del suelo y verás el truco."
         },
         {
           "lugar": "Plaza Colonna",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La columna de Marco Aurelio, delante del palacio del Gobierno."
         },
         {
           "lugar": "Via Condotti",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La calle de las grandes marcas, que desemboca justo en la escalinata."
         },
         {
           "lugar": "Plaza de España",
           "rol": "parada",
-          "nota": "Y la escalinata."
+          "nota": "Y la escalinata.",
+          "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
         },
         {
           "lugar": "Santa Maria del Popolo",
           "rol": "parada",
           "antes_de": "12:00",
-          "nota": "Los dos Caravaggio, gratis. Cierra a las 12:00."
+          "nota": "Los dos Caravaggio, gratis. Cierra a las 12:00.",
+          "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
         },
         {
           "lugar": "Piazza del Popolo",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
         },
         {
           "lugar": "Terraza del Pincio",
           "rol": "parada",
-          "nota": "Sube por las rampas: Roma de día desde arriba."
+          "nota": "Sube por las rampas: Roma de día desde arriba.",
+          "por_que": "Roma desde arriba, sobre la Piazza del Popolo."
         }
       ],
       "comida": {
@@ -9509,34 +9736,40 @@
         {
           "lugar": "Parque de Villa Borghese",
           "rol": "parada",
-          "nota": "El lago y el templete; barca o bici."
+          "nota": "El lago y el templete; barca o bici.",
+          "por_que": "El gran parque de Roma: el lago con su templete, y barca o bici si te apetece."
         },
         {
           "lugar": "Iglesia de Santa Maria della Vittoria",
           "rol": "parada",
-          "nota": "El Éxtasis de Santa Teresa de Bernini, gratis. Abre a las 16:00."
+          "nota": "El Éxtasis de Santa Teresa de Bernini, gratis. Abre a las 16:00.",
+          "por_que": "El Éxtasis de Santa Teresa de Bernini, en una iglesia pequeña donde casi nunca hay gente."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
-          "nota": "El Moisés de Miguel Ángel."
+          "nota": "El Moisés de Miguel Ángel.",
+          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
           "rol": "parada",
           "estirar": true,
-          "nota": "Callejear y aperitivo en la Piazza della Madonna dei Monti."
+          "nota": "Callejear y aperitivo en la Piazza della Madonna dei Monti.",
+          "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti."
         },
         {
           "lugar": "Via dei Fori Imperiali",
           "rol": "atardecer",
           "no_calle": true,
-          "nota": "Los Foros Imperiales y el Coliseo con la última luz."
+          "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
         }
       ],
       "cena": {
@@ -9555,21 +9788,25 @@
             {
               "lugar": "Fontana de Trevi",
               "rol": "parada",
-              "aviso": "A esta hora ya hay gente; si puedes, pásate temprano."
+              "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
+              "por_que": "A primera hora, sin gente: la ves tranquila y haces la foto sin nadie delante."
             },
             {
               "lugar": "Plaza de España",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La escalinata más famosa del mundo y, arriba, Trinità dei Monti."
             },
             {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
               "antes_de": "12:00",
-              "minutos": 20
+              "minutos": 20,
+              "por_que": "Dos Caravaggio y una capilla de Rafael, en la iglesia de la plaza. Por la mañana cierra a las 12:00."
             },
             {
               "lugar": "Piazza del Popolo",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La gran entrada norte de Roma, con su obelisco y sus dos iglesias gemelas."
             }
           ]
         }
@@ -9593,25 +9830,30 @@
             {
               "min_dias": 4
             }
-          ]
+          ],
+          "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
         },
         {
           "lugar": "Boca de la Verdad",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
         },
         {
           "lugar": "Jardín de los Naranjos",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
         },
         {
           "lugar": "Ojo de la Cerradura del Aventino",
           "rol": "parada",
-          "nota": "Luego se baja a Testaccio."
+          "nota": "Luego se baja a Testaccio.",
+          "por_que": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada."
         },
         {
           "lugar": "Testaccio",
           "rol": "parada",
-          "nota": "Callejear hasta el mercado."
+          "nota": "Callejear hasta el mercado.",
+          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Baja callejeando hasta el mercado."
         }
       ],
       "comida": {
@@ -9627,14 +9869,18 @@
           "rol": "parada",
           "traslado": "el bus 118 (desde la Pirámide)",
           "traslado_min": 25,
-          "nota": "Visita guiada de unos 45 min. Cierran de 12:00 a 14:00 y los miércoles."
+          "nota": "Visita guiada de unos 45 min. Cierran de 12:00 a 14:00 y los miércoles.",
+          "por_que": "Las catacumbas más importantes de Roma, con visita guiada de unos 45 min."
         },
         {
           "lugar": "Via Appia Antica",
           "rol": "parada",
           "no_calle": true,
           "minutos": 105,
-          "nota": "A pie o en bici por el tramo más bonito, hasta la tumba de Cecilia Metella."
+          "nota": "A pie o en bici por el tramo más bonito, hasta la tumba de Cecilia Metella.",
+          "por_que": "La calzada romana con sus losas originales, entre pinos y tumbas. A pie o en bici, hasta la tumba de Cecilia Metella.",
+          "estirar": true,
+          "estirar_max": 150
         },
         {
           "lugar": "Circo Máximo",
@@ -9642,12 +9888,15 @@
           "estirar": true,
           "traslado": "el bus 118 (hasta el Circo Máximo)",
           "traslado_min": 30,
-          "nota": "Bajas del bus aquí: el Palatino enfrente con la luz de la tarde."
+          "nota": "Bajas del bus aquí: el Palatino enfrente con la luz de la tarde.",
+          "por_que": "Bajas del bus aquí: el Palatino con la luz de la tarde.",
+          "estirar_max": 30
         },
         {
           "lugar": "Plaza del Campidoglio",
           "rol": "atardecer",
-          "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces."
+          "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces.",
+          "por_que": "Termina el día con el Foro a tus pies: quédate a ver cómo se encienden las luces."
         }
       ],
       "cena": {
@@ -9663,31 +9912,37 @@
               "lugar": "Boca de la Verdad",
               "rol": "parada",
               "hora": "09:30",
-              "nota": "A la apertura, sin cola."
+              "nota": "A la apertura, sin cola.",
+              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
             },
             {
               "lugar": "Jardín de los Naranjos",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
             },
             {
               "lugar": "Ojo de la Cerradura del Aventino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada."
             },
             {
               "lugar": "Pirámide Cestia",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "Una pirámide romana de verdad, pegada a la muralla."
             },
             {
               "lugar": "Cementerio Protestante",
               "rol": "parada",
               "solo": {
                 "ritmo": "completo"
-              }
+              },
+              "por_que": "Un cementerio jardín, precioso y tranquilo, donde descansan Keats y Shelley."
             },
             {
               "lugar": "Testaccio",
               "rol": "parada",
-              "nota": "Callejear hasta el mercado."
+              "nota": "Callejear hasta el mercado.",
+              "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Baja callejeando hasta el mercado."
             }
           ]
         },
@@ -9705,19 +9960,23 @@
                   "min_dias": 4
                 }
               ],
-              "nota": "A las 10:00."
+              "nota": "A las 10:00.",
+              "por_que": "Las termas más espectaculares de Roma, enormes y casi vacías a primera hora."
             },
             {
               "lugar": "Boca de la Verdad",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
             },
             {
               "lugar": "Jardín de los Naranjos",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
             },
             {
               "lugar": "Ojo de la Cerradura del Aventino",
-              "rol": "parada"
+              "rol": "parada",
+              "por_que": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada."
             }
           ]
         },
@@ -9735,31 +9994,36 @@
             {
               "lugar": "Pirámide Cestia",
               "rol": "de_paso",
-              "nota": "Metro B de Piramide a Colosseo (8 min)."
+              "nota": "Metro B de Piramide a Colosseo (8 min).",
+              "por_que": "Una pirámide romana de verdad, pegada a la muralla."
             },
             {
               "lugar": "Basílica de San Clemente",
               "rol": "parada",
               "traslado": "el metro B (Piramide → Colosseo)",
               "traslado_min": 20,
-              "nota": "Las tres iglesias superpuestas."
+              "nota": "Las tres iglesias superpuestas.",
+              "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
             },
             {
               "lugar": "Iglesia de San Pietro in Vincoli",
               "rol": "parada",
               "si_cerrado": "de_paso",
-              "nota": "El Moisés de Miguel Ángel."
+              "nota": "El Moisés de Miguel Ángel.",
+              "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
             },
             {
               "lugar": "Monti",
               "rol": "parada",
               "estirar": true,
-              "nota": "Callejear y aperitivo."
+              "nota": "Callejear y aperitivo.",
+              "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti."
             },
             {
               "lugar": "Plaza del Campidoglio",
               "rol": "atardecer",
-              "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces."
+              "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces.",
+              "por_que": "Termina el día con el Foro a tus pies: quédate a ver cómo se encienden las luces."
             },
             {
               "lugar": "Altar de la Patria",
@@ -9767,7 +10031,8 @@
               "solo": {
                 "estacion": "invierno"
               },
-              "nota": "La terraza panorámica abre hasta las 19:30 (taquilla hasta las 18:45): Roma iluminada."
+              "nota": "La terraza panorámica abre hasta las 19:30 (taquilla hasta las 18:45): Roma iluminada.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             }
           ]
         },
@@ -9779,26 +10044,32 @@
               "hora": "14:00",
               "traslado": "el bus 118 (desde la Pirámide)",
               "traslado_min": 25,
-              "nota": "Visita guiada de unos 45 min."
+              "nota": "Visita guiada de unos 45 min.",
+              "por_que": "Las catacumbas más importantes de Roma, con visita guiada de unos 45 min."
             },
             {
               "lugar": "Via Appia Antica",
               "rol": "parada",
               "no_calle": true,
               "minutos": 60,
-              "nota": "El primer tramo, con la última luz."
+              "nota": "El primer tramo, con la última luz.",
+              "por_que": "La calzada romana con sus losas originales, entre pinos y tumbas. A pie o en bici, hasta la tumba de Cecilia Metella.",
+              "estirar": true,
+              "estirar_max": 150
             },
             {
               "lugar": "Plaza del Campidoglio",
               "rol": "parada",
               "traslado": "el bus 118 (hasta el Circo Máximo)",
               "traslado_min": 30,
-              "nota": "Ya de noche: por detrás de la plaza, el Foro iluminado a tus pies."
+              "nota": "Ya de noche: por detrás de la plaza, el Foro iluminado a tus pies.",
+              "por_que": "Termina el día con el Foro a tus pies: quédate a ver cómo se encienden las luces."
             },
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
-              "nota": "La terraza panorámica abre hasta las 19:30: Roma iluminada."
+              "nota": "La terraza panorámica abre hasta las 19:30: Roma iluminada.",
+              "por_que": "Al lado del Campidoglio. Entra y sube a la terraza: Roma entera, con el Foro y el Coliseo delante."
             }
           ]
         }
@@ -9819,31 +10090,37 @@
           "lugar": "Boca de la Verdad",
           "rol": "parada",
           "hora": "09:30",
-          "nota": "A la apertura, sin cola."
+          "nota": "A la apertura, sin cola.",
+          "por_que": "La máscara de 'Vacaciones en Roma'. A primera hora casi no hay cola."
         },
         {
           "lugar": "Jardín de los Naranjos",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Un jardín de naranjos con una de las vistas más bonitas de Roma, y casi sin turistas."
         },
         {
           "lugar": "Ojo de la Cerradura del Aventino",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Mira por la cerradura de la puerta de los Caballeros de Malta: la cúpula de San Pedro, perfectamente enmarcada."
         },
         {
           "lugar": "Pirámide Cestia",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "Una pirámide romana de verdad, pegada a la muralla."
         },
         {
           "lugar": "Cementerio Protestante",
           "rol": "parada",
           "solo": {
             "ritmo": "completo"
-          }
+          },
+          "por_que": "Un cementerio jardín, precioso y tranquilo, donde descansan Keats y Shelley."
         },
         {
           "lugar": "Testaccio",
           "rol": "parada",
-          "nota": "Callejear hasta el mercado."
+          "nota": "Callejear hasta el mercado.",
+          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Baja callejeando hasta el mercado."
         }
       ],
       "comida": {
@@ -9860,36 +10137,42 @@
           "rol": "parada",
           "traslado": "el metro B (Piramide → Colosseo)",
           "traslado_min": 20,
-          "nota": "Desde las 14:00; las tres iglesias superpuestas."
+          "nota": "Desde las 14:00; las tres iglesias superpuestas.",
+          "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
           "rol": "parada",
           "solo": {
             "ritmo": "completo"
-          }
+          },
+          "por_que": "La catedral de Roma, más antigua que San Pedro."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
-          "nota": "El Moisés de Miguel Ángel."
+          "nota": "El Moisés de Miguel Ángel.",
+          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
           "rol": "parada",
           "estirar": true,
-          "nota": "Callejear y aperitivo."
+          "nota": "Callejear y aperitivo.",
+          "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti."
         },
         {
           "lugar": "Via dei Fori Imperiali",
           "rol": "atardecer",
           "no_calle": true,
-          "nota": "Los Foros Imperiales y el Coliseo con la última luz."
+          "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
         }
       ],
       "cena": {
@@ -9919,33 +10202,39 @@
         {
           "lugar": "Basílica de San Clemente",
           "rol": "parada",
-          "nota": "Las tres iglesias superpuestas; última entrada a las 17:30."
+          "nota": "Las tres iglesias superpuestas; última entrada a las 17:30.",
+          "por_que": "Tres iglesias una encima de otra: bajas desde la basílica del siglo XII hasta un templo romano."
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "La catedral de Roma, más antigua que San Pedro."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
-          "rol": "parada"
+          "rol": "parada",
+          "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V."
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
           "rol": "parada",
           "si_cerrado": "de_paso",
-          "nota": "El Moisés de Miguel Ángel."
+          "nota": "El Moisés de Miguel Ángel.",
+          "por_que": "El Moisés de Miguel Ángel, a dos pasos de Monti."
         },
         {
           "lugar": "Monti",
           "rol": "parada",
           "estirar": true,
-          "nota": "Callejear y aperitivo."
+          "nota": "Callejear y aperitivo.",
+          "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y aperitivo en la Piazza della Madonna dei Monti."
         },
         {
           "lugar": "Via dei Fori Imperiali",
           "rol": "atardecer",
           "no_calle": true,
-          "nota": "Los Foros Imperiales y el Coliseo con la última luz."
+          "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
+          "por_que": "Pasea por la avenida de los Foros con la última luz, hasta el Coliseo."
         }
       ],
       "cena": {
@@ -9966,29 +10255,34 @@
         {
           "lugar": "Piazza Navona",
           "rol": "parada",
-          "nota": "De día y sin prisa: Bernini y los pintores."
+          "nota": "De día y sin prisa: Bernini y los pintores.",
+          "por_que": "Por la tarde y sin prisa: Bernini, los pintores y los músicos de la plaza."
         },
         {
           "lugar": "Campo de' Fiori",
           "rol": "parada",
           "estirar": true,
-          "nota": "Aperitivo en la plaza."
+          "nota": "Aperitivo en la plaza.",
+          "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
         },
         {
           "lugar": "Plaza Farnese",
-          "rol": "de_paso"
+          "rol": "de_paso",
+          "por_que": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas."
         },
         {
           "lugar": "Castillo de Sant'Angelo",
           "rol": "parada",
           "hora": "17:30",
           "pago": true,
-          "nota": "Sube a la terraza: Roma y San Pedro desde arriba."
+          "nota": "Sube a la terraza: Roma y San Pedro desde arriba.",
+          "por_que": "Sube a la terraza a última hora: Roma y San Pedro desde arriba."
         },
         {
           "lugar": "Puente Sant'Angelo",
           "rol": "atardecer",
-          "nota": "La cúpula de San Pedro recortada contra el atardecer, sobre el Tíber."
+          "nota": "La cúpula de San Pedro recortada contra el atardecer, sobre el Tíber.",
+          "por_que": "El atardecer sobre San Pedro desde el puente de los ángeles."
         }
       ],
       "cena": {
@@ -10003,26 +10297,31 @@
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
-              "nota": "Sube a la terraza a la hora del atardecer."
+              "nota": "Sube a la terraza a la hora del atardecer.",
+              "por_que": "Sube a la terraza a última hora: Roma y San Pedro desde arriba."
             },
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "atardecer",
-              "nota": "La cúpula de San Pedro recortada contra el atardecer."
+              "nota": "La cúpula de San Pedro recortada contra el atardecer.",
+              "por_que": "El atardecer sobre San Pedro desde el puente de los ángeles."
             },
             {
               "lugar": "Piazza Navona",
               "rol": "parada",
-              "nota": "Ya de noche, con las fuentes iluminadas."
+              "nota": "Ya de noche, con las fuentes iluminadas.",
+              "por_que": "Por la tarde y sin prisa: Bernini, los pintores y los músicos de la plaza."
             },
             {
               "lugar": "Campo de' Fiori",
               "rol": "parada",
-              "nota": "Aperitivo en la plaza."
+              "nota": "Aperitivo en la plaza.",
+              "por_que": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar."
             },
             {
               "lugar": "Plaza Farnese",
-              "rol": "de_paso"
+              "rol": "de_paso",
+              "por_que": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas."
             }
           ]
         }
@@ -10083,7 +10382,7 @@
       "recorrido": [
         "Foro Romano desde el Campidoglio (noche)"
       ],
-      "texto": "Detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado aparece a tus pies. Probablemente la mejor vista nocturna de Roma, gratis y a dos minutos de donde acaba la tarde."
+      "texto": "Detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado aparece a tus pies. Probablemente la mejor vista nocturna de Roma, a dos minutos de donde acaba la tarde."
     },
     "trastevere_sublicio": {
       "nombre": "Trastevere de noche",

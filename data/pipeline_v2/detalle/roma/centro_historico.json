@@ -24,7 +24,7 @@
             "last_entry": "21:00"
           }
         ],
-        "notes": "Desde febrero 2026, acceder a la balaustrada (zona baja junto al agua) cuesta una tasa de 2€. La piazza superior es libre y gratuita — puedes ver y fotografiar la fuente sin pagar. De 22:00 a 08:00 el acceso a la balaustrada es libre y sin tasa."
+        "notes": "A la balaustrada (la zona baja junto al agua) se baja con tasa desde febrero de 2026; la plaza de arriba es libre y desde ahí se ve y se fotografía la fuente entera. De 22:00 a 08:00 se baja sin tasa."
       },
       "transport": [
         {
@@ -54,12 +54,12 @@
       },
       "tips": [
         "Entre las 07:30 y las 08:30 la tienes prácticamente para ti — de día, a mediodía, es un caos con cientos de personas. La otra opción mágica es después de las 22:00, cuando se ilumina y la plaza se vacía.",
-        "Desde febrero 2026 hay una tasa de 2€ para bajar a la balaustrada (la zona junto al agua donde se tiran las monedas). Es solo pago electrónico, no llevan efectivo. Puedes verla perfectamente gratis desde arriba.",
+        "Desde febrero de 2026 hay una tasa para bajar a la balaustrada (la zona junto al agua donde se tiran las monedas), solo con pago electrónico. Desde arriba la ves perfectamente.",
         "El mejor punto para la foto clásica es desde la esquina superior derecha de la plaza (viniendo de Via delle Muratte) — tienes toda la fuente en encuadre sin gente delante.",
         "No comas en los restaurantes de la plaza — están orientados 100% al turista. Camina 3 minutos hacia Via del Lavatore y encontrarás sitios auténticos a mitad de precio."
       ],
       "secrets": [
-        "De noche (después de las 22:00) la fuente está iluminada, el acceso a la balaustrada es gratuito y apenas hay 10-15 personas — es la Trevi que los romanos conocen y los turistas se pierden.",
+        "De noche (después de las 22:00) la fuente está iluminada, se baja a la balaustrada sin tasa y apenas hay 10-15 personas: es la Trevi que los romanos conocen y los turistas se pierden.",
         "Si llueve, ven igualmente: el agua de lluvia mezclándose con los chorros de la fuente crea un efecto visual que no verás en ninguna postal.",
         "La tradición original no era una moneda, sino beber agua de la fuente. La costumbre de la moneda viene de la película 'Tres monedas en la fuente' (1954) — y ahora genera más de 1 millón de euros al año para Cáritas."
       ]
@@ -258,7 +258,7 @@
         "address": "Largo di Torre Argentina, 00186 Roma"
       },
       "tips": [
-        "Parada rápida de 10-15 minutos — se ve todo desde el nivel de calle, sin bajar. Es gratuito y está en el cruce de caminos entre el Panteón, Campo de' Fiori y el Ghetto.",
+        "Parada rápida de 10-15 minutos: se ve todo desde el nivel de la calle, sin bajar. Está en el cruce de caminos entre el Panteón, Campo de' Fiori y el Ghetto.",
         "Los gatos son la estrella: la asociación Torre Argentina Cat Sanctuary cuida a unos 100 gatos entre las ruinas. El refugio está en el lado sur de la plaza y aceptan donaciones.",
         "El templo B (el redondo) es probablemente donde cayó César. No hay señalización clara, pero es el circular con columnas que ves desde la esquina sudoeste."
       ],
@@ -354,7 +354,7 @@
             "hours": "07:45–13:00, 16:00–20:00"
           }
         ],
-        "notes": "Entrada gratuita. Cierra al mediodía como la mayoría de iglesias romanas."
+        "notes": "Cierra al mediodía, como la mayoría de iglesias romanas."
       },
       "transport": [
         {
@@ -377,18 +377,18 @@
         "address": "Piazza del Gesù, 00186 Roma"
       },
       "tips": [
-        "Gratis. Entra, mira hacia arriba y quédate 5 minutos absorbiendo el techo de Baciccia — es uno de los momentos 'wow' menos conocidos de Roma.",
+        "Entra, mira hacia arriba y quédate 5 minutos con el techo de Baciccia: es uno de los momentos 'wow' menos conocidos de Roma.",
         "Ven por la tarde (16:00-17:00), cuando el sol de poniente entra por las ventanas y enciende los dorados del interior.",
         "No te pierdas la Capilla de San Ignacio (transepto izquierdo): el altar de lapislázuli es más impresionante que muchos museos enteros."
       ],
       "secrets": [
-        "Cada día a las 17:30 (18:00 en julio-septiembre) hay una 'ceremonia de la máquina': un mecanismo del siglo XVIII baja un lienzo que cubre la estatua de plata de San Ignacio y la revela con un efecto teatral de luces. Es gratis y dura 10 minutos — puro barroco en acción.",
+        "Cada día a las 17:30 (18:00 en julio-septiembre) hay una 'ceremonia de la máquina': un mecanismo del siglo XVIII baja el lienzo que cubre la estatua de plata de San Ignacio y la revela con un efecto teatral de luces. Dura 10 minutos: puro barroco en acción.",
         "Esta iglesia cambió la historia de la arquitectura: la planta de nave única con capillas laterales que ves aquí se copió en miles de iglesias jesuitas de América Latina, Asia y Europa."
       ]
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
-      "description": "Tres obras maestras de Caravaggio en una capilla lateral, gratis. La iglesia nacional de Francia en Roma alberga en la Capilla Contarelli el ciclo de San Mateo: La vocación, El martirio y La inspiración de San Mateo. El contraste brutal de luz y sombra, la violencia de las escenas y los modelos sacados de la calle romana son Caravaggio en estado puro.",
+      "description": "Tres obras maestras de Caravaggio en una capilla lateral. La iglesia nacional de Francia en Roma alberga en la Capilla Contarelli el ciclo de San Mateo: La vocación, El martirio y La inspiración de San Mateo. El contraste brutal de luz y sombra, la violencia de las escenas y los modelos sacados de la calle romana son Caravaggio en estado puro.",
       "what_to_see": [
         "La vocación de San Mateo — el rayo de luz que señala a Mateo entre los recaudadores es una de las imágenes más icónicas de la historia del arte",
         "El martirio de San Mateo — la violencia cruda del asesinato con figuras que huyen en pánico",
@@ -402,7 +402,7 @@
             "hours": "10:00–12:30, 15:00–19:00"
           }
         ],
-        "notes": "Entrada gratuita. Cierra al mediodía. Puede cerrar durante misas o ceremonias sin aviso previo."
+        "notes": "Cierra al mediodía. Puede cerrar durante misas o ceremonias sin aviso previo."
       },
       "transport": [
         {
@@ -424,7 +424,7 @@
         "address": "Piazza di San Luigi de' Francesi, 00186 Roma"
       },
       "tips": [
-        "Gratis. Los Caravaggios están en la Capilla Contarelli (primera capilla a la izquierda del altar). Lleva monedas de 1€ para la máquina de luz — sin ella, los cuadros están oscuros y no se ven los detalles.",
+        "Los Caravaggio están en la Capilla Contarelli (primera capilla a la izquierda del altar). Lleva monedas para la máquina de luz: sin ella, los cuadros están oscuros y no se ven los detalles.",
         "Está a 200 metros de Piazza Navona — combínalas en un paseo. San Luigi es una parada de 15-20 minutos que vale más que muchos museos de pago.",
         "Entre semana por la mañana (10:00-11:00) casi no hay gente. Los fines de semana puede haber cola para entrar a la capilla."
       ],
@@ -537,7 +537,7 @@
             "hours": "07:10–19:00"
           }
         ],
-        "notes": "Entrada gratuita. Puede cerrar durante misas."
+        "notes": "Puede cerrar durante misas."
       },
       "transport": [
         {
@@ -559,7 +559,7 @@
         "address": "Piazza della Minerva 42, 00186 Roma"
       },
       "tips": [
-        "Gratis. Está justo detrás del Panteón — combínalas en la misma visita. El Cristo de Miguel Ángel está a la izquierda del altar mayor.",
+        "Está justo detrás del Panteón: combínalas en la misma visita. El Cristo de Miguel Ángel está a la izquierda del altar mayor.",
         "Las bóvedas azules con estrellas doradas son únicas en Roma — en ninguna otra iglesia del centro verás este estilo gótico."
       ],
       "secrets": [
@@ -582,8 +582,7 @@
             "dates": "Todo el año",
             "hours": "07:30–19:00"
           }
-        ],
-        "notes": "Entrada gratuita."
+        ]
       },
       "transport": [
         {
@@ -604,7 +603,7 @@
         "address": "Piazza di Sant'Ignazio, 00186 Roma"
       },
       "tips": [
-        "Gratis. Busca el disco dorado en el suelo de la nave central: es el punto exacto donde la ilusión del techo es perfecta. Da un paso fuera del disco y verás cómo la perspectiva se deforma — es hipnótico.",
+        "Busca el disco dorado en el suelo de la nave central: es el punto exacto donde la ilusión del techo es perfecta. Da un paso fuera del disco y verás cómo la perspectiva se deforma; es hipnótico.",
         "No te pierdas la falsa cúpula del crucero — también es una pintura plana. Los jesuitas no tenían dinero para una cúpula real, así que Pozzo pintó una. Desde abajo, cuesta creer que no es de verdad."
       ],
       "secrets": [
@@ -719,7 +718,7 @@
       ],
       "secrets": [
         "El nombre 'Condotti' viene de los conductos de agua del acueducto Aqua Virgo que pasaban por debajo de esta calle — los mismos que alimentan Trevi y Piazza Navona.",
-        "El Caffè Greco ha sido sede de conspiraciones políticas, encuentros artísticos y el Grand Tour europeo durante 260 años. Las salas interiores, decoradas con cuadros del siglo XIX, son un museo gratis si pides un café en la barra (en las mesas de salón el café cuesta 5 veces más)."
+        "El Caffè Greco ha sido sede de conspiraciones políticas, encuentros artísticos y el Grand Tour europeo durante 260 años. Pide un café en la barra y mira las salas interiores, decoradas con cuadros del siglo XIX: son un museo."
       ]
     },
     {

@@ -33,7 +33,7 @@
  *      con `"coordinates_checked": true` y no vuelve a salir.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
@@ -347,6 +347,37 @@ const section = (title) => {
     }
   }
   s.info.push(`${fechas.length} fechas, ${fechas.filter((entry) => !entry.verificar).length} se enseñan`)
+}
+
+// ── 11. Lo que lee el viajero ───────────────────────────────────────────────────────────────
+// PROMPT_AJUSTES_20_RUTAS A: cada parada de los días curados (y sus variantes) lleva su `por_que` (sin él, la app
+// cae al texto genérico); y ningún texto que se ve habla de "gratis" (salvo `ticket_info`, que es la pestaña Tickets,
+// y lo interno: notas, fuentes y el formato).
+{
+  const s = section('Lo que lee el viajero')
+  const sinPorQue = new Set()
+  for (const cfg of D.curated_days ?? []) {
+    for (const [nombre, section] of [['base', cfg], ...Object.entries(cfg.variantes ?? {})]) {
+      const paradas = [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? []), ...(section.insertar ?? []).map((item) => item.parada), ...(section.si_espera?.tarde ?? []), ...(section.si_sobra?.anadir ?? [])]
+      for (const parada of paradas) if (parada && !parada.por_que) sinPorQue.add(`${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${parada.lugar}`)
+    }
+  }
+  for (const item of sinPorQue) s.warn.push(`sin por_que (sale el texto genérico): ${item}`)
+  const INTERNO = new Set(['ticket_info', 'nota', 'notas', 'fuente', 'free_days'])
+  const gratis = []
+  const buscar = (valor, ruta) => {
+    if (typeof valor === 'string') {
+      if (/\bgratis\b|\bgratuit[oa]s?\b/i.test(valor)) gratis.push(ruta)
+    } else if (valor && typeof valor === 'object') {
+      for (const [clave, hijo] of Object.entries(valor)) if (!INTERNO.has(clave) && !clave.startsWith('_')) buscar(hijo, `${ruta}.${clave}`)
+    }
+  }
+  const { museos_de_pago: _pago, principios_local: _principios, ...visible } = D
+  buscar(visible, destino)
+  const detalleDir = join(ROOT, `data/pipeline_v2/detalle/${destino}`)
+  if (existsSync(detalleDir)) for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json'))) buscar(JSON.parse(readFileSync(join(detalleDir, file), 'utf8')), `detalle/${file}`)
+  for (const ruta of gratis) s.red.push(`"gratis" en un texto que ve el viajero: ${ruta}`)
+  s.info.push(`${sinPorQue.size} paradas curadas sin por_que; ${gratis.length} "gratis" a la vista`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────

@@ -1142,3 +1142,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 252. **`aviso_fecha` en una variante** (`{ icono, etiqueta, texto }`): el aviso de lo que esa variante del día de la
     semana cambia de un imprescindible (la audiencia de los miércoles, el Panteón del sábado). Nunca un aviso genérico
     de "el fin de semana hay más gente".
+253. **"Por qué aquí" curado** (PROMPT_AJUSTES_20_RUTAS A.1): cada parada de los días curados y sus variantes lleva
+    `por_que` (docs/roma_por_que.json: `por_dia[día][lugar]`, el atardecer del Campidoglio/Pincio con el de D5/D4, si no
+    `por_lugar`). La app enseña `por_que` (`why_source: 'curado'`); el texto genérico es solo reserva, y lo que añade el
+    pool sin el suyo toma el más habitual de ese lugar. `validar.mjs` avisa de la parada curada sin `por_que`.
+254. **La `nota` es interna** (A.2): nunca sale del motor. Al viajero le llegan `por_que` y los avisos (cerrado,
+    madrugón, turno: `aviso`, `closed_notice`, `hours_warning`, `pace_notice`).
+255. **Sin "gratis" en lo que se lee** (A.3), fuera de la pestaña Tickets (`ticket_info` sigue igual hasta las APIs;
+    `pago: true` del motor, también). Ni en la ficha de lugar (los días sin coste ya no van en el horario).
+    `validar.mjs` en rojo si aparece.
