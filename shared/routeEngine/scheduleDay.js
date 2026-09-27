@@ -86,6 +86,8 @@ export const PRIORITY = { POOL: 0, JOYA: 1, ESSENTIAL: 1.5, THEME: 2, FILLER: 3 
 const CURATED_INVERSION_PENALTY = 10
 /** A partir de aquí, el rato parado antes de comer es un hueco y cuenta como tiempo perdido (regla 102). */
 const PRE_LUNCH_GAP_MINUTES = 60
+/** Una comida que empieza a esta hora o más tarde dura 1 h más el paseo (B.5, PROMPT_RUTAS_CURADAS). */
+const LATE_LUNCH_START = 14 * 60
 const MAX_IMPROVEMENT_PASSES = 30
 /** Piezas de tarde hasta las que se prueban TODOS los órdenes (8! = 40.320 simulaciones). Medido: ninguna tarde pasa de 8. */
 const MAX_AFTERNOON_PIECES = 8
@@ -698,7 +700,10 @@ function simulate(sequence, ctx) {
     // las 12:30, antes del Campidoglio desde el que se baja directo). Pero lo que pase de 60 min sí es un
     // hueco (regla 102) y cuenta: sin contarlo, la mañana del lunes de Pascua acababa en Navona a las 10:25.
     idle += Math.max(0, at - cursor - PRE_LUNCH_GAP_MINUTES)
-    const meal = { type: 'lunch', start: at, end: at + lunchBlock, eatMinutes: mode.mealMinutes, coordinates: position, spot: null }
+    // Comida a las 14:00 o más tarde (tras un imprescindible que alargó la mañana): 1 h más el paseo, no la franja
+    // entera (PROMPT_RUTAS_CURADAS B.5).
+    const block = at >= LATE_LUNCH_START ? Math.min(lunchBlock, mode.mealMinutes + 15) : lunchBlock
+    const meal = { type: 'lunch', start: at, end: at + block, eatMinutes: mode.mealMinutes, coordinates: position, spot: null }
     meals.push(meal)
     pendingLunch = { meal, from: position }
     lunchBeforeVisit = visits.length
@@ -828,7 +833,9 @@ function simulate(sequence, ctx) {
         const sameGroupRunning = ctx.keepOrder && Boolean(place.group) && previous?.place.group === place.group
         const inProgress = continuesGroup || withContainer || (unit.isLong && Boolean(place.group)) || sameGroupRunning
         // En un bloque curado, la mañana puede alargarse hasta las 13:30 (y lo que está en marcha, media hora más).
-        const limit = ctx.keepOrder ? (inProgress ? lunchClose + 30 : lunchClose) : inProgress ? lunchClose : lunchOpen
+        // Un imprescindible (nivel 1) en orden curado también puede alargar la mañana hasta las 14:00 (B.5). Para
+        // nada más: no sirve para meter paradas de relleno antes de comer.
+        const limit = ctx.keepOrder ? (inProgress || place.level === 1 ? lunchClose + 30 : lunchClose) : inProgress ? lunchClose : lunchOpen
         if (at + duration > limit && !(inProgress && lunchComesNext)) {
           return { ok: false, reason: 'new_visit_past_lunch', unitId: unit.id }
         }

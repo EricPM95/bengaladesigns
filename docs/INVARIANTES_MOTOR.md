@@ -1075,3 +1075,22 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     catálogo: la nocturna (su `conflicts_with`), el Free Tour (su punto de encuentro) y "X visto desde Y" (X). El Free
     Tour saca de ahí su transporte cercano. `/api/describe-stop` se guarda en `place_content_cache` (destino
     `describe:{destino}`): se paga una sola vez por lugar.
+231. **Tabla de rutas** (`curated_routes.por_dias_ciudad`, PROMPT_RUTAS_CURADAS B.1): qué días curados van, por días
+    de ciudad (sin la excursión) y con o sin Free Tour. `{con_galeria, sin_galeria}` se decide por el pool o Arte;
+    desde 4 días de viaje, siempre con Galería. Sustituye a la regla 221 (D4 sin Galería): en 3 días sin Galería va
+    D4M (sin Free Tour) o D5C (con Free Tour).
+232. **Cena tardía desde atardeceres a las 20:00** (`LATE_SUNSET_MINUTES`, antes 20:15): con atardeceres de 20:00 a
+    20:14 la cena no cabía antes de las 20:30 y el motor tiraba la tarde entera del Vaticano y Trastevere.
+233. **Invierno en los días curados con el sol antes de las 18:30** (antes 18:00). Una variante de invierno con
+    `atardecer_antes_de` solo se aplica si el sol se pone antes de esa hora (D2: 18:20); `tranquilo_invierno` sigue
+    la suya o, si no la trae, la de `invierno`.
+234. **Nocturnas en tranquilo**: una, salvo `maximo_tranquilo` del paseo (La Roma de las fuentes: 2, a 10 min).
+235. **La comida flexible, solo por un imprescindible**: en orden curado, una visita de nivel 1 puede alargar la
+    mañana hasta las 14:00 (`lunchClose + 30`). Una comida que empieza a las 14:00 o más tarde dura 1 h más el paseo
+    (`mealMinutes + 15`). Nunca para meter relleno antes de comer.
+236. **La tarde no repite lo de la mañana YA filtrada**: si una parada de la mañana no va ese día (`solo`), la de la
+    tarde con el mismo nombre se queda.
+237. **Pool con día fijo** (`curated_pool`: `dia` + `despues_de`; `si_viaje_tiene` / `si_no`): su día y detrás de
+    su parada (o justo delante si detrás ya no llega). Lo marcado nunca va "de paso" y nunca desaparece en silencio:
+    si no cabe, `not_included` con `from_pool` y `day_number`, y la app lo avisa en ese día ("No hemos podido
+    incluir X porque…").

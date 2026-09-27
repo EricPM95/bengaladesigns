@@ -30,8 +30,9 @@ import { TAG_INTEREST_MAP } from './experienceTags.js'
 const PASS_THROUGH_MINUTES = 10
 /** Un imprescindible visto por fuera, si su `pass_by` no dice otra cosa. */
 const OUTSIDE_MINUTES = 15
-/** Con el atardecer antes de esta hora el día va en su variante de invierno (el documento: "hacia las 17:00"). */
-const WINTER_SUNSET_BEFORE = 18 * 60
+/** Con el atardecer antes de esta hora el día va en su variante de invierno. 18:30 (PROMPT_RUTAS_CURADAS, B.3): así
+    mediados de marzo y la segunda quincena de octubre ya van en invierno. */
+const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
 const MIRADOR_LATE_MINUTES = 30
 /** Madrugar lo justo: de media en media hora. */
@@ -134,6 +135,19 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   }
   if (cityDays.length >= 5) list.push(rules.cinco_dias ?? 'D6')
   if (cityDays.length >= 6) list.push(rules.seis_dias ?? 'D7')
+  // Tabla de rutas del destino (`curated_routes.por_dias_ciudad`, PROMPT_RUTAS_CURADAS B.1): qué días van, por días de
+  // ciudad y con o sin Free Tour. Una entrada {con_galeria, sin_galeria} se decide por el pool o Arte; desde 4 días
+  // de viaje, siempre con Galería (es el museo de pago que toca).
+  const routeTable = destData.curated_routes?.por_dias_ciudad
+  if (routeTable) {
+    const keys = Object.keys(routeTable).map(Number).sort((a, b) => a - b)
+    const key = keys.filter((k) => k <= cityDays.length).at(-1)
+    const row = key != null ? routeTable[String(key)]?.[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] : null
+    if (row) {
+      list.length = 0
+      for (const item of row) list.push(typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)
+    }
+  }
   // Lo del pool que activa un día que no ha entrado (las catacumbas en 5 días: D7), si hay sitio o en lugar del
   // último día opcional.
   for (const name of poolNames) {
@@ -253,14 +267,19 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
       if (variant.atardecer) sections = { ...sections, tarde: sections.tarde.map((stop) => (stop.lugar === variant.atardecer ? { ...stop, rol: 'atardecer' } : stop)) }
     }
+    // Invierno de ESTE día: con `atardecer_antes_de`, solo si el sol se pone antes de esa hora (D2: 18:20 — antes, se
+    // sube primero al Janículo). `tranquilo_invierno` sigue la condición de la suya o, si no la trae, la de invierno.
+    const sunsetToday = hoursOf(day).sunset
+    const before = (hhmm) => hhmm == null || (sunsetToday != null && sunsetToday < Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1] ?? 0))
+    const winterFor = (name) => isWinter(day) && before(cfg.variantes?.[name]?.atardecer_antes_de ?? (name === 'tranquilo_invierno' ? cfg.variantes?.invierno?.atardecer_antes_de : null))
     // Tarde B de D5 (el Campidoglio y el Ghetto salen en otro día del viaje); si no, la A, con su atardecer de invierno.
     if (tardeB) apply('tarde_b')
-    else if (cfg.variantes?.invierno?.atardecer && isWinter(day)) apply('invierno')
+    else if (cfg.variantes?.invierno?.atardecer && winterFor('invierno')) apply('invierno')
     if (cfg.variantes?.con_d5 && order.includes('D5')) apply('con_d5')
-    if (isWinter(day) && !cfg.variantes?.invierno?.atardecer) apply('invierno')
+    if (winterFor('invierno') && !cfg.variantes?.invierno?.atardecer) apply('invierno')
     if (tranquilo) {
       apply('tranquilo')
-      if (isWinter(day)) apply('tranquilo_invierno')
+      if (winterFor('tranquilo_invierno')) apply('tranquilo_invierno')
     }
     if (hasFreeTour) apply('con_free_tour')
     const weekday = WEEKDAY_KEY[norm(day.weekday ?? '')] ?? null
@@ -285,9 +304,6 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const stop = sections.manana.find((other) => other.lugar === sinCaracalla.si_no_va)
       if (!stop || !stopApplies(stop, day) || closedThatDay(stop.lugar, day) || dropPaid.has(stop.lugar)) apply('sin_caracalla')
     }
-    // La tarde no repite lo que ya va por la mañana (el Cementerio, con la mañana sin Caracalla).
-    const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
-    sections = { ...sections, tarde: sections.tarde.filter((stop) => !morningNames.has(stop.lugar)) }
     const closedAnchors = []
     const sin = applied.map((name) => cfg.variantes?.[name]?.sin).find(Boolean)
     if (sin) closedAnchors.push(sin)
@@ -295,6 +311,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // lo enseña por fuera (el Castillo desde el Puente).
     const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day)).map((stop) => stop.lugar)
     sections = { ...sections, manana: sections.manana.filter((stop) => stopApplies(stop, day)), tarde: sections.tarde.filter((stop) => stopApplies(stop, day)) }
+    // La tarde no repite lo que ya va por la mañana (el Cementerio, con la mañana sin Caracalla). Con la mañana YA
+    // filtrada (PROMPT_RUTAS_CURADAS B.6): si la parada de la mañana no va este día, la de la tarde se queda.
+    const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
+    sections = { ...sections, tarde: sections.tarde.filter((stop) => !morningNames.has(stop.lugar)) }
     // Lo marcado en el pool es una visita, nunca "de paso" (el Parque de Villa Borghese en la variante de invierno):
     // el pool manda sobre la variante (2026-09-27).
     const asVisit = (stop) => (inPool(stop.lugar) && stop.rol === 'de_paso' ? { ...stop, rol: 'parada' } : stop)
@@ -873,7 +893,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
       return true
     }
-    const max = tranquilo ? 1 : walk.maximo ?? 2
+    // Tranquilo: una nocturna, salvo que el paseo diga otra cosa (La Roma de las fuentes: 2, a 10 min).
+    const max = tranquilo ? walk.maximo_tranquilo ?? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
     let fromAlternative = false
     if (chain.length === 0) {
