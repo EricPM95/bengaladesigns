@@ -1,4 +1,5 @@
 import type {
+  DateNoticeIcon,
   DayType,
   ExcursionProminence,
   Budget,
@@ -23,6 +24,7 @@ import type {
 import { buildTransportSegment, type CityTransitionFact } from './cityTransitionTransport'
 import { buildPhaseTransportSegment, type PhaseTransitionFact } from './phaseTransitionTransport'
 import { appendReturnLegDay } from './tripDays'
+import { DATE_NOTICE_ICONS } from './dateNotices'
 
 // ── Tipos de la respuesta cruda de Claude (ver ROUTE_SYSTEM_PROMPT en server/index.js) ──
 
@@ -173,6 +175,8 @@ export interface GeneratedDay {
   transfer_notice?: string | null
   /** Motor v3, solo en el primer día de ciudad: el banner de contexto de toda la ruta. */
   context_banner?: string | null
+  /** Motor v3, solo en el primer día de ciudad: los avisos de fechas especiales — Route.dateNotices. */
+  date_notices?: { id: string; day_number: number | null; date_iso: string | null; icon: string; title: string; tag: string; texts: string[]; kind: 'auto' | 'curado' | 'mixto' }[] | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
@@ -781,5 +785,15 @@ export function mapGeneratedRouteToRoute(
     defaultTransport: generated.default_transport,
     anchorNames,
     contextBanner: generated.days.find((day) => day.context_banner)?.context_banner ?? null,
+    dateNotices: (generated.days.find((day) => day.date_notices?.length)?.date_notices ?? []).map((notice) => ({
+      id: notice.id,
+      dayNumber: notice.day_number,
+      dateIso: notice.date_iso,
+      icon: (DATE_NOTICE_ICONS.includes(notice.icon as DateNoticeIcon) ? notice.icon : 'fiesta') as DateNoticeIcon,
+      title: notice.title,
+      tag: notice.tag,
+      texts: notice.texts,
+      kind: notice.kind,
+    })),
   }
 }

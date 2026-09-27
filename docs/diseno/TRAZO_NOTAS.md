@@ -34,3 +34,4 @@ nuestra lógica, textos y datos mandan en el contenido.
 - Franjas Mañana/Mediodía/Tarde/Atardecer/Noche: salen de la hora y nunca retroceden (`periodFor`).
 - Título del día = `curated_day.name` del motor; atardecer y mirador de noche = `sunset_minutes` / `night_view` del motor (la app ya los guarda).
 - RUTA: tarjeta de país con la bandera en franjas inclinadas (`flagColors.ts`, todos los países).
+- Avisos de fechas (PROMPT_AVISO_FECHAS): `DateNoticesModal.tsx` — hoja desde abajo en móvil, tarjeta centrada en ordenador, fondo desenfocado, icono ilustrado propio (`DateNoticeIcons.tsx`, trazo terracota sobre crema), encabezado "Hemos preparado tu viaje para estas fechas", un solo botón "¡Entendido!", como mucho 3 tarjetas con puntitos (la tercera, "y N más"). Sale una vez por ruta (`dateNoticesSeenKey`); la etiqueta del día (DayList) la reabre. Capturas en `docs/diseno/avisos_fechas/`.

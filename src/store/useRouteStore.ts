@@ -361,6 +361,11 @@ interface RouteStoreState {
   setRoute: (route: Route) => void
   /** Cierra el banner de contexto del viaje (ContextBanner.tsx): no vuelve a salir en este viaje. */
   dismissContextBanner: () => void
+  /** La ventana de fechas especiales ya se vio con estos avisos (DateNoticesModal.tsx): se guarda con la ruta. */
+  markDateNoticesSeen: (key: string) => void
+  /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
+  openDateNoticeId: string | null
+  setOpenDateNoticeId: (id: string | null) => void
   /** Restaura un viaje ya guardado (TripSync.tsx, al abrir la app) — a diferencia de `setRoute`, no resetea reservas/wishlist ni recalcula el modo inicial: repone exactamente lo que había. */
   hydrateTrip: (payload: TripPayload) => void
   /** Ronda 9 (Mejora 2): añade/cambia las fechas exactas del viaje YA generado desde la cabecera del
@@ -691,6 +696,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   dismissContextBanner: () =>
     set((state) => (state.route ? { route: { ...state.route, contextBannerDismissed: true } } : state)),
+
+  markDateNoticesSeen: (key) => set((state) => (state.route ? { route: { ...state.route, dateNoticesSeenKey: key } } : state)),
+
+  openDateNoticeId: null,
+  setOpenDateNoticeId: (id) => set({ openDateNoticeId: id }),
 
   setRoute: (route) =>
     set({

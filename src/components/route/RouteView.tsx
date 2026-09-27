@@ -15,6 +15,7 @@ import { MapDestinationHeader } from './MapDestinationHeader'
 import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
+import { DateNoticesModal } from './DateNoticesModal'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
 
@@ -291,6 +292,8 @@ export function RouteView() {
           <FloatingBudget />
         </>
       )}
+      {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
+      <DateNoticesModal route={route} />
     </div>
   )
 }

@@ -677,4 +677,25 @@ export interface Route {
   contextBanner?: string | null
   /** El viajero lo cerró con la X: no vuelve a salir en este viaje. */
   contextBannerDismissed?: boolean
+  /** Motor v3: avisos de fechas especiales (festivos, cierres, eventos) — DateNoticesModal.tsx. */
+  dateNotices?: DateNotice[]
+  /** La firma de los avisos que el viajero ya vio (dateNoticesKey): si la ruta se regenera y cambian, vuelven a salir. */
+  dateNoticesSeenKey?: string | null
+}
+
+/** Icono ilustrado de un aviso de fecha (DateNoticeIcons.tsx); 'cierre' = cierre resuelto por el motor. */
+export type DateNoticeIcon = 'fiesta' | 'religioso' | 'fuegos' | 'luz' | 'navidad' | 'bandera' | 'musica' | 'calma' | 'cierre'
+
+/** Una tarjeta de la ventana de fechas especiales: lo que hemos hecho por un cierre y/o lo que hay ese día. */
+export interface DateNotice {
+  id: string
+  /** El día del viaje al que va su etiqueta; null sin fechas (solo el mes). */
+  dayNumber: number | null
+  dateIso: string | null
+  icon: DateNoticeIcon
+  title: string
+  /** La etiqueta pequeña de la cabecera del día ("Todos los Santos"). */
+  tag: string
+  texts: string[]
+  kind: 'auto' | 'curado' | 'mixto'
 }

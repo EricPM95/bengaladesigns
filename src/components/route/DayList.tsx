@@ -17,6 +17,7 @@ import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
+import { DateNoticeTag } from './DateNoticesModal'
 
 /** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
 const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
@@ -208,6 +209,14 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 {travel && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
+                {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
+                {(route.dateNotices ?? []).some((notice) => notice.dayNumber === day.dayNumber) && (
+                  <span className="mt-1 flex flex-wrap gap-1.5">
+                    {(route.dateNotices ?? []).filter((notice) => notice.dayNumber === day.dayNumber).map((notice) => (
+                      <DateNoticeTag key={notice.id} notice={notice} />
+                    ))}
+                  </span>
+                )}
                 {/* Cerrado: un puntito por parada, del color de su tipo, y cuántas son. */}
                 {!expanded && numbered.length > 0 && (
                   <span className="mt-1 flex flex-wrap items-center gap-1">
