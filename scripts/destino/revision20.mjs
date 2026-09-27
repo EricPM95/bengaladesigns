@@ -55,6 +55,12 @@ const m2t = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:$
 const quarter = (minutes) => Math.round(minutes / 15) * 15
 const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
 const coordsOf = (item) => (item?.latitude != null ? [item.latitude, item.longitude] : null)
+/** De dónde sale el tramo siguiente: donde ACABA la parada (el Free Tour, en Piazza Navona). */
+const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, item.end_longitude] : coordsOf(item))
+
+// Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
+const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
+const recuento = { genericos: [], notas: [], gratis: [], caminoLargo: [], tramosLargos: [] }
 const sinEmoji = (text) => String(text ?? '').replace(/^[^\p{L}\p{N}¡¿"«(]+/u, '')
 
 /** Domingo de Pascua (algoritmo anónimo gregoriano). */
@@ -96,11 +102,12 @@ function comoSale(stop) {
 
 function porQue(stop) {
   const partes = []
-  if (stop.note) partes.push(stop.note)
-  else if (stop.why) partes.push(sinEmoji(stop.why))
+  // Lo que ve el viajero: su "Por qué aquí" (la nota es interna y ya no sale del motor).
+  if (stop.why) partes.push(sinEmoji(stop.why))
+  if (stop.free_tour_end) partes.push(stop.free_tour_end)
   if (stop.free_tour_covers?.length) partes.push(`recorre: ${stop.free_tour_covers.join(', ')}`)
   if (stop.outside_of?.length) partes.push(`se ve por fuera: ${stop.outside_of.join(', ')}`)
-  for (const aviso of [stop.closed_notice, stop.hours_warning, stop.season_notice]) if (aviso && aviso !== stop.note) partes.push(`⚠️ ${aviso}`)
+  for (const aviso of [stop.closed_notice, stop.hours_warning, stop.season_notice]) if (aviso) partes.push(`⚠️ ${aviso}`)
   if (stop.experience) partes.push(`experiencia: ${EXP[stop.experience] ?? stop.experience}`)
   return cell(partes.join(' · '))
 }
@@ -189,17 +196,26 @@ for (const [index, viaje] of VIAJES.entries()) {
     for (const stop of dayStops) {
       const start = t2m(stop.suggested_time)
       const fromLunch = lunch && previous && lunchStart >= endOf(previous) - 1 && lunchStart < start
-      const from = fromLunch ? coordsOf(lunch) : previous ? coordsOf(previous) : null
+      const from = fromLunch ? coordsOf(lunch) : previous ? endCoordsOf(previous) : null
       const walk = legBetween(from, coordsOf(stop))
       const llegas = stop.transit ? `${stop.transit.icon} ${stop.transit.label.replace(', unos ', ', ')}` : walk != null && previous ? `${Math.max(1, Math.round(walk))} min andando` : '—'
       const que = stop.night_view_title ?? stop.name
-      row(start, stop.suggested_time, cell(que), `${stop.duration_minutes} min`, comoSale(stop), llegas, porQue(stop))
+      const sale = comoSale(stop)
+      const porque = porQue(stop)
+      row(start, stop.suggested_time, cell(que), `${stop.duration_minutes} min`, sale, llegas, porque)
+      const donde = `ruta ${numero}, día ${n}, ${stop.suggested_time} ${que}`
+      if (stop.why_source !== 'curado' && !stop.night_view && !stop.free_tour_covers) recuento.genericos.push(`${donde}: ${sinEmoji(stop.why ?? '')}`)
+      if (NOTAS_INTERNAS.some((nota) => porque.includes(cell(nota)) && !cell(stop.why ?? '').includes(cell(nota)))) recuento.notas.push(donde)
+      if (sale === 'Por el camino' && stop.duration_minutes > 10) recuento.caminoLargo.push(`${donde} (${stop.duration_minutes} min)`)
+      const conAviso = String(day.transfer_notice ?? '').includes(`→ ${stop.place_name ?? stop.name}:`)
+      if (!stop.transit && previous && walk != null && walk > 25 && !conAviso) recuento.tramosLargos.push(`${donde} (${Math.round(walk)} min andando)`)
       previous = stop
     }
     // Comida: con su restaurante y su barrio; se llega andando desde la parada de antes.
     if (lunch) {
       const antes = dayStops.filter((stop) => endOf(stop) <= lunchStart + 1).at(-1)
-      const walk = antes ? legBetween(coordsOf(antes), coordsOf(lunch)) : null
+      const walk = antes ? legBetween(endCoordsOf(antes), coordsOf(lunch)) : null
+      if (walk != null && walk > 25) recuento.tramosLargos.push(`ruta ${numero}, día ${n}, a la comida (${Math.round(walk)} min andando)`)
       const minutos = lunchEnd != null && lunchStart != null ? lunchEnd - lunchStart : null
       row(lunchStart - 0.5, lunch.suggested_time, `Comida: ${cell(lunch.restaurant ?? 'sin restaurante elegido')}`, minutos ? `${minutos} min` : '', '🍝 Comida', walk != null ? `${Math.max(1, Math.round(walk))} min andando` : '—', cell(lunch.zone_display ?? lunch.zone ?? ''))
     }
@@ -239,6 +255,12 @@ for (const [index, viaje] of VIAJES.entries()) {
   out.push('')
 }
 
+// "gratis" en todo lo que se ve (Parte A.3): se busca en el propio documento, que es lo que lee el viajero.
+for (const [index, line] of out.entries()) if (/gratis|gratuit/i.test(line)) recuento.gratis.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
+const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
+out.push('## Recuento (Parte D)', '', ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('"Gratis" fuera de Tickets', recuento.gratis), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '')
+console.log(JSON.stringify(Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length]))))
+
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'
 writeFileSync(path, [
   '# 20 rutas de Roma, tal como salen en la app',
@@ -248,7 +270,7 @@ writeFileSync(path, [
   '- **Hora**: la que ve el usuario (:00/:15/:30/:45). **Tiempo**: minutos de visita.',
   '- **Cómo sale en la app**: Parada / Por el camino / Por fuera (con su motivo) / 🌅 Atardecer / 🌙 Noche / 🍝 Comida / 🍷 Cena / 🕐 Tiempo libre.',
   '- **Cómo llegas**: andando desde lo anterior (la comida, si va en medio), o el bus/metro del día ("🚌 Bus 118, 25 min").',
-  '- **Por qué aquí**: la nota del día curado o el porqué del motor, y sus avisos (⚠️).',
+  '- **Por qué aquí**: el `por_que` de la parada (lo que ve el viajero; la nota es interna) y sus avisos (⚠️). Al final, el recuento de la Parte D.',
   '',
   '## Índice',
   '',
