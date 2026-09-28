@@ -642,7 +642,8 @@ function nearbySuggestions(destData, trip, options, dayVisitedNames, from, { sta
   const seen = new Set([...dayVisitedNames, ...(trip.coveredByFreeTour ?? []).flatMap((item) => item.names), ...tourSeen, ...passBySeen])
   const chosenTags = new Set((options.experiencesPositive ?? []).flatMap((theme) => (theme in TAG_INTEREST_MAP && theme !== 'free_tour' ? TAG_INTEREST_MAP[theme] : [])))
   const suggestions = (destData.places ?? [])
-    .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates))
+    // Un lugar de nivel 1 o 2 no es una "idea" de tiempo libre: si va, es parada (decisión del usuario, 2026-09-28).
+    .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates) && (place.level ?? 3) > 2)
     .map((place) => ({ place, walk: travel.leg(from, place.coordinates)?.minutes ?? Infinity, ofExperience: (place.tags ?? []).some((tag) => chosenTags.has(tag)) }))
     .filter((item) => item.walk <= FREE_AFTERNOON_MAX_WALK_MINUTES)
     // De camino: el rodeo para pasar por allí hacia lo siguiente, 15 min como mucho.

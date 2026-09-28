@@ -9905,8 +9905,9 @@
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
               "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
-              "minutos": 30,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "estirar": true,
+              "minutos": 30
             },
             {
               "lugar": "Terraza del Pincio",
@@ -9939,10 +9940,15 @@
             {
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
-              "nota": "El lago y su templete, camino de la Galería: aquí va lo que sobre hasta el turno.",
+              "nota": "En invierno, el lago camino de la Galería (la tarde es corta).",
               "minutos": 45,
               "estirar": true,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "solo": [
+                {
+                  "estacion": "invierno"
+                }
+              ]
             },
             {
               "lugar": "Galería Borghese",
@@ -9986,6 +9992,19 @@
               "nota": "Abre a las 16:00 por la tarde.",
               "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
               "hora_ok": true,
+              "solo": [
+                {
+                  "estacion": "no_invierno"
+                }
+              ]
+            },
+            {
+              "lugar": "Parque de Villa Borghese",
+              "rol": "parada",
+              "nota": "En verano, después de Santa Maria del Popolo: se sube al parque y aquí va lo que sobre hasta el atardecer en el Pincio.",
+              "minutos": 30,
+              "estirar": true,
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
               "solo": [
                 {
                   "estacion": "no_invierno"
@@ -10411,12 +10430,22 @@
         {
           "lugar": "Isla Tiberina",
           "rol": "parada",
-          "por_que": "La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años."
+          "por_que": "La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años.",
+          "solo": [
+            {
+              "no_si_dia": "D1-FT"
+            }
+          ]
         },
         {
           "lugar": "Teatro de Marcelo",
           "rol": "parada",
-          "por_que": "Parece un Coliseo pequeño, y es más antiguo que el Coliseo. Lo curioso es que encima de las gradas romanas hay casas en las que hoy vive gente."
+          "por_que": "Parece un Coliseo pequeño, y es más antiguo que el Coliseo. Lo curioso es que encima de las gradas romanas hay casas en las que hoy vive gente.",
+          "solo": [
+            {
+              "no_si_dia": "D1-FT"
+            }
+          ]
         },
         {
           "lugar": "Plaza del Campidoglio",
@@ -11314,7 +11343,9 @@
           "nota": "Bendición Urbi et Orbi a las 12:00",
           "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
           "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-          "traslado_min": 25
+          "traslado_min": 25,
+          "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
+          "traslado_despues_min": 25
         },
         "verificar": true,
         "fuente": "vatican.va (confirmar cada año)",
@@ -11459,7 +11490,9 @@
           "dia": "12-25",
           "nota": "Bendición Urbi et Orbi a las 12:00",
           "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-          "traslado_min": 25
+          "traslado_min": 25,
+          "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
+          "traslado_despues_min": 25
         }
       },
       {

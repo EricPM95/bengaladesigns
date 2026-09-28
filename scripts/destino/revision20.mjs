@@ -13,6 +13,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { curatedStops, grupoFueraDeOrdenEnDia, textosConHora, tituloQueNoSeCumple } from './textChecks.mjs'
 import { readFileSync, readdirSync } from 'node:fs'
+import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
 
 const VIAJES = [
   // COMPLETO
@@ -62,6 +63,7 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 // Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
 const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
+const auditoria = []
 const recuento = { repetidos: [], sinLinea: [], nivelCamino: [], ordenGrupo: [], titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
 /** Monumento = nivel 1 o 2 (PROMPT_PENDIENTE B). */
 const nivelDe = (name) => (D.places ?? []).find((place) => place.name === name)?.level ?? 3
@@ -139,6 +141,8 @@ for (const [index, viaje] of VIAJES.entries()) {
     const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, n, viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, viaje.fecha, pool, positive, { city: 'Roma', scheduler: 'v3', month: null })
     days.push(day)
   }
+  // Auditoría automática (punto 14): todo lo que antes se miraba a mano, con su lista de casos.
+  for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}` })) auditoria.push(caso)
   const banner = days.find((day) => day?.context_banner)?.context_banner
   if (banner) out.push(`> **Banner del viaje**: ${cell(banner)}`, '')
   // Los avisos de fechas especiales: la ventana que sale al entrar en la ruta (PROMPT_AVISO_FECHAS).
@@ -318,7 +322,10 @@ for (const [titulo, fecha] of [['3 días en agosto, sin fechas', null], ['Los mi
 out.push('Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu viaje coincide…", sin etiqueta. Con el 13-15, el Vaticano pasa al viernes 13 y la ventana cuenta el Ferragosto en su día.', '')
 
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
+const auditoriaLineas = Object.entries(TIPOS_AUDITORIA).flatMap(([tipo, titulo]) => lineaRecuento(titulo, auditoria.filter((caso) => caso.tipo === tipo).map((caso) => `${caso.donde}${caso.detalle ? ` — ${caso.detalle}` : ''}`)))
+out.push('## Auditoría automática', '', 'Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.mjs). Tiene que salir todo a 0, o con la lista de lo que no se ha podido arreglar.', '', ...auditoriaLineas, '')
 out.push('## Recuento (Parte D)', '', ...lineaRecuento('Lugares repetidos en el mismo día', recuento.repetidos), ...lineaRecuento('Monumentos (nivel 1-2) sin su propia línea', recuento.sinLinea), ...lineaRecuento('Lugares de nivel 1 o 2 como "Por el camino"', recuento.nivelCamino), ...lineaRecuento('Plazas o puentes después de su monumento, fuera de las excepciones', recuento.ordenGrupo), ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
+console.log(JSON.stringify(Object.fromEntries(Object.keys(TIPOS_AUDITORIA).map((tipo) => [tipo, auditoria.filter((caso) => caso.tipo === tipo).length]).filter(([, count]) => count > 0))))
 console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length])) }))
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'

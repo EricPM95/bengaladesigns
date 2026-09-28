@@ -322,6 +322,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.experiencia == null || selected.includes(cond.experiencia)) &&
       (cond.pool == null || (cond.pool ? inPool(stop.lugar) : !inPool(stop.lugar))) &&
       (cond.min_dias == null || contentDays >= cond.min_dias) &&
+      // `no_si_dia`: no, si el viaje lleva ese otro día (la Isla Tiberina de D5, que ya está en D1-FT).
+      (cond.no_si_dia == null || !order.includes(cond.no_si_dia)) &&
       (cond.fecha == null || (Boolean(day) && realDateIso(day)?.slice(5) === cond.fecha)) &&
       (cond.cierra_antes_del_atardecer == null || (Boolean(day) && closesBeforeSunset(cond.cierra_antes_del_atardecer, day))) &&
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
@@ -455,6 +457,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         if (sections.comida) sections = { ...sections, comida: { ...sections.comida, hora: undefined, bloque: undefined, temprana: undefined, restaurantes: undefined } }
       }
       suggestionName = sug.lugar
+      // La vuelta de la sugerencia a lo que sigue del día (de San Pedro a la Borghese: el metro A).
+      // (En la primera de la tarde que abre ese día: el 25 de diciembre la Galería está cerrada.)
+      const firstOpen = sections.tarde.findIndex((stop) => !closedThatDay(stop.lugar, day))
+      if (sug.traslado_despues && firstOpen >= 0 && !sections.tarde[firstOpen].traslado && sug.hora < '13:00') sections = { ...sections, tarde: sections.tarde.map((stop, at) => (at === firstOpen ? { ...stop, traslado: sug.traslado_despues, traslado_min: sug.traslado_despues_min } : stop)) }
     }
     // Media jornada (la excursión se lleva la mañana): solo la tarde.
     if (day.halfDayExcursion) sections = { ...sections, manana: [], comida: null }

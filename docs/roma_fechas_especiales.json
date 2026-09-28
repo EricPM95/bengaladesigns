@@ -64,7 +64,9 @@
         "nota": "Bendición Urbi et Orbi a las 12:00",
         "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
         "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-        "traslado_min": 25
+        "traslado_min": 25,
+        "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
+        "traslado_despues_min": 25
       },
       "verificar": true,
       "fuente": "vatican.va (confirmar cada año)",
@@ -209,7 +211,9 @@
         "dia": "12-25",
         "nota": "Bendición Urbi et Orbi a las 12:00",
         "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-        "traslado_min": 25
+        "traslado_min": 25,
+        "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
+        "traslado_despues_min": 25
       }
     },
     {

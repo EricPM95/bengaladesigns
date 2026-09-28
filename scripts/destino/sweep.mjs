@@ -6,6 +6,10 @@ import { join } from 'node:path'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
+import { auditarViaje } from './auditoria.mjs'
+import { travelTimesFor } from '../../server/engine/buildDayV3.js'
+const travel = travelTimesFor('roma')
+const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
 const D = findPipelineV2Data('Roma')
 const t2m = (s) => { const [h, m] = String(s).split(':').map(Number); return h * 60 + m }
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
@@ -30,11 +34,13 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
   const pos = exps.length ? ['imprescindibles', ...exps] : []
   const trip = { dias, ritmo, ft, ex, mes, fecha, pool: POOL, problemas: [], dias_out: [] }
   const seenDay = new Set(), count = new Map(), fuera = new Map()
+  const builtDays = []
   for (let n = 1; n <= dias; n++) {
     let day
     try { day = await buildDayBlockV3(D, dias + 1, ft === 'si', n, ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, fecha, POOL, pos, { city: 'Roma', scheduler: 'v3', month: null }) }
     catch (e) { trip.problemas.push({ n, tipo: 'error', txt: String(e.message).slice(0, 120) }); continue }
     if (!day) continue
+    builtDays.push(day)
     for (const it of day.not_included ?? []) fuera.set(it.name, { n, reason: it.reason })
     const cd = day.curated_day?.id ?? (day.type === 'excursion' || (day.excursion_options?.length && !day.stops?.length) ? 'EXC' : null)
     trip.dias_out.push(cd + (day.half_day_excursion ? '+' + day.half_day_excursion.id : ''))
@@ -74,6 +80,8 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
   const miss = lvl1.filter((x) => !seenDay.has(x))
   if (miss.length) trip.problemas.push({ tipo: 'falta_nivel1', txt: miss.join(', ') })
   for (const [name, c] of count) if (c > 2) trip.problemas.push({ tipo: 'repite', txt: `${name} ×${c}` })
+  // La auditoría automática (punto 14): cada caso cuenta con su tipo, prefijo `audit_`.
+  for (const caso of auditarViaje(D, builtDays, { startIso: fecha, poolNames: POOL, leg: legBetween })) trip.problemas.push({ tipo: `audit_${caso.tipo}`, txt: `${caso.donde} ${caso.detalle}`.trim() })
   out.push(trip)
 }
 writeFileSync(args.out ?? join(tmpdir(), 'sweep.json'), JSON.stringify(out))

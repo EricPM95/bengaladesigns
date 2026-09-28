@@ -1343,3 +1343,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       Pincio → Santa Maria del Popolo), D1 tranquilo en sábado y en invierno (Plaza Venecia → Altar → Campidoglio al
       atardecer), D1-FT tranquilo come junto a los Foros, D5 con la Isla Tiberina y el Teatro de Marcelo de camino al
       Campidoglio, D4M tranquilo con el Pincio de parada. `insertar` admite `despues_de` y `estacion`; `sin_estirar`.
+291. **Auditoría automática siempre** (decisión del usuario, 2026-09-28), para todos los destinos:
+    scripts/destino/auditoria.mjs (`auditarViaje`), usada por la revisión (con la lista de casos: ruta, día, hora,
+    parada) y por el barrido (tipos `audit_*`). Comprueba: lugar repetido el mismo día u otro día (salvo nocturnas y
+    revisitas); pool fuera; parada fuera de su horario real de ese día; mirador después del sol o texto de atardecer de
+    noche; tramo de más de 25 min andando sin línea en la parada; hueco de más de 30 min sin nada; tiempo libre de más
+    de 60 min (en verano, antes del atardecer, hasta 150: decisión del 2026-09-27); tiempo libre que pisa la comida o
+    la cena; cena que espera más de 20 min sin motivo; zigzag (volver a menos de 300 m de una parada tras alejarse más
+    de 1,2 km, salvo junto al mirador del atardecer, que es a propósito); nivel 1-2 "Por el camino" o como idea de
+    tiempo libre (el motor ya no los sugiere como ideas); imprescindible de menos de 20 min; por fuera distinto de su
+    `minutos_fuera`; avisos que prometen lo que la ruta no hace, que nombran un lugar que no está en el viaje o que se
+    repiten; títulos con hora. Las horas de la app van al cuarto de hora: la auditoría da 7 min de margen. Los días
+    libres del viajero no se revisan. La revisión solo sale con todo a 0 o con la lista de lo que no se ha podido
+    arreglar y por qué (docs/INFORME_ULTIMO.md).
