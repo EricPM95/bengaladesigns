@@ -251,7 +251,8 @@ export function nightTiming(chain, timing = {}) {
   const exactStart = nightStartsAt(timing.sunset)
   const nightStart = exactStart === null ? null : roundUpToSlot(exactStart)
   const { lastEnd, lastCoords, dinnerStart, dinnerCoords } = timing
-  if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart) {
+  // (Lo que sale en lugar de la nocturna del día, el centro iluminado, va después de cenar: antes, el rato con nombre.)
+  if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart && !chain[0]?.afterDinnerOnly) {
     // Hacia la cena: al revés que después de cenar.
     let entries = [...chain].reverse()
     while (entries.length > 0) {

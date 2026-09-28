@@ -227,6 +227,29 @@ export async function buildDayBlockV3(
  * Un día de ciudad del motor v3. El reparto y las horas ya están decididos (planTrip); aquí se le
  * añaden las nocturnas —calculadas con lo que de verdad se visita— y lo que no ha cabido.
  */
+const MESES_TEXTO = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+/** "Cierra el 25 de diciembre" (festivo o fecha) o "Cierra los lunes". */
+function closedText({ dateIso, weekday }) {
+  if (dateIso) return `Cierra el ${Number(dateIso.slice(8, 10))} de ${MESES_TEXTO[Number(dateIso.slice(5, 7)) - 1]}`
+  return weekday ? `Cierra los ${weekday}${/s$/.test(weekday) ? '' : 's'}` : 'Ese día cierra'
+}
+
+/**
+ * ¿Pasa la ruta por ahí ese día? (lo visitado, lo visto de paso o por fuera, lo nocturno, el barrio donde se cena o un
+ * lugar de su mismo grupo: la Piazza del Popolo con su iglesia). Entonces no "quedó fuera".
+ */
+function passesThrough(destData, trip, item, nights) {
+  const day = (trip.days ?? []).find((candidate) => candidate.dayNumber === item.dayNumber)
+  if (!day) return false
+  const place = (destData.places ?? []).find((candidate) => candidate.name === item.name)
+  const names = new Set((day.schedule?.visits ?? []).flatMap((visit) => [visit.place.name, ...(visit.place.outsideOf ?? [])]))
+  if (names.has(item.name)) return true
+  if ((nights.get(day.dayNumber) ?? []).some((entry) => (entry.conflicts_with ?? []).includes(item.name))) return true
+  if (place && (place.tags ?? []).includes('barrio') && place.zone && (day.dinnerZone === place.zone || day.dinnerPlaceZone === place.zone)) return true
+  if (place?.group && [...names].some((name) => (destData.places ?? []).find((candidate) => candidate.name === name)?.group === place.group)) return true
+  return false
+}
+
 function buildCityDayV3(destData, trip, tripDay, options) {
   // Con días curados, el paseo nocturno lo trae cada día (night_walks); si no, el reparto de siempre.
   const nights = trip.nightsByDay ?? planNightWalks(destData, nightWalkPlan(trip))
@@ -277,7 +300,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     // (Si era del pool, se avisa como lo del pool: nunca desaparece en silencio.)
-    ...(trip.notEnoughTime ?? []).map((item) => ({ name: item.name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día o elige el ritmo completo', ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true, day_number: item.dayNumber ?? null } : {}) })),
+    // (Decisión del usuario, 2026-09-28: lo que la ruta pasa ese día no "quedó fuera"; y si fue un cierre, el motivo es el cierre.)
+    ...(trip.notEnoughTime ?? []).filter((item) => !passesThrough(destData, trip, item, nights)).map((item) => ({ name: item.name, reason: item.closed ? closedText(item.closed) : 'No te dio tiempo', suggestion: item.closed ? 'Cambia las fechas si quieres verlo por dentro' : 'Alarga el viaje medio día o elige el ritmo completo', ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true, day_number: item.dayNumber ?? null } : {}) })),
   ]
   // El paseo nocturno curado: nombre propio y su texto (en la primera nocturna del día).
   if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {
@@ -324,6 +348,16 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (aperitivo) day.aperitivo = aperitivo
   const freeAfternoon = aperitivo ? null : freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
+  // En invierno, la "Tarde libre" de antes de cenar también lleva nombre y contenido (decisión del usuario, 2026-09-28).
+  if (day.free_afternoon && (tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE) {
+    const zone = dinnerZones(destData).find((option) => option.id === tripDay.dinnerZone)
+    const title = zone ? winterEveningTitle(destData, zone.id, tripDay, dayVisitedNames) : null
+    // Sale como el rato con nombre de siempre (el bloque de aperitivo), no como "Tarde libre".
+    if (title) {
+      day.aperitivo = { title, barrio: String(zone.label).replace(/\s*\/\s*/g, ' y '), minutes: day.free_afternoon.minutes, winter: true, suggestions: day.free_afternoon.suggestions ?? [] }
+      delete day.free_afternoon
+    }
+  }
   // El tiempo libre de antes de cenar acaba cuando hay que salir hacia la cena (decisión del usuario, 2026-09-28): con
   // las horas que ve el viajero (ya redondeadas), desde que acaba lo último del día hasta la cena menos el paseo.
   const dinnerMeal = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
@@ -531,6 +565,22 @@ const NIGHT_BEFORE_DINNER_MAX = 25
  * antes de cenar, cuando se cena en un barrio con ambiente (un barrio de cena: 3+ restaurantes), se llama
  * así —no "Tarde libre (90 min)"— y lleva 2-3 sugerencias abiertas y de camino.
  */
+/**
+ * El nombre del rato de antes de cenar en invierno (decisión del usuario, 2026-09-28), por barrio de cena
+ * (`destination_config.aperitivo_invierno`): el 25 de diciembre, en diciembre o el resto del invierno; y si ese día ya
+ * se vio lo que nombra, el otro título ("Aperitivo en Campo de' Fiori y la Plaza Farnese"). Null si no hay.
+ */
+function winterEveningTitle(destData, zoneId, tripDay, dayVisitedNames) {
+  const titles = destData.destination_config?.aperitivo_invierno?.[zoneId]
+  if (!titles) return null
+  if (titles.si_visto && titles.si_visto.some((name) => dayVisitedNames.has(name))) return titles.si_visto_titulo ?? null
+  const iso = tripDay.hours?.weekday ? tripDay.hours?.dateIso : null
+  if (iso && titles[iso.slice(5)]) return titles[iso.slice(5)]
+  const month = iso ? Number(iso.slice(5, 7)) : null
+  if (month === 12 && titles.diciembre) return titles.diciembre
+  return titles.invierno ?? null
+}
+
 function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0) {
   const idle = Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
@@ -545,7 +595,7 @@ function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMin
   const winter = (tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE
   const lit = destData.destination_config?.paseo_iluminado?.[zone.id] ?? null
   return {
-    title: winter ? `Paseo por ${lit ?? `${barrio} de noche`} y aperitivo` : `Aperitivo y paseo por ${barrio}`,
+    title: winter ? winterEveningTitle(destData, zone.id, tripDay, dayVisitedNames) ?? `Paseo por ${lit ?? `${barrio} de noche`} y aperitivo` : `Aperitivo y paseo por ${barrio}`,
     barrio,
     minutes: idle,
     ...(winter ? { winter: true } : {}),

@@ -94,7 +94,7 @@ interface GeneratedStop {
   /** Monumento con interior: por dentro o por fuera — Stop.visitMode. */
   visit_mode?: 'dentro' | 'fuera' | null
   /** Por qué va por fuera: cerrado, ya cerrado o no cabe — Stop.outsideKind. */
-  outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_cabe' | null
+  outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | null
   /** Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona — Stop.freeTourEnd. */
   free_tour_end?: string | null
   /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("🚌 Bus 118, unos 25 min"). */

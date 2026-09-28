@@ -155,7 +155,9 @@
       "sugerencia": {
         "lugar": "Puente Sant'Angelo (noche)",
         "hora": "21:30",
-        "nota": "La Girandola sobre el Castillo (hora a confirmar)"
+        "nota": "La Girandola sobre el Castillo (hora a confirmar cada año; interna, no se enseña)",
+        "nombre": "La Girandola",
+        "texto": "Los fuegos de la Girandola sobre el Castillo, una tradición que viene del siglo XV por los patronos de Roma. Busca sitio en el puente o en la orilla con tiempo: se llena."
       },
       "verificar": true,
       "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it",
@@ -169,9 +171,9 @@
       "tipo": "festivo",
       "icono": "calma",
       "titulo": "Ferragosto",
-      "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
+      "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos ajustado tu ruta a lo que sí abre.",
       "fuente": "closed_dates de roma.json",
-      "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca."
+      "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
     },
     {
       "id": "todos_los_santos",
@@ -203,7 +205,7 @@
       "tipo": "religioso",
       "icono": "navidad",
       "titulo": "Navidad en Roma",
-      "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
+      "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos colocado tu ruta para que no te pierdas nada.",
       "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
       "sugerencia": {
         "lugar": "Bendición Urbi et Orbi",
@@ -225,6 +227,21 @@
       "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
       "verificar": true,
       "fuente": "Programa a confirmar cada año en comune.roma.it",
+      "comprobado": "2026-09-28"
+    },
+    {
+      "id": "domenica_al_museo",
+      "fecha": "primer_domingo",
+      "tipo": "evento",
+      "icono": "fiesta",
+      "titulo": "Primer domingo de mes · Museos gratis",
+      "texto": "El primer domingo de mes la entrada al Coliseo es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.",
+      "requiere_lugares": [
+        "Coliseo",
+        "Foro Romano y Palatino"
+      ],
+      "verificar": true,
+      "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
       "comprobado": "2026-09-28"
     }
   ]

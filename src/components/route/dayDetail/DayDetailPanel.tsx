@@ -825,6 +825,8 @@ export function DayDetailPanel({
     })
     if (stops.length > 0) timeline.push({ type: 'end' })
   }
+  // Los trayectos en bus o metro que se pintan antes del tiempo libre (no se repiten delante de su parada).
+  const transitMovedBeforeFree = new Set<number>()
   const placed: PlacedItem[] = []
   for (const item of timeline) {
     const floor = placed.length > 0 ? placed[placed.length - 1].period : null
@@ -840,6 +842,9 @@ export function DayDetailPanel({
       // Índice negativo = el hueco de DESPUÉS de la comida (empieza al acabar la franja de comer).
       const after = item.index < 0 ? -1 - item.index : item.index
       start = item.index < 0 && !Number.isNaN(lunchEndMinutes) ? lunchEndMinutes : (schedule[after]?.endMinutes ?? start)
+      // Si a lo siguiente se va en bus o metro, el tiempo libre es al llegar (decisión del usuario, 2026-09-28): acaba
+      // cuando empieza la parada.
+      if (item.index >= 0 && realStops[after + 1]?.transitLabel && schedule[after + 1]) start = schedule[after + 1].startMinutes - item.entry.minutes
       end = start + item.entry.minutes
     } else if (item.type === 'lunch') {
       start = Number.isNaN(lunchStart) ? (schedule[item.index]?.endMinutes ?? start) : lunchStart
@@ -875,6 +880,18 @@ export function DayDetailPanel({
     }
     if (item.type === 'free') {
       const index = item.index < 0 ? -1 - item.index : item.index
+      // El trayecto en bus o metro va antes del tiempo libre: primero se llega y luego se pasea (Villa Borghese).
+      const next = index + 1
+      if (item.index >= 0 && realStops[next]?.transitLabel && connectorEntries[next]) {
+        transitMovedBeforeFree.add(next)
+        const { connectorKey, connector, fromName } = connectorEntries[next]
+        return (
+          <div key={`free-transit-${index}`}>
+            {renderGap(connectorKey, connector, fromName, stops[next].name, next, false, realStops[next].transitLabel ?? null)}
+            {renderFreeTime(item.entry, index, minutesToTime(start))}
+          </div>
+        )
+      }
       return renderFreeTime(item.entry, index, minutesToTime(start))
     }
     if (item.type === 'lunch') {
@@ -958,7 +975,7 @@ export function DayDetailPanel({
         <div>
           {/* El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector`
               decide solo si además lleva el trayecto. Un paseo quitado no deja ni rastro. */}
-          {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
+          {walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
               <ZoneWalkCard stop={stop} startTime={day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />

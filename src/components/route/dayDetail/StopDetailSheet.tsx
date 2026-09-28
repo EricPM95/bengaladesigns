@@ -549,7 +549,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
                   {stop.visitMode === 'fuera' && stop.outsideReason && (
                     <div className="space-y-2">
-                      <p className={`flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' ? 'text-accent-red' : 'text-text'}`}>
+                      <p className={`flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre' ? 'text-accent-red' : 'text-text'}`}>
                         <CameraIcon />
                         <span>
                           <span className="font-medium">Por fuera</span> · {stop.outsideReason}

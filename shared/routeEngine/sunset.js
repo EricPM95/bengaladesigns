@@ -80,4 +80,6 @@ export function sunsetFor(destData, { dateIso = null, season = null } = {}) {
 
 /** Ventana del atardecer (Paso 5 revisado): cuenta como atardecer llegar de 60 min antes a 15 después;
     lo ideal, de 45 a 30 min antes. */
-export const SUNSET_WINDOW = { earliestBefore: 60, idealFrom: 45, idealTo: 30, latestAfter: 15 }
+// La parada del atardecer empieza unos 25 min antes del sol y acaba unos 15 min después (decisión del usuario,
+// 2026-09-28: "quédate hasta que se enciendan las luces").
+export const SUNSET_WINDOW = { earliestBefore: 60, idealFrom: 25, idealTo: 30, latestAfter: 15, stayAfter: 15 }

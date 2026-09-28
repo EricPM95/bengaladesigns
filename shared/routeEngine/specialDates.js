@@ -13,6 +13,12 @@ const FIXED = /^(\d{2})-(\d{2})$/
 
 /** ¿Cae la fecha en esa entrada (su día o su rango)? */
 export function specialDateMatches(entry, dateIso) {
+  // "primer_domingo": el primer domingo de cada mes (los museos del Estado gratis en Italia, #domenicalmuseo).
+  if (entry?.fecha === 'primer_domingo') {
+    if (!dateIso) return false
+    const date = new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
+    return date.getUTCDay() === 0 && date.getUTCDate() <= 7
+  }
   return matchesDateRange(entry?.fecha, entry?.hasta, dateIso)
 }
 

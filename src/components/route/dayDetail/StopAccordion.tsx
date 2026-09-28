@@ -23,6 +23,7 @@ interface StopAccordionProps {
 const OUTSIDE_SHORT: Record<string, string> = {
   cerrado: 'Hoy cierra',
   ya_cerrado: 'A esta hora ya ha cerrado',
+  no_abre: 'A esta hora no abre',
   no_cabe: 'para llegar a todo',
 }
 
@@ -84,7 +85,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
       // El motivo en la misma línea, a la vista sin abrir (decisión del usuario, 2026-09-28): cerrado, en rojo; por
       // tiempo, en gris y corto.
       const short = OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null
-      const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado'
+      const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
       // Por tiempo, todo en una pieza gris ("Por fuera · 15 min · para llegar a todo"); cerrado, el motivo en rojo.
       meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}${short && !closed ? ` · ${short}` : ''}` })
       if (short && closed) meta.push({ text: short, warn: true })

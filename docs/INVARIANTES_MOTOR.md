@@ -1415,3 +1415,31 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 299. **Condiciones de día en las paradas curadas**: `no_si_dia` (una lista o un día) quita la parada si el viaje lleva
     ese otro día (la Isla Tiberina y el Altar de D5, que ya salen en D1 o D1-FT); `si_dia` la pone solo si lo lleva (la
     Columna y los Mercados de Trajano en D5 en invierno, de camino a Monti, cuando el Altar ya salió).
+300. **Repaso "como un local" de las 20 rutas, Parte A** (decisión del usuario, 2026-09-28), reglas generales:
+    - Noche con nocturna a hora fija (la Girandola el 29/6): ese día va uno que cene a 15 min o menos (en Roma, D1);
+      la nocturna sale con su nombre y su texto (`sugerencia.nombre` / `texto`); la nota con "hora a confirmar" es interna.
+    - La nocturna no repite lo que ya salió ese día (sin `excepcion_mismo_dia`); la escalinata vista por la mañana deja
+      paso al centro iluminado, siempre después de cenar (`alternativas_despues_de_cenar`); en invierno, antes de cenar,
+      el rato con nombre (`destination_config.aperitivo_invierno`: luces de Navidad en diciembre, compras el resto,
+      paseo con luces el 25; y si ya se vio lo que nombra, otro título). La "Tarde libre" de invierno sale igual.
+    - "Lo que quedó fuera": nunca lo que la ruta pasa ese día (visitado, de paso, nocturno, el barrio de la cena o su
+      compañero de grupo); si fue un cierre, el motivo es el cierre ("Cierra el 25 de diciembre").
+    - Todo monumento con `minutos_fuera` sale siempre, aunque sea gratis; por horario, "A esta hora no abre"
+      (`outside_kind: 'no_abre'`, en rojo). Piazza del Popolo → Santa Maria del Popolo (grupo `popolo`); el rescate de
+      una sugerencia no quita lo que tiene su compañero de grupo en el día.
+    - Atardecer: la parada empieza unos 25 min antes del sol (`SUNSET_WINDOW.idealFrom`; un paseo como la avenida de
+      los Foros, `atardecer_desde`) y acaba 15 min después (`stayAfter`); lo de detrás se recoloca.
+    - La parada de barrio de antes de cenar (Trastevere, Monti, Campo de' Fiori; `estirar` o `aperitivo`) se estira hasta
+      la hora de salir a cenar.
+    - Turnos (`turnos` en el lugar: la Galería cada hora de 9:00 a 17:00): si antes queda más de media hora, el turno
+      anterior que no deja hueco. `si_da_tiempo`: la parada sale si por ella se pierde una a hora fija.
+    - El monumento que el motor pasa a por dentro para llenar la espera se estira; si un cierre deja más de 90 min, antes
+      entran paradas de camino. D1-FT tiene orden de invierno (subir primero al Janículo).
+    - Datos: la Cúpula antes que la Basílica (45 min); Trevi a las 8:30 y desayuno de 25 min (D4, D4M); D3 con Trinità dei
+      Monti si da tiempo; D5C sin Letrán, San Clemente a las 14:00 ("para bajar hay que reservar online") y Monti después
+      de los Foros; D4 con Free Tour: Babuino → Margutta → Popolo → Santa Maria del Popolo → Parque → Pincio; el domingo de
+      verano, Santa Maria del Popolo justo después de la Galería; Santa Maria del Popolo después del Pincio solo con el sol
+      antes de las 17:30.
+    - Fechas: el primer domingo de mes (`fecha: primer_domingo`, `requiere_lugares`: solo si ese día va el Coliseo); en
+      Navidad y Ferragosto, "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
+    - En la app, si a lo siguiente se va en bus o metro, el trayecto se pinta antes del tiempo libre.

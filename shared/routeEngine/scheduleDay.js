@@ -821,11 +821,12 @@ function simulate(sequence, ctx) {
       // Mirador del atardecer: se llega en la hora dorada (no antes de 45 min antes de la puesta de
       // sol), nunca más tarde de 15 min después, y no se sale antes de que se ponga el sol.
       if (place.sunset != null) {
-        at = Math.max(at, roundUpToFive(place.sunset - SUNSET_WINDOW.idealFrom))
+        // (`sunsetLead`: un paseo al atardecer, como la avenida de los Foros, empieza antes que un mirador.)
+        at = Math.max(at, roundUpToFive(place.sunset - (place.sunsetLead ?? SUNSET_WINDOW.idealFrom)))
         if (at > place.sunset + SUNSET_WINDOW.latestAfter) return { ok: false, reason: 'missed_sunset', unitId: unit.id }
       }
 
-      const duration = place.sunset != null ? Math.max(visitMinutes(unit, index, mode), place.sunset - at) : visitMinutes(unit, index, mode)
+      const duration = place.sunset != null ? Math.max(visitMinutes(unit, index, mode), place.sunset + SUNSET_WINDOW.stayAfter - at) : visitMinutes(unit, index, mode)
       // Abierto de principio a fin, en el primer tramo donde quepa entera (con cierre de mediodía,
       // se espera a la tarde en vez de descartarla).
       const schedule = effectiveSchedule(place, ctx.hours)

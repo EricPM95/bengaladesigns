@@ -248,7 +248,9 @@ export function dateNoticesFor(destData, trip, options = {}) {
   // 6. Curados: la tarjeta va en el primer día del viaje que cae en su fecha. Con rango (Navidad, del 24 al 26), lo
   // automático de los demás días del rango se junta en su tarjeta: es la misma ocasión.
   for (const entry of specials) {
-    const inRange = days.filter((day) => specialDateMatches(entry, day.hours.dateIso)).map((day) => day.hours.dateIso)
+    // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
+    const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside)
+    const inRange = days.filter((day) => specialDateMatches(entry, day.hours.dateIso) && carriesPlaces(day)).map((day) => day.hours.dateIso)
     if (inRange.length === 0) continue
     const target = slot(inRange[0])
     if (target.curated) continue
