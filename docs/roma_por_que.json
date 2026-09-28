@@ -52,7 +52,15 @@
     "Castillo de Sant'Angelo": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
     "Iglesia de Santa Maria in Trastevere": "Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes.",
-    "Trastevere": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+    "Trastevere": {
+      "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+      "solo_si_sigue": [
+        "Mirador del Janículo",
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola"
+      ],
+      "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+    },
     "San Pietro in Montorio y Tempietto de Bramante": "Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis.",
     "Fontana dell'Acqua Paola": "Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante.",
     "Mirador del Janículo": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo.",
@@ -106,7 +114,7 @@
         "comprobado": "2026-09-28"
       },
       "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra. Tienes tiempo de sobra: el punto de encuentro del tour está a unos 10 min andando.",
-      "Museos Vaticanos y Capilla Sixtina": "Por la tarde hay menos cola que a media mañana, y entras hacia las 14:30. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos."
+      "Museos Vaticanos y Capilla Sixtina": "Por la tarde hay menos cola que a media mañana. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos."
     },
     "D5": {
       "Circo Máximo": "Bajas del bus aquí, donde corrían las cuadrigas. Con la luz de la tarde, el Palatino que tienes delante se vuelve dorado.",
@@ -122,7 +130,12 @@
       "Parque de Villa Borghese": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
     },
     "D2": {
-      "Plaza de San Pedro": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+      "Plaza de San Pedro": {
+        "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+        "solo_si_viene_de": [
+          "Museos Vaticanos y Capilla Sixtina"
+        ]
+      }
     },
     "D1-FT": {
       "Coliseo": {
@@ -238,5 +251,17 @@
     "D5": {
       "Plaza del Campidoglio": "Ya estuviste el Día {dia}, pero al atardecer es otro sitio: el Foro a tus pies mientras se encienden las luces."
     }
-  }
+  },
+  "nocturnas": {
+    "Plaza de España (noche)": "Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer.",
+    "Piazza Navona (noche)": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte."
+  },
+  "miradores_de_noche": {
+    "Mirador del Janículo": "El sol ya se ha puesto y, a cambio, tienes Roma encendida a tus pies: cúpulas, campanarios y tejados hasta el horizonte.",
+    "Terraza del Pincio": "Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo.",
+    "Plaza del Campidoglio": "Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor.",
+    "Puente Sant'Angelo": "Ya es de noche: los ángeles de Bernini iluminados, el Castillo encendido y el Tíber reflejándolo todo.",
+    "Via dei Fori Imperiali": "La avenida de los Foros de noche: las ruinas iluminadas a los dos lados y el Coliseo encendido al fondo."
+  },
+  "_solo_si": "solo_si_viene_de / solo_si_sigue: el texto solo sale si la parada de antes (o la de después) es una de esas; si no, \"general\" o el texto general del lugar (decisión del usuario, 2026-09-28)."
 }

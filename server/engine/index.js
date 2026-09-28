@@ -307,7 +307,9 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {
     day.night_walk = { name: tripDay.nightWalk.nombre, text: tripDay.nightWalk.texto ?? null }
     const first = day.stops.find((stop) => stop.is_night_experience)
-    if (tripDay.nightWalk.texto) first.why = tripDay.nightWalk.texto
+    // (Después de cenar, su texto de después de cenar si lo trae: "Del Pincio se baja…" no vale a las 21:30.)
+    const walkWhy = !first.before_dinner && tripDay.nightWalk.textoDespuesCenar ? tripDay.nightWalk.textoDespuesCenar : tripDay.nightWalk.texto
+    if (walkWhy) first.why = walkWhy
     // El nombre del paseo va en todas sus paradas nocturnas: la tarjeta lo enseña siempre.
     for (const stop of day.stops) if (stop.is_night_experience) stop.night_walk_name = tripDay.nightWalk.nombre
   }

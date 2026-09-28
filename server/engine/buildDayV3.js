@@ -36,6 +36,14 @@ const EARLY_WHY_BEFORE = 9 * 60 + 30
  * El `por_que` de la parada: un texto, o { texto, temprano } si depende de la hora. `temprano` solo si la parada empieza
  * antes de las 09:30; si no, `texto` (nunca "a primera hora" a las 10:00 en tranquilo o por la tarde con el pool).
  */
+/** El texto general de un lugar (sin condiciones): el de `por_que_lugares`, o su `general`. */
+function generalWhyOf(destData, name) {
+  const why = destData.por_que_lugares?.[name]
+  if (!why) return null
+  if (typeof why === 'string') return why
+  return why.general ?? (why.solo_si_viene_de || why.solo_si_sigue ? null : why)
+}
+
 function curatedWhyAt(why, startMinutes) {
   if (typeof why === 'string') return why
   // `temprano_antes` ("09:00"): el umbral de ESE texto, si no es el de siempre (la Fontana de Trevi: antes de la tasa).
@@ -244,7 +252,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const lunchEnd = schedule.meals.find((meal) => meal.type === 'lunch')?.end ?? 0
   const tour = destData.default_free_tour ?? null
   const tourToday = schedule.visits.some((visit) => visit.place.isFreeTour)
-  const stops = schedule.visits.map((visit) => {
+  const stops = schedule.visits.map((visit, visitIndex) => {
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
     // La estirable que se lleva un buen rato (decisión del usuario, 2026-09-28): con su nombre y su texto, nunca
     // tiempo libre suelto ("Tiempo libre en Villa Borghese: barca en el lago, bici…").
@@ -267,7 +275,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.nightView || lateForSun) {
       stop.night_view = true
       delete stop.sunset_minutes
-      stop.why = destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
+      // Un texto por mirador (decisión del usuario, 2026-09-28): en el puente o en los Foros no se está en alto.
+      stop.why = destData.destination_config?.night_view_texts?.[visit.place.name] ?? destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
       // Sale como experiencia nocturna, con su nombre: "Roma iluminada desde el Janículo" (decisión del 2026-09-27).
       const desde = destData.destination_config?.night_view_names?.[visit.place.name]
       const template = destData.destination_config?.night_view_title
@@ -376,8 +385,19 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // atardecer del Janículo…").
     if (visit.place.curatedWhy && !stop.night_view) {
       const why = visit.place.curatedWhy
-      stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : curatedWhyAt(why, visit.start)
+      // `solo_si_viene_de` / `solo_si_sigue` (decisión del usuario, 2026-09-28): un texto que habla de lo de antes o de
+      // después solo sale si se cumple; si no, su texto general ("general" o el del lugar).
+      // (Si entre medias se come, lo de antes es la comida: la Plaza de San Pedro después de comer no "sale de los Museos".)
+      const previousVisit = schedule.visits[visitIndex - 1] ?? null
+      const lunchBetween = previousVisit && schedule.meals.some((meal) => meal.type === 'lunch' && meal.start >= previousVisit.end - 1 && meal.start < visit.start)
+      const previousName = lunchBetween ? 'la comida' : previousVisit?.place.name ?? null
+      const nextName = schedule.visits[visitIndex + 1]?.place.name ?? null
+      const condition = typeof why === 'object' && why ? (why.solo_si_viene_de ? { lista: why.solo_si_viene_de, nombre: previousName, tipo: 'viene_de' } : why.solo_si_sigue ? { lista: why.solo_si_sigue, nombre: nextName, tipo: 'sigue' } : null) : null
+      const holds = !condition || condition.lista.includes(condition.nombre)
+      const general = condition && !holds ? (why.general ?? generalWhyOf(destData, visit.place.name)) : null
+      stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : general ? curatedWhyAt(general, visit.start) : curatedWhyAt(why, visit.start)
       stop.why_source = 'curado'
+      if (condition) stop.why_condition = { tipo: condition.tipo, cumple: holds, usa_general: Boolean(general) }
     }
     // Por fuera, su texto de por fuera (el del lugar: `por_fuera` en el JSON del destino), si la parada no trae el suyo.
     if (stop.visit_mode === 'fuera' && sourcePlace?.por_fuera && !(typeof visit.place.curatedWhy === 'object' && visit.place.curatedWhy?.por_fuera)) {

@@ -320,7 +320,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       ...(entry.season_notice ? { season_notice: entry.season_notice } : {}),
       // La excepción de su día curado (la escalinata de D4, con la Plaza de España vista por la mañana).
       ...(entry.sameDayException ? { same_day_exception: true } : {}),
-      why: plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night(),
+      // Su propio texto si lo tiene (la Plaza de España o Piazza Navona de noche); si no, el de siempre.
+      why: entry.texto ?? (plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',
       category_label: 'De noche',

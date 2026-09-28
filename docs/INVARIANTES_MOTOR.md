@@ -1443,3 +1443,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Fechas: el primer domingo de mes (`fecha: primer_domingo`, `requiere_lugares`: solo si ese día va el Coliseo); en
       Navidad y Ferragosto, "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
     - En la app, si a lo siguiente se va en bus o metro, el trayecto se pinta antes del tiempo libre.
+301. **Repaso de las 20 rutas, Parte B: textos que cuadran con lo que pasa** (decisión del usuario, 2026-09-28):
+    - Cada lugar nocturno puede llevar su `texto` (la Plaza de España y Piazza Navona de noche); el genérico ya no sale
+      en el segundo lugar de una nocturna. El paseo que habla del segundo lugar lleva `texto_si_va_segundo` (la Fontana
+      de Trevi sin "sube hasta la Plaza de España" cuando la plaza va detrás). Lo que sale en lugar del paseo del día,
+      si coincide con otro paseo del destino (el centro iluminado), lleva su nombre y su texto.
+    - "Roma iluminada desde…": un texto por mirador (`destination_config.night_view_texts`); `night_view_text` queda de
+      reserva.
+    - Un texto que habla de lo de antes o de después lleva `solo_si_viene_de` / `solo_si_sigue` (con la comida en medio,
+      lo de antes es la comida); si no se cumple, su `general` o el texto general del lugar (la Plaza de San Pedro
+      después de comer, Trastevere sin mirador detrás). El paseo de noche lleva `texto_despues_cenar` (la escalinata).
+      La parada guarda `why_condition` para la auditoría.
+    - Museos Vaticanos por la tarde sin hora en el texto.

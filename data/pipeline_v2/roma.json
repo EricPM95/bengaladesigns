@@ -80,7 +80,8 @@
       "conflicts_with": [
         "Plaza de España"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto": "Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer."
     },
     {
       "name": "Panteón (noche)",
@@ -166,7 +167,8 @@
       "conflicts_with": [
         "Piazza Navona"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte."
     },
     {
       "name": "Trastevere de noche",
@@ -7358,6 +7360,14 @@
         ],
         "si_visto_titulo": "Aperitivo en Campo de' Fiori y la Plaza Farnese"
       }
+    },
+    "night_view_texts": {
+      "_nota": "El texto de cada mirador cuando ya es de noche (decisión del usuario, 2026-09-28); sin él, night_view_text.",
+      "Mirador del Janículo": "El sol ya se ha puesto y, a cambio, tienes Roma encendida a tus pies: cúpulas, campanarios y tejados hasta el horizonte.",
+      "Terraza del Pincio": "Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo.",
+      "Plaza del Campidoglio": "Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor.",
+      "Puente Sant'Angelo": "Ya es de noche: los ángeles de Bernini iluminados, el Castillo encendido y el Tíber reflejándolo todo.",
+      "Via dei Fori Imperiali": "La avenida de los Foros de noche: las ruinas iluminadas a los dos lados y el Coliseo encendido al fondo."
     }
   },
   "museos_de_pago": {
@@ -8924,7 +8934,12 @@
         {
           "lugar": "Plaza de San Pedro",
           "rol": "parada",
-          "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+          "por_que": {
+            "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+            "solo_si_viene_de": [
+              "Museos Vaticanos y Capilla Sixtina"
+            ]
+          }
         },
         {
           "lugar": "Cúpula de San Pedro",
@@ -8998,7 +9013,15 @@
           "rol": "parada",
           "estirar": true,
           "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte.",
-          "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+          "por_que": {
+            "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+            "solo_si_sigue": [
+              "Mirador del Janículo",
+              "San Pietro in Montorio y Tempietto de Bramante",
+              "Fontana dell'Acqua Paola"
+            ],
+            "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+          }
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -9083,7 +9106,15 @@
               "lugar": "Trastevere",
               "rol": "parada",
               "nota": "Bajar de noche callejeando.",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             }
           ],
           "atardecer_antes_de": "18:20",
@@ -9129,7 +9160,15 @@
                 "rol": "parada",
                 "estirar": true,
                 "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte.",
-                "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+                "por_que": {
+                  "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                  "solo_si_sigue": [
+                    "Mirador del Janículo",
+                    "San Pietro in Montorio y Tempietto de Bramante",
+                    "Fontana dell'Acqua Paola"
+                  ],
+                  "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+                }
               },
               {
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -9167,7 +9206,12 @@
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+              "por_que": {
+                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+                "solo_si_viene_de": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              }
             },
             {
               "lugar": "Basílica de San Pedro",
@@ -9199,7 +9243,15 @@
               "lugar": "Trastevere",
               "rol": "parada",
               "estirar": true,
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             },
             {
               "lugar": "Mirador del Janículo",
@@ -9213,7 +9265,12 @@
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+              "por_que": {
+                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+                "solo_si_viene_de": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              }
             },
             {
               "lugar": "Basílica de San Pedro",
@@ -9251,7 +9308,15 @@
               "lugar": "Trastevere",
               "rol": "parada",
               "nota": "Callejear de noche hasta la cena.",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             }
           ],
           "nombre": "Vaticano, Castillo y Trastevere"
@@ -9289,7 +9354,12 @@
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+              "por_que": {
+                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+                "solo_si_viene_de": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              }
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -9353,7 +9423,12 @@
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
               "nota": "El Ángelus es a las 12:00 los domingos, si el Papa está en Roma.",
-              "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+              "por_que": {
+                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+                "solo_si_viene_de": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              }
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -9410,7 +9485,15 @@
               "rol": "parada",
               "estirar": true,
               "nota": "Callejear.",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             },
             {
               "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -9454,7 +9537,12 @@
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
+              "por_que": {
+                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
+                "solo_si_viene_de": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              }
             },
             {
               "lugar": "Basílica de San Pedro",
@@ -9543,7 +9631,7 @@
           "rol": "parada",
           "hora": "14:30",
           "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00.",
-          "por_que": "Por la tarde hay menos cola que a media mañana, y entras hacia las 14:30. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos.",
+          "por_que": "Por la tarde hay menos cola que a media mañana. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos.",
           "hora_ok": true
         },
         {
@@ -9676,7 +9764,15 @@
           "rol": "parada",
           "estirar": true,
           "nota": "Callejear y aperitivo: aquí va el tiempo que sobre antes del atardecer.",
-          "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+          "por_que": {
+            "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+            "solo_si_sigue": [
+              "Mirador del Janículo",
+              "San Pietro in Montorio y Tempietto de Bramante",
+              "Fontana dell'Acqua Paola"
+            ],
+            "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+          }
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -9763,7 +9859,15 @@
               "rol": "parada",
               "estirar": true,
               "nota": "Callejear y aperitivo: aquí va el tiempo que sobre antes del atardecer.",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             }
           ]
         },
@@ -9848,7 +9952,15 @@
                 "cierra_antes_del_atardecer": "Jardín de los Naranjos"
               },
               "nota": "Bajar por el Ponte Sublicio y callejear: aperitivo en el barrio.",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             }
           ],
           "cena": {
@@ -9906,7 +10018,15 @@
             {
               "lugar": "Trastevere",
               "rol": "parada",
-              "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
+              "por_que": {
+                "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                "solo_si_sigue": [
+                  "Mirador del Janículo",
+                  "San Pietro in Montorio y Tempietto de Bramante",
+                  "Fontana dell'Acqua Paola"
+                ],
+                "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+              }
             }
           ],
           "nombre": "Roma Antigua, el Ghetto y Trastevere",
@@ -11264,7 +11384,9 @@
       "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
       "maximo_tranquilo": 2,
       "cifra_ok": true,
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "texto_si_va_segundo": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
+      "texto_si_va_segundo_lugar": "Plaza de España (noche)"
     },
     "trastevere": {
       "nombre": "Trastevere de noche",
@@ -11297,7 +11419,8 @@
         "Panteón (noche)",
         "Piazza Navona (noche)"
       ],
-      "alternativas_despues_de_cenar": true
+      "alternativas_despues_de_cenar": true,
+      "texto_despues_cenar": "Después de cenar, baja por Via Condotti hasta la escalinata iluminada, con la Barcaccia sonando y Trinità dei Monti encendida arriba."
     },
     "foro_a_tus_pies": {
       "nombre": "El Foro a tus pies",
@@ -11930,7 +12053,15 @@
     "Castillo de Sant'Angelo": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
     "Iglesia de Santa Maria in Trastevere": "Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes.",
-    "Trastevere": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+    "Trastevere": {
+      "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+      "solo_si_sigue": [
+        "Mirador del Janículo",
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola"
+      ],
+      "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+    },
     "San Pietro in Montorio y Tempietto de Bramante": "Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis.",
     "Fontana dell'Acqua Paola": "Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante.",
     "Mirador del Janículo": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo.",

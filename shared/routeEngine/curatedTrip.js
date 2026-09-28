@@ -1546,6 +1546,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   // partes, el texto fijo del paseo.
   const walkText = (walk, chain) => {
     const parts = walk.texto_partes
+    // (Si la nocturna lleva detrás el lugar del que habla su texto, que ya tiene el suyo: la Fontana de Trevi sin "sube
+    // hasta la Plaza de España" cuando la plaza va detrás.)
+    if (!parts && walk.texto_si_va_segundo && chain.slice(1).some((entry) => entry.name === walk.texto_si_va_segundo_lugar)) return walk.texto_si_va_segundo
     if (!parts) return chain.length < walk.recorrido.length && walk.texto_corto ? walk.texto_corto : walk.texto
     const pieces = chain.map((entry) => parts.lugares?.[entry.name]).filter(Boolean)
     if (pieces.length === 0) return walk.texto ?? null
@@ -1592,12 +1595,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       usedNights.add(entry.name)
       for (const name of entry.conflicts_with ?? []) timesSeen.set(name, (timesSeen.get(name) ?? 0) + 1)
     }
-    const text = fromAlternative ? null : walkText(walk, chain)
+    // (Lo que sale en lugar del paseo del día: si coincide con otro paseo del destino, su nombre y su texto.)
+    const sameAs = fromAlternative ? Object.values(walks).find((other) => other !== walk && Array.isArray(other.recorrido) && chain.every((entry) => other.recorrido.includes(entry.name))) : null
+    const text = fromAlternative ? (sameAs ? walkText(sameAs, chain) : null) : walkText(walk, chain)
     nightsByDay.set(
       day.dayNumber,
       chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(fromAlternative && walk.alternativas_despues_de_cenar ? { afterDinnerOnly: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) && !(entry.conflicts_with ?? []).some((name) => wokeFor.has(name)) ? { replacesDayVisit: true } : {}) })),
     )
-    day.nightWalk = { nombre: fromAlternative ? 'Paseo nocturno' : walk.nombre, texto: text }
+    day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? 'Paseo nocturno' : walk.nombre, texto: text, ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
   }
 
   // La noche de una fecha especial (la Girandola el 29 de junio, decisión del usuario 2026-09-28): esa noche la nocturna
