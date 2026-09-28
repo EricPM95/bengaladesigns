@@ -19,6 +19,8 @@ import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts
 
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+/** Sin la última frase de lo que hemos hecho ("Hemos puesto…"): cuando no es verdad. */
+const withoutPromise = (text) => String(text ?? '').replace(/\s*Hemos [^.]*\.\s*$/, '')
 const weekdayOf = (dateIso) => WEEKDAYS[new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`).getUTCDay()]
 const dayNumberOf = (dateIso) => Number(String(dateIso).slice(8, 10))
 const capital = (text) => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text)
@@ -98,6 +100,19 @@ const tagOf = (entry) => String(entry.titulo ?? '').split(' · ').at(-1)
  * @returns {object[]} tarjetas { id, day_number, date_iso, icon, title, tag, texts, kind }
  */
 export function dateNoticesFor(destData, trip, options = {}) {
+  /**
+   * El texto curado de una fecha (decisión del usuario, 2026-09-28): su `contexto` si lo tiene (los cierres y lo que
+   * hemos movido ya lo cuenta el aviso automático, solo de lugares del viaje: así no se repite ni nombra lo que no va);
+   * y la promesa final ("Hemos puesto…") solo si su sugerencia está de verdad en la ruta de ese día.
+   */
+  const curatedText = (entry) => {
+    const text = entry.contexto ?? entry.texto
+    const sug = entry.sugerencia
+    if (!sug?.hora || !sug.lugar) return text
+    const day = (trip.days ?? []).find((candidate) => candidate.hours?.dateIso && (sug.dia ? candidate.hours.dateIso.slice(5) === sug.dia : specialDateMatches(entry, candidate.hours.dateIso)))
+    const placed = Boolean(day) && ((day.schedule?.visits ?? []).some((visit) => visit.place.name === sug.lugar) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => night.name === sug.lugar))
+    return placed ? text : withoutPromise(text)
+  }
   const calendar = { hasDates: trip.calendar?.hasDates ?? (trip.days ?? []).some((day) => day.hours?.weekday), month: trip.calendar?.month ?? options.month ?? null }
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
   const joyas = new Set([...(destData.joyas ?? []), ...(destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name)])
@@ -122,7 +137,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       title: entry.titulo,
       tag: tagOf(entry),
       // Sin fechas la ruta no se ajusta a esa fecha: fuera la frase de "hemos ajustado / hemos puesto…" (no es verdad).
-      texts: [entry.tipo === 'temporada' ? entry.texto : `Si tu viaje coincide con ${label}: ${lowerFirst(entry.texto.replace(/\s*Hemos [^.]*\.\s*$/, ''), destData.destination)}`],
+      texts: [entry.tipo === 'temporada' ? entry.texto : `Si tu viaje coincide con ${label}: ${lowerFirst(withoutPromise(entry.contexto ?? entry.texto), destData.destination)}`],
       kind: 'curado',
     }))
   }
@@ -259,7 +274,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
         icon: curated?.icono ?? first?.icon ?? 'cierre',
         title: curated?.titulo ?? `${capital(longDate(iso))} · ${capital([...new Set(auto.map((item) => item.subject))].join(' · '))}`,
         tag: curated ? tagOf(curated) : first.tag,
-        texts: [...auto.map((item) => item.text), ...(curated ? [curated.texto] : [])],
+        texts: [...auto.map((item) => item.text), ...(curated ? [curatedText(curated)] : [])].filter(Boolean),
         kind: curated && auto.length ? 'mixto' : curated ? 'curado' : 'auto',
       }
     })

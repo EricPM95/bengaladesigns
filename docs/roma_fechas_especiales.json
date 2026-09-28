@@ -6,11 +6,12 @@
     "icono": "nombre del icono del diseño: fiesta, religioso, fuegos, luz, navidad, bandera, musica, calma",
     "titulo": "Lo que sale en grande. Corto.",
     "texto": "2-3 líneas de tú a tú. Sin precios (ni 'gratis'). Dice qué pasa y qué hemos hecho o qué te recomendamos.",
-    "sugerencia": "opcional: una parada o nocturna con hora que el motor puede ofrecer ese día (no la mete sola: sale como botón 'Añadir a mi ruta').",
+    "sugerencia": "opcional: una parada o nocturna con hora que el motor puede ofrecer ese día (no la mete sola: sale como botón 'Añadir a mi ruta'). Con hora, el motor la mete en la ruta de ese día a su hora (una pausa como la Bendición) o pone esa hora al lugar si el día ya lo lleva; \"(noche)\", esa noche la nocturna es esa. \"dia\": solo ese día del rango. Si no entra, el aviso no dice que la hemos puesto.",
     "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true.",
     "fuente": "de dónde sale el dato",
     "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app.",
-    "comprobado": "AAAA-MM-DD: la última vez que se comprobó el dato (obligatorio con verificar). validar.mjs avisa si tiene más de 11 meses."
+    "comprobado": "AAAA-MM-DD: la última vez que se comprobó el dato (obligatorio con verificar). validar.mjs avisa si tiene más de 11 meses.",
+    "contexto": "opcional: el texto sin la parte de los cierres y de lo que hemos movido (eso ya lo cuenta el aviso automático, solo de lugares del viaje). Si existe, es lo que sale del curado: así no se repite y nunca nombra un lugar que no está en el viaje (decisión del usuario, 2026-09-28). Recortado de tu texto por Claude."
   },
   "fechas": [
     {
@@ -20,7 +21,8 @@
       "icono": "fiesta",
       "titulo": "1 de enero · Año Nuevo",
       "texto": "Roma empieza el año con calma: hoy cierran el Coliseo, el Foro, el Panteón y los Museos Vaticanos. Hemos colocado sus visitas en otro día de tu viaje.",
-      "fuente": "closed_dates de roma.json"
+      "fuente": "closed_dates de roma.json",
+      "contexto": "Roma empieza el año con calma."
     },
     {
       "id": "reyes",
@@ -31,7 +33,8 @@
       "texto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
       "verificar": true,
       "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "contexto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana."
     },
     {
       "id": "viernes_santo",
@@ -56,9 +59,10 @@
       "titulo": "Domingo de Pascua",
       "texto": "A las 12:00 el Papa suele dar la bendición Urbi et Orbi en la Plaza de San Pedro, con muchísima gente. Hemos dejado tu día preparado para que puedas ir si quieres.",
       "sugerencia": {
-        "lugar": "Plaza de San Pedro",
+        "lugar": "Bendición Urbi et Orbi",
         "hora": "11:30",
-        "nota": "Bendición Urbi et Orbi a las 12:00"
+        "nota": "Bendición Urbi et Orbi a las 12:00",
+        "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente."
       },
       "verificar": true,
       "fuente": "vatican.va (confirmar cada año)",
@@ -71,7 +75,8 @@
       "icono": "fiesta",
       "titulo": "Lunes de Pascua (Pasquetta)",
       "texto": "Los Museos Vaticanos cierran y los romanos se van de pícnic a los parques. Hemos movido el Vaticano a otro día de tu viaje.",
-      "fuente": "closed_dates de roma.json"
+      "fuente": "closed_dates de roma.json",
+      "contexto": "Los romanos se van de pícnic a los parques."
     },
     {
       "id": "natale_di_roma",
@@ -107,7 +112,8 @@
       "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde suele haber un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
       "verificar": true,
       "fuente": "closed_dates de roma.json; concierto a confirmar cada año",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "contexto": "Por la tarde suele haber un gran concierto en San Juan de Letrán."
     },
     {
       "id": "fiesta_republica",
@@ -132,7 +138,8 @@
         },
         "_nota": "Probable, no confirmado: en 2026 abrieron a las 14:15 y en 2016 hacia las 11:00. El motor evita la mañana si puede y el aviso lo dice con prudencia."
       },
-      "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016"
+      "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016",
+      "contexto": "Hay desfile en Via dei Fori Imperiali."
     },
     {
       "id": "san_pedro_pablo",
@@ -140,7 +147,7 @@
       "tipo": "evento",
       "icono": "fuegos",
       "titulo": "29 de junio · San Pedro y San Pablo",
-      "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos movido tu visita al Vaticano.",
+      "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos.",
       "sugerencia": {
         "lugar": "Puente Sant'Angelo (noche)",
         "hora": "21:30",
@@ -148,7 +155,8 @@
       },
       "verificar": true,
       "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "contexto": "Fiesta de los patronos de Roma: por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos."
     },
     {
       "id": "ferragosto",
@@ -158,7 +166,8 @@
       "icono": "calma",
       "titulo": "Ferragosto",
       "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
-      "fuente": "closed_dates de roma.json"
+      "fuente": "closed_dates de roma.json",
+      "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca."
     },
     {
       "id": "todos_los_santos",
@@ -180,7 +189,8 @@
       "texto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.",
       "verificar": true,
       "fuente": "Tradición anual; hora a confirmar en vatican.va",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "contexto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena."
     },
     {
       "id": "navidad",
@@ -190,7 +200,13 @@
       "icono": "navidad",
       "titulo": "Navidad en Roma",
       "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
-      "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'"
+      "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
+      "sugerencia": {
+        "lugar": "Bendición Urbi et Orbi",
+        "hora": "11:30",
+        "dia": "12-25",
+        "nota": "Bendición Urbi et Orbi a las 12:00"
+      }
     },
     {
       "id": "nochevieja",

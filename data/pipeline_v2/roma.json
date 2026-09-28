@@ -1479,7 +1479,11 @@
       ],
       "minutos_fuera": 15,
       "por_fuera": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante.",
-      "lo_mejor_dentro": "recorrerlo y subir a la terraza del ángel"
+      "lo_mejor_dentro": "recorrerlo y subir a la terraza del ángel",
+      "closed_dates": [
+        "12-25",
+        "01-01"
+      ]
     },
     {
       "name": "Mirador del Janículo",
@@ -1559,7 +1563,11 @@
       ],
       "minutos_fuera": 10,
       "por_fuera": "La villa del cardenal Borghese, en mitad del parque, con su fachada llena de estatuas. Dentro está la mejor colección de Bernini del mundo: si quieres entrar, añádela a tus imprescindibles.",
-      "lo_mejor_dentro": "ver los Bernini y los Caravaggio sin prisa"
+      "lo_mejor_dentro": "ver los Bernini y los Caravaggio sin prisa",
+      "closed_dates": [
+        "12-25",
+        "01-01"
+      ]
     },
     {
       "name": "Parque de Villa Borghese",
@@ -2044,7 +2052,11 @@
       ],
       "minutos_fuera": 10,
       "por_fuera": "El centro comercial de la Roma imperial. Desde Via dei Fori Imperiali lo ves entero, con sus tiendas en semicírculo, tal y como lo veían los romanos.",
-      "lo_mejor_dentro": "recorrer sus tiendas romanas y ver los Foros desde arriba"
+      "lo_mejor_dentro": "recorrer sus tiendas romanas y ver los Foros desde arriba",
+      "closed_dates": [
+        "05-01",
+        "12-25"
+      ]
     },
     {
       "name": "Cúpula de San Pedro",
@@ -2267,6 +2279,10 @@
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
         "De pago."
+      ],
+      "closed_dates": [
+        "05-01",
+        "12-25"
       ]
     },
     {
@@ -2649,6 +2665,10 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada."
+      ],
+      "closed_dates": [
+        "05-01",
+        "12-25"
       ]
     },
     {
@@ -3630,6 +3650,11 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada."
+      ],
+      "closed_dates": [
+        "01-01",
+        "easter",
+        "12-25"
       ]
     },
     {
@@ -10984,13 +11009,13 @@
     },
     {
       "name": "Bendición Urbi et Orbi",
-      "duration_minutes": 45,
+      "duration_minutes": 60,
       "coordinates": [
         41.9022,
         12.4568
       ],
       "zone": "vaticano",
-      "description": "El 25 de diciembre a las 12:00, el Papa da la bendición Urbi et Orbi desde el balcón de la Basílica de San Pedro.",
+      "description": "El 25 de diciembre y el Domingo de Pascua a las 12:00, el Papa da la bendición Urbi et Orbi desde el balcón de la Basílica de San Pedro.",
       "why": "El 25 de diciembre a las 12:00, la bendición Urbi et Orbi del Papa en la Plaza de San Pedro. Opcional: llega con margen por los controles."
     }
   ],
@@ -11105,7 +11130,8 @@
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
         "texto": "Roma empieza el año con calma: hoy cierran el Coliseo, el Foro, el Panteón y los Museos Vaticanos. Hemos colocado sus visitas en otro día de tu viaje.",
-        "fuente": "closed_dates de roma.json"
+        "fuente": "closed_dates de roma.json",
+        "contexto": "Roma empieza el año con calma."
       },
       {
         "id": "reyes",
@@ -11116,7 +11142,8 @@
         "texto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana."
       },
       {
         "id": "viernes_santo",
@@ -11141,9 +11168,10 @@
         "titulo": "Domingo de Pascua",
         "texto": "A las 12:00 el Papa suele dar la bendición Urbi et Orbi en la Plaza de San Pedro, con muchísima gente. Hemos dejado tu día preparado para que puedas ir si quieres.",
         "sugerencia": {
-          "lugar": "Plaza de San Pedro",
+          "lugar": "Bendición Urbi et Orbi",
           "hora": "11:30",
-          "nota": "Bendición Urbi et Orbi a las 12:00"
+          "nota": "Bendición Urbi et Orbi a las 12:00",
+          "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente."
         },
         "verificar": true,
         "fuente": "vatican.va (confirmar cada año)",
@@ -11156,7 +11184,8 @@
         "icono": "fiesta",
         "titulo": "Lunes de Pascua (Pasquetta)",
         "texto": "Los Museos Vaticanos cierran y los romanos se van de pícnic a los parques. Hemos movido el Vaticano a otro día de tu viaje.",
-        "fuente": "closed_dates de roma.json"
+        "fuente": "closed_dates de roma.json",
+        "contexto": "Los romanos se van de pícnic a los parques."
       },
       {
         "id": "natale_di_roma",
@@ -11192,7 +11221,8 @@
         "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde suele haber un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
         "verificar": true,
         "fuente": "closed_dates de roma.json; concierto a confirmar cada año",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Por la tarde suele haber un gran concierto en San Juan de Letrán."
       },
       {
         "id": "fiesta_republica",
@@ -11217,7 +11247,8 @@
           },
           "_nota": "Probable, no confirmado: en 2026 abrieron a las 14:15 y en 2016 hacia las 11:00. El motor evita la mañana si puede y el aviso lo dice con prudencia."
         },
-        "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016"
+        "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016",
+        "contexto": "Hay desfile en Via dei Fori Imperiali."
       },
       {
         "id": "san_pedro_pablo",
@@ -11225,7 +11256,7 @@
         "tipo": "evento",
         "icono": "fuegos",
         "titulo": "29 de junio · San Pedro y San Pablo",
-        "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos movido tu visita al Vaticano.",
+        "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos.",
         "sugerencia": {
           "lugar": "Puente Sant'Angelo (noche)",
           "hora": "21:30",
@@ -11233,7 +11264,8 @@
         },
         "verificar": true,
         "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Fiesta de los patronos de Roma: por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos."
       },
       {
         "id": "ferragosto",
@@ -11243,7 +11275,8 @@
         "icono": "calma",
         "titulo": "Ferragosto",
         "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
-        "fuente": "closed_dates de roma.json"
+        "fuente": "closed_dates de roma.json",
+        "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca."
       },
       {
         "id": "todos_los_santos",
@@ -11265,7 +11298,8 @@
         "texto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.",
         "verificar": true,
         "fuente": "Tradición anual; hora a confirmar en vatican.va",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena."
       },
       {
         "id": "navidad",
@@ -11275,7 +11309,13 @@
         "icono": "navidad",
         "titulo": "Navidad en Roma",
         "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
-        "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'"
+        "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
+        "sugerencia": {
+          "lugar": "Bendición Urbi et Orbi",
+          "hora": "11:30",
+          "dia": "12-25",
+          "nota": "Bendición Urbi et Orbi a las 12:00"
+        }
       },
       {
         "id": "nochevieja",

@@ -1305,3 +1305,22 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     su compañero (la línea propia del monumento lleva su `minutos_fuera`, no 5 min), ni al quitarle a un monumento por
     fuera los minutos de lo que se ve desde él, ni con el redondeo al cuarto de hora (quarterHourStops). Si no cabe
     con su tiempo, el motor decide como con cualquier parada.
+285. **El pool manda: tiene que entrar** (decisión del usuario, 2026-09-28). En tranquilo, si lo del pool (o un nivel 1)
+    se queda fuera, el día madruga un poco (de 30 en 30 min) y, si ni así, madruga Y acorta la comida, lo justo (la
+    Galería de la ruta 20). La revisión cuenta "Lugares del pool fuera" (0).
+286. **Un imprescindible dura 20 min como mínimo** (salvo por fuera o de paso): la Plaza de España no se ve en 10.
+    En unitOf (la parada corta de exterior y el `minutos` del día curado) y en quarterHourStops (`min_minutes`).
+287. **Cierres del 25/12 y el 1/1 comprobados** (2026-09-28): la Galería Borghese y el Castillo cierran los dos días;
+    Capitolinos, Mercados de Trajano y Ara Pacis cierran el 25/12 y el 1/5 (el 1/1 abren); Doria Pamphilj, el 1/1, Pascua
+    y el 25/12. Sin confirmar (no se ha tocado): Cúpula de San Pedro, Domus Aurea, Villa Farnesina, GNAM y San Clemente.
+288. **Sugerencias de las fechas especiales** (decisión del usuario, 2026-09-28): una `sugerencia` con hora entra en la
+    ruta de ese día a su hora y el resto se ajusta. Una pausa del destino (la Bendición Urbi et Orbi, 11:30-12:30 el
+    25/12 —`dia`— y el Domingo de Pascua) se añade a la mañana o a la tarde; si el día ya lleva el lugar (el Panteón el
+    21/4), se le pone esa hora; un lugar que el día no lleva no se añade. Si no llega a su hora, sale lo de la mañana
+    que va justo antes (nunca un nivel 1 ni lo del pool); la comida con hora fija no la pisa (come después). "(noche)":
+    esa noche la nocturna es esa, a su hora (la Girandola, 21:30, en el Puente Sant'Angelo; `fixedStart`).
+289. **Avisos de fechas que cuadran con la ruta** (decisión del usuario, 2026-09-28): la promesa final del texto curado
+    ("Hemos puesto…", "Hemos colocado…") solo sale si su sugerencia está de verdad en la ruta de ese día. Si el aviso
+    automático ya cuenta los cierres y lo movido (solo de lugares del viaje), el curado aporta su `contexto` (el mismo
+    texto sin los cierres): sale uno y nunca nombra un lugar que no está en el viaje (el 1 de mayo ya no habla de
+    Caracalla). También sin fechas ("Si tu viaje coincide con…" usa el `contexto`).
