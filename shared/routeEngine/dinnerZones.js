@@ -11,6 +11,7 @@
  */
 
 import { straightLineMeters } from './travelTimes.js'
+import { closedOnDay } from './openingHours.js'
 
 export const MIN_DINNER_RESTAURANTS = 3
 
@@ -127,4 +128,26 @@ export function dinnerZones(destData) {
 
 function average(values) {
   return Math.round((values.reduce((sum, v) => sum + v, 0) / values.length) * 10000) / 10000
+}
+
+/**
+ * El restaurante recomendado de una comida o una cena (decisión del usuario, 2026-09-28: cada comida y cada cena lleva
+ * un restaurante curado nuestro, que el viajero puede cambiar). De `names` (los de su barrio) o, sin ellos, de todos los
+ * que dan esa comida: el que abre ese día (`closed_on` / `closed_dates`) y queda más cerca de `near`. Si los de su barrio
+ * cierran todos ese día, uno de la misma zona que abra. null si no hay ninguno.
+ * @param {{ names?: string[]|null, meal: 'comida'|'cena', near: [number, number]|null, weekday?: string|null, dateIso?: string|null }} options
+ * @returns {{ name: string, coordinates: [number, number], zone: string|null } | null}
+ */
+export function recommendedRestaurant(destData, { names = null, meal, near, weekday = null, dateIso = null }) {
+  const serves = meal === 'cena' ? servesDinner : servesLunch
+  const all = (destData?.restaurants ?? []).filter((restaurant) => serves(restaurant) && restaurantCoordinates(restaurant))
+  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso)
+  const wanted = names?.length ? all.filter((restaurant) => names.includes(restaurant.name)) : all
+  const mains = new Set(wanted.map((restaurant) => mainZoneOf(restaurant.zone ?? '')))
+  const sameZone = all.filter((restaurant) => mains.has(mainZoneOf(restaurant.zone ?? '')))
+  const pool = [wanted.filter(open), sameZone.filter(open)].find((list) => list.length > 0) ?? []
+  if (pool.length === 0) return null
+  const distance = (restaurant) => (near ? straightLineMeters(near, restaurantCoordinates(restaurant)) : 0)
+  const best = [...pool].sort((a, b) => distance(a) - distance(b) || a.name.localeCompare(b.name, 'es'))[0]
+  return { name: best.name, coordinates: restaurantCoordinates(best), zone: best.zone ?? null }
 }

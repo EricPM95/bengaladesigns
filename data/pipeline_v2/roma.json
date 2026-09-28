@@ -5636,7 +5636,10 @@
       "tip": "Reserva imprescindible, sobre todo a la hora de la comida. Abierto desde 1961, cocina romana impecable a dos pasos del Panteón.",
       "hours": "Lun-Sáb 12:30-15:00, 19:00-23:00. Domingo cerrado.",
       "best_for": "Comida romana clásica cerca del Panteón",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Trattoria Da Enzo al 29",
@@ -5658,7 +5661,10 @@
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Felice a Testaccio",
@@ -5694,7 +5700,10 @@
       "tip": "Gestionada por la familia Camerucci. Cocina de Le Marche con toques romanos. Reserva obligatoria, sitio pequeño.",
       "hours": "Mar-Sáb 12:45-14:45, 19:45-22:45. Dom solo comida. Lunes cerrado.",
       "best_for": "Cocina familiar refinada fuera de los circuitos turísticos",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes"
+      ]
     },
     {
       "name": "Trattoria Dal Cavalier Gino",
@@ -5712,7 +5721,10 @@
       "tip": "Escondida en un callejón cerca del Parlamento. Frecuentada por políticos y periodistas. No aceptan tarjeta, solo efectivo.",
       "hours": "Lun-Sáb 13:00-14:45, 20:00-22:30. Domingo cerrado.",
       "best_for": "Trattoria secreta donde comen los romanos de verdad",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Tonnarello",
@@ -5774,7 +5786,11 @@
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes",
+        "domingo"
+      ]
     },
     {
       "name": "Pizzarium (Bonci)",
@@ -5814,7 +5830,10 @@
       "tip": "El forno más famoso de Roma desde 1824. La pizza bianca caliente recién salida del horno es una experiencia religiosa.",
       "hours": "Lun-Sáb 7:00-20:00. Dom cerrado.",
       "best_for": "La pizza bianca con mortadella más mítica de Roma",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Forno Campo de' Fiori",
@@ -5854,7 +5873,10 @@
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "miércoles"
+      ]
     },
     {
       "name": "Da Remo",
@@ -5876,7 +5898,10 @@
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Fatamorgana",
@@ -6134,7 +6159,10 @@
       "tip": "Enoteca histórica en un palazzo del siglo XVI. Más de 40 vinos por copa. Ambiente íntimo y local, nada turístico. Perfecto para una copa tranquila.",
       "hours": "Mar-Sáb 12:00-14:30, 18:00-00:00. Lun solo tarde. Dom cerrado.",
       "best_for": "Vino natural en un palazzo del siglo XVI",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Il Sorpasso",
@@ -6152,7 +6180,10 @@
       "hours": "Lun-Sáb 7:30-01:00. Dom cerrado.",
       "best_for": "Aperitivo gourmet con tablas de embutidos cerca del Vaticano",
       "meal": "ambos",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Enoteca Ferrara",
@@ -6251,7 +6282,10 @@
       "tip": "El suppli elevado a gourmet. Las versiones de cacio e pepe y carbonara son adictivas. Perfecto para un bocado rápido entre visitas.",
       "hours": "Lun-Sáb 11:00-21:00. Dom cerrado.",
       "best_for": "El mejor suppli gourmet de Roma",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Dar Filettaro a Santa Barbara",
@@ -6269,7 +6303,10 @@
       "tip": "Desde 1938, solo hacen una cosa: bacalao frito en masa crujiente. Y lo hacen perfecto. Local minimalista, mesas compartidas, sin tonterías.",
       "hours": "Lun-Sáb 17:30-23:00. Dom cerrado.",
       "best_for": "Filetes de bacalao fritos desde 1938 (una sola cosa, perfecta)",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Er Buchetto",
@@ -6309,7 +6346,10 @@
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "La Prosciutteria (Trastevere)",
@@ -6399,7 +6439,10 @@
       "tip": "Solo abre para cenar: llega antes de las 20:00 o toca hacer cola. Ruidosa y muy romana.",
       "hours": "Mié-Lun 18:30-24:00 (solo cena). Martes cerrado. Cierra unas 2 semanas en agosto.",
       "best_for": "Pizza romana auténtica para cenar",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "martes"
+      ]
     },
     {
       "name": "La Prezzemolina",
@@ -6453,7 +6496,10 @@
       "tip": "No aceptan reservas: llega a la apertura o a media tarde para evitar colas de hasta 50 minutos.",
       "hours": "Mar-Dom 12:00-23:00 (o hasta agotar masa). Lunes cerrado.",
       "best_for": "Pizza napolitana de masa alta",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes"
+      ]
     },
     {
       "name": "Ai Tre Scalini",
@@ -6551,7 +6597,11 @@
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes",
+        "domingo"
+      ]
     },
     {
       "name": "Il Bocconcino",
@@ -6569,7 +6619,10 @@
       "tip": "Buena opción para comer justo después del Coliseo; reserva online, a mediodía el servicio puede ir lento.",
       "hours": "Jue-Mar 8:30-23:30, cocina todo el día. Miércoles cerrado.",
       "best_for": "Osteria romana a dos pasos del Coliseo",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "miércoles"
+      ]
     },
     {
       "name": "La Taverna dei Fori Imperiali",
@@ -6587,7 +6640,10 @@
       "tip": "Reserva con antelación, sobre todo para cenar: es pequeña y se llena cada noche.",
       "hours": "Mié-Lun 12:30-15:00 (Vie-Sáb hasta 15:30) y 19:30-22:30. Martes cerrado.",
       "best_for": "Cocina romana familiar entre el Foro y Monti",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "martes"
+      ]
     },
     {
       "name": "Enoteca Corsi",
@@ -6605,7 +6661,10 @@
       "tip": "Ve pronto, sobre las 12:30: a mediodía se llena de gente de oficina y no siempre hay mesa sin reserva.",
       "hours": "Lun-Vie 12:00-15:30 y 19:30-22:30. Sáb solo 12:00-15:30. Domingo cerrado.",
       "best_for": "Comida romana auténtica a buen precio junto a Piazza Venezia",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Il Gabriello",
@@ -6623,7 +6682,10 @@
       "tip": "Solo abre para cenar y es pequeño: reserva por teléfono para las 19:30-20:00.",
       "hours": "Lun-Sáb 19:00-23:00 (solo cena). Domingo cerrado.",
       "best_for": "Cena especial tras el atardecer en la Escalinata",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Edy",
@@ -6641,7 +6703,10 @@
       "tip": "Reserva para cenar, sobre todo de jueves a sábado; pide mesa en el callejón si hace buen tiempo.",
       "hours": "Lun-Sáb 12:00-15:00 y 18:30-23:00. Domingo cerrado.",
       "best_for": "Trattoria familiar a dos pasos de Via Margutta",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Sgarro Bistrot",
@@ -6677,7 +6742,10 @@
       "tip": "Reserva con antelación y pide mesa en la terraza del callejón, a dos pasos del Parlamento.",
       "hours": "Mar-Dom 12:30-15:00 y 19:30-23:00. Lunes cerrado.",
       "best_for": "Cocina romana clásica bien hecha, camino del centro",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes"
+      ]
     },
     {
       "name": "Piccolo Arancio",
@@ -6695,7 +6763,10 @@
       "tip": "Pequeño y siempre lleno: reserva por TheFork o por teléfono, sobre todo para cenar.",
       "hours": "Mar-Dom 12:00-15:30 y 18:30-24:00. Lunes cerrado.",
       "best_for": "Cocina romana clásica a dos pasos de Trevi",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes"
+      ]
     },
     {
       "name": "Colline Emiliane",
@@ -6713,7 +6784,11 @@
       "tip": "Reserva siempre (teléfono o WhatsApp): sin reserva suelen no tener mesa.",
       "hours": "Mar-Sáb 12:45-14:45 y 19:30-22:45. Domingo y lunes cerrado.",
       "best_for": "Pasta fresca emiliana hecha a mano",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes",
+        "domingo"
+      ]
     },
     {
       "name": "Ristorante Arlù",
@@ -6749,7 +6824,10 @@
       "tip": "No aceptan reservas y hay solo unas 15 plazas: llega antes de las 12:30 o pide la pasta para llevar.",
       "hours": "Lun-Sáb desde ~11:45 hasta 21:00-22:00 según el día. Domingo cerrado.",
       "best_for": "Pasta fresca casera, comida rápida sentado",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Trattoria Valentino",
@@ -6767,7 +6845,10 @@
       "tip": "Se llena de romanos y no tiene reserva online: reserva por teléfono o llega justo a la apertura de la cena.",
       "hours": "Lun-Sáb 12:30-15:00 y 20:00-23:00. Domingo cerrado.",
       "best_for": "Cena auténtica de barrio entre locales, en Monti",
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "domingo"
+      ]
     },
     {
       "name": "Dal Toscano",
@@ -6789,7 +6870,10 @@
         "nota": "Coordenada del portal (antes, el centro de Via Germanico, ~300 m).",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_on": [
+        "lunes"
+      ]
     },
     {
       "name": "L'Arcangelo",
@@ -6812,7 +6896,31 @@
         "nota": "Solo cenas, todos los días 19:15-22:45 (el usuario, 2026-09-26). Los restaurantes son recomendaciones: el horario lo comprueba el viajero en el mapa.",
         "fecha": "2026-09-26"
       },
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "closed_dates": [
+        "08-10",
+        "08-11",
+        "08-12",
+        "08-13",
+        "08-14",
+        "08-15",
+        "08-16",
+        "08-17",
+        "08-18",
+        "08-19",
+        "08-20",
+        "08-21",
+        "08-22",
+        "08-23",
+        "08-24",
+        "08-25",
+        "08-26",
+        "08-27",
+        "08-28",
+        "08-29",
+        "08-30",
+        "08-31"
+      ]
     },
     {
       "name": "Osteria dell'Angelo",

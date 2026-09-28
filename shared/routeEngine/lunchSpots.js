@@ -27,7 +27,7 @@ const NEAR_STRAIGHT_METERS = 615
 export function lunchSpots(destData) {
   const list = (destData?.restaurants ?? [])
     .filter(servesLunch)
-    .map((restaurant) => ({ name: restaurant.name, coordinates: restaurantCoordinates(restaurant), zone: restaurant.zone ?? null }))
+    .map((restaurant) => ({ name: restaurant.name, coordinates: restaurantCoordinates(restaurant), zone: restaurant.zone ?? null, closed_on: restaurant.closed_on ?? null, closed_dates: restaurant.closed_dates ?? null }))
     .filter((spot) => spot.coordinates)
   return list.map((spot) => ({
     ...spot,

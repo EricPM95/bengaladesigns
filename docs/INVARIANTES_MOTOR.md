@@ -1508,3 +1508,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - En rojo, solo el dato de la parada: "Hoy cierra" y, si tiene hora, "Cerrado a esa hora", con el horario de ese
       día y de esa época (la parada guarda los datos de horario del lugar, así que vale aunque el día cambie de fecha).
     - Los días nuestros siguen igual: al añadir, hora sugerida y los avisos de siempre.
+
+307. **Comidas y cenas con restaurante recomendado, que el viajero puede cambiar** (decisión del usuario,
+    2026-09-28; se descarta "solo la zona"):
+    - El motor pone un restaurante curado en cada comida y en cada cena (`recommendedRestaurant` en
+      shared/routeEngine/dinnerZones.js para la cena; `lunchSpots` para la comida). Si ese día cierra (`closed_on`
+      semanal o `closed_dates`, leídos del horario comprobado de cada restaurante), pone otro de los del día o, si
+      cierran todos, de la misma zona.
+    - Los paseos se miden desde ese restaurante (no desde el centro de la zona), así que no salen "tramos largos"
+      falsos.
+    - En la línea: "Comida · Giggetto al Portico d'Ottavia" (o "Cena · …"), los minutos andando con la parada anterior
+      y la siguiente, y "Cambiar": el mapa de restaurantes centrado en esa zona, con los de la zona primero
+      ("Recomendado") y en gris los que cierran ese día ("Hoy cierra").
+    - Cambiar de restaurante no mueve ninguna hora: solo cambian los minutos andando que se enseñan.

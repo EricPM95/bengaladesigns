@@ -16,7 +16,7 @@
 
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
-import { dinnerZones } from './dinnerZones.js'
+import { dinnerZones, mainZoneOf, recommendedRestaurant } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay, effectiveSchedule, matchesDateRange, parseClosingMinutes } from './openingHours.js'
@@ -539,6 +539,20 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   }
   // ── 5. Horas ────────────────────────────────────────────────────────────────────────────────
   const allLunchSpots = lunchSpots(destData)
+  /** Las zonas de comida que abren ese día, una lista por conjunto (la misma lista siempre, para la memoria del programador). */
+  const openSpotsCache = new Map()
+  const openLunchSpots = (named, hours) => {
+    const dateIso = calendar.hasDates ? hours.dateIso : null
+    const key = `${[...named].sort().join('|')}#${hours.weekday ?? ''}#${dateIso ?? ''}`
+    if (!openSpotsCache.has(key)) {
+      const open = allLunchSpots.filter((spot) => !closedOnDay(spot, hours.weekday, dateIso))
+      const wanted = named.size > 0 ? open.filter((spot) => named.has(spot.name)) : open
+      const zones = new Set(allLunchSpots.filter((spot) => named.has(spot.name)).map((spot) => mainZoneOf(spot.zone ?? '')))
+      const sameZone = open.filter((spot) => zones.has(mainZoneOf(spot.zone ?? '')))
+      openSpotsCache.set(key, wanted.length > 0 ? wanted : sameZone.length > 0 ? sameZone : open)
+    }
+    return openSpotsCache.get(key)
+  }
   const dinnerOptions = dinnerZones(destData)
   const seen = new Set(hasFreeTour ? [...tourCovers] : [])
   const notEnoughTime = new Set()
@@ -983,9 +997,14 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     // La comida en su barrio (los restaurantes que dice el día); la cena, en su barrio de cena.
     const named = new Set(sections.comida?.restaurantes ?? [])
-    const spots = named.size > 0 ? allLunchSpots.filter((spot) => named.has(spot.name)) : allLunchSpots
+    // Los que cierran ese día no cuentan (días de cierre de los restaurantes curados); si cierran todos los del día,
+    // otro de la misma zona que abra (decisión del usuario, 2026-09-28).
+    const spots = openLunchSpots(named, hours)
     const dinner = dinnerOptions.find((zone) => zone.id === sections.cena?.barrio) ?? null
-    const dinnerPoint = dinner?.coordinates ?? units.at(-1)?.places.at(-1)?.coordinates ?? null
+    // La cena lleva su restaurante recomendado, y los paseos se miden desde él.
+    const dinnerNear = dinner?.coordinates ?? units.at(-1)?.places.at(-1)?.coordinates ?? null
+    const dinnerRestaurant = recommendedRestaurant(destData, { names: dinner?.restaurants ?? null, meal: 'cena', near: dinnerNear, weekday: hours.weekday, dateIso: realDateIso(day) })
+    const dinnerPoint = dinnerRestaurant?.coordinates ?? dinnerNear
     let result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     // `si_da_tiempo` (Trinità dei Monti antes del Free Tour, Monti después de los Foros): si por ella se pierde algo, sale.
     if (result.dropped.length > 0 && units.some((unit) => unit.onlyIfTime)) {
@@ -1380,6 +1399,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       dinnerZone: dinner?.id ?? null,
       dinnerPlaceZone: dinner?.placeZone ?? null,
       dinnerCoords: dinnerPoint,
+      dinnerRestaurant,
       nightNames: null,
       blocks: [
         ...(morning ? [{ id: dayId, slot: 'manana', label: sections.nombre ?? cfg.nombre }] : []),

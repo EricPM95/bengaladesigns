@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
@@ -61,7 +62,7 @@ import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
-import { hasOwnTime } from '../../../lib/freeDays'
+import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
@@ -532,7 +533,32 @@ export function DayDetailPanel({
   // Catálogo curado de la ciudad (solo se pide cuando se abre el "+"): si lo hay, "Añadir parada" es
   // la pantalla nueva de lugares del destino; si no, sigue siendo el buscador de POIs de Mapbox de
   // siempre, que funciona en cualquier ciudad aunque no tengamos JSON escrito para ella.
-  const { places: curatedPool, excursions: curatedExcursions, resolved: curatedPoolResolved } = useDestinationPool(day.city, insertAt !== null)
+  /** "Cambiar" restaurante de una comida o una cena: el mapa de restaurantes de su zona. */
+  const [mealPicker, setMealPicker] = useState<{ mealTime: 'lunch' | 'dinner'; coordinates: Coordinates | null; zone: string | null } | null>(null)
+  const setMealRestaurant = useRouteStore((state) => state.setMealRestaurant)
+  const { places: curatedPool, excursions: curatedExcursions, resolved: curatedPoolResolved } = useDestinationPool(day.city, insertAt !== null || mealPicker !== null)
+  /** El restaurante de la comida o la cena: el que ha elegido el viajero o, si no, el recomendado. */
+  const restaurantOf = (mealTime: 'lunch' | 'dinner') => {
+    const meal = day.meals.find((candidate) => candidate.mealTime === mealTime)
+    return meal?.chosenRestaurant ?? meal?.recommendedRestaurant ?? null
+  }
+  /** Los minutos andando que se enseñan, medidos desde el restaurante: ninguna hora se mueve al cambiarlo. */
+  const mealWalkNote = (mealTime: 'lunch' | 'dinner', index: number): string | null => {
+    const restaurant = restaurantOf(mealTime)
+    if (!restaurant) return null
+    const before = realStops[index]
+    const after = realStops.slice(index + 1).find((candidate) => !candidate.isNightExperience)
+    const parts = [
+      before ? `${estimatedWalkMinutes(before.coordinates, restaurant.coordinates)} min andando desde ${before.name}` : null,
+      after ? `${estimatedWalkMinutes(restaurant.coordinates, after.coordinates)} hasta ${after.name}` : null,
+    ].filter(Boolean)
+    return parts.length > 0 ? parts.join(' · ') : null
+  }
+  const openMealPicker = (mealTime: 'lunch' | 'dinner') => {
+    const restaurant = restaurantOf(mealTime)
+    const meal = day.meals.find((candidate) => candidate.mealTime === mealTime)
+    setMealPicker({ mealTime, coordinates: restaurant?.coordinates ?? meal?.coordinates ?? null, zone: restaurant?.zone ?? meal?.curatedZone ?? null })
+  }
 
   // "+" entre dos paradas: el lugar elegido entra EXACTAMENTE en ese hueco (no al final del día), y
   // a partir de ahí manda el store — recalcula solo el tramo con la parada anterior y redondea al
@@ -729,7 +755,7 @@ export function DayDetailPanel({
   // colapsado manual: mientras cualquiera de esos esté abierto, este mapa ni se monta.
   // `insertAt !== null` = está abierta la pantalla de añadir parada, que también trae su propio
   // mapa: sin esto el mapa del día se veía POR ENCIMA de ella, con su cabecera y su "Ver todo".
-  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null || insertAt !== null
+  const mapHiddenBySheet = detailIndex !== null || arrivalSheetOpen || mealSheet !== null || insertAt !== null || mealPicker !== null
 
   // ── Prompt 4: tipo de día y prominencia de excursión ────────────────────────────────────────
   const dayType = day.dayType ?? 'normal'
@@ -927,7 +953,9 @@ export function DayDetailPanel({
             curatedZoneDisplay={lunchCuratedZoneDisplay}
             franja="comida"
             timeRange={lunchTimeRange}
-            chosenName={lunchMeal?.chosenRestaurant?.name ?? null}
+            chosenName={restaurantOf('lunch')?.name ?? null}
+            walkNote={mealWalkNote('lunch', index)}
+            onChange={() => openMealPicker('lunch')}
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
           />
         </div>
@@ -974,7 +1002,9 @@ export function DayDetailPanel({
             curatedZoneDisplay={dinnerCuratedZoneDisplay}
             franja="cena"
             timeRange={Number.isNaN(dinnerStartMinutes) ? null : minutesToTime(dinnerStartMinutes)}
-            chosenName={day.meals.find((meal) => meal.mealTime === 'dinner')?.chosenRestaurant?.name ?? null}
+            chosenName={restaurantOf('dinner')?.name ?? null}
+            walkNote={mealWalkNote('dinner', index)}
+            onChange={() => openMealPicker('dinner')}
             onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
           />
         </div>
@@ -1256,6 +1286,7 @@ export function DayDetailPanel({
                     franja={meal.mealTime === 'dinner' ? 'cena' : 'comida'}
                     timeRange={null}
                     chosenName={meal.chosenRestaurant!.name}
+                    onChange={() => openMealPicker(meal.mealTime === 'dinner' ? 'dinner' : 'lunch')}
                     onOpen={() => setMealSheet({ franja: meal.mealTime === 'dinner' ? 'cena' : 'comida', stopIndex: 0, coordinates: meal.chosenRestaurant!.coordinates })}
                   />
                 ))}
@@ -1337,6 +1368,32 @@ export function DayDetailPanel({
                   </div>
                 ))}
             </div>
+          )}
+
+          {/* En el body: la animación del panel del día hace de caja de los position: fixed. */}
+          {route && mealPicker && curatedPool.length > 0 && createPortal(
+            <PlaceExplorerScreen
+              open
+              destination={day.city}
+              places={curatedPool}
+              title={`${mealPicker.mealTime === 'dinner' ? 'Cena' : 'Comida'} — Día ${day.dayNumber}`}
+              subtitle={mealPicker.zone}
+              route={route}
+              dayMarkers={dayMarkers}
+              dayNumber={day.dayNumber}
+              dateIso={dateIso}
+              initialFilters={['restaurantes']}
+              focusCoordinates={mealPicker.coordinates}
+              recommendedZone={mealPicker.zone}
+              quickAddLabel="Elegir"
+              onQuickAdd={(place) => {
+                // Cambiar de restaurante no mueve ninguna hora: solo cambian los minutos andando que se enseñan.
+                setMealRestaurant(day.id, mealPicker.mealTime, { name: place.name, coordinates: place.coordinates, zone: place.zone_label ?? null })
+                setMealPicker(null)
+              }}
+              onClose={() => setMealPicker(null)}
+            />,
+            document.body,
           )}
 
           {route && insertAt !== null && curatedPool.length > 0 && (

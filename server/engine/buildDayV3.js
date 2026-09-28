@@ -441,7 +441,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       ? { zone: meal.spot.zone, zone_display: `en ${String(meal.spot.zone).replace(/\s*\/\s*/g, ' y ')}`, restaurant: meal.spot.name, latitude: meal.coordinates[0], longitude: meal.coordinates[1] }
       : meal.type === 'lunch'
         ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida')
-        : dinnerFields(destData, tripDay.dinnerZone, dinnerZone)),
+        : {
+            ...dinnerFields(destData, tripDay.dinnerZone, dinnerZone),
+            // La cena también lleva su restaurante recomendado (decisión del usuario, 2026-09-28).
+            ...(tripDay.dinnerRestaurant ? { restaurant: tripDay.dinnerRestaurant.name, latitude: tripDay.dinnerRestaurant.coordinates[0], longitude: tripDay.dinnerRestaurant.coordinates[1] } : {}),
+          }),
   }))
 
   // Por qué hoy se madruga, si el día tuvo que pasar al horario normal para no perder un

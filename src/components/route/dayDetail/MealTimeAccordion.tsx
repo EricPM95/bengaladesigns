@@ -20,6 +20,10 @@ interface MealTimeAccordionProps {
   subtitle?: string | null
   /** El restaurante que ha elegido el viajero para esta comida o cena: sustituye a las recomendaciones. */
   chosenName?: string | null
+  /** Los minutos andando con la parada anterior y la siguiente, medidos desde el restaurante ("8 min desde el Panteón"). */
+  walkNote?: string | null
+  /** "Cambiar": abre el mapa de restaurantes de la zona. */
+  onChange?: () => void
   /** Abre MealDetailSheet (pantalla completa) — gestionado por DayDetailPanel.tsx, igual que StopDetailSheet/ArrivalDetailSheet, para poder desmontar el mapa de este panel mientras esa pantalla está abierta encima (ver mapHiddenBySheet). */
   onOpen: () => void
 }
@@ -35,7 +39,7 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, chosenName = null, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, chosenName = null, walkNote = null, onChange, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
   // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
@@ -44,8 +48,25 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
 
   // Diseño "Trazo Itinerario": la misma tarjeta alargada que las paradas, en terracota, sin número
   // (la comida no es un pin del mapa) y sin foto (no hay restaurante elegido todavía).
+  // Con restaurante (el recomendado o el que ha elegido el viajero): "Comida · Giggetto al Portico d'Ottavia" y "Cambiar".
   if (chosenName) {
-    return <TrazoCard kind="comida" time={timeRange ?? null} name={chosenName} sub={`${franja === 'cena' ? 'Cena' : 'Comida'} · elegido por ti`} noPhoto onOpen={onOpen} />
+    return (
+      <TrazoCard
+        kind="comida"
+        time={timeRange ?? null}
+        name={`${franja === 'cena' ? 'Cena' : 'Comida'} · ${chosenName}`}
+        sub={walkNote ?? (zoneText ? zoneText.replace(/^en /, 'En ') : null) ?? undefined}
+        noPhoto
+        onOpen={onOpen}
+        action={
+          onChange ? (
+            <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="rounded-full border border-accent px-3 py-1 text-[12px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+              Cambiar
+            </button>
+          ) : undefined
+        }
+      />
+    )
   }
   return (
     <TrazoCard

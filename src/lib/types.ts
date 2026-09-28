@@ -451,6 +451,8 @@ export interface MealSlot {
   coordinates?: Coordinates
   /** El restaurante que ha elegido el viajero para esta comida o cena (sustituye a la zona). */
   chosenRestaurant?: ChosenRestaurant | null
+  /** El restaurante curado que pone el motor (decisión del usuario, 2026-09-28); el viajero lo puede cambiar. */
+  recommendedRestaurant?: ChosenRestaurant | null
 }
 
 /** Un restaurante elegido por el viajero: no es una parada, va en su comida o su cena. */

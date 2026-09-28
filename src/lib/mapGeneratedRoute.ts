@@ -146,7 +146,7 @@ interface GeneratedMeal {
   zone_display?: string | null
   /** Motor v3, comida: fin de la franja (llegar, comer y andar a la siguiente parada) — MealSlot.windowEnd. */
   window_end?: string | null
-  /** Motor v3, comida: el restaurante elegido y dónde está — MealSlot.coordinates. */
+  /** Motor v3, comida y cena: el restaurante recomendado y dónde está — MealSlot.recommendedRestaurant. */
   restaurant?: string | null
   latitude?: number
   longitude?: number
@@ -463,6 +463,9 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     curatedZoneDisplay: generated.zone_display ?? null,
     ...(generated.window_end ? { windowEnd: generated.window_end } : {}),
     ...(typeof generated.latitude === 'number' && typeof generated.longitude === 'number' ? { coordinates: { lat: generated.latitude, lng: generated.longitude } } : {}),
+    ...(generated.restaurant && typeof generated.latitude === 'number' && typeof generated.longitude === 'number'
+      ? { recommendedRestaurant: { name: generated.restaurant, coordinates: { lat: generated.latitude, lng: generated.longitude }, zone: generated.zone ?? null } }
+      : {}),
   }
 }
 

@@ -22,6 +22,7 @@ import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
+import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -64,6 +65,10 @@ interface PlaceExplorerScreenProps {
   onQuickAddExcursion?: (excursion: Excursion) => void
   /** Con él, el chip "Hoteles": los hoteles no van dentro de los días, llevan a Booking. */
   hotelsUrl?: string | null
+  /** "Cambiar" restaurante de una comida o cena: los de esta zona van primero, con "Recomendado". */
+  recommendedZone?: string | null
+  /** Texto del botón de cada sitio ("+ Añadir" por defecto; "Elegir" al cambiar un restaurante). */
+  quickAddLabel?: string
   onClose: () => void
 }
 
@@ -347,8 +352,15 @@ export function PlaceExplorerScreen({
   onQuickAdd,
   onQuickAddExcursion,
   hotelsUrl = null,
+  recommendedZone = null,
+  quickAddLabel = '+ Añadir',
   onClose,
 }: PlaceExplorerScreenProps) {
+  const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
+  /** De la zona de la comida o la cena que se está cambiando. */
+  const isRecommended = (place: DestinationPlace) => Boolean(recommendedZone) && place.kind === 'restaurant' && mainZone(place.zone_label) === mainZone(recommendedZone)
+  /** Cierra el día que se mira (solo con fechas): en gris y con "Hoy cierra". */
+  const closedToday = (place: DestinationPlace) => Boolean(dateIso && placeHoursOnDate(place.hours_data, dateIso)?.closed)
   const [hotelsActive, setHotelsActive] = useState(false)
   const [activeFilters, setActiveFilters] = useState<PlaceFilterId[]>(initialFilters)
   /** La excursión abierta en su tarjeta. No usa `selected` (que es un lugar del catálogo) porque no
@@ -512,6 +524,8 @@ export function PlaceExplorerScreen({
     // Recomendados: los más votados primero. Sin likes todavía (o con empate) manda el nivel curado
     // del destino, que es exactamente "lo imprescindible primero" — nunca un orden arbitrario.
     return [...filtered].sort((a, b) => {
+      const zoneDiff = Number(isRecommended(b)) - Number(isRecommended(a))
+      if (zoneDiff !== 0) return zoneDiff
       const likeDiff = (likes.counts.get(b.name) ?? 0) - (likes.counts.get(a.name) ?? 0)
       if (likeDiff !== 0) return likeDiff
       const levelDiff = (a.level ?? 9) - (b.level ?? 9)
@@ -522,7 +536,7 @@ export function PlaceExplorerScreen({
       return a.name.localeCompare(b.name, 'es')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes])
+  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes, recommendedZone])
 
   // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
   // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
@@ -576,6 +590,7 @@ export function PlaceExplorerScreen({
         bg: chip?.color ?? '#6B7280',
         text: '#FFFFFF',
         small: true,
+        ...(closedToday(place) ? { opacity: 0.35 } : {}),
       }
     })
     return [...dayMarkers, ...poiMarkers, ...excursionMarkers]
@@ -904,7 +919,7 @@ export function PlaceExplorerScreen({
                       selected?.name === place.name ? 'border-accent bg-accent-soft' : 'border-border'
                     }`}
                   >
-                    <button type="button" onClick={() => setSelected(place)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                    <button type="button" onClick={() => setSelected(place)} className={`flex min-w-0 flex-1 items-center gap-3 text-left ${closedToday(place) ? 'opacity-50' : ''}`}>
                       <PlaceThumb name={place.name} city={destination} chip={chip} wikipediaTitle={place.wikipedia_title} />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5">
@@ -913,6 +928,12 @@ export function PlaceExplorerScreen({
                             <span className="shrink-0 rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">En tu ruta</span>
                           )}
                         </span>
+                        {(isRecommended(place) || closedToday(place)) && (
+                          <span className="flex items-center gap-1.5 py-0.5">
+                            {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
+                            {closedToday(place) && <span className="text-caption font-semibold text-text-muted">Hoy cierra</span>}
+                          </span>
+                        )}
                         <span className="flex flex-wrap items-center gap-x-1.5 text-caption text-text-soft">
                           {/* Un restaurante se elige por tipo y precio, no por cuánto se tarda en
                               verlo: donde una atracción pone su duración, este pone su sub-categoría
@@ -981,7 +1002,7 @@ export function PlaceExplorerScreen({
                     </button>
                     {onQuickAdd && (
                       <button type="button" onClick={() => onQuickAdd(place)} aria-label={`Añadir ${place.name}`} className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
-                        + Añadir
+                        {quickAddLabel}
                       </button>
                     )}
                   </div>
