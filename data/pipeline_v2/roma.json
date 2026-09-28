@@ -95,7 +95,8 @@
       "conflicts_with": [
         "Panteón"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto": "El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona."
     },
     {
       "name": "Mirador del Janículo (noche)",
@@ -176,7 +177,9 @@
         {
           "desde": "12-01",
           "hasta": "01-06",
-          "texto": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar."
+          "texto": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar.",
+          "texto_despues_cenar": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos.",
+          "verificar": "Mercadillo del 1 de diciembre al 6 de enero, también el 25: visto solo en fuentes secundarias (romatoday, virgilio). Verificar el 1 de diciembre."
         }
       ]
     },
@@ -3347,7 +3350,7 @@
       ],
       "level": 2,
       "type": "interior",
-      "schedule": "09:00-20:00",
+      "schedule": "07:30-21:00",
       "tags": [
         "iglesia",
         "arte"
@@ -3365,23 +3368,8 @@
       ],
       "coordinates_checked": true,
       "windows": [
-        "09:00-20:00"
+        "07:30-21:00"
       ],
-      "by_season": {
-        "invierno": [
-          "09:00-20:00"
-        ],
-        "primavera": [
-          "09:00-20:00"
-        ],
-        "verano": [
-          "09:00-12:00",
-          "16:00-20:00"
-        ],
-        "otono": [
-          "09:00-20:00"
-        ]
-      },
       "closed_on": [],
       "reservation": "no",
       "card_text": "Abierta a diario, aproximadamente de 09:00 a 20:00. En agosto cierra a mediodía. No se visita durante la misa.",
@@ -3392,7 +3380,35 @@
       "is_free_access": true,
       "comprobado": "2026-09-28",
       "minutos_fuera": 10,
-      "por_fuera": "La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio."
+      "por_fuera": "La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio.",
+      "by_period": [
+        {
+          "from": "01-01",
+          "to": "07-31",
+          "windows": [
+            "07:30-21:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "08-01",
+          "to": "08-31",
+          "windows": [
+            "08:00-12:00",
+            "16:00-21:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "09-01",
+          "to": "12-31",
+          "windows": [
+            "07:30-21:00"
+          ],
+          "last_entry": null
+        }
+      ],
+      "verificar": "Horario de lazionascosto.it y scopriroma.com (todos los días 7:30-21:00; agosto 8:00-12:00 y 16:00-21:00). La web oficial (santamariaintrastevere.it/orari) daba error el 28-09-2026: verificar."
     },
     {
       "name": "Villa Farnesina",
@@ -11489,7 +11505,7 @@
               "sol_despues_de": "20:00"
             }
           ],
-          "por_que": "La catedral de Roma, más antigua que San Pedro: la fachada con sus quince estatuas gigantes y, dentro, el claustro cosmatesco. Los días largos da tiempo de sobra."
+          "por_que": "La catedral de Roma, más antigua que San Pedro. Fíjate en la fachada, con sus quince estatuas gigantes mirando la ciudad, y entra al claustro: columnas retorcidas llenas de mosaicos, y casi siempre vacío."
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
@@ -11793,7 +11809,9 @@
           "Plaza de España (noche)": "la escalinata de la Plaza de España"
         },
         "varios": "están a pocos minutos a pie unos de otros: un paseo precioso para cerrar el día.",
-        "uno": "está a un paso: el broche perfecto para cerrar el día."
+        "uno": "está a un paso: el broche perfecto para cerrar el día.",
+        "varios_antes_de_cenar": "están a pocos minutos a pie unos de otros: un paseo precioso antes de ir a cenar.",
+        "uno_antes_de_cenar": "está a un paso: un paseo precioso antes de ir a cenar."
       },
       "texto": "Tu noche en el centro: lo que no has visto de día, iluminado y con menos gente. El Panteón, la Piazza Navona con sus fuentes, la Fontana de Trevi y la escalinata de la Plaza de España están a diez minutos unos de otros: un paseo precioso para cerrar el día."
     },
@@ -12311,6 +12329,18 @@
         "verificar": true,
         "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
         "comprobado": "2026-09-28"
+      },
+      {
+        "id": "mercadillo_navona",
+        "fecha": "12-01",
+        "hasta": "01-06",
+        "tipo": "fiesta",
+        "icono": "navidad",
+        "titulo": "Mercadillo de Navidad en Piazza Navona",
+        "texto": "Del 1 de diciembre al 6 de enero suele haber mercadillo de Navidad en Piazza Navona, también el 25; compruébalo en la web oficial. Hemos dejado la plaza en tus paseos de noche.",
+        "verificar": true,
+        "fuente": "romatoday.it y virgilio.it (fuentes secundarias, 2026-09-28): verificar el 1 de diciembre en una fuente oficial (Roma Capitale).",
+        "contexto": "Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad."
       }
     ],
     "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."

@@ -246,6 +246,18 @@
       "verificar": true,
       "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
       "comprobado": "2026-09-28"
+    },
+    {
+      "id": "mercadillo_navona",
+      "fecha": "12-01",
+      "hasta": "01-06",
+      "tipo": "fiesta",
+      "icono": "navidad",
+      "titulo": "Mercadillo de Navidad en Piazza Navona",
+      "texto": "Del 1 de diciembre al 6 de enero suele haber mercadillo de Navidad en Piazza Navona, también el 25; compruébalo en la web oficial. Hemos dejado la plaza en tus paseos de noche.",
+      "verificar": true,
+      "fuente": "romatoday.it y virgilio.it (fuentes secundarias, 2026-09-28): verificar el 1 de diciembre en una fuente oficial (Roma Capitale).",
+      "contexto": "Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad."
     }
   ]
 }

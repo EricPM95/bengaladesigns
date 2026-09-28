@@ -1710,7 +1710,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const nightsByDay = new Map()
   // El texto del paseo según lo que lleva de verdad (`texto_partes`: una frase por nocturna del recorrido); sin
   // partes, el texto fijo del paseo.
-  const walkText = (walk, chain) => {
+  // `beforeDinner`: con `texto_partes`, sus `uno_antes_de_cenar` / `varios_antes_de_cenar` ("un paseo precioso antes de ir
+  // a cenar", no "para cerrar el día"; repaso 3, 2026-09-28).
+  const walkText = (walk, chain, beforeDinner = false) => {
     const parts = walk.texto_partes
     // (Si la nocturna lleva detrás el lugar del que habla su texto, que ya tiene el suyo: la Fontana de Trevi sin "sube
     // hasta la Plaza de España" cuando la plaza va detrás.)
@@ -1720,7 +1722,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (pieces.length === 0) return walk.texto ?? null
     const list = pieces.length === 1 ? pieces[0] : `${pieces.slice(0, -1).join(', ')} y ${pieces.at(-1)}`
     const joined = list.charAt(0).toUpperCase() + list.slice(1)
-    return `${parts.inicio} ${joined} ${pieces.length === 1 ? parts.uno : parts.varios}`
+    const ending = pieces.length === 1 ? (beforeDinner ? parts.uno_antes_de_cenar : null) ?? parts.uno : (beforeDinner ? parts.varios_antes_de_cenar : null) ?? parts.varios
+    return `${parts.inicio} ${joined} ${ending}`
   }
   for (const day of cityPlanned) {
     const walk = walks[day.curatedDay.noche]
@@ -1771,7 +1774,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(fromAlternative && walk.alternativas_despues_de_cenar ? { afterDinnerOnly: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) && !(entry.conflicts_with ?? []).some((name) => wokeFor.has(name)) ? { replacesDayVisit: true } : {}) })),
     )
     // (Sin nombre propio, el de sus lugares: «Trastevere y Piazza Navona de noche»; repaso 3, 2026-09-28.)
-    day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? nightNameOf(chain) : walk.nombre, texto: text, recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
+    day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? nightNameOf(chain) : walk.nombre, texto: text, textoAntesCenar: fromAlternative ? (sameAs ? walkText(sameAs, chain, true) : null) : walkText(walk, chain, true), recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
   }
 
   // La noche de una fecha especial (la Girandola el 29 de junio, decisión del usuario 2026-09-28): esa noche la nocturna
@@ -1807,7 +1810,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (chain.length > 0) {
         for (const [dayNumber, list] of nightsByDay) if (dayNumber !== host.dayNumber) nightsByDay.set(dayNumber, list.filter((entry) => !chain.some((other) => other.name === entry.name)))
         nightsByDay.set(host.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true })))
-        host.nightWalk = { nombre: centro.nombre, texto: walkText(centro, chain), recorrido: chain.map((entry) => entry.name) }
+        host.nightWalk = { nombre: centro.nombre, texto: walkText(centro, chain), textoAntesCenar: walkText(centro, chain, true), recorrido: chain.map((entry) => entry.name) }
       }
     }
   }

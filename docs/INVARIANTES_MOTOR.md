@@ -1584,3 +1584,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Lo que ya ha cerrado cuando se llega, con su plaza, no se baja a ver para volver a subir al mirador: va después del
       atardecer, camino de la cena (la plaza, de nivel 2, sigue como parada corta).
     - Una nocturna sin nombre propio se llama por sus lugares: «Trastevere y Navona de noche».
+
+313. **Repaso 3, textos y comprobaciones** (2026-09-28):
+    - `texto_partes` de un paseo nocturno: `uno_antes_de_cenar` / `varios_antes_de_cenar` ("un paseo precioso antes de ir
+      a cenar"); `texto_fechas` lleva su `texto_despues_cenar` (sin "antes de cenar" después de cenar).
+    - Santa Maria in Trastevere: 7:30-21:00 todo el año, agosto 8:00-12:00 y 16:00-21:00 (con `verificar`: la web oficial
+      no cargaba). El mercadillo de Navona: nueva fecha especial con `verificar: true` hasta confirmarlo el 1 de diciembre.

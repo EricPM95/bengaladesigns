@@ -1,3 +1,47 @@
+# Repaso 3 (28 de septiembre de 2026)
+
+Todo va en commits y **sin subir**. La revisión de las 25 rutas está regenerada.
+- **Auditoría: todo a 0.**
+- **Barrido: 765 de 768.** Los 3 que faltan son los de siempre: Ferragosto.
+
+## a) Qué he cambiado
+
+1. **Invierno antes de cenar: primero la nocturna** (20-25 min), luego «luces y aperitivo» hasta la hora de cenar (hasta 90 min).
+   - Las esperas de las rutas 8, 17 y 19 desaparecen.
+2. **Ruta 12, día 2: «De Via Veneto a la Galería por el parque de Villa Borghese»**, por la Porta Pinciana (lugar nuevo).
+   - Sale los domingos con Free Tour y buen tiempo.
+3. **D5 de mayo:** el orden de invierno se forzaba cuando el Campidoglio no llegaba al atardecer. Ahora solo se fuerza con el sol antes de las 18:30.
+   - He encontrado otro fallo de paso: Testaccio (estirable) se llevaba el tiempo de la tarde y se pasaba a después de comer. Ya solo se estira hasta la comida.
+   - Ruta 11, día 5: vuelven la Via Appia (150 min), el Circo Máximo y el Campidoglio al atardecer.
+4. **D4 con Free Tour, fuera del invierno:**
+   - Via del Babuino y Via Margutta;
+   - el Parque (el lago y la sombra), a la hora del calor;
+   - la Piazza del Popolo y Santa Maria del Popolo cuando abre;
+   - los Jardines del Pincio hasta el atardecer (lugar nuevo, 7 min de escaleras);
+   - la Terraza del Pincio.
+   - La plaza ya no espera 75 min.
+   - «Descanso a la sombra» sale en julio y agosto si quedan más de 90 min entre las 14:00 y las 17:00. En las 25 rutas no llega a salir.
+5. **Domingo de Pascua:** Galería, Parque (105 min) y Pincio al atardecer. La Piazza del Popolo y la iglesia van después, al bajar a cenar.
+6. **Nocturnas sin nombre:** «Trastevere y Navona de noche».
+7. **Textos «antes de cenar» en su sitio:**
+   - «El centro iluminado» antes de cenar dice «un paseo precioso antes de ir a cenar».
+   - Navona en Navidad, después de cenar, acaba en «Date una vuelta entre los puestos.».
+8. **Panteón (noche) y 9. Letrán:** tus textos, tal cual.
+11. **Santa Maria in Trastevere:** ahora de 7:30 a 21:00 (en agosto, de 8:00 a 12:00 y de 16:00 a 21:00), así que a las 19:30 entra.
+12. **El mercadillo de Navona** tiene su fecha especial con «verificar», y el aviso no sale hasta que se confirme.
+
+## b) Lo que no he podido hacer o he hecho distinto
+
+- **Santa Maria in Trastevere:** su web oficial daba error al consultarla. El horario sale de lazionascosto.it y scopriroma.com, que coinciden entre sí. Lleva una nota de «verificar».
+- **Pascua:** la Piazza del Popolo no sale «Por el camino», sino como parada corta. Es nivel 2, y la regla de siempre dice que un nivel 1-2 nunca va «Por el camino».
+- **Navona en Navidad:** para el «antes de cenar» he usado un texto de después de cenar, que es lo mismo que ya hace la escalinata, en vez de solo_si_sigue. Hace el mismo papel.
+- **Los miradores que llegan de noche** en el barrido suben de 81 a 118: sin el orden de invierno forzado (sol después de las 18:30), el mirador llega ya de noche y sale como «Roma iluminada desde…». Es lo que decidiste aceptar.
+- **Porta Pinciana y Jardines del Pincio** llevan textos míos. Revísalos si quieres.
+
+## c) Preguntas
+
+Ninguna.
+
 # Segundo repaso «como un local» (28 de septiembre de 2026)
 
 Todo va en commits y **sin subir**. La revisión ya tiene **25 rutas** (las 20 de siempre y los 5 fines de semana, rutas 21-25).

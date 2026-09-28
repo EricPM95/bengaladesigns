@@ -18,7 +18,7 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | [5](#ruta-5) | 3 | completo | sí | Barrios | — | sábado 9 oct 2027 | Domingo 10 de octubre · Museos Vaticanos |
 | [6](#ruta-6) | 3 | completo | no | Naturaleza | Castillo de Sant'Angelo | lunes 28 jun 2027 · Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro | Lunes 28 de junio · Castillo de Sant'Angelo · 29 de junio · San Pedro y San Pablo · Miércoles 30 de junio · Audiencia papal |
 | [7](#ruta-7) | 4 | completo | no | sin experiencias | — | viernes 30 abr 2027 · 1 de mayo | 1 de mayo · Día del Trabajo |
-| [8](#ruta-8) | 4 | completo | sí | Arte | — | sábado 4 dic 2027 · invierno, domingo | Primer domingo de mes · Museos gratis |
+| [8](#ruta-8) | 4 | completo | sí | Arte | — | sábado 4 dic 2027 · invierno, domingo | Mercadillo de Navidad en Piazza Navona · Primer domingo de mes · Museos gratis |
 | [9](#ruta-9) | 4 | completo | no | Barrios | — | lunes 1 nov 2027 · Todos los Santos, lunes | 1 de noviembre · Todos los Santos |
 | [10](#ruta-10) | 4 | completo | no | sin experiencias | — | viernes 24 dic 2027 · Navidad | Navidad en Roma |
 | [11](#ruta-11) | 5 | completo | no | sin experiencias | — | sábado 22 may 2027 · 26 may: audiencia papal (miércoles por la mañana) | Sábado 22 de mayo · Misa en el Panteón · Domingo 23 de mayo · Museos Vaticanos |
@@ -29,7 +29,7 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | [16](#ruta-16) | 2 | tranquilo | no | sin experiencias | — | sábado 16 ene 2027 | Domingo 17 de enero · Museos Vaticanos |
 | [17](#ruta-17) | 3 | tranquilo | sí | sin experiencias | — | sábado 13 feb 2027 | Domingo 14 de febrero · Museos Vaticanos |
 | [18](#ruta-18) | 3 | tranquilo | no | Barrios | — | sábado 23 oct 2027 | Sábado 23 de octubre · Misa en el Panteón · Domingo 24 de octubre · Museos Vaticanos |
-| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada | 8 de diciembre · La Inmaculada |
+| [19](#ruta-19) | 4 | tranquilo | no | sin experiencias | — | lunes 6 dic 2027 · 8 de diciembre, la Inmaculada | Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
 | [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | Galería Borghese | sábado 20 nov 2027 | Domingo 21 de noviembre · Museos Vaticanos |
 | [21](#ruta-21) | 2 | completo | no | sin experiencias | — | sábado 15 may 2027 · fin de semana A | Domingo 16 de mayo · Museos Vaticanos |
 | [22](#ruta-22) | 3 | completo | no | sin experiencias | — | viernes 8 oct 2027 · fin de semana B | Domingo 10 de octubre · Museos Vaticanos |
@@ -588,13 +588,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
 - **Primer domingo de mes · Museos gratis** · etiqueta «Museos gratis» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 4 para que no los pierdas.
   - El primer domingo de mes la entrada al Coliseo es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
-**sábado 4 dic 2027** · 🌅 atardecer 16:39 · día curado D3
+**sábado 4 dic 2027** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:39 · día curado D3
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -631,7 +633,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:45 | Trastevere | 60 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
 | 20:00 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
 | 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere y Navona de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
-| 22:30 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere y Navona de noche» · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar. |
+| 22:30 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere y Navona de noche» · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos. |
 
 ### Día 3 — Excursión
 
@@ -742,8 +744,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Piazza del Popolo | 15 min | Parada | 14 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 16:00 | Santa Maria del Popolo | 35 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 16:45 | Terraza del Pincio | 36 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
-| 18:00 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · Tu noche en el centro, iluminado y con menos gente. El Panteón, con su pórtico iluminado y la Piazza Navona con sus fuentes están a pocos minutos a pie unos de otros: un paseo precioso para cerrar el día. |
-| 18:45 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · El templo de los dioses iluminado y la plaza casi vacía — Roma eterna |
+| 18:00 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · Tu noche en el centro, iluminado y con menos gente. El Panteón, con su pórtico iluminado y la Piazza Navona con sus fuentes están a pocos minutos a pie unos de otros: un paseo precioso antes de ir a cenar. |
+| 18:45 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona. |
 | 19:15 | Compras por Via del Corso y aperitivo | 41 min | 🕐 Tiempo libre |  | ideas: Jardines del Pincio, Via Margutta, Via del Babuino |
 | 20:00 | Cena: Sgarro Bistrot |  | 🍷 Cena | 9 min andando | en Tridente y Spagna |
 
@@ -804,7 +806,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:00 | Santa Maria del Popolo | 35 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 16:45 | Terraza del Pincio | 20 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 17:30 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar. |
-| 18:15 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · El templo de los dioses iluminado y la plaza casi vacía — Roma eterna |
+| 18:15 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona. |
 | 18:45 | Paseo con las luces de Navidad y aperitivo | 71 min | 🕐 Tiempo libre |  | ideas: Jardines del Pincio, Via Margutta, Via del Babuino |
 | 20:00 | Cena: Sgarro Bistrot |  | 🍷 Cena | 9 min andando | en Tridente y Spagna |
 
@@ -1480,12 +1482,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
 - **8 de diciembre · La Inmaculada** · etiqueta «La Inmaculada» en el día 3
   - Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
-**lunes 6 dic 2027** · 🌅 atardecer 16:39 · día curado D1 (tranquilo, tranquilo_invierno)
+**lunes 6 dic 2027** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:39 · día curado D1 (tranquilo, tranquilo_invierno)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1541,7 +1545,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:30 | Piazza del Popolo | 25 min | Parada | 14 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 17:00 | Santa Maria del Popolo | 35 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 17:45 | Roma iluminada desde el Pincio | 20 min | 🌙 Noche | 6 min andando | Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo. |
-| 18:30 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · Tu noche en el centro, iluminado y con menos gente. El Panteón, con su pórtico iluminado está a un paso: el broche perfecto para cerrar el día. |
+| 18:30 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · Tu noche en el centro, iluminado y con menos gente. El Panteón, con su pórtico iluminado está a un paso: un paseo precioso antes de ir a cenar. |
 | 19:00 | Luces de Navidad por Via del Corso y Via Condotti, y aperitivo | 56 min | 🕐 Tiempo libre |  | ideas: Jardines del Pincio, Via Margutta, Via del Babuino |
 | 20:00 | Cena: Sgarro Bistrot |  | 🍷 Cena | 9 min andando | en Tridente y Spagna |
 
@@ -1812,7 +1816,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 11:45 | Testaccio | 65 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
 | 13:00 | Comida: Felice a Testaccio | 75 min | 🍝 Comida | 1 min andando | en Testaccio |
 | 14:45 | Basílica de San Clemente | 45 min | Parada · por dentro | 🚇 Metro B, 20 min | Tres iglesias, una encima de otra. Arriba, una basílica del siglo XII; debajo, otra más antigua; y al fondo, un templo romano donde se oye correr agua subterránea. La basílica de arriba es gratis; para bajar hay que reservar online. |
-| 15:45 | Basílica de San Juan de Letrán | 30 min | Parada · por dentro | 15 min andando | La catedral de Roma, más antigua que San Pedro: la fachada con sus quince estatuas gigantes y, dentro, el claustro cosmatesco. Los días largos da tiempo de sobra. |
+| 15:45 | Basílica de San Juan de Letrán | 30 min | Parada · por dentro | 15 min andando | La catedral de Roma, más antigua que San Pedro. Fíjate en la fachada, con sus quince estatuas gigantes mirando la ciudad, y entra al claustro: columnas retorcidas llenas de mosaicos, y casi siempre vacío. |
 | 16:45 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 21 min andando | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
 | 17:30 | Iglesia de San Pietro in Vincoli | 25 min | Parada · por dentro | 12 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
 | 18:00 | Monti | 90 min | Parada | 4 min andando | El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber. |

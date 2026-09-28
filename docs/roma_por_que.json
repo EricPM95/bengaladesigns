@@ -142,6 +142,9 @@
         "texto": "Hoy toca la Roma antigua, y empiezas por el edificio más famoso de Roma. Guarda la entrada: con la misma ves después el Foro y el Palatino.",
         "temprano": "Llegas a la apertura, con poca cola y todavía fresco. Hoy toca la Roma antigua, y no hay mejor forma de empezarla. Guarda la entrada: con la misma ves después el Foro y el Palatino."
       }
+    },
+    "D5C": {
+      "Basílica de San Juan de Letrán": "La catedral de Roma, más antigua que San Pedro. Fíjate en la fachada, con sus quince estatuas gigantes mirando la ciudad, y entra al claustro: columnas retorcidas llenas de mosaicos, y casi siempre vacío."
     }
   },
   "_gratis": "Cuando un sitio es de entrada libre (ticket_info 'Gratis.'), el texto puede decirlo si suma: 'y la entrada es gratis'. Nunca importes ni precios con cifra.",
@@ -255,7 +258,8 @@
   "nocturnas": {
     "Plaza de España (noche)": "Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer.",
     "Piazza Navona (noche)": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte.",
-    "Trastevere de noche": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado."
+    "Trastevere de noche": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado.",
+    "Panteón (noche)": "El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona."
   },
   "miradores_de_noche": {
     "Mirador del Janículo": "El sol ya se ha puesto y, a cambio, tienes Roma encendida a tus pies: cúpulas, campanarios y tejados hasta el horizonte.",
