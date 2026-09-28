@@ -304,7 +304,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     ...(trip.notEnoughTime ?? []).filter((item) => !passesThrough(destData, trip, item, nights)).map((item) => ({ name: item.name, reason: item.closed ? closedText(item.closed) : 'No te dio tiempo', suggestion: item.closed ? 'Cambia las fechas si quieres verlo por dentro' : 'Alarga el viaje medio día o elige el ritmo completo', day_number: item.dayNumber ?? null, ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true } : {}) })),
   ]
   // El paseo nocturno curado: nombre propio y su texto (en la primera nocturna del día).
-  if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {
+  if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience && (tripDay.nightWalk.recorrido ?? []).includes(stop.name))) {
     day.night_walk = { name: tripDay.nightWalk.nombre, text: tripDay.nightWalk.texto ?? null }
     const first = day.stops.find((stop) => stop.is_night_experience)
     // (Después de cenar, su texto de después de cenar si lo trae: "Del Pincio se baja…" no vale a las 21:30.)
@@ -649,10 +649,14 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
       const toLunch = lunch.coordinates ? travel.leg(coordsOf(previous), lunch.coordinates)?.minutes ?? 0 : 0
       gaps.push({ minutes: lunch.start - previous.end - toLunch, from: previous, after: previous.place.name, before: LUNCH_LABEL, to: lunch.coordinates ?? null, end: lunch.start - toLunch, zone: previous.place.zone })
       // Después: desde que acaba la franja de la comida (que ya lleva el paseo) hasta la siguiente.
-      gaps.push({ minutes: next.start - lunch.end, fromCoords: next.place.coordinates, fromEnd: lunch.end, after: LUNCH_LABEL, before: next.place.name, to: next.place.coordinates, end: next.start, zone: next.place.zone })
+      // Con metro o bus después de comer (`transitAfter`), el tiempo libre es al llegar, ya en la zona de la siguiente
+      // (segundo repaso, 2026-09-28: el parque de la Borghese, no el Borgo antes de 25 min de metro).
+      gaps.push({ minutes: next.start - lunch.end - (lunch.transitAfter ?? 0), fromCoords: next.place.coordinates, fromEnd: lunch.end + (lunch.transitAfter ?? 0), after: LUNCH_LABEL, before: next.place.name, to: next.place.coordinates, end: next.start, zone: next.place.zone })
       continue
     }
-    gaps.push({ minutes: next.start - previous.end - (next.walkMinutes ?? 0), from: previous, after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (next.walkMinutes ?? 0), zone: previous.place.zone ?? next.place.zone })
+    // Si a la siguiente se va en metro o bus, el tiempo libre es al llegar: sus ideas y su paseo, de la zona de la siguiente.
+    const byTransit = Boolean(next.place.transitMinutes)
+    gaps.push({ minutes: next.start - previous.end - (next.walkMinutes ?? 0), ...(byTransit ? { fromCoords: next.place.coordinates, fromEnd: previous.end + (next.walkMinutes ?? 0) } : { from: previous }), after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (byTransit ? 0 : next.walkMinutes ?? 0), zone: byTransit ? next.place.zone ?? previous.place.zone : previous.place.zone ?? next.place.zone })
   }
   const seenToday = new Set(dayVisitedNames)
   return gaps

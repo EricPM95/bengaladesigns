@@ -82,7 +82,7 @@ function quarterHourStops(stops) {
     return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity) }
   })
 }
-import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
+import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
@@ -507,6 +507,20 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     dinnerStart: dinnerMeal?.start ?? null,
     dinnerEnd: dinnerMeal?.end ?? null,
     dinnerCoords: asPoint(dinnerMeal?.coordinates),
+  }
+  // Una nocturna que solo vale antes de cenar (el Janículo de noche: el bus 115 deja de subir a las 22:00): si el barrio
+  // de la tarde se estiró hasta la cena, devuelve lo justo para que quepa antes (segundo repaso, 2026-09-28).
+  const absorbed = lastVisit?.place.absorbedExtra ?? 0
+  if (absorbed > 0 && nightChain.some((entry) => entry.solo_antes_de_cenar) && !nightTiming(nightChain, nightTimingInput).beforeDinner) {
+    // Hasta dejar el barrio en media hora (luego se baja del mirador por él, camino de la cena).
+    const maxCut = Math.max(absorbed, lastVisit.end - lastVisit.start - 30)
+    for (let cut = 15; cut <= maxCut; cut += 15) {
+      if (!nightTiming(nightChain, { ...nightTimingInput, lastEnd: lastVisit.end - cut }).beforeDinner) continue
+      nightTimingInput.lastEnd = lastVisit.end - cut
+      const last = stops[schedule.visits.length - 1]
+      if (last) last.duration_minutes = Math.max(20, (last.duration_minutes ?? 0) - cut)
+      break
+    }
   }
   return {
     day_number: tripDay.dayNumber,

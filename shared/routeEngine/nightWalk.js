@@ -302,7 +302,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   const plan = nightTiming(chain, timing)
   // Después de cenar, lo que solo vale antes (subir al Janículo a oscuras) deja paso a su relevo (decisión del usuario,
   // 2026-09-28).
-  const entries = plan.beforeDinner ? plan.entries : [...new Map(plan.entries.map((entry) => (entry.solo_antes_de_cenar ? entry.fallback : entry)).filter(Boolean).map((entry) => [entry.name, entry])).values()]
+  const entries = plan.beforeDinner ? plan.entries : [...new Map(plan.entries.map((entry) => (entry.solo_antes_de_cenar ? (entry.fallback ? { ...entry.fallback, replacedFrom: entry.name } : null) : entry)).filter(Boolean).map((entry) => [entry.name, entry])).values()]
   for (const { entry, start, duration } of timeChain(entries, plan.start)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
@@ -324,7 +324,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       // La excepción de su día curado (la escalinata de D4, con la Plaza de España vista por la mañana).
       ...(entry.sameDayException ? { same_day_exception: true } : {}),
       // Su propio texto si lo tiene (la Plaza de España o Piazza Navona de noche); si no, el de siempre.
-      why: entry.texto ?? (plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
+      // (El relevo de una nocturna que solo vale antes de cenar, Trastevere de noche: su descripción, nunca el genérico.)
+      why: entry.texto ?? (entry.replacedFrom && entry.description ? entry.description : plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',
       category_label: 'De noche',

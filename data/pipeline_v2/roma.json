@@ -185,7 +185,8 @@
       "conflicts_with": [
         "Plaza Trilussa"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado."
     }
   ],
   "closed_on": {

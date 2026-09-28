@@ -203,16 +203,15 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 11:45 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
 | 12:30 | Basílica de San Pedro | 80 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
 | 14:00 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
-| 15:15 | Via della Conciliazione | 5 min | Por el camino | 4 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
-| 15:30 | Puente Sant'Angelo | 15 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
-| 16:00 | Castillo de Sant'Angelo | 15 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. · experiencia: Arte |
-| 16:30 | San Pietro in Montorio y Tempietto de Bramante | 25 min | Parada · por dentro | 🚌 Bus 115 o el 870, 20 min | Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis. · experiencia: Arte |
-| 17:00 | Fontana dell'Acqua Paola | 15 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
-| 18:00 | Mirador del Janículo | 45 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 19:15 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 20 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. · experiencia: Arte |
+| 15:15 | Puente Sant'Angelo | 10 min | Parada | 5 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:30 | Castillo de Sant'Angelo | 80 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. · experiencia: Arte |
+| 17:15 | San Pietro in Montorio y Tempietto de Bramante | 25 min | Parada · por dentro | 🚌 Bus 115 o el 870, 20 min | Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis. · experiencia: Arte |
+| 17:45 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 18:30 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 19:30 | Iglesia de Santa Maria in Trastevere | 10 min | Por fuera (A esta hora ya ha cerrado) | 20 min andando | La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio. · experiencia: Arte |
 | 19:45 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
-| 20:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 20:45 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 3 — Trevi sin gente, el Popolo y la Borghese
 
@@ -226,7 +225,6 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 10:45 | Piazza del Popolo | 15 min | Parada | 12 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 11:30 | Bendición Urbi et Orbi | 60 min | ☕ Pausa | 🚇 Metro A o el bus 64, 25 min | El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente. |
 | 13:00 | Comida: Ristorante Arlù | 75 min | 🍝 Comida | 4 min andando | en Vaticano y Borgo |
-| 14:15 | Tiempo libre antes de Galería Borghese | 45 min | 🕐 Tiempo libre |  | Pasear por Villa Borghese: el pulmón verde de Roma. |
 | 15:00 | Galería Borghese | 120 min | Parada · por dentro | 🚇 Metro A, 25 min | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. · experiencia: Arte |
 | 17:30 | Santa Maria del Popolo | 30 min | Parada · por dentro | 19 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. · experiencia: Arte |
 | 18:30 | Parque de Villa Borghese | 30 min | Parada | 16 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
@@ -374,7 +372,7 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 19:30 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 20 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
 | 20:00 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. · experiencia: Barrios |
 | 20:45 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
+| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 | 23:00 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte. |
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
@@ -628,7 +626,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:30 | Iglesia de Santa Maria in Trastevere | 10 min | Parada · por dentro | 7 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. · experiencia: Arte |
 | 18:45 | Trastevere | 60 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
 | 20:00 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · De noche es una experiencia completamente distinta: con sus luces y otro ambiente. |
+| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 | 22:30 | Piazza Navona (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Paseo nocturno» · Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte. |
 
 ### Día 3 — Excursión
@@ -1067,13 +1065,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 14:30 | Basílica de San Pedro | 85 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
 | 16:00 | Via della Conciliazione | 5 min | Por el camino | 5 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
 | 16:15 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
-| 16:30 | Castillo de Sant'Angelo | 15 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| 17:15 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:45 | Trastevere | 65 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
-| 19:00 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 9 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
-| 19:15 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
-| 20:15 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 21:15 | Cena: Tonnarello |  | 🍷 Cena | 13 min andando | en Trastevere |
+| 16:30 | Castillo de Sant'Angelo | 80 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
+| 18:15 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 18:45 | Trastevere | 35 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
+| 19:30 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 9 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
+| 19:45 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 20:30 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 21:30 | Cena: Tonnarello |  | 🍷 Cena | 13 min andando | en Trastevere |
 | 22:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 2 — Roma Antigua y el centro barroco
@@ -1359,9 +1357,9 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:00 | Altar de la Patria | 45 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
 | 17:00 | Barrio Judío | 35 min | Parada | 13 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
 | 17:45 | Isla Tiberina | 20 min | Parada | 9 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
-| 18:15 | Trastevere | 105 min | Parada | 8 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:15 | Trastevere | 30 min | Parada | 8 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 19:00 | Mirador del Janículo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Roma desde arriba», antes de cenar · En invierno el atardecer llega pronto, y a cambio el Janículo te regala Roma entera iluminada: cúpulas, campanarios y tejados hasta el horizonte. Sube con calma o en el bus 115, y baja luego a Trastevere, que queda al lado. |
 | 20:00 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Roma desde arriba» · En invierno el atardecer llega pronto, y a cambio el Janículo te regala Roma entera iluminada: cúpulas, campanarios y tejados hasta el horizonte. Sube con calma o en el bus 115, y baja luego a Trastevere, que queda al lado. |
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
@@ -1613,14 +1611,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:15 | Borgo Pio | 10 min | Por el camino | 3 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
 | 15:30 | Via della Conciliazione | 5 min | Por el camino | 3 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
 | 15:45 | Puente Sant'Angelo | 15 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
-| 16:15 | Castillo de Sant'Angelo | 15 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| 17:00 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:30 | Trastevere | 65 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
-| 18:45 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 9 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
-| 19:00 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
-| 20:00 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 21:00 | Cena: Tonnarello |  | 🍷 Cena | 13 min andando | en Trastevere |
-| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 16:15 | Castillo de Sant'Angelo | 70 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
+| 18:00 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 18:30 | Trastevere | 35 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
+| 19:15 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 9 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
+| 19:30 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 20:15 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 21:15 | Cena: Tonnarello |  | 🍷 Cena | 13 min andando | en Trastevere |
+| 22:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 2 — Roma Antigua y el centro barroco
 
@@ -1696,17 +1694,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 11:45 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
 | 12:30 | Basílica de San Pedro | 80 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
 | 14:00 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
-| 15:15 | Via della Conciliazione | 5 min | Por el camino | 4 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
-| 15:30 | Puente Sant'Angelo | 15 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
-| 16:00 | Castillo de Sant'Angelo | 15 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| 16:30 | San Pietro in Montorio y Tempietto de Bramante | 25 min | Parada · por dentro | 🚌 Bus 115 o el 870, 20 min | Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis. |
-| 17:00 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
-| 17:30 | Tiempo libre antes de Mirador del Janículo | 39 min | 🕐 Tiempo libre |  | Pasear por Trastevere: piérdete por las callejuelas empedradas de Trastevere. |
-| 18:15 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 19:15 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 20 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 15:15 | Puente Sant'Angelo | 10 min | Parada | 5 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:30 | Castillo de Sant'Angelo | 80 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
+| 17:15 | San Pietro in Montorio y Tempietto de Bramante | 25 min | Parada · por dentro | 🚌 Bus 115 o el 870, 20 min | Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis. |
+| 17:45 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 18:30 | Mirador del Janículo | 40 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 19:30 | Iglesia de Santa Maria in Trastevere | 10 min | Por fuera (A esta hora ya ha cerrado) | 20 min andando | La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio. |
 | 19:45 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
-| 20:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 20:45 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 22:00 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 3 — Trevi sin gente, el Pincio y la tarde en Monti
 
@@ -2022,9 +2018,10 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 - **Tiempo libre de más de 60 min**: 1
   - ruta 11, día 2 antes de la comida — 81 min
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
-- **Cena que empieza más de 20 min después de llegar, sin motivo**: 3
+- **Cena que empieza más de 20 min después de llegar, sin motivo**: 4
   - ruta 12, día 5, 20:00 cena — 25 min de espera
   - ruta 14, día 2, 20:00 cena — 22 min de espera
+  - ruta 17, día 2, 20:00 cena — 34 min de espera
   - ruta 25, día 2, 20:00 cena — 26 min de espera
 - **Zigzag: volver a una zona que ya se dejó ese día**: 0 ✅
 - **Nivel 1-2 como "Por el camino"**: 0 ✅
@@ -2040,9 +2037,7 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 - **Lugar de una nocturna que ya salió de día ese mismo día**: 0 ✅
 - **"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre**: 0 ✅
 - **Iglesia o monumento antes que su plaza**: 0 ✅
-- **Texto genérico en una nocturna o en "Roma iluminada"**: 2
-  - ruta 5, día 2, 22:00 Trastevere de noche — De noche es una experiencia completamente distinta: con sus luces y otro ambiente.
-  - ruta 8, día 2, 21:30 Trastevere de noche — De noche es una experiencia completamente distinta: con sus luces y otro ambiente.
+- **Texto genérico en una nocturna o en "Roma iluminada"**: 0 ✅
 - **Texto con solo_si_viene_de / solo_si_sigue que no se cumple**: 0 ✅
 - **Tiempo libre con ideas de otra zona**: 0 ✅
 

@@ -1529,3 +1529,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       16:00-18:00; domingo y festivos 16:30-18:00).
     - "Por fuera" por el horario tiene dos textos, según la hora real de la visita: si ese día todavía abre más tarde,
       "Todavía no ha abierto (abre a las 16:30)"; si ya no, "A esta hora ya ha cerrado".
+
+309. **Segundo repaso, puntos 1 (trayecto), 6 y 7** (2026-09-28):
+    - Si a la siguiente parada se va en metro o bus (también después de comer, `transitAfter`), el tiempo libre es al
+      llegar: se descuenta el trayecto y sus ideas y su paseo son de la zona de la siguiente.
+    - Una nocturna que solo vale antes de cenar (el Janículo): si el barrio de la tarde se estiró hasta la cena,
+      devuelve lo justo para que quepa antes (el barrio, nunca por debajo de 30 min). Su relevo después de cenar
+      (Trastevere de noche) sale con su propio texto, y el paseo no se nombra si no queda ninguna de sus paradas.
+    - Antes de dejar 20 min o más de espera antes del sol, el monumento que ese día va por fuera por tiempo (el
+      Castillo) prueba a ir por dentro, con la subida por el barrio o sin ella. Se queda si no se pierde nada (lo que va
+      "por el camino" no cuenta) y la espera no pasa de una hora.
