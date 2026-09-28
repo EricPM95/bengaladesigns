@@ -1,0 +1,161 @@
+// La prueba de las 365 fechas (motor v4, días escritos): el viaje empezando cada día del año, de 2 a 7 días, en los dos
+// ritmos, con y sin Free Tour; cada experiencia; cada extra del pool solo y en parejas. Todo lo de auditoria.mjs y lo
+// propio de los días escritos. No arregla nada: cuenta y enseña ejemplos, y lo que salga se arregla en los datos.
+//   node scripts/destino/prueba365.mjs [año=2027] [rapida] [out=docs/PRUEBA365.md]
+import { writeFileSync } from 'node:fs'
+import { buildDayBlockV3 } from '../../server/engine/index.js'
+import { travelTimesFor } from '../../server/engine/buildDayV3.js'
+import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
+import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
+import { tituloQueNoSeCumple } from './textChecks.mjs'
+import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+
+const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
+const year = Number(args['año'] ?? args.ano ?? 2027)
+const quick = Boolean(args.rapida)
+const out = args.out ?? 'docs/PRUEBA365.md'
+const D = findPipelineV2Data('Roma')
+const travel = travelTimesFor('roma')
+const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
+const EXTRA_TIPOS = {
+  v4_llega_tarde: 'Se llega tarde a una hora fija (o a recoger la entrada)',
+  v4_fuera_de_horario: 'Parada fuera de su horario sin solución escrita',
+  v4_cerrado_sin_solucion: 'Cerrado ese día y sin nada escrito',
+  v4_comida_corta: 'Comida de menos de 45 min',
+  v4_lugar_desconocido: 'Lugar escrito que no existe en las fichas',
+  v4_elastica: 'La elástica tendría que pasar de su margen (el mirador no llega a su hora)',
+  v4_sin_gente_tranquilo: '«Sin gente» en el título en ritmo tranquilo',
+  v4_antes_de_cenar: '«Antes de cenar» en una parada que va después de cenar',
+  v4_titulo: 'Título del día que no se cumple',
+  v4_error: 'El motor falla',
+  pago_cerrado_fecha: '(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)',
+}
+const TIPOS = { ...TIPOS_AUDITORIA, ...EXTRA_TIPOS }
+const counts = new Map()
+/** Por tipo, en qué día escrito y versión cae ("D4 A lun"), para saber qué arreglar. */
+const byDay = new Map()
+const tally = (tipo, key) => {
+  const map = byDay.get(tipo) ?? new Map()
+  map.set(key, (map.get(key) ?? 0) + 1)
+  byDay.set(tipo, map)
+}
+const examples = new Map()
+let trips = 0
+const add = (tipo, where, detail) => {
+  counts.set(tipo, (counts.get(tipo) ?? 0) + 1)
+  const list = examples.get(tipo) ?? []
+  if (list.length < 6) list.push(`${where}${detail ? ` — ${detail}` : ''}`)
+  examples.set(tipo, list)
+}
+const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+const hh = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+const t2m = (t) => {
+  const [h, m] = String(t ?? '').split(':').map(Number)
+  return Number.isFinite(h) ? h * 60 + (m || 0) : null
+}
+
+async function runTrip({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
+  const positive = [...(ft ? ['free_tour'] : []), ...exps]
+  const label = `${fecha} · ${dias} días · ${ritmo}${ft ? ' · FT' : ''}${exps.length ? ` · ${exps.join('+')}` : ''}${pool.length ? ` · pool ${pool.join('+')}` : ''}`
+  const pace = ritmo === 'completo' ? 'nonstop' : 'tranquilo'
+  const days = []
+  try {
+    for (let n = 1; n <= dias; n++) days.push(await buildDayBlockV3(D, dias + 1, ft, n, pace, null, fecha, pool, positive.length ? ['imprescindibles', ...positive] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4' }))
+  } catch (error) {
+    add('v4_error', label, String(error?.message ?? error).slice(0, 160))
+    return
+  }
+  trips++
+  const keyOf = (n) => {
+    const day = days[n - 1]
+    return day?.curated_day ? `${day.curated_day.id} ${day.curated_day.variants?.[0] ?? ''}${(day.curated_day.variants ?? []).slice(1).length ? ` +${day.curated_day.variants.slice(1).join('+')}` : ''} ${ritmo === 'tranquilo' ? 'T' : ''}` : 'otro'
+  }
+  const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+  const closedAllTrip = (name) => {
+    const place = (D.places ?? []).find((candidate) => candidate.name === name)
+    return Boolean(place) && days.some((day, index) => day?.stops?.length && closedOnDay(place, WEEKDAYS[new Date(`${addDays(fecha, index)}T12:00:00Z`).getUTCDay()], addDays(fecha, index)))
+  }
+  for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg: legBetween, label, pace: ritmo })) {
+    // (Si ese imprescindible cierra algún día del viaje, es la fecha: va aparte, como información.)
+    if (caso.tipo === 'pago_sin_dentro' && closedAllTrip(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cerrado_fecha'
+    add(caso.tipo, caso.donde, caso.detalle)
+    const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    tally(caso.tipo, n ? keyOf(n) : 'viaje')
+  }
+  for (const [index, day] of days.entries()) {
+    if (!day?.stops?.length) continue
+    const n = index + 1
+    for (const aviso of tituloQueNoSeCumple(day)) add('v4_titulo', `${label}, día ${n}`, aviso)
+    if (ritmo === 'tranquilo' && /sin gente/i.test(day.curated_day?.name ?? '')) add('v4_sin_gente_tranquilo', `${label}, día ${n}`, day.curated_day.name)
+    const dinner = (day.meals ?? []).find((meal) => meal.time === 'dinner')
+    const dinnerAt = t2m(dinner?.suggested_time)
+    for (const stop of day.stops) if (dinnerAt != null && t2m(stop.suggested_time) > dinnerAt && /antes de (ir a )?cenar/i.test(stop.why ?? '')) add('v4_antes_de_cenar', `${label}, día ${n}, ${stop.suggested_time} ${stop.name}`)
+  }
+}
+
+/** Lo que el motor ha apuntado en cada día (problemas y elástica), desde el plan. */
+import { writtenDaysFor } from '../../server/engine/writtenDays.js'
+import { planWrittenTrip } from '../../shared/routeEngine/writtenTrip.js'
+const written = writtenDaysFor('roma')
+function planChecks({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
+  const label = `${fecha} · ${dias} días · ${ritmo}${ft ? ' · FT' : ''}${exps.length ? ` · ${exps.join('+')}` : ''}${pool.length ? ` · pool ${pool.join('+')}` : ''}`
+  const positive = [...(ft ? ['free_tour'] : []), ...exps]
+  const plan = planWrittenTrip({ destData: D, written, totalDays: dias + 1, pace: ritmo === 'completo' ? 'nonstop' : 'tranquilo', hasFreeTour: ft, poolNames: pool, experiencesPositive: positive.length ? ['imprescindibles', ...positive] : [], dateRangeStartIso: fecha, travel })
+  if (!plan) {
+    add('v4_error', label, 'sin plan (falta un día escrito)')
+    return
+  }
+  for (const day of plan.days) {
+    const w = day.written
+    if (!w) continue
+    const where = `${label}, día ${day.dayNumber} (${day.curatedDay?.id} ${w.version}, ${day.hours?.weekday})`
+    for (const problem of w.problems ?? []) tally(`v4_${problem.tipo}`, `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''} ${day.hours?.weekday ?? ''}`)
+    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 5) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
+    for (const problem of w.problems ?? []) add(`v4_${problem.tipo}`, where, [problem.lugar, problem.llega ? `llega ${problem.llega} para las ${problem.hora}` : problem.hora, problem.minutos != null ? `${problem.minutos} min` : null].filter(Boolean).join(' · '))
+    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 5) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
+  }
+}
+
+const started = Date.now()
+const starts = Array.from({ length: 365 }, (_, i) => addDays(`${year}-01-01`, i))
+const grid = []
+// 1. Todas las fechas, de 2 a 7 días, los dos ritmos, con y sin Free Tour.
+for (const fecha of quick ? starts.filter((_, i) => i % 7 === 0) : starts) {
+  for (const dias of [2, 3, 4, 5, 6, 7]) for (const ritmo of ['completo', 'tranquilo']) for (const ft of [false, true]) grid.push({ fecha, dias, ritmo, ft })
+}
+// 2. Cada experiencia (3 y 5 días, completo, sin Free Tour).
+for (const fecha of starts.filter((_, i) => i % (quick ? 14 : 2) === 0)) for (const exp of ['arte_museos', 'naturaleza_vistas', 'barrios_sabores']) for (const dias of [3, 5]) grid.push({ fecha, dias, ritmo: 'completo', ft: false, exps: [exp] })
+// 3. Cada extra del pool solo y en parejas (4 días, completo; una fecha por semana, cambiando el día de la semana).
+const extras = (D.pool_lista?.lugares ?? []).filter((name) => !['Coliseo', 'Foro Romano y Palatino', 'Fontana de Trevi', 'Panteón', 'Museos Vaticanos y Capilla Sixtina', 'Basílica de San Pedro', 'Piazza Navona', 'Plaza de España'].includes(name))
+const pairs = extras.flatMap((a, i) => extras.slice(i + 1).map((b) => [a, b]))
+const weekly = starts.filter((_, i) => i % (quick ? 28 : 7) === 0)
+for (const [w, fecha] of weekly.entries()) {
+  for (const name of extras) grid.push({ fecha: addDays(fecha, w % 7), dias: 4, ritmo: 'completo', ft: false, pool: [name] })
+  for (const pair of pairs.filter((_, i) => i % weekly.length === w)) grid.push({ fecha: addDays(fecha, w % 7), dias: 5, ritmo: 'completo', ft: false, pool: pair })
+}
+
+for (const [index, trip] of grid.entries()) {
+  planChecks(trip)
+  await runTrip(trip)
+  if (index % 500 === 0) process.stderr.write(`\r${index}/${grid.length} viajes (${Math.round((Date.now() - started) / 1000)} s)   `)
+}
+process.stderr.write('\n')
+
+const total = [...counts.values()].reduce((a, b) => a + b, 0)
+const lines = [
+  `# Prueba de las 365 fechas (motor v4, días escritos)`,
+  '',
+  `${trips} viajes (${quick ? 'rápida: una fecha por semana' : `todas las fechas de ${year}`}), en ${Math.round((Date.now() - started) / 1000)} s. **Total: ${total}.**`,
+  '',
+  ...Object.entries(TIPOS).map(([tipo, texto]) => {
+    const count = counts.get(tipo) ?? 0
+    return count === 0 ? `- **${texto}**: 0 ✅` : [`- **${texto}**: ${count}`, ...(examples.get(tipo) ?? []).map((example) => `  - ${example}`)].join('\n')
+  }),
+  '',
+  '## Dónde caen (día escrito, versión y variantes; T = tranquilo)',
+  '',
+  ...[...byDay.entries()].map(([tipo, map]) => `- **${TIPOS[tipo] ?? tipo}**: ${[...map.entries()].sort((x, y) => y[1] - x[1]).slice(0, 14).map(([k, v]) => `${k.trim()} ×${v}`).join(' · ')}`),
+  ...[...counts.keys()].filter((tipo) => !(tipo in TIPOS)).map((tipo) => `- **${tipo}**: ${counts.get(tipo)}\n${(examples.get(tipo) ?? []).map((example) => `  - ${example}`).join('\n')}`),
+]
+writeFileSync(out, lines.join('\n') + '\n')
+console.log(JSON.stringify({ viajes: trips, total, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))
