@@ -38,6 +38,12 @@ const VIAJES = [
   { dias: 3, ritmo: 'tranquilo', ft: false, exps: ['barrios_sabores'], fecha: '2027-10-23' },
   { dias: 4, ritmo: 'tranquilo', ft: false, exps: [], fecha: '2027-12-06', nota: '8 de diciembre, la Inmaculada' },
   { dias: 2, ritmo: 'tranquilo', ft: false, exps: [], pool: ['Galería Borghese'], fecha: '2027-11-20' },
+  // FINES DE SEMANA NORMALES (segundo repaso, 2026-09-28): la mayoría de los viajeros; sin experiencias ni pool.
+  { dias: 2, ritmo: 'completo', ft: false, exps: [], fecha: '2027-05-15', nota: 'fin de semana A' },
+  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-10-08', nota: 'fin de semana B' },
+  { dias: 3, ritmo: 'completo', ft: true, exps: [], fecha: '2027-05-21', nota: 'fin de semana C' },
+  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-06-12', nota: 'fin de semana D' },
+  { dias: 4, ritmo: 'completo', ft: false, exps: [], fecha: '2027-09-17', nota: 'fin de semana E' },
 ]
 
 const D = findPipelineV2Data('Roma')
@@ -333,7 +339,7 @@ console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.f
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'
 writeFileSync(path, [
-  '# 20 rutas de Roma, tal como salen en la app',
+  `# ${VIAJES.length} rutas de Roma, tal como salen en la app`,
   '',
   `Motor v3 con los días curados, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revision20.mjs\`. Sin arreglar nada: es para revisar que las rutas son bonitas.`,
   '',
