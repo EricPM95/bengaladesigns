@@ -1401,3 +1401,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     Vittoria → Tritón → Via Veneto → Parque → Galería 11:00 … Pincio → Via Margutta → Via del Babuino → Plaza de España
     iluminada. D4 tranquilo en invierno: Plaza de España → Trinità dei Monti (desde la balaustrada, para llegar al turno
     de las 11:00 de la Galería: en tranquilo el día no empieza antes de las 10:00).
+297. **Tardes de verano en D4** (decisión del usuario, 2026-09-28): hasta 2,5 h antes del atardecer se aceptan, pero
+    no como tiempo libre suelto: el Parque de Villa Borghese se estira con nombre y texto (`estirar_titulo` /
+    `estirar_texto` en la parada estirable: "Tiempo libre en Villa Borghese" · "Barca en el lago, bici o un rato a la
+    sombra antes de subir al Pincio para el atardecer."). Sale así cuando se estira 45 min o más sobre su tiempo
+    (`display_title`, que la app pinta como el nombre).

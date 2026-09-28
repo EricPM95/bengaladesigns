@@ -9938,7 +9938,9 @@
           "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
           "minutos": 30,
           "estirar": true,
-          "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
+          "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+          "estirar_titulo": "Tiempo libre en Villa Borghese",
+          "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
         },
         {
           "lugar": "Terraza del Pincio",
@@ -10060,7 +10062,9 @@
               "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
               "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
               "estirar": true,
-              "minutos": 30
+              "minutos": 30,
+              "estirar_titulo": "Tiempo libre en Villa Borghese",
+              "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
             },
             {
               "lugar": "Santa Maria del Popolo",
@@ -10124,7 +10128,9 @@
                 {
                   "estacion": "invierno"
                 }
-              ]
+              ],
+              "estirar_titulo": "Tiempo libre en Villa Borghese",
+              "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
             },
             {
               "lugar": "Galería Borghese",
@@ -10185,7 +10191,9 @@
                 {
                   "estacion": "no_invierno"
                 }
-              ]
+              ],
+              "estirar_titulo": "Tiempo libre en Villa Borghese",
+              "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
             },
             {
               "lugar": "Terraza del Pincio",

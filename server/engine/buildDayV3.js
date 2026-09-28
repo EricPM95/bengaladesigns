@@ -49,6 +49,9 @@ const ON_THE_WAY_MAX_MINUTES = 10
 /** Un imprescindible nunca dura menos (decisión del usuario, 2026-09-28: la Plaza de España de 10 min era poco). */
 const IMPRESCINDIBLE_MIN_MINUTES = 20
 
+/** Estirada al menos esto sobre su tiempo, la estirable sale con su nombre de tiempo libre (2026-09-28). */
+const STRETCH_TITLE_MIN = 45
+
 function quarterHourStops(stops) {
   const exact = stops.map((stop) => toMinutes(stop.suggested_time))
   return stops.map((stop, index) => {
@@ -243,6 +246,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const tourToday = schedule.visits.some((visit) => visit.place.isFreeTour)
   const stops = schedule.visits.map((visit) => {
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
+    // La estirable que se lleva un buen rato (decisión del usuario, 2026-09-28): con su nombre y su texto, nunca
+    // tiempo libre suelto ("Tiempo libre en Villa Borghese: barca en el lago, bici…").
+    const stretchUnit = unitById.get(visit.unitId)
+    const stretchedLong = stretchUnit?.stretchTitle && stretchUnit.stretchBase != null && visit.end - visit.start - stretchUnit.stretchBase >= STRETCH_TITLE_MIN
     stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
     // Mirador del atardecer: la hora de la puesta de sol a la que se ajusta (para las comprobaciones).
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
@@ -376,6 +383,13 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (stop.visit_mode === 'fuera' && sourcePlace?.por_fuera && !(typeof visit.place.curatedWhy === 'object' && visit.place.curatedWhy?.por_fuera)) {
       stop.why = sourcePlace.por_fuera
       stop.why_source = 'curado'
+    }
+    if (stretchedLong) {
+      stop.display_title = stretchUnit.stretchTitle
+      if (stretchUnit.stretchWhy) {
+        stop.why = stretchUnit.stretchWhy
+        stop.why_source = 'curado'
+      }
     }
     // Dónde acaba lo que no acaba donde empieza (el Free Tour, en Piazza Navona): el tramo siguiente sale de ahí.
     if (visit.place.end_coordinates) {

@@ -726,6 +726,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       // `estirar`: aquí va el tiempo que sobre antes del atardecer (Trastevere en D2, nunca arriba en el monte).
       // `estirar_max`: hasta cuántos minutos se puede estirar (el Circo Máximo, un prado: 30).
       ...(stop.estirar ? { stretch: true, stretchMax: stop.estirar_max ?? null } : {}),
+      // `estirar_titulo` / `estirar_texto`: estirada 45 min o más, la parada se llama así ("Tiempo libre en Villa Borghese").
+      ...(stop.estirar && stop.estirar_titulo ? { stretchTitle: stop.estirar_titulo, stretchWhy: stop.estirar_texto ?? null, stretchBase: scheduled.duration_minutes ?? null } : {}),
       // `si_abre`: solo si está abierta al llegar; si hay que esperar a que abra, no entra (Santa Cecilia).
       ...(stop.si_abre ? { onlyIfOpenNow: true } : {}),
       // `revisita`: si el viaje ya lo vio otro día, sale como revisita con este texto ({dia}: el día en que se vio).

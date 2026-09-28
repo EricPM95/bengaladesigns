@@ -89,6 +89,8 @@ interface GeneratedStop {
   night_view?: boolean
   /** "Roma iluminada desde el Janículo" — Stop.nightViewTitle. */
   night_view_title?: string | null
+  /** La estirable que se lleva un buen rato: "Tiempo libre en Villa Borghese" (se pinta como el título, Stop.nightViewTitle). */
+  display_title?: string | null
   /** Monumento con interior: por dentro o por fuera — Stop.visitMode. */
   visit_mode?: 'dentro' | 'fuera' | null
   /** Por qué va por fuera: cerrado, ya cerrado o no cabe — Stop.outsideKind. */
@@ -403,6 +405,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     // Atardecer y mirador de noche: los marca el motor (formatDayV3); la tarjeta del día los pinta aparte.
     ...(generated.night_view ? { isNightView: true } : generated.sunset_minutes != null ? { isSunset: true } : {}),
     ...(generated.night_view && generated.night_view_title ? { nightViewTitle: generated.night_view_title } : {}),
+    // (El título propio de una estirable larga va por el mismo sitio: es el nombre que se ve en la tarjeta y la ficha.)
+    ...(generated.display_title ? { nightViewTitle: generated.display_title } : {}),
     ...(generated.free_tour_end ? { freeTourEnd: generated.free_tour_end } : {}),
     ...(generated.transit ? { transitLabel: `${generated.transit.icon} ${generated.transit.label}` } : {}),
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día' } : {}),
