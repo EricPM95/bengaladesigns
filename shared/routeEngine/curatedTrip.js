@@ -381,9 +381,20 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // lo enseña por fuera (el Castillo desde el Puente).
     // El museo de pago que este viaje no visita por dentro (su `solo`: sin pool ni Arte, pocos días) y se ve por fuera
     // (`minutos_fuera`) no desaparece: va por fuera, en su sitio (PROMPT_PENDIENTE B.4b). Lo demás, fuera como antes.
-    const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day) && !seenOutside(stop)).map((stop) => stop.lugar)
-    const keep = (stop) => (stopApplies(stop, day) ? stop : seenOutside(stop) ? asOutside(stop) : null)
-    sections = { ...sections, manana: sections.manana.map(keep).filter(Boolean), tarde: sections.tarde.map(keep).filter(Boolean) }
+    // Un lugar no sale nunca dos veces en el mismo día (decisión del usuario, 2026-09-28): si una entrada suya va (la
+    // Galería de D4 con Free Tour: el turno de las 13:00 en invierno, el de las 15:00 si no), la otra no se queda "por
+    // fuera"; y de las que no van, una sola por fuera.
+    const applying = new Set([...sections.manana, ...sections.tarde].filter((stop) => stopApplies(stop, day)).map((stop) => stop.lugar))
+    const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day) && !seenOutside(stop) && !applying.has(stop.lugar)).map((stop) => stop.lugar)
+    const outsideKept = new Set()
+    const keep = (stop) => {
+      if (stopApplies(stop, day)) return stop
+      if (!seenOutside(stop) || applying.has(stop.lugar) || outsideKept.has(stop.lugar)) return null
+      outsideKept.add(stop.lugar)
+      return asOutside(stop)
+    }
+    const once = (list) => list.filter((stop, at) => list.findIndex((other) => other.lugar === stop.lugar) === at)
+    sections = { ...sections, manana: once(sections.manana.map(keep).filter(Boolean)), tarde: once(sections.tarde.map(keep).filter(Boolean)) }
     // La tarde no repite lo que ya va por la mañana (el Cementerio, con la mañana sin Caracalla). Con la mañana YA
     // filtrada (PROMPT_RUTAS_CURADAS B.6): si la parada de la mañana no va este día, la de la tarde se queda.
     const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
@@ -714,9 +725,12 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // Se ve DESDE el compañero (la Plaza Venecia desde el Altar, el Castillo desde el Puente): desde su mismo punto
         // y en un momento, sin andar. Antes o después de él según lo pone el día curado.
         const from = before ? host.places[0] : host.places.at(-1)
-        unit = { ...unit, places: unit.places.map((place) => ({ ...place, coordinates: before ? from.coordinates : from.end_coordinates ?? from.coordinates, duration_minutes: Math.min(place.duration_minutes ?? SEEN_FROM_MINUTES, SEEN_FROM_MINUTES) })) }
+        // Un monumento por fuera lleva sus `minutos_fuera` del JSON, sin recortar (decisión del usuario, 2026-09-28): si
+        // no cabe, el motor decide como con cualquier parada. Lo demás (nivel 3), un momento desde el compañero.
+        const monumentOutside = unit.places.some((place) => place.visitOutside)
+        unit = { ...unit, places: unit.places.map((place) => ({ ...place, coordinates: before ? from.coordinates : from.end_coordinates ?? from.coordinates, duration_minutes: place.visitOutside ? place.duration_minutes : Math.min(place.duration_minutes ?? SEEN_FROM_MINUTES, SEEN_FROM_MINUTES) })) }
         // Esos minutos salen de la visita del compañero (se ve desde allí): el día no se alarga.
-        if ((from.duration_minutes ?? 0) > SEEN_FROM_MINUTES * 3) {
+        if (!monumentOutside && !from.visitOutside && (from.duration_minutes ?? 0) > SEEN_FROM_MINUTES * 3) {
           const shorter = { ...host, places: host.places.map((place) => (place === from ? { ...place, duration_minutes: place.duration_minutes - SEEN_FROM_MINUTES } : place)) }
           list = list.map((other) => (other === host ? shorter : other))
           for (const [other, otherHost] of wanted) if (otherHost === host) wanted.set(other, shorter)

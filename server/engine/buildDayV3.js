@@ -61,9 +61,9 @@ function quarterHourStops(stops) {
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
     // (Y un monumento "Por fuera" en su propia línea, que se ve desde su compañero: tampoco se rellena.)
     const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.instead_of_visit
-    // Por fuera tampoco se rellena: su `minutos_fuera` como mucho.
-    const outsideCap = stop.visit_mode === 'fuera' ? stop.duration_minutes ?? rounded : Infinity
-    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(rounded, outsideCap) }
+    // Por fuera, sus `minutos_fuera` exactos: ni se rellena ni se recorta con el redondeo (decisión del 2026-09-28).
+    if (stop.visit_mode === 'fuera' && stop.duration_minutes != null) return { ...stop, suggested_time: toHHMM(roundedStart) }
+    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : rounded }
   })
 }
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'

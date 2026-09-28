@@ -62,7 +62,7 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 // Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
 const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
-const recuento = { sinLinea: [], nivelCamino: [], ordenGrupo: [], titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
+const recuento = { repetidos: [], sinLinea: [], nivelCamino: [], ordenGrupo: [], titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
 /** Monumento = nivel 1 o 2 (PROMPT_PENDIENTE B). */
 const nivelDe = (name) => (D.places ?? []).find((place) => place.name === name)?.level ?? 3
 const sinEmoji = (text) => String(text ?? '').replace(/^[^\p{L}\p{N}¡¿"«(]+/u, '')
@@ -165,6 +165,13 @@ for (const [index, viaje] of VIAJES.entries()) {
       if ((stop.pass_through || stop.is_pass_by) && !stop.outside && !stop.is_night_experience && nivelDe(nombre) <= 2) recuento.nivelCamino.push(`ruta ${numero}, día ${n}: ${nombre} (${stop.suggested_time})`)
     }
     for (const aviso of grupoFueraDeOrdenEnDia(D, day)) recuento.ordenGrupo.push(`ruta ${numero}, día ${n}: ${aviso}`)
+    // Un lugar no sale nunca dos veces en el mismo día (lo nocturno aparte).
+    const vistos = new Map()
+    for (const stop of (day?.stops ?? []).filter((item) => !item.is_night_experience)) {
+      const nombre = stop.place_name ?? stop.name
+      if (vistos.has(nombre)) recuento.repetidos.push(`ruta ${numero}, día ${n}: ${nombre} (${vistos.get(nombre)} y ${stop.suggested_time})`)
+      else vistos.set(nombre, stop.suggested_time)
+    }
     const titulo = day?.curated_day?.name ?? (day?.type === 'excursion' || (day?.excursion_options?.length && !day?.stops?.length) ? 'Excursión' : day?.title ?? '')
     out.push(`### Día ${n} — ${cell(titulo)}`)
     out.push('')
@@ -309,7 +316,7 @@ for (const [titulo, fecha] of [['3 días en agosto, sin fechas', null], ['Los mi
 out.push('Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu viaje coincide…", sin etiqueta. Con el 13-15, el Vaticano pasa al viernes 13 y la ventana cuenta el Ferragosto en su día.', '')
 
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
-out.push('## Recuento (Parte D)', '', ...lineaRecuento('Monumentos (nivel 1-2) sin su propia línea', recuento.sinLinea), ...lineaRecuento('Lugares de nivel 1 o 2 como "Por el camino"', recuento.nivelCamino), ...lineaRecuento('Plazas o puentes después de su monumento, fuera de las excepciones', recuento.ordenGrupo), ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
+out.push('## Recuento (Parte D)', '', ...lineaRecuento('Lugares repetidos en el mismo día', recuento.repetidos), ...lineaRecuento('Monumentos (nivel 1-2) sin su propia línea', recuento.sinLinea), ...lineaRecuento('Lugares de nivel 1 o 2 como "Por el camino"', recuento.nivelCamino), ...lineaRecuento('Plazas o puentes después de su monumento, fuera de las excepciones', recuento.ordenGrupo), ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
 console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length])) }))
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'

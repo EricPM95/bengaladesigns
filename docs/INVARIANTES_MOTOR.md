@@ -1297,3 +1297,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     atardecer."). Si se pierde el atardecer o un imprescindible, lo dice claro y ofrece la alternativa ("…Lo verás ya
     de noche, con Roma iluminada, que también es precioso. ¿Lo cambiamos?"). `lo_mejor_dentro` va en cada lugar con
     `minutos_fuera` (y en docs/roma_por_que.json, `por_fuera`).
+283. **Un lugar no aparece nunca dos veces en el mismo día** (decisión del usuario, 2026-09-28). Si una entrada suya va
+    por dentro, la otra no se queda "por fuera" (la Galería de D4 con Free Tour: turno de las 13:00 en invierno, de
+    las 15:00 si no); de las que no van, una sola por fuera; y cada sección sin repetidos (resolveEntry). La revisión
+    lo cuenta ("Lugares repetidos en el mismo día": 0).
+284. **Los minutos "por fuera" son los del JSON y no se recortan** (decisión del usuario, 2026-09-28): ni al verse desde
+    su compañero (la línea propia del monumento lleva su `minutos_fuera`, no 5 min), ni al quitarle a un monumento por
+    fuera los minutos de lo que se ve desde él, ni con el redondeo al cuarto de hora (quarterHourStops). Si no cabe
+    con su tiempo, el motor decide como con cualquier parada.
