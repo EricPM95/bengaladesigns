@@ -81,7 +81,7 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
   if (miss.length) trip.problemas.push({ tipo: 'falta_nivel1', txt: miss.join(', ') })
   for (const [name, c] of count) if (c > 2) trip.problemas.push({ tipo: 'repite', txt: `${name} ×${c}` })
   // La auditoría automática (punto 14): cada caso cuenta con su tipo, prefijo `audit_`.
-  for (const caso of auditarViaje(D, builtDays, { startIso: fecha, poolNames: POOL, leg: legBetween })) trip.problemas.push({ tipo: `audit_${caso.tipo}`, txt: `${caso.donde} ${caso.detalle}`.trim() })
+  for (const caso of auditarViaje(D, builtDays, { startIso: fecha, poolNames: POOL, leg: legBetween, pace: ritmo })) trip.problemas.push({ tipo: `audit_${caso.tipo}`, txt: `${caso.donde} ${caso.detalle}`.trim() })
   out.push(trip)
 }
 writeFileSync(args.out ?? join(tmpdir(), 'sweep.json'), JSON.stringify(out))

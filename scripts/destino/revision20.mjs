@@ -15,7 +15,8 @@ import { curatedStops, grupoFueraDeOrdenEnDia, textosConHora, tituloQueNoSeCumpl
 import { readFileSync, readdirSync } from 'node:fs'
 import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
 
-const VIAJES = [
+// (revisionCierre.mjs pasa su propia lista y su título: los 30 viajes del cierre de Roma.)
+const VIAJES = globalThis.__REVISION_VIAJES ?? [
   // COMPLETO
   { dias: 2, ritmo: 'completo', ft: false, exps: [], fecha: '2027-04-24', nota: 'domingo Vaticano cerrado + 25 de abril' },
   { dias: 2, ritmo: 'completo', ft: true, exps: [], fecha: '2027-06-26' },
@@ -149,7 +150,7 @@ for (const [index, viaje] of VIAJES.entries()) {
     days.push(day)
   }
   // Auditoría automática (punto 14): todo lo que antes se miraba a mano, con su lista de casos.
-  for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}` })) auditoria.push(caso)
+  for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}`, pace: viaje.ritmo })) auditoria.push(caso)
   // La nota de temporada que le sale a este viaje (o "sin nota").
   const seasonNote = days.find((day) => day?.season_note)?.season_note
   out.push(`**Nota de temporada**: ${seasonNote ? cell(seasonNote.text) : 'sin nota'}`, '')
@@ -341,7 +342,7 @@ console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.f
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'
 writeFileSync(path, [
-  `# ${VIAJES.length} rutas de Roma, tal como salen en la app`,
+  globalThis.__REVISION_TITULO ?? `# ${VIAJES.length} rutas de Roma, tal como salen en la app`,
   '',
   `Motor v3 con los días curados, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revision20.mjs\`. Sin arreglar nada: es para revisar que las rutas son bonitas.`,
   '',

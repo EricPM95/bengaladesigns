@@ -29,8 +29,8 @@ export const TIPOS_AUDITORIA = {
   fuera_de_horario: 'Parada fuera de su horario real de ese día',
   atardecer_tarde: 'Mirador de atardecer después del sol (o texto de atardecer de noche)',
   tramo_largo: 'Tramo de más de 25 min andando sin transporte',
-  hueco: 'Hueco de más de 30 min sin nada entre dos paradas',
-  libre_largo: 'Tiempo libre de más de 60 min',
+  hueco: 'Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)',
+  libre_largo: 'Tiempo libre de más de 30 min (60 si sale con nombre de paseo)',
   libre_pisa_comida: 'Tiempo libre que pisa la comida o la cena',
   cena_espera: 'Cena que empieza más de 20 min después de llegar, sin motivo',
   zigzag: 'Zigzag: volver a una zona que ya se dejó ese día',
@@ -50,6 +50,22 @@ export const TIPOS_AUDITORIA = {
   texto_generico: 'Texto genérico en una nocturna o en "Roma iluminada"',
   texto_condicion: 'Texto con solo_si_viene_de / solo_si_sigue que no se cumple',
   ideas_lejos: 'Tiempo libre con ideas de otra zona',
+  paseo_largo: 'Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo',
+  restaurante_repetido: 'El mismo restaurante dos veces en el viaje',
+  fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas',
+  manana_tarde: '"Por la mañana" en el texto de una parada que va por la tarde',
+}
+
+/** Cierre de Roma (2026-09-28): el máximo de una parada de paseo, por ritmo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
+const LIBRE_CON_NOMBRE_MAX = 60
+const HUECO_MARGEN_MAX = 30
+export const PASEO_MAX = { completo: 90, tranquilo: 120, calle: 45 }
+export function paseoMaxOf(place, pace) {
+  const tags = new Set(place?.tags ?? [])
+  if (place?.max_minutos_paseo != null) return place.max_minutos_paseo
+  if (tags.has('calle')) return PASEO_MAX.calle
+  if (tags.has('parque') || tags.has('barrio') || tags.has('paseo')) return pace === 'tranquilo' ? PASEO_MAX.tranquilo : PASEO_MAX.completo
+  return null
 }
 
 /**
@@ -66,6 +82,7 @@ export function auditarViaje(D, days, options = {}) {
   const add = (tipo, n, hora, parada, detalle = '') => casos.push({ tipo, donde: `${label ? `${label}, ` : ''}día ${n}${hora ? `, ${hora}` : ''}${parada ? ` ${parada}` : ''}`, detalle })
   const seenOnDay = new Map()
   const allNames = new Set()
+  const restaurantsSeen = []
 
   for (const [index, day] of days.entries()) {
     if (!day?.stops?.length || day.type === 'excursion' || day.is_free_day || day.free_day) continue
@@ -129,7 +146,10 @@ export function auditarViaje(D, days, options = {}) {
         // Hueco sin nada (sin la comida en medio y sin tiempo libre con nombre).
         const prevEnd = t2m(previous.suggested_time) + (previous.duration_minutes ?? 0)
         const named = (day.free_times ?? []).some((entry) => entry.before === name)
-        if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > 30) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
+        // (Cierre de Roma: antes de un mirador del atardecer o de una entrada con turno, hasta 30 min son margen, no hueco:
+        // se llega a la hora dorada o a recoger la entrada.)
+        const margin = stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
+        if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > margin) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
       }
       // Nivel 1-2 "Por el camino".
       if (passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)
@@ -159,7 +179,7 @@ export function auditarViaje(D, days, options = {}) {
 
     // Tiempo libre: largo, o que pisa la comida o la cena; ideas de nivel 1-2.
     const libres = [
-      ...(day.free_times ?? []).map((entry) => ({ minutes: entry.minutes, before: entry.before, ideas: entry.suggestions ?? [] })),
+      ...(day.free_times ?? []).map((entry) => ({ minutes: entry.minutes, before: entry.before, ideas: entry.suggestions ?? [], title: entry.title ?? null })),
       ...(day.aperitivo ? [{ minutes: day.aperitivo.minutes, before: 'la cena', ideas: day.aperitivo.suggestions ?? [], evening: true }] : []),
       ...(day.free_afternoon ? [{ minutes: day.free_afternoon.minutes, before: 'la cena', ideas: day.free_afternoon.suggestions ?? [], evening: true }] : []),
     ]
@@ -167,10 +187,28 @@ export function auditarViaje(D, days, options = {}) {
     const lastEnd = Math.max(0, ...day.stops.filter((stop) => dinnerStart == null || t2m(stop.suggested_time) < dinnerStart).map((stop) => t2m(stop.suggested_time) + (stop.duration_minutes ?? 0)))
     for (const libre of libres) {
       const beforeSun = dayStops.some((stop) => nameOf(stop) === libre.before && stop.sunset_minutes != null) && sunset != null && sunset >= 19 * 60
-      if (libre.minutes > 60 && !libre.evening && !(beforeSun && libre.minutes <= VERANO_ANTES_DEL_SOL_MAX)) add('libre_largo', n, '', `antes de ${libre.before}`, `${libre.minutes} min`)
+      // (Cierre de Roma, 2026-09-28: desde 30 min, también antes del sol en verano.)
+      void beforeSun
+      // (El paso d del relleno: el rato con nombre de paseo de la zona, "Via Margutta y Via del Babuino", vale hasta 60 min.)
+      if (libre.minutes > (libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
     }
+    // Paradas de paseo por encima de su máximo; "por fuera para llegar a todo" con tiempo de sobra; "por la mañana" por la tarde.
+    const stretched = []
+    for (const stop of dayStops) {
+      const max = paseoMaxOf(byName.get(nameOf(stop)), options.pace)
+      if (max != null && (stop.duration_minutes ?? 0) > max) {
+        stretched.push(nameOf(stop))
+        add('paseo_largo', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min (máximo ${max})`)
+      }
+      const start = t2m(stop.suggested_time)
+      if (start != null && start >= 13 * 60 && /por la mañana/i.test(stop.why ?? '')) add('manana_tarde', n, stop.suggested_time, nameOf(stop), 'el texto habla de la mañana')
+    }
+    const hasFree = libres.some((libre) => !libre.evening && libre.minutes > 30)
+    for (const stop of dayStops) if (stop.outside_kind === 'no_cabe' && (hasFree || stretched.length > 0)) add('fuera_con_tiempo', n, stop.suggested_time, nameOf(stop), hasFree ? 'con tiempo libre ese día' : `con ${stretched.join(', ')} estirado`)
+    // (Restaurantes de todo el viaje, más abajo.)
+    for (const meal of day.meals ?? []) if (meal.restaurant) restaurantsSeen.push({ name: meal.restaurant, n, time: meal.time })
     // La comida: el tiempo libre de antes no la pisa.
     for (const entry of day.free_times ?? []) if (entry.before === 'la comida' && lunchStart != null && (lunchEnd ?? lunchStart) < lunchStart) add('libre_pisa_comida', n, '', 'antes de la comida')
     // Cena que espera sin motivo: llega (con el paseo) y la cena empieza más de 20 min después, ya dentro de su franja.
@@ -273,5 +311,9 @@ export function auditarViaje(D, days, options = {}) {
       if (early.length <= cityDays.length / 2) add('nota_promete', '—', '', 'Nota de temporada', `promete visitas a primera hora y solo ${early.length} de ${cityDays.length} días empiezan así`)
     }
   }
+  // El mismo restaurante dos veces en el viaje (cierre de Roma, 2026-09-28).
+  const byRestaurant = new Map()
+  for (const item of restaurantsSeen) byRestaurant.set(item.name, [...(byRestaurant.get(item.name) ?? []), item])
+  for (const [name, list] of byRestaurant) if (list.length > 1) add('restaurante_repetido', list[1].n, '', name, list.map((item) => `día ${item.n} (${item.time === 'lunch' ? 'comida' : 'cena'})`).join(', '))
   return casos
 }

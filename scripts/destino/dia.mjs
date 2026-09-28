@@ -18,7 +18,7 @@ for (const n of which) {
   for (const s of day.stops ?? []) console.log(`  ${s.suggested_time} ${s.duration_minutes}m ${s.night_view_title ?? s.name}${s.pass_through ? ' (paso)' : ''}${s.visit_mode === 'fuera' ? ` (por fuera: ${s.outside_reason})` : s.visit_mode === 'dentro' ? ' (dentro)' : ''}${s.sunset_minutes != null ? ' 🌅' : ''}${s.night_view ? ' 🌙' : ''}${s.transit ? ` 🚌${s.transit.label}` : ''}${s.is_night_experience ? ' (noche)' : ''}`)
   if (day.aperitivo) console.log(`  aperitivo ${day.aperitivo.minutes} ${day.aperitivo.title}`)
   if (day.free_afternoon) console.log(`  tarde libre ${day.free_afternoon.minutes}`)
-  for (const f of day.free_times ?? []) console.log(`  libre ${f.minutes} antes de ${f.before}`)
+  for (const f of day.free_times ?? []) console.log(`  libre ${f.minutes} antes de ${f.before}${f.title ? ` «${f.title}»` : ""} [${(f.suggestions ?? []).map((x) => x.name).join(", ")}]`)
   if (day.transfer_notice) console.log(`  traslado: ${day.transfer_notice}`)
   for (const it of day.not_included ?? []) console.log(`  fuera: ${it.name} (${it.reason})`)
 }
