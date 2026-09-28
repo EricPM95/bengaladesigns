@@ -2186,7 +2186,9 @@
       "ticket_info": [
         "Gratis."
       ],
-      "is_free_access": true
+      "is_free_access": true,
+      "minutos_fuera": 10,
+      "por_fuera": "La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco."
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
@@ -2242,7 +2244,9 @@
         "Gratis.",
         "La luz de los Caravaggio funciona con monedas."
       ],
-      "is_free_access": true
+      "is_free_access": true,
+      "minutos_fuera": 10,
+      "por_fuera": "La iglesia de los franceses, a dos pasos de Navona. Dentro esconde tres Caravaggio: si está abierta, entra aunque sean cinco minutos."
     },
     {
       "name": "Ara Pacis",
@@ -3358,7 +3362,9 @@
         "Gratis."
       ],
       "is_free_access": true,
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-28",
+      "minutos_fuera": 10,
+      "por_fuera": "La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio."
     },
     {
       "name": "Villa Farnesina",

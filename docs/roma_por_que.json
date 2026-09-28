@@ -208,6 +208,18 @@
       "minutos": 10,
       "texto": "La placita escondida sobre Monti donde está la iglesia del Moisés de Miguel Ángel. Vuelve otro día: por dentro merece la pena.",
       "lo_mejor_dentro": "ver de cerca el Moisés de Miguel Ángel"
+    },
+    "Iglesia del Gesù": {
+      "minutos": 10,
+      "texto": "La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco."
+    },
+    "Iglesia de San Luigi dei Francesi": {
+      "minutos": 10,
+      "texto": "La iglesia de los franceses, a dos pasos de Navona. Dentro esconde tres Caravaggio: si está abierta, entra aunque sean cinco minutos."
+    },
+    "Iglesia de Santa Maria in Trastevere": {
+      "minutos": 10,
+      "texto": "La plaza que es el corazón de Trastevere, con una de las fuentes más antiguas de Roma y los mosaicos dorados de la fachada. Siéntate en los escalones de la fuente: aquí se queda el barrio."
     }
   },
   "_tono": "Tono (decisión del usuario, 2026-09-28): como te lo contaría un amigo que vive en Roma. Un poco de contexto y un detalle que poca gente sabe, sin enrollarse: dos o tres frases.",
