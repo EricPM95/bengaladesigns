@@ -130,6 +130,27 @@
     "Boca de la Verdad": {
       "sitios": [
         {
+          "dia": "D2",
+          "hueco": "aventino_boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "antes_de": "Trastevere",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15,
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
           "dia": "D1",
           "hueco": "boca",
           "cambios": {
@@ -167,6 +188,34 @@
     },
     "Ojo de la Cerradura del Aventino": {
       "sitios": [
+        {
+          "dia": "D2",
+          "hueco": "aventino",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "antes_de": "Trastevere",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15,
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                },
+                {
+                  "antes_de": "Trastevere",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                }
+              ]
+            }
+          }
+        },
         {
           "dia": "D1",
           "hueco": "ojo",
@@ -269,6 +318,10 @@
                     "si_cerrado": "fuera"
                   }
                 }
+              ],
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas"
               ]
             }
           }
@@ -432,35 +485,30 @@
         },
         {
           "dia": "D1",
-          "hueco": "letran",
+          "hueco": "manana_temprano",
           "cambios": {
-            "tarde.*": {
+            "manana": {
               "insertar": [
                 {
                   "al_principio": true,
                   "parada": {
                     "lugar": "Basílica de San Juan de Letrán",
-                    "min": 30,
+                    "tipo": "fija",
+                    "hora": {
+                      "completo": "08:00",
+                      "tranquilo": "08:30"
+                    },
+                    "min": 25,
                     "modo": "dentro",
-                    "si_cerrado": "fuera",
-                    "traslado": {
-                      "como": "un taxi",
-                      "min": 15
-                    }
+                    "si_cerrado": "fuera"
                   }
                 }
               ],
               "ajustar": {
-                "Barrio Judío": {
-                  "traslado": {
-                    "como": "un taxi",
-                    "min": 15
-                  }
-                },
-                "Panteón": {
-                  "traslado": {
-                    "como": "un taxi",
-                    "min": 15
+                "Coliseo": {
+                  "hora": {
+                    "completo": "09:00",
+                    "tranquilo": "09:30"
                   }
                 }
               }

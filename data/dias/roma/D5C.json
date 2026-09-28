@@ -78,7 +78,7 @@
         },
         {
           "lugar": "Monti",
-          "min": 20,
+          "min": 30,
           "elastica": 30
         },
         {
@@ -137,7 +137,7 @@
         },
         {
           "lugar": "Monti",
-          "min": 30,
+          "min": 45,
           "elastica": 30
         },
         {
@@ -249,7 +249,7 @@
         },
         {
           "lugar": "Mercados de Trajano",
-          "min": 60,
+          "min": 70,
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"

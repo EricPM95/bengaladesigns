@@ -218,7 +218,8 @@
         "restaurante": "Trattoria Monti",
         "alternativa": "La Boccaccia",
         "hora": "19:30"
-      }
+      },
+      "empieza": "14:45"
     },
     "D": {
       "_sol": "desde las 19:45: las cuatro basílicas, los Mercados de Trajano (museo de pago), Monti y los Foros al atardecer",
@@ -275,7 +276,8 @@
         "restaurante": "Trattoria Monti",
         "alternativa": "La Boccaccia",
         "hora": "19:30"
-      }
+      },
+      "empieza": "14:45"
     }
   },
   "variantes": {

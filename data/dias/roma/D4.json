@@ -86,7 +86,8 @@
           "lugar": "Ara Pacis",
           "min": 45,
           "modo": "dentro",
-          "entrada": true
+          "entrada": true,
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Via Margutta",
@@ -127,7 +128,8 @@
           "lugar": "Ara Pacis",
           "min": 45,
           "modo": "dentro",
-          "entrada": true
+          "entrada": true,
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Via Margutta",
@@ -169,7 +171,8 @@
           "lugar": "Ara Pacis",
           "min": 45,
           "modo": "dentro",
-          "entrada": true
+          "entrada": true,
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Via Margutta",
@@ -214,7 +217,8 @@
           "lugar": "Ara Pacis",
           "min": 45,
           "modo": "dentro",
-          "entrada": true
+          "entrada": true,
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Via Margutta",
@@ -240,7 +244,7 @@
         {
           "lugar": "Jardines del Pincio",
           "titulo": "Aperitivo en los Jardines del Pincio",
-          "min": 50
+          "min": 60
         },
         {
           "lugar": "Terraza del Pincio",
@@ -348,8 +352,71 @@
               "cambiar_por": {
                 "lugar": "Parque de Villa Borghese",
                 "min": 60,
-                "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago"
+                "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
+                "traslado": {
+                  "como": "un taxi (unos 15 min)",
+                  "min": 20
+                }
               }
+            }
+          }
+        ]
+      }
+    },
+    "fecha:01-01": {
+      "_nota": "1 de enero: la Galería, el Castillo, el Ara Pacis y el Panteón cierran. Por la mañana, de Trevi al parque; por la tarde, la de siempre sin el Ara Pacis.",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "fija",
+            "hora": {
+              "completo": "08:30",
+              "tranquilo": "09:30"
+            },
+            "min": 25
+          },
+          {
+            "lugar": "Via Condotti",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
+            "min": 60
+          }
+        ]
+      },
+      "tarde.*": {
+        "quitar": [
+          "Ara Pacis",
+          "Parque de Villa Borghese"
+        ],
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Iglesia de San Ignacio de Loyola",
+              "min": 20,
+              "modo": "dentro",
+              "si_cerrado": "fuera"
+            }
+          },
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Plaza Colonna",
+              "min": 10
             }
           }
         ]

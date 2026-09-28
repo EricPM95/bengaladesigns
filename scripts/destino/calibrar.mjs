@@ -90,7 +90,8 @@ for (const id of ids) {
     const q = (m) => Math.round(m / 15) * 15
     const hora = v === 'A' || v === 'B' ? Math.max(q(r95 + 50), 19 * 60) : Math.max(19 * 60 + 30, Math.floor(r5 / 15) * 15)
     console.log(`     → sin extremos: elástica ${w5 ?? '—'}..${w95 ?? '—'} (centro ${w5 == null ? '—' : Math.round((w5 + w95) / 2)}) · llega a cenar ${hh(r5)}-${hh(r95)} · cena propuesta ${hh(hora)}`)
-    if (a.escribir) (globalThis.__propuestas ??= []).push({ id, v, hora: hh(hora) })
+    // (Solo A y B: en C y D la cena es al llegar, a partir de las 19:30.)
+    if (a.escribir && (v === 'A' || v === 'B')) (globalThis.__propuestas ??= []).push({ id, v, hora: hh(hora) })
     for (const [k, list] of s.problems) console.log(`     ⚠ ${k} ×${list.length} (${list.slice(0, 3).join(', ')}${list.length > 3 ? '…' : ''})`)
   }
 }

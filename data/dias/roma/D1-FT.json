@@ -174,7 +174,7 @@
     },
     "C": {
       "_sol": "de 18:45 a 19:44: Santa Cecilia y Santa Maria in Trastevere antes de subir; el Tempietto ya ha cerrado (por fuera)",
-      "empieza": "14:35",
+      "empieza": "14:50",
       "paradas": [
         {
           "lugar": "Barrio Judío",
@@ -318,6 +318,51 @@
             }
           }
         }
+      }
+    },
+    "fecha:01-01": {
+      "_nota": "1 de enero: el Coliseo y el Foro cierran (se ven por fuera); los Museos Capitolinos abren.",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": {
+              "completo": "09:30",
+              "tranquilo": "10:00"
+            },
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 15
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15
+          },
+          {
+            "lugar": "Museos Capitolinos",
+            "min": 90,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 40,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ]
       }
     }
   },

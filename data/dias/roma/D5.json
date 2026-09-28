@@ -252,7 +252,7 @@
       }
     },
     "D": {
-      "_sol": "desde las 19:45: los Museos Capitolinos (última entrada 18:30), la Isla Tiberina y el Teatro de Marcelo, y el atardecer en el Campidoglio",
+      "_sol": "desde las 19:45: la Via Appia con calma, la Isla Tiberina y el Teatro de Marcelo, y el atardecer en el Campidoglio",
       "empieza": "14:30",
       "paradas": [
         {
@@ -274,7 +274,7 @@
         },
         {
           "lugar": "Via Appia Antica",
-          "min": 105,
+          "min": 120,
           "elastica": 30,
           "no_calle": true
         },
@@ -287,28 +287,8 @@
           }
         },
         {
-          "lugar": "Museos Capitolinos",
-          "min": 90,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Museos Capitolinos",
-          "min": 120,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
           "lugar": "Isla Tiberina",
-          "min": 20,
+          "min": 30,
           "no_si_dia": [
             "D1-FT"
           ]

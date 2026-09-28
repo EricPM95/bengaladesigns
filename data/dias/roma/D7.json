@@ -36,7 +36,8 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera",
-          "si_no_visto": true
+          "si_no_visto": true,
+          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -77,7 +78,8 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera",
-          "si_no_visto": true
+          "si_no_visto": true,
+          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -117,7 +119,8 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera",
-          "si_no_visto": true
+          "si_no_visto": true,
+          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -163,7 +166,8 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera",
-          "si_no_visto": true
+          "si_no_visto": true,
+          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
