@@ -300,7 +300,10 @@ export function timeChain(entries, start) {
 export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   const stops = []
   const plan = nightTiming(chain, timing)
-  for (const { entry, start, duration } of timeChain(plan.entries, plan.start)) {
+  // Después de cenar, lo que solo vale antes (subir al Janículo a oscuras) deja paso a su relevo (decisión del usuario,
+  // 2026-09-28).
+  const entries = plan.beforeDinner ? plan.entries : [...new Map(plan.entries.map((entry) => (entry.solo_antes_de_cenar ? entry.fallback : entry)).filter(Boolean).map((entry) => [entry.name, entry])).values()]
+  for (const { entry, start, duration } of timeChain(entries, plan.start)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
     const isRevisit = (entry.conflicts_with ?? []).some((name) => dayVisitedNames.has(name))

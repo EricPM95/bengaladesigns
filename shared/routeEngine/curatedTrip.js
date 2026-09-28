@@ -743,6 +743,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // se pasa a la tarde).
     if (stop.antes_de && role !== 'de_paso' && !ready.visitOutside) ready = { ...ready, latest_end: stop.antes_de }
     if (stop.no_calle) ready = { ...ready, notStreet: true }
+    // `max_minutos`: el puente no se queda con lo que sobra del redondeo (lo que sobra pasa a lo siguiente).
+    if (stop.max_minutos) ready = { ...ready, maxMinutes: stop.max_minutos }
+    // `salida`: donde acaba la visita, si no es donde se entra (el Foro sale junto al Campidoglio); se mide desde ahí.
+    if (Array.isArray(source.salida) && !ready.visitOutside && !ready.passThrough && !ready.end_coordinates) ready = { ...ready, end_coordinates: source.salida }
     // (Por fuera manda su `minutos_fuera`, no los minutos de la visita por dentro.)
     if (stop.minutos && !ready.visitOutside) ready = { ...ready, duration_minutes: role === 'de_paso' ? stop.minutos : Math.max(source.level === 1 ? IMPRESCINDIBLE_MIN_MINUTES : 0, stop.minutos) }
     // `traslado_min`: se llega en transporte y el tramo no pasa de esos minutos (el metro B de Piramide a Colosseo
@@ -1590,6 +1594,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       fromAlternative = walk.recorrido.length > 0
     }
     chain = chain.slice(0, max)
+    // (Lo que solo vale antes de cenar, el Janículo de noche, lleva su relevo por si cae después: Trastevere de noche.)
+    chain = chain.map((entry) => (entry.si_no && catalogue.get(entry.si_no) ? { ...entry, fallback: catalogue.get(entry.si_no) } : entry))
     if (chain.length === 0) continue
     for (const entry of chain) {
       usedNights.add(entry.name)

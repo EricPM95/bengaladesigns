@@ -109,7 +109,10 @@
       "conflicts_with": [
         "Mirador del Janículo"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "solo_antes_de_cenar": true,
+      "si_no": "Trastevere de noche",
+      "nota_bus": "ATAC 115: última salida de Via Paola a las 22:00 (romaatac, 2026-09-28)."
     },
     {
       "name": "Terraza del Pincio (noche)",
@@ -856,7 +859,12 @@
       "minutos_fuera": 15,
       "por_fuera": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos.",
       "comprobado": "2026-09-28",
-      "lo_mejor_dentro": "pasear por la Vía Sacra y subir al Palatino"
+      "lo_mejor_dentro": "pasear por la Vía Sacra y subir al Palatino",
+      "salida": [
+        41.8931,
+        12.4843
+      ],
+      "salida_nota": "Salida del Clivo Capitolino, junto al Campidoglio (el texto dice \"sales por el lado del Campidoglio\")."
     },
     {
       "name": "Arco de Constantino",
@@ -8986,7 +8994,8 @@
           "lugar": "Puente Sant'Angelo",
           "rol": "parada",
           "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+          "max_minutos": 15
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -9060,7 +9069,8 @@
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "max_minutos": 15
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -9133,7 +9143,8 @@
                 "lugar": "Puente Sant'Angelo",
                 "rol": "parada",
                 "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+                "max_minutos": 15
               },
               {
                 "lugar": "Castillo de Sant'Angelo",
@@ -9228,7 +9239,8 @@
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "max_minutos": 15
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -9288,7 +9300,8 @@
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
               "nota": "Y por el río hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "max_minutos": 15
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -9392,7 +9405,8 @@
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
               "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "max_minutos": 15
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -9452,7 +9466,8 @@
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
               "nota": "Y por el río hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "max_minutos": 15
             },
             {
               "lugar": "Castillo de Sant'Angelo",

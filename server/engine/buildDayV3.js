@@ -77,8 +77,9 @@ function quarterHourStops(stops) {
     const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.instead_of_visit
     // Por fuera, sus `minutos_fuera` exactos: ni se rellena ni se recorta con el redondeo (decisión del 2026-09-28).
     if (stop.visit_mode === 'fuera' && stop.duration_minutes != null) return { ...stop, suggested_time: toHHMM(roundedStart) }
-    const { min_minutes: floor, ...clean } = stop
-    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.max(rounded, floor ?? 0) }
+    const { min_minutes: floor, max_minutes: ceiling, ...clean } = stop
+    // (`max_minutes`: el puente no se queda con lo que sobra del redondeo.)
+    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity) }
   })
 }
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
@@ -343,6 +344,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     } else if (sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
     // Un imprescindible es parada de verdad: 20 min como mínimo (la Plaza de España no se ve en 10), salvo por fuera.
     if (sourcePlace?.level === 1 && !visit.place.visitOutside && !stop.pass_through && !visit.place.passBy && !stop.is_night_experience) stop.min_minutes = IMPRESCINDIBLE_MIN_MINUTES
+    if (visit.place.maxMinutes) stop.max_minutes = visit.place.maxMinutes
     if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice

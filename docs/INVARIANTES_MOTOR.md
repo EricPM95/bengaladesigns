@@ -1455,3 +1455,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       después de comer, Trastevere sin mirador detrás). El paseo de noche lleva `texto_despues_cenar` (la escalinata).
       La parada guarda `why_condition` para la auditoría.
     - Museos Vaticanos por la tarde sin hora en el texto.
+302. **Repaso de las 20 rutas, Parte C: minutos** (decisión del usuario, 2026-09-28): `max_minutos` en la parada (el
+    Puente Sant'Angelo, 15: lo que sobra del redondeo no se queda en un puente); `salida` en el lugar (el Foro sale por el
+    Clivo Capitolino, junto al Campidoglio: lo siguiente se mide desde ahí, como el `ends_at` del Free Tour; vale para
+    cualquier lugar con la salida lejos de la entrada); `solo_antes_de_cenar` + `si_no` en un lugar nocturno (el Janículo
+    de noche no se sube a oscuras después de cenar: sale Trastevere de noche; el bus 115 deja de salir de Via Paola a las
+    22:00).
