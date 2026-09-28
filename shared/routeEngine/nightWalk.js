@@ -15,7 +15,7 @@
 import { roundUpToFive, roundUpToSlot, toHHMM as minutesToTime } from './time.js'
 import { whyTexts } from './whyTexts.js'
 import { dinnerZones } from './dinnerZones.js'
-import { effectiveSchedule, parseClosingMinutes } from './openingHours.js'
+import { effectiveSchedule, matchesDateRange, parseClosingMinutes } from './openingHours.js'
 import { seasonFit } from './availability.js'
 
 /** Metros entre dos puntos {lat, lng} (equirectangular: a escala de ciudad el error es despreciable). */
@@ -307,6 +307,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
     const isRevisit = (entry.conflicts_with ?? []).some((name) => dayVisitedNames.has(name))
+    const dateText = (entry.texto_fechas ?? []).find((item) => matchesDateRange(item.desde, item.hasta, timing.dateIso ?? null))?.texto ?? null
     stops.push({
       name: entry.name,
       suggested_time: minutesToTime(start),
@@ -325,7 +326,11 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       ...(entry.sameDayException ? { same_day_exception: true } : {}),
       // Su propio texto si lo tiene (la Plaza de España o Piazza Navona de noche); si no, el de siempre.
       // (El relevo de una nocturna que solo vale antes de cenar, Trastevere de noche: su descripción, nunca el genérico.)
-      why: entry.texto ?? (entry.replacedFrom && entry.description ? entry.description : plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
+      // : el texto de unas fechas (Piazza Navona con el mercadillo de Navidad, del 1 de diciembre al 6 de enero).
+      // `texto_fechas`: el de unas fechas (Piazza Navona con el mercadillo, del 1 de diciembre al 6 de enero). Sin texto
+      // propio, su descripción; el genérico solo si no hay nada (segundo repaso, 2026-09-28).
+      why: dateText ?? entry.texto ?? entry.description ?? (plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
+      ...(dateText ? { date_text: true } : {}),
       ...(isRevisit ? { is_revisit: true } : {}),
       category: 'landmark',
       category_label: 'De noche',

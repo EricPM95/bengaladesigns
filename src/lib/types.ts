@@ -265,6 +265,8 @@ export interface Stop {
   freeTourTips?: string[]
   /** true solo para paradas de "experiencia nocturna" del pipeline v2 (ver night_experience en routeAlgorithm.js — un lugar ya visitado de día, revisitado de noche otro día del viaje). StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado (gradiente noche + icono de luna) en vez de la tarjeta normal. */
   isNightExperience?: boolean
+  /** Nocturna antes de cenar (invierno): el rato libre del día va justo antes de ella. */
+  beforeDinner?: boolean
   /** La ha añadido el viajero ("Añadida por ti"). */
   addedByUser?: boolean
   /** Los campos de horario del lugar (DestinationPlace.hours_data), para "Hoy cierra" en un día libre aunque el día cambie de fecha. */

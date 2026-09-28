@@ -60,6 +60,11 @@ const IMPRESCINDIBLE_MIN_MINUTES = 20
 /** Estirada al menos esto sobre su tiempo, la estirable sale con su nombre de tiempo libre (2026-09-28). */
 const STRETCH_TITLE_MIN = 45
 
+/** Invierno: el sol antes de esta hora; más de WINTER_IDLE_MAX libres antes de cenar, la nocturna pasa antes, detrás de WINTER_FREE_BEFORE_NIGHT como mucho. */
+const WINTER_EVENING_BEFORE = 18 * 60
+const WINTER_IDLE_MAX = 90
+const WINTER_FREE_BEFORE_NIGHT = 60
+
 function quarterHourStops(stops) {
   const exact = stops.map((stop) => toMinutes(stop.suggested_time))
   return stops.map((stop, index) => {
@@ -507,6 +512,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     dinnerStart: dinnerMeal?.start ?? null,
     dinnerEnd: dinnerMeal?.end ?? null,
     dinnerCoords: asPoint(dinnerMeal?.coordinates),
+    dateIso: tripDay.hours?.dateIso ?? null,
   }
   // Una nocturna que solo vale antes de cenar (el Janículo de noche: el bus 115 deja de subir a las 22:00): si el barrio
   // de la tarde se estiró hasta la cena, devuelve lo justo para que quepa antes (segundo repaso, 2026-09-28).
@@ -522,11 +528,27 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       break
     }
   }
+  // Invierno con más de 90 min antes de cenar (segundo repaso, 2026-09-28): la nocturna va antes de la cena, detrás de
+  // como mucho 60 min de rato libre (el paseo por Via del Corso); lo que sobre se lo lleva la nocturna (index.js).
+  let chainForNight = nightChain
+  const winterEvening = (tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_BEFORE && (schedule.idleBeforeDinner ?? 0) > WINTER_IDLE_MAX
+  if (nightChain.length > 0) {
+    const chain = winterEvening && !nightTiming(nightChain, nightTimingInput).beforeDinner ? nightChain.map((entry) => ({ ...entry, afterDinnerOnly: false })) : nightChain
+    // Con la nocturna antes de cenar: primero el rato libre (60 min como mucho) y luego la nocturna, camino de la cena.
+    if (nightTiming(chain, nightTimingInput).beforeDinner) {
+      chainForNight = chain
+      for (let delay = WINTER_FREE_BEFORE_NIGHT; delay >= 15; delay -= 15) {
+        if (!nightTiming(chain, { ...nightTimingInput, lastEnd: nightTimingInput.lastEnd + delay }).beforeDinner) continue
+        nightTimingInput.lastEnd += delay
+        break
+      }
+    }
+  }
   return {
     day_number: tripDay.dayNumber,
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
-    stops: quarterHourStops([...stops, ...(nightChain.length > 0 ? nightStopsFor(nightChain, dayVisitedNames, nightTimingInput) : [])]),
+    stops: quarterHourStops([...stops, ...(chainForNight.length > 0 ? nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput) : [])]),
     meals: meals.map((meal) => ({ ...meal, suggested_time: nearestQuarter(meal.suggested_time), ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end) } : {}) })),
     not_included: [],
     times_are_final: true,

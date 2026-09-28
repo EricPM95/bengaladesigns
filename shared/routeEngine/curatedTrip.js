@@ -45,6 +45,8 @@ const SHORT_STOP_MINUTES = 15
 const MID_DAY_WAIT_MAX = 60
 /** Con esta espera o más antes del sol, el monumento que iba por fuera por tiempo prueba a ir por dentro. */
 const FILL_INSIDE_MIN_IDLE = 20
+/** Lo que se cuenta para llegar andando a comer al estirar el barrio de antes de la comida. */
+const LUNCH_WALK_ALLOWANCE = 10
 /** La cena de una noche con nocturna a hora fija, a esta distancia de ella como mucho (unos 15 min andando). */
 const NIGHT_FIXED_DINNER_METERS = 1200
 /** Espera a la cena a partir de la cual la parada de barrio de antes se estira (decisión del usuario, 2026-09-28). */
@@ -370,8 +372,12 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     let sections = sectionsOf(cfg)
     const applied = []
     const apply = (name) => {
-      const variant = cfg.variantes?.[name]
-      if (!variant) return
+      const raw = cfg.variantes?.[name]
+      if (!raw) return
+      // `sin_free_tour`: lo que solo vale sin Free Tour (D4 en domingo: comida a las 12:00 y la Galería a las 14:00).
+      // (`si_en_tarde`: solo si esa parada va por la tarde; en invierno la Galería va por la mañana.)
+      const withoutTour = raw.sin_free_tour && !hasFreeTour && (!raw.sin_free_tour.si_en_tarde || sections.tarde.some((stop) => stop.lugar === raw.sin_free_tour.si_en_tarde))
+      const variant = withoutTour ? { ...raw, ...raw.sin_free_tour, insertar: [...(raw.insertar ?? []), ...(raw.sin_free_tour.insertar ?? [])] } : raw
       applied.push(name)
       for (const key of ['nombre', 'manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra', 'si_espera']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
@@ -381,14 +387,25 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // después en invierno, cuando abre a las 16:30 y el sol ya se ha puesto).
         if (insert.estacion && (insert.estacion === 'invierno') !== isWinter(day)) continue
         if (!sunCondition(insert, day)) continue
+        // (`solo_si_falta`: si esa parada ya va ese día, no se repite.)
+        if (insert.solo_si_falta && namesOf(sections).includes(insert.parada.lugar)) continue
         if (insert.despues_de) {
-          const after = sections.tarde.findIndex((stop) => stop.lugar === insert.despues_de)
-          sections = { ...sections, tarde: after >= 0 ? [...sections.tarde.slice(0, after + 1), insert.parada, ...sections.tarde.slice(after + 1)] : [...sections.tarde, insert.parada] }
+          // (Varias opciones: detrás de la primera que haya. `en: 'manana'`: en la mañana; si no, en la tarde.)
+          const key = insert.en === 'manana' ? 'manana' : 'tarde'
+          const anchors = [].concat(insert.despues_de)
+          const anchor = anchors.find((name) => sections[key].some((stop) => stop.lugar === name))
+          const after = sections[key].findIndex((stop) => stop.lugar === anchor)
+          // (`solo_si_esta`: sin ninguna de esas paradas, no se inserta.)
+          if (after < 0 && insert.solo_si_esta) continue
+          sections = { ...sections, [key]: after >= 0 ? [...sections[key].slice(0, after + 1), insert.parada, ...sections[key].slice(after + 1)] : [...sections[key], insert.parada] }
           continue
         }
         const at = sections.tarde.findIndex((stop) => stop.lugar === insert.antes_de)
         sections = { ...sections, tarde: at >= 0 ? [...sections.tarde.slice(0, at), insert.parada, ...sections.tarde.slice(at)] : [...sections.tarde, insert.parada] }
       }
+      // `horas`: la hora fija de una parada ese día (D4 en domingo: la Galería a las 14:00, para bajar a Santa Maria del
+      // Popolo cuando abre, a las 16:30).
+      if (variant.horas) sections = { ...sections, manana: sections.manana.map((stop) => (variant.horas[stop.lugar] ? { ...stop, hora: variant.horas[stop.lugar] } : stop)), tarde: sections.tarde.map((stop) => (variant.horas[stop.lugar] ? { ...stop, hora: variant.horas[stop.lugar] } : stop)) }
       if (variant.atardecer) sections = { ...sections, tarde: sections.tarde.map((stop) => (stop.lugar === variant.atardecer ? { ...stop, rol: 'atardecer' } : stop)) }
       // `sin_estirar`: ese día no se estira (D4 en domingo: el Parque, para que Santa Maria del Popolo llegue abierta).
       // (Solo si lo que va detrás lo necesita: con Free Tour o con el sol pronto, Santa Maria del Popolo va antes o después.)
@@ -1175,26 +1192,29 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // La espera antes de una parada que abre más tarde (Santa Maria del Popolo, a las 16:30 el domingo) se queda en la
     // estirable que va justo antes (el Parque), de 15 en 15 min y sin que se caiga nada (decisión del usuario,
     // 2026-09-28: nada de horas muertas de más de una hora).
-    for (let guard = 0; guard < 4; guard++) {
-      const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30)
-      if (at < 0) break
-      const previous = result.visits[at - 1]
-      const unit = units.find((other) => other.id === previous.unitId)
-      const wait = result.visits[at].start - previous.end - (result.visits[at].walkMinutes ?? 0)
-      let done = false
-      for (let extra = Math.floor((wait - 10) / 15) * 15; extra >= 15 && !done; extra -= 15) {
-        const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place, index) => (index === other.places.length - 1 ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
-        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
-        const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
-        const sunKept = !result.visits.some((visit) => visit.place.sunset != null) || trial.visits.some((visit) => visit.place.sunset != null)
-        if (keepsAll && sunKept) {
-          units = list
-          result = trial
-          done = true
+    const absorbWaits = () => {
+      for (let guard = 0; guard < 4; guard++) {
+        const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30)
+        if (at < 0) break
+        const previous = result.visits[at - 1]
+        const unit = units.find((other) => other.id === previous.unitId)
+        const wait = result.visits[at].start - previous.end - (result.visits[at].walkMinutes ?? 0)
+        let done = false
+        for (let extra = Math.floor((wait - 10) / 15) * 15; extra >= 15 && !done; extra -= 15) {
+          const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place) => (place.name === previous.place.name ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
+          const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+          const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
+          const sunKept = !result.visits.some((visit) => visit.place.sunset != null) || trial.visits.some((visit) => visit.place.sunset != null)
+          if (keepsAll && sunKept) {
+            units = list
+            result = trial
+            done = true
+          }
         }
+        if (!done) break
       }
-      if (!done) break
     }
+    absorbWaits()
     const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
     const stretchVisits = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().filter((visit) => units.find((unit) => unit.id === visit.unitId)?.stretch) : []
     const stretchVisit = stretchVisits[0] ?? null
@@ -1408,6 +1428,28 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     for (const visit of result.visits) {
       seen.add(visit.place.name)
       for (const name of visit.place.outsideOf ?? []) seen.add(name)
+    }
+    // Otra vez al final: los turnos (la Galería a las 10:00) pueden haber abierto una espera nueva.
+    absorbWaits()
+    // El barrio de antes de comer se queda el rato hasta la comida (segundo repaso, 2026-09-28: Testaccio con su
+    // mercado, no 35 min de parada y luego "Tiempo libre antes de la comida"), de 15 en 15 y sin que se mueva nada.
+    {
+      const lunch = (result.meals ?? []).find((meal) => meal.type === 'lunch')
+      const before = lunch ? [...result.visits].reverse().find((visit) => visit.end <= lunch.start) : null
+      const unit = before ? units.find((other) => other.id === before.unitId) : null
+      const gap = before ? lunch.start - before.end - LUNCH_WALK_ALLOWANCE : 0
+      if (unit?.stretch && gap > 30) {
+        for (let extra = Math.floor((gap - 10) / 15) * 15; extra >= 15; extra -= 15) {
+          const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place) => (place.name === before.place.name ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
+          const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+          const trialLunch = (trial.meals ?? []).find((meal) => meal.type === 'lunch')
+          if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId)) && trialLunch?.start === lunch.start) {
+            units = list
+            result = trial
+            break
+          }
+        }
+      }
     }
     // "Por fuera" por el horario: dos textos según la hora real de la visita (segundo repaso, 2026-09-28). Si ese día
     // todavía abre más tarde, "Todavía no ha abierto (abre a las 16:00)"; si ya no, "A esta hora ya ha cerrado".

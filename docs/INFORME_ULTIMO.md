@@ -1,3 +1,94 @@
+# Segundo repaso «como un local» (28 de septiembre de 2026)
+
+Todo va en commits y **sin subir**. La revisión ya tiene **25 rutas** (las 20 de siempre y los 5 fines de semana, rutas 21-25).
+
+- **Barrido: 765 de 768 limpios**, igual que antes de los restaurantes. Los 3 que faltan son los de siempre: Ferragosto, con los Vaticanos cerrados.
+- **Auditoría: todo a 0 salvo 3 esperas antes de cenar** (lo explico en b).
+
+## a) Qué he cambiado
+
+**1. Tiempo libre en otra zona o antes del trayecto**
+- Con metro o bus hasta la siguiente parada (también después de comer), el tiempo libre es al llegar: se descuenta el trayecto y las ideas son de esa zona.
+  - Ruta 3, día 3: la Galería llega a su turno de las 15:00.
+- La espera antes de Santa Maria del Popolo se queda en la Piazza del Popolo, con su nombre: «Tiempo libre en la Piazza del Popolo».
+  - Ya no sale «Pasear por Villa Borghese» entre la plaza y la iglesia.
+
+**2 y 9. D4 en domingo y en invierno, en tu orden**
+- **Domingo sin Free Tour:**
+  - la mañana acaba en la Plaza de España y Trinità dei Monti;
+  - comida a las 12:00;
+  - la Galería a las 14:00;
+  - la Piazza del Popolo y Santa Maria del Popolo juntas a las 16:30;
+  - el Parque y el Pincio al atardecer.
+  - Ruta 11, día 2: sin los 81 min libres antes de comer.
+- **Domingo con Free Tour:** la plaza se estira hasta que abre la iglesia; luego el Parque y el Pincio.
+- **Invierno:**
+  - la mañana hasta la Plaza de España, Trinità dei Monti y el Pincio hasta la Galería de las 11:00;
+  - comida normal;
+  - el Parque, la Piazza del Popolo, Santa Maria del Popolo cuando abre y el Pincio al atardecer.
+
+**3. La Cúpula** vuelve a caber en la ruta 6, día 3.
+
+**4. Santa Maria del Popolo** por dentro a las 11:30 los días de diario.
+- La Plaza de España dura 20 min, la Piazza del Popolo 15 y la iglesia 25.
+- He comprobado el horario en su web oficial:
+  - de lunes a sábado, de 8:30 a 9:45, de 10:30 a 12:00 y de 16:00 a 18:00;
+  - domingos y festivos, de 16:30 a 18:00.
+
+**5. Dos textos para «por fuera» por el horario:**
+- «Todavía no ha abierto (abre a las 16:30)»;
+- «A esta hora ya ha cerrado».
+
+**6. El Janículo de D1-FT tranquilo de invierno** sube antes de cenar, a las 19:00, en el bus 115.
+- Trastevere devuelve lo que se había estirado.
+- «Trastevere de noche» lleva su propio texto.
+
+**7. El Castillo** va por dentro antes que dejar tiempo libre, si cabe.
+- Ruta 3, día 2, y fin de semana B, día 2.
+
+**8. Invierno con más de 90 min antes de cenar**
+- Primero, como mucho 60 min con nombre («Compras por Via del Corso y aperitivo»); luego «El centro iluminado»; luego la cena.
+- En la app, el rato libre sale antes de la nocturna.
+- **El mercadillo de Navona abre el 25 de diciembre.** Va del 1 de diciembre al 6 de enero; lo he visto en fuentes secundarias, no en una oficial.
+  - La Navona de noche tiene un texto para esas fechas: habla del mercadillo en vez de decir «sin los puestos».
+
+**10. Barrios de una sola parada**
+- Monti va detrás de los Foros también en D4M.
+- Testaccio se estira hasta la comida: «Testaccio y su mercado».
+
+**11. Los Foros al atardecer** duran unos 45 min y Monti se lleva el resto.
+- Los días largos (sol a las 20:00 o más tarde), D5C recupera San Juan de Letrán.
+
+**12. La Basílica de San Pedro**
+- Su web oficial dice todo el año de 7:00 a 20:00, con la última entrada a las 19:15.
+- El horario de 7:30 a 17:00 es el de la Cúpula en invierno.
+- D3 entra a las 18:30 y sale a las 19:50: cabe.
+- La auditoría mira ahora la hora de salida y la última entrada.
+
+**13. Restaurantes:** con el restaurante recomendado desaparecen los «tramo largo» falsos.
+
+## b) Lo que no he podido hacer o he hecho distinto
+
+- **Quedan 3 esperas antes de cenar**, de 24 a 34 min (rutas 8 y 19, día 4, y ruta 17, día 2). Son días con la nocturna antes de cenar.
+  - Para quitarlas habría que pasar de los 60 min de rato libre o de los 20-25 min por nocturna, que son los límites que pediste.
+- **Ruta 12, día 2:** siguen los 48 min antes de la Galería el domingo con Free Tour.
+  - Santa Maria della Vittoria abre a las 9:00 los domingos y no se llega al turno de las 10:00.
+  - Meter el Parque por la mañana lo repetiría por la tarde.
+- **El domingo de Pascua** (ruta 3, día 3): después de la Bendición, Santa Maria del Popolo se ve por fuera, porque se llega a las 17:45.
+- **Letrán, el texto de Navona en Navidad y el rato «Tiempo libre en la Piazza del Popolo»** llevan textos míos. Revísalos si quieres.
+- **He bajado a 20 min el mínimo para que el rato de antes de cenar salga con nombre** (antes, 45). Así desaparecen las esperas cortas sin nada.
+
+## c) Preguntas
+
+1. **Las 3 esperas antes de cenar** en días de invierno con nocturna:
+   - (a) Aceptarlas.
+   - (b) Dejar que la última nocturna dure lo que falte hasta la cena.
+   - **Recomiendo (b).**
+2. **Ruta 12, día 2** (domingo con Free Tour):
+   - (a) Aceptar los 48 min en Barberini.
+   - (b) Quitar la Fuente del Tritón ese día para llegar a las 10:00.
+   - **Recomiendo (b).**
+
 # Informe del 28 de septiembre de 2026
 
 Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 rutas** (más abajo). Todo en commits y **sin subir**.

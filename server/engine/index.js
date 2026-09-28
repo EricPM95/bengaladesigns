@@ -309,7 +309,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     const first = day.stops.find((stop) => stop.is_night_experience)
     // (Después de cenar, su texto de después de cenar si lo trae: "Del Pincio se baja…" no vale a las 21:30.)
     const walkWhy = !first.before_dinner && tripDay.nightWalk.textoDespuesCenar ? tripDay.nightWalk.textoDespuesCenar : tripDay.nightWalk.texto
-    if (walkWhy) first.why = walkWhy
+    if (walkWhy && !first.date_text) first.why = walkWhy
     // El nombre del paseo va en todas sus paradas nocturnas: la tarjeta lo enseña siempre.
     for (const stop of day.stops) if (stop.is_night_experience) stop.night_walk_name = tripDay.nightWalk.nombre
   }
@@ -339,8 +339,9 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     const nightStops = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner)
     if ((tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE && nightStops.length > 0) {
       const busy = nightStops.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
-      const over = (tripDay.schedule?.idleBeforeDinner ?? 0) - busy - APERITIVO_MAX_MINUTES
-      if (over > 0 && over <= WINTER_NIGHT_STRETCH_MAX) nightStops.at(-1).duration_minutes += Math.ceil(over / 15) * 15
+      // (Segundo repaso, 2026-09-28: el rato libre de antes se queda en 60 min como mucho.)
+      const over = (tripDay.schedule?.idleBeforeDinner ?? 0) - busy - WINTER_FREE_MAX_MINUTES
+      if (over > 0) nightStops.at(-1).duration_minutes += Math.min(WINTER_NIGHT_STRETCH_MAX, Math.ceil(over / 15) * 15)
     }
   // Una nocturna antes de cenar dura 20-25 min (decisión del usuario, 2026-09-28: la Plaza de España de 60 min era
   // demasiado); lo que sobra es tiempo libre, no nocturna.
@@ -369,8 +370,10 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       return Number.isFinite(h) ? h * 60 + (m || 0) : null
     }
     const dinnerStart = Math.ceil(dinnerMeal.start / 15) * 15
-    const lastEnd = Math.max(0, ...(day.stops ?? []).map((stop) => ({ start: toMinutes(stop.suggested_time), duration: stop.duration_minutes ?? 0 })).filter(({ start }) => start != null && start < dinnerStart).map(({ start, duration }) => start + duration))
-    const room = dinnerStart - (dinnerMeal.walkMinutes ?? 0) - lastEnd
+    // Con la nocturna antes de cenar, el rato va de la última visita del día hasta que empieza la nocturna.
+    const firstNight = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner).map((stop) => toMinutes(stop.suggested_time)).filter((start) => start != null).sort((x, y) => x - y)[0]
+    const lastEnd = Math.max(0, ...(day.stops ?? []).filter((stop) => !(stop.is_night_experience && stop.before_dinner)).map((stop) => ({ start: toMinutes(stop.suggested_time), duration: stop.duration_minutes ?? 0 })).filter(({ start }) => start != null && start < dinnerStart).map(({ start, duration }) => start + duration))
+    const room = (firstNight ?? dinnerStart - (dinnerMeal.walkMinutes ?? 0)) - lastEnd
     for (const key of ['aperitivo', 'free_afternoon']) {
       if (!day[key]) continue
       if (room < APERITIVO_MIN_MINUTES / 3) delete day[key]
@@ -552,13 +555,15 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, bus
 }
 
 /** Desde aquí, el rato antes de cenar ya se dice (FreeTimeBlock del cliente, 45 min). */
-const APERITIVO_MIN_MINUTES = 45
+const APERITIVO_MIN_MINUTES = 20
 /** Hasta aquí, el rato antes de cenar es aperitivo (decisión del 2026-09-26: los 99 min de 6 días en invierno). */
 const APERITIVO_MAX_MINUTES = 120
 /** Con el sol antes de esta hora, el rato antes de cenar es de noche: paseo iluminado y aperitivo (PROMPT_RUTAS_CURADAS B3.1). */
 const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 /** Lo más que se alarga el paseo nocturno de antes de cenar en invierno para no pasar de 2 h (C.1). */
 const WINTER_NIGHT_STRETCH_MAX = 45
+/** En invierno, con la nocturna antes de cenar, el rato libre de antes: 60 min como mucho. */
+const WINTER_FREE_MAX_MINUTES = 60
 /** Una nocturna antes de cenar, como mucho (decisión del usuario, 2026-09-28). */
 const NIGHT_BEFORE_DINNER_MAX = 25
 

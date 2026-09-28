@@ -1,7 +1,7 @@
 // Auditoría automática de un viaje (decisión del usuario, 2026-09-28): todo lo que antes se repasaba a mano, para
 // cualquier destino. La usan la revisión (con su lista de casos: ruta, día, hora, parada) y el barrido (contando).
 // Los días libres del viajero ("lo organizo yo") no se revisan.
-import { closedOnDay, effectiveSchedule, parseHoursSessions, placeWindows } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions, placeWindows } from '../../shared/routeEngine/openingHours.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { grupoFueraDeOrdenEnDia, tituloQueNoSeCumple } from './textChecks.mjs'
 import { whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -109,6 +109,11 @@ export function auditarViaje(D, days, options = {}) {
           const text = placeWindows(place, { ...hours, sunset })?.join(', ') ?? effectiveSchedule(place, { ...hours, sunset })
           const sessions = parseHoursSessions(text)
           if (sessions.length > 0 && !sessions.some((window) => start >= window.open - ROUNDING && end <= window.close + ROUNDING)) add('fuera_de_horario', n, stop.suggested_time, name, `abierto ${text}`)
+          // Y la última entrada (la Basílica de San Pedro, a las 19:15): se mira cuándo empieza y cuándo acaba (segundo repaso).
+          else {
+            const lastEntry = lastEntryMinutes(place, start, { ...hours, sunset })
+            if (lastEntry != null && start > lastEntry + ROUNDING) add('fuera_de_horario', n, stop.suggested_time, name, `última entrada ${String(Math.floor(lastEntry / 60)).padStart(2, '0')}:${String(lastEntry % 60).padStart(2, '0')}`)
+          }
         }
       }
       // Atardecer: el mirador que llega después del sol, o un texto de atardecer ya de noche.
@@ -158,19 +163,24 @@ export function auditarViaje(D, days, options = {}) {
       ...(day.aperitivo ? [{ minutes: day.aperitivo.minutes, before: 'la cena', ideas: day.aperitivo.suggestions ?? [], evening: true }] : []),
       ...(day.free_afternoon ? [{ minutes: day.free_afternoon.minutes, before: 'la cena', ideas: day.free_afternoon.suggestions ?? [], evening: true }] : []),
     ]
-    const lastEnd = Math.max(0, ...day.stops.filter((stop) => dinnerStart == null || t2m(stop.suggested_time) < dinnerStart).map((stop) => t2m(stop.suggested_time) + (stop.duration_minutes ?? 0)))
+    // Con la nocturna antes de cenar (invierno), el rato libre va antes de ella y acaba cuando empieza.
+    const nightFirst = Math.min(Infinity, ...day.stops.filter((stop) => stop.is_night_experience && stop.before_dinner).map((stop) => t2m(stop.suggested_time)))
+    const lastEnd = Math.max(0, ...day.stops.filter((stop) => !(stop.is_night_experience && stop.before_dinner) && (dinnerStart == null || t2m(stop.suggested_time) < dinnerStart)).map((stop) => t2m(stop.suggested_time) + (stop.duration_minutes ?? 0)))
     for (const libre of libres) {
       const beforeSun = dayStops.some((stop) => nameOf(stop) === libre.before && stop.sunset_minutes != null) && sunset != null && sunset >= 19 * 60
       if (libre.minutes > 60 && !libre.evening && !(beforeSun && libre.minutes <= VERANO_ANTES_DEL_SOL_MAX)) add('libre_largo', n, '', `antes de ${libre.before}`, `${libre.minutes} min`)
-      if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
+      if (libre.evening && Number.isFinite(nightFirst) && lastEnd + libre.minutes > nightFirst + 1) add('libre_pisa_comida', n, '', 'antes de la nocturna', `acaba ${lastEnd + libre.minutes - nightFirst} min tarde`)
+      else if (libre.evening && !Number.isFinite(nightFirst) && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
     }
     // La comida: el tiempo libre de antes no la pisa.
     for (const entry of day.free_times ?? []) if (entry.before === 'la comida' && lunchStart != null && (lunchEnd ?? lunchStart) < lunchStart) add('libre_pisa_comida', n, '', 'antes de la comida')
     // Cena que espera sin motivo: llega (con el paseo) y la cena empieza más de 20 min después, ya dentro de su franja.
     if (dinnerStart != null) {
-      const arrive = lastEnd + (day.dinner_walk_minutes ?? 0)
-      const idle = dinnerStart - arrive - (day.aperitivo?.minutes ?? 0) - (day.free_afternoon?.minutes ?? 0)
+      // (Con la nocturna antes de cenar, se llega a cenar al acabarla.)
+      const nightEnd = Math.max(0, ...day.stops.filter((stop) => stop.is_night_experience && stop.before_dinner).map((stop) => t2m(stop.suggested_time) + (stop.duration_minutes ?? 0)))
+      const arrive = Math.max(lastEnd + (day.aperitivo?.minutes ?? 0) + (day.free_afternoon?.minutes ?? 0), nightEnd) + (day.dinner_walk_minutes ?? 0)
+      const idle = dinnerStart - arrive
       // (Decisión del usuario, 2026-09-28: también si se llega antes de la franja de la cena: es una espera sin nada.)
       void dinnerWindowStart
       if (idle > 20) add('cena_espera', n, dinner.suggested_time, 'cena', `${idle} min de espera`)

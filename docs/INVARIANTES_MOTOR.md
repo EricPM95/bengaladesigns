@@ -1539,3 +1539,30 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Antes de dejar 20 min o más de espera antes del sol, el monumento que ese día va por fuera por tiempo (el
       Castillo) prueba a ir por dentro, con la subida por el barrio o sin ella. Se queda si no se pierde nada (lo que va
       "por el camino" no cuenta) y la espera no pasa de una hora.
+
+310. **Segundo repaso, puntos 2, 3, 8, 9, 10, 11 y 12** (2026-09-28), reglas generales:
+    - `horas` en una variante: la hora preferida de una parada ese día. `sin_free_tour`: lo que solo vale sin Free Tour.
+      `insertar` acepta varias opciones en `despues_de` (la primera que haya) y `en: 'manana'`.
+    - D4 en domingo: Santa Maria del Popolo abre de 16:30 a 18:00. Sin Free Tour, comida a las 12:00, la Galería a las
+      14:00, luego la Piazza del Popolo y la iglesia juntas, el Parque y el Pincio al atardecer; la mañana acaba en la
+      Plaza de España y Trinità dei Monti. Con Free Tour, la Piazza del Popolo de la tarde se estira hasta que abre la
+      iglesia ("Tiempo libre en la Piazza del Popolo").
+    - D4 en invierno: la mañana hasta la Plaza de España, Trinità dei Monti y el Pincio hasta la Galería de las 11:00
+      (San Ignacio, si da tiempo); comida normal; el Parque, la Piazza del Popolo, Santa Maria del Popolo cuando abre y el
+      Pincio al atardecer.
+    - La espera antes de una parada que abre más tarde se queda en la estirable de antes (exactamente esa visita, aunque
+      vaya en el mismo grupo que la siguiente), también después de mover un turno; y el barrio de antes de comer se
+      estira hasta la comida (Testaccio y su mercado).
+    - Nocturna antes de cenar: primero el rato libre con nombre (60 min como mucho) y luego la nocturna, camino de la
+      cena; en invierno con más de 90 min antes de cenar, la nocturna pasa siempre antes. El rato de antes de cenar sale
+      con nombre desde 20 min (antes, 45).
+    - Una nocturna sin texto propio sale con su descripción, nunca con el genérico; `texto_fechas` da el texto de unas
+      fechas (Piazza Navona con el mercadillo de Navidad, del 1 de diciembre al 6 de enero).
+    - Monti va detrás de los Foros como una sola parada también en D4M; los Foros al atardecer empiezan 30 min antes del
+      sol (unos 45 min); los días largos (sol a las 20:00 o más tarde), D5C recupera San Juan de Letrán.
+    - La auditoría mira también la última entrada (la Basílica de San Pedro, 19:15).
+    - `insertar` también acepta `solo_si_esta` (sin ninguna de esas paradas, no se inserta) y `solo_si_falta` (si la
+      parada ya va ese día, no se repite); `sin_free_tour.si_en_tarde`: solo si esa parada va por la tarde. D4 en
+      domingo: la Piazza del Popolo y Santa Maria del Popolo siempre juntas, antes del Pincio si el sol se pone a las
+      17:30 o más tarde y después si antes (con Free Tour, la plaza se estira antes de subir al Pincio). D4 tranquilo
+      de invierno: sin Trinità por la mañana (si no, la Galería pierde las 11:00) y con la misma tarde que D4 de invierno.

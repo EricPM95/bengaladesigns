@@ -71,6 +71,7 @@ interface GeneratedStop {
   free_tour_tips?: string[]
   /** Solo pipeline v2 (ver routeAlgorithm.js) — Stop.isNightExperience en types.ts. */
   is_night_experience?: boolean
+  before_dinner?: boolean
   /** Solo pipeline v2 — Stop.tags en types.ts. */
   tags?: string[]
   /** Solo pipeline v2, algunos lugares — Stop.scheduleText en types.ts. */
@@ -402,6 +403,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
         }
       : {}),
     ...(generated.is_night_experience ? { isNightExperience: true } : {}),
+    ...(generated.before_dinner ? { beforeDinner: true } : {}),
     // Atardecer y mirador de noche: los marca el motor (formatDayV3); la tarjeta del día los pinta aparte.
     ...(generated.night_view ? { isNightView: true } : generated.sunset_minutes != null ? { isSunset: true } : {}),
     ...(generated.night_view && generated.night_view_title ? { nightViewTitle: generated.night_view_title } : {}),

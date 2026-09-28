@@ -171,7 +171,14 @@
         "Piazza Navona"
       ],
       "allow_same_day": true,
-      "texto": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte."
+      "texto": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte.",
+      "texto_fechas": [
+        {
+          "desde": "12-01",
+          "hasta": "01-06",
+          "texto": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar."
+        }
+      ]
     },
     {
       "name": "Trastevere de noche",
@@ -10347,7 +10354,8 @@
                 "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
                 "cifra_ok": true,
                 "comprobado": "2026-09-28"
-              }
+              },
+              "si_da_tiempo": true
             },
             {
               "lugar": "Plaza Colonna",
@@ -10363,40 +10371,18 @@
               "lugar": "Plaza de España",
               "rol": "parada",
               "nota": "Y la escalinata.",
-              "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido."
+              "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
+              "minutos": 20
             },
             {
-              "lugar": "Ara Pacis",
-              "rol": "parada",
-              "pago": true,
-              "solo": {
-                "experiencia": "arte_museos",
-                "min_dias": 5
-              },
-              "por_que": "El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo."
+              "lugar": "Trinità dei Monti",
+              "rol": "de_paso",
+              "minutos": 10
             },
-            {
-              "lugar": "Piazza del Popolo",
-              "rol": "parada",
-              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
-            }
-          ],
-          "comida": {
-            "texto": "Tridente o Spagna, temprano",
-            "restaurantes": [
-              "Edy",
-              "Poldo e Gianna Osteria",
-              "Sgarro Bistrot"
-            ],
-            "hora": "12:00",
-            "bloque": 45,
-            "si_lleva": "Galería Borghese"
-          },
-          "tarde": [
             {
               "lugar": "Galería Borghese",
               "rol": "parada",
-              "hora": "13:00",
+              "hora": "11:00",
               "pago": true,
               "solo": [
                 {
@@ -10412,7 +10398,17 @@
               "nota": "Turno de las 13:00, con reserva.",
               "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",
               "fija": true
-            },
+            }
+          ],
+          "comida": {
+            "texto": "Tridente o Spagna",
+            "restaurantes": [
+              "Edy",
+              "Poldo e Gianna Osteria",
+              "Sgarro Bistrot"
+            ]
+          },
+          "tarde": [
             {
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
@@ -10424,35 +10420,29 @@
               "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
             },
             {
+              "lugar": "Piazza del Popolo",
+              "rol": "parada",
+              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
+              "minutos": 15,
+              "estirar": true,
+              "estirar_max": 60,
+              "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
+              "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
+            },
+            {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
               "nota": "Abre de 16:00 a 18:00: con el sol después de las 17:00, antes del Pincio.",
               "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-              "hora_ok": true,
-              "solo": [
-                {
-                  "sol_despues_de": "17:30"
-                }
-              ]
+              "hora_ok": true
             },
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
               "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
-            },
-            {
-              "lugar": "Santa Maria del Popolo",
-              "rol": "parada",
-              "nota": "Abre de 16:00 a 18:00: después del atardecer en el Pincio, bajando.",
-              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-              "hora_ok": true,
-              "solo": [
-                {
-                  "sol_antes_de": "17:30"
-                }
-              ]
             }
-          ]
+          ],
+          "_nota": "Invierno (segundo repaso, 2026-09-28): la mañana hasta la Plaza de España, Trinità dei Monti y el paseo por el Pincio hasta la Galería de las 11:00; comida normal; por la tarde el Parque, la Piazza del Popolo, Santa Maria del Popolo cuando abre (16:00) y el Pincio al atardecer."
         },
         "con_free_tour": {
           "manana": [
@@ -10535,7 +10525,11 @@
             {
               "lugar": "Piazza del Popolo",
               "rol": "parada",
-              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
+              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
+              "estirar": true,
+              "estirar_max": 90,
+              "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
+              "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
             },
             {
               "lugar": "Santa Maria del Popolo",
@@ -10611,33 +10605,109 @@
           "nombre": "Trevi, el Popolo y la Borghese"
         },
         "domingo": {
+          "_nota": "Domingo (segundo repaso, 2026-09-28): Santa Maria del Popolo abre a las 16:30. Con Free Tour, junto a la Piazza del Popolo de la tarde; sin él, al salir de la Galería (de 15:00 a 17:00, la única manera de llegar abierta). Con el sol antes de las 17:30, después del Pincio.",
           "quitar": [
-            "Santa Maria del Popolo"
+            "Santa Maria del Popolo",
+            "Piazza del Popolo"
           ],
           "insertar": [
             {
               "parada": {
-                "lugar": "Santa Maria del Popolo",
+                "lugar": "Piazza del Popolo",
                 "rol": "parada",
-                "nota": "El domingo solo abre de 16:30 a 18:00: justo al salir de la Galería.",
-                "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-                "hora_ok": true
+                "estirar": true,
+                "estirar_max": 90,
+                "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
+                "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
               },
               "sol_despues_de": "17:30",
-              "despues_de": "Galería Borghese"
+              "despues_de": [
+                "Via Margutta",
+                "Galería Borghese",
+                "Parque de Villa Borghese"
+              ],
+              "solo_si_esta": true
             },
             {
-              "despues_de": "Terraza del Pincio",
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
-                "nota": "El domingo solo abre de 16:30 a 18:00.",
-                "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
                 "hora_ok": true
               },
-              "sol_antes_de": "17:30"
+              "sol_despues_de": "17:30",
+              "despues_de": [
+                "Piazza del Popolo",
+                "Galería Borghese"
+              ]
+            },
+            {
+              "parada": {
+                "lugar": "Piazza del Popolo",
+                "rol": "parada",
+                "estirar": true,
+                "estirar_max": 90,
+                "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
+                "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza antes de subir al Pincio."
+              },
+              "sol_antes_de": "17:30",
+              "despues_de": [
+                "Via Margutta"
+              ],
+              "solo_si_esta": true
+            },
+            {
+              "parada": {
+                "lugar": "Santa Maria del Popolo",
+                "rol": "parada",
+                "hora_ok": true
+              },
+              "sol_antes_de": "17:30",
+              "despues_de": [
+                "Terraza del Pincio"
+              ]
+            },
+            {
+              "parada": {
+                "lugar": "Piazza del Popolo",
+                "rol": "parada",
+                "minutos": 15
+              },
+              "sol_antes_de": "17:30",
+              "despues_de": [
+                "Terraza del Pincio"
+              ],
+              "solo_si_falta": true
             }
-          ]
+          ],
+          "sin_free_tour": {
+            "_nota": "Sin Free Tour (la Galería va por la tarde): comida a las 12:00 y la Galería a las 14:00, para bajar a la Piazza del Popolo y a Santa Maria del Popolo cuando abre (16:30), subir al Parque y ver el atardecer en el Pincio. La mañana acaba en la Plaza de España y Trinità dei Monti.",
+            "comida": {
+              "texto": "Tridente o Spagna",
+              "restaurantes": [
+                "Edy",
+                "Poldo e Gianna Osteria",
+                "Sgarro Bistrot"
+              ],
+              "hora": "12:00",
+              "bloque": 75
+            },
+            "horas": {
+              "Galería Borghese": "14:00"
+            },
+            "insertar": [
+              {
+                "en": "manana",
+                "parada": {
+                  "lugar": "Trinità dei Monti",
+                  "rol": "parada"
+                },
+                "despues_de": [
+                  "Plaza de España"
+                ]
+              }
+            ],
+            "si_en_tarde": "Galería Borghese"
+          }
         },
         "tranquilo_invierno": {
           "nombre": "La Borghese, el Pincio y la escalinata",
@@ -10660,12 +10730,6 @@
               "minutos": 20
             },
             {
-              "lugar": "Trinità dei Monti",
-              "rol": "de_paso",
-              "por_que": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
-              "nota": "Sube la escalinata: desde aquí, paseo hasta la Galería."
-            },
-            {
               "lugar": "Galería Borghese",
               "rol": "parada",
               "hora": "11:00",
@@ -10684,27 +10748,40 @@
               "nota": "Turno de las 11:00, con reserva: sin prisas para llegar.",
               "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",
               "fija": true
-            },
-            {
-              "lugar": "Parque de Villa Borghese",
-              "rol": "parada",
-              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
-              "minutos": 30,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
             }
           ],
           "tarde": [
             {
-              "lugar": "Terraza del Pincio",
-              "rol": "atardecer",
-              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+              "lugar": "Parque de Villa Borghese",
+              "rol": "parada",
+              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "estirar": true,
+              "minutos": 30,
+              "estirar_titulo": "Tiempo libre en Villa Borghese",
+              "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
+            },
+            {
+              "lugar": "Piazza del Popolo",
+              "rol": "parada",
+              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
+              "minutos": 15,
+              "estirar": true,
+              "estirar_max": 60,
+              "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
+              "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
             },
             {
               "lugar": "Santa Maria del Popolo",
               "rol": "parada",
-              "nota": "Abre de 16:00 a 18:00: después del atardecer.",
+              "nota": "Abre de 16:00 a 18:00: con el sol después de las 17:00, antes del Pincio.",
               "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
               "hora_ok": true
+            },
+            {
+              "lugar": "Terraza del Pincio",
+              "rol": "atardecer",
+              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
             }
           ]
         }
@@ -10832,20 +10909,22 @@
           "por_que": "Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro."
         },
         {
-          "lugar": "Monti",
-          "rol": "parada",
-          "estirar": true,
-          "nota": "Callejear y aperitivo en la Piazza della Madonna dei Monti.",
-          "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber."
-        },
-        {
           "lugar": "Via dei Fori Imperiali",
           "rol": "atardecer",
           "no_calle": true,
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
           "por_que": "Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer.",
           "hora_ok": true,
-          "atardecer_desde": 60
+          "atardecer_desde": 30
+        },
+        {
+          "lugar": "Monti",
+          "rol": "parada",
+          "estirar": true,
+          "nota": "Callejear y aperitivo en la Piazza della Madonna dei Monti.",
+          "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber.",
+          "aperitivo": true,
+          "si_da_tiempo": true
         }
       ],
       "cena": {
@@ -10947,7 +11026,11 @@
           "lugar": "Testaccio",
           "rol": "parada",
           "nota": "Callejear hasta el mercado.",
-          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado."
+          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado.",
+          "estirar": true,
+          "estirar_max": 75,
+          "estirar_titulo": "Testaccio y su mercado",
+          "estirar_texto": "Callejea por el barrio obrero más auténtico de Roma antes de comer: el mercado (de lunes a sábado), las trattorias de siempre y el Monte Testaccio."
         }
       ],
       "comida": {
@@ -11060,7 +11143,11 @@
               "lugar": "Testaccio",
               "rol": "parada",
               "nota": "Callejear hasta el mercado.",
-              "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado."
+              "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado.",
+              "estirar": true,
+              "estirar_max": 75,
+              "estirar_titulo": "Testaccio y su mercado",
+              "estirar_texto": "Callejea por el barrio obrero más auténtico de Roma antes de comer: el mercado (de lunes a sábado), las trattorias de siempre y el Monte Testaccio."
             }
           ]
         },
@@ -11291,7 +11378,11 @@
           "lugar": "Testaccio",
           "rol": "parada",
           "nota": "Callejear hasta el mercado.",
-          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado."
+          "por_que": "El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado.",
+          "estirar": true,
+          "estirar_max": 75,
+          "estirar_titulo": "Testaccio y su mercado",
+          "estirar_texto": "Callejea por el barrio obrero más auténtico de Roma antes de comer: el mercado (de lunes a sábado), las trattorias de siempre y el Monte Testaccio."
         }
       ],
       "comida": {
@@ -11313,6 +11404,16 @@
           "hora": "14:00"
         },
         {
+          "lugar": "Basílica de San Juan de Letrán",
+          "rol": "parada",
+          "solo": [
+            {
+              "sol_despues_de": "20:00"
+            }
+          ],
+          "por_que": "La catedral de Roma, más antigua que San Pedro: la fachada con sus quince estatuas gigantes y, dentro, el claustro cosmatesco. Los días largos da tiempo de sobra."
+        },
+        {
           "lugar": "Basílica de Santa María la Mayor",
           "rol": "parada",
           "por_que": "Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco."
@@ -11331,7 +11432,7 @@
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
           "por_que": "Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer.",
           "hora_ok": true,
-          "atardecer_desde": 60
+          "atardecer_desde": 30
         },
         {
           "lugar": "Monti",
@@ -11404,7 +11505,7 @@
           "nota": "Los Foros Imperiales y el Coliseo con la última luz.",
           "por_que": "Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer.",
           "hora_ok": true,
-          "atardecer_desde": 60
+          "atardecer_desde": 30
         }
       ],
       "cena": {
