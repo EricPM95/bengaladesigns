@@ -590,6 +590,17 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     days.push(planned)
   }
 
+  // Revisitas marcadas (decisión del usuario, 2026-09-28): un lugar solo se repite otro día si su parada lo dice
+  // (`revisita`), a otra hora y con su texto de revisita ("Ya estuviste el Día 1, pero al atardecer es otro sitio…").
+  for (const [index, day] of days.entries()) {
+    for (const unit of day.units ?? []) {
+      if (!unit.revisitText) continue
+      const name = unit.places[0]?.name
+      const earlier = days.slice(0, index).find((other) => (other.schedule?.visits ?? []).some((visit) => visit.place.name === name))
+      if (earlier) unit.revisitReason = unit.revisitText.replace('{dia}', String(earlier.dayNumber))
+    }
+  }
+
   /** El `por_que` más habitual de un lugar en los días curados (para las paradas que no traen el suyo). */
   function curatedWhyOf(name) {
     if (!whyByPlace) {
@@ -717,6 +728,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       ...(stop.estirar ? { stretch: true, stretchMax: stop.estirar_max ?? null } : {}),
       // `si_abre`: solo si está abierta al llegar; si hay que esperar a que abra, no entra (Santa Cecilia).
       ...(stop.si_abre ? { onlyIfOpenNow: true } : {}),
+      // `revisita`: si el viaje ya lo vio otro día, sale como revisita con este texto ({dia}: el día en que se vio).
+      ...(stop.revisita ? { revisitText: stop.revisita } : {}),
       // `si_cerrado: de_paso`: si a esa hora ya cerró, se ve de paso (el Tempietto).
       ...(stop.si_cerrado === 'de_paso' ? { passIfClosed: true, curatedStop: stop } : {}),
     }

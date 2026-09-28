@@ -10473,7 +10473,8 @@
           "lugar": "Plaza del Campidoglio",
           "rol": "atardecer",
           "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces.",
-          "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro."
+          "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro.",
+          "revisita": "Ya estuviste el Día {dia}, pero al atardecer es otro sitio: el Foro a tus pies mientras se encienden las luces."
         }
       ],
       "cena": {
@@ -10609,7 +10610,8 @@
               "lugar": "Plaza del Campidoglio",
               "rol": "atardecer",
               "nota": "Por detrás de la plaza, el Foro entero a tus pies: quédate a ver cómo se encienden las luces.",
-              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro."
+              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro.",
+              "revisita": "Ya estuviste el Día {dia}, pero al atardecer es otro sitio: el Foro a tus pies mientras se encienden las luces."
             },
             {
               "lugar": "Altar de la Patria",
@@ -10649,7 +10651,8 @@
               "traslado": "el bus 118 (hasta el Circo Máximo)",
               "traslado_min": 30,
               "nota": "Ya de noche: por detrás de la plaza, el Foro iluminado a tus pies.",
-              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro."
+              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro.",
+              "revisita": "Ya estuviste el Día {dia}, pero al atardecer es otro sitio: el Foro a tus pies mientras se encienden las luces."
             },
             {
               "lugar": "Altar de la Patria",

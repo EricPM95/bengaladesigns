@@ -1390,3 +1390,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     `solo` y en `insertar`). La espera antes de una parada que abre más tarde se queda en la estirable que va justo
     antes (el Parque), de 15 en 15 min y sin que se caiga nada; `sin_estirar` solo si hace falta (sin Free Tour y con
     el sol después de las 17:00).
+295. **Revisitas marcadas** (decisión del usuario, 2026-09-28): un lugar puede repetirse otro día solo si es una
+    revisita marcada, a otra hora y con su texto de revisita: la parada del día curado lleva `revisita` ("Ya estuviste
+    el Día {dia}, pero al atardecer es otro sitio…", el Campidoglio de D5; también en docs/roma_por_que.json,
+    `revisitas`). Si el viaje ya lo vio otro día, sale como revisita (`is_revisit`, `revisit_reason`); si no, visita
+    normal. La auditoría no cuenta las revisitas marcadas como repetidas.
