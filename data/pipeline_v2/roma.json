@@ -8448,16 +8448,6 @@
           },
           "tarde": [
             {
-              "lugar": "Piazza Navona",
-              "rol": "parada",
-              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
-            },
-            {
-              "lugar": "Iglesia de San Luigi dei Francesi",
-              "rol": "parada",
-              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
-            },
-            {
               "lugar": "Panteón",
               "rol": "parada",
               "por_que": "El templo romano mejor conservado del mundo. Mira la cúpula y su óculo: casi 2.000 años en pie."
@@ -8474,6 +8464,16 @@
                 "ritmo": "completo"
               },
               "por_que": "Detrás del Panteón, y la entrada es gratis: la única iglesia gótica de Roma, con su techo azul de estrellas y un Cristo de Miguel Ángel."
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada",
+              "por_que": "Tres Caravaggio en una capilla, a dos pasos de Navona, y entrar es gratis. Lleva una moneda: la luz de los cuadros funciona así."
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada",
+              "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
               "lugar": "Largo di Torre Argentina",
@@ -9867,7 +9867,7 @@
           ],
           "insertar": [
             {
-              "antes_de": "Parque de Villa Borghese",
+              "antes_de": "Terraza del Pincio",
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
