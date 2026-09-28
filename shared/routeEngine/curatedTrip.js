@@ -25,7 +25,7 @@ import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
 import { lunchSpots } from './lunchSpots.js'
-import { joinSpanish } from './whyTexts.js'
+import { joinSpanish, placeWithArticle, whyTexts } from './whyTexts.js'
 import { isStreet } from './localRules.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 
@@ -310,6 +310,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         }
         // Lo del pool que el día lleva y ese día cierra (el Castillo en D2 un lunes): también es un cierre.
         if (poolNames.some((name) => carries(cfg, name) && closedThatDay(name, day))) cost += 1000
+        // Y una entrada de pago que el día lleva por dentro y ese día cierra (el Castillo en D2 un lunes): mejor otro día,
+        // que las entradas son parte del negocio (auditoría final de Roma, 2026-09-28).
+        for (const stop of [...(cfg.manana ?? []), ...(cfg.tarde ?? [])]) if (stop.pago && !poolNames.includes(stop.lugar) && stopApplies(stop, null) && closedThatDay(stop.lugar, day)) cost += EVITAR_COST
         // Las joyas del día cerradas ese día (festivos): la que no se ve por fuera (los Museos Vaticanos) pesa más
         // que las que sí (el Coliseo y el Panteón, por fuera con aviso). El 24-25 de diciembre, el Vaticano va el 24.
         for (const joya of cfg.joyas ?? []) if (closedThatDay(joya, day)) cost += placeByName.get(joya)?.pass_by ? 300 : 2000
@@ -554,9 +557,28 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // Tarde B en cuanto alguno (el Campidoglio o el Ghetto) sale en otro día del viaje; la A, solo si no sale ninguno.
     return (rule.si_salen_en_otro_dia ?? []).some((name) => others.has(name))
   }
+  // Las entradas son parte del negocio (auditoría final de Roma, 2026-09-28): un imprescindible de pago que en este viaje
+  // solo se ve con el Free Tour (el tour pasa por delante del Panteón, pero no entra) sale por dentro el mismo día, justo
+  // al acabar el tour, igual que el Coliseo. Si ese día no cabe, lo intenta el programador en otro (más abajo).
+  const paidEssential = (place) => place?.level === 1 && place.type === 'interior' && (place.ticket_info ?? []).some((line) => /de pago/i.test(line))
+  const withTourInsides = (entries) => {
+    if (!hasFreeTour || !tour?.name) return entries
+    const inside = new Set(entries.flatMap((entry) => [...entry.sections.manana, ...entry.sections.tarde].filter((stop) => stop.rol !== 'de_paso').map((stop) => stop.lugar)))
+    const missing = [...tourCovers].filter((name) => paidEssential(placeByName.get(name)) && !inside.has(name))
+    if (missing.length === 0) return entries
+    return entries.map((entry) => {
+      for (const key of ['manana', 'tarde']) {
+        const at = entry.sections[key].findIndex((stop) => stop.lugar === tour.name)
+        if (at < 0) continue
+        const added = missing.map((name) => ({ lugar: name, rol: 'parada', tras_free_tour: true, por_que: whyTexts.insideAfterTour(placeWithArticle(placeByName.get(name)), destData.destination ?? 'la ciudad') }))
+        return { ...entry, tourInsides: missing, sections: { ...entry.sections, [key]: [...entry.sections[key].slice(0, at + 1), ...added, ...entry.sections[key].slice(at + 1)] } }
+      }
+      return entry
+    })
+  }
   const resolveAll = () => {
     const first = order.map((id, index) => resolveEntry(id, index))
-    return first.map((entry, index) => (tardeBOf(first, entry) ? resolveEntry(entry.id, index, { tardeB: true }) : entry))
+    return withTourInsides(first.map((entry, index) => (tardeBOf(first, entry) ? resolveEntry(entry.id, index, { tardeB: true }) : entry)))
   }
   let resolved = resolveAll()
 
@@ -565,7 +587,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   if (museumRules) {
     const quota = (museumRules.tope ?? []).find((row) => contentDays <= row.hasta_dias)?.extra ?? 0
     const limit = quota + (selected.includes('arte_museos') ? museumRules.con_arte ?? 1 : 0)
-    const paid = () => resolved.flatMap((entry) => [...entry.sections.manana, ...entry.sections.tarde].filter((stop) => stop.pago && !inPool(stop.lugar) && !inside(stop.lugar) && !dropPaid.has(stop.lugar)).map((stop) => stop.lugar))
+    const paid = () => resolved.flatMap((entry) => [...entry.sections.manana, ...entry.sections.tarde].filter((stop) => stop.pago && !stop.sin_tope && !inPool(stop.lugar) && !inside(stop.lugar) && !dropPaid.has(stop.lugar)).map((stop) => stop.lugar))
     for (const name of museumRules.quitar_en_orden ?? []) {
       if (paid().length <= limit) break
       if (paid().includes(name)) dropPaid.add(name)

@@ -1653,3 +1653,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     paseo); hueco desde 20 min (30 antes de un mirador del atardecer o de una entrada con turno: es margen); nuevas:
     parada de paseo por encima de su máximo, restaurante repetido en el viaje, "por fuera para llegar a todo" con tiempo
     libre o paradas estiradas, "por la mañana" en una parada de la tarde.
+
+322. **Las entradas son parte del negocio** (auditoría final de Roma, 2026-09-28):
+    - Un imprescindible de pago (nivel 1, interior, "De pago") que en el viaje solo se ve con el Free Tour sale por dentro
+      el mismo día, justo al acabar el tour, con el texto "El Free Tour te ha enseñado… ahora toca verlo por dentro"
+      (el Panteón, a 5 min de Navona, antes de comer). En Roma, D3 come a las 13:00 (60 min) y entra a los Museos
+      Vaticanos a las 14:45 (dentro de su franja de 14:30-15:00), en bus 40 o taxi.
+    - Una entrada de pago que el día lleva y ese día cierra (el Castillo en D2 un lunes) pesa en el orden de los días:
+      mejor otro día, si lo hay.
+    - `sin_tope` en una parada de pago: no cuenta para el tope de `museos_de_pago` (el Castillo desde 4 días, `min_dias: 4`).
+      El tope es un techo (quita lo que sobra), no un mínimo.
+    - D3 en ritmo tranquilo (empieza a las 10:00 con el tour): "Free Tour por el centro y el Vaticano por la tarde".
+    - La auditoría avisa si un imprescindible de pago no sale nunca por dentro en el viaje.

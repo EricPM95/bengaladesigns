@@ -9225,9 +9225,13 @@
             {
               "experiencia": "arte_museos",
               "min_dias": 5
+            },
+            {
+              "min_dias": 4
             }
           ],
-          "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
+          "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
+          "sin_tope": true
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -9300,9 +9304,13 @@
                 {
                   "experiencia": "arte_museos",
                   "min_dias": 5
+                },
+                {
+                  "min_dias": 4
                 }
               ],
-              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
+              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
+              "sin_tope": true
             },
             {
               "lugar": "Mirador del Janículo",
@@ -9463,10 +9471,16 @@
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
-              "solo": {
-                "pool": true
-              },
-              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "min_dias": 4
+                }
+              ],
+              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
+              "sin_tope": true
             },
             {
               "lugar": "Trastevere",
@@ -9524,10 +9538,16 @@
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
-              "solo": {
-                "pool": true
-              },
-              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "min_dias": 4
+                }
+              ],
+              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
+              "sin_tope": true
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -9850,16 +9870,20 @@
         "restaurantes": [
           "Supplizio",
           "Armando al Pantheon"
-        ]
+        ],
+        "bloque": 60,
+        "hora": "13:00"
       },
       "tarde": [
         {
           "lugar": "Museos Vaticanos y Capilla Sixtina",
           "rol": "parada",
-          "hora": "14:30",
+          "hora": "14:45",
           "nota": "Entrada de 14:30 a 15:00; última entrada a las 18:00.",
           "por_que": "Por la tarde hay menos cola que a media mañana. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos.",
-          "hora_ok": true
+          "hora_ok": true,
+          "traslado": "el bus 40 (desde Largo di Torre Argentina hasta el Borgo) o un taxi",
+          "traslado_min": 25
         },
         {
           "lugar": "Plaza de San Pedro",
@@ -9882,7 +9906,12 @@
         "barrio": "vaticano"
       },
       "noche": "castillo_tiber",
-      "variantes": {},
+      "variantes": {
+        "tranquilo": {
+          "_nota": "Tranquilo empieza a las 10:00 con el tour: el título no promete Trevi sin gente (auditoría final de Roma, 2026-09-28).",
+          "nombre": "Free Tour por el centro y el Vaticano por la tarde"
+        }
+      },
       "no_en": [
         {
           "dia_semana": "domingo"
@@ -11956,7 +11985,7 @@
     "cinco_dias": "D6",
     "seis_dias": "D7",
     "museos_de_pago": {
-      "_nota": "💶 (`pago` en las paradas): tope por días del viaje, +1 con Arte; lo del pool no cuenta. Si sobran, se quitan en este orden.",
+      "_nota": "💶 (`pago` en las paradas): tope por días del viaje, +1 con Arte; lo del pool no cuenta. Si sobran, se quitan en este orden. Lo que lleva sin_tope (el Castillo desde 4 días: las entradas son parte del negocio, 2026-09-28) no cuenta.",
       "tope": [
         {
           "hasta_dias": 3,
