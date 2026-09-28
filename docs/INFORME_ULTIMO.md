@@ -1,3 +1,51 @@
+# Días escritos: primer paso (28 de septiembre de 2026)
+
+Sin subir. **El motor no lee todavía nada de esto:** la app sigue igual.
+
+## a) Qué he hecho
+
+1. **El formato:** `docs/DIAS_ESCRITOS_FORMATO.md`.
+   - Un fichero por día, con mañana y tarde.
+   - Paradas fijas, normales y opcionales, y una elástica por tarde.
+   - Qué hacer si una parada está cerrada, restaurante con su alternativa, entradas marcadas.
+   - Variantes como cambios sobre el día y el sitio escrito de cada lugar del pool.
+2. **Los cortes de luz:** 17:40, 18:45 y 19:45, calculados con los atardeceres de la app para 2027.
+   - Las cuatro versiones tienen 58-64 min de ancho, lo que absorbe una elástica de ±30.
+   - Con 17:30 / 18:45 / 20:00, las del medio salían de 74 min.
+3. **El borrador de D4:**
+   - El dato está en `data/dias/roma/D4.json` y la hoja para leerlo en `docs/DIAS_ESCRITOS_D4.md`.
+   - Lleva la mañana con su versión tranquila, las 4 tardes, lunes, domingo y Free Tour, y el sitio de la Galería y del Parque.
+   - He simulado el sol más temprano y el más tardío de cada versión: la elástica nunca pasa de ±30 y no queda ningún hueco.
+4. **Reglas 323-326** en INVARIANTES (estructura, pool, ritmo y comprobación).
+5. **Del prompt de cierre:** lo que sigue sirviendo ya estaba hecho. Son la auditoría, que será la comprobación, `revisionCierre.mjs` con los 30 viajes, los textos por hora, los restaurantes sin repetir, los avisos y el orden de los días.
+
+   Lo demás (relleno, cambio de orden, Janículo por la hora, miércoles, Panteón y Castillo) queda como decisiones para escribir los días: ya está recogido en el borrador de D4 y lo estará en el resto.
+
+## b) Lo que he hecho distinto
+
+- **La Galería va siempre a las 11:00 por la mañana** y Santa Maria del Popolo siempre por la tarde, a partir de las 16:30. Así la mañana es la misma en las cuatro versiones y el domingo no cambia el orden, solo los restaurantes.
+- **El Ara Pacis va en todas las tardes, con su entrada.**
+- **No hay restaurante junto a la Galería** (el más cercano es un café), así que la comida va al Tridente, donde acaba la bajada por el Pincio.
+- **No he escrito los textos:** los `por_que` siguen donde están. Solo he puesto títulos nuevos para dos paradas: «Via Margutta y Via del Babuino» y «El lago de Villa Borghese».
+
+## c) Preguntas
+
+En `docs/DIAS_ESCRITOS_D4.md`, al final. Las principales:
+
+1. **Santa Maria del Popolo del 5 al 12 de febrero:** llega a las 17:56 y cierra a las 18:00.
+   - a) por fuera esos días;
+   - b) mover el corte a las 17:30.
+
+   **Recomiendo a.**
+2. **La ficha del Parque de Villa Borghese dice 08:30-17:00.** Parece de otra cosa. Hay que corregirla antes de la prueba.
+3. **Via Margutta como elástica llega a 75 min.**
+   - a) vale;
+   - b) los Jardines del Pincio.
+4. **El segundo sitio de la Galería:** en D4M o en D1 por la mañana. Recomiendo decidirlo con D4M escrito.
+5. **Tranquilo:** con la Galería fija a las 11:00, la comida no se alarga más que en completo (unos 80 min en los dos). ¿Te vale?
+
+---
+
 # Cierre de Roma (28 de septiembre de 2026)
 
 Todo en commits y **sin subir**. Revisiones nuevas: `docs/REVISION_CIERRE_ROMA.md` (tus 30 viajes, con `scripts/destino/revisionCierre.mjs`) y `docs/REVISION_20_RUTAS.md` (las 26 rutas), las dos con la auditoría nueva. Barrido: **765 de 768** (los 3 de Ferragosto, como siempre). Reglas 316-321 en INVARIANTES.
