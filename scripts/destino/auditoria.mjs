@@ -54,6 +54,7 @@ export const TIPOS_AUDITORIA = {
   restaurante_repetido: 'El mismo restaurante dos veces en el viaje',
   fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas',
   manana_tarde: '"Por la mañana" en el texto de una parada que va por la tarde',
+  pago_sin_dentro: 'Imprescindible de pago que no sale nunca por dentro en el viaje',
 }
 
 /** Cierre de Roma (2026-09-28): el máximo de una parada de paseo, por ritmo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
@@ -79,7 +80,7 @@ export function auditarViaje(D, days, options = {}) {
   const byName = new Map((D.places ?? []).map((place) => [place.name, place]))
   const levelOf = (name) => byName.get(name)?.level ?? 3
   const casos = []
-  const add = (tipo, n, hora, parada, detalle = '') => casos.push({ tipo, donde: `${label ? `${label}, ` : ''}día ${n}${hora ? `, ${hora}` : ''}${parada ? ` ${parada}` : ''}`, detalle })
+  const add = (tipo, n, hora, parada, detalle = '') => casos.push({ tipo, donde: `${label ? `${label}, ` : ''}${n === 0 ? 'todo el viaje' : `día ${n}`}${hora ? `, ${hora}` : ''}${parada ? ` ${parada}` : ''}`, detalle })
   const seenOnDay = new Map()
   const allNames = new Set()
   const restaurantsSeen = []
@@ -315,5 +316,11 @@ export function auditarViaje(D, days, options = {}) {
   const byRestaurant = new Map()
   for (const item of restaurantsSeen) byRestaurant.set(item.name, [...(byRestaurant.get(item.name) ?? []), item])
   for (const [name, list] of byRestaurant) if (list.length > 1) add('restaurante_repetido', list[1].n, '', name, list.map((item) => `día ${item.n} (${item.time === 'lunch' ? 'comida' : 'cena'})`).join(', '))
+  // Las entradas son parte del negocio (2026-09-28): todo imprescindible de pago por dentro algún día del viaje.
+  const insideNames = new Set(days.flatMap((day) => (day?.stops ?? []).filter((stop) => stop.visit_mode === 'dentro').map((stop) => stop.place_name ?? stop.name)))
+  for (const place of D.places ?? []) {
+    if (place.level !== 1 || place.type !== 'interior' || !(place.ticket_info ?? []).some((line) => /de pago/i.test(line))) continue
+    if (!insideNames.has(place.name)) add('pago_sin_dentro', 0, '', place.name, 'ningún día por dentro')
+  }
   return casos
 }

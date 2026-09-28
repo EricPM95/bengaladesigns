@@ -86,3 +86,47 @@ También quedan a 0 el restaurante repetido (antes 4 y 2) y "por la mañana" por
 
    **Recomiendo B**: acorta la espera de después de comer y la del Pincio a la vez.
 2. **El margen antes del atardecer y de la Galería:** ¿te vale hasta 30 min? Recomiendo sí.
+
+---
+
+# Las entradas (tu mensaje de la auditoría final)
+
+1. **Panteón con Free Tour:** hecho, como regla general (322).
+   - Justo al acabar el tour, a las 12:45, 30 min por dentro. Después, la comida a las 13:00, en 60 min, y los Museos Vaticanos a las 14:45, dentro de su franja de 14:30-15:00, en bus 40 o taxi.
+   - El sábado cabe de sobra (la venta se corta a las 16:00). El domingo, la misa es a las 10:30 y abre a las 11:45: también cabe.
+   - Ya sale por dentro en los 17 viajes con Free Tour.
+   - **Quedan 2 sin Panteón por dentro:** las rutas 14 y 20, de 2 días, con la Galería en el pool. La Galería ocupa la tarde de D1 y el día 2 es el Vaticano. Es la pregunta 3.
+2. **Castillo con 4 días o más:**
+   - Ahora entra por dentro en los 11 viajes de 4-5 días sin Free Tour (antes, 1 de 17).
+   - Lleva `min_dias: 4` y `sin_tope`, que no cuenta para el tope.
+   - Si D2 cae en lunes (el Castillo cierra), el orden de los días lo evita.
+   - **Con Free Tour no sale** (6 viajes): no hay D2, y en D3 la tarde del Vaticano llega hasta las 19:50, cuando el Castillo cierra a las 19:30. Es la pregunta 4.
+3. **museos_de_pago:** la regla sí se aplica, pero es un **techo**: quita lo que sobra, no añade.
+   - Con 4 días deja 1 de pago (la Galería); Caracalla sale por fuera.
+   - Por eso nunca salían los Capitolinos, el Ara Pacis o Trajano: solo están en días con condiciones (Arte y 5 días, invierno).
+   - Ahora el relleno los mete en los huecos (el Ara Pacis en 18 días de las dos revisiones, Trajano en 2). **Lo que entra de relleno no cuenta para el tope.** Es la pregunta 5.
+4. **D3 tranquilo:** «Free Tour por el centro y el Vaticano por la tarde».
+5. **Auditoría:** nueva comprobación, "Imprescindible de pago que no sale nunca por dentro en el viaje". Da 0 en los 30 viajes y 2 en las 26 rutas (las del punto 1).
+
+Además:
+- En tu 12 de marzo, D2 pasa al viernes y deja 40 min antes del Janículo.
+- Barrido: 765 de 768.
+
+## Preguntas nuevas
+
+3. **Panteón en viajes de 2 días con la Galería en el pool:**
+   - A) Dejarlo así (el pool manda).
+   - B) El Panteón por dentro antes de cenar, en lugar de la nocturna del Pincio.
+
+   Recomiendo **B**.
+4. **Castillo con Free Tour en 4-5 días:**
+   - A) En D4 con Free Tour, por la mañana antes de la Galería.
+   - B) Un día extra de Vaticano-Castillo-Trastevere (D2) en 5 días.
+   - C) Dejarlo por fuera.
+
+   Recomiendo **B** para 5 días y **C** para 4.
+5. **¿Lo que añade el relleno (Ara Pacis, Trajano, GNAM) cuenta para el tope de museos de pago?**
+   - A) No: son huecos.
+   - B) Sí: se buscaría otra cosa si se pasa.
+
+   Recomiendo **A**.
