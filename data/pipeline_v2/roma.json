@@ -3849,7 +3849,7 @@
     },
     {
       "name": "San Pietro in Montorio y Tempietto de Bramante",
-      "duration_minutes": 30,
+      "duration_minutes": 20,
       "zone": "trastevere",
       "coordinates": [
         41.8886,
@@ -9552,6 +9552,7 @@
           "nombre": "Vaticano, Castillo y Trastevere"
         },
         "miercoles": {
+          "_nota": "Miércoles de audiencia (cierre de Roma, 2026-09-28): Museos Vaticanos → el Puente y el Castillo por dentro mientras la audiencia ocupa la plaza → comida a las 13:00 → Plaza de San Pedro, Cúpula y Basílica (reabre hacia las 12:30) → Trastevere.",
           "manana": [
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -9565,10 +9566,23 @@
             },
             {
               "lugar": "Borgo Pio",
-              "rol": "parada",
-              "minutos": 30,
-              "nota": "Callejear por el Borgo mientras acaba la audiencia del Papa.",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "Del Vaticano al Castillo por el Borgo, mientras la audiencia llena la plaza.",
               "por_que": "Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos."
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "max_minutos": 15,
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo, antes de entrar."
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "nota": "Miércoles (cierre de Roma): por dentro mientras la audiencia ocupa la plaza.",
+              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
             }
           ],
           "comida": {
@@ -9577,19 +9591,13 @@
               "Borghiciana Pastificio Artigianale",
               "Pizzarium (Bonci)"
             ],
-            "hora": "12:00",
-            "bloque": 75
+            "hora": "13:00"
           },
           "tarde_antes": [
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": {
-                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
-                "solo_si_viene_de": [
-                  "Museos Vaticanos y Capilla Sixtina"
-                ]
-              }
+              "por_que": "La plaza de Bernini, ya sin la audiencia. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
             },
             {
               "lugar": "Cúpula de San Pedro",
@@ -9608,43 +9616,14 @@
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
+              "nota": "El miércoles reabre hacia las 12:30, tras la audiencia papal.",
               "por_que": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta."
-            },
-            {
-              "lugar": "Via della Conciliazione",
-              "rol": "de_paso",
-              "minutos": 10,
-              "nota": "De San Pedro al Castillo: el camino del viajero.",
-              "por_que": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto."
-            },
-            {
-              "lugar": "Puente Sant'Angelo",
-              "rol": "parada",
-              "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
-              "max_minutos": 15
-            },
-            {
-              "lugar": "Castillo de Sant'Angelo",
-              "rol": "parada",
-              "pago": true,
-              "solo": [
-                {
-                  "pool": true
-                },
-                {
-                  "experiencia": "arte_museos",
-                  "min_dias": 5
-                }
-              ],
-              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
             }
           ],
           "aviso_fecha": {
             "icono": "religioso",
             "etiqueta": "Audiencia papal",
-            "texto": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto."
+            "texto": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto."
           }
         },
         "museos_cerrados": {
@@ -9747,6 +9726,7 @@
           "sin": "Museos Vaticanos y Capilla Sixtina"
         },
         "tranquilo_miercoles": {
+          "_nota": "Miércoles de audiencia (cierre de Roma, 2026-09-28): Museos Vaticanos → el Puente y el Castillo por dentro mientras la audiencia ocupa la plaza → comida a las 13:00 → Plaza de San Pedro, Cúpula y Basílica (reabre hacia las 12:30) → Trastevere.",
           "manana": [
             {
               "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -9755,38 +9735,53 @@
                 "texto": "Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma, es la visita del día. Dentro de la Capilla no se pueden hacer fotos: disfrútala con los ojos.",
                 "temprano": "Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos."
               }
+            },
+            {
+              "lugar": "Borgo Pio",
+              "rol": "de_paso",
+              "minutos": 10,
+              "nota": "Del Vaticano al Castillo por el Borgo, mientras la audiencia llena la plaza.",
+              "por_que": "Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos."
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "max_minutos": 15,
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo, antes de entrar."
+            },
+            {
+              "lugar": "Castillo de Sant'Angelo",
+              "rol": "parada",
+              "pago": true,
+              "nota": "Miércoles (cierre de Roma): por dentro mientras la audiencia ocupa la plaza.",
+              "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
             }
           ],
           "comida": {
-            "texto": "Borgo o Prati",
+            "texto": "Borgo",
             "restaurantes": [
               "Borghiciana Pastificio Artigianale",
-              "200 Gradi",
               "Pizzarium (Bonci)"
-            ]
+            ],
+            "hora": "13:00"
           },
           "tarde_antes": [
             {
               "lugar": "Plaza de San Pedro",
               "rol": "parada",
-              "por_que": {
-                "texto": "Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola.",
-                "solo_si_viene_de": [
-                  "Museos Vaticanos y Capilla Sixtina"
-                ]
-              }
+              "por_que": "La plaza de Bernini, ya sin la audiencia. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola."
             },
             {
               "lugar": "Basílica de San Pedro",
               "rol": "parada",
-              "nota": "El miércoles abre a las 12:30, tras la audiencia papal.",
+              "nota": "El miércoles reabre hacia las 12:30, tras la audiencia papal.",
               "por_que": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta."
             }
           ],
           "aviso_fecha": {
             "icono": "religioso",
             "etiqueta": "Audiencia papal",
-            "texto": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Hemos puesto la Basílica después de comer, cuando ya ha abierto."
+            "texto": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto."
           }
         }
       },
@@ -10129,7 +10124,7 @@
                   ],
                   "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
                 },
-                "minutos": 30
+                "minutos": 20
               },
               {
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -10782,7 +10777,7 @@
           "nombre": "Trevi, el Popolo y la Borghese"
         },
         "domingo": {
-          "_nota": "Domingo (segundo repaso, 2026-09-28): Santa Maria del Popolo abre a las 16:30. Con Free Tour, junto a la Piazza del Popolo de la tarde; sin él, al salir de la Galería (de 15:00 a 17:00, la única manera de llegar abierta). Con el sol antes de las 17:30, después del Pincio.",
+          "_nota": "Domingo (segundo repaso, 2026-09-28): Santa Maria del Popolo abre a las 16:30. Con Free Tour, junto a la Piazza del Popolo de la tarde; sin él, al salir de la Galería y del parque (Galería → Parque → Popolo y la iglesia cuando abre → Pincio; cierre de Roma). Con el sol antes de las 17:30, después del Pincio.",
           "quitar": [
             "Santa Maria del Popolo",
             "Piazza del Popolo"
@@ -10813,8 +10808,8 @@
               },
               "sol_despues_de": "17:30",
               "despues_de": [
-                "Galería Borghese",
-                "Parque de Villa Borghese"
+                "Parque de Villa Borghese",
+                "Galería Borghese"
               ]
             },
             {

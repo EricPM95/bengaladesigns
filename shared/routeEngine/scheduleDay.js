@@ -1006,13 +1006,16 @@ function relationBroken(visits, lunchBeforeVisit) {
  * el lugar principal del grupo (el más largo): el tiempo de más se pasa en el Altar de la Patria,
  * no en cruzar la Plaza Venecia.
  */
+const NIGHT_VIEW_MIN_MINUTES = 15
 function visitMinutes(unit, index, mode) {
   const place = unit.places[index]
   // El Free Tour dura lo que dura; una parada "de paso" dura lo que dice su mensaje ("dedícale 15
   // minutos"), sin el extra del ritmo.
   if (place.isFreeTour || place.passBy) return place.duration_minutes ?? 30
-  // Una calle no es una parada: se pasa por ella (Parte A, regla 4).
-  if (isStreet(place)) return Math.min(place.duration_minutes ?? STREET_MINUTES, STREET_MINUTES)
+  // El mirador que llega de noche ("Roma iluminada desde…") es una parada de verdad: nunca menos de 15 min (cierre de Roma).
+  if (place.nightView) return Math.max(NIGHT_VIEW_MIN_MINUTES, isStreet(place) && !place.notStreet ? STREET_MINUTES : place.duration_minutes ?? 30)
+  // Una calle no es una parada: se pasa por ella (Parte A, regla 4). Salvo la que el día hace paseo (`no_calle`).
+  if (isStreet(place) && !place.notStreet) return Math.min(place.duration_minutes ?? STREET_MINUTES, STREET_MINUTES)
   const durations = unit.places.map((p) => p.duration_minutes ?? 30)
   const main = durations.indexOf(Math.max(...durations))
   // Tranquilo es menos paradas, no paradas más largas (revisión del 2026-09-25): el extra solo para

@@ -685,10 +685,22 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // Sin nada que proponer (la espera al atardecer del Pincio, con todo visto): una idea corta de la
         // zona, sin más paradas (decisión del 2026-09-26).
         ...(suggestions.length === 0 ? { hint: zoneHintFor(destData, gap.zone) } : {}),
+        // Con una idea clara de paseo de la misma zona, sale con su nombre (cierre de Roma, punto 1d): "Via Margutta y
+        // Via del Babuino", no "Tiempo libre antes de la comida".
+        ...(namedWalkTitle(destData, suggestions, gap.zone) ? { title: namedWalkTitle(destData, suggestions, gap.zone) } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
         ...(isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes) ? { title: SIESTA_TITLE, hint: SIESTA_HINT } : {}),
       }
     })
+}
+
+/** Las ideas de paseo (calles, plazas, paseos) de la zona del hueco, hasta dos, como título; si no las hay, nada. */
+const WALK_IDEA_TAGS = new Set(['calle', 'paseo', 'plaza'])
+function namedWalkTitle(destData, suggestions, zone) {
+  if (suggestions.length === 0) return null
+  const places = suggestions.map((item) => (destData.places ?? []).find((place) => place.name === item.name)).filter(Boolean)
+  const walks = places.filter((place) => place.type === 'exterior' && (place.tags ?? []).some((tag) => WALK_IDEA_TAGS.has(tag)))
+  return walks.length > 0 && walks.length === places.length ? joinSpanish(walks.slice(0, 2).map((place) => place.name)) : null
 }
 
 const SIESTA_TITLE = 'Descanso a la sombra'

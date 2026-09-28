@@ -1614,3 +1614,42 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       Popolo "Ojo: por la mañana cierra a las 12:00"; Campo de' Fiori, "por la mañana es mercado").
     - `requiere_lugares` de una fecha especial cuenta también las nocturnas: el aviso del mercadillo de Navona va en el
       día que pasa por la plaza, de día o de noche; si ninguno, no sale.
+
+317. **Cierre de Roma, punto 1: una sola regla de relleno** (2026-09-28; amplía la 314):
+    - Hueco: más de 30 min libres entre dos visitas, antes de comer o después de comer, o una parada de paseo por encima
+      de su máximo (parque, jardín o barrio: 90 min en completo, 120 en tranquilo; una calle, 45; o su propio
+      `max_minutos_paseo`, la Via Appia 150).
+    - El día prueba, en este orden, hasta 4 veces: a) por dentro lo que iba "por fuera para llegar a todo"; b) lo suyo
+      que se quedó fuera (Letrán por el sol, Monti por "si da tiempo") o lo suyo que iba detrás del atardecer (Santa Maria
+      in Trastevere antes de subir al Janículo), llevado al hueco; c) la siguiente parada que no está en el viaje, junto a
+      la parada del hueco o a la anterior (a 700 m, o de la misma zona a 1 km), por nivel y abierta, después o justo
+      antes de ella (el Ara Pacis entre el Popolo y el Pincio). Nunca una calle, nunca lo que se añadió de relleno como
+      referencia, nunca un tramo andando más largo que los del día, y sin perder nada ni el atardecer.
+    - d) Solo entonces, tiempo libre; si sus ideas son todas de paseo (calles, plazas, paseos), sale con su nombre: «Via
+      Margutta y Via del Babuino».
+    - Lo que se añade lleva su texto del destino o el consejo de su ficha, nunca "Te pilla de camino".
+    - Una variante que cambia la mañana se lleva sus paradas de la tarde (no salen dos veces).
+    - La versión de noche de un mirador ("Roma iluminada desde…") dura 15 min como mínimo, y la avenida que el día hace
+      paseo (`no_calle`) no se recorta como calle.
+
+318. **Cierre de Roma, punto 2: el miércoles de audiencia** (2026-09-28): Museos Vaticanos → Borgo Pio → Puente y
+    Castillo por dentro mientras la audiencia ocupa la plaza → comida a las 13:00 → Plaza de San Pedro, Cúpula y
+    Basílica (reabre hacia las 12:30) → Trastevere. En `variantes.miercoles` y `tranquilo_miercoles` de D2.
+
+319. **Cierre de Roma, punto 3: la subida al Janículo depende de la hora, no del mes** (2026-09-28):
+    - `si_espera` se prueba también cuando con el orden de ahora se llega cerrado a algo de esa tarde (el Tempietto
+      después de su última entrada, 17:30), y vale si llega al sol y se llega abierto a más cosas. Lo que solo iba de
+      paso (la Fuente de las Tortugas) no cuenta como perdido.
+    - Y al revés: un día en invierno por la fecha prueba el orden normal y se lo queda si el mirador llega a su hora,
+      no pierde ningún mirador y hay menos cosas cerradas.
+    - El Tempietto dura 20 min por dentro; en la subida, Trastevere 20 min (se vuelve de noche).
+
+320. **Cierre de Roma, punto 4: antes de «ya ha cerrado», cambiar el orden** (2026-09-28): antes de dejar una parada
+    por fuera porque ya ha cerrado, el día prueba a cambiarla de sitio con la de al lado (de interior, de la misma zona o
+    a menos de 1,4 km, no de su mismo grupo). San Pietro in Vincoli antes que Santa María la Mayor los domingos de
+    invierno de D4M.
+
+321. **Cierre de Roma, punto 7: la auditoría** (2026-09-28): tiempo libre desde 30 min (60 si sale con nombre de
+    paseo); hueco desde 20 min (30 antes de un mirador del atardecer o de una entrada con turno: es margen); nuevas:
+    parada de paseo por encima de su máximo, restaurante repetido en el viaje, "por fuera para llegar a todo" con tiempo
+    libre o paradas estiradas, "por la mañana" en una parada de la tarde.

@@ -26,6 +26,7 @@ import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
 import { lunchSpots } from './lunchSpots.js'
 import { joinSpanish } from './whyTexts.js'
+import { isStreet } from './localRules.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 
 /** Lo que dura pasar por un sitio "de paso". */
@@ -48,6 +49,24 @@ const MID_DAY_WAIT_MAX = 60
 const FILL_INSIDE_MIN_IDLE = 20
 /** Con una espera así o más, el día recupera lo suyo que se había quedado fuera (Letrán). */
 const RECOVER_MIN_GAP = 30
+/** Cierre de Roma (2026-09-28): la regla de relleno. Hueco: más de FILL_GAP_MINUTES; hasta FILL_ROUNDS paradas nuevas por día, probando FILL_CANDIDATES de la zona. */
+const FILL_GAP_MINUTES = 30
+const FILL_ROUNDS = 4
+const FILL_CANDIDATES = 6
+/** O a menos de esto de la parada junto al hueco, aunque sea de otra zona (Via Margutta, bajando del Pincio). */
+const FILL_NEAR_METERS = 700
+/** De la misma zona, pero sin cruzar media ciudad (el centro histórico es muy grande). */
+const FILL_ZONE_METERS = 1000
+const FILL_WALK_MAX = 25
+const FILL_LEG_MAX = 15
+/** El máximo de una parada de paseo: el suyo (`max_minutos_paseo`: la Via Appia), 45 una avenida, 90 un parque o un barrio (120 en tranquilo). */
+function paseoMaxOf(place, tranquilo) {
+  const tags = new Set(place?.tags ?? [])
+  if (place?.max_minutos_paseo != null) return place.max_minutos_paseo
+  if (tags.has('calle')) return 45
+  if (tags.has('parque') || tags.has('barrio') || tags.has('paseo')) return tranquilo ? 120 : 90
+  return null
+}
 /** Lo que se cuenta para llegar andando a comer al estirar el barrio de antes de la comida. */
 const LUNCH_WALK_ALLOWANCE = 5
 /** La cena de una noche con nocturna a hora fija, a esta distancia de ella como mucho (unos 15 min andando). */
@@ -369,7 +388,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   // La variante de cada día, en este orden: tarde A/B (D5), invierno, tranquilo, Free Tour (después del ritmo: con
   // tour, D4 no enseña Trevi ni la Plaza de España aunque sea tranquilo), día de la semana, "Museos cerrados", las
   // de pool y "sin Caracalla". Las secciones que trae una variante sustituyen a las de antes.
-  const resolveEntry = (id, index, { tardeB = false, forceWinter = false } = {}) => {
+  const resolveEntry = (id, index, { tardeB = false, forceWinter = false, noWinter = false } = {}) => {
     const cfg = curatedById.get(id)
     const day = cityDays[index]
     let sections = sectionsOf(cfg)
@@ -383,6 +402,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const variant = withoutTour ? { ...raw, ...raw.sin_free_tour, insertar: [...(raw.insertar ?? []), ...(raw.sin_free_tour.insertar ?? [])] } : raw
       applied.push(name)
       for (const key of ['nombre', 'manana', 'comida', 'tarde', 'cena', 'noche', 'si_sobra', 'si_espera']) if (variant[key] !== undefined) sections = { ...sections, [key]: variant[key] }
+      // (Una mañana nueva se lleva sus paradas de la tarde: el miércoles, el Castillo pasa a la mañana; cierre de Roma.)
+      if (variant.manana !== undefined && variant.tarde === undefined) sections = { ...sections, tarde: sections.tarde.filter((stop) => !variant.manana.some((other) => other.lugar === stop.lugar)) }
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
       if (variant.tarde_antes) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar)), tarde: [...variant.tarde_antes, ...sections.tarde.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar))] }
       for (const insert of variant.insertar ?? []) {
@@ -419,7 +440,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const sunsetToday = hoursOf(day).sunset
     const before = (hhmm) => hhmm == null || (sunsetToday != null && sunsetToday < Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1] ?? 0))
     // `forceWinter`: con el orden normal el mirador llegaba después del sol (decisión del usuario, 2026-09-28).
-    const winterFor = (name) => forceWinter || (isWinter(day) && before(cfg.variantes?.[name]?.atardecer_antes_de ?? (name === 'tranquilo_invierno' ? cfg.variantes?.invierno?.atardecer_antes_de : null)))
+    // (`noWinter`: el orden normal, aunque sea invierno por la fecha, si con él se llega a todo abierto; cierre de Roma.)
+    const winterFor = (name) => forceWinter || (!noWinter && isWinter(day) && before(cfg.variantes?.[name]?.atardecer_antes_de ?? (name === 'tranquilo_invierno' ? cfg.variantes?.invierno?.atardecer_antes_de : null)))
     // Tarde B de D5 (el Campidoglio y el Ghetto salen en otro día del viaje); si no, la A, con su atardecer de invierno.
     if (tardeB) apply('tarde_b')
     else if (cfg.variantes?.invierno?.atardecer && winterFor('invierno')) apply('invierno')
@@ -521,7 +543,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     // Media jornada (la excursión se lleva la mañana): solo la tarde.
     if (day.halfDayExcursion) sections = { ...sections, manana: [], comida: null }
-    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName, forceWinter, recoverable }
+    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName, forceWinter, noWinter, recoverable }
   }
   // Lo que el tope de museos de pago quita (se decide con el viaje entero y se aplica al volver a resolver).
   const dropPaid = new Set()
@@ -638,6 +660,34 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
       return longest
     }
+    // Los huecos que hay que rellenar (cierre de Roma): más de 30 min libres entre dos visitas o antes de comer, y las
+    // paradas de paseo por encima de su máximo. Cada uno con la visita junto a la que está y cuántos minutos sobran.
+    const issuesOf = (plan) => {
+      const visits = (plan.schedule?.visits ?? []).filter((visit) => !visit.place.isNightExperience)
+      const meals = plan.schedule?.meals ?? []
+      const unitSlot = (visit) => (plan.units ?? []).find((unit) => unit.id === visit.unitId)?.slot ?? 'tarde'
+      const out = []
+      for (let i = 1; i < visits.length; i++) {
+        if (meals.some((meal) => meal.start >= visits[i - 1].end && meal.start < visits[i].start)) continue
+        const gap = visits[i].start - visits[i - 1].end - (visits[i].walkMinutes ?? 0)
+        if (gap > FILL_GAP_MINUTES) out.push({ visit: visits[i - 1], slot: unitSlot(visits[i - 1]), amount: gap - FILL_GAP_MINUTES })
+      }
+      const lunch = meals.find((meal) => meal.type === 'lunch')
+      const beforeLunch = lunch ? [...visits].reverse().find((visit) => visit.end <= lunch.start) : null
+      if (beforeLunch && lunch.start - beforeLunch.end - LUNCH_WALK_ALLOWANCE > FILL_GAP_MINUTES) out.push({ visit: beforeLunch, slot: unitSlot(beforeLunch), amount: lunch.start - beforeLunch.end - LUNCH_WALK_ALLOWANCE - FILL_GAP_MINUTES })
+      // (Y después de comer, hasta la siguiente: la comida de las 12:00 y la Galería de las 14:00.)
+      const afterLunch = lunch ? visits.find((visit) => visit.start >= lunch.end) : null
+      const afterGap = afterLunch ? afterLunch.start - lunch.end - (lunch.transitAfter ?? 0) : 0
+      if (afterGap > FILL_GAP_MINUTES) out.push({ visit: afterLunch, slot: unitSlot(afterLunch), amount: afterGap - FILL_GAP_MINUTES, before: true })
+      for (const visit of visits) {
+        const max = paseoMaxOf(placeByName.get(visit.place.name), tranquilo)
+        if (max != null && visit.end - visit.start > max) out.push({ visit, slot: unitSlot(visit), amount: visit.end - visit.start - max })
+      }
+      return out
+    }
+    const longestWalk = (plan) => Math.max(0, ...(plan.schedule?.visits ?? []).filter((visit) => !visit.place.transit).map((visit) => visit.walkMinutes ?? 0))
+    const issueScore = (plan) => issuesOf(plan).reduce((sum, item) => sum + item.amount, 0)
+    const worstIssue = (plan) => issuesOf(plan).sort((a, b) => b.amount - a.amount)[0] ?? null
     // Llenar la espera nunca puede costar una parada (sin el mirador, la espera "baja" a 0).
     const droppedCount = (plan) => (plan.schedule?.dropped ?? []).length
     // Para el monumento por dentro: lo que va "por el camino" (Via della Conciliazione, 5 min) no cuenta como pérdida.
@@ -720,6 +770,23 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         forcedWinter = true
       } else restore(after)
     }
+    // Al revés también (cierre de Roma, punto 3): invierno por la fecha, pero si con el orden normal el mirador llega a
+    // su hora y se llega abierto a lo que el invierno dejaba cerrado (la subida andando al Janículo con el Tempietto
+    // antes de su última entrada), el orden normal. Lo decide la hora, no el mes.
+    if (!forcedWinter && entry.applied.includes('invierno') && !entry.forceWinter) {
+      const closedCount = (plan) => (plan.schedule?.visits ?? []).filter((visit) => visit.place.visitOutside && (visit.place.outsideKind === 'ya_cerrado' || visit.place.outsideKind === 'no_abre')).length
+      const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      restore(before)
+      const normalEntry = resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, noWinter: true })
+      const normalPlan = planDay(normalEntry, skeletonDay)
+      // (Sin perder el mirador: el orden normal que deja fuera el Janículo no vale.)
+      const sunsetNames = (plan) => (plan.schedule?.visits ?? []).filter((visit) => visit.place.sunset != null || visit.place.nightView).map((visit) => visit.place.name)
+      const keepsSunset = sunsetNames(planned).every((name) => (normalPlan.schedule?.visits ?? []).some((visit) => visit.place.name === name))
+      if (keepsSunset && !normalEntry.applied.includes('invierno') && !sunsetLate(normalPlan, normalEntry.sections) && keyDropped(normalPlan) <= keyDropped(planned) && realDropped(normalPlan) <= realDropped(planned) && closedCount(normalPlan) < closedCount(planned)) {
+        planned = normalPlan
+        resolved[resolvedIndex - 1] = normalEntry
+      } else restore(after)
+    }
     // Invierno por la fecha (o cualquier día con mirador): la misma espera se llena igual.
     if (!sunsetLate(planned, resolved[resolvedIndex - 1].sections)) {
       const beforeNatural = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
@@ -732,7 +799,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // Antes de dejar más de 30 min de tiempo libre, el día recupera una parada suya que se había quedado fuera, si está
     // abierta y cabe (la misma idea que el Castillo por dentro; repaso de la ruta 3, 2026-09-28).
     const current = resolved[resolvedIndex - 1]
-    if (current?.recoverable?.length && maxWait(planned) > RECOVER_MIN_GAP) {
+    if (current?.recoverable?.length && (maxWait(planned) > RECOVER_MIN_GAP || issueScore(planned) > 0)) {
       const beforeRecover = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
       let tarde = [...current.sections.tarde]
       for (const { stop, after } of current.recoverable) {
@@ -742,10 +809,146 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const recoveredEntry = { ...current, sections: { ...current.sections, tarde } }
       const recoveredPlan = planDay(recoveredEntry, skeletonDay)
       const visited = current.recoverable.every(({ stop }) => (recoveredPlan.schedule?.visits ?? []).some((visit) => visit.place.name === stop.lugar && !visit.place.visitOutside))
-      if (visited && !sunsetLate(recoveredPlan, recoveredEntry.sections) && realDropped(recoveredPlan) <= realDropped(planned) && keyDropped(recoveredPlan) <= keyDropped(planned) && maxWait(recoveredPlan) < maxWait(planned)) {
+      if (visited && (!sunsetLate(recoveredPlan, recoveredEntry.sections) || sunsetLate(planned, current.sections)) && realDropped(recoveredPlan) <= realDropped(planned) && keyDropped(recoveredPlan) <= keyDropped(planned) && (maxWait(recoveredPlan) < maxWait(planned) || (maxWait(recoveredPlan) <= maxWait(planned) && issueScore(recoveredPlan) < issueScore(planned)))) {
         planned = recoveredPlan
         resolved[resolvedIndex - 1] = recoveredEntry
       } else restore(beforeRecover)
+    }
+    // Una sola regla de relleno (cierre de Roma, 2026-09-28): antes de dejar más de 30 min de tiempo libre, o de estirar
+    // una parada de paseo por encima de su máximo (90 min en completo, 120 en tranquilo, 45 una avenida), el día prueba:
+    // a) el monumento que iba "por fuera para llegar a todo", por dentro; b) lo suyo que se quedó fuera (arriba);
+    // c) la siguiente parada de la misma zona que no esté en el viaje, por nivel y abierta a esa hora. Solo si nada de
+    // eso cabe, tiempo libre.
+    for (let round = 0; round < FILL_ROUNDS && issueScore(planned) > 0; round++) {
+      const entryNow = resolved[resolvedIndex - 1]
+      const issue = worstIssue(planned)
+      if (!issue) break
+      const snapshot = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      const accept = (candidatePlan, candidateEntry, mustVisit = null, newStop = false) => {
+        const visited = !mustVisit || (candidatePlan.schedule?.visits ?? []).some((visit) => visit.place.name === mustVisit && !visit.place.visitOutside)
+        // (Sin empeorar el atardecer: si ya no llegaba, tampoco se le pide.)
+        // (Ni un tramo andando más largo que los que ya tenía el día.)
+        // (Y lo que se añade, de camino: se llega y se sale andando en poco, sin ir y volver; el Ara Pacis sí, los Mercados
+        // de Trajano entre la Isla Tiberina y el Teatro de Marcelo no.)
+        const visits = candidatePlan.schedule?.visits ?? []
+        const at = mustVisit ? visits.findIndex((visit) => visit.place.name === mustVisit) : -1
+        // (Cada tramo nuevo, como mucho 15 min o lo que ya se andaba de una a otra sin ella.)
+        const direct = at >= 0 && visits[at + 1] ? (planned.schedule?.visits ?? []).find((visit) => visit.place.name === visits[at + 1].place.name)?.walkMinutes ?? 0 : 0
+        const onTheWay = !newStop || at < 0 || [visits[at], visits[at + 1]].every((visit) => !visit || visit.place.transit || (visit.walkMinutes ?? 0) <= Math.max(FILL_LEG_MAX, direct))
+        return visited && onTheWay && longestWalk(candidatePlan) <= Math.max(FILL_WALK_MAX, longestWalk(planned)) && (!sunsetLate(candidatePlan, candidateEntry.sections) || sunsetLate(planned, entryNow.sections)) && realDropped(candidatePlan) <= realDropped(planned) && keyDropped(candidatePlan) <= keyDropped(planned) && issueScore(candidatePlan) < issueScore(planned)
+      }
+      let improved = false
+      // a) Por dentro lo que iba por fuera por tiempo.
+      const outsideVisit = (planned.schedule?.visits ?? []).find((visit) => visit.place.visitOutside && visit.place.outsideKind === 'no_cabe')
+      if (outsideVisit) {
+        autoInside.add(outsideVisit.place.name)
+        const insideEntry = resolveEntry(entryNow.id, resolvedIndex - 1, { tardeB: entryNow.tardeB, forceWinter: entryNow.forceWinter || undefined, noWinter: entryNow.noWinter || undefined })
+        const insidePlan = planDay(insideEntry, skeletonDay)
+        autoInside.delete(outsideVisit.place.name)
+        if (accept(insidePlan, insideEntry, outsideVisit.place.name)) {
+          planned = insidePlan
+          resolved[resolvedIndex - 1] = insideEntry
+          improved = true
+        } else restore(snapshot)
+      }
+      // b) Una parada suya que se ha quedado fuera (Monti, "si da tiempo", detrás del atardecer): al hueco.
+      if (!improved) {
+        const key = issue.slot === 'manana' ? 'manana' : 'tarde'
+        const list = entryNow.sections[key]
+        // (Lo que no sale en el plan: perdido por tiempo o quitado por "si da tiempo".)
+        const plannedNames = new Set((planned.schedule?.visits ?? []).map((visit) => visit.place.name))
+        const droppedNames = new Set(list.filter((stop) => stop.rol === 'parada' && !plannedNames.has(stop.lugar) && !closedThatDay(stop.lugar, skeletonDay)).map((stop) => stop.lugar))
+        const at = list.findIndex((stop) => stop.lugar === issue.visit.place.name)
+        // (Y lo suyo que va detrás del atardecer, adelantado al hueco de antes: Trastevere antes de subir al Janículo.)
+        const sunsetAt = list.findIndex((other) => other.rol === 'atardecer')
+        const laterOwn = sunsetAt > at && at >= 0 ? list.slice(sunsetAt + 1).filter((other) => other.rol === 'parada' && plannedNames.has(other.lugar) && !droppedNames.has(other.lugar)) : []
+        for (const stop of [...list.filter((other) => droppedNames.has(other.lugar) && other.rol !== 'atardecer'), ...laterOwn]) {
+          if (at < 0) break
+          const without = list.filter((other) => other !== stop)
+          const where = without.findIndex((other) => other.lugar === issue.visit.place.name)
+          const movedEntry = { ...entryNow, sections: { ...entryNow.sections, [key]: [...without.slice(0, where + 1), { ...stop, si_da_tiempo: undefined }, ...without.slice(where + 1)] } }
+          const movedPlan = planDay(movedEntry, skeletonDay)
+          if (accept(movedPlan, movedEntry, stop.lugar)) {
+            planned = movedPlan
+            resolved[resolvedIndex - 1] = movedEntry
+            improved = true
+            break
+          }
+          restore(snapshot)
+        }
+      }
+      // c) La siguiente parada de la misma zona que no esté en el viaje (por nivel, y abierta a esa hora).
+      if (!improved) {
+        const anchor = issue.visit
+        const anchorPlace = placeByName.get(anchor.place.name)
+        // (También junto a la visita de antes, en la misma parte del día: el Ara Pacis entre el Popolo y el Pincio.)
+        const plannedVisits = planned.schedule?.visits ?? []
+        const key = issue.slot === 'manana' ? 'manana' : 'tarde'
+        // (Solo las paradas propias del día: lo que ya se añadió de relleno no arrastra a otra zona.)
+        const own = (visit) => visit && entryNow.sections[key].some((stop) => stop.lugar === visit.place.name && !stop.relleno)
+        const ownVisits = plannedVisits.filter((visit) => visit === anchor || own(visit))
+        const previous = ownVisits[ownVisits.indexOf(anchor) - 1]
+        const refs = [own(anchor) || !anchorPlace ? anchorPlace : null, previous ? placeByName.get(previous.place.name) : null].filter((place) => place && Array.isArray(place.coordinates))
+        const nearRef = (place) => refs.filter((ref) => metersBetween(place.coordinates, ref.coordinates) <= (place.zone && place.zone === ref.zone ? FILL_ZONE_METERS : FILL_NEAR_METERS)).sort((a, b) => metersBetween(place.coordinates, a.coordinates) - metersBetween(place.coordinates, b.coordinates))[0] ?? null
+        const inTrip = new Set([...seen, ...resolved.filter(Boolean).flatMap((other) => [...other.sections.manana, ...other.sections.tarde].map((stop) => stop.lugar)), ...days.flatMap((other) => (other.schedule?.visits ?? []).map((visit) => visit.place.name))])
+        const candidates = (destData.places ?? [])
+          .filter((place) => anchorPlace && Array.isArray(place.coordinates) && nearRef(place) && !inTrip.has(place.name) && !place.isFreeTour && !isStreet(place) && Array.isArray(place.coordinates) && !closedThatDay(place.name, skeletonDay))
+          .sort((a, b) => (a.level ?? 3) - (b.level ?? 3) || metersBetween(a.coordinates, nearRef(a).coordinates) - metersBetween(b.coordinates, nearRef(b).coordinates))
+          .slice(0, FILL_CANDIDATES)
+        // (Después de su parada de referencia o, si a esa hora ya no cabe, justo antes.)
+        const tries = candidates.flatMap((place) => [{ place, before: false }, { place, before: true }])
+        for (const { place, before } of tries) {
+          const list = entryNow.sections[key]
+          const at = list.findIndex((stop) => stop.lugar === nearRef(place).name)
+          if (before && (at < 0 || list[at].rol === 'atardecer')) continue
+          // (Con su texto: el del destino o, si no tiene, el consejo de su ficha; nunca "Te pilla de camino".)
+          const stop = { lugar: place.name, rol: 'parada', relleno: true, por_que: curatedWhyOf(place.name) ?? place.tip ?? undefined }
+          const nextList = at < 0 ? [...list, stop] : before ? [...list.slice(0, at), stop, ...list.slice(at)] : [...list.slice(0, at + 1), stop, ...list.slice(at + 1)]
+          const addedEntry = { ...entryNow, sections: { ...entryNow.sections, [key]: nextList } }
+          const addedPlan = planDay(addedEntry, skeletonDay)
+          if (accept(addedPlan, addedEntry, place.name, true)) {
+            planned = addedPlan
+            resolved[resolvedIndex - 1] = addedEntry
+            improved = true
+            break
+          }
+          restore(snapshot)
+        }
+      }
+      if (!improved) break
+    }
+    // Antes de dejar algo "por fuera" porque ya ha cerrado, se prueba a cambiarlo de sitio con la parada de al lado de la
+    // misma zona (San Pietro in Vincoli antes que Santa María la Mayor, los domingos de invierno; cierre de Roma).
+    {
+      const entryNow = resolved[resolvedIndex - 1]
+      const closedVisit = (planned.schedule?.visits ?? []).find((visit) => {
+        if (!visit.place.visitOutside || visit.place.outsideKind !== 'ya_cerrado') return false
+        const sessions = parseHoursSessions(effectiveSchedule(placeByName.get(visit.place.name) ?? visit.place, hoursOf(skeletonDay)))
+        return sessions.length > 0 && !sessions.some((session) => session.open > visit.start)
+      })
+      const key = closedVisit ? (['manana', 'tarde'].find((slot) => entryNow.sections[slot].some((stop) => stop.lugar === closedVisit.place.name)) ?? null) : null
+      if (key) {
+        const list = entryNow.sections[key]
+        const at = list.findIndex((stop) => stop.lugar === closedVisit.place.name)
+        const here = placeByName.get(closedVisit.place.name)
+        for (const other of [at - 1, at + 1]) {
+          const neighbour = list[other]
+          const there = neighbour ? placeByName.get(neighbour.lugar) : null
+          if (!there || !here || neighbour.rol !== 'parada' || !['interior', 'mixto'].includes(there.type) || (there.group && there.group === here.group) || !(there.zone === here.zone || metersBetween(there.coordinates, here.coordinates) <= FILL_NEAR_METERS * 2)) continue
+          const swapped = [...list]
+          ;[swapped[at], swapped[other]] = [swapped[other], swapped[at]]
+          const snapshot = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+          const swappedEntry = { ...entryNow, sections: { ...entryNow.sections, [key]: swapped } }
+          const swappedPlan = planDay(swappedEntry, skeletonDay)
+          const insideNow = (swappedPlan.schedule?.visits ?? []).some((visit) => visit.place.name === closedVisit.place.name && !visit.place.visitOutside)
+          if (insideNow && (!sunsetLate(swappedPlan, swappedEntry.sections) || sunsetLate(planned, entryNow.sections)) && realDropped(swappedPlan) <= realDropped(planned) && keyDropped(swappedPlan) <= keyDropped(planned)) {
+            planned = swappedPlan
+            resolved[resolvedIndex - 1] = swappedEntry
+            break
+          }
+          restore(snapshot)
+        }
+      }
     }
     for (const meal of planned.schedule?.meals ?? []) if (meal.type === 'lunch' && meal.spot?.name) usedRestaurants.add(meal.spot.name)
     if (planned.dinnerRestaurant?.name) usedRestaurants.add(planned.dinnerRestaurant.name)
@@ -774,7 +977,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const counts = new Map()
       for (const cfg of destData.curated_days ?? []) {
         for (const section of [cfg, ...Object.values(cfg.variantes ?? {})]) {
-          for (const item of [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]) {
+          // (También las paradas que traen los `insertar`: la Porta Pinciana del domingo.)
+          for (const item of [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? []), ...(section.insertar ?? []).map((insert) => insert.parada)]) {
             if (!item?.por_que) continue
             const byText = counts.get(item.lugar) ?? new Map()
             const key = JSON.stringify(item.por_que)
@@ -1196,7 +1400,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const sunsetIndex = result.visits.findIndex((visit) => visit.place.sunset != null)
     if (waitRule?.tarde && sunsetIndex > 0) {
       const wait = result.visits[sunsetIndex].start - result.visits[sunsetIndex - 1].end - (result.visits[sunsetIndex].walkMinutes ?? 0)
-      if (wait > (waitRule.minutos ?? 60)) {
+      // (Cierre de Roma, punto 3: también si con el orden de ahora se llega cerrado a algo de esa tarde, el Tempietto
+      // después de su última entrada. Lo decide la hora a la que se llega, no el mes.)
+      const closedNow = (candidate) => candidate.visits.filter((visit) => visit.place.visitOutside && (visit.place.outsideKind === 'ya_cerrado' || visit.place.outsideKind === 'no_abre') && waitRule.tarde.some((stop) => stop.lugar === visit.place.name)).length
+      const closedBefore = closedNow(result)
+      if (wait > (waitRule.minutos ?? 60) || closedBefore > 0) {
         const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
         // (Lo de pago que este viaje no visita por dentro, por fuera: igual que en la tarde de siempre.)
         const tarde = waitRule.tarde.map((stop) => (stopApplies(stop, day) ? stop : seenOutside(stop) ? asOutside(stop) : null)).filter((stop) => stop && !morningNames.has(stop.lugar))
@@ -1209,10 +1417,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
           trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         }
         const names = (candidate) => new Set(candidate.visits.map((visit) => visit.place.name))
-        const had = names(result)
+        // (Lo que solo iba de paso, la Fuente de las Tortugas, no cuenta como perdido.)
+        const had = new Set(result.visits.filter((visit) => !visit.place.passThrough && !visit.place.passBy && units.find((unit) => unit.id === visit.unitId)?.role !== 'de_paso').map((visit) => visit.place.name))
         const has = names(trial)
         // (Y llegando al sol de verdad: el Janículo a las 18:45 con el sol a las 18:30 no vale.)
-        if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null && visit.start <= visit.place.sunset)) {
+        if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null && visit.start <= visit.place.sunset) && (wait > (waitRule.minutos ?? 60) || closedNow(trial) < closedBefore)) {
           units = list
           result = trial
         }
