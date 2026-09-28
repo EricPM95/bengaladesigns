@@ -104,6 +104,7 @@ export function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
     reservation: place.reservation ?? null,
     ticketInfo: place.ticket_info ?? null,
     tags: place.tags,
+    hoursData: place.hours_data ?? null,
   }
 }
 

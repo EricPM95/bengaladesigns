@@ -1498,3 +1498,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - En un día libre: "Con horas / Sin horas" (al volver a "Con horas", horas seguidas desde las 09:30); arrastrar
       reajusta desde la parada que cambia hacia abajo y la primera conserva su hora; "Mover a otro día" la pone al final
       con su hora sugerida. Quitar un día, quitar una parada, moverla o cambiarle la hora dejan "Deshacer".
+
+306. **Días libres: solo paradas, y las horas las pone el viajero** (decisión del usuario, 2026-09-28; sustituye a lo
+    que la 305 decía de las horas en los días libres):
+    - Un día libre no tiene hora sugerida, ni "Sin hora", ni interruptor "Con horas / Sin horas". Las paradas salen en
+      el orden en que el viajero las pone, con los minutos andando entre una y otra, y sin hora (`time: ''`).
+    - Cada parada lleva "Poner hora" (luego "Cambiar hora" o "Quitar hora"). La app no calcula ni mueve esa hora, y no
+      reordena por ella; arrastrar o subir/bajar solo cambia el orden.
+    - En rojo, solo el dato de la parada: "Hoy cierra" y, si tiene hora, "Cerrado a esa hora", con el horario de ese
+      día y de esa época (la parada guarda los datos de horario del lugar, así que vale aunque el día cambie de fecha).
+    - Los días nuestros siguen igual: al añadir, hora sugerida y los avisos de siempre.

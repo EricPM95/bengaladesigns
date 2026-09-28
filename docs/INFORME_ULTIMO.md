@@ -17,7 +17,6 @@ Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 ruta
   - los días con número, fecha y nombre;
   - los que no se pueden elegir, en gris con su motivo;
   - la hora y los minutos ya sugeridos;
-  - «Sin hora» en los días libres;
   - los avisos solo si pasan: cerrado a esa hora, se pisa con otra parada, reserva.
   - Probado: la Galería sale a las 09:30 y el Coliseo detrás, a las 12:15.
 - **Restaurantes:** preguntan «Para comer» o «Para cenar».
@@ -25,15 +24,16 @@ Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 ruta
   - En uno libre entran a las 13:30 o a las 20:30.
 - **Excursiones:** solo en un día vacío.
   - La de día entero ocupa el día y ya no deja añadir más.
-  - La de medio día deja la tarde libre desde las 14:00.
+  - La de medio día deja la tarde libre.
 - **Al añadir** vuelves a Días con el día abierto y la app baja hasta lo nuevo, que lleva «Añadida por ti».
   - Abajo sale «Añadido al Día 3 · Compras», con «Deshacer».
   - En el día libre, abajo del todo, siempre está el botón «+ Añadir lugares».
 - **Día libre:**
   - El menú del día tiene «Añadir lugares», «Cambiar el nombre», «Mover el día antes/después» y «Quitar este día». Quitar pide confirmación y deja «Deshacer».
-  - El interruptor «Con horas / Sin horas»: al volver a «Con horas», las horas van seguidas desde las 09:30.
-  - El menú de cada parada tiene «Cambiar hora», «Mover a otro día», «Subir», «Bajar» y «Quitar del día», con «Deshacer».
-  - Al arrastrar, las horas se reajustan desde esa parada hacia abajo.
+  - **Cambio que pediste después:** solo paradas, y la hora la pone el viajero. Ya no hay hora sugerida, «Sin hora» ni interruptor.
+  - Las paradas salen en tu orden, con los minutos andando entre una y otra.
+  - Cada parada tiene «Poner hora» (luego «Cambiar hora» o «Quitar hora»), además de «Mover a otro día», «Subir», «Bajar» y «Quitar del día», con «Deshacer».
+  - En rojo solo sale «Hoy cierra» y, con hora, «Cerrado a esa hora». Probado: el Coliseo a las 18:00 (90 min) sale «Cerrado a esa hora», porque ese día cierra a las 19:15.
 - **Guardado:** todo va con el viaje. Al recargar, el viaje volvió con sus días añadidos.
 - **Al rehacer el viaje**, el motor planifica sin los días añadidos y luego vuelven igual.
 - **Comprobación:**
@@ -46,7 +46,6 @@ Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 ruta
 
 - **Un solo commit, no uno por parte:** las cinco partes tocan los mismos archivos.
 - **El aviso de cerrado usa el horario de ese día y de esa época**, con el mismo cálculo que el motor. Para eso el catálogo de lugares ahora manda también sus campos de horario al móvil.
-- **La media jornada libera la tarde desde las 14:00, no desde las 16:00**, como pedías. Esto vale para todos los días en blanco con excursión de medio día.
 - **Un día añadido con excursión de día entero** conserva su menú de día libre, para poder quitarlo.
 - **Visto de paso, sin tocar:** las tarjetas de excursión de la pantalla de lugares muestran «desde 65 €». Es un precio fuera de Tickets, pero ya estaba así.
 

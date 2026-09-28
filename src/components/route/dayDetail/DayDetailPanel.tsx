@@ -61,6 +61,8 @@ import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
+import { hasOwnTime } from '../../../lib/freeDays'
+import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
 const FREE_TIME_MIN_MINUTES = 45
@@ -295,7 +297,6 @@ export function DayDetailPanel({
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
   const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
-  const setDayUntimed = useRouteStore((state) => state.setDayUntimed)
   const [askRestore, setAskRestore] = useState(false)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   const focusStopId = useAddFlowStore((state) => state.focusStopId)
@@ -819,13 +820,15 @@ export function DayDetailPanel({
     return free < FREE_TIME_MIN_MINUTES ? null : free
   }
   const timeline: TimelineItem[] = []
+  /** Día libre (decisión del usuario, 2026-09-28): solo paradas, en el orden del viajero; la hora, la que él ponga. */
+  const freeDay = (day.dayType ?? 'normal') === 'manual'
   if (muestraParadas) {
     stops.forEach((_stop, index) => {
       timeline.push({ type: 'stop', index })
       for (const entry of freeTimesOf(day)) {
         if (realStops[index]?.name === entry.after && entry.before !== LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index, entry })
       }
-      if (lunchInsertionIndex === index) {
+      if (lunchInsertionIndex === index && !freeDay) {
         for (const entry of freeTimesOf(day)) {
           if (realStops[index]?.name === entry.after && entry.before === LUNCH_FREE_LABEL) timeline.push({ type: 'free', index, entry })
         }
@@ -834,7 +837,7 @@ export function DayDetailPanel({
           if (entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index: -1 - index, entry })
         }
       }
-      if (dinnerInsertionIndex === index) {
+      if (dinnerInsertionIndex === index && !freeDay) {
         const hasFree = dinnerFreeMinutes(index) !== null
         if (hasFree) timeline.push({ type: 'dinnerFree', index })
         timeline.push({ type: 'dinner', index, withGap: !hasFree })
@@ -986,7 +989,8 @@ export function DayDetailPanel({
     // La primera parada del día no lleva el conector de relleno genérico; sí el real desde el
     // alojamiento de anoche. Al abrir franja tampoco (la cabecera ya separa). El paseo por barrio no
     // lleva conector: "6 min · 540 m" hasta un barrio entero no significa nada.
-    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : !firstInPeriod
+    // Día libre: siempre los minutos andando entre una parada y la siguiente (no hay franjas).
+    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : freeDay || !firstInPeriod
     const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
@@ -997,13 +1001,15 @@ export function DayDetailPanel({
           {walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
-              <ZoneWalkCard stop={stop} startTime={day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
+              <ZoneWalkCard stop={stop} startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
             )
           ) : (
             <StopAccordion
               number={realStop ? (stopNumbers.get(realStop.id) ?? null) : null}
-              stop={stop}
-              startTime={day.untimed ? undefined : minutesToTime(startMinutes)}
+              // Día libre: el horario de ese día y de esa época (el mismo con el que sale "Cerrado a esa hora").
+              stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
+              startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
+              freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}
@@ -1042,24 +1048,6 @@ export function DayDetailPanel({
           />
         )}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
-        {(day.dayType ?? 'normal') === 'manual' && (
-          <div className="mt-1 inline-flex rounded-full border border-text/[.12] bg-bg p-0.5" role="group" aria-label="Horas del día">
-            {[
-              { untimed: false, label: 'Con horas' },
-              { untimed: true, label: 'Sin horas' },
-            ].map((option) => (
-              <button
-                key={option.label}
-                type="button"
-                aria-pressed={Boolean(day.untimed) === option.untimed}
-                onClick={() => Boolean(day.untimed) !== option.untimed && setDayUntimed(day.id, option.untimed)}
-                className={`rounded-full px-3 py-1 text-[12.5px] font-medium transition-colors ${Boolean(day.untimed) === option.untimed ? 'bg-text text-bg' : 'text-text/60 hover:text-text'}`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        )}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
         {showsRoute && stops.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 pt-1 text-[12px] text-text/60">
@@ -1241,7 +1229,7 @@ export function DayDetailPanel({
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
           {periodGroups.map((group, groupIndex) => (
             <div key={`${group.period}-${groupIndex}`}>
-              <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />
+              {!freeDay && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
               {/* La línea punteada del día; las tarjetas cuelgan de ella. */}
               <div className="relative flex flex-col pl-[26px]">
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
@@ -1254,7 +1242,7 @@ export function DayDetailPanel({
           )}
 
           {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
-          {dayType === 'manual' && stops.length === 0 && day.meals.some((meal) => meal.chosenRestaurant) && (
+          {dayType === 'manual' && day.meals.some((meal) => meal.chosenRestaurant) && (
             <div className="space-y-2 pt-2">
               {[...day.meals]
                 .filter((meal) => meal.chosenRestaurant)
@@ -1266,7 +1254,7 @@ export function DayDetailPanel({
                     city={day.city}
                     coordinates={meal.chosenRestaurant!.coordinates}
                     franja={meal.mealTime === 'dinner' ? 'cena' : 'comida'}
-                    timeRange={day.untimed ? null : meal.time}
+                    timeRange={null}
                     chosenName={meal.chosenRestaurant!.name}
                     onOpen={() => setMealSheet({ franja: meal.mealTime === 'dinner' ? 'cena' : 'comida', stopIndex: 0, coordinates: meal.chosenRestaurant!.coordinates })}
                   />

@@ -13,8 +13,6 @@ import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from './time'
 export const MAX_TRIP_DAYS = 14
 /** La primera parada de un día libre (lo organiza el viajero), si no trae hora. */
 export const FREE_DAY_FIRST_STOP = '09:30'
-/** La primera parada de la tarde después de una excursión de medio día. */
-export const HALF_DAY_AFTERNOON_START = '14:00'
 /** Nombre de un día añadido sin nombre. */
 export const FREE_DAY_DEFAULT_NAME = 'Día libre'
 export const FREE_DAY_NAME_MAX = 40
@@ -49,45 +47,17 @@ export function timeForStopAfter(previous: Stop | undefined, fallback: string, n
 
 export const isFreeDay = (day: DayPlan): boolean => (day.dayType ?? 'normal') === 'manual'
 
-/** La primera hora de un día libre: 09:30, o las 14:00 si la mañana es de una excursión de medio día. */
-export function freeDayStart(day: DayPlan): string {
-  return day.halfDayExcursion && !day.halfDayExcursionDeclined ? HALF_DAY_AFTERNOON_START : FREE_DAY_FIRST_STOP
-}
-
-/** La hora sugerida para `stop` al final de `day`. */
-export function suggestedTimeFor(day: DayPlan, stop: Stop): string {
-  const previous = [...day.stops].reverse().find((candidate) => !candidate.isNightExperience)
-  return timeForStopAfter(previous, isFreeDay(day) ? freeDayStart(day) : (day.stops[0]?.time ?? FREE_DAY_FIRST_STOP), stop)
-}
-
-/** Horas seguidas desde el principio del día libre ("Con horas"). */
-export function chainedTimes(day: DayPlan, stops: Stop[]): Stop[] {
-  const result: Stop[] = []
-  for (const stop of stops) {
-    if (stop.isNightExperience) {
-      result.push(stop)
-      continue
-    }
-    const previous = [...result].reverse().find((candidate) => !candidate.isNightExperience)
-    result.push({ ...stop, time: timeForStopAfter(previous, freeDayStart(day), stop) })
-  }
-  return result
-}
-
 /**
- * Tras arrastrar en un día libre: las horas se reajustan desde la parada que ha cambiado hacia abajo, y la primera del
- * día conserva su hora (la del hueco, aunque la parada que lo ocupa sea otra).
+ * Días libres: solo paradas, y la hora la pone el viajero (decisión del usuario, 2026-09-28). Una parada de un día libre
+ * sin hora lleva `time: ''`; la app no calcula, no mueve y no reordena por esa hora.
  */
-export function retimeFromChange(previousOrder: Stop[], nextOrder: Stop[]): Stop[] {
-  const changed = nextOrder.findIndex((stop, index) => stop.id !== previousOrder[index]?.id)
-  if (changed < 0) return nextOrder
-  const result = nextOrder.map((stop) => ({ ...stop }))
-  if (changed === 0 && previousOrder[0]) result[0].time = previousOrder[0].time
-  for (let index = Math.max(1, changed); index < result.length; index++) {
-    if (result[index].isNightExperience) continue
-    result[index].time = timeForStopAfter(result[index - 1], result[index].time, result[index])
-  }
-  return result
+export const hasOwnTime = (stop: Stop): boolean => /^\d{1,2}:\d{2}$/.test(stop.time ?? '')
+
+/** La hora sugerida para `stop` al final de un día nuestro. En un día libre, ninguna (''). */
+export function suggestedTimeFor(day: DayPlan, stop: Stop): string {
+  if (isFreeDay(day)) return ''
+  const previous = [...day.stops].reverse().find((candidate) => !candidate.isNightExperience)
+  return timeForStopAfter(previous, day.stops[0]?.time ?? FREE_DAY_FIRST_STOP, stop)
 }
 
 /** Días renumerados 1..n y fechas del viaje movidas `delta` días por el final. */
@@ -206,9 +176,10 @@ export function withMealRestaurant(day: DayPlan, mealTime: 'lunch' | 'dinner', r
  */
 export function withStopAt(day: DayPlan, stop: Stop, time: string | null): DayPlan {
   const start = time ? parseTimeToMinutes(time) : NaN
-  const newStop: Stop = { ...stop, time: time ?? suggestedTimeFor(day, stop), addedByUser: true }
+  const newStop: Stop = { ...stop, time: isFreeDay(day) ? '' : (time ?? suggestedTimeFor(day, stop)), addedByUser: true }
   let at = day.stops.length
-  if (!day.untimed && !Number.isNaN(start)) {
+  // En un día libre, al final: el orden es el que pone el viajero.
+  if (!isFreeDay(day) && !Number.isNaN(start)) {
     const later = day.stops.findIndex((other) => !other.isNightExperience && parseTimeToMinutes(other.time) > start)
     if (later >= 0) at = later
   }

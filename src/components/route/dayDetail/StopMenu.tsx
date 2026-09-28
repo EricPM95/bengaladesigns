@@ -4,6 +4,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { withUndo } from '../../../store/useAddFlowStore'
+import { hasOwnTime } from '../../../lib/freeDays'
 
 interface StopMenuProps {
   dayId: string
@@ -13,7 +14,7 @@ interface StopMenuProps {
   /** Paradas reales del día YA sembradas (o listas para sembrarse) del pool de plantilla, en el mismo orden que se muestran — para "Mover antes/después" (reordenar) y "Mover a otro día" (encontrar el resto de paradas al sembrar). */
   realStops: Stop[]
   otherDays: { id: string; dayNumber: number; city: string }[]
-  /** Día libre (decisión del usuario, 2026-09-28): Cambiar hora, Mover a otro día, Subir, Bajar y Quitar del día, con "Deshacer". */
+  /** Día libre (decisión del usuario, 2026-09-28): Poner / Cambiar / Quitar hora, Mover a otro día, Subir, Bajar y Quitar del día, con "Deshacer". */
   freeDay?: boolean
 }
 
@@ -103,9 +104,22 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
           >
             {view === 'menu' && freeDay && (
               <div className="space-y-0.5">
+                {/* Día libre: la hora es solo la que pone el viajero (decisión del usuario, 2026-09-28). */}
                 <button type="button" onClick={() => setView('change-time')} className={menuItemClass}>
-                  Cambiar hora
+                  {hasOwnTime(stop) ? 'Cambiar hora' : 'Poner hora'}
                 </button>
+                {hasOwnTime(stop) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      undoable(`${stop.name}: sin hora`, () => updateStopTime(dayId, stop.id, ''))
+                      close()
+                    }}
+                    className={menuItemClass}
+                  >
+                    Quitar hora
+                  </button>
+                )}
                 <button type="button" onClick={() => setView('move-day')} disabled={otherDays.length === 0} className={menuItemClass}>
                   Mover a otro día
                 </button>
@@ -186,6 +200,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
                 />
                 <button
                   type="button"
+                  disabled={!time}
                   onClick={handleSaveTime}
                   className="w-full rounded-lg bg-accent py-1.5 text-small font-medium text-white hover:bg-accent-hover"
                 >

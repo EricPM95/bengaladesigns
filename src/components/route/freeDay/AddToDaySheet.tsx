@@ -63,7 +63,6 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   const addPlaceToDay = useRouteStore((state) => state.addPlaceToDay)
   const setMealRestaurant = useRouteStore((state) => state.setMealRestaurant)
   const addExcursionToDay = useRouteStore((state) => state.addExcursionToDay)
-  const setDayUntimed = useRouteStore((state) => state.setDayUntimed)
 
   const days = route.days.filter((day) => !day.isReturnLeg)
   const firstFree = days.find((day) => !blockedReason(item, day))
@@ -91,18 +90,19 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   const suggested = day && draft ? suggestedTimeFor(day, draft) : '09:30'
   const [time, setTime] = useState(suggested)
   const [minutes, setMinutes] = useState(draft?.durationMinutes ?? 60)
-  const [noTime, setNoTime] = useState(false)
+  // Día libre (decisión del usuario, 2026-09-28): solo paradas, sin hora; la pone el viajero después si quiere.
+  const freeDay = Boolean(day && isFreeDay(day))
   // Al cambiar de día, la hora sugerida es la de ese día.
   useEffect(() => {
     setTime(suggested)
-    setNoTime(Boolean(day?.untimed))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayId])
 
   const dateIso = day && route.answers.dateRange ? addDaysToIso(route.answers.dateRange.start, day.dayNumber - 1) : null
-  const timed = Boolean(day && draft && !noTime)
   const warnings: string[] = []
-  if (timed && place && day) {
+  // En un día libre, solo el dato del sitio: si ese día cierra.
+  if (freeDay && place && dateIso && placeHoursOnDate(place.hours_data, dateIso)?.closed) warnings.push('Ese día está cerrado.')
+  if (!freeDay && draft && place && day) {
     const start = parseTimeToMinutes(time)
     // Con fechas, el horario de ese día y de esa época (el mismo cálculo que el motor); sin fechas, el general.
     const onDate = dateIso ? placeHoursOnDate(place.hours_data, dateIso) : null
@@ -143,8 +143,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
     }
     if (!draft) return
     const stop = { ...draft, durationMinutes: Math.max(5, minutes) }
-    if (noTime && isFreeDay(day) && !day.untimed) setDayUntimed(day.id, true)
-    addPlaceToDay(day.id, stop, noTime ? null : time)
+    addPlaceToDay(day.id, stop, freeDay ? null : time)
     onAdded({ dayId: day.id, stopId: stop.id })
   }
 
@@ -194,33 +193,17 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
           )}
 
           {draft && day && (
-            <div className="mt-5">
-              {day.untimed ? (
-                <p className="text-[13px] text-text-soft">Este día va sin horas: entra al final, con el paseo desde la anterior.</p>
-              ) : (
-                <div className="flex items-end gap-2">
-                  {!noTime && (
-                    <label className="flex-1">
-                      <span className="text-[12px] font-medium text-text-soft">Hora</span>
-                      <input type="time" value={time} onChange={(event) => setTime(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
-                    </label>
-                  )}
-                  <label className="w-28">
-                    <span className="text-[12px] font-medium text-text-soft">Minutos</span>
-                    <input type="number" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
-                  </label>
-                  {isFreeDay(day) && (
-                    <button
-                      type="button"
-                      onClick={() => setNoTime((value) => !value)}
-                      aria-pressed={noTime}
-                      className={`h-11 shrink-0 rounded-full border px-3.5 text-[13px] font-medium transition-colors ${noTime ? 'border-accent bg-accent-soft text-text' : 'border-text/15 text-text-soft hover:bg-bg-hover'}`}
-                    >
-                      Sin hora
-                    </button>
-                  )}
-                </div>
+            <div className="mt-5 flex items-end gap-2">
+              {!freeDay && (
+                <label className="flex-1">
+                  <span className="text-[12px] font-medium text-text-soft">Hora</span>
+                  <input type="time" value={time} onChange={(event) => setTime(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
+                </label>
               )}
+              <label className="w-28">
+                <span className="text-[12px] font-medium text-text-soft">Minutos</span>
+                <input type="number" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
+              </label>
             </div>
           )}
 

@@ -37,14 +37,11 @@ import { daysBetweenInclusive } from '../lib/dateRange'
 import { seasonOfMonth } from '../lib/season'
 import { addDaysToIso } from '../lib/dateRange'
 import {
-  FREE_DAY_FIRST_STOP,
   addFreeDay as addFreeDayTo,
-  chainedTimes,
   isFreeDay,
   moveDay,
   removeFreeDay as removeFreeDayFrom,
   renameDay as renameDayIn,
-  retimeFromChange,
   suggestedTimeFor,
   timeForStopAfter,
   userAddedDays,
@@ -726,8 +723,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) =>
       state.route
         ? {
-            // Al volver a "Con horas", horas seguidas desde el principio del día; el viajero las cambia si quiere.
-            route: updateDay(state.route, dayId, (day) => ({ ...day, untimed, stops: !untimed && day.untimed && isFreeDay(day) ? chainedTimes(day, day.stops) : day.stops })),
+            route: updateDay(state.route, dayId, (day) => ({ ...day, untimed })),
           }
         : state,
     ),
@@ -934,8 +930,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           const reordered = orderedStopIds
             .map((id) => stopsById.get(id))
             .filter((stop): stop is Stop => Boolean(stop))
-          // Día libre: las horas se reajustan desde la parada que cambia hacia abajo; la primera conserva la suya.
-          if (isFreeDay(day)) return { ...day, stops: day.untimed ? reordered : retimeFromChange(day.stops, reordered) }
+          // Día libre: solo el orden (las horas las pone el viajero y no se mueven).
+          if (isFreeDay(day)) return { ...day, stops: reordered }
           return { ...day, stops: pushOverlapsForward(reassignTimesByPosition(day.stops, reordered)) }
         }),
       }
@@ -1025,8 +1021,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
         route: updateDay(state.route, dayId, (day) => {
           const previous = day.stops[day.stops.length - 1]
-          const fallback = (day.dayType ?? 'normal') === 'manual' && !previous ? FREE_DAY_FIRST_STOP : stop.time
+          const fallback = stop.time
           const stops = day.stops.map((other, at) => (at === day.stops.length - 1 ? { ...other, nextLegPending: true } : other))
+          // Día libre: sin hora (la pone el viajero si quiere).
+          if (isFreeDay(day)) return { ...day, stops: [...stops, { ...stop, time: '' }] }
           return { ...day, stops: [...stops, { ...stop, time: stop.isNightExperience ? stop.time : timeForStopAfter(previous, fallback, stop) }] }
         }),
       }
@@ -1051,7 +1049,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           // Igual que addStop pero en una posición concreta: hora para la que entra, calculada desde la
           // parada que le queda justo delante; las de detrás solo se mueven si se pisan (hacia delante).
           const stops = day.stops.map((other, at) => (at === index - 1 ? { ...other, nextLegPending: true } : other))
-          const fallback = (day.dayType ?? 'normal') === 'manual' && index === 0 ? FREE_DAY_FIRST_STOP : stop.time
+          const fallback = stop.time
+          if (isFreeDay(day)) {
+            stops.splice(index, 0, { ...stop, time: '', nextLegPending: index < day.stops.length || undefined })
+            return { ...day, stops }
+          }
           // Una experiencia nocturna trae su hora (después de cenar): no se encadena a la última parada. Las de detrás no
           // se mueven (decisión del usuario, 2026-09-28): solo se recalculan los paseos con la anterior y la siguiente.
           stops.splice(index, 0, stop.isNightExperience ? stop : { ...stop, time: timeForStopAfter(day.stops[index - 1], fallback, stop), nextLegPending: index < day.stops.length || undefined })

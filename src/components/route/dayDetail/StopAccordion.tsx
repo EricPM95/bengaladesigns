@@ -19,6 +19,8 @@ interface StopAccordionProps {
   startTime?: string
   /** La ha añadido el viajero: lleva "Añadida por ti". */
   addedByUser?: boolean
+  /** Día libre: lo único en rojo es esto ("Hoy cierra" / "Cerrado a esa hora"); undefined = día nuestro. */
+  freeDayWarning?: string | null
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -41,7 +43,8 @@ const RESERVATION_NOTE: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning }: StopAccordionProps) {
+  const freeDay = freeDayWarning !== undefined
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -98,8 +101,12 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (stop.isRevisit) meta.push({ text: 'Revisita' })
   if (addedByUser) meta.push({ text: 'Añadida por ti' })
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
-  if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
-  if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
+  if (freeDay) {
+    if (freeDayWarning) meta.push({ text: freeDayWarning, warn: true })
+  } else {
+    if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
+    if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
+  }
   if (stop.closedNotice) meta.push({ text: stop.closedNotice })
   // Free Tour: dónde acaba (y que la comida es por esa zona).
   if (stop.freeTourEnd) meta.push({ icon: 'pin', text: stop.freeTourEnd })

@@ -267,6 +267,8 @@ export interface Stop {
   isNightExperience?: boolean
   /** La ha añadido el viajero ("Añadida por ti"). */
   addedByUser?: boolean
+  /** Los campos de horario del lugar (DestinationPlace.hours_data), para "Hoy cierra" en un día libre aunque el día cambie de fecha. */
+  hoursData?: Record<string, unknown> | null
   /** Mirador del atardecer (el motor lo ajusta a la puesta de sol): tarjeta melocotón en DIAS. */
   isSunset?: boolean
   /** Mirador que llega ya de noche ("Roma iluminada a tus pies"): tarjeta azul noche en DIAS. */
