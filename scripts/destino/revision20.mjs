@@ -272,8 +272,9 @@ for (const [index, viaje] of VIAJES.entries()) {
       const paseo = night.night_walk_name ? `paseo nocturno «${night.night_walk_name}»` : 'experiencia nocturna'
       row(t2m(night.suggested_time) + 0.2, night.suggested_time, cell(night.name), `${night.duration_minutes} min`, '🌙 Noche', '', cell(`${paseo}${night.before_dinner ? ', antes de cenar' : ''}${night.why ? ` · ${sinEmoji(night.why)}` : ''}`))
     }
-    // El rato libre va antes de la nocturna de antes de cenar (segundo repaso, 2026-09-28): al acabar el día.
-    const freeAt = afterDay
+    // El rato de luces y aperitivo va detrás de la nocturna de antes de cenar (repaso 3, 2026-09-28).
+    const nightBefore = nights.filter((s) => s.before_dinner).map(endOf)
+    const freeAt = Math.max(afterDay, ...nightBefore)
     if (day.aperitivo) row(freeAt + 0.1, m2t(quarter(freeAt)), cell(day.aperitivo.title), `${day.aperitivo.minutes} min`, '🕐 Tiempo libre', '', cell(day.aperitivo.suggestions?.length ? `ideas: ${day.aperitivo.suggestions.map((s) => s.name).join(', ')}` : ''))
     if (day.free_afternoon) row(freeAt + 0.1, m2t(quarter(freeAt)), 'Tarde libre', `${day.free_afternoon.minutes} min`, '🕐 Tiempo libre', '', cell(day.free_afternoon.suggestions?.length ? `ideas: ${day.free_afternoon.suggestions.map((s) => s.name).join(', ')}` : ''))
     if (dinner) {

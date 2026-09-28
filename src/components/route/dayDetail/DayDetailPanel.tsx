@@ -848,12 +848,8 @@ export function DayDetailPanel({
   const timeline: TimelineItem[] = []
   /** Día libre (decisión del usuario, 2026-09-28): solo paradas, en el orden del viajero; la hora, la que él ponga. */
   const freeDay = (day.dayType ?? 'normal') === 'manual'
-  // Con una nocturna antes de cenar (invierno), el rato libre con nombre va antes de ella (segundo repaso, 2026-09-28).
-  const firstNightBeforeDinner = realStops.findIndex((realStop) => realStop.isNightExperience && realStop.beforeDinner)
-  const aperitivoBeforeNight = firstNightBeforeDinner > 0 && Boolean(day.aperitivo)
   if (muestraParadas) {
     stops.forEach((_stop, index) => {
-      if (aperitivoBeforeNight && index === firstNightBeforeDinner) timeline.push({ type: 'dinnerFree', index: index - 1 })
       timeline.push({ type: 'stop', index })
       for (const entry of freeTimesOf(day)) {
         if (realStops[index]?.name === entry.after && entry.before !== LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index, entry })
@@ -868,7 +864,7 @@ export function DayDetailPanel({
         }
       }
       if (dinnerInsertionIndex === index && !freeDay) {
-        const hasFree = !aperitivoBeforeNight && dinnerFreeMinutes(index) !== null
+        const hasFree = dinnerFreeMinutes(index) !== null
         if (hasFree) timeline.push({ type: 'dinnerFree', index })
         timeline.push({ type: 'dinner', index, withGap: !hasFree })
       }
@@ -901,7 +897,7 @@ export function DayDetailPanel({
       end = Number.isNaN(lunchEndMinutes) ? start + 75 : lunchEndMinutes
     } else if (item.type === 'dinnerFree') {
       start = schedule[item.index]?.endMinutes ?? start
-      end = start + (aperitivoBeforeNight ? (day.aperitivo?.minutes ?? 0) : (dinnerFreeMinutes(item.index) ?? 0))
+      end = start + (dinnerFreeMinutes(item.index) ?? 0)
     } else if (item.type === 'dinner') {
       start = Number.isNaN(dinnerStartMinutes) ? start : dinnerStartMinutes
       end = start + 90

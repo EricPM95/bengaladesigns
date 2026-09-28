@@ -45,8 +45,10 @@ const SHORT_STOP_MINUTES = 15
 const MID_DAY_WAIT_MAX = 60
 /** Con esta espera o más antes del sol, el monumento que iba por fuera por tiempo prueba a ir por dentro. */
 const FILL_INSIDE_MIN_IDLE = 20
+/** El orden de invierno forzado (el mirador primero) solo con el sol antes de esta hora. */
+const FORCED_WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Lo que se cuenta para llegar andando a comer al estirar el barrio de antes de la comida. */
-const LUNCH_WALK_ALLOWANCE = 10
+const LUNCH_WALK_ALLOWANCE = 5
 /** La cena de una noche con nocturna a hora fija, a esta distancia de ella como mucho (unos 15 min andando). */
 const NIGHT_FIXED_DINNER_METERS = 1200
 /** Espera a la cena a partir de la cual la parada de barrio de antes se estira (decisión del usuario, 2026-09-28). */
@@ -684,7 +686,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       return cur
     }
     let forcedWinter = false
-    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno')) {
+    // (Solo con el sol antes de las 18:30: en mayo, el orden de invierno nunca; repaso 3, 2026-09-28.)
+    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno') && (planned.hours?.sunset ?? Infinity) < FORCED_WINTER_SUNSET_BEFORE) {
       const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
       restore(before)
       const { entry: winterEntry, plan: winterPlan } = fillSunWait({ entry: resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true }), plan: null }, { tardeB: entry.tardeB, forceWinter: true })
@@ -1194,7 +1197,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // 2026-09-28: nada de horas muertas de más de una hora).
     const absorbWaits = () => {
       for (let guard = 0; guard < 4; guard++) {
-        const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30)
+        const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30 && !(result.meals ?? []).some((meal) => meal.start >= result.visits[index - 1].end && meal.start < visit.start))
         if (at < 0) break
         const previous = result.visits[at - 1]
         const unit = units.find((other) => other.id === previous.unitId)
@@ -1216,7 +1219,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     absorbWaits()
     const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
-    const stretchVisits = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().filter((visit) => units.find((unit) => unit.id === visit.unitId)?.stretch) : []
+    // (Solo lo de la tarde: el barrio de la mañana, Testaccio, se estira hasta la comida y nada más.)
+    const stretchVisits = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().filter((visit) => { const unit = units.find((other) => other.id === visit.unitId); return unit?.stretch && unit.slot !== 'manana' }) : []
     const stretchVisit = stretchVisits[0] ?? null
     if (stretchVisit) {
       const before = result.visits[sunsetAt - 1]
@@ -1259,7 +1263,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // aperitivo antes de cenar se lo llevan las estirables del día (la Via Appia), cada una hasta su `estirar_max`.
     const idleMax = tranquilo ? DINNER_IDLE_MAX.tranquilo : DINNER_IDLE_MAX.completo
     if (!result.visits.some((visit) => visit.place.sunset != null) && (result.idleBeforeDinner ?? 0) > idleMax) {
-      const stretchables = [...result.visits].reverse().map((visit) => units.find((unit) => unit.id === visit.unitId)).filter((unit) => unit?.stretch)
+      const stretchables = [...result.visits].reverse().map((visit) => units.find((unit) => unit.id === visit.unitId)).filter((unit) => unit?.stretch && unit.slot !== 'manana')
       for (let extra = Math.ceil(((result.idleBeforeDinner ?? 0) - idleMax) / 15) * 15; extra >= 15 && stretchables.length > 0; extra -= 15) {
         const give = new Map()
         let left = extra
@@ -1438,12 +1442,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const before = lunch ? [...result.visits].reverse().find((visit) => visit.end <= lunch.start) : null
       const unit = before ? units.find((other) => other.id === before.unitId) : null
       const gap = before ? lunch.start - before.end - LUNCH_WALK_ALLOWANCE : 0
-      if (unit?.stretch && gap > 30) {
-        for (let extra = Math.floor((gap - 10) / 15) * 15; extra >= 15; extra -= 15) {
+      if (unit?.stretch && gap > 20) {
+        for (let extra = Math.floor(gap / 15) * 15; extra >= 15; extra -= 15) {
           const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place) => (place.name === before.place.name ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
           const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
           const trialLunch = (trial.meals ?? []).find((meal) => meal.type === 'lunch')
-          if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId)) && trialLunch?.start === lunch.start) {
+          const stretched = trial.visits.find((visit) => visit.unitId === before.unitId && visit.place.name === before.place.name)
+          if (result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId)) && trialLunch?.start === lunch.start && stretched && stretched.end <= trialLunch.start) {
             units = list
             result = trial
             break

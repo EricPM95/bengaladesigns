@@ -1566,3 +1566,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       domingo: la Piazza del Popolo y Santa Maria del Popolo siempre juntas, antes del Pincio si el sol se pone a las
       17:30 o más tarde y después si antes (con Free Tour, la plaza se estira antes de subir al Pincio). D4 tranquilo
       de invierno: sin Trinità por la mañana (si no, la Galería pierde las 11:00) y con la misma tarde que D4 de invierno.
+
+311. **Repaso 3, puntos 1 y 3** (decisión del usuario, 2026-09-28; sustituye el orden de la 310):
+    - Con la nocturna antes de cenar: primero la nocturna (20-25 min por parada) y luego el rato de "luces y aperitivo",
+      justo antes de la cena y hasta la hora de cenar, de hasta 90 min.
+    - El orden de invierno forzado (el mirador primero) solo con el sol antes de las 18:30.
+    - Lo estirable de la mañana (Testaccio) solo se estira hasta la comida, nunca con lo que sobra de la tarde; y la
+      espera antes de una parada no cuenta si hay una comida o una cena en medio.

@@ -339,7 +339,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     const nightStops = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner)
     if ((tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_SUNSET_BEFORE && nightStops.length > 0) {
       const busy = nightStops.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
-      // (Segundo repaso, 2026-09-28: el rato libre de antes se queda en 60 min como mucho.)
+      // (Repaso 3, 2026-09-28: el rato de luces y aperitivo de después llega hasta 90 min; lo que pase, en la nocturna.)
       const over = (tripDay.schedule?.idleBeforeDinner ?? 0) - busy - WINTER_FREE_MAX_MINUTES
       if (over > 0) nightStops.at(-1).duration_minutes += Math.min(WINTER_NIGHT_STRETCH_MAX, Math.ceil(over / 15) * 15)
     }
@@ -370,10 +370,14 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       return Number.isFinite(h) ? h * 60 + (m || 0) : null
     }
     const dinnerStart = Math.ceil(dinnerMeal.start / 15) * 15
-    // Con la nocturna antes de cenar, el rato va de la última visita del día hasta que empieza la nocturna.
-    const firstNight = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner).map((stop) => toMinutes(stop.suggested_time)).filter((start) => start != null).sort((x, y) => x - y)[0]
-    const lastEnd = Math.max(0, ...(day.stops ?? []).filter((stop) => !(stop.is_night_experience && stop.before_dinner)).map((stop) => ({ start: toMinutes(stop.suggested_time), duration: stop.duration_minutes ?? 0 })).filter(({ start }) => start != null && start < dinnerStart).map(({ start, duration }) => start + duration))
-    const room = (firstNight ?? dinnerStart - (dinnerMeal.walkMinutes ?? 0)) - lastEnd
+    // Con la nocturna antes de cenar, el rato de luces y aperitivo va detrás de ella, hasta la cena (repaso 3).
+    const lastEnd = Math.max(0, ...(day.stops ?? []).map((stop) => ({ start: toMinutes(stop.suggested_time), duration: stop.duration_minutes ?? 0 })).filter(({ start }) => start != null && start < dinnerStart).map(({ start, duration }) => start + duration))
+    const room = dinnerStart - (dinnerMeal.walkMinutes ?? 0) - lastEnd
+    // El hueco real de después de la nocturna (el Janículo que sube antes de cenar): también con nombre.
+    if (!day.aperitivo && !day.free_afternoon && room >= APERITIVO_MIN_MINUTES && (day.stops ?? []).some((stop) => stop.is_night_experience && stop.before_dinner)) {
+      const late = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, 0, room)
+      if (late) day.aperitivo = late
+    }
     for (const key of ['aperitivo', 'free_afternoon']) {
       if (!day[key]) continue
       if (room < APERITIVO_MIN_MINUTES / 3) delete day[key]
@@ -562,8 +566,8 @@ const APERITIVO_MAX_MINUTES = 120
 const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 /** Lo más que se alarga el paseo nocturno de antes de cenar en invierno para no pasar de 2 h (C.1). */
 const WINTER_NIGHT_STRETCH_MAX = 45
-/** En invierno, con la nocturna antes de cenar, el rato libre de antes: 60 min como mucho. */
-const WINTER_FREE_MAX_MINUTES = 60
+/** En invierno, con la nocturna antes de cenar, el rato de luces y aperitivo de después: 90 min como mucho. */
+const WINTER_FREE_MAX_MINUTES = 90
 /** Una nocturna antes de cenar, como mucho (decisión del usuario, 2026-09-28). */
 const NIGHT_BEFORE_DINNER_MAX = 25
 
@@ -588,8 +592,8 @@ function winterEveningTitle(destData, zoneId, tripDay, dayVisitedNames) {
   return titles.invierno ?? null
 }
 
-function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0) {
-  const idle = Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
+function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0, idleOverride = null) {
+  const idle = idleOverride ?? Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
   if (!last || idle < APERITIVO_MIN_MINUTES || idle > APERITIVO_MAX_MINUTES) return null
