@@ -687,7 +687,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const withOutsideLines = (list, wanted) => {
       for (let [name, host] of wanted) {
         const hostName = host.places[0].name
-        const before = curatedOrder.indexOf(name) >= 0 && curatedOrder.indexOf(name) < curatedOrder.indexOf(hostName)
+        // Primero la plaza o el puente, luego el monumento (`group_order`, PROMPT_PENDIENTE C): la Plaza Venecia antes
+        // que el Altar; sin orden de grupo, donde lo pone el día curado.
+        const own = placeByName.get(name)?.group_order
+        const hostOrder = placeByName.get(hostName)?.group_order
+        const before = own != null && hostOrder != null ? own < hostOrder : curatedOrder.indexOf(name) >= 0 && curatedOrder.indexOf(name) < curatedOrder.indexOf(hostName)
         let unit = unitOf({ lugar: name, rol: 'de_paso', por_fuera: true }, host.slot, (host.curatedIndex ?? 0) % CURATED_AFTERNOON_OFFSET + (before ? -0.5 : 0.5), dayId, day)
         if (!unit || unit.skipped) continue
         // Se ve DESDE el compañero (la Plaza Venecia desde el Altar, el Castillo desde el Puente): desde su mismo punto

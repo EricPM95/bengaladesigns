@@ -37,7 +37,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
-import { curatedStops, textosConHora } from './textChecks.mjs'
+import { curatedStops, gruposFueraDeOrden, textosConHora } from './textChecks.mjs'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZonesOf, restaurantZonesNamedIn, servesDinner, zonesOfLabel } from '../../shared/routeEngine/dinnerZones.js'
@@ -401,6 +401,8 @@ const section = (title) => {
     else if (!place.por_fuera) s.red.push(`${place.name}: tiene minutos_fuera y le falta el texto por_fuera`)
   }
   s.info.push(`${places.filter((p) => p.minutos_fuera != null).length} lugares se ven por fuera`)
+  // Primero la plaza o el puente, luego el monumento (`group_order`), salvo hora fija o atardecer/noche.
+  for (const aviso of gruposFueraDeOrden(D)) s.warn.push(`orden de grupo: ${aviso}`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────

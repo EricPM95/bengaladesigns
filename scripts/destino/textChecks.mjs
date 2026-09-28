@@ -65,3 +65,56 @@ export function tituloQueNoSeCumple(day) {
   }
   return avisos
 }
+
+/**
+ * Primero la plaza o el puente, luego el monumento (PROMPT_PENDIENTE C): dentro de un grupo, en el orden de
+ * `group_order` (Puente Sant'Angelo 1 → Castillo 2; Plaza Venecia 1 → Altar 2). Excepciones: el monumento con hora fija
+ * (el Coliseo a la apertura, antes que el Arco) y la plaza o el puente que es el sitio del atardecer o de la noche (D7:
+ * el Castillo a las 17:30 y el Puente al atardecer).
+ */
+const ordenDe = (D) => new Map((D.places ?? []).filter((place) => place.group && place.group_order != null).map((place) => [place.name, place]))
+
+/** En los días curados (cada lista de paradas, con sus variantes): lo que rompe el orden. */
+export function gruposFueraDeOrden(D) {
+  const orden = ordenDe(D)
+  const avisos = []
+  for (const cfg of D.curated_days ?? []) {
+    // La hora fija vale para todo el día curado (el Coliseo de D1 lleva su hora en la base; en tranquilo, a las 10:00).
+    const conHora = new Set([cfg, ...Object.values(cfg.variantes ?? {})].flatMap((section) => [...(section.manana ?? []), ...(section.tarde_antes ?? []), ...(section.tarde ?? [])]).filter((stop) => stop.hora).map((stop) => stop.lugar))
+    for (const [nombre, section] of [['base', cfg], ...Object.entries(cfg.variantes ?? {})]) {
+      for (const clave of ['manana', 'tarde_antes', 'tarde']) {
+        const lista = (section[clave] ?? []).filter((stop) => orden.has(stop.lugar))
+        lista.forEach((primero, i) => {
+          for (const despues of lista.slice(i + 1)) {
+            const a = orden.get(primero.lugar)
+            const b = orden.get(despues.lugar)
+            if (a.group !== b.group || a.group_order < b.group_order) continue
+            // `primero` va antes y tiene un número mayor: rompe el orden, salvo por hora fija o atardecer/noche.
+            if (primero.hora || conHora.has(primero.lugar) || despues.rol === 'atardecer') continue
+            avisos.push(`${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${primero.lugar} antes que ${despues.lugar}`)
+          }
+        })
+      }
+    }
+  }
+  return avisos
+}
+
+/** En un día del motor: la plaza o el puente que sale después de su monumento, fuera de las excepciones. */
+export function grupoFueraDeOrdenEnDia(D, day) {
+  const orden = ordenDe(D)
+  const cfg = (D.curated_days ?? []).find((candidate) => candidate.id === day?.curated_day?.id)
+  const conHora = new Set(cfg ? [cfg, ...Object.values(cfg.variantes ?? {})].flatMap((section) => [...(section.manana ?? []), ...(section.tarde_antes ?? []), ...(section.tarde ?? [])]).filter((stop) => stop.hora).map((stop) => stop.lugar) : [])
+  const paradas = (day?.stops ?? []).filter((stop) => orden.has(stop.place_name ?? stop.name))
+  const avisos = []
+  paradas.forEach((primero, i) => {
+    for (const despues of paradas.slice(i + 1)) {
+      const a = orden.get(primero.place_name ?? primero.name)
+      const b = orden.get(despues.place_name ?? despues.name)
+      if (a.group !== b.group || a.group_order < b.group_order) continue
+      if (conHora.has(a.name) || despues.sunset_minutes != null || despues.is_night_experience || despues.night_view) continue
+      avisos.push(`${a.name} (${primero.suggested_time}) antes que ${b.name} (${despues.suggested_time})`)
+    }
+  })
+  return avisos
+}

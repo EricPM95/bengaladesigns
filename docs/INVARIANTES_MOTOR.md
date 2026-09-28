@@ -1228,3 +1228,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       (docs/kit/plantilla_por_fuera.json) y `validar.mjs` lista los de interior sin él.
     - Lo que se visita por dentro va como `type: interior` aunque la entrada sea libre (eso lo dice `is_free_access` /
       `ticket_info`): San Luigi, el Gesù, Santa Maria in Trastevere, Santa Maria sopra Minerva, San Ignacio.
+273. **Primero la plaza o el puente, luego el monumento** (decisión del usuario, 2026-09-28): dentro de un grupo, el
+    orden de `group_order` (Puente Sant'Angelo 1 → Castillo 2; Plaza Venecia 1 → Altar 2; Plaza de San Pedro →
+    Basílica). Excepciones: el monumento con hora fija en su día curado (el Coliseo a la apertura, antes que el Arco) y
+    la plaza o el puente que es el sitio del atardecer o de la noche (D7: el Castillo a las 17:30 y el Puente al
+    atardecer). `textChecks.mjs` (`gruposFueraDeOrden` en los datos, `grupoFueraDeOrdenEnDia` en las rutas); lo que se
+    ve desde su compañero también va en ese orden.
