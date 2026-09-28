@@ -26,6 +26,8 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
 import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
+import { planWrittenTrip, poolStatusFor } from '../../shared/routeEngine/writtenTrip.js'
+import { writtenDaysFor } from './writtenDays.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
@@ -51,6 +53,43 @@ import { MODES_V3, isTranquiloPace } from '../../shared/routeEngine/modes.js'
 export function plannerFor(requestPlanner) {
   const choice = (requestPlanner ?? process.env.ROUTE_V3_PLANNER ?? '').toString().trim().toLowerCase()
   return choice === 'bloques' || choice === 'blocks' ? 'bloques' : 'dias'
+}
+
+/**
+ * Motor v4, días escritos (PROMPT_ROMA_COMPLETA, 2026-09-29): `ROUTE_ENGINE=v4` en el entorno o `engine: 'v4'` en las
+ * opciones de una petición; `engine: 'v3'` fuerza el de días curados. Con `WRITTEN_DAYS_DEFAULT` a true, v4 es el
+ * de por defecto en los destinos con días escritos. Si el viaje necesita un día que no está escrito, v3.
+ */
+export const WRITTEN_DAYS_DEFAULT = false
+export function useWrittenDays(requestEngine) {
+  const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
+  if (choice === 'v4') return true
+  if (choice === 'v3' || choice === 'viejo') return false
+  return WRITTEN_DAYS_DEFAULT
+}
+
+/** El plan v4 de un viaje, una vez aunque se pidan sus días por separado (los últimos 64 viajes). */
+const writtenPlanCache = new Map()
+function writtenPlanFor(written, destKey, args) {
+  const { destData, ...rest } = args
+  const key = JSON.stringify([destKey, rest])
+  if (writtenPlanCache.has(key)) return writtenPlanCache.get(key)
+  const plan = planWrittenTrip({ ...args, written, travel: travelTimesFor(destKey) })
+  writtenPlanCache.set(key, plan)
+  if (writtenPlanCache.size > 64) writtenPlanCache.delete(writtenPlanCache.keys().next().value)
+  return plan
+}
+/** El pool de un viaje con días escritos: qué va ya incluido y cuántos extras caben (null sin días escritos). */
+export function writtenPoolStatus(destData, city, { days, hasFreeTour = false, dateRangeStartIso = null, pace = 'nonstop' }) {
+  const destKey = findPipelineV2Key(destData.destination ?? city ?? '')
+  const written = writtenDaysFor(destKey)
+  if (!written) return null
+  return poolStatusFor({ destData, written, totalDays: days + 1, pace, hasFreeTour, experiencesPositive: hasFreeTour ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso, travel: travelTimesFor(destKey) })
+}
+
+/** Para las pruebas, después de cambiar los días escritos. */
+export function clearWrittenPlanCache() {
+  writtenPlanCache.clear()
 }
 
 export function engineFor(requestEngine, destData = null) {
@@ -138,7 +177,10 @@ export async function buildDayBlockV3(
   // Mañanas y tardes tipo (Parte B): con bloques curados en el destino, el viaje se monta con ellos.
   const curated = isV3 && Array.isArray(destData.curated_days) && destData.curated_days.length > 0 && plannerFor(options.planner) === 'dias'
   const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
-  const plan = isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')) }) : preplanTrip(tripArgs)
+  const destKey = findPipelineV2Key(destData.destination ?? options.city ?? '')
+  const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null }) : null
+  const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
   if (!dayPlan) return null
@@ -293,7 +335,9 @@ function buildCityDayV3(destData, trip, tripDay, options) {
             ? `Solo ${availabilityLabel(item.available)}`
             : item.reason === 'pool_afternoon_taken'
               ? `En 2 días solo hay una tarde para tus lugares elegidos, y es para ${item.takenBy}`
-              : 'No cabía en ningún día del viaje',
+              : item.reason === 'pool_limit'
+                ? 'Ya has elegido todos los lugares extra que caben en este viaje'
+                : 'No cabía en ningún día del viaje',
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     // Lo que se queda solo con su nocturna no "falta": sale de noche.

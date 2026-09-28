@@ -26,7 +26,7 @@ import {
 } from './routeAlgorithm.js'
 import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
-import { buildDayBlockV3, engineFor } from './engine/index.js'
+import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
 
@@ -4206,7 +4206,12 @@ app.post('/api/curated-places-pool', (req, res) => {
     })
     const all = pipelineV2Data.places ?? []
     if (levelKey === 'pool') {
-      res.json({ found: true, level: 'pool', places: buildCuratedPoolV2(pipelineV2Data).map(toPoolPlace) })
+      // Con días escritos (motor v4) y los días del viaje: lo que ya va en la ruta sale como incluido y no cuenta como
+      // elección; `max_extras`, cuántos extras caben (2 días, 2; 3, 3; 4, 4; 5 o más, 5). Sin esos datos, como siempre.
+      const days = Number(req.body?.days)
+      const status = Number.isInteger(days) && days > 0 && useWrittenDays(req.body?.engine) ? writtenPoolStatus(pipelineV2Data, destination, { days, hasFreeTour: Boolean(req.body?.free_tour), dateRangeStartIso: req.body?.start ?? null, pace: req.body?.pace ?? 'nonstop' }) : null
+      const included = new Set(status?.included ?? [])
+      res.json({ found: true, level: 'pool', places: buildCuratedPoolV2(pipelineV2Data).map((place) => ({ ...toPoolPlace(place), ...(status ? { included: included.has(place.name) } : {}) })), ...(status ? { max_extras: status.maxExtras } : {}) })
       return
     }
     const levelNumber = Number(levelKey)

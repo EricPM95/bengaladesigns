@@ -11,7 +11,7 @@ const pos = exps.length ? ['imprescindibles', ...exps] : []
 const pool = a.pool ? a.pool.split('|') : []
 const which = a.n ? [Number(a.n)] : Array.from({ length: dias }, (_, i) => i + 1)
 for (const n of which) {
-  const day = await buildDayBlockV3(D, dias + 1, a.ft === 'si', n, (a.ritmo ?? 'completo') === 'completo' ? 'nonstop' : 'tranquilo', null, a.fecha, pool, pos, { city: 'Roma', scheduler: 'v3', month: null })
+  const day = await buildDayBlockV3(D, dias + 1, a.ft === 'si', n, (a.ritmo ?? 'completo') === 'completo' ? 'nonstop' : 'tranquilo', null, a.fecha, pool, pos, { city: 'Roma', scheduler: 'v3', month: null, engine: a.motor ?? undefined })
   if (!day) continue
   console.log(`\n## Día ${n} · ${day.curated_day?.id} ${day.curated_day?.name ?? ''} · variantes ${JSON.stringify(day.curated_day?.variants ?? [])} · atardecer ${day.sunset_time ?? day.hours?.sunset ?? ''}`)
   for (const m of day.meals ?? []) console.log(`  [${m.type}] ${m.suggested_time ?? m.time ?? ''}-${m.end_time ?? ''} ${m.restaurant?.name ?? m.spot?.name ?? ''}`)

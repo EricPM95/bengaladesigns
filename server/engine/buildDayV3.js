@@ -539,7 +539,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   }
   const nightStops = chainForNight.length > 0 ? nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput) : []
   const lastNightBefore = nightStops.filter((stop) => stop.before_dinner).at(-1)
-  if (lastNightBefore && lastNightBefore.latitude != null) {
+  // (Con días escritos, el restaurante escrito manda: no se vuelve a elegir junto a la nocturna.)
+  if (lastNightBefore && lastNightBefore.latitude != null && !tripDay.written) {
     const dinnerMealOut = meals.find((meal) => meal.time === 'dinner')
     const near = [lastNightBefore.latitude, lastNightBefore.longitude]
     const pick = dinnerMealOut ? recommendedRestaurant(destData, { meal: 'cena', near, weekday: tripDay.hours?.weekday ?? null, dateIso: tripDay.hours?.dateIso ?? null, exclude: new Set(tripDay.otherRestaurants ?? []) }) : null
