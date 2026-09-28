@@ -18,6 +18,8 @@ interface MealTimeAccordionProps {
   timeRange?: string | null
   /** Texto propio en lugar de "Recomendaciones de restaurantes cerca" (día con excursión de medio día). */
   subtitle?: string | null
+  /** El restaurante que ha elegido el viajero para esta comida o cena: sustituye a las recomendaciones. */
+  chosenName?: string | null
   /** Abre MealDetailSheet (pantalla completa) — gestionado por DayDetailPanel.tsx, igual que StopDetailSheet/ArrivalDetailSheet, para poder desmontar el mapa de este panel mientras esa pantalla está abierta encima (ver mapHiddenBySheet). */
   onOpen: () => void
 }
@@ -33,7 +35,7 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, chosenName = null, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
   // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
@@ -42,6 +44,9 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
 
   // Diseño "Trazo Itinerario": la misma tarjeta alargada que las paradas, en terracota, sin número
   // (la comida no es un pin del mapa) y sin foto (no hay restaurante elegido todavía).
+  if (chosenName) {
+    return <TrazoCard kind="comida" time={timeRange ?? null} name={chosenName} sub={`${franja === 'cena' ? 'Cena' : 'Comida'} · elegido por ti`} noPhoto onOpen={onOpen} />
+  }
   return (
     <TrazoCard
       kind="comida"

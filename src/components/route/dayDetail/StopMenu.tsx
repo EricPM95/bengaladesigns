@@ -3,6 +3,7 @@ import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
+import { withUndo } from '../../../store/useAddFlowStore'
 
 interface StopMenuProps {
   dayId: string
@@ -12,6 +13,8 @@ interface StopMenuProps {
   /** Paradas reales del día YA sembradas (o listas para sembrarse) del pool de plantilla, en el mismo orden que se muestran — para "Mover antes/después" (reordenar) y "Mover a otro día" (encontrar el resto de paradas al sembrar). */
   realStops: Stop[]
   otherDays: { id: string; dayNumber: number; city: string }[]
+  /** Día libre (decisión del usuario, 2026-09-28): Cambiar hora, Mover a otro día, Subir, Bajar y Quitar del día, con "Deshacer". */
+  freeDay?: boolean
 }
 
 type MenuView = 'menu' | 'remove' | 'move-day' | 'change-time'
@@ -30,7 +33,7 @@ const lightItemClass = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-
  * ÍNDICE de las paradas, así que cualquier acción que cambie el orden ya los actualiza sin lógica
  * extra.
  */
-export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: StopMenuProps) {
+export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeDay = false }: StopMenuProps) {
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<MenuView>('menu')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -51,25 +54,28 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
     setView('menu')
   }
 
+  const undoable = (message: string, change: () => void) => (freeDay ? withUndo(message, change) : change())
+
   const handleReorder = (direction: 'before' | 'after') => {
     ensureSeeded()
     const ids = realStops.map((s) => s.id)
     const targetIndex = direction === 'before' ? index - 1 : index + 1
     if (targetIndex < 0 || targetIndex >= ids.length) return
     ;[ids[index], ids[targetIndex]] = [ids[targetIndex], ids[index]]
-    reorderStops(dayId, ids)
+    undoable(direction === 'before' ? `${stop.name}: sube` : `${stop.name}: baja`, () => reorderStops(dayId, ids))
     close()
   }
 
   const handleMoveToDay = (targetDayId: string) => {
     ensureSeeded()
-    moveStopToDay(stop.id, dayId, targetDayId)
+    const target = otherDays.find((day) => day.id === targetDayId)
+    undoable(`Movida al Día ${target?.dayNumber ?? ''}`, () => moveStopToDay(stop.id, dayId, targetDayId))
     close()
   }
 
   const handleSaveTime = () => {
     ensureSeeded()
-    updateStopTime(dayId, stop.id, time)
+    undoable(`${stop.name} a las ${time}`, () => updateStopTime(dayId, stop.id, time))
     close()
   }
 
@@ -95,7 +101,35 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays }: Sto
             onClick={(event) => event.stopPropagation()}
             className="absolute right-0 top-[34px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
-            {view === 'menu' && (
+            {view === 'menu' && freeDay && (
+              <div className="space-y-0.5">
+                <button type="button" onClick={() => setView('change-time')} className={menuItemClass}>
+                  Cambiar hora
+                </button>
+                <button type="button" onClick={() => setView('move-day')} disabled={otherDays.length === 0} className={menuItemClass}>
+                  Mover a otro día
+                </button>
+                <button type="button" onClick={() => handleReorder('before')} disabled={index === 0} className={menuItemClass}>
+                  Subir
+                </button>
+                <button type="button" onClick={() => handleReorder('after')} disabled={index === realStops.length - 1} className={menuItemClass}>
+                  Bajar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    ensureSeeded()
+                    undoable(`Quitada del día: ${stop.name}`, () => removeStop(dayId, stop.id))
+                    close()
+                  }}
+                  className={menuItemClass}
+                >
+                  <span className="text-[oklch(0.75_0.15_25)]">Quitar del día</span>
+                </button>
+              </div>
+            )}
+
+            {view === 'menu' && !freeDay && (
               <div className="space-y-0.5">
                 <button type="button" onClick={() => setPickerOpen(true)} className={menuItemClass}>
                   Cambiar parada

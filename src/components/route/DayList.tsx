@@ -20,6 +20,10 @@ import { ContextBanner } from './ContextBanner'
 import { ConfirmDialog } from './ConfirmDialog'
 import { SeasonNote } from './SeasonNote'
 import { DateNoticeTag } from './DateNoticesModal'
+import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
+import { dayName } from './freeDay/AddToDaySheet'
+import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
+import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 
 /** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
 const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
@@ -78,6 +82,15 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const [regenerateDayId, setRegenerateDayId] = useState<string | null>(null)
   const [pendingRegenerate, setPendingRegenerate] = useState<Stop[] | null>(null)
   const [dayReorderWarning, setDayReorderWarning] = useState<string | null>(null)
+  const addFreeDay = useRouteStore((state) => state.addFreeDay)
+  const renameDay = useRouteStore((state) => state.renameDay)
+  const moveFreeDay = useRouteStore((state) => state.moveFreeDay)
+  const removeFreeDay = useRouteStore((state) => state.removeFreeDay)
+  const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
+  /** La ventana del nombre: crear un día o cambiar el de uno libre. */
+  const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
+  const [removeDayId, setRemoveDayId] = useState<string | null>(null)
+  const removeDay = route.days.find((day) => day.id === removeDayId) ?? null
 
   // Mismos umbrales que al reordenar paradas (ver DayDetailPanel.tsx): 8 px de margen para que un
   // toque torpe no cuente como arrastre, y retardo en táctil para no secuestrar el scroll.
@@ -161,7 +174,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-10 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-28 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -238,7 +251,20 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
               {!day.isReturnLeg && (
                 <span onClick={(event) => event.stopPropagation()}>
-                  <DayMenu onRegenerate={() => setRegenerateDayId(day.id)} />
+                  <DayMenu
+                    onRegenerate={() => setRegenerateDayId(day.id)}
+                    freeDay={
+                      isFreeDay(day) || day.userAdded
+                        ? {
+                            onAddPlaces: () => openAddFlow(day.id),
+                            onRename: () => setNameSheet({ dayId: day.id }),
+                            onMoveBefore: canMoveDay(route, day.id, -1) ? () => moveFreeDay(day.id, -1) : null,
+                            onMoveAfter: canMoveDay(route, day.id, 1) ? () => moveFreeDay(day.id, 1) : null,
+                            onRemove: day.userAdded ? () => setRemoveDayId(day.id) : null,
+                          }
+                        : undefined
+                    }
+                  />
                 </span>
               )}
 
@@ -277,6 +303,38 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       })}
       </SortableContext>
       </DndContext>
+
+      {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
+      <AddDayButton onClick={() => setNameSheet({ dayId: null })} disabled={!canAddDay(route)} />
+      {nameSheet && (
+        <DayNameSheet
+          title={nameSheet.dayId ? 'Cambiar el nombre' : 'Añadir un día'}
+          initialName={nameSheet.dayId ? dayName(route.days.find((day) => day.id === nameSheet.dayId) ?? route.days[0]) : ''}
+          confirmLabel={nameSheet.dayId ? 'Guardar' : 'Crear día'}
+          onClose={() => setNameSheet(null)}
+          onConfirm={(name) => {
+            if (nameSheet.dayId) renameDay(nameSheet.dayId, name)
+            else {
+              const dayId = addFreeDay(name)
+              if (dayId) openAddFlow(dayId)
+            }
+            setNameSheet(null)
+          }}
+        />
+      )}
+      {removeDay && (
+        <ConfirmDialog
+          eyebrow={`Día ${removeDay.dayNumber} · ${dayName(removeDay)}`}
+          text="Quitas este día y todo lo que tiene. El viaje acaba un día antes."
+          confirmLabel="Quitar"
+          onCancel={() => setRemoveDayId(null)}
+          onConfirm={() => {
+            if (activeDayId === removeDay.id) onSelectDay(null)
+            withUndo(`Día ${removeDay.dayNumber} quitado`, () => removeFreeDay(removeDay.id))
+            setRemoveDayId(null)
+          }}
+        />
+      )}
 
       {regenerateDay && (
         <AttractionsFinder

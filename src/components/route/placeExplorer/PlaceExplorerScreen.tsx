@@ -59,6 +59,11 @@ interface PlaceExplorerScreenProps {
   focusCoordinates?: Coordinates | null
   /** Presente = modo "añadir": la ficha del lugar muestra el CTA "Añadir a mi ruta". Ausente = solo explorar. */
   onPick?: (stop: Stop) => void
+  /** Modo añadir del viaje ("+ Añadir día", Explorar): cada sitio lleva su "+ Añadir", que abre la ventana del día. */
+  onQuickAdd?: (place: DestinationPlace) => void
+  onQuickAddExcursion?: (excursion: Excursion) => void
+  /** Con él, el chip "Hoteles": los hoteles no van dentro de los días, llevan a Booking. */
+  hotelsUrl?: string | null
   onClose: () => void
 }
 
@@ -75,11 +80,11 @@ function formatDistance(meters: number): string {
   return `a ${(meters / 1000).toFixed(1)} km`
 }
 
-function placeholderPhoto(name: string): string {
+export function placeholderPhoto(name: string): string {
   return `https://picsum.photos/seed/${encodeURIComponent(name)}/600/400`
 }
 
-function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
+export function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {
   const chip = findPlaceCategoryChip(place.filter_category)
   return {
     id: `stop-pool-${normalize(place.name).replace(/\s+/g, '-')}-${Date.now()}`,
@@ -248,10 +253,11 @@ function TicketIcon({ className = 'h-3 w-3' }: { className?: string }) {
  * Precio y valoración son PLACEHOLDER del JSON del destino hasta integrar Civitatis/GYG — por eso
  * el precio va como "desde" y nunca como tarifa cerrada.
  */
-function ExcursionResultCard({ excursion, open, onToggle }: { excursion: Excursion; open: boolean; onToggle: () => void }) {
+function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: Excursion; open: boolean; onToggle: () => void; onAdd?: () => void }) {
   return (
     <div className={`rounded-xl border transition-colors ${open ? 'border-accent bg-accent-soft' : 'border-border'}`}>
-      <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-center gap-3 p-2.5 text-left">
+      <div className="flex items-center gap-2 pr-2.5">
+      <button type="button" onClick={onToggle} aria-expanded={open} className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left">
         <span
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl"
           style={{ backgroundColor: EXCURSION_CHIP?.activeBg ?? '#E0F2F1' }}
@@ -281,6 +287,12 @@ function ExcursionResultCard({ excursion, open, onToggle }: { excursion: Excursi
           </span>
         </span>
       </button>
+      {onAdd && (
+        <button type="button" onClick={onAdd} className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+          + Añadir
+        </button>
+      )}
+      </div>
 
       {open && (
         <div className="space-y-2 px-2.5 pb-2.5">
@@ -331,8 +343,12 @@ export function PlaceExplorerScreen({
   initialQuery,
   focusCoordinates = null,
   onPick,
+  onQuickAdd,
+  onQuickAddExcursion,
+  hotelsUrl = null,
   onClose,
 }: PlaceExplorerScreenProps) {
+  const [hotelsActive, setHotelsActive] = useState(false)
   const [activeFilters, setActiveFilters] = useState<PlaceFilterId[]>(initialFilters)
   /** La excursión abierta en su tarjeta. No usa `selected` (que es un lugar del catálogo) porque no
       comparte nada con él: no tiene ficha ampliada, ni likes, ni "Añadir a mi ruta". */
@@ -657,6 +673,17 @@ export function PlaceExplorerScreen({
                 </button>
               )
             })}
+            {hotelsUrl && (
+              <button
+                type="button"
+                onClick={() => setHotelsActive((value) => !value)}
+                aria-pressed={hotelsActive}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-caption font-semibold transition-colors ${hotelsActive ? 'border-text bg-text text-bg' : 'border-border bg-bg text-text-soft hover:bg-bg-hover'}`}
+              >
+                <span aria-hidden="true">🛏️</span>
+                Hoteles
+              </button>
+            )}
           </div>
           {activeFilters.length > 0 && (
             <button
@@ -794,6 +821,19 @@ export function PlaceExplorerScreen({
 
             {queryTooShort && <p className="py-8 text-center text-small text-text-soft">Escribe al menos {MIN_QUERY_LENGTH} letras para buscar.</p>}
 
+            {hotelsActive && hotelsUrl && (
+              <div className="mb-3 flex items-center gap-3 rounded-xl border border-border p-2.5">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-xl" aria-hidden="true">🛏️</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-small font-semibold text-text">Hoteles en {destination}</span>
+                  <span className="block text-caption text-text-soft">No van dentro de los días: se buscan en Booking.</span>
+                </span>
+                <a href={hotelsUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+                  Ver hoteles
+                </a>
+              </div>
+            )}
+
             {needle && results.length === 0 && (
               <p className="py-8 text-center text-small text-text-soft">No encontramos este lugar en nuestra selección de {destination}.</p>
             )}
@@ -821,6 +861,7 @@ export function PlaceExplorerScreen({
                     excursion={excursion}
                     open={selectedExcursion?.id === excursion.id}
                     onToggle={() => setSelectedExcursion((prev) => (prev?.id === excursion.id ? null : excursion))}
+                    onAdd={onQuickAddExcursion ? () => onQuickAddExcursion(excursion) : undefined}
                   />
                 ))}
               </div>
@@ -937,6 +978,11 @@ export function PlaceExplorerScreen({
                       <HeartIcon filled={liked} />
                       {likeCount > 0 && <span className="tabular-nums">{likeCount}</span>}
                     </button>
+                    {onQuickAdd && (
+                      <button type="button" onClick={() => onQuickAdd(place)} aria-label={`Añadir ${place.name}`} className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+                        + Añadir
+                      </button>
+                    )}
                   </div>
                 )
               })}
@@ -984,7 +1030,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : undefined}
+            footerAction={onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}

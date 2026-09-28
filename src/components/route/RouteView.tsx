@@ -19,6 +19,8 @@ import { DateNoticesModal } from './DateNoticesModal'
 import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
+import { AddToTripScreen } from './freeDay/AddToTripScreen'
+import { UndoToast } from './freeDay/UndoToast'
 
 // Límites del tirador gris (móvil) entre mapa y panel inferior — ninguno de los dos lados puede
 // llegar a desaparecer del todo: el mapa siempre deja al menos MOBILE_MAP_MIN_VH visible, y el
@@ -296,6 +298,9 @@ export function RouteView() {
       )}
       {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
       <DateNoticesModal route={route} />
+      {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
+      <AddToTripScreen route={route} />
+      <UndoToast />
       {datesDialog}
     </div>
   )

@@ -1484,3 +1484,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       tiene atardecer (el 14 de abril, D1-FT perdía toda la tarde).
     - `si_da_tiempo` sale si por ella se pierde cualquier cosa, no solo una hora fija (Monti después de los Foros en
       D5C, en mayo).
+
+305. **"+ Añadir día" y la pantalla de añadir** (decisión del usuario, 2026-09-28), general para todos los destinos:
+    - El día añadido va detrás del último día de ruta (el de vuelta se mueve un día), es `manual` con `userAdded` y el
+      motor no lo toca nunca: al rehacer el viaje se planifica sin él y vuelve igual, en su número de día. El semáforo,
+      la auditoría y el barrido no lo ven (solo vive en el cliente). Máximo 14 días por viaje.
+    - "+ Añadir" en cada sitio (desde el día o desde Explorar) pregunta a qué día. Hora sugerida: cuando acaba la
+      anterior más el paseo, al cuarto de hora (menos de 3 min andando, encadenada); en un día vacío, las 09:30; con
+      excursión de medio día, las 14:00. Avisos solo si pasan: cerrado a esa hora (con el horario de ese día y de esa
+      época, el mismo cálculo que el motor), se pisa con otra parada, reserva. Se puede añadir igual.
+    - Los restaurantes nunca son paradas: van como comida o cena (en un día nuestro la sustituyen; en uno libre, a las
+      13:30 o las 20:30). Las excursiones, solo en un día vacío; la de día entero lo ocupa.
+    - En un día libre: "Con horas / Sin horas" (al volver a "Con horas", horas seguidas desde las 09:30); arrastrar
+      reajusta desde la parada que cambia hacia abajo y la primera conserva su hora; "Mover a otro día" la pone al final
+      con su hora sugerida. Quitar un día, quitar una parada, moverla o cambiarle la hora dejan "Deshacer".

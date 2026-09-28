@@ -4013,6 +4013,9 @@ app.post('/api/destination-places', (req, res) => {
       // del JSON porque solo 4 de los 67 lugares de Roma lo traen escrito: filtrar por el campo a
       // secas no devolvería nada.
       requires_ticket: !(place.is_free_access ?? place.type === 'exterior'),
+      // "+ Añadir" (decisión del usuario, 2026-09-28): el horario de ese día y de esa época, con el mismo módulo que el
+      // motor (shared/routeEngine/openingHours.js), para avisar de "A esa hora está cerrado".
+      hours_data: Object.fromEntries(['schedule', 'type', 'windows', 'by_day', 'by_season', 'by_period', 'closed_on', 'closed_dates', 'special_hours', 'last_entry', 'last_sunday'].filter((key) => place[key] != null).map((key) => [key, place[key]])),
       // Experiencias a las que pertenece (misma tabla que el motor): "También te puede interesar".
       themes: Object.entries(TAG_INTEREST_MAP)
         .filter(([theme, tags]) => theme !== 'free_tour' && (place.tags ?? []).some((tag) => tags.includes(tag)))

@@ -265,6 +265,8 @@ export interface Stop {
   freeTourTips?: string[]
   /** true solo para paradas de "experiencia nocturna" del pipeline v2 (ver night_experience en routeAlgorithm.js — un lugar ya visitado de día, revisitado de noche otro día del viaje). StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado (gradiente noche + icono de luna) en vez de la tarjeta normal. */
   isNightExperience?: boolean
+  /** La ha añadido el viajero ("Añadida por ti"). */
+  addedByUser?: boolean
   /** Mirador del atardecer (el motor lo ajusta a la puesta de sol): tarjeta melocotón en DIAS. */
   isSunset?: boolean
   /** Mirador que llega ya de noche ("Roma iluminada a tus pies"): tarjeta azul noche en DIAS. */
@@ -445,6 +447,15 @@ export interface MealSlot {
   windowEnd?: string
   /** Motor v3: dónde está el restaurante elegido para esta comida (ancla de la búsqueda). */
   coordinates?: Coordinates
+  /** El restaurante que ha elegido el viajero para esta comida o cena (sustituye a la zona). */
+  chosenRestaurant?: ChosenRestaurant | null
+}
+
+/** Un restaurante elegido por el viajero: no es una parada, va en su comida o su cena. */
+export interface ChosenRestaurant {
+  name: string
+  coordinates: Coordinates
+  zone?: string | null
 }
 
 // ── Excursions ────────────────────────────────────────────
@@ -588,6 +599,8 @@ export interface DayPlan {
   originalSnapshot?: DayPlan | null
   /** Día libre (lo organiza el viajero) sin horas: las paradas en orden y el paseo entre ellas ("Sin hora"). */
   untimed?: boolean
+  /** Día que el viajero ha añadido al final del viaje ("+ Añadir día"): el motor no lo toca nunca y se puede quitar. */
+  userAdded?: boolean
   /** Excursión que el motor deja ya marcada en un día de excursión — la más popular del destino. */
   excursionPreselectedId?: string | null
   /** Frase de prueba social del destino, del JSON. Ver destination_config. */

@@ -1,4 +1,63 @@
-# Informe: repaso de las 20 rutas (28 de septiembre de 2026)
+# Informe del 28 de septiembre de 2026
+
+Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 rutas** (más abajo). Todo en commits y **sin subir**.
+
+# «+ Añadir día»
+
+## a) Qué he cambiado
+
+- **El botón «+ Añadir día»** va debajo del último día, con borde discontinuo terracota.
+  - Abre la ventana del nombre: solo el título, el campo con el ejemplo en gris y «Crear día». Vacío, el día se llama «Día libre».
+  - El día va detrás del último día de ruta, y el de vuelta se mueve un día. La cabecera ya lo refleja: 28 sept – 1 oct.
+  - Como máximo, 14 días.
+- **La pantalla de añadir** es la misma de Explorar, con «Añadiendo a Día 3 · Compras» arriba.
+  - Cada sitio lleva «+ Añadir», también desde Explorar.
+  - El chip «Hoteles» lleva a Booking con «Ver hoteles».
+- **La ventana de «+ Añadir»** tiene:
+  - los días con número, fecha y nombre;
+  - los que no se pueden elegir, en gris con su motivo;
+  - la hora y los minutos ya sugeridos;
+  - «Sin hora» en los días libres;
+  - los avisos solo si pasan: cerrado a esa hora, se pisa con otra parada, reserva.
+  - Probado: la Galería sale a las 09:30 y el Coliseo detrás, a las 12:15.
+- **Restaurantes:** preguntan «Para comer» o «Para cenar».
+  - En un día nuestro sustituyen esa comida. Probado: «Armando al Pantheon · Comida · elegido por ti».
+  - En uno libre entran a las 13:30 o a las 20:30.
+- **Excursiones:** solo en un día vacío.
+  - La de día entero ocupa el día y ya no deja añadir más.
+  - La de medio día deja la tarde libre desde las 14:00.
+- **Al añadir** vuelves a Días con el día abierto y la app baja hasta lo nuevo, que lleva «Añadida por ti».
+  - Abajo sale «Añadido al Día 3 · Compras», con «Deshacer».
+  - En el día libre, abajo del todo, siempre está el botón «+ Añadir lugares».
+- **Día libre:**
+  - El menú del día tiene «Añadir lugares», «Cambiar el nombre», «Mover el día antes/después» y «Quitar este día». Quitar pide confirmación y deja «Deshacer».
+  - El interruptor «Con horas / Sin horas»: al volver a «Con horas», las horas van seguidas desde las 09:30.
+  - El menú de cada parada tiene «Cambiar hora», «Mover a otro día», «Subir», «Bajar» y «Quitar del día», con «Deshacer».
+  - Al arrastrar, las horas se reajustan desde esa parada hacia abajo.
+- **Guardado:** todo va con el viaje. Al recargar, el viaje volvió con sus días añadidos.
+- **Al rehacer el viaje**, el motor planifica sin los días añadidos y luego vuelven igual.
+- **Comprobación:**
+  - Barrido: 765 de 768. Los días libres no entran en el barrido.
+  - Typecheck y build limpios.
+  - Un script comprueba la lógica: 19 casos, todos bien.
+  - Lo probé todo en el móvil, con capturas de las cinco pantallas que pedías.
+
+## b) Lo que no he podido hacer o he hecho distinto
+
+- **Un solo commit, no uno por parte:** las cinco partes tocan los mismos archivos.
+- **El aviso de cerrado usa el horario de ese día y de esa época**, con el mismo cálculo que el motor. Para eso el catálogo de lugares ahora manda también sus campos de horario al móvil.
+- **La media jornada libera la tarde desde las 14:00, no desde las 16:00**, como pedías. Esto vale para todos los días en blanco con excursión de medio día.
+- **Un día añadido con excursión de día entero** conserva su menú de día libre, para poder quitarlo.
+- **Visto de paso, sin tocar:** las tarjetas de excursión de la pantalla de lugares muestran «desde 65 €». Es un precio fuera de Tickets, pero ya estaba así.
+
+## c) Preguntas
+
+1. **Los días libres enseñan «Hora de comer» y «Hora de cenar» con restaurantes de la zona**, como los días nuestros.
+   - (a) Dejarlo así.
+   - (b) Quitarlos hasta que el viajero elija un restaurante.
+   - **Recomiendo (a).**
+
+# Repaso de las 20 rutas
 
 Todo va en commits, uno por parte, y **sin subir**. Las 20 rutas están regeneradas en `docs/REVISION_20_RUTAS.md`, con la auditoría automática **a 0 en todo**.
 

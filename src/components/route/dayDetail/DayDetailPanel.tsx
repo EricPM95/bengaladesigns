@@ -60,6 +60,7 @@ import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { useAddFlowStore } from '../../../store/useAddFlowStore'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
 const FREE_TIME_MIN_MINUTES = 45
@@ -296,6 +297,22 @@ export function DayDetailPanel({
   const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
   const setDayUntimed = useRouteStore((state) => state.setDayUntimed)
   const [askRestore, setAskRestore] = useState(false)
+  const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
+  const focusStopId = useAddFlowStore((state) => state.focusStopId)
+  const setFocusStopId = useAddFlowStore((state) => state.setFocusStopId)
+  const panelRef = useRef<HTMLDivElement>(null)
+  // Recién añadida desde la pantalla de añadir: se desplaza hasta ella.
+  useEffect(() => {
+    if (!focusStopId) return
+    const target = panelRef.current?.querySelector(`[data-stop-id="${focusStopId}"]`)
+    if (!target) return
+    const timer = window.setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setFocusStopId(null)
+    }, 350)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusStopId, day.stops.length])
   const reorderStops = useRouteStore((state) => state.reorderStops)
   const setLegToNext = useRouteStore((state) => state.setLegToNext)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
@@ -744,7 +761,7 @@ export function DayDetailPanel({
   // Solo los días que el destino ya no sabe llenar (`beyondAutoDays`). Los que coloca el motor
   // (día de excursión y media jornada en día de revisitas) tienen su propia lógica y no pasan por
   // aquí. Lo que decide qué ve el viajero es la DURACIÓN de lo que eligió, no cómo llegó hasta él.
-  const esDiaEnBlanco = Boolean(day.beyondAutoDays)
+  const esDiaEnBlanco = Boolean(day.beyondAutoDays || day.userAdded)
   const excursionElegidaEnBlanco = esDiaEnBlanco
     ? (excursionOptions.find((option) => option.id === day.selectedExcursionId) ?? null)
     : null
@@ -907,6 +924,7 @@ export function DayDetailPanel({
             curatedZoneDisplay={lunchCuratedZoneDisplay}
             franja="comida"
             timeRange={lunchTimeRange}
+            chosenName={lunchMeal?.chosenRestaurant?.name ?? null}
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
           />
         </div>
@@ -953,6 +971,7 @@ export function DayDetailPanel({
             curatedZoneDisplay={dinnerCuratedZoneDisplay}
             franja="cena"
             timeRange={Number.isNaN(dinnerStartMinutes) ? null : minutesToTime(dinnerStartMinutes)}
+            chosenName={day.meals.find((meal) => meal.mealTime === 'dinner')?.chosenRestaurant?.name ?? null}
             onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
           />
         </div>
@@ -972,7 +991,7 @@ export function DayDetailPanel({
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
       <SortableStop key={stop.id} id={realStop?.id ?? stop.id} disabled={Boolean(realStop?.isZoneWalk)}>
-        <div>
+        <div data-stop-id={realStop?.id ?? stop.id}>
           {/* El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector`
               decide solo si además lleva el trayecto. Un paseo quitado no deja ni rastro. */}
           {walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
@@ -985,8 +1004,9 @@ export function DayDetailPanel({
               number={realStop ? (stopNumbers.get(realStop.id) ?? null) : null}
               stop={stop}
               startTime={day.untimed ? undefined : minutesToTime(startMinutes)}
+              addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => setDetailIndex(index)}
-              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />}
+              menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}
             />
           )}
         </div>
@@ -997,7 +1017,7 @@ export function DayDetailPanel({
   return (
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
-    <div className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
+    <div ref={panelRef} className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
       <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} onAccepted={() => setDetailIndex(null)} />
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
@@ -1022,10 +1042,23 @@ export function DayDetailPanel({
           />
         )}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
-        {(day.dayType ?? 'normal') === 'manual' && day.stops.length > 0 && (
-          <button type="button" onClick={() => setDayUntimed(day.id, !day.untimed)} className="mt-1 px-1 text-[12.5px] font-medium text-text/60 hover:text-text">
-            {day.untimed ? 'Poner horas' : 'Sin hora'}
-          </button>
+        {(day.dayType ?? 'normal') === 'manual' && (
+          <div className="mt-1 inline-flex rounded-full border border-text/[.12] bg-bg p-0.5" role="group" aria-label="Horas del día">
+            {[
+              { untimed: false, label: 'Con horas' },
+              { untimed: true, label: 'Sin horas' },
+            ].map((option) => (
+              <button
+                key={option.label}
+                type="button"
+                aria-pressed={Boolean(day.untimed) === option.untimed}
+                onClick={() => Boolean(day.untimed) !== option.untimed && setDayUntimed(day.id, option.untimed)}
+                className={`rounded-full px-3 py-1 text-[12.5px] font-medium transition-colors ${Boolean(day.untimed) === option.untimed ? 'bg-text text-bg' : 'text-text/60 hover:text-text'}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         )}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
         {showsRoute && stops.length > 0 && (
@@ -1127,7 +1160,7 @@ export function DayDetailPanel({
           {/* Con la mañana ya resuelta por una excursión de medio día, la tarde tiene su propio
               bloque (arriba) y estas dos salidas sobran: "buscar excursiones" le ofrecería una
               segunda excursión al mismo día. */}
-          {dayType === 'manual' && stops.length === 0 && !halfDayExcursion && (
+          {dayType === 'manual' && stops.length === 0 && !halfDayExcursion && !day.userAdded && (
             <div className="space-y-2 pt-1">
               {/* Solo en el día en blanco por límite del destino, y solo en el PRIMERO: repetirlo en
                   cada día a partir del octavo sería regañar al viajero por alargar su viaje. No es
@@ -1208,7 +1241,7 @@ export function DayDetailPanel({
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
           {periodGroups.map((group, groupIndex) => (
             <div key={`${group.period}-${groupIndex}`}>
-              <PeriodHeader period={group.period} range={group.range} />
+              <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />
               {/* La línea punteada del día; las tarjetas cuelgan de ella. */}
               <div className="relative flex flex-col pl-[26px]">
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
@@ -1218,6 +1251,42 @@ export function DayDetailPanel({
           ))}
           </SortableContext>
           </DndContext>
+          )}
+
+          {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
+          {dayType === 'manual' && stops.length === 0 && day.meals.some((meal) => meal.chosenRestaurant) && (
+            <div className="space-y-2 pt-2">
+              {[...day.meals]
+                .filter((meal) => meal.chosenRestaurant)
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map((meal) => (
+                  <MealTimeAccordion
+                    key={meal.id}
+                    destino={destino}
+                    city={day.city}
+                    coordinates={meal.chosenRestaurant!.coordinates}
+                    franja={meal.mealTime === 'dinner' ? 'cena' : 'comida'}
+                    timeRange={day.untimed ? null : meal.time}
+                    chosenName={meal.chosenRestaurant!.name}
+                    onOpen={() => setMealSheet({ franja: meal.mealTime === 'dinner' ? 'cena' : 'comida', stopIndex: 0, coordinates: meal.chosenRestaurant!.coordinates })}
+                  />
+                ))}
+            </div>
+          )}
+
+          {/* "+ Añadir lugares" (decisión del usuario, 2026-09-28): abajo del todo en el día libre, vacío o con cosas. */}
+          {/* Con una excursión de día entero no sale: su tarjeta ya dice que ocupa el día entero. */}
+          {dayType === 'manual' && (
+              <button
+                type="button"
+                onClick={() => openAddFlow(day.id)}
+                className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-text/25 text-[14px] font-medium text-text/70 transition-colors hover:bg-bg-hover"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Añadir lugares
+              </button>
           )}
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y

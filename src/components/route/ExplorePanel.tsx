@@ -7,6 +7,8 @@ import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayPositionPicker } from './dayDetail/DayPositionPicker'
 import { NearbyPlacesView, toMarker } from './explore/NearbyPlacesView'
 import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
+import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
+import { finishAdd } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
 import { categoriesForFilters, type PlaceFilterId } from '../../lib/placeCategories'
 import { BOOKING_BLUE, buildHotelSearchUrl } from '../../lib/affiliateLinks'
@@ -64,6 +66,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [activeCard, setActiveCard] = useState<ExploreCardId | null>(null)
   const [pendingStop, setPendingStop] = useState<Stop | null>(null)
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
+  /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
+  const [addItem, setAddItem] = useState<AddItem | null>(null)
 
   // El catálogo se pide al entrar en la pestaña, no al pulsar una tarjeta: los contadores salen de
   // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
@@ -127,11 +131,12 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     return `${count} ${count === 1 ? 'lugar' : 'lugares'}`
   }
 
-  // Destino curado: las tarjetas abren la pantalla compartida de lugares, sin acción de añadir
-  // (desde EXPLORAR solo se consulta; para meter algo en la ruta se usa el "+" del día, que es quien
-  // sabe en qué hueco va). Los destinos sin catálogo siguen con la búsqueda de Mapbox de siempre.
+  // Destino curado: las tarjetas abren la pantalla compartida de lugares, con "+ Añadir" en cada sitio
+  // (decisión del usuario, 2026-09-28): la ventana pregunta a qué día va. Los destinos sin catálogo
+  // siguen con la búsqueda de Mapbox de siempre.
   if (placeExplorerOpen && activeCard) {
     return (
+      <>
       <PlaceExplorerScreen
         open
         destination={city}
@@ -141,8 +146,23 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
         route={route}
         initialFilters={[activeCard]}
+        onQuickAdd={(place) => setAddItem({ kind: 'place', place })}
+        onQuickAddExcursion={(excursion) => setAddItem({ kind: 'excursion', excursion })}
         onClose={backToCards}
       />
+      {addItem && (
+        <AddToDaySheet
+          route={route}
+          item={addItem}
+          initialDayId={null}
+          onClose={() => setAddItem(null)}
+          onAdded={(result) => {
+            finishAdd(result, route)
+            setAddItem(null)
+          }}
+        />
+      )}
+      </>
     )
   }
 

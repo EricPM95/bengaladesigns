@@ -3,7 +3,7 @@ import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import type {
-  Coordinates,
+  ChosenRestaurant,
   AccommodationMode,
   AppScreen,
   DayType,
@@ -35,6 +35,23 @@ import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
 import { daysBetweenInclusive } from '../lib/dateRange'
 import { seasonOfMonth } from '../lib/season'
+import { addDaysToIso } from '../lib/dateRange'
+import {
+  FREE_DAY_FIRST_STOP,
+  addFreeDay as addFreeDayTo,
+  chainedTimes,
+  isFreeDay,
+  moveDay,
+  removeFreeDay as removeFreeDayFrom,
+  renameDay as renameDayIn,
+  retimeFromChange,
+  suggestedTimeFor,
+  timeForStopAfter,
+  userAddedDays,
+  withMealRestaurant,
+  withStopAt,
+  withUserDaysBack,
+} from '../lib/freeDays'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -67,30 +84,6 @@ function linkBudgetItem(budget: Budget, id: string, item: Omit<BudgetItem, 'id'>
  * tampoco empuja a las de después: lo único que calculamos es la hora de la parada NUEVA, que no
  * tenía ninguna.
  */
-function timeForStopAfter(previous: Stop | undefined, fallback: string, next?: Stop): string {
-  if (!previous) return fallback
-  const previousStart = parseTimeToMinutes(previous.time)
-  if (Number.isNaN(previousStart)) return fallback
-  // Retocar la ruta (decisión del usuario, 2026-09-28): cuando acaba la anterior, más el paseo hasta la nueva,
-  // redondeado al cuarto de hora; con menos de 3 min andando, encadenada sin redondear.
-  const walk = next ? estimatedWalkMinutes(previous.coordinates, next.coordinates) : (previous.walkingTimeToNextMinutes ?? 15)
-  const end = previousStart + previous.durationMinutes
-  return minutesToTime(walk < 3 ? end + walk : roundUpToQuarterHour(end + walk))
-}
-
-/** Paseo estimado entre dos puntos (línea recta con el rodeo de la ciudad, a 80 m/min) hasta que Mapbox da el real. */
-function estimatedWalkMinutes(from: Coordinates | undefined, to: Coordinates | undefined): number {
-  if (!from || !to || !Number.isFinite(from.lat) || !Number.isFinite(to.lat) || (from.lat === 0 && from.lng === 0) || (to.lat === 0 && to.lng === 0)) return 15
-  const rad = Math.PI / 180
-  const dLat = (to.lat - from.lat) * rad
-  const dLng = (to.lng - from.lng) * rad
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(from.lat * rad) * Math.cos(to.lat * rad) * Math.sin(dLng / 2) ** 2
-  const meters = 2 * 6371000 * Math.asin(Math.sqrt(a))
-  return Math.round((meters * 1.3) / 80)
-}
-
-/** La primera parada de un día libre (lo organiza el viajero), si no trae hora. */
-const FREE_DAY_FIRST_STOP = '09:30'
 
 /**
  * Ninguna hora se pisa (revisión del 2026-09-24): si una parada empieza antes de que acabe la
@@ -360,6 +353,17 @@ interface RouteStoreState {
   restoreOriginalDay: (dayId: string) => void
   /** Día libre sin horas ("Sin hora"). */
   setDayUntimed: (dayId: string, untimed: boolean) => void
+  /** "+ Añadir día": un día libre detrás del último día de ruta. Devuelve su id (null si ya hay 14). */
+  addFreeDay: (name: string) => string | null
+  removeFreeDay: (dayId: string) => void
+  renameDay: (dayId: string, name: string) => void
+  moveFreeDay: (dayId: string, direction: -1 | 1) => void
+  /** Un lugar desde la pantalla de añadir, a la hora elegida (null = la sugerida). */
+  addPlaceToDay: (dayId: string, stop: Stop, time: string | null) => void
+  /** Un restaurante como comida o cena del día (null = volver a la zona). */
+  setMealRestaurant: (dayId: string, mealTime: 'lunch' | 'dinner', restaurant: ChosenRestaurant | null) => void
+  /** Una excursión desde la pantalla de añadir, en un día vacío. */
+  addExcursionToDay: (dayId: string, excursion: Excursion) => void
   /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
   openDateNoticeId: string | null
   setOpenDateNoticeId: (id: string | null) => void
@@ -719,7 +723,37 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return { route: { ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) } }
     }),
   setDayUntimed: (dayId, untimed) =>
-    set((state) => (state.route ? { route: updateDay(state.route, dayId, (day) => ({ ...day, untimed })) } : state)),
+    set((state) =>
+      state.route
+        ? {
+            // Al volver a "Con horas", horas seguidas desde el principio del día; el viajero las cambia si quiere.
+            route: updateDay(state.route, dayId, (day) => ({ ...day, untimed, stops: !untimed && day.untimed && isFreeDay(day) ? chainedTimes(day, day.stops) : day.stops })),
+          }
+        : state,
+    ),
+  addFreeDay: (name) => {
+    const route = get().route
+    const added = route ? addFreeDayTo(route, name) : null
+    if (!added) return null
+    set({ route: added.route })
+    return added.dayId
+  },
+  removeFreeDay: (dayId) => set((state) => (state.route ? { route: removeFreeDayFrom(state.route, dayId) } : state)),
+  renameDay: (dayId, name) => set((state) => (state.route ? { route: renameDayIn(state.route, dayId, name) } : state)),
+  moveFreeDay: (dayId, direction) => set((state) => (state.route ? { route: moveDay(state.route, dayId, direction) } : state)),
+  addPlaceToDay: (dayId, stop, time) =>
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (day) => withStopAt(day, stop, time)) } : state)),
+  setMealRestaurant: (dayId, mealTime, restaurant) =>
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (day) => withMealRestaurant(day, mealTime, restaurant)) } : state)),
+  addExcursionToDay: (dayId, excursion) => {
+    // La excursión puede venir del catálogo del destino y no de las del día: se apunta en el día para que la encuentre.
+    set((state) =>
+      state.route
+        ? { route: updateDay(state.route, dayId, (day) => ({ ...day, excursions: (day.excursions ?? []).some((other) => other.id === excursion.id) ? day.excursions : [...(day.excursions ?? []), excursion] })) }
+        : state,
+    )
+    get().addBlankDayExcursion(dayId, excursion)
+  },
 
   openDateNoticeId: null,
   setOpenDateNoticeId: (id) => set({ openDateNoticeId: id }),
@@ -728,8 +762,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       // Rehacer el viaje (fechas desde el mapa): los días libres del viajero ("lo organizo yo") no los toca el motor
       // nunca (decisión del usuario, 2026-09-28): se quedan en su número de día.
-      const freeDays = state.keepBookingsOnNextRoute ? new Map((state.route?.days ?? []).filter((day) => (day.dayType ?? 'normal') === 'manual').map((day) => [day.dayNumber, day])) : new Map<number, DayPlan>()
-      const route = freeDays.size > 0 ? { ...incoming, days: incoming.days.map((day) => (freeDays.has(day.dayNumber) ? { ...freeDays.get(day.dayNumber)!, id: day.id } : day)) } : incoming
+      const freeDays = state.keepBookingsOnNextRoute ? new Map((state.route?.days ?? []).filter((day) => (day.dayType ?? 'normal') === 'manual' && !day.userAdded).map((day) => [day.dayNumber, day])) : new Map<number, DayPlan>()
+      const replanned = freeDays.size > 0 ? { ...incoming, days: incoming.days.map((day) => (freeDays.has(day.dayNumber) ? { ...freeDays.get(day.dayNumber)!, id: day.id } : day)) } : incoming
+      // Los días añadidos ("+ Añadir día") no pasan por el motor: vuelven tal cual, con su número de día.
+      const route = state.keepBookingsOnNextRoute ? withUserDaysBack(replanned, userAddedDays(state.route)) : replanned
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
@@ -776,7 +812,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       const route = state.route
-      const span = dateRange ? daysBetweenInclusive(dateRange.start, dateRange.end) : null
+      // Los días añadidos por el viajero no los planifica el motor: se quitan del final y vuelven en setRoute.
+      const userDays = userAddedDays(route).length
+      const fullSpan = dateRange ? daysBetweenInclusive(dateRange.start, dateRange.end) : null
+      const span = fullSpan != null ? fullSpan - userDays : null
+      const plannedRange = dateRange && userDays > 0 ? { ...dateRange, end: addDaysToIso(dateRange.end, -userDays) } : dateRange
       const startMonth = dateRange ? Number(dateRange.start.slice(5, 7)) - 1 : null
       // Sin fechas, el mismo mes de antes (el de las fechas que se quitan, o el que ya tenía).
       const month = startMonth ?? (route.answers.dateRange ? Number(route.answers.dateRange.start.slice(5, 7)) - 1 : route.answers.month)
@@ -784,8 +824,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         destination: route.destination,
         answers: {
           ...route.answers,
-          dateRange,
-          days: span ?? route.answers.days,
+          dateRange: plannedRange,
+          days: span ?? (route.answers.days != null ? route.answers.days - userDays : route.answers.days),
           month,
           season: month != null ? seasonOfMonth(month) : route.answers.season,
         },
@@ -894,6 +934,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           const reordered = orderedStopIds
             .map((id) => stopsById.get(id))
             .filter((stop): stop is Stop => Boolean(stop))
+          // Día libre: las horas se reajustan desde la parada que cambia hacia abajo; la primera conserva la suya.
+          if (isFreeDay(day)) return { ...day, stops: day.untimed ? reordered : retimeFromChange(day.stops, reordered) }
           return { ...day, stops: pushOverlapsForward(reassignTimesByPosition(day.stops, reordered)) }
         }),
       }
@@ -918,7 +960,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           // arrastrarlas, horarios — en vez de tener que reinventar todo eso para este caso.
           dayType: mediaJornada ? 'manual' : 'excursion',
           halfDayExcursion: mediaJornada
-            ? { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' }
+            ? { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '14:00' }
             : null,
           // Se limpia el "no, gracias" anterior: si vuelve a elegir una, es que la quiere.
           halfDayExcursionDeclined: false,
@@ -956,7 +998,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             // que traía era la de otro día — pero sin tocar las que ya estaban.
             if (day.id === fromDayId) return { ...day, stops: withoutStop(day.stops, stopId) }
             if (day.id === toDayId) {
-              return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }]) }
+              return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, time: suggestedTimeFor(day, stop) }]) }
             }
             return day
           }),
@@ -1265,7 +1307,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 const MANUAL_EDIT_ACTIONS = [
   'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
-  'markDidntMakeCutAdded',
+  'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',
 ] as const
 for (const name of MANUAL_EDIT_ACTIONS) {
   const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown

@@ -17,6 +17,8 @@ interface StopAccordionProps {
   menu?: ReactNode
   /** Hora de inicio calculada para esta parada concreta ("09:00") — distinta de `stop.hours` (horario de apertura del lugar). */
   startTime?: string
+  /** La ha añadido el viajero: lleva "Añadida por ti". */
+  addedByUser?: boolean
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -39,7 +41,7 @@ const RESERVATION_NOTE: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false }: StopAccordionProps) {
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -94,6 +96,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
   // Por fuera no hace falta reservar: la reserva va dentro, en Entradas.
   if (stop.visitMode !== 'fuera' && stop.reservation && RESERVATION_NOTE[stop.reservation]) meta.push({ text: RESERVATION_NOTE[stop.reservation] })
   if (stop.isRevisit) meta.push({ text: 'Revisita' })
+  if (addedByUser) meta.push({ text: 'Añadida por ti' })
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
   if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
