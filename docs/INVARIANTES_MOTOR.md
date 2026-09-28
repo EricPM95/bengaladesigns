@@ -1590,3 +1590,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       a cenar"); `texto_fechas` lleva su `texto_despues_cenar` (sin "antes de cenar" después de cenar).
     - Santa Maria in Trastevere: 7:30-21:00 todo el año, agosto 8:00-12:00 y 16:00-21:00 (con `verificar`: la web oficial
       no cargaba). El mercadillo de Navona: nueva fecha especial con `verificar: true` hasta confirmarlo el 1 de diciembre.
+
+314. **Ruta 3 de octubre: el día recupera lo suyo antes de dejar tiempo libre** (2026-09-28):
+    - Antes de dejar más de 30 min de tiempo libre entre dos visitas, el día recupera una parada suya de la tarde que se
+      había quedado fuera solo por el sol o la estación (Letrán en D5C, entre San Clemente y Santa María la Mayor), si
+      está abierta, cabe y no se pierde nada. Es la misma idea que el Castillo por dentro.
+    - D1-FT de invierno con más de 45 min de espera antes del sol (octubre, marzo; `si_espera`): Trastevere como parada,
+      se sube andando por el Tempietto abierto (10:00-18:00, última entrada 17:30, cerrado el lunes) y la Fontana
+      dell'Acqua Paola al Janículo al atardecer, y se baja a Santa Maria in Trastevere y a cenar. Con el sol pronto
+      (diciembre), el bus 115.

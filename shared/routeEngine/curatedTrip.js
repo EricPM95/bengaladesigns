@@ -46,6 +46,8 @@ const SHORT_STOP_MINUTES = 15
 const MID_DAY_WAIT_MAX = 60
 /** Con esta espera o más antes del sol, el monumento que iba por fuera por tiempo prueba a ir por dentro. */
 const FILL_INSIDE_MIN_IDLE = 20
+/** Con una espera así o más, el día recupera lo suyo que se había quedado fuera (Letrán). */
+const RECOVER_MIN_GAP = 30
 /** El orden de invierno forzado (el mirador primero) solo con el sol antes de esta hora. */
 const FORCED_WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Lo que se cuenta para llegar andando a comer al estirar el barrio de antes de la comida. */
@@ -471,6 +473,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // Galería de D4 con Free Tour: el turno de las 13:00 en invierno, el de las 15:00 si no), la otra no se queda "por
     // fuera"; y de las que no van, una sola por fuera.
     const applying = new Set([...sections.manana, ...sections.tarde].filter((stop) => stopApplies(stop, day)).map((stop) => stop.lugar))
+    // Lo de la tarde que hoy no va solo por el sol o la estación (Letrán en D5C, "los días largos"): si luego sobra tiempo,
+    // el día lo recupera (repaso de la ruta 3, 2026-09-28). Con el nombre de la parada de antes, para volver a su sitio.
+    const SUN_KEYS = new Set(['sol_antes_de', 'sol_despues_de', 'estacion'])
+    const recoverable = sections.tarde
+      .map((stop, at) => ({ stop, after: sections.tarde.slice(0, at).reverse().find((other) => stopApplies(other, day))?.lugar ?? null }))
+      .filter(({ stop }) => stop.solo && !stopApplies(stop, day) && !applying.has(stop.lugar) && [].concat(stop.solo).every((cond) => Object.keys(cond).every((key) => SUN_KEYS.has(key))))
+      .map(({ stop, after }) => ({ stop: { ...stop, solo: undefined }, after }))
     const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day) && !seenOutside(stop) && !applying.has(stop.lugar)).map((stop) => stop.lugar)
     const outsideKept = new Set()
     const keep = (stop) => {
@@ -514,7 +523,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     // Media jornada (la excursión se lleva la mañana): solo la tarde.
     if (day.halfDayExcursion) sections = { ...sections, manana: [], comida: null }
-    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName, forceWinter }
+    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName, forceWinter, recoverable }
   }
   // Lo que el tope de museos de pago quita (se decide con el viaje entero y se aplica al volver a resolver).
   const dropPaid = new Set()
@@ -616,6 +625,17 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
      * luego, por dentro, el monumento que iba por fuera por tiempo. Vale para cualquier día con mirador, sea de invierno
      * por la fecha o por el orden forzado (repaso de las 20 rutas: el D2 de marzo esperaba 100 min antes del Janículo).
      */
+    // La espera más larga del día entre dos visitas (sin contar comidas): lo que se vería como tiempo libre.
+    const maxWait = (plan) => {
+      const visits = (plan.schedule?.visits ?? []).filter((visit) => !visit.place.isNightExperience)
+      const meals = plan.schedule?.meals ?? []
+      let longest = 0
+      for (let i = 1; i < visits.length; i++) {
+        if (meals.some((meal) => meal.start >= visits[i - 1].end && meal.start < visits[i].start)) continue
+        longest = Math.max(longest, visits[i].start - visits[i - 1].end - (visits[i].walkMinutes ?? 0))
+      }
+      return longest
+    }
     // Llenar la espera nunca puede costar una parada (sin el mirador, la espera "baja" a 0).
     const droppedCount = (plan) => (plan.schedule?.dropped ?? []).length
     // Para el monumento por dentro: lo que va "por el camino" (Via della Conciliazione, 5 min) no cuenta como pérdida.
@@ -706,6 +726,24 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         planned = filled.plan
         resolved[resolvedIndex - 1] = filled.entry
       } else restore(beforeNatural)
+    }
+    // Antes de dejar más de 30 min de tiempo libre, el día recupera una parada suya que se había quedado fuera, si está
+    // abierta y cabe (la misma idea que el Castillo por dentro; repaso de la ruta 3, 2026-09-28).
+    const current = resolved[resolvedIndex - 1]
+    if (current?.recoverable?.length && maxWait(planned) > RECOVER_MIN_GAP) {
+      const beforeRecover = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      let tarde = [...current.sections.tarde]
+      for (const { stop, after } of current.recoverable) {
+        const at = after ? tarde.findIndex((other) => other.lugar === after) : -1
+        tarde = [...tarde.slice(0, at + 1), stop, ...tarde.slice(at + 1)]
+      }
+      const recoveredEntry = { ...current, sections: { ...current.sections, tarde } }
+      const recoveredPlan = planDay(recoveredEntry, skeletonDay)
+      const visited = current.recoverable.every(({ stop }) => (recoveredPlan.schedule?.visits ?? []).some((visit) => visit.place.name === stop.lugar && !visit.place.visitOutside))
+      if (visited && !sunsetLate(recoveredPlan, recoveredEntry.sections) && realDropped(recoveredPlan) <= realDropped(planned) && keyDropped(recoveredPlan) <= keyDropped(planned) && maxWait(recoveredPlan) < maxWait(planned)) {
+        planned = recoveredPlan
+        resolved[resolvedIndex - 1] = recoveredEntry
+      } else restore(beforeRecover)
     }
     days.push(planned)
   }
