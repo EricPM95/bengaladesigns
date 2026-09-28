@@ -1246,3 +1246,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     su franja. Si se pierde un imprescindible o el atardecer, se pregunta ("Para entrar hay que quitar el Janículo.
     ¿Lo cambiamos?"). Antes de guardar, una línea con lo que cambia y "Vale" / "Mejor no". La ruta guarda
     `insideNames`.
+276. **Sin fechas = días normales, nunca festivos** (decisión del usuario, 2026-09-28). Sin fechas el motor usa el día
+    15 del mes solo para el atardecer y el horario de temporada (`by_season`/`by_period`): ni `closed_dates`, ni
+    cierres por día de la semana (`weekday` es null), ni `last_sunday`, ni `special_hours` de `fechas_especiales`, ni
+    las reglas con fecha de los días curados (`no_en.fecha`, `cuando.fecha`, `si_fecha`). En curatedTrip todo pasa por
+    `realDateIso(day)` (null sin fechas); en openingHours `specialHoursOn` recibe la fecha solo si hay `weekday`. Lo
+    único del mes que sale sin fechas es la ventana de avisos "Si tu viaje coincide con…" (sin etiqueta en ningún día y sin
+    la última frase "Hemos ajustado / puesto…" del texto curado, que sin fechas no es verdad; con "Mejor no" tampoco).
+    Al poner fechas desde el botón del mapa, la ruta se rehace como en el formulario y sale la ventana de avisos; si el
+    viajero la había editado a mano, antes se pregunta ("Vamos a ajustar tu ruta a estas fechas y algunos días pueden
+    cambiar. ¿Seguimos?"): con "Mejor no" se guardan las fechas y la ruta se queda igual, con las etiquetas de los
+    días.

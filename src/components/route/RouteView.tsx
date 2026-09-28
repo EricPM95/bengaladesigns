@@ -16,6 +16,7 @@ import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
+import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
 
@@ -51,7 +52,8 @@ export function RouteView() {
   const panelSplit = useRouteStore((state) => state.panelSplit)
   const setPanelSplit = useRouteStore((state) => state.setPanelSplit)
   const devSimulatedTodayIso = useRouteStore((state) => state.dev_simulated_today_iso)
-  const setRouteDateRange = useRouteStore((state) => state.setRouteDateRange)
+  // Fechas desde el mapa: en los curados, la ruta se rehace (y se pregunta si ya estaba editada a mano).
+  const { onChangeDateRange: setRouteDateRange, dialog: datesDialog } = useDatesChange(route)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
@@ -294,6 +296,7 @@ export function RouteView() {
       )}
       {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
       <DateNoticesModal route={route} />
+      {datesDialog}
     </div>
   )
 }

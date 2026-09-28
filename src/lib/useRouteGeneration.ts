@@ -34,6 +34,7 @@ export function useRouteGeneration(enabled: boolean) {
 
   const finalizeRoute = async (finalCheckpoint: GenerationResumeState, params: GenerationParams) => {
     const mapped = mapGeneratedRouteToRoute(finalCheckpoint.generated, params.destination, params.answers, params.transportContext)
+    mapped.mustIncludePlaces = params.mustIncludePlaces ?? []
     // El país del destino: el motor de los destinos curados no lo manda, pero el lugar que eligió el viajero
     // sí lo trae (para la bandera de la pestaña RUTA).
     const destinationCountry = useRouteStore.getState().destinationPlace?.countryCode ?? null

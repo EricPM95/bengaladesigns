@@ -39,7 +39,7 @@ export function useWantInside(route: Route | null, day: DayPlan) {
           answers: route.answers,
           all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
           day_number: day.dayNumber,
-          must_include_places: selectedPool,
+          must_include_places: route.mustIncludePlaces ?? selectedPool,
           inside_names: route.insideNames ?? [],
           add: stopName,
         }),

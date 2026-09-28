@@ -111,6 +111,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const dateIso = calendar.dateOfDay(day.dayNumber)
     return { weekday: day.weekday ?? null, season: calendar.season, dateIso, sunset: sunsetFor(destData, { dateIso, season: calendar.season }) }
   }
+  // Sin fechas no hay días concretos (PROMPT_PENDIENTE G): el 15 del mes solo vale para el atardecer y el horario de
+  // temporada; nada de festivos, fechas del día curado ni horarios especiales.
+  const realDateIso = (day) => (calendar.hasDates ? hoursOf(day).dateIso : null)
   const closedThatDay = (name, day) => {
     const place = placeByName.get(name)
     if (!place) return false
@@ -211,7 +214,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const violates = (cfg, day) => {
     const hours = hoursOf(day)
     return (cfg.no_en ?? []).some((rule) => {
-      if (rule.fecha) return Boolean(hours.dateIso) && hours.dateIso.slice(5) === rule.fecha
+      if (rule.fecha) return Boolean(realDateIso(day)) && realDateIso(day).slice(5) === rule.fecha
       if (rule.dia_semana) return Boolean(hours.weekday) && norm(hours.weekday) === norm(rule.dia_semana) && (!rule.si_lleva || carries(cfg, rule.si_lleva))
       return false
     })
@@ -287,7 +290,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.experiencia == null || selected.includes(cond.experiencia)) &&
       (cond.pool == null || (cond.pool ? inPool(stop.lugar) : !inPool(stop.lugar))) &&
       (cond.min_dias == null || contentDays >= cond.min_dias) &&
-      (cond.fecha == null || (Boolean(day) && hoursOf(day).dateIso?.slice(5) === cond.fecha)) &&
+      (cond.fecha == null || (Boolean(day) && realDateIso(day)?.slice(5) === cond.fecha)) &&
       (cond.cierra_antes_del_atardecer == null || (Boolean(day) && closesBeforeSunset(cond.cierra_antes_del_atardecer, day))) &&
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
     )
@@ -338,7 +341,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (tranquilo) apply(`tranquilo_${weekday}`)
     }
     // Las de fecha (`si_fecha`: D1 el 25 de diciembre o el 1 de enero, "Navidad"), en el orden del JSON.
-    const mmdd = hoursOf(day).dateIso?.slice(5) ?? null
+    const mmdd = realDateIso(day)?.slice(5) ?? null
     for (const [name, variant] of Object.entries(cfg.variantes ?? {})) if (mmdd && (variant.si_fecha ?? []).includes(mmdd)) apply(name)
     // "Museos cerrados" (D2 en domingo sin alternativa o en festivo): el día entero sin horas muertas.
     for (const [name, variant] of Object.entries(cfg.variantes ?? {})) if (variant.si_cerrado && closedThatDay(variant.si_cerrado, day)) apply(name)

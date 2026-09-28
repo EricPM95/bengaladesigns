@@ -8,6 +8,7 @@ import type {
   DayType,
   Budget,
   BudgetItem,
+  DateNotice,
   DateRange,
   DayPlan,
   DestinationArchetype,
@@ -32,6 +33,8 @@ import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpTo
 import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
+import { daysBetweenInclusive } from '../lib/dateRange'
+import { seasonOfMonth } from '../lib/season'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -376,6 +379,13 @@ interface RouteStoreState {
       quita las fechas (vuelve a "Añadir fechas"). No recalcula `days` — el número de días del viaje
       ya generado no cambia por poner/quitar fechas después. */
   setRouteDateRange: (dateRange: DateRange | undefined) => void
+  /** Fechas puestas desde el mapa (PROMPT_PENDIENTE G): rehace la ruta como el formulario (pantalla de carga) con esas
+      fechas, sin tocar reservas ni wishlist. `undefined` = quitar fechas (días normales del mismo mes). */
+  regenerateRouteForDates: (dateRange: DateRange | undefined) => void
+  /** "Mejor no": se guardan las fechas y la ruta se queda; los avisos de esas fechas, con su etiqueta en el día. */
+  setRouteDatesKeepingRoute: (dateRange: DateRange | undefined, notices: DateNotice[]) => void
+  /** La siguiente `setRoute` es la misma ruta rehecha: no resetea reservas ni wishlist. */
+  keepBookingsOnNextRoute: boolean
   setActiveDayId: (dayId: string | null) => void
   setMode: (mode: RouteMode) => void
   toggleDarkMode: () => void
@@ -712,7 +722,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setOpenDateNoticeId: (id) => set({ openDateNoticeId: id }),
 
   setRoute: (route) =>
-    set({
+    set((state) => ({
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
         ? { ...route, days: route.days.map((day) => (day.countryCode ? day : { ...day, countryCode: dayCountryCode(null, day.city) })) }
@@ -725,15 +735,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // de en la pestaña RUTA — ver getTodayTripContext.
       mode: getTodayTripContext(route) ? 'today' : 'route',
       intensity: route.intensity,
-      accommodationSelections: {},
-      transportBookings: {},
-      insuranceBooking: null,
-      n26Added: false,
-      rentalVehicleBooking: null,
-      esimSelections: {},
-      wishlist: [],
+      ...(state.keepBookingsOnNextRoute
+        ? {}
+        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, wishlist: [] }),
+      keepBookingsOnNextRoute: false,
       dev_simulated_today_iso: null,
-    }),
+    })),
 
   hydrateTrip: (payload) =>
     set({
@@ -755,6 +762,34 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return state
       return { route: { ...state.route, answers: { ...state.route.answers, dateRange } } }
     }),
+  keepBookingsOnNextRoute: false,
+  regenerateRouteForDates: (dateRange) =>
+    set((state) => {
+      if (!state.route) return state
+      const route = state.route
+      const span = dateRange ? daysBetweenInclusive(dateRange.start, dateRange.end) : null
+      const startMonth = dateRange ? Number(dateRange.start.slice(5, 7)) - 1 : null
+      // Sin fechas, el mismo mes de antes (el de las fechas que se quitan, o el que ya tenía).
+      const month = startMonth ?? (route.answers.dateRange ? Number(route.answers.dateRange.start.slice(5, 7)) - 1 : route.answers.month)
+      return {
+        destination: route.destination,
+        answers: {
+          ...route.answers,
+          dateRange,
+          days: span ?? route.answers.days,
+          month,
+          season: month != null ? seasonOfMonth(month) : route.answers.season,
+        },
+        ...route.transportContext,
+        selected_curated_place_names: route.mustIncludePlaces ?? state.selected_curated_place_names,
+        keepBookingsOnNextRoute: true,
+        screen: 'loading',
+      }
+    }),
+  setRouteDatesKeepingRoute: (dateRange, notices) =>
+    set((state) =>
+      state.route ? { route: { ...state.route, answers: { ...state.route.answers, dateRange }, dateNotices: notices, dateNoticesSeenKey: null, dateNoticesKept: true } } : state,
+    ),
   setActiveDayId: (dayId) => set({ activeDayId: dayId }),
   setMode: (mode) => set({ mode }),
   toggleDarkMode: () =>
@@ -1195,3 +1230,23 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((current) => (current.route ? { route: updateDay(current.route, dayId, (d) => ({ ...d, ...optimized })) } : current))
   },
 }))
+
+// Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
+// antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
+const MANUAL_EDIT_ACTIONS = [
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays',
+  'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops', 'regenerateDayStops', 'replaceDayWithInside',
+  'markDidntMakeCutAdded',
+] as const
+for (const name of MANUAL_EDIT_ACTIONS) {
+  const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown
+  useRouteStore.setState({
+    [name]: (...args: unknown[]) => {
+      const before = useRouteStore.getState().route
+      const result = original(...args)
+      const after = useRouteStore.getState().route
+      if (after && after !== before && !after.editedManually) useRouteStore.setState({ route: { ...after, editedManually: true } })
+      return result
+    },
+  } as Partial<RouteStoreState>)
+}

@@ -689,6 +689,12 @@ export interface Route {
   dateNoticesSeenKey?: string | null
   /** "Quiero entrar": las paradas que el viajero ha pedido ver por dentro (el motor las pone por dentro y obligatorias). */
   insideNames?: string[]
+  /** El viajero ha cambiado la ruta a mano (añadir, quitar, mover, cambiar horas…): antes de rehacerla por fechas se pregunta. */
+  editedManually?: boolean
+  /** Los avisos son de una ruta que se quedó como estaba al ponerle fechas ("Mejor no"): la ventana no dice "hemos preparado". */
+  dateNoticesKept?: boolean
+  /** Lo que el viajero marcó del pool al generarla: para rehacerla igual (fechas, "Quiero entrar") aunque se abra otro día. */
+  mustIncludePlaces?: string[]
 }
 
 /** Icono ilustrado de un aviso de fecha (DateNoticeIcons.tsx); 'cierre' = cierre resuelto por el motor. */

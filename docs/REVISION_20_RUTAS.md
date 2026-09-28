@@ -1558,6 +1558,28 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 **Lo que quedó fuera**: Galería Borghese (No cabía en ningún día del viaje).
 
+## Caso de prueba: agosto sin fechas frente a 13-15 de agosto
+
+### 3 días en agosto, sin fechas
+
+**Avisos de fechas**: 
+- **Ferragosto** · sin etiqueta en ningún día: Si tu viaje coincide con los días del 14 al 15 de agosto: los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran.
+
+- **Día 1 — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:30 Foro Romano y Palatino · 12:30 Plaza del Campidoglio · 13:00 Plaza Venecia · 13:15 Altar de la Patria · 15:15 Barrio Judío · 15:45 Fuente de las Tortugas · 16:00 Largo di Torre Argentina · 16:30 Panteón · 17:00 Elefantino de Bernini · 17:15 Iglesia de Santa Maria sopra Minerva · 17:45 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 19:00 Campo de' Fiori · 21:30 Fontana de Trevi (noche) · 22:30 Plaza de España (noche)
+- **Día 2 — Vaticano, Castillo y Trastevere al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:45 Basílica de San Pedro · 13:00 Cúpula de San Pedro · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:45 Puente Sant'Angelo · 16:15 Castillo de Sant'Angelo (por fuera: Hoy lo ves por fuera para llegar a todo lo del día) · 17:00 Iglesia de Santa Maria in Trastevere · 17:30 Trastevere · 18:15 San Pietro in Montorio y Tempietto de Bramante (por fuera: A esta hora ya ha cerrado) · 18:30 Fontana dell'Acqua Paola · 19:30 Mirador del Janículo · 22:00 Trastevere de noche
+- **Día 3 — Trevi sin gente, el Pincio y la tarde en Monti**: 08:00 Fontana de Trevi · 08:30 Desayuno romano · 09:30 Iglesia de San Ignacio de Loyola · 09:45 Plaza Colonna · 10:15 Via Condotti · 10:30 Plaza de España · 11:30 Santa Maria del Popolo · 12:00 Piazza del Popolo · 12:45 Terraza del Pincio · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Basílica de Santa María la Mayor · 18:15 Iglesia de San Pietro in Vincoli · 18:45 Monti · 19:30 Via dei Fori Imperiali · 22:00 Coliseo (noche)
+
+### Los mismos 3 días, del 13 al 15 de agosto de 2027
+
+**Avisos de fechas**: 
+- **Ferragosto** · etiqueta «Ferragosto» en el día 2: Los Museos Vaticanos cierran el sábado 14 (Ferragosto) y el domingo 15 (Ferragosto). Hemos puesto tu visita el viernes 13 para que no los pierdas. El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer. El 15 de agosto el Panteón cierra por Ferragosto. Hemos puesto tu visita el sábado 14 para que no lo pierdas. Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.
+
+- **Día 1 (viernes 13 ago 2027) — Vaticano, Castillo y Trastevere al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:45 Basílica de San Pedro · 13:00 Cúpula de San Pedro · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:45 Puente Sant'Angelo · 16:15 Castillo de Sant'Angelo (por fuera: Hoy lo ves por fuera para llegar a todo lo del día) · 17:00 Iglesia de Santa Maria in Trastevere · 17:30 Trastevere · 18:15 San Pietro in Montorio y Tempietto de Bramante (por fuera: A esta hora ya ha cerrado) · 18:30 Fontana dell'Acqua Paola · 19:30 Mirador del Janículo · 22:00 Trastevere de noche
+- **Día 2 (sábado 14 ago 2027) — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:30 Foro Romano y Palatino · 12:30 Plaza del Campidoglio · 13:00 Plaza Venecia · 13:15 Altar de la Patria · 15:15 Panteón · 15:45 Elefantino de Bernini · 16:00 Iglesia de Santa Maria sopra Minerva · 16:30 Iglesia de San Luigi dei Francesi · 17:00 Piazza Navona · 17:45 Campo de' Fiori · 18:00 Largo di Torre Argentina · 18:30 Barrio Judío · 19:00 Fuente de las Tortugas · 21:30 Fontana de Trevi (noche) · 22:30 Plaza de España (noche)
+- **Día 3 (domingo 15 ago 2027) — Trevi sin gente, el Pincio y la tarde en Monti**: 08:00 Fontana de Trevi · 08:30 Desayuno romano · 09:30 Iglesia de San Ignacio de Loyola · 09:45 Plaza Colonna · 10:15 Via Condotti · 10:30 Plaza de España · 11:30 Piazza del Popolo · 12:15 Terraza del Pincio · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:30 Monti · 19:30 Via dei Fori Imperiali · 22:00 Coliseo (noche)
+
+Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu viaje coincide…", sin etiqueta. Con el 13-15, el Vaticano pasa al viernes 13 y la ventana cuenta el Ferragosto en su día.
+
 ## Recuento (Parte D)
 
 - **Monumentos (nivel 1-2) sin su propia línea**: 0 ✅

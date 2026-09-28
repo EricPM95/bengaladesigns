@@ -289,6 +289,25 @@ for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json
   recorrer(JSON.parse(readFileSync(new URL(file, detalleDir), 'utf8')), false, file)
 }
 for (const [index, line] of out.entries()) if (/€|\beuros?\b|\bEUR\b/i.test(line) && !CIFRA_OK.some((text) => line.includes(text))) recuento.precios.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
+// Caso de prueba (PROMPT_PENDIENTE G): sin fechas = días normales, nunca festivos. 3 días de agosto sin fechas (el motor
+// usa el 15 solo para el atardecer y la temporada) frente al mismo viaje del 13 al 15 de agosto (Ferragosto).
+out.push('## Caso de prueba: agosto sin fechas frente a 13-15 de agosto', '')
+for (const [titulo, fecha] of [['3 días en agosto, sin fechas', null], ['Los mismos 3 días, del 13 al 15 de agosto de 2027', '2027-08-13']]) {
+  const dias = []
+  for (let n = 1; n <= 3; n++) dias.push(await buildDayBlockV3(D, 4, false, n, 'nonstop', null, fecha, [], [], { city: 'Roma', scheduler: 'v3', month: 7 }))
+  out.push(`### ${titulo}`, '')
+  const avisos = dias.find((day) => day?.date_notices)?.date_notices ?? []
+  out.push(`**Avisos de fechas**: ${avisos.length ? '' : 'ninguno.'}`)
+  for (const notice of avisos) out.push(`- **${cell(notice.title)}**${notice.day_number ? ` · etiqueta «${cell(notice.tag)}» en el día ${notice.day_number}` : ' · sin etiqueta en ningún día'}: ${cell(notice.texts.join(' '))}`)
+  out.push('')
+  for (const [i, day] of dias.entries()) {
+    const cuando = fecha ? ` (${fechaLarga(addDays(fecha, i))})` : ''
+    out.push(`- **Día ${i + 1}${cuando} — ${cell(day?.curated_day?.name ?? day?.title ?? '')}**: ${(day?.stops ?? []).map((stop) => `${stop.suggested_time} ${stop.night_view_title ?? stop.name}${stop.visit_mode === 'fuera' ? ` (por fuera: ${stop.outside_reason})` : ''}`).join(' · ')}`)
+  }
+  out.push('')
+}
+out.push('Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu viaje coincide…", sin etiqueta. Con el 13-15, el Vaticano pasa al viernes 13 y la ventana cuenta el Ferragosto en su día.', '')
+
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
 out.push('## Recuento (Parte D)', '', ...lineaRecuento('Monumentos (nivel 1-2) sin su propia línea', recuento.sinLinea), ...lineaRecuento('Lugares de nivel 1 o 2 como "Por el camino"', recuento.nivelCamino), ...lineaRecuento('Plazas o puentes después de su monumento, fuera de las excepciones', recuento.ordenGrupo), ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
 console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length])) }))

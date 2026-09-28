@@ -91,7 +91,7 @@ export const DEFAULT_INDOOR_SCHEDULE = '09:00-17:00'
  *   día; si no, el `schedule` de siempre.
  */
 export function effectiveSchedule(place, hours = {}) {
-  const structured = Boolean(place?.windows || place?.by_day || place?.by_season || place?.by_period || specialHoursOn(place, hours?.dateIso))
+  const structured = Boolean(place?.windows || place?.by_day || place?.by_season || place?.by_period || specialHoursOn(place, hours?.weekday ? hours.dateIso : null))
   const text = structured ? scheduleForDay(place, hours ?? {}) : place?.schedule
   if (parseHoursSessions(text).length > 0) return text
   if (structured && text == null) return null // abierto siempre ("00:00-24:00")
@@ -119,7 +119,8 @@ export function lastEntryMinutes(place, visitStart, seasonOrHours = null) {
   // Con horario por periodo (Estaciones, Parte 2), la última entrada es la de ese periodo (null = no
   // hay), por encima de la de la época.
   // Un día con horario especial (`fechas_especiales` confirmado: el Coliseo el 2 de junio), el suyo.
-  const special = specialHoursOn(place, hours.dateIso)
+  // (Solo con fechas reales: sin ellas no hay "2 de junio", y `weekday` solo va con fechas.)
+  const special = specialHoursOn(place, hours.weekday ? hours.dateIso : null)
   if (special) return special.last_entry == null ? null : hhmmToMinutes(special.last_entry)
   const lastSunday = hours.weekday ? lastSundayOpening(place, hours.dateIso) : null
   if (lastSunday) return lastSunday.last_entry == null ? null : hhmmToMinutes(lastSunday.last_entry)
@@ -360,7 +361,8 @@ export function placeWindows(place, hours = {}) {
 function rawWindows(place, hours) {
   // Un día con horario especial (PROMPT_AVISO_FECHAS): por delante de todo lo demás (los cierres van antes, en el
   // reparto).
-  const special = specialHoursOn(place, hours.dateIso)
+  // (Solo con fechas reales: sin ellas no hay "2 de junio", y `weekday` solo va con fechas.)
+  const special = specialHoursOn(place, hours.weekday ? hours.dateIso : null)
   if (special) return special.windows
   // El último domingo del mes con su horario propio (`last_sunday`), solo con fechas.
   const lastSunday = hours.weekday ? lastSundayOpening(place, hours.dateIso) : null
