@@ -43,6 +43,10 @@ const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha 
 const SHORT_STOP_MINUTES = 15
 /** Más espera que esto antes del atardecer, con el mirador primero, se llena (decisión del usuario, 2026-09-28). */
 const MID_DAY_WAIT_MAX = 60
+/** Un hueco así antes del sol (por un cierre) se llena primero con paradas de camino (decisión del usuario, 2026-09-28). */
+const CLOSURE_GAP_MINUTES = 90
+/** "De camino, en la misma zona": a esta distancia del mirador como mucho. */
+const ON_THE_WAY_METERS = 700
 /** Un imprescindible es parada de verdad: nunca menos de 20 min (decisión del usuario, 2026-09-28). */
 const IMPRESCINDIBLE_MIN_MINUTES = 20
 /** Lo que se ve desde el compañero (la Plaza Venecia desde el Altar): su propia línea, en un momento. */
@@ -570,6 +574,33 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         return at > 0 ? visits[at].start - visits[at - 1].end - (visits[at].walkMinutes ?? 0) : 0
       }
       const outsideForTime = (plan) => (plan.schedule?.visits ?? []).find((visit) => visit.place.visitOutside && visit.place.outsideKind === 'no_cabe')
+      // Un hueco de más de 90 min antes del sol (el Castillo cerrado el lunes, decisión del usuario 2026-09-28): primero
+      // entran las paradas de nivel 2-3 de camino, en la misma zona (subir al Janículo por el barrio: el Tempietto y la
+      // Fontana dell'Acqua Paola van antes del mirador); después se estira lo estirable; y solo entonces tiempo libre.
+      if (waitBeforeSun(winterPlan) > CLOSURE_GAP_MINUTES) {
+        const tarde = winterEntry.sections.tarde
+        const at = tarde.findIndex((stop) => stop.rol === 'atardecer')
+        const mirador = at >= 0 ? placeByName.get(tarde[at].lugar) : null
+        const near = (stop) => {
+          const place = placeByName.get(stop.lugar)
+          return place && mirador && (place.level ?? 3) >= 2 && Array.isArray(place.coordinates) && metersBetween(place.coordinates, mirador.coordinates) <= ON_THE_WAY_METERS
+        }
+        const after = at >= 0 ? tarde.slice(at + 1) : []
+        const climb = after.filter(near).sort((a, b) => metersBetween(placeByName.get(b.lugar).coordinates, mirador.coordinates) - metersBetween(placeByName.get(a.lugar).coordinates, mirador.coordinates))
+        if (climb.length > 0) {
+          const beforeClimb = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+          // El transporte hasta el mirador pasa a la primera parada de la subida.
+          const { traslado, traslado_min: trasladoMin, ...miradorStop } = tarde[at]
+          const moved = climb.map((stop, index) => (index === 0 && traslado ? { ...stop, traslado, traslado_min: trasladoMin } : stop))
+          const reordered = [...tarde.slice(0, at), ...moved, miradorStop, ...after.filter((stop) => !climb.includes(stop))]
+          const climbEntry = { ...winterEntry, sections: { ...winterEntry.sections, tarde: reordered } }
+          const climbPlan = planDay(climbEntry, skeletonDay)
+          if (!sunsetLate(climbPlan, climbEntry.sections) && keyDropped(climbPlan) <= keyDropped(winterPlan) && waitBeforeSun(climbPlan) < waitBeforeSun(winterPlan)) {
+            winterEntry = climbEntry
+            winterPlan = climbPlan
+          } else restore(beforeClimb)
+        }
+      }
       const filler = waitBeforeSun(winterPlan) > MID_DAY_WAIT_MAX && outsideForTime(winterPlan)
       if (filler) {
         const beforeFill = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }

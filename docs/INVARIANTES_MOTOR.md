@@ -1406,3 +1406,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     `estirar_texto` en la parada estirable: "Tiempo libre en Villa Borghese" · "Barca en el lago, bici o un rato a la
     sombra antes de subir al Pincio para el atardecer."). Sale así cuando se estira 45 min o más sobre su tiempo
     (`display_title`, que la app pinta como el nombre).
+298. **Huecos por un cierre** (decisión del usuario, 2026-09-28, regla general): si un cierre deja un hueco de más de
+    90 min antes del sol, primero entran paradas de nivel 2-3 de camino, en la misma zona (a 700 m del mirador como
+    mucho, de la más lejana a la más cercana: el lunes de octubre en D2, con el Castillo cerrado, se sube al Janículo
+    por el Tempietto y la Fontana dell'Acqua Paola, y el bus pasa a la primera de la subida); después se estira lo
+    estirable hasta su `estirar_max`; y solo entonces sale tiempo libre con nombre. (Si aún sobra más de una hora y hay
+    un monumento por fuera por tiempo, ese va por dentro.)
