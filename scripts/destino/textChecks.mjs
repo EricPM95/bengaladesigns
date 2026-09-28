@@ -88,7 +88,7 @@ export function gruposFueraDeOrden(D) {
           for (const despues of lista.slice(i + 1)) {
             const a = orden.get(primero.lugar)
             const b = orden.get(despues.lugar)
-            if (a.group !== b.group || a.group_order < b.group_order) continue
+            if (primero.lugar === despues.lugar || a.group !== b.group || a.group_order < b.group_order) continue
             // `primero` va antes y tiene un número mayor: rompe el orden, salvo por hora fija o atardecer/noche.
             if (primero.hora || conHora.has(primero.lugar) || despues.rol === 'atardecer') continue
             avisos.push(`${cfg.id}${nombre === 'base' ? '' : ` (${nombre})`}: ${primero.lugar} antes que ${despues.lugar}`)

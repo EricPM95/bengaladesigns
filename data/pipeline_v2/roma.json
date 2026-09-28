@@ -4392,6 +4392,18 @@
       ],
       "breakable_if_short": false,
       "combined_duration_minutes": 90
+    },
+    "popolo": {
+      "name": "Piazza del Popolo",
+      "places": [
+        "Piazza del Popolo",
+        "Santa Maria del Popolo"
+      ],
+      "order": [
+        "Piazza del Popolo",
+        "Santa Maria del Popolo"
+      ],
+      "note": "Primero la plaza y luego la iglesia (decisión del usuario, 2026-09-28)."
     }
   },
   "zone_distribution": {
@@ -11789,9 +11801,10 @@
         "tipo": "festivo",
         "icono": "calma",
         "titulo": "Ferragosto",
-        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos ajustado tu ruta a lo que sí abre.",
+        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
         "fuente": "closed_dates de roma.json",
-        "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
+        "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca.",
+        "aviso_restaurantes": true
       },
       {
         "id": "todos_los_santos",
@@ -11823,7 +11836,7 @@
         "tipo": "religioso",
         "icono": "navidad",
         "titulo": "Navidad en Roma",
-        "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos colocado tu ruta para que no te pierdas nada.",
+        "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
         "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
         "sugerencia": {
           "lugar": "Bendición Urbi et Orbi",
@@ -11834,7 +11847,8 @@
           "traslado_min": 25,
           "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
           "traslado_despues_min": 25
-        }
+        },
+        "aviso_restaurantes": true
       },
       {
         "id": "nochevieja",
@@ -11862,7 +11876,8 @@
         "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
         "comprobado": "2026-09-28"
       }
-    ]
+    ],
+    "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
   },
   "por_que_lugares": {
     "Coliseo": {

@@ -20,6 +20,7 @@ import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 /** Sin la última frase de lo que hemos hecho ("Hemos puesto…"): cuando no es verdad. */
+const RESTAURANTES_TEXT = 'Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.'
 const withoutPromise = (text) => String(text ?? '').replace(/\s*Hemos [^.]*\.\s*$/, '')
 const weekdayOf = (dateIso) => WEEKDAYS[new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`).getUTCDay()]
 const dayNumberOf = (dateIso) => Number(String(dateIso).slice(8, 10))
@@ -276,7 +277,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
         icon: curated?.icono ?? first?.icon ?? 'cierre',
         title: curated?.titulo ?? `${capital(longDate(iso))} · ${capital([...new Set(auto.map((item) => item.subject))].join(' · '))}`,
         tag: curated ? tagOf(curated) : first.tag,
-        texts: [...auto.map((item) => item.text), ...(curated ? [curatedText(curated)] : [])].filter(Boolean),
+        // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; una frase aparte, fuera de las 35 palabras.)
+        texts: [...auto.map((item) => item.text), ...(curated ? [curatedText(curated)] : []), ...(curated?.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
         kind: curated && auto.length ? 'mixto' : curated ? 'curado' : 'auto',
       }
     })

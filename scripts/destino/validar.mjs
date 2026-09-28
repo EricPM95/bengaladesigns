@@ -344,7 +344,7 @@ const section = (title) => {
       if (!/posible|suele|compru[eé]balo|a confirmar|web oficial/i.test(entry.texto ?? '')) s.warn.push(`${id}: verificar: true y el texto no lo dice con prudencia ("es posible que…", "compruébalo en la web oficial")`)
       else s.info.push(`${id}: dato que cambia cada año, dicho con prudencia`)
     }
-    if (!/^(\d{2}-\d{2}|easter([+-]\d+)?)$/.test(String(entry.fecha ?? ''))) s.red.push(`${id}: fecha "${entry.fecha}" no se lee (MM-DD o easter±N)`)
+    if (!/^(\d{2}-\d{2}|easter([+-]\d+)?|primer_domingo)$/.test(String(entry.fecha ?? ''))) s.red.push(`${id}: fecha "${entry.fecha}" no se lee (MM-DD o easter±N)`)
     const palabras = String(entry.texto ?? '').split(/\s+/).filter(Boolean).length
     if (palabras > 35) s.red.push(`${id}: el texto tiene ${palabras} palabras (35 como mucho)`)
     if (PRECIO_VISIBLE.test(entry.texto ?? '')) s.red.push(`${id}: el texto lleva una cifra o un precio`)

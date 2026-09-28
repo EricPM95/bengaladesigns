@@ -11,7 +11,8 @@
     "fuente": "de dónde sale el dato",
     "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app.",
     "comprobado": "AAAA-MM-DD: la última vez que se comprobó el dato (obligatorio con verificar). validar.mjs avisa si tiene más de 11 meses.",
-    "contexto": "opcional: el texto sin la parte de los cierres y de lo que hemos movido (eso ya lo cuenta el aviso automático, solo de lugares del viaje). Si existe, es lo que sale del curado: así no se repite y nunca nombra un lugar que no está en el viaje (decisión del usuario, 2026-09-28). Recortado de tu texto por Claude."
+    "contexto": "opcional: el texto sin la parte de los cierres y de lo que hemos movido (eso ya lo cuenta el aviso automático, solo de lugares del viaje). Si existe, es lo que sale del curado: así no se repite y nunca nombra un lugar que no está en el viaje (decisión del usuario, 2026-09-28). Recortado de tu texto por Claude.",
+    "aviso_restaurantes": "true: el aviso añade, aparte, \"Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.\" (Navidad y Ferragosto)."
   },
   "fechas": [
     {
@@ -171,9 +172,10 @@
       "tipo": "festivo",
       "icono": "calma",
       "titulo": "Ferragosto",
-      "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos ajustado tu ruta a lo que sí abre.",
+      "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
       "fuente": "closed_dates de roma.json",
-      "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
+      "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca.",
+      "aviso_restaurantes": true
     },
     {
       "id": "todos_los_santos",
@@ -205,7 +207,7 @@
       "tipo": "religioso",
       "icono": "navidad",
       "titulo": "Navidad en Roma",
-      "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena. Hemos colocado tu ruta para que no te pierdas nada.",
+      "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
       "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
       "sugerencia": {
         "lugar": "Bendición Urbi et Orbi",
@@ -216,7 +218,8 @@
         "traslado_min": 25,
         "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
         "traslado_despues_min": 25
-      }
+      },
+      "aviso_restaurantes": true
     },
     {
       "id": "nochevieja",
