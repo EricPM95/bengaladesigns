@@ -61,5 +61,6 @@
       "fuente": null,
       "_nota": "No se pudo verificar: se deja como estaba."
     }
-  }
+  },
+  "_comprobado": "Cada dato que cambia de un año a otro (fechas especiales con verificar, textos con cifra_ok, horarios por temporada, restaurantes curados) lleva \"comprobado\": \"AAAA-MM-DD\", la fecha de su última comprobación. validar.mjs avisa en amarillo si falta o tiene más de 11 meses; cada 1 de diciembre se repasa lo que salga en node scripts/destino/comprobado.mjs."
 }

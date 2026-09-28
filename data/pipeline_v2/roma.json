@@ -721,7 +721,8 @@
         "fecha": "2026-09-25"
       },
       "minutos_fuera": 20,
-      "por_fuera": "Hoy lo ves por fuera, y también impresiona. Rodéalo entero: por el lado de Monti está la parte que aún conserva sus tres pisos de arcos completos. Es la mejor foto."
+      "por_fuera": "Hoy lo ves por fuera, y también impresiona. Rodéalo entero: por el lado de Monti está la parte que aún conserva sus tres pisos de arcos completos. Es la mejor foto.",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Foro Romano y Palatino",
@@ -850,7 +851,8 @@
         "fecha": "2026-09-25"
       },
       "minutos_fuera": 15,
-      "por_fuera": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos."
+      "por_fuera": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos.",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Arco de Constantino",
@@ -1358,7 +1360,8 @@
         "mie": [
           "12:30-20:00"
         ]
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Plaza de San Pedro",
@@ -1619,7 +1622,8 @@
         "fuente": "https://turismoroma.it/en/places/villa-borghese",
         "nota": "La web oficial de turismo dice 'del amanecer al anochecer'. Se usa 07:00 como apertura y la puesta de sol como cierre. El dato anterior (08:30-17:00/19:00/20:00) no tenía fuente. OJO: la Terraza del Pincio se dejó como abierta 24 h; hay que confirmar que el acceso al Pincio desde la Piazza del Popolo sigue abierto de noche aunque el parque cierre.",
         "fecha": "2026-09-25"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Bioparque de Roma",
@@ -1707,7 +1711,8 @@
         "fuente": "https://ecommerce.bioparco.it/regolamento-orari.php",
         "nota": "Web oficial. Para el 25 oct–31 dic publica 09:30-19:00, que parece una errata (sería más horas en invierno que en verano): se usa 17:00, igual que el resto del invierno. Los fines de semana del 29 mar al 4 oct abre hasta las 19:00; no se usa (el horario de diario es el prudente). Última entrada: 60 min antes del cierre.",
         "fecha": "2026-09-25"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Galería Nacional de Arte Moderno",
@@ -2113,7 +2118,8 @@
         "fuente": "https://www.basilicasanpietro.va/it/orari",
         "nota": "La web oficial no publica última entrada; no se inventa. Primavera pasa a 18:00 desde el cambio de hora (antes el JSON la tenía a 17:00 toda la primavera).",
         "fecha": "2026-09-25"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Iglesia del Gesù",
@@ -2774,7 +2780,8 @@
         "fecha": "2026-09-25"
       },
       "minutos_fuera": 10,
-      "por_fuera": "La placita escondida sobre Monti donde está la iglesia del Moisés de Miguel Ángel. Vuelve otro día: por dentro merece la pena."
+      "por_fuera": "La placita escondida sobre Monti donde está la iglesia del Moisés de Miguel Ángel. Vuelve otro día: por dentro merece la pena.",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Domus Aurea",
@@ -2942,7 +2949,8 @@
         "fecha": "2026-09-25"
       },
       "minutos_fuera": 15,
-      "por_fuera": "Desde el parque de al lado ves sus muros de ladrillo, y te haces una idea de lo enormes que eran: aquí se bañaban miles de romanos a la vez."
+      "por_fuera": "Desde el parque de al lado ves sus muros de ladrillo, y te haces una idea de lo enormes que eran: aquí se bañaban miles de romanos a la vez.",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Jardín de los Naranjos",
@@ -3042,7 +3050,8 @@
       "uphill": {
         "transit": null,
         "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Basílica de Santa María la Mayor",
@@ -3318,7 +3327,8 @@
       "ticket_info": [
         "Gratis."
       ],
-      "is_free_access": true
+      "is_free_access": true,
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Villa Farnesina",
@@ -5404,7 +5414,8 @@
       "what_to_order": "Carbonara, cacio e pepe, carciofi alla giudia",
       "tip": "Reserva imprescindible, sobre todo a la hora de la comida. Abierto desde 1961, cocina romana impecable a dos pasos del Panteón.",
       "hours": "Lun-Sáb 12:30-15:00, 19:00-23:00. Domingo cerrado.",
-      "best_for": "Comida romana clásica cerca del Panteón"
+      "best_for": "Comida romana clásica cerca del Panteón",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Trattoria Da Enzo al 29",
@@ -5425,7 +5436,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Felice a Testaccio",
@@ -5442,7 +5454,8 @@
       "what_to_order": "Tonnarelli cacio e pepe (lo preparan en la mesa), amatriciana, abbacchio",
       "tip": "Famosos por servir el cacio e pepe directamente en la rueda de queso. Reserva con antelación.",
       "hours": "Todos los días 12:30-14:45, 19:30-23:15.",
-      "best_for": "El mejor cacio e pepe de Roma (servido en rueda de queso)"
+      "best_for": "El mejor cacio e pepe de Roma (servido en rueda de queso)",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Trattoria Monti",
@@ -5459,7 +5472,8 @@
       "what_to_order": "Tortello del giorno, frascarelli, coniglio in porchetta",
       "tip": "Gestionada por la familia Camerucci. Cocina de Le Marche con toques romanos. Reserva obligatoria, sitio pequeño.",
       "hours": "Mar-Sáb 12:45-14:45, 19:45-22:45. Dom solo comida. Lunes cerrado.",
-      "best_for": "Cocina familiar refinada fuera de los circuitos turísticos"
+      "best_for": "Cocina familiar refinada fuera de los circuitos turísticos",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Trattoria Dal Cavalier Gino",
@@ -5476,7 +5490,8 @@
       "what_to_order": "Fettuccine al ragu, saltimbocca alla romana, amatriciana",
       "tip": "Escondida en un callejón cerca del Parlamento. Frecuentada por políticos y periodistas. No aceptan tarjeta, solo efectivo.",
       "hours": "Lun-Sáb 13:00-14:45, 20:00-22:30. Domingo cerrado.",
-      "best_for": "Trattoria secreta donde comen los romanos de verdad"
+      "best_for": "Trattoria secreta donde comen los romanos de verdad",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Tonnarello",
@@ -5493,7 +5508,8 @@
       "what_to_order": "Tonnarelli cacio e pepe, carbonara, gricia, amatriciana",
       "tip": "Terraza enorme en pleno Trastevere. Ideal para cenar al aire libre. Puede haber cola, pero se mueve rápido.",
       "hours": "Todos los días 12:00-00:00.",
-      "best_for": "Cenar pasta al aire libre en el corazón de Trastevere"
+      "best_for": "Cenar pasta al aire libre en el corazón de Trastevere",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Taverna Trilussa",
@@ -5514,7 +5530,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "SantoPalato",
@@ -5535,7 +5552,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Pizzarium (Bonci)",
@@ -5556,7 +5574,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Antico Forno Roscioli",
@@ -5573,7 +5592,8 @@
       "what_to_order": "Pizza bianca (sola o con mortadella), pizza rossa, suppli al telefono",
       "tip": "El forno más famoso de Roma desde 1824. La pizza bianca caliente recién salida del horno es una experiencia religiosa.",
       "hours": "Lun-Sáb 7:00-20:00. Dom cerrado.",
-      "best_for": "La pizza bianca con mortadella más mítica de Roma"
+      "best_for": "La pizza bianca con mortadella más mítica de Roma",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Forno Campo de' Fiori",
@@ -5590,7 +5610,8 @@
       "what_to_order": "Pizza bianca, pizza rossa, filetti di baccala fritos",
       "tip": "Desde 1880. Busca la entrada por Vicolo del Gallo, no por la plaza. Pide la pizza bianca recién hecha.",
       "hours": "Lun-Sáb 7:30-14:30, 16:45-20:00. Horario variable.",
-      "best_for": "Pizza callejera histórica al lado de Campo de' Fiori"
+      "best_for": "Pizza callejera histórica al lado de Campo de' Fiori",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Ai Marmi (Panattoni)",
@@ -5611,7 +5632,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Da Remo",
@@ -5632,7 +5654,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Fatamorgana",
@@ -5648,7 +5671,8 @@
       "what_to_order": "Sabores creativos: Kentuki (tabaco y chocolate), Bacio del Principe, o lo que sea de temporada",
       "tip": "Pionera del gelato natural en Roma. Sin colorantes, sin conservantes, sin gluten. Sabores únicos que no encontrarás en otro sitio. Varias sedes (también Via Laurina 10 cerca de Piazza del Popolo).",
       "hours": "Todos los días 12:00-23:00 (aprox).",
-      "best_for": "Gelato artesanal con sabores creativos e innovadores"
+      "best_for": "Gelato artesanal con sabores creativos e innovadores",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Fior di Luna",
@@ -5664,7 +5688,8 @@
       "what_to_order": "Chocolate negro (cacao puro), crema con vainilla de Madagascar, sabores de fruta de temporada",
       "tip": "Ingredientes de origen controlado, chocolate de Valrhona, leche fresca del Lacio. Sin aditivos. Pequeño y discreto, como debe ser.",
       "hours": "Variable según temporada, aprox 12:00-00:00.",
-      "best_for": "Gelato puro y artesanal en Trastevere"
+      "best_for": "Gelato puro y artesanal en Trastevere",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Gelateria dei Gracchi",
@@ -5680,7 +5705,8 @@
       "what_to_order": "Crema dei Gracchi, pistacho, nocciola, frutas de temporada",
       "tip": "Muy cerca del Vaticano, perfecto para después de la visita. Ingredientes naturales, sabores clásicos ejecutados a la perfección.",
       "hours": "Todos los días 11:00-00:00 (aprox).",
-      "best_for": "El mejor gelato cerca del Vaticano"
+      "best_for": "El mejor gelato cerca del Vaticano",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Neve di Latte",
@@ -5700,7 +5726,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Otaleg",
@@ -5720,7 +5747,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, point)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Gelateria Valentino",
@@ -5736,7 +5764,8 @@
       "what_to_order": "Pistacho, stracciatella, caramelo salado",
       "tip": "Parada rápida a cualquier hora, lejos de los helados turísticos de la plaza; tienen opciones sin lactosa y veganas.",
       "hours": "Todos los días 11:00-24:00 (solo confirmado en TripAdvisor)",
-      "best_for": "Helado artesano junto a Trevi"
+      "best_for": "Helado artesano junto a Trevi",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Fatamorgana (Via Laurina)",
@@ -5752,7 +5781,8 @@
       "what_to_order": "Kentucky (chocolate y tabaco), albahaca con nueces y miel, pistacho de Bronte",
       "tip": "Parada rápida después de comer; todos los sabores y conos son sin gluten.",
       "hours": null,
-      "best_for": "Helado artesano de sabores originales"
+      "best_for": "Helado artesano de sabores originales",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Roscioli Caffè Pasticceria",
@@ -5768,7 +5798,8 @@
       "what_to_order": "Cornetto relleno (crema, pistacho o chocolate), caffe espresso, maritozzo con panna",
       "tip": "De la familia Roscioli (imperio gastronómico romano). Los mejores cornetti de Roma. Ideal para desayunar antes de explorar el centro.",
       "hours": "Lun-Sáb 7:00-20:00. Dom 8:00-18:00.",
-      "best_for": "El mejor desayuno italiano del centro"
+      "best_for": "El mejor desayuno italiano del centro",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Caffè Sant'Eustachio",
@@ -5784,7 +5815,8 @@
       "what_to_order": "Gran Caffe Sant'Eustachio (su especialidad con crema batida), caffe espresso",
       "tip": "Tostaduría histórica desde 1938. Pide en barra como un local: 'Un caffe, per favore'. El azúcar ya viene incluido en su caffe estrella (pide 'amaro' si lo quieres sin azúcar).",
       "hours": "Todos los días 7:30-01:00.",
-      "best_for": "El caffe más legendario de Roma"
+      "best_for": "El caffe más legendario de Roma",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "La Casa del Caffè Tazza d'Oro",
@@ -5800,7 +5832,8 @@
       "what_to_order": "Granita di caffe con panna (en verano es imprescindible), espresso, caffe del Brasile",
       "tip": "Justo al lado del Panteón. En verano, la granita de café con nata es el mejor refresco de Roma. Compra un paquete de café para llevar como souvenir.",
       "hours": "Lun-Sáb 7:00-20:00. Dom 10:30-19:30.",
-      "best_for": "Granita di caffe con panna junto al Panteón"
+      "best_for": "Granita di caffe con panna junto al Panteón",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Faro - Caffè Specialty",
@@ -5820,7 +5853,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Pasticceria Regoli",
@@ -5840,7 +5874,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Freni e Frizioni",
@@ -5860,7 +5895,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Il Goccetto",
@@ -5876,7 +5912,8 @@
       "what_to_order": "Vino natural o biodinámico por copa, tabla de quesos italianos",
       "tip": "Enoteca histórica en un palazzo del siglo XVI. Más de 40 vinos por copa. Ambiente íntimo y local, nada turístico. Perfecto para una copa tranquila.",
       "hours": "Mar-Sáb 12:00-14:30, 18:00-00:00. Lun solo tarde. Dom cerrado.",
-      "best_for": "Vino natural en un palazzo del siglo XVI"
+      "best_for": "Vino natural en un palazzo del siglo XVI",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Il Sorpasso",
@@ -5893,7 +5930,8 @@
       "tip": "Espacio amplio con estética industrial-chic. Tablas de embutidos y quesos artesanales espectaculares. Zona Prati, ideal tras visitar el Vaticano.",
       "hours": "Lun-Sáb 7:30-01:00. Dom cerrado.",
       "best_for": "Aperitivo gourmet con tablas de embutidos cerca del Vaticano",
-      "meal": "ambos"
+      "meal": "ambos",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Enoteca Ferrara",
@@ -5913,7 +5951,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Barnum Cafe",
@@ -5929,7 +5968,8 @@
       "what_to_order": "Spritz, negroni sbagliato, brunch los domingos",
       "tip": "Café-cocktail bar con aire bohemio cerca de Campo de' Fiori. Perfecto para el aperitivo de atardecer. Wifi y enchufes si necesitas un descanso digital.",
       "hours": "Lun-Jue 9:00-01:00. Vie-Sáb 9:00-02:00. Dom 10:00-01:00.",
-      "best_for": "Aperitivo con encanto bohemio cerca de Campo de' Fiori"
+      "best_for": "Aperitivo con encanto bohemio cerca de Campo de' Fiori",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Ma Che Siete Venuti a Fà",
@@ -5949,7 +5989,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Trapizzino (Trastevere)",
@@ -5970,7 +6011,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Supplizio",
@@ -5987,7 +6029,8 @@
       "what_to_order": "Suppli classico al telefono (ragu), suppli cacio e pepe, suppli alla carbonara",
       "tip": "El suppli elevado a gourmet. Las versiones de cacio e pepe y carbonara son adictivas. Perfecto para un bocado rápido entre visitas.",
       "hours": "Lun-Sáb 11:00-21:00. Dom cerrado.",
-      "best_for": "El mejor suppli gourmet de Roma"
+      "best_for": "El mejor suppli gourmet de Roma",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Dar Filettaro a Santa Barbara",
@@ -6004,7 +6047,8 @@
       "what_to_order": "Filetti di baccala fritti (bacalao frito), puntarelle, ensalada",
       "tip": "Desde 1938, solo hacen una cosa: bacalao frito en masa crujiente. Y lo hacen perfecto. Local minimalista, mesas compartidas, sin tonterías.",
       "hours": "Lun-Sáb 17:30-23:00. Dom cerrado.",
-      "best_for": "Filetes de bacalao fritos desde 1938 (una sola cosa, perfecta)"
+      "best_for": "Filetes de bacalao fritos desde 1938 (una sola cosa, perfecta)",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Er Buchetto",
@@ -6021,7 +6065,8 @@
       "what_to_order": "Panino di porchetta (con corteza crujiente), vino de la casa",
       "tip": "Desde los años 50, porchetta directa del cerdo entero cortada al momento. El panino más contundente de Roma. Cerca de Termini, ideal para llegar con hambre.",
       "hours": "Lun-Sáb 10:00-22:00 (aprox).",
-      "best_for": "El bocadillo de porchetta definitivo"
+      "best_for": "El bocadillo de porchetta definitivo",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Mordi e Vai",
@@ -6042,7 +6087,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "La Prosciutteria (Trastevere)",
@@ -6059,7 +6105,8 @@
       "what_to_order": "Tabla mixta de prosciutto, salami, quesos y bruschette. Vino tinto de la casa.",
       "tip": "Tablas abundantes de embutidos y quesos italianos a buen precio. Perfecto para compartir entre dos. Ambiente desenfadado y juvenil.",
       "hours": "Todos los días 11:00-00:00.",
-      "best_for": "Tablas de embutidos y quesos para compartir"
+      "best_for": "Tablas de embutidos y quesos para compartir",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "200 Gradi",
@@ -6076,7 +6123,8 @@
       "what_to_order": "Panino Verbano (anchoas y búfala), panino de pato, panino de porchetta",
       "tip": "Ideal si vais justos de tiempo: está entre la salida de los Museos y la plaza, y el bocadillo se puede llevar.",
       "hours": "Todos los días, comida y cena (horario exacto sin confirmar)",
-      "best_for": "Bocadillo gourmet rápido"
+      "best_for": "Bocadillo gourmet rápido",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Pizzeria Da Baffetto",
@@ -6093,7 +6141,8 @@
       "what_to_order": "Pizza margherita, capricciosa, con prosciutto crudo y rucola",
       "tip": "Pizzería clásica romana desde 1960. Cola en la puerta garantizada. Pizza fina, crujiente y enorme. Sitio minúsculo, mesas compartidas.",
       "hours": "Todos los días 18:30-01:00. Solo cenas.",
-      "best_for": "Pizza clásica romana nocturna con ambiente vintage"
+      "best_for": "Pizza clásica romana nocturna con ambiente vintage",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Coming Out",
@@ -6110,7 +6159,8 @@
       "what_to_order": "Pizza",
       "tip": "Probado por nosotros: muy buenas pizzas a un paso del Coliseo.",
       "hours": null,
-      "best_for": "Pizza rápida y buena junto al Coliseo"
+      "best_for": "Pizza rápida y buena junto al Coliseo",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Li Rioni",
@@ -6127,7 +6177,8 @@
       "what_to_order": "Pizza romana fina al horno de leña, supplì",
       "tip": "Solo abre para cenar: llega antes de las 20:00 o toca hacer cola. Ruidosa y muy romana.",
       "hours": "Mié-Lun 18:30-24:00 (solo cena). Martes cerrado. Cierra unas 2 semanas en agosto.",
-      "best_for": "Pizza romana auténtica para cenar"
+      "best_for": "Pizza romana auténtica para cenar",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "La Prezzemolina",
@@ -6144,7 +6195,8 @@
       "what_to_order": "Pizza al taglio de mortadela, pizza carbonara, supplì",
       "tip": "Ideal para un almuerzo rápido para llevar entre el Coliseo y el Foro; ve antes de las 13:00 para tener más variedad.",
       "hours": "Todos los días 11:00-17:00 (solo confirmado en TripAdvisor)",
-      "best_for": "Almuerzo rápido y barato"
+      "best_for": "Almuerzo rápido y barato",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "La Boccaccia",
@@ -6161,7 +6213,8 @@
       "what_to_order": "Pizza al taglio de berenjena y tomate, patata y champiñones",
       "tip": "Solo tiene 5-6 taburetes: pide para llevar y cómetela en la fuente de Piazza della Madonna dei Monti, a 2 minutos.",
       "hours": "Todos los días 9:00-23:00",
-      "best_for": "Almuerzo rápido y barato en Monti"
+      "best_for": "Almuerzo rápido y barato en Monti",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Piccolo Buco",
@@ -6178,7 +6231,8 @@
       "what_to_order": "Margherita con burrata, cuatro quesos, napolitana",
       "tip": "No aceptan reservas: llega a la apertura o a media tarde para evitar colas de hasta 50 minutos.",
       "hours": "Mar-Dom 12:00-23:00 (o hasta agotar masa). Lunes cerrado.",
-      "best_for": "Pizza napolitana de masa alta"
+      "best_for": "Pizza napolitana de masa alta",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Ai Tre Scalini",
@@ -6198,7 +6252,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Buccone Vini e Olii",
@@ -6214,7 +6269,8 @@
       "what_to_order": "Carpaccio de Chianina, albóndigas, tabla de embutidos y quesos con vino por copas",
       "tip": "Ideal para un almuerzo ligero o un aperitivo al atardecer; cierra a las 22:00.",
       "hours": "Lun-Sáb 10:00-22:00, Dom 11:00-22:00",
-      "best_for": "Vino por copas en una enoteca histórica"
+      "best_for": "Vino por copas en una enoteca histórica",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Panella - L'Arte del Pane",
@@ -6234,7 +6290,8 @@
       "coordinates_checked": {
         "fuente": "OpenStreetMap (el local)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Pompi",
@@ -6250,7 +6307,8 @@
       "what_to_order": "Tiramisú clásico, de fresa o de caramelo salado",
       "tip": "El tiramisú más famoso de Roma, desde 1960: se pide para llevar y se come en la Escalinata.",
       "hours": "Dom-Vie 10:00-22:30, Sáb 10:30-22:30 (web oficial)",
-      "best_for": "Postre dulce tras la Escalinata"
+      "best_for": "Postre dulce tras la Escalinata",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Osteria Fernanda",
@@ -6271,7 +6329,8 @@
       "coordinates_checked": {
         "fuente": "Mapbox Geocoding v6 (address, rooftop)",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Il Bocconcino",
@@ -6288,7 +6347,8 @@
       "what_to_order": "Tagliolini con ragú de pato, carbonara",
       "tip": "Buena opción para comer justo después del Coliseo; reserva online, a mediodía el servicio puede ir lento.",
       "hours": "Jue-Mar 8:30-23:30, cocina todo el día. Miércoles cerrado.",
-      "best_for": "Osteria romana a dos pasos del Coliseo"
+      "best_for": "Osteria romana a dos pasos del Coliseo",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "La Taverna dei Fori Imperiali",
@@ -6305,7 +6365,8 @@
       "what_to_order": "Cacio e pepe, carbonara, ñoquis con ragú de ternera",
       "tip": "Reserva con antelación, sobre todo para cenar: es pequeña y se llena cada noche.",
       "hours": "Mié-Lun 12:30-15:00 (Vie-Sáb hasta 15:30) y 19:30-22:30. Martes cerrado.",
-      "best_for": "Cocina romana familiar entre el Foro y Monti"
+      "best_for": "Cocina romana familiar entre el Foro y Monti",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Enoteca Corsi",
@@ -6322,7 +6383,8 @@
       "what_to_order": "Carbonara, carciofi alla giudia, abbacchio",
       "tip": "Ve pronto, sobre las 12:30: a mediodía se llena de gente de oficina y no siempre hay mesa sin reserva.",
       "hours": "Lun-Vie 12:00-15:30 y 19:30-22:30. Sáb solo 12:00-15:30. Domingo cerrado.",
-      "best_for": "Comida romana auténtica a buen precio junto a Piazza Venezia"
+      "best_for": "Comida romana auténtica a buen precio junto a Piazza Venezia",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Il Gabriello",
@@ -6339,7 +6401,8 @@
       "what_to_order": "Tonnarelli con gambas, amatriciana, cacio e pepe",
       "tip": "Solo abre para cenar y es pequeño: reserva por teléfono para las 19:30-20:00.",
       "hours": "Lun-Sáb 19:00-23:00 (solo cena). Domingo cerrado.",
-      "best_for": "Cena especial tras el atardecer en la Escalinata"
+      "best_for": "Cena especial tras el atardecer en la Escalinata",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Edy",
@@ -6356,7 +6419,8 @@
       "what_to_order": "Spaghetti al cartoccio (con marisco), cacio e pepe, saltimbocca",
       "tip": "Reserva para cenar, sobre todo de jueves a sábado; pide mesa en el callejón si hace buen tiempo.",
       "hours": "Lun-Sáb 12:00-15:00 y 18:30-23:00. Domingo cerrado.",
-      "best_for": "Trattoria familiar a dos pasos de Via Margutta"
+      "best_for": "Trattoria familiar a dos pasos de Via Margutta",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Sgarro Bistrot",
@@ -6373,7 +6437,8 @@
       "what_to_order": "Amatriciana, carbonara, cacio e pepe, saltimbocca",
       "tip": "Bistró familiar pequeño y de lo mejor en calidad-precio junto a la Escalinata; ojo, las bebidas no son baratas.",
       "hours": "Todos los días 11:30-22:30 (mar y sáb hasta 23:45), según TripAdvisor",
-      "best_for": "Cena romana sencilla y buena al pie de la Escalinata"
+      "best_for": "Cena romana sencilla y buena al pie de la Escalinata",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Poldo e Gianna Osteria",
@@ -6390,7 +6455,8 @@
       "what_to_order": "Tonnarelli cacio e pepe, rigatoni a la carbonara, rigatoni all'amatriciana",
       "tip": "Reserva con antelación y pide mesa en la terraza del callejón, a dos pasos del Parlamento.",
       "hours": "Mar-Dom 12:30-15:00 y 19:30-23:00. Lunes cerrado.",
-      "best_for": "Cocina romana clásica bien hecha, camino del centro"
+      "best_for": "Cocina romana clásica bien hecha, camino del centro",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Piccolo Arancio",
@@ -6407,7 +6473,8 @@
       "what_to_order": "Ravioli a la naranja, carbonara, fettuccine con ragú de cordero",
       "tip": "Pequeño y siempre lleno: reserva por TheFork o por teléfono, sobre todo para cenar.",
       "hours": "Mar-Dom 12:00-15:30 y 18:30-24:00. Lunes cerrado.",
-      "best_for": "Cocina romana clásica a dos pasos de Trevi"
+      "best_for": "Cocina romana clásica a dos pasos de Trevi",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Colline Emiliane",
@@ -6424,7 +6491,8 @@
       "what_to_order": "Tagliatelle a la boloñesa, tortellini en caldo, lasaña verde",
       "tip": "Reserva siempre (teléfono o WhatsApp): sin reserva suelen no tener mesa.",
       "hours": "Mar-Sáb 12:45-14:45 y 19:30-22:45. Domingo y lunes cerrado.",
-      "best_for": "Pasta fresca emiliana hecha a mano"
+      "best_for": "Pasta fresca emiliana hecha a mano",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Ristorante Arlù",
@@ -6441,7 +6509,8 @@
       "what_to_order": "Carbonara, cacio e pepe, costillas de cordero",
       "tip": "Reserva en su web en temporada alta; es de los pocos locales familiares de Borgo Pio (desde 1959) que no es trampa para turistas.",
       "hours": "Lun-Sáb 11:30-16:00 y 18:30-22:00 (web oficial). Domingo sin confirmar.",
-      "best_for": "Comida romana clásica a dos pasos de San Pedro"
+      "best_for": "Comida romana clásica a dos pasos de San Pedro",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Borghiciana Pastificio Artigianale",
@@ -6458,7 +6527,8 @@
       "what_to_order": "Carbonara de pasta fresca, lasaña, tiramisú de pistacho",
       "tip": "No aceptan reservas y hay solo unas 15 plazas: llega antes de las 12:30 o pide la pasta para llevar.",
       "hours": "Lun-Sáb desde ~11:45 hasta 21:00-22:00 según el día. Domingo cerrado.",
-      "best_for": "Pasta fresca casera, comida rápida sentado"
+      "best_for": "Pasta fresca casera, comida rápida sentado",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Trattoria Valentino",
@@ -6475,7 +6545,8 @@
       "what_to_order": "Scamorza a la parrilla (con jamón, radicchio o gorgonzola), carciofi alla romana, cacio e pepe",
       "tip": "Se llena de romanos y no tiene reserva online: reserva por teléfono o llega justo a la apertura de la cena.",
       "hours": "Lun-Sáb 12:30-15:00 y 20:00-23:00. Domingo cerrado.",
-      "best_for": "Cena auténtica de barrio entre locales, en Monti"
+      "best_for": "Cena auténtica de barrio entre locales, en Monti",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Dal Toscano",
@@ -6496,7 +6567,8 @@
         "fuente": "https://www.ristorantedaltoscano.it/en/ (web oficial: Via Germanico 58/60, 00192 Roma) + Mapbox Geocoding v6 (número 58, precisión rooftop)",
         "nota": "Coordenada del portal (antes, el centro de Via Germanico, ~300 m).",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "L'Arcangelo",
@@ -6518,7 +6590,8 @@
         "fuente": "Falstaff (abril de 2026) + https://www.larcangelo.com/en/ (web oficial) + OpenStreetMap (coordenadas)",
         "nota": "Solo cenas, todos los días 19:15-22:45 (el usuario, 2026-09-26). Los restaurantes son recomendaciones: el horario lo comprueba el viajero en el mapa.",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Osteria dell'Angelo",
@@ -6539,7 +6612,8 @@
         "fuente": "https://www.touringclub.it/destinazioni/roma/mangiare/240317-osteria-dellangelo + OpenStreetMap (coordenadas)",
         "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabe si abre a mediodía: queda como \"cena\".",
         "fecha": "2026-09-26"
-      }
+      },
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Nonna Betta",
@@ -6560,7 +6634,8 @@
         "martes"
       ],
       "best_for": "La alcachofa a la judía en su barrio de siempre",
-      "_fuente": "https://www.nonnabetta.it/ (dirección, horario y cierre); coordenadas OpenStreetMap (2026-09-26)"
+      "_fuente": "https://www.nonnabetta.it/ (dirección, horario y cierre); coordenadas OpenStreetMap (2026-09-26)",
+      "comprobado": "2026-09-28"
     },
     {
       "name": "Giggetto al Portico d'Ottavia",
@@ -6581,7 +6656,8 @@
         "lunes"
       ],
       "best_for": "Comer junto a las ruinas del Pórtico de Octavia",
-      "_fuente": "https://www.giggetto.it/contatti (dirección, horario; el lunes no figura: cerrado); coordenadas OpenStreetMap (2026-09-26)"
+      "_fuente": "https://www.giggetto.it/contatti (dirección, horario; el lunes no figura: cerrado); coordenadas OpenStreetMap (2026-09-26)",
+      "comprobado": "2026-09-28"
     }
   ],
   "excursions": {
@@ -8224,7 +8300,8 @@
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
                 "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "09:00",
-                "cifra_ok": true
+                "cifra_ok": true,
+                "comprobado": "2026-09-28"
               }
             },
             {
@@ -9122,7 +9199,8 @@
             "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Con el tour volverás a pasar por aquí a media mañana.",
             "temprano": "A primera hora casi no hay nadie, y bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Disfrútala ahora: con el tour volverás a pasar a media mañana y estará llena.",
             "temprano_antes": "09:00",
-            "cifra_ok": true
+            "cifra_ok": true,
+            "comprobado": "2026-09-28"
           }
         },
         {
@@ -9495,7 +9573,8 @@
             "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
             "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
             "temprano_antes": "09:00",
-            "cifra_ok": true
+            "cifra_ok": true,
+            "comprobado": "2026-09-28"
           }
         },
         {
@@ -9517,7 +9596,8 @@
           "nota": "La cúpula falsa; abre a las 09:00.",
           "por_que": {
             "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
-            "cifra_ok": true
+            "cifra_ok": true,
+            "comprobado": "2026-09-28"
           }
         },
         {
@@ -9619,7 +9699,8 @@
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
                 "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "09:00",
-                "cifra_ok": true
+                "cifra_ok": true,
+                "comprobado": "2026-09-28"
               }
             },
             {
@@ -9641,7 +9722,8 @@
               "nota": "La cúpula falsa; abre a las 09:00.",
               "por_que": {
                 "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
-                "cifra_ok": true
+                "cifra_ok": true,
+                "comprobado": "2026-09-28"
               }
             },
             {
@@ -9853,7 +9935,8 @@
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
                 "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "09:00",
-                "cifra_ok": true
+                "cifra_ok": true,
+                "comprobado": "2026-09-28"
               }
             },
             {
@@ -9910,7 +9993,8 @@
             "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
             "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
             "temprano_antes": "09:00",
-            "cifra_ok": true
+            "cifra_ok": true,
+            "comprobado": "2026-09-28"
           }
         },
         {
@@ -9932,7 +10016,8 @@
           "nota": "La cúpula falsa; abre a las 09:00.",
           "por_que": {
             "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
-            "cifra_ok": true
+            "cifra_ok": true,
+            "comprobado": "2026-09-28"
           }
         },
         {
@@ -10041,7 +10126,8 @@
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
                 "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "09:00",
-                "cifra_ok": true
+                "cifra_ok": true,
+                "comprobado": "2026-09-28"
               }
             },
             {
@@ -10622,7 +10708,8 @@
       },
       "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
       "maximo_tranquilo": 2,
-      "cifra_ok": true
+      "cifra_ok": true,
+      "comprobado": "2026-09-28"
     },
     "trastevere": {
       "nombre": "Trastevere de noche",
@@ -11015,7 +11102,8 @@
         "titulo": "6 de enero · Reyes (la Befana)",
         "texto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
         "verificar": true,
-        "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente"
+        "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "viernes_santo",
@@ -11029,7 +11117,8 @@
           "nota": "Via Crucis con el Papa (hacia las 21:15)"
         },
         "verificar": true,
-        "fuente": "Tradición anual; hora y cortes a confirmar cada año en vatican.va"
+        "fuente": "Tradición anual; hora y cortes a confirmar cada año en vatican.va",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "pascua",
@@ -11044,7 +11133,8 @@
           "nota": "Bendición Urbi et Orbi a las 12:00"
         },
         "verificar": true,
-        "fuente": "vatican.va (confirmar cada año)"
+        "fuente": "vatican.va (confirmar cada año)",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "pasquetta",
@@ -11077,7 +11167,8 @@
         "titulo": "25 de abril · Fiesta de la Liberación",
         "texto": "Fiesta de la Liberación: festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
         "verificar": true,
-        "fuente": "Festivo nacional; cierres de lugares a confirmar"
+        "fuente": "Festivo nacional; cierres de lugares a confirmar",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "primero_mayo",
@@ -11087,7 +11178,8 @@
         "titulo": "1 de mayo · Día del Trabajo",
         "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde suele haber un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
         "verificar": true,
-        "fuente": "closed_dates de roma.json; concierto a confirmar cada año"
+        "fuente": "closed_dates de roma.json; concierto a confirmar cada año",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "fiesta_republica",
@@ -11127,7 +11219,8 @@
           "nota": "La Girandola sobre el Castillo (hora a confirmar)"
         },
         "verificar": true,
-        "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it"
+        "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "ferragosto",
@@ -11147,7 +11240,8 @@
         "titulo": "1 de noviembre · Todos los Santos",
         "texto": "Todos los Santos es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
         "verificar": true,
-        "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)"
+        "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "inmaculada",
@@ -11157,7 +11251,8 @@
         "titulo": "8 de diciembre · La Inmaculada",
         "texto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.",
         "verificar": true,
-        "fuente": "Tradición anual; hora a confirmar en vatican.va"
+        "fuente": "Tradición anual; hora a confirmar en vatican.va",
+        "comprobado": "2026-09-28"
       },
       {
         "id": "navidad",
@@ -11177,7 +11272,8 @@
         "titulo": "31 de diciembre · Nochevieja",
         "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
         "verificar": true,
-        "fuente": "Programa a confirmar cada año en comune.roma.it"
+        "fuente": "Programa a confirmar cada año en comune.roma.it",
+        "comprobado": "2026-09-28"
       }
     ]
   },
@@ -11204,12 +11300,14 @@
       "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
       "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
       "temprano_antes": "09:00",
-      "cifra_ok": true
+      "cifra_ok": true,
+      "comprobado": "2026-09-28"
     },
     "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más.",
     "Iglesia de San Ignacio de Loyola": {
       "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
-      "cifra_ok": true
+      "cifra_ok": true,
+      "comprobado": "2026-09-28"
     },
     "Plaza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi.",

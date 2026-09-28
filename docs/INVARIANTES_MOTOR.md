@@ -1274,3 +1274,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     del Popolo y San Pietro in Vincoli (10 min) no pueden desaparecer, así que salen siempre como parada, aunque sea por
     fuera. El Ara Pacis no lleva: desde fuera apenas se entrevé tras la cristalera y no merece un desvío; si no se
     entra, va a "No te dio tiempo".
+280. **Datos que caducan llevan `comprobado: "AAAA-MM-DD"`** (decisión del usuario, 2026-09-28): las fechas especiales con
+    `verificar`, todo objeto con `cifra_ok` (textos de los días, por_que_lugares, paseos, fichas), los lugares con
+    horario por temporada (`by_season` / `by_period`) y los restaurantes curados. Roma: 2026-09-28 en todo (se revisó
+    en septiembre); también en docs/roma_por_que.json y docs/roma_fechas_especiales.json, para que no se pierda al
+    volver a aplicarlos. validar.mjs (sección 13) avisa en amarillo de lo que no tiene fecha o la tiene de hace más de
+    11 meses; `node scripts/destino/comprobado.mjs` saca la lista por destino, y es lo que usa la revisión automática de
+    cada 1 de diciembre. Las plantillas del kit piden el campo (`_comprobado`).

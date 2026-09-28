@@ -30,7 +30,16 @@
       "icono": "bandera",
       "titulo": "D de mes · Nombre del evento",
       "texto": "Qué se puede ver y a qué hora. Hemos preparado tu ruta para que puedas verlo.",
-      "horario_especial": { "confirmado": false, "lugares": { "Nombre exacto del lugar": { "windows": ["14:00-19:00"] } } },
+      "horario_especial": {
+        "confirmado": false,
+        "lugares": {
+          "Nombre exacto del lugar": {
+            "windows": [
+              "14:00-19:00"
+            ]
+          }
+        }
+      },
       "verificar": true,
       "fuente": ""
     },
@@ -45,5 +54,6 @@
       "verificar": true,
       "fuente": ""
     }
-  ]
+  ],
+  "_comprobado": "Cada dato que cambia de un año a otro (fechas especiales con verificar, textos con cifra_ok, horarios por temporada, restaurantes curados) lleva \"comprobado\": \"AAAA-MM-DD\", la fecha de su última comprobación. validar.mjs avisa en amarillo si falta o tiene más de 11 meses; cada 1 de diciembre se repasa lo que salga en node scripts/destino/comprobado.mjs."
 }

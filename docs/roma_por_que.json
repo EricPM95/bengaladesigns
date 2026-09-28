@@ -24,12 +24,14 @@
       "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
       "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
       "temprano_antes": "09:00",
-      "cifra_ok": true
+      "cifra_ok": true,
+      "comprobado": "2026-09-28"
     },
     "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más.",
     "Iglesia de San Ignacio de Loyola": {
       "texto": "La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.",
-      "cifra_ok": true
+      "cifra_ok": true,
+      "comprobado": "2026-09-28"
     },
     "Plaza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi.",
@@ -96,7 +98,8 @@
         "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Con el tour volverás a pasar por aquí a media mañana.",
         "temprano": "A primera hora casi no hay nadie, y bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Disfrútala ahora: con el tour volverás a pasar a media mañana y estará llena.",
         "temprano_antes": "09:00",
-        "cifra_ok": true
+        "cifra_ok": true,
+        "comprobado": "2026-09-28"
       },
       "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra. Tienes tiempo de sobra: el punto de encuentro del tour está a unos 10 min andando.",
       "Museos Vaticanos y Capilla Sixtina": "Por la tarde hay menos cola que a media mañana, y entras hacia las 14:30. Tómatelo con calma, es la visita del día. Dentro de la Capilla Sixtina no se pueden hacer fotos."
@@ -130,12 +133,14 @@
     "_para": "Ficha de la Fontana de Trevi, sección Horario (sustituye la línea de la tasa).",
     "texto": "No es una entrada: la fuente se ve gratis desde la plaza a cualquier hora. Para bajar a la zona junto al agua hay una tasa de 2 € de 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, libre. Los residentes en Roma y los niños pequeños no pagan. Compruébalo en la web del Ayuntamiento.",
     "cifra_ok": true,
-    "fuente": "comune.roma.it (Biglietto d'ingresso per visitare la Fontana di Trevi); romapop.it; statoquotidiano.it, febrero de 2026"
+    "fuente": "comune.roma.it (Biglietto d'ingresso per visitare la Fontana di Trevi); romapop.it; statoquotidiano.it, febrero de 2026",
+    "comprobado": "2026-09-28"
   },
   "trevi_noche": {
     "_para": "Texto de la nocturna 'Fontana de Trevi (noche)' y del paseo 'La Roma de las fuentes'.",
     "añadir": "Y a partir de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
-    "cifra_ok": true
+    "cifra_ok": true,
+    "comprobado": "2026-09-28"
   },
   "_por_fuera": "Los lugares con interior que también se ven por fuera: 'minutos' (minutos_fuera en roma.json) y 'texto', que es el Por qué aquí cuando la parada va por fuera (cerrada, o museo de pago que no cabe).",
   "por_fuera": {

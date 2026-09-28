@@ -17,5 +17,6 @@
       "Nombre exacto del lugar": "El texto de ese lugar en ese día, si cambia (bajas del bus aquí, luego pasarás con el tour…)."
     }
   },
-  "_cifras": "Ninguna cifra ni precio en lo que se lee (multas, \"monedas de 1 €\"): sin cifra o a Tickets. Lo que se queda con cifra a propósito (una tasa bien explicada, una curiosidad) lleva cifra_ok: true en su objeto y validar.mjs lo deja pasar."
+  "_cifras": "Ninguna cifra ni precio en lo que se lee (multas, \"monedas de 1 €\"): sin cifra o a Tickets. Lo que se queda con cifra a propósito (una tasa bien explicada, una curiosidad) lleva cifra_ok: true en su objeto y validar.mjs lo deja pasar.",
+  "_comprobado": "Cada dato que cambia de un año a otro (fechas especiales con verificar, textos con cifra_ok, horarios por temporada, restaurantes curados) lleva \"comprobado\": \"AAAA-MM-DD\", la fecha de su última comprobación. validar.mjs avisa en amarillo si falta o tiene más de 11 meses; cada 1 de diciembre se repasa lo que salga en node scripts/destino/comprobado.mjs."
 }

@@ -38,6 +38,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildUnits } from '../../shared/routeEngine/units.js'
 import { curatedStops, gruposFueraDeOrden, textosConHora } from './textChecks.mjs'
+import { caducado, datosQueCaducan, detalleDe } from './comprobado.mjs'
 import { parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { MIN_DINNER_RESTAURANTS, dinnerZones, mainZonesOf, restaurantZonesNamedIn, servesDinner, zonesOfLabel } from '../../shared/routeEngine/dinnerZones.js'
@@ -405,6 +406,20 @@ const section = (title) => {
   s.info.push(`${places.filter((p) => p.minutos_fuera != null).length} lugares se ven por fuera`)
   // Primero la plaza o el puente, luego el monumento (`group_order`), salvo hora fija o atardecer/noche.
   for (const aviso of gruposFueraDeOrden(D)) s.warn.push(`orden de grupo: ${aviso}`)
+}
+
+// ── 13. Datos que caducan ───────────────────────────────────────────────────────────────────
+// Decisión del usuario (2026-09-28): fechas especiales con `verificar`, textos con `cifra_ok`, horarios por temporada
+// y restaurantes curados llevan `comprobado: "AAAA-MM-DD"`. Sin fecha o de hace más de 11 meses: amarillo, con la
+// lista (la revisión de cada 1 de diciembre sale de aquí: node scripts/destino/comprobado.mjs).
+{
+  const s = section('Datos que caducan (comprobado)')
+  const items = datosQueCaducan(D, detalleDe(ROOT, destino))
+  for (const item of items) {
+    const motivo = caducado(item)
+    if (motivo) s.warn.push(`${item.tipo} · ${item.nombre}: ${motivo}`)
+  }
+  s.info.push(`${items.length} datos con fecha de comprobación`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────
