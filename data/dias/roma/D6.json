@@ -1,0 +1,187 @@
+{
+  "_nota": "D6 escrito (2026-09-29): la mañana es la media jornada a Ostia Antica (08:00-14:00); la tarde, desde las 16:00, las basílicas, Monti y los Foros al atardecer.",
+  "id": "D6",
+  "nombre": "Ostia Antica, las basílicas y el Coliseo de noche",
+  "joyas": [],
+  "no_en": [],
+  "barrio_cena": "monti",
+  "noche": "coliseo",
+  "manana": {
+    "paradas": [],
+    "comida": null
+  },
+  "tarde": {
+    "empieza": "16:00",
+    "A": {
+      "_sol": "antes de las 17:40: Monti y los Foros al atardecer nada más volver; luego Santa María la Mayor",
+      "paradas": [
+        {
+          "lugar": "Monti",
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Monti",
+        "alternativa": "Trattoria Valentino",
+        "hora": "19:30"
+      }
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44: San Clemente y el Moisés antes de los Foros; Santa María la Mayor después",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "min": 40,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 25,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Monti",
+        "alternativa": "Trattoria Valentino",
+        "hora": "20:15"
+      }
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44: San Clemente, Letrán y Santa María la Mayor antes de los Foros",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "min": 40,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 20,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Monti",
+        "alternativa": "Trattoria Valentino",
+        "hora": "19:30"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45: con el Moisés (en verano San Pietro in Vincoli abre hasta las 19:00)",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "min": 40,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 50,
+          "elastica": 30
+        },
+        {
+          "lugar": "Columna de Trajano",
+          "min": 10
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Monti",
+        "alternativa": "Trattoria Valentino",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "lunes": {
+      "_nota": "Trattoria Monti cierra el lunes.",
+      "tarde.*": {
+        "restaurante": {
+          "cena": "Trattoria Valentino",
+          "alternativa": "La Boccaccia"
+        }
+      }
+    },
+    "domingo": {
+      "_nota": "Trattoria Valentino cierra el domingo."
+    }
+  }
+}

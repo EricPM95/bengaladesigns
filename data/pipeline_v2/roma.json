@@ -1629,41 +1629,60 @@
         "Bioparque de Roma"
       ],
       "windows": [
-        "08:30-17:00"
+        "06:30-19:00"
       ],
-      "schedule": "08:30-17:00",
-      "by_season": {
-        "invierno": [
-          "08:30-17:00"
-        ],
-        "primavera": [
-          "08:30-19:00"
-        ],
-        "verano": [
-          "08:30-20:00"
-        ],
-        "otono": [
-          "08:30-17:00"
-        ]
-      },
+      "schedule": "06:30-19:00",
       "closed_on": [],
       "reservation": "no",
       "card_text": "Abierto todos los días. Las puertas cierran según la época: nov-feb entre 17:00 y 19:00; mar-abr y sep-oct entre 19:00 y 21:00; may-ago entre 20:00 y 22:00. Algunas puertas cierran antes de la hora oficial.",
       "by_period": [
         {
           "from": "01-01",
+          "to": "02-28",
+          "windows": [
+            "06:30-19:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "03-01",
+          "to": "04-30",
+          "windows": [
+            "06:30-21:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "05-01",
+          "to": "08-31",
+          "windows": [
+            "06:30-22:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "09-01",
+          "to": "10-31",
+          "windows": [
+            "06:30-21:00"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "11-01",
           "to": "12-31",
           "windows": [
-            "07:00-sunset"
+            "06:30-19:00"
           ],
           "last_entry": null
         }
       ],
       "hours_audit": {
-        "confianza": "media",
-        "fuente": "https://turismoroma.it/en/places/villa-borghese",
-        "nota": "La web oficial de turismo dice 'del amanecer al anochecer'. Se usa 07:00 como apertura y la puesta de sol como cierre. El dato anterior (08:30-17:00/19:00/20:00) no tenía fuente. OJO: la Terraza del Pincio se dejó como abierta 24 h; hay que confirmar que el acceso al Pincio desde la Piazza del Popolo sigue abierto de noche aunque el parque cierre.",
-        "fecha": "2026-09-25"
+        "confianza": "alta",
+        "fuente": "https://www.comune.roma.it/web/it/informazione-di-servizio.page?contentId=IDS1431373 (Roma Capitale: apertura de las verjas 06:30-08:30; cierre 17:00-19:00 de noviembre a febrero, 19:00-21:00 en marzo-abril y septiembre-octubre, 20:00-22:00 de mayo a agosto; acceso libre todos los días)",
+        "nota": "Se toma el final de cada tramo de cierre. El horario anterior (08:30-17:00 en invierno) era de otra cosa (el Bioparco).",
+        "comprobado": "2026-09-29",
+        "fecha": "2026-09-29"
       },
       "comprobado": "2026-09-28"
     },

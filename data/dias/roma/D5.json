@@ -1,0 +1,388 @@
+{
+  "_nota": "D5 escrito (2026-09-29): el sur de Roma. Caracalla a la apertura, el Aventino y Testaccio; por la tarde las catacumbas y la Via Appia en bus, y el atardecer en el Campidoglio. En verano, los Museos Capitolinos antes del atardecer (museo de pago).",
+  "id": "D5",
+  "nombre": "El sur de Roma: el Aventino, Testaccio y la Via Appia",
+  "joyas": [],
+  "no_en": [
+    {
+      "dia_semana": "lunes",
+      "si_lleva": "Termas de Caracalla"
+    }
+  ],
+  "barrio_cena": "monti",
+  "noche": null,
+  "manana": {
+    "paradas": [
+      {
+        "lugar": "Termas de Caracalla",
+        "tipo": "fija",
+        "hora": {
+          "completo": "09:00",
+          "tranquilo": "09:30"
+        },
+        "min": 60,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera"
+      },
+      {
+        "lugar": "Boca de la Verdad",
+        "min": 20
+      },
+      {
+        "lugar": "Jardín de los Naranjos",
+        "min": 20
+      },
+      {
+        "lugar": "Ojo de la Cerradura del Aventino",
+        "min": 10
+      },
+      {
+        "lugar": "Pirámide Cestia",
+        "modo": "camino"
+      },
+      {
+        "lugar": "Cementerio Protestante",
+        "tipo": "opcional",
+        "min": 25,
+        "si_cerrado": "camino"
+      },
+      {
+        "lugar": "Testaccio",
+        "min": 40,
+        "titulo": "Testaccio y su mercado"
+      }
+    ],
+    "comida": {
+      "restaurante": "Mordi e Vai",
+      "alternativa": "Felice a Testaccio"
+    }
+  },
+  "tarde": {
+    "empieza": "14:00",
+    "A": {
+      "_sol": "antes de las 17:40: la Via Appia y el Campidoglio al anochecer; después, los Mercados de Trajano",
+      "paradas": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": {
+            "cambiar_por": {
+              "lugar": "Via Appia Antica",
+              "min": 45,
+              "no_calle": true
+            }
+          },
+          "traslado": {
+            "como": "el bus 118 (desde la Pirámide)",
+            "min": 25
+          }
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 45,
+          "elastica": 30,
+          "no_calle": true
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "modo": "atardecer",
+          "traslado": {
+            "como": "el bus 118 (hasta el Circo Máximo)",
+            "min": 30
+          }
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "La Boccaccia",
+        "alternativa": "Trattoria Valentino",
+        "hora": "20:00"
+      }
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44",
+      "paradas": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": {
+            "cambiar_por": {
+              "lugar": "Via Appia Antica",
+              "min": 45,
+              "no_calle": true
+            }
+          },
+          "traslado": {
+            "como": "el bus 118 (desde la Pirámide)",
+            "min": 25
+          }
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 60,
+          "elastica": 30,
+          "no_calle": true
+        },
+        {
+          "lugar": "Circo Máximo",
+          "min": 20,
+          "traslado": {
+            "como": "el bus 118 (hasta el Circo Máximo)",
+            "min": 30
+          }
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "min": 15,
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Iglesia del Gesù",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "modo": "atardecer"
+        }
+      ],
+      "cena": {
+        "restaurante": "La Boccaccia",
+        "alternativa": "Trattoria Valentino",
+        "hora": "20:00"
+      }
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44",
+      "paradas": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": {
+            "cambiar_por": {
+              "lugar": "Via Appia Antica",
+              "min": 45,
+              "no_calle": true
+            }
+          },
+          "traslado": {
+            "como": "el bus 118 (desde la Pirámide)",
+            "min": 25
+          }
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 60,
+          "elastica": 30,
+          "no_calle": true
+        },
+        {
+          "lugar": "Circo Máximo",
+          "min": 20,
+          "traslado": {
+            "como": "el bus 118 (hasta el Circo Máximo)",
+            "min": 30
+          }
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "min": 15,
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Iglesia del Gesù",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "modo": "atardecer"
+        }
+      ],
+      "cena": {
+        "restaurante": "La Boccaccia",
+        "alternativa": "Trattoria Valentino",
+        "hora": "19:30"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45: los Museos Capitolinos (última entrada 18:30), la Isla Tiberina y el Teatro de Marcelo, y el atardecer en el Campidoglio",
+      "empieza": "14:30",
+      "paradas": [
+        {
+          "lugar": "Catacumbas de San Calixto",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": {
+            "cambiar_por": {
+              "lugar": "Via Appia Antica",
+              "min": 45,
+              "no_calle": true
+            }
+          },
+          "traslado": {
+            "como": "el bus 118 (desde la Pirámide)",
+            "min": 25
+          }
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 105,
+          "elastica": 30,
+          "no_calle": true
+        },
+        {
+          "lugar": "Circo Máximo",
+          "min": 20,
+          "traslado": {
+            "como": "el bus 118 (hasta el Circo Máximo)",
+            "min": 30
+          }
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "min": 90,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "min": 120,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "min": 15,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "min": 15,
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Iglesia del Gesù",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Plaza del Campidoglio",
+          "modo": "atardecer"
+        }
+      ],
+      "cena": {
+        "restaurante": "La Boccaccia",
+        "alternativa": "Trattoria Valentino",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "domingo": {
+      "_nota": "El mercado de Testaccio y Mordi e Vai cierran el domingo; el Cementerio Protestante, a las 13:00.",
+      "manana": {
+        "restaurante": {
+          "comida": "Felice a Testaccio",
+          "alternativa": "Da Remo"
+        }
+      }
+    },
+    "lunes": {
+      "_nota": "Caracalla cierra el lunes (el orden ya lo evita): por fuera.",
+      "manana": {
+        "cambiar": {
+          "Termas de Caracalla": {
+            "lugar": "Termas de Caracalla",
+            "tipo": "fija",
+            "hora": {
+              "completo": "09:00",
+              "tranquilo": "10:00"
+            },
+            "modo": "fuera"
+          }
+        }
+      }
+    }
+  },
+  "experiencias": {}
+}

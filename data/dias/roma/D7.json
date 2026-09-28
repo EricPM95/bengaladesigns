@@ -1,0 +1,216 @@
+{
+  "_nota": "D7 escrito (2026-09-29): la mañana es la media jornada a Tívoli; la tarde, desde las 16:00, Navona, Campo de' Fiori, el Castillo por dentro y el atardecer en el Puente Sant'Angelo.",
+  "id": "D7",
+  "nombre": "Tívoli, el Castillo y el atardecer sobre San Pedro",
+  "joyas": [],
+  "no_en": [
+    {
+      "dia_semana": "lunes"
+    }
+  ],
+  "barrio_cena": "centro_historico",
+  "noche": "panteon",
+  "manana": {
+    "paradas": [],
+    "comida": null
+  },
+  "tarde": {
+    "empieza": "16:00",
+    "A": {
+      "_sol": "antes de las 17:40: el atardecer en el puente nada más volver; el Castillo después (última entrada 18:30)",
+      "paradas": [
+        {
+          "lugar": "Piazza Navona",
+          "min": 30,
+          "elastica": 30,
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_no_visto": true
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_visto": "Castillo de Sant'Angelo"
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 30,
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+        },
+        {
+          "lugar": "Plaza Farnese",
+          "modo": "camino"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Dal Cavalier Gino",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "20:45"
+      }
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44",
+      "paradas": [
+        {
+          "lugar": "Piazza Navona",
+          "min": 15,
+          "elastica": 30,
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_no_visto": true
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_visto": "Castillo de Sant'Angelo"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 30,
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+        },
+        {
+          "lugar": "Plaza Farnese",
+          "modo": "camino"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Dal Cavalier Gino",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "21:00"
+      }
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44: el Castillo primero; Navona y Campo de' Fiori; el puente al atardecer",
+      "paradas": [
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 65,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_no_visto": true
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "min": 75,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_visto": "Castillo de Sant'Angelo"
+        },
+        {
+          "lugar": "Piazza Navona",
+          "min": 30,
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 30,
+          "elastica": 30,
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+        },
+        {
+          "lugar": "Plaza Farnese",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Dal Cavalier Gino",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "19:30"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45",
+      "paradas": [
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 75,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_no_visto": true
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "min": 75,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_visto": "Castillo de Sant'Angelo"
+        },
+        {
+          "lugar": "Piazza Navona",
+          "min": 40,
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 75,
+          "elastica": 30,
+          "titulo": "Campo de' Fiori, a la hora del aperitivo",
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+        },
+        {
+          "lugar": "Plaza Farnese",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Dal Cavalier Gino",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "domingo": {
+      "_nota": "Trattoria Dal Cavalier Gino cierra el domingo.",
+      "tarde.*": {
+        "restaurante": {
+          "cena": "Pizzeria Da Baffetto",
+          "alternativa": "Tonnarello"
+        }
+      }
+    }
+  }
+}

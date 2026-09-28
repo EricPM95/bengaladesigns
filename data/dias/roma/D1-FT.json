@@ -1,0 +1,357 @@
+{
+  "_nota": "D1-FT escrito (2026-09-29): Roma antigua por la mañana; por la tarde el Ghetto, la Isla Tiberina y Trastevere hasta el Janículo. Se sube andando por el Tempietto si se llega antes de su última entrada (17:30); si no, se ve por fuera.",
+  "id": "D1-FT",
+  "nombre": "Roma Antigua, el Ghetto y Trastevere al atardecer",
+  "nombre_tranquilo": "Roma Antigua, el Ghetto y Trastevere al atardecer",
+  "joyas": [
+    "Coliseo"
+  ],
+  "no_en": [
+    {
+      "fecha": "12-25"
+    },
+    {
+      "fecha": "01-01"
+    }
+  ],
+  "barrio_cena": "trastevere",
+  "noche": "trastevere",
+  "manana": {
+    "paradas": [
+      {
+        "lugar": "Coliseo",
+        "tipo": "fija",
+        "hora": {
+          "completo": "08:30",
+          "tranquilo": "08:45"
+        },
+        "min": 85,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera",
+        "turno": true
+      },
+      {
+        "lugar": "Arco de Constantino",
+        "min": 15
+      },
+      {
+        "lugar": "Foro Romano y Palatino",
+        "min": 100,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera"
+      },
+      {
+        "lugar": "Plaza del Campidoglio",
+        "tipo": "opcional",
+        "min": 15,
+        "no_si_dia": [
+          "D5"
+        ]
+      },
+      {
+        "lugar": "Plaza Venecia",
+        "modo": "camino"
+      },
+      {
+        "lugar": "Altar de la Patria",
+        "min": 40,
+        "modo": "dentro",
+        "si_cerrado": "fuera"
+      }
+    ],
+    "comida": {
+      "restaurante": "Giggetto al Portico d'Ottavia",
+      "alternativa": "Nonna Betta"
+    }
+  },
+  "tarde": {
+    "empieza": "15:00",
+    "A": {
+      "_sol": "antes de las 17:40: Trastevere, el Tempietto abierto y el Janículo al atardecer; se baja a Santa Maria in Trastevere",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 15
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 10
+        },
+        {
+          "lugar": "Trastevere",
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "min": 10
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Da Enzo al 29",
+        "alternativa": "Tonnarello",
+        "hora": "19:30"
+      },
+      "empieza": "14:10"
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44: con Santa Cecilia (abre a las 16:30) antes de subir",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 25
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20
+        },
+        {
+          "lugar": "Trastevere",
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "min": 15
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Da Enzo al 29",
+        "alternativa": "Tonnarello",
+        "hora": "20:30"
+      },
+      "empieza": "14:40"
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44: Santa Cecilia y Santa Maria in Trastevere antes de subir; el Tempietto ya ha cerrado (por fuera)",
+      "empieza": "14:35",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 25
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20
+        },
+        {
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Trastevere",
+          "min": 45,
+          "elastica": 30
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "fuera"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "min": 15
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Da Enzo al 29",
+        "alternativa": "Tonnarello",
+        "hora": "19:30"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45: la comida sin prisa; el Janículo con tiempo para buscar sitio en la balaustrada",
+      "empieza": "15:20",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 25
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "min": 20
+        },
+        {
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Trastevere",
+          "min": 55,
+          "elastica": 30
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "fuera"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "min": 15
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer",
+          "lead": 40
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Da Enzo al 29",
+        "alternativa": "Tonnarello",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "lunes": {
+      "_nota": "El Tempietto cierra los lunes: por fuera.",
+      "tarde.*": {
+        "cambiar": {
+          "San Pietro in Montorio y Tempietto de Bramante": {
+            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+            "modo": "fuera"
+          }
+        }
+      }
+    },
+    "domingo": {
+      "_nota": "Trattoria Da Enzo cierra el domingo.",
+      "tarde.*": {
+        "restaurante": {
+          "cena": "Tonnarello",
+          "alternativa": "Taverna Trilussa"
+        }
+      }
+    },
+    "fecha:primer_domingo": {
+      "_nota": "Primer domingo de mes: el Coliseo y el Foro son gratis y sin reserva, con mucha cola: se llega antes de que abra.",
+      "manana": {
+        "ajustar": {
+          "Coliseo": {
+            "hora": {
+              "completo": "08:15",
+              "tranquilo": "08:30"
+            }
+          }
+        }
+      }
+    }
+  },
+  "experiencias": {
+    "arte_museos": {
+      "_nota": "Arte: los Museos Capitolinos en lugar del paseo por el Ghetto.",
+      "tarde.*": {
+        "quitar": [
+          "Fuente de las Tortugas",
+          "Teatro de Marcelo"
+        ],
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 60,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera"
+            }
+          }
+        ]
+      }
+    },
+    "naturaleza_vistas": {
+      "_nota": "Naturaleza y vistas: al Janículo con tiempo para buscar sitio en la balaustrada.",
+      "tarde.*": {
+        "ajustar": {
+          "Mirador del Janículo": {
+            "lead": 40
+          }
+        }
+      }
+    }
+  }
+}

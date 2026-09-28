@@ -1,0 +1,155 @@
+{
+  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. En tranquilo, Trevi de noche en lugar de al amanecer.",
+  "id": "D3",
+  "nombre": "Trevi sin gente, Free Tour y Vaticano por la tarde",
+  "nombre_tranquilo": "Free Tour por el centro y el Vaticano por la tarde",
+  "joyas": [
+    "Museos Vaticanos y Capilla Sixtina"
+  ],
+  "no_en": [
+    {
+      "dia_semana": "domingo"
+    }
+  ],
+  "barrio_cena": "vaticano",
+  "noche": "castillo_tiber",
+  "manana": {
+    "paradas": [
+      {
+        "lugar": "Fontana de Trevi",
+        "tipo": "opcional",
+        "hora": "08:45",
+        "min": 25,
+        "tranquilo": {
+          "pasa_a": "Trevi de noche, después de cenar",
+          "sugerencia": "¿Te animas a madrugar un día? A las 8:30 la tienes casi para ti."
+        }
+      },
+      {
+        "lugar": "Desayuno romano",
+        "tipo": "opcional",
+        "min": 25
+      },
+      {
+        "lugar": "Free Tour Centro Histórico",
+        "tipo": "fija",
+        "hora": "10:00",
+        "min": 150,
+        "entrada": true
+      },
+      {
+        "lugar": "Panteón",
+        "min": 30,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera",
+        "texto": "El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Levanta la vista: la cúpula tiene un agujero de nueve metros abierto al cielo desde hace casi dos mil años."
+      }
+    ],
+    "comida": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Supplizio"
+    }
+  },
+  "tarde": {
+    "empieza": "14:10",
+    "A": {
+      "_sol": "sin mirador: la tarde del Vaticano es igual todo el año",
+      "paradas": [
+        {
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "tipo": "fija",
+          "hora": "14:45",
+          "min": 180,
+          "modo": "dentro",
+          "entrada": true,
+          "traslado": {
+            "como": "el bus 40 (desde Largo di Torre Argentina hasta el Borgo) o un taxi",
+            "min": 25
+          },
+          "turno": true
+        },
+        {
+          "lugar": "Plaza de San Pedro",
+          "min": 20
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "min": 60,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "modo": "camino"
+        }
+      ],
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "20:45"
+      }
+    },
+    "B": "igual que A",
+    "C": {
+      "paradas": "igual que A",
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "19:30"
+      }
+    },
+    "D": "igual que C"
+  },
+  "variantes": {
+    "tranquilo": {
+      "noche": "fuentes"
+    },
+    "sabado": {
+      "_nota": "El sábado el Panteón vende entradas hasta las 16:00: al acabar el tour (12:30) cabe de sobra."
+    },
+    "cerrado:Museos Vaticanos y Capilla Sixtina": {
+      "_nota": "Los Museos Vaticanos cierran (sus festivos): la tarde en el Castillo, la Plaza y la Basílica.",
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "traslado": {
+              "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Cúpula de San Pedro",
+            "min": 45,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Borgo Pio",
+            "modo": "camino"
+          }
+        ]
+      }
+    }
+  }
+}

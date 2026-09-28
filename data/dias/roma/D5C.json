@@ -1,0 +1,316 @@
+{
+  "_nota": "D5C escrito (2026-09-29): el tercer día de 3 con Free Tour. El Aventino y Testaccio por la mañana; San Clemente, Letrán, Santa María la Mayor y el Moisés, Monti y los Foros al atardecer. En invierno sin Letrán (no llega); en verano con los Mercados de Trajano.",
+  "id": "D5C",
+  "nombre": "El Aventino, Testaccio, las basílicas y el Coliseo de noche",
+  "joyas": [],
+  "no_en": [],
+  "barrio_cena": "monti",
+  "noche": "coliseo",
+  "manana": {
+    "paradas": [
+      {
+        "lugar": "Boca de la Verdad",
+        "tipo": "fija",
+        "hora": {
+          "completo": "09:30",
+          "tranquilo": "10:00"
+        },
+        "min": 20
+      },
+      {
+        "lugar": "Jardín de los Naranjos",
+        "min": 20
+      },
+      {
+        "lugar": "Ojo de la Cerradura del Aventino",
+        "min": 10
+      },
+      {
+        "lugar": "Pirámide Cestia",
+        "modo": "camino"
+      },
+      {
+        "lugar": "Cementerio Protestante",
+        "tipo": "opcional",
+        "min": 25,
+        "si_cerrado": "camino"
+      },
+      {
+        "lugar": "Testaccio",
+        "min": 45,
+        "titulo": "Testaccio y su mercado"
+      }
+    ],
+    "comida": {
+      "restaurante": "Felice a Testaccio",
+      "alternativa": "Mordi e Vai"
+    }
+  },
+  "tarde": {
+    "empieza": "13:40",
+    "A": {
+      "_sol": "antes de las 17:40",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "tipo": "fija",
+          "hora": "14:00",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "traslado": {
+            "como": "el metro B (Piramide → Colosseo)",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 20,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Valentino",
+        "alternativa": "La Boccaccia",
+        "hora": "20:00"
+      }
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44: con Letrán",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "tipo": "fija",
+          "hora": "14:00",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "traslado": {
+            "como": "el metro B (Piramide → Colosseo)",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Valentino",
+        "alternativa": "La Boccaccia",
+        "hora": "20:00"
+      }
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44: con los Mercados de Trajano",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "tipo": "fija",
+          "hora": "14:00",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "traslado": {
+            "como": "el metro B (Piramide → Colosseo)",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Valentino",
+        "alternativa": "La Boccaccia",
+        "hora": "19:30"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45",
+      "empieza": "14:00",
+      "paradas": [
+        {
+          "lugar": "Basílica de San Clemente",
+          "tipo": "fija",
+          "hora": "14:30",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "traslado": {
+            "como": "el metro B (Piramide → Colosseo)",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Juan de Letrán",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 60,
+          "elastica": 30
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
+        }
+      ],
+      "cena": {
+        "restaurante": "Trattoria Valentino",
+        "alternativa": "La Boccaccia",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "domingo": {
+      "_nota": "Trattoria Valentino cierra el domingo; el Cementerio Protestante, a las 13:00; San Clemente abre a las 12:00.",
+      "tarde.*": {
+        "restaurante": {
+          "cena": "La Boccaccia",
+          "alternativa": "Trattoria Monti"
+        }
+      }
+    }
+  },
+  "experiencias": {
+    "arte_museos": {
+      "_nota": "Arte: la Domus Aurea de Nerón (solo abre de viernes a domingo, con visita guiada) después de San Clemente.",
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Basílica de San Clemente",
+            "parada": {
+              "lugar": "Domus Aurea",
+              "min": 75,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "quitar"
+            }
+          }
+        ]
+      }
+    },
+    "barrios_sabores": {
+      "_nota": "Barrios: Testaccio y su mercado con calma.",
+      "manana": {
+        "ajustar": {
+          "Cementerio Protestante": {
+            "tipo": "opcional"
+          }
+        }
+      }
+    }
+  }
+}

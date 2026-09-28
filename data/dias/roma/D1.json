@@ -1,0 +1,409 @@
+{
+  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; en verano empieza más tarde).",
+  "id": "D1",
+  "nombre": "Roma Antigua y el centro barroco",
+  "joyas": [
+    "Coliseo",
+    "Panteón"
+  ],
+  "no_en": [
+    {
+      "fecha": "12-25"
+    },
+    {
+      "fecha": "01-01"
+    }
+  ],
+  "barrio_cena": "centro_historico",
+  "noche": "fuentes",
+  "manana": {
+    "paradas": [
+      {
+        "lugar": "Coliseo",
+        "tipo": "fija",
+        "hora": {
+          "completo": "08:30",
+          "tranquilo": "09:00"
+        },
+        "min": 85,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera",
+        "turno": true
+      },
+      {
+        "lugar": "Arco de Constantino",
+        "min": 15
+      },
+      {
+        "lugar": "Foro Romano y Palatino",
+        "min": 100,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera"
+      },
+      {
+        "lugar": "Plaza del Campidoglio",
+        "tipo": "opcional",
+        "min": 15,
+        "no_si_dia": [
+          "D5"
+        ]
+      },
+      {
+        "lugar": "Plaza Venecia",
+        "modo": "camino"
+      },
+      {
+        "lugar": "Altar de la Patria",
+        "min": 40,
+        "modo": "dentro",
+        "si_cerrado": "fuera"
+      }
+    ],
+    "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia"
+    }
+  },
+  "tarde": {
+    "empieza": "14:45",
+    "A": {
+      "_sol": "sin mirador: el centro barroco; la noche de las fuentes va antes de cenar",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 30
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "min": 15
+        },
+        {
+          "lugar": "Iglesia del Gesù",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Panteón",
+          "min": 30,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Piazza Navona",
+          "min": 30
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 30
+        }
+      ],
+      "cena": {
+        "restaurante": "Armando al Pantheon",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "20:00"
+      }
+    },
+    "B": "igual que A",
+    "C": {
+      "empieza": "15:00",
+      "paradas": [
+        {
+          "lugar": "Barrio Judío",
+          "min": 30
+        },
+        {
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Largo di Torre Argentina",
+          "min": 15
+        },
+        {
+          "lugar": "Iglesia del Gesù",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Panteón",
+          "min": 30,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Piazza Navona",
+          "min": 30
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 30
+        }
+      ],
+      "cena": {
+        "restaurante": "Armando al Pantheon",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "19:30"
+      },
+      "_sol": "la tarde empieza más tarde: San Luigi dei Francesi antes del Panteón (cierra a las 18:15)"
+    },
+    "D": {
+      "empieza": "15:15",
+      "_sol": "en verano la comida va sin prisa y la tarde empieza a las 15:30",
+      "paradas": "igual que C",
+      "cena": {
+        "restaurante": "Armando al Pantheon",
+        "alternativa": "Pizzeria Da Baffetto",
+        "hora": "19:30"
+      }
+    }
+  },
+  "variantes": {
+    "sabado": {
+      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer.",
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Iglesia de San Luigi dei Francesi",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          },
+          {
+            "lugar": "Largo di Torre Argentina",
+            "min": 15
+          },
+          {
+            "lugar": "Iglesia del Gesù",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Barrio Judío",
+            "min": 30
+          },
+          {
+            "lugar": "Fuente de las Tortugas",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Campo de' Fiori",
+            "min": 30
+          }
+        ]
+      }
+    },
+    "domingo": {
+      "_nota": "Armando al Pantheon cierra el domingo.",
+      "tarde.*": {
+        "restaurante": {
+          "cena": "Pizzeria Da Baffetto",
+          "alternativa": "Tonnarello"
+        }
+      }
+    },
+    "fecha:12-25": {
+      "_nota": "Navidad: Coliseo, Foro y Panteón cerrados (se ven por fuera); a las 12:00, la Bendición Urbi et Orbi en la Plaza de San Pedro.",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "09:30",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 15
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15
+          },
+          {
+            "lugar": "Bendición Urbi et Orbi",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 45
+          }
+        ],
+        "comida": {
+          "restaurante": "Pizzarium (Bonci)",
+          "alternativa": "Ristorante Arlù"
+        }
+      }
+    },
+    "fecha:easter": {
+      "_nota": "Domingo de Pascua: la Bendición Urbi et Orbi a las 12:00 en la Plaza de San Pedro. El Coliseo y el Foro a primera hora; el Altar de la Patria, a la vuelta.",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "08:30",
+            "min": 80,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 10
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Bendición Urbi et Orbi",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 45,
+            "traslado": {
+              "como": "un taxi",
+              "min": 20
+            }
+          }
+        ],
+        "comida": {
+          "restaurante": "Pizzarium (Bonci)",
+          "alternativa": "Ristorante Arlù"
+        }
+      },
+      "tarde.*": {
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Altar de la Patria",
+              "min": 40,
+              "modo": "dentro",
+              "si_cerrado": "fuera",
+              "traslado": {
+                "como": "un taxi",
+                "min": 20
+              }
+            }
+          }
+        ]
+      }
+    },
+    "fecha:primer_domingo": {
+      "_nota": "Primer domingo de mes: el Coliseo y el Foro son gratis y sin reserva, con mucha cola: se llega antes de que abra.",
+      "manana": {
+        "ajustar": {
+          "Coliseo": {
+            "hora": {
+              "completo": "08:15",
+              "tranquilo": "08:30"
+            }
+          }
+        }
+      }
+    }
+  },
+  "experiencias": {
+    "arte_museos": {
+      "_nota": "Arte: los Museos Capitolinos nada más comer (a 10 min del Ghetto), en lugar del paseo por el Ghetto.",
+      "tarde.*": {
+        "quitar": [
+          "Barrio Judío",
+          "Fuente de las Tortugas"
+        ],
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 60,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera"
+            }
+          }
+        ]
+      }
+    },
+    "barrios_sabores": {
+      "_nota": "Barrios: más tiempo en el Ghetto.",
+      "tarde.*": {
+        "ajustar": {
+          "Barrio Judío": {
+            "min": 45
+          }
+        }
+      }
+    }
+  }
+}

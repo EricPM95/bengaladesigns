@@ -1,0 +1,535 @@
+{
+  "_nota": "Roma con días escritos (2026-09-29): cortes de luz de la tarde, pool y reparto. Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
+  "cortes_luz": [
+    "17:40",
+    "18:45",
+    "19:45"
+  ],
+  "pool": {
+    "_nota": "Cada extra del pool con su sitio escrito (día, mitad y qué sustituye), otro si ese día no está en el viaje y un segundo sitio si chocan (hueco). Manda el orden de pool_lista. Lo que ya va en la ruta no cuenta.",
+    "Galería Borghese": {
+      "sitios": [
+        {
+          "dia": "D1",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Panteón",
+                  "min": 30,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                },
+                {
+                  "lugar": "Piazza Navona",
+                  "min": 20
+                },
+                {
+                  "lugar": "Galería Borghese",
+                  "min": 120,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera",
+                  "tipo": "fija",
+                  "hora": "16:00",
+                  "turno": true,
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 20
+                  }
+                },
+                {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese",
+                  "min": 30,
+                  "elastica": 30
+                },
+                {
+                  "lugar": "Terraza del Pincio",
+                  "modo": "atardecer"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Galería Borghese",
+                  "min": 120,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera",
+                  "tipo": "fija",
+                  "hora": "15:00",
+                  "turno": true,
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 20
+                  }
+                },
+                {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese",
+                  "min": 45,
+                  "elastica": 30
+                },
+                {
+                  "lugar": "Jardines del Pincio",
+                  "min": 30
+                },
+                {
+                  "lugar": "Terraza del Pincio",
+                  "modo": "atardecer"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Parque de Villa Borghese": {
+      "sitios": [
+        {
+          "dia": "D4",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "antes_de": "Jardines del Pincio",
+                  "parada": {
+                    "lugar": "Parque de Villa Borghese",
+                    "titulo": "El lago de Villa Borghese",
+                    "min": 25
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D4M",
+          "cambios": {
+            "manana": {
+              "ajustar": {
+                "Parque de Villa Borghese": {
+                  "tipo": "normal"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Boca de la Verdad": {
+      "sitios": [
+        {
+          "dia": "D1",
+          "hueco": "boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Isla Tiberina",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Ojo de la Cerradura del Aventino": {
+      "sitios": [
+        {
+          "dia": "D1",
+          "hueco": "ojo",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                },
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ],
+              "ajustar": {
+                "Largo di Torre Argentina": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "ojo",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Isla Tiberina",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Museos Capitolinos": {
+      "sitios": [
+        {
+          "dia": "D5",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "antes_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            },
+            "tarde.B": {
+              "insertar": [
+                {
+                  "antes_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "capitolinos",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "capitolinos",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas",
+                "Teatro de Marcelo"
+              ],
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Termas de Caracalla": {
+      "sitios": [
+        {
+          "dia": "D1-FT",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Circo Máximo",
+                  "modo": "camino"
+                },
+                {
+                  "lugar": "Termas de Caracalla",
+                  "min": 60,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                },
+                {
+                  "lugar": "Boca de la Verdad",
+                  "min": 15
+                },
+                {
+                  "lugar": "Ojo de la Cerradura del Aventino",
+                  "min": 10
+                },
+                {
+                  "lugar": "Jardín de los Naranjos",
+                  "modo": "atardecer"
+                },
+                {
+                  "lugar": "Trastevere",
+                  "min": 45
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas",
+                "Largo di Torre Argentina",
+                "Iglesia del Gesù"
+              ],
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Termas de Caracalla",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera",
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ],
+              "ajustar": {
+                "Iglesia de Santa Maria sopra Minerva": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Basílica de San Juan de Letrán": {
+      "sitios": [
+        {
+          "dia": "D5C",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de San Clemente",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D4M",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de Santa María la Mayor",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            },
+            "tarde.B": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de Santa María la Mayor",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "letran",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 30,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera",
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ],
+              "ajustar": {
+                "Barrio Judío": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                },
+                "Panteón": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "letran",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas"
+              ],
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 30,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera",
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ],
+              "ajustar": {
+                "Isla Tiberina": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Castillo de Sant'Angelo": {
+      "_nota": "Va siempre por dentro en D2 y, con Free Tour, en D4 (4 días o más). Con Free Tour en 2-3 días no hay mañana libre: sale como no incluido, con su motivo.",
+      "sitios": []
+    },
+    "Cúpula de San Pedro": {
+      "_nota": "En D2 (en tranquilo deja de ser opcional). Con Free Tour no hay D2: sale como no incluido, con su motivo.",
+      "sitios": [
+        {
+          "dia": "D2",
+          "cambios": {
+            "manana": {
+              "ajustar": {
+                "Cúpula de San Pedro": {
+                  "tipo": "normal"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "noches": {
+    "escalinata": {
+      "_nota": "Días escritos (2026-09-29): la escalinata iluminada vale el mismo día que la Plaza de España de la mañana (D4): de noche es otra cosa.",
+      "excepcion_mismo_dia": true
+    }
+  }
+}
