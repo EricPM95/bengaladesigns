@@ -4094,6 +4094,145 @@
         "testaccio"
       ],
       "_fuente": "Coordenadas de la Piazza Testaccio (OpenStreetMap, 2026-09-26)"
+    },
+    {
+      "name": "Trinità dei Monti",
+      "duration_minutes": 15,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9063,
+        12.4833
+      ],
+      "level": 2,
+      "type": "interior",
+      "is_free_access": true,
+      "tags": [
+        "iglesia",
+        "mirador"
+      ],
+      "filter_category": "iglesias",
+      "description": "La iglesia de las dos torres en lo alto de la escalinata de la Plaza de España",
+      "tip": "Las visitas se suspenden durante las misas (de lunes a viernes a las 18:30; el domingo a las 9:30).",
+      "search_aliases": [
+        "trinita dei monti",
+        "trinidad de los montes",
+        "iglesia trinita"
+      ],
+      "search_en": "Trinità dei Monti Rome",
+      "search_en_keywords": [
+        "trinita"
+      ],
+      "schedule": "10:15-19:45",
+      "windows": [
+        "10:15-19:45"
+      ],
+      "by_day": {
+        "lun,mar,jue-sab": [
+          "10:15-19:45"
+        ],
+        "mie": [
+          "12:00-19:45"
+        ],
+        "dom": [
+          "09:00-19:30"
+        ]
+      },
+      "closed_on": [],
+      "reservation": "no",
+      "card_text": "De lunes a sábado 10:15-19:45 (el miércoles desde las 12:00); el domingo 9:00-19:30. Las visitas se suspenden durante las misas.",
+      "ticket_info": [
+        "Gratis."
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
+      "lo_mejor_dentro": "ver la iglesia de los franceses y sus frescos",
+      "neighbor_of": [
+        "Plaza de España"
+      ],
+      "comprobado": "2026-09-28",
+      "fuente_horario": "trinitadeimonti.net/it/orari (2026-09-28)"
+    },
+    {
+      "name": "Via Veneto",
+      "duration_minutes": 10,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9078,
+        12.4888
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "description": "La calle de la Dolce Vita, entre la Plaza Barberini y la Porta Pinciana",
+      "tip": "El Café de Paris y el Harry's Bar son los de las fotos de los años sesenta.",
+      "search_aliases": [
+        "via veneto",
+        "via vittorio veneto"
+      ],
+      "search_en": "Via Veneto Rome",
+      "search_en_keywords": [
+        "veneto"
+      ]
+    },
+    {
+      "name": "Via del Babuino",
+      "duration_minutes": 10,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.908,
+        12.4791
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "description": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España",
+      "tip": "Busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio.",
+      "search_aliases": [
+        "via del babuino",
+        "babuino"
+      ],
+      "search_en": "Via del Babuino Rome",
+      "search_en_keywords": [
+        "babuino"
+      ],
+      "neighbor_of": [
+        "Plaza de España",
+        "Piazza del Popolo"
+      ]
+    },
+    {
+      "name": "Via Margutta",
+      "duration_minutes": 10,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9089,
+        12.4797
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "description": "La calle escondida de los pintores, entre patios y talleres",
+      "tip": "En el número 51 estaba la casa de Gregory Peck en «Vacaciones en Roma».",
+      "search_aliases": [
+        "via margutta",
+        "margutta"
+      ],
+      "search_en": "Via Margutta Rome",
+      "search_en_keywords": [
+        "margutta"
+      ],
+      "neighbor_of": [
+        "Via del Babuino"
+      ]
     }
   ],
   "groups": {
@@ -9969,6 +10108,12 @@
               "por_que": "La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico."
             },
             {
+              "lugar": "Via Veneto",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo."
+            },
+            {
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
               "nota": "En invierno, el lago camino de la Galería (la tarde es corta).",
@@ -10058,6 +10203,19 @@
                   "sol_antes_de": "17:00"
                 }
               ]
+            },
+            {
+              "lugar": "Via Margutta",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
+            },
+            {
+              "lugar": "Via del Babuino",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España.",
+              "nota": "Baja hasta la Plaza de España, que esta noche se ve iluminada."
             }
           ]
         },
@@ -10134,7 +10292,14 @@
               "rol": "parada",
               "nota": "Y la escalinata.",
               "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
-              "hora": "10:00"
+              "hora": "10:00",
+              "minutos": 20
+            },
+            {
+              "lugar": "Trinità dei Monti",
+              "rol": "de_paso",
+              "por_que": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
+              "nota": "Sube la escalinata: desde aquí, paseo hasta la Galería."
             },
             {
               "lugar": "Galería Borghese",
@@ -11628,6 +11793,10 @@
     "Bendición Urbi et Orbi": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
     "Columna de Trajano": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro.",
     "Via della Conciliazione": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto.",
-    "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini."
+    "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",
+    "Trinità dei Monti": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
+    "Via Veneto": "La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo.",
+    "Via del Babuino": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España.",
+    "Via Margutta": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
   }
 }

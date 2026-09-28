@@ -584,5 +584,37 @@
    12.475
   ],
   "mapbox": null
+ },
+ "Trinità dei Monti": {
+  "version": 2,
+  "wikipedia": [
+   41.90592,
+   12.48364
+  ],
+  "mapbox": null
+ },
+ "Via Veneto": {
+  "version": 2,
+  "wikipedia": [
+   41.9061,
+   12.4897
+  ],
+  "mapbox": null
+ },
+ "Via del Babuino": {
+  "version": 2,
+  "wikipedia": [
+   41.90861111,
+   12.47888889
+  ],
+  "mapbox": null
+ },
+ "Via Margutta": {
+  "version": 2,
+  "wikipedia": [
+   41.90888889,
+   12.47916667
+  ],
+  "mapbox": null
  }
 }

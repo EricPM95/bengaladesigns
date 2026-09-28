@@ -1395,3 +1395,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     el Día {dia}, pero al atardecer es otro sitio…", el Campidoglio de D5; también en docs/roma_por_que.json,
     `revisitas`). Si el viaje ya lo vio otro día, sale como revisita (`is_revisit`, `revisit_reason`); si no, visita
     normal. La auditoría no cuenta las revisitas marcadas como repetidas.
+296. **Lugares nuevos de Roma** (2026-09-28): Trinità dei Monti (nivel 2, interior gratis, 15 min dentro y 10 por fuera,
+    horario oficial de trinitadeimonti.net con `comprobado`), Via Veneto, Via del Babuino y Via Margutta (calles, de paso,
+    10 min como mucho). Coordenadas contrastadas con Wikipedia en validar.mjs. D4 con Free Tour: Santa Maria della
+    Vittoria → Tritón → Via Veneto → Parque → Galería 11:00 … Pincio → Via Margutta → Via del Babuino → Plaza de España
+    iluminada. D4 tranquilo en invierno: Plaza de España → Trinità dei Monti (desde la balaustrada, para llegar al turno
+    de las 11:00 de la Galería: en tranquilo el día no empieza antes de las 10:00).
