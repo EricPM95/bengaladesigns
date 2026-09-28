@@ -1257,3 +1257,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     viajero la había editado a mano, antes se pregunta ("Vamos a ajustar tu ruta a estas fechas y algunos días pueden
     cambiar. ¿Seguimos?"): con "Mejor no" se guardan las fechas y la ruta se queda igual, con las etiquetas de los
     días.
+277. **D2 no va en miércoles de invierno si el viaje tiene otro día para él** (decisión del usuario, 2026-09-28). En
+    `no_en`, una regla con `evitar: true` (y `invierno: true`: solo con el sol antes de WINTER_SUNSET_BEFORE) no prohíbe
+    el día: suma EVITAR_COST (300) al reparto, así que D2 se mueve si hay otro día sin cierres y, si no lo hay, se
+    queda. No genera aviso de fecha. Si se queda, el Janículo llega de noche y sale como mirador nocturno ("Roma
+    iluminada desde el Janículo", `night_view_text`): se vende como experiencia de noche, nunca como un atardecer
+    perdido.

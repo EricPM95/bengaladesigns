@@ -214,10 +214,18 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const violates = (cfg, day) => {
     const hours = hoursOf(day)
     return (cfg.no_en ?? []).some((rule) => {
+      if (rule.evitar) return false
       if (rule.fecha) return Boolean(realDateIso(day)) && realDateIso(day).slice(5) === rule.fecha
       if (rule.dia_semana) return Boolean(hours.weekday) && norm(hours.weekday) === norm(rule.dia_semana) && (!rule.si_lleva || carries(cfg, rule.si_lleva))
       return false
     })
+  }
+  // `evitar` (decisión del usuario, 2026-09-28): mejor otro día si el viaje lo tiene, pero si no, se queda y sin aviso.
+  // D2 en miércoles de invierno: la audiencia retrasa la tarde y el Janículo llega de noche ("Roma iluminada").
+  const EVITAR_COST = 300
+  const avoids = (cfg, day) => {
+    const hours = hoursOf(day)
+    return (cfg.no_en ?? []).some((rule) => rule.evitar && rule.dia_semana && Boolean(hours.weekday) && norm(hours.weekday) === norm(rule.dia_semana) && (!rule.invierno || isWinter(day)))
   }
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
@@ -229,6 +237,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         const cfg = curatedById.get(id)
         const day = cityDays[index]
         if (violates(cfg, day)) cost += 1000
+        if (avoids(cfg, day)) cost += EVITAR_COST
         // Lo del pool que el día lleva y ese día cierra (el Castillo en D2 un lunes): también es un cierre.
         if (poolNames.some((name) => carries(cfg, name) && closedThatDay(name, day))) cost += 1000
         // Las joyas del día cerradas ese día (festivos): la que no se ve por fuera (los Museos Vaticanos) pesa más
@@ -258,7 +267,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     order.forEach((id, index) => {
       const cfg = curatedById.get(id)
       const placed = cityDays[index]
-      const noEn = (other, name) => (cfg.no_en ?? []).some((rule) => rule.dia_semana && hoursOf(other).weekday && norm(hoursOf(other).weekday) === norm(rule.dia_semana) && (rule.si_lleva ? rule.si_lleva === name && carries(cfg, name) : (cfg.joyas ?? []).includes(name)))
+      const noEn = (other, name) => (cfg.no_en ?? []).some((rule) => !rule.evitar && rule.dia_semana && hoursOf(other).weekday && norm(hoursOf(other).weekday) === norm(rule.dia_semana) && (rule.si_lleva ? rule.si_lleva === name && carries(cfg, name) : (cfg.joyas ?? []).includes(name)))
       const names = [...new Set([...(cfg.joyas ?? []), ...poolNames.filter((name) => carries(cfg, name)), ...(cfg.no_en ?? []).filter((rule) => rule.si_lleva && carries(cfg, rule.si_lleva)).map((rule) => rule.si_lleva)])]
       for (const name of names) {
         if (closedThatDay(name, placed)) continue

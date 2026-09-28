@@ -9092,6 +9092,12 @@
       "no_en": [
         {
           "dia_semana": "domingo"
+        },
+        {
+          "dia_semana": "miércoles",
+          "invierno": true,
+          "evitar": true,
+          "nota": "Decisión del usuario (2026-09-28): la audiencia retrasa la tarde y el Janículo llega de noche. Si el viaje tiene otro día para D2, ese; si no, se queda y el Janículo sale como mirador nocturno (Roma iluminada), sin aviso."
         }
       ]
     },
