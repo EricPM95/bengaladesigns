@@ -288,6 +288,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   }
   // El día curado y las variantes que se le han aplicado (para la revisión y la ficha).
   if (tripDay.curatedDay) day.curated_day = { id: tripDay.curatedDay.id, name: tripDay.curatedDay.nombre, variants: tripDay.curatedDay.variantes }
+  // El título no promete un atardecer que ese día no hay (el Janículo llega ya de noche): "… y Trastevere", sin "al atardecer".
+  if (day.curated_day?.name && / al atardecer$/.test(day.curated_day.name) && !(day.stops ?? []).some((stop) => stop.sunset_minutes != null)) day.curated_day.name = day.curated_day.name.replace(/ al atardecer$/, '')
   // Mañanas y tardes tipo (Parte B): qué bloque lleva cada medio día; sin bloque, "medio día sin tipo".
   if (Array.isArray(tripDay.blocks)) {
     day.blocks = tripDay.blocks.map((block) => ({ id: block.id, slot: block.slot, label: block.label }))
@@ -313,11 +315,31 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       const over = (tripDay.schedule?.idleBeforeDinner ?? 0) - busy - APERITIVO_MAX_MINUTES
       if (over > 0 && over <= WINTER_NIGHT_STRETCH_MAX) nightStops.at(-1).duration_minutes += Math.ceil(over / 15) * 15
     }
+  // Una nocturna antes de cenar dura 20-25 min (decisión del usuario, 2026-09-28: la Plaza de España de 60 min era
+  // demasiado); lo que sobra es tiempo libre, no nocturna.
+  for (const stop of day.stops ?? []) if (stop.is_night_experience && stop.before_dinner) stop.duration_minutes = Math.min(stop.duration_minutes ?? NIGHT_BEFORE_DINNER_MAX, NIGHT_BEFORE_DINNER_MAX)
   const nightBeforeDinner = (day.stops ?? []).filter((stop) => stop.is_night_experience && stop.before_dinner).reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0)
   const aperitivo = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (aperitivo) day.aperitivo = aperitivo
   const freeAfternoon = aperitivo ? null : freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, nightBeforeDinner)
   if (freeAfternoon) day.free_afternoon = freeAfternoon
+  // El tiempo libre de antes de cenar acaba cuando hay que salir hacia la cena (decisión del usuario, 2026-09-28): con
+  // las horas que ve el viajero (ya redondeadas), desde que acaba lo último del día hasta la cena menos el paseo.
+  const dinnerMeal = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'dinner')
+  if (dinnerMeal) {
+    const toMinutes = (hhmm) => {
+      const [h, m] = String(hhmm ?? '').split(':').map(Number)
+      return Number.isFinite(h) ? h * 60 + (m || 0) : null
+    }
+    const dinnerStart = Math.ceil(dinnerMeal.start / 15) * 15
+    const lastEnd = Math.max(0, ...(day.stops ?? []).map((stop) => ({ start: toMinutes(stop.suggested_time), duration: stop.duration_minutes ?? 0 })).filter(({ start }) => start != null && start < dinnerStart).map(({ start, duration }) => start + duration))
+    const room = dinnerStart - (dinnerMeal.walkMinutes ?? 0) - lastEnd
+    for (const key of ['aperitivo', 'free_afternoon']) {
+      if (!day[key]) continue
+      if (room < APERITIVO_MIN_MINUTES / 3) delete day[key]
+      else day[key].minutes = Math.min(day[key].minutes, room)
+    }
+  }
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
   // Todos los huecos de más de 30 min, con nombre (el cliente los pinta en su sitio; `free_time` queda para
@@ -490,6 +512,8 @@ const APERITIVO_MAX_MINUTES = 120
 const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 /** Lo más que se alarga el paseo nocturno de antes de cenar en invierno para no pasar de 2 h (C.1). */
 const WINTER_NIGHT_STRETCH_MAX = 45
+/** Una nocturna antes de cenar, como mucho (decisión del usuario, 2026-09-28). */
+const NIGHT_BEFORE_DINNER_MAX = 25
 
 /**
  * "Aperitivo y paseo por {barrio}" (PROMPT_AJUSTES_BLOQUES B.7): el tiempo libre de 90 min o menos justo

@@ -645,7 +645,10 @@ function simulate(sequence, ctx) {
   const [lunchOpen, lunchClose] = mode.lunchWindow
   // Cena de verano (Parte A, regla 8): con atardecer a las 20:15 o más tarde, se cena a las 21:00.
   const lateDinner = sequence.some((element) => element !== LUNCH && element.places.some((place) => place.sunset != null && place.sunset >= LATE_SUNSET_MINUTES))
-  const dinnerFrom = lateDinner ? LATE_DINNER_START : mode.dinnerWindow[0]
+  // La cena empieza en el cuarto de hora siguiente a llegar a su barrio, dentro de su franja (decisión del usuario,
+  // 2026-09-28: bajando del Janículo a las 20:20 se cena a las 20:30, no a las 21:00). La de verano solo alarga la
+  // franja por arriba.
+  const dinnerFrom = mode.dinnerWindow[0]
   // Hasta media hora de margen para bajar del mirador y llegar al barrio de la cena.
   const dinnerUntil = lateDinner ? Math.max(dinnerLatest, LATE_DINNER_START + 30) : dinnerLatest
   const visitLimit = pendingMeals.dinner ? dinnerUntil : mode.dayEndWithDinner
@@ -918,7 +921,7 @@ function simulate(sequence, ctx) {
   if (pendingMeals.dinner) {
     // Se va andando hasta el barrio donde se cena: ese paseo es parte del día.
     const walkToDinner = position && dinnerPoint ? (travel.leg(position, dinnerPoint)?.minutes ?? 0) : 0
-    const at = Math.max(roundUpToSlot(cursor + walkToDinner), dinnerFrom)
+    const at = Math.max(roundUpToQuarter(cursor + walkToDinner), dinnerFrom)
     if (at > dinnerUntil) return { ok: false, reason: 'dinner_out_of_window' }
     walk += walkToDinner
     meters += walkToDinner > 0 ? (travel.leg(position, dinnerPoint)?.meters ?? 0) : 0

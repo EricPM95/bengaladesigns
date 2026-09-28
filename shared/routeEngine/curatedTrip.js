@@ -34,12 +34,15 @@ const OUTSIDE_MINUTES = 15
 /** Con el atardecer antes de esta hora el día va en su variante de invierno. 18:30 (PROMPT_RUTAS_CURADAS, B.3): así
     mediados de marzo y la segunda quincena de octubre ya van en invierno. */
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
-/** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
-const MIRADOR_LATE_MINUTES = 30
+/** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche (decisión del
+    usuario, 2026-09-28: en cuanto llega después del sol). */
+const MIRADOR_LATE_MINUTES = 0
 /** Por qué un monumento va por fuera (PROMPT_PENDIENTE B.4), en el orden en que se decide. */
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día' }
 /** Un monumento de exterior que el día ponía de paso: parada corta. */
 const SHORT_STOP_MINUTES = 15
+/** Más espera que esto antes del atardecer, con el mirador primero, se llena (decisión del usuario, 2026-09-28). */
+const MID_DAY_WAIT_MAX = 60
 /** Un imprescindible es parada de verdad: nunca menos de 20 min (decisión del usuario, 2026-09-28). */
 const IMPRESCINDIBLE_MIN_MINUTES = 20
 /** Lo que se ve desde el compañero (la Plaza Venecia desde el Altar): su propia línea, en un momento. */
@@ -100,7 +103,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const inPool = (name) => poolNames.includes(name)
   // "Quiero entrar" (PROMPT_PENDIENTE F): por dentro y obligatorio, como si estuviera en el pool, pero sin sus reglas
   // (no mueve días ni cambia paradas: solo recoloca horas).
-  const inside = (name) => insideNames.includes(name)
+  // (`autoInside`: lo que el motor pasa a por dentro para llenar la espera antes del atardecer, un día cada vez.)
+  const autoInside = new Set()
+  const inside = (name) => insideNames.includes(name) || autoInside.has(name)
   const tour = destData.default_free_tour ?? null
   const tourCovers = new Set(hasFreeTour ? tour?.covers ?? [] : [])
   const joyaNames = new Set((destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name))
@@ -329,7 +334,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   // La variante de cada día, en este orden: tarde A/B (D5), invierno, tranquilo, Free Tour (después del ritmo: con
   // tour, D4 no enseña Trevi ni la Plaza de España aunque sea tranquilo), día de la semana, "Museos cerrados", las
   // de pool y "sin Caracalla". Las secciones que trae una variante sustituyen a las de antes.
-  const resolveEntry = (id, index, { tardeB = false } = {}) => {
+  const resolveEntry = (id, index, { tardeB = false, forceWinter = false } = {}) => {
     const cfg = curatedById.get(id)
     const day = cityDays[index]
     let sections = sectionsOf(cfg)
@@ -342,16 +347,27 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       if (variant.quitar) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.quitar.includes(stop.lugar)), tarde: sections.tarde.filter((stop) => !variant.quitar.includes(stop.lugar)) }
       if (variant.tarde_antes) sections = { ...sections, manana: sections.manana.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar)), tarde: [...variant.tarde_antes, ...sections.tarde.filter((stop) => !variant.tarde_antes.some((other) => other.lugar === stop.lugar))] }
       for (const insert of variant.insertar ?? []) {
+        // `estacion`: solo en invierno o fuera de él (D4 en domingo: Santa Maria del Popolo antes del Pincio en verano,
+        // después en invierno, cuando abre a las 16:30 y el sol ya se ha puesto).
+        if (insert.estacion && (insert.estacion === 'invierno') !== isWinter(day)) continue
+        if (insert.despues_de) {
+          const after = sections.tarde.findIndex((stop) => stop.lugar === insert.despues_de)
+          sections = { ...sections, tarde: after >= 0 ? [...sections.tarde.slice(0, after + 1), insert.parada, ...sections.tarde.slice(after + 1)] : [...sections.tarde, insert.parada] }
+          continue
+        }
         const at = sections.tarde.findIndex((stop) => stop.lugar === insert.antes_de)
         sections = { ...sections, tarde: at >= 0 ? [...sections.tarde.slice(0, at), insert.parada, ...sections.tarde.slice(at)] : [...sections.tarde, insert.parada] }
       }
       if (variant.atardecer) sections = { ...sections, tarde: sections.tarde.map((stop) => (stop.lugar === variant.atardecer ? { ...stop, rol: 'atardecer' } : stop)) }
+      // `sin_estirar`: ese día no se estira (D4 en domingo: el Parque, para que Santa Maria del Popolo llegue abierta).
+      if (variant.sin_estirar) sections = { ...sections, tarde: sections.tarde.map((stop) => (variant.sin_estirar.includes(stop.lugar) ? { ...stop, estirar: undefined } : stop)) }
     }
     // Invierno de ESTE día: con `atardecer_antes_de`, solo si el sol se pone antes de esa hora (D2: 18:20 — antes, se
     // sube primero al Janículo). `tranquilo_invierno` sigue la condición de la suya o, si no la trae, la de invierno.
     const sunsetToday = hoursOf(day).sunset
     const before = (hhmm) => hhmm == null || (sunsetToday != null && sunsetToday < Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1] ?? 0))
-    const winterFor = (name) => isWinter(day) && before(cfg.variantes?.[name]?.atardecer_antes_de ?? (name === 'tranquilo_invierno' ? cfg.variantes?.invierno?.atardecer_antes_de : null))
+    // `forceWinter`: con el orden normal el mirador llegaba después del sol (decisión del usuario, 2026-09-28).
+    const winterFor = (name) => forceWinter || (isWinter(day) && before(cfg.variantes?.[name]?.atardecer_antes_de ?? (name === 'tranquilo_invierno' ? cfg.variantes?.invierno?.atardecer_antes_de : null)))
     // Tarde B de D5 (el Campidoglio y el Ghetto salen en otro día del viaje); si no, la A, con su atardecer de invierno.
     if (tardeB) apply('tarde_b')
     else if (cfg.variantes?.invierno?.atardecer && winterFor('invierno')) apply('invierno')
@@ -428,20 +444,21 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     let suggestionName = null
     if (suggestion && !suggestion.night) {
       const { sug } = suggestion
-      const fixed = (stop) => ({ ...stop, hora: sug.hora, fija: true, rol: 'parada', ...(sug.por_que ? { por_que: sug.por_que } : {}) })
+      const fixed = (stop) => ({ ...stop, hora: sug.hora, fija: true, rol: 'parada', ...(sug.por_que ? { por_que: sug.por_que } : {}), ...(sug.traslado ? { traslado: sug.traslado, traslado_min: sug.traslado_min } : {}) })
       const has = [...sections.manana, ...sections.tarde].some((stop) => stop.lugar === sug.lugar)
       if (has) sections = { ...sections, manana: sections.manana.map((stop) => (stop.lugar === sug.lugar ? fixed(stop) : stop)), tarde: sections.tarde.map((stop) => (stop.lugar === sug.lugar ? fixed(stop) : stop)) }
       else if ((destData.curated_breaks ?? []).some((item) => item.name === sug.lugar)) {
         const stop = fixed({ lugar: sug.lugar })
         sections = sug.hora < '13:00' ? { ...sections, manana: [...sections.manana, stop] } : { ...sections, tarde: [stop, ...sections.tarde] }
-        // La comida con hora fija del día (D4 en invierno, a las 12:00) no pisa la bendición: come después.
-        if (sections.comida?.hora && sections.comida.hora < '14:00') sections = { ...sections, comida: { ...sections.comida, hora: undefined, bloque: undefined, temprana: undefined } }
+        // La comida con hora fija del día (D4 en invierno, a las 12:00) no pisa la bendición: come después, y cerca
+        // (sin los restaurantes del barrio de siempre, que quedan lejos).
+        if (sections.comida) sections = { ...sections, comida: { ...sections.comida, hora: undefined, bloque: undefined, temprana: undefined, restaurantes: undefined } }
       }
       suggestionName = sug.lugar
     }
     // Media jornada (la excursión se lleva la mañana): solo la tarde.
     if (day.halfDayExcursion) sections = { ...sections, manana: [], comida: null }
-    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName }
+    return { id, cfg, day, sections, applied, closedAnchors, notToday, tardeB, suggestionName, forceWinter }
   }
   // Lo que el tope de museos de pago quita (se decide con el viaje entero y se aplica al volver a resolver).
   const dropPaid = new Set()
@@ -505,7 +522,54 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       days.push({ ...skeletonDay, units: [], schedule: null, hours: hoursOf(skeletonDay), isBlank: true })
       continue
     }
-    days.push(planDay(entry, skeletonDay))
+    // Si con el orden normal el mirador del atardecer llega después del sol (el Janículo a las 18:45 con el sol a las
+    // 18:30), el orden de invierno: el mirador primero (decisión del usuario, 2026-09-28), sin depender solo de
+    // `atardecer_antes_de`. Se queda si así llega a tiempo y no se pierde nada importante.
+    const before = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+    let planned = planDay(entry, skeletonDay)
+    const sunsetLate = (plan, sections) => {
+      const sunset = plan.hours?.sunset
+      if (sunset == null) return false
+      const miradores = new Set([...sections.manana, ...sections.tarde].filter((stop) => stop.rol === 'atardecer').map((stop) => stop.lugar))
+      return (plan.schedule?.visits ?? []).some((visit) => (visit.place.sunset != null || miradores.has(visit.place.name)) && visit.start > sunset) || (plan.schedule?.dropped ?? []).some(({ reason }) => reason === 'missed_sunset')
+    }
+    const keyDropped = (plan) => (plan.schedule?.dropped ?? []).filter(({ unit }) => unit.places.some((place) => place.level === 1 || inPool(place.name))).length
+    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno')) {
+      const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      const restore = (state) => {
+        seen.clear(); for (const name of state.seen) seen.add(name)
+        notEnoughTime.clear(); for (const name of state.notEnoughTime) notEnoughTime.add(name)
+        notEnoughDay.clear(); for (const [name, value] of state.notEnoughDay) notEnoughDay.set(name, value)
+      }
+      restore(before)
+      let winterEntry = resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true })
+      let winterPlan = planDay(winterEntry, skeletonDay)
+      // Con el mirador primero, la espera hasta el sol (más de una hora) se llena como lo haría un local: el monumento
+      // que iba por fuera por tiempo (el Castillo), por dentro.
+      const waitBeforeSun = (plan) => {
+        const visits = plan.schedule?.visits ?? []
+        const at = visits.findIndex((visit) => visit.place.sunset != null)
+        return at > 0 ? visits[at].start - visits[at - 1].end - (visits[at].walkMinutes ?? 0) : 0
+      }
+      const outsideForTime = (plan) => (plan.schedule?.visits ?? []).find((visit) => visit.place.visitOutside && visit.place.outsideKind === 'no_cabe')
+      const filler = waitBeforeSun(winterPlan) > MID_DAY_WAIT_MAX && outsideForTime(winterPlan)
+      if (filler) {
+        const beforeFill = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+        autoInside.add(filler.place.name)
+        const fillEntry = resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true })
+        const fillPlan = planDay(fillEntry, skeletonDay)
+        autoInside.delete(filler.place.name)
+        if (!sunsetLate(fillPlan, fillEntry.sections) && keyDropped(fillPlan) <= keyDropped(winterPlan) && waitBeforeSun(fillPlan) < waitBeforeSun(winterPlan)) {
+          winterEntry = fillEntry
+          winterPlan = fillPlan
+        } else restore(beforeFill)
+      }
+      if (!sunsetLate(winterPlan, winterEntry.sections) && keyDropped(winterPlan) <= keyDropped(planned)) {
+        planned = winterPlan
+        resolved[resolvedIndex - 1] = winterEntry
+      } else restore(after)
+    }
+    days.push(planned)
   }
 
   /** El `por_que` más habitual de un lugar en los días curados (para las paradas que no traen el suyo). */
@@ -902,7 +966,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     }
     // `si_espera` (D2 en invierno): si antes del atardecer se esperan más de esos minutos, la tarde de `si_espera`
     // (Trastevere antes del Janículo), que se queda ese rato en su `estirar`. Solo si no se pierde nada y llega al sol.
-    const waitRule = sections.si_espera
+    // (Con el orden de invierno forzado porque el normal llega tarde al sol, no se vuelve al normal.)
+    const waitRule = entry.forceWinter ? null : sections.si_espera
     const sunsetIndex = result.visits.findIndex((visit) => visit.place.sunset != null)
     if (waitRule?.tarde && sunsetIndex > 0) {
       const wait = result.visits[sunsetIndex].start - result.visits[sunsetIndex - 1].end - (result.visits[sunsetIndex].walkMinutes ?? 0)
@@ -921,7 +986,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         const names = (candidate) => new Set(candidate.visits.map((visit) => visit.place.name))
         const had = names(result)
         const has = names(trial)
-        if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null)) {
+        // (Y llegando al sol de verdad: el Janículo a las 18:45 con el sol a las 18:30 no vale.)
+        if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null && visit.start <= visit.place.sunset)) {
           units = list
           result = trial
         }
@@ -930,13 +996,16 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // Lo que el programador ha quitado para llegar al sol (Via della Conciliazione en D2 en invierno): antes, la parada
     // que se estira (Trastevere) devuelve 15 o 30 min, nunca por debajo de 20, si así vuelve sin perder nada ni el sol.
     const lostForSun = result.dropped.filter(({ reason }) => reason === 'missed_sunset')
-    if (lostForSun.length > 0 && result.visits.some((visit) => visit.place.sunset != null) && units.some((unit) => unit.stretch)) {
+    // (También si el mirador llega, pero después del sol: el Janículo a las 18:45 con el sol a las 18:37.)
+    const sunLate = (candidate) => candidate.visits.some((visit) => visit.place.sunset != null && visit.start > visit.place.sunset)
+    const lateBefore = sunLate(result)
+    if ((lostForSun.length > 0 || lateBefore) && result.visits.some((visit) => visit.place.sunset != null) && units.some((unit) => unit.stretch)) {
       for (const cut of [STRETCH_GIVE_BACK_MINUTES, STRETCH_GIVE_BACK_MINUTES * 2]) {
         const list = units.map((unit) => (unit.stretch ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: Math.max(STRETCH_MIN_MINUTES, (place.duration_minutes ?? 30) - cut) } : place)) } : unit))
         const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
         const recovered = lostForSun.every(({ unit }) => trial.visits.some((visit) => visit.unitId === unit.id))
-        if (keepsAll && recovered && trial.visits.some((visit) => visit.place.sunset != null)) {
+        if (keepsAll && recovered && trial.visits.some((visit) => visit.place.sunset != null) && (!lateBefore || !sunLate(trial))) {
           units = list
           result = trial
           break

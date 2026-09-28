@@ -254,8 +254,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const sunsetToday = tripDay.hours?.sunset ?? null
     const curatedStops = (destData.curated_days ?? []).flatMap((day) => [...(day.manana ?? []), ...(day.tarde ?? []), ...Object.values(day.variantes ?? {}).flatMap((variant) => [...(variant.manana ?? []), ...(variant.tarde ?? [])])])
     const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)) || curatedStops.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)
-    if (visit.place.nightView || (sunsetMirador && visit.place.sunset == null && sunsetToday != null && visit.start > sunsetToday + 30)) {
+    // Si llega después de que se ponga el sol, ya es de noche (decisión del usuario, 2026-09-28: el Pincio a las 17:00
+    // con el sol a las 16:39 no es "el atardecer más clásico"): "Roma iluminada desde el Pincio", sin 🌅.
+    const lateForSun = (sunsetMirador || visit.place.sunset != null) && sunsetToday != null && visit.start > sunsetToday
+    if (visit.place.nightView || lateForSun) {
       stop.night_view = true
+      delete stop.sunset_minutes
       stop.why = destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
       // Sale como experiencia nocturna, con su nombre: "Roma iluminada desde el Janículo" (decisión del 2026-09-27).
       const desde = destData.destination_config?.night_view_names?.[visit.place.name]

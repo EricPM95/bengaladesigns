@@ -1324,3 +1324,22 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     automático ya cuenta los cierres y lo movido (solo de lugares del viaje), el curado aporta su `contexto` (el mismo
     texto sin los cierres): sale uno y nunca nombra un lugar que no está en el viaje (el 1 de mayo ya no habla de
     Caracalla). También sin fechas ("Si tu viaje coincide con…" usa el `contexto`).
+290. **Revisión "como un local" (decisión del usuario, 2026-09-28), con reglas generales:**
+    - El tiempo libre de antes de cenar acaba cuando hay que salir hacia la cena (con las horas ya redondeadas), y una
+      nocturna antes de cenar dura 25 min como mucho (la Plaza de España de 60 min era demasiado).
+    - Un mirador del atardecer que llega después del sol ya es de noche ("Roma iluminada desde el Pincio"), sin 🌅
+      (`MIRADOR_LATE_MINUTES = 0`). Si con el orden normal el mirador llega tarde, se prueba el orden de invierno
+      (el mirador primero), sin depender solo de `atardecer_antes_de`; y si así queda más de una hora de espera antes
+      del sol, el monumento que iba por fuera por tiempo (el Castillo) va por dentro. `si_espera` solo vale si llega al
+      sol de verdad.
+    - Castillo/Puente → Janículo: el bus 115 o el 870 desde Via Paola (comprobado en ATAC). La revisión cuenta un tramo
+      de más de 25 min como largo si la parada no lleva línea (un aviso "o en bus o taxi" no es transporte).
+    - La cena empieza en el cuarto de hora siguiente a llegar a su barrio, dentro de su franja; la de verano solo alarga
+      la franja por arriba.
+    - Órdenes nuevos de los días curados: D4 en invierno (Galería → Parque → Pincio al atardecer → Santa Maria del
+      Popolo), D4 en domingo (Parque sin estirar; Santa Maria del Popolo antes del Pincio, en invierno después), D4 con
+      Free Tour (Santa Maria della Vittoria a las 9:00 → Tritón → Parque → Galería a las 11:00 fija → comida 13:15 →
+      Popolo → Pincio), D4 tranquilo en invierno (Plaza de España 10:00 → Galería 11:00 → Parque → comida 13:30 →
+      Pincio → Santa Maria del Popolo), D1 tranquilo en sábado y en invierno (Plaza Venecia → Altar → Campidoglio al
+      atardecer), D1-FT tranquilo come junto a los Foros, D5 con la Isla Tiberina y el Teatro de Marcelo de camino al
+      Campidoglio, D4M tranquilo con el Pincio de parada. `insertar` admite `despues_de` y `estacion`; `sin_estirar`.

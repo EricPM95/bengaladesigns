@@ -8307,6 +8307,23 @@
               "minutos": 30,
               "nota": "A última hora, la terraza con la luz de la tarde.",
               "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies."
+            },
+            {
+              "lugar": "Plaza del Campidoglio",
+              "rol": "atardecer",
+              "nota": "La vista del Foro desde arriba.",
+              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro."
+            },
+            {
+              "lugar": "Barrio Judío",
+              "rol": "parada",
+              "por_que": "Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio."
+            },
+            {
+              "lugar": "Campo de' Fiori",
+              "rol": "parada",
+              "nota": "El aperitivo antes de cenar.",
+              "por_que": "Por la mañana es mercado de frutas y flores, y por la tarde, el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí."
             }
           ],
           "aviso_fecha": {
@@ -8631,6 +8648,56 @@
               "por_que": "Tres iglesias, una encima de otra. Arriba, una basílica del siglo XII; debajo, otra más antigua; y al fondo, un templo romano donde se oye correr agua subterránea. La basílica de arriba es gratis; para bajar hace falta entrada."
             }
           ]
+        },
+        "tranquilo_invierno": {
+          "tarde": [
+            {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
+            {
+              "lugar": "Altar de la Patria",
+              "rol": "parada",
+              "minutos": 30,
+              "nota": "Por dentro es gratis; sube a la terraza panorámica.",
+              "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies."
+            },
+            {
+              "lugar": "Plaza del Campidoglio",
+              "rol": "atardecer",
+              "nota": "La vista del Foro desde arriba.",
+              "por_que": "Terminas el día en la plaza de Miguel Ángel. Rodea el Ayuntamiento hasta el mirador de detrás y quédate a ver cómo se encienden las luces del Foro."
+            },
+            {
+              "lugar": "Panteón",
+              "rol": "parada",
+              "por_que": "Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael."
+            },
+            {
+              "lugar": "Iglesia de San Luigi dei Francesi",
+              "rol": "parada",
+              "por_que": "A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo."
+            },
+            {
+              "lugar": "Piazza Navona",
+              "rol": "parada",
+              "por_que": "Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini."
+            },
+            {
+              "lugar": "Campo de' Fiori",
+              "rol": "parada",
+              "nota": "Aperitivo en la plaza.",
+              "por_que": "Por la mañana es mercado de frutas y flores, y por la tarde, el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí."
+            },
+            {
+              "lugar": "Plaza Farnese",
+              "rol": "de_paso",
+              "por_que": "Una plaza tranquila a un minuto de Campo de' Fiori. Fíjate en las dos fuentes: están hechas con bañeras de granito de las Termas de Caracalla. El palacio, en el que trabajó Miguel Ángel, hoy es la embajada de Francia."
+            }
+          ]
         }
       },
       "no_en": [
@@ -8795,7 +8862,9 @@
               "lugar": "Mirador del Janículo",
               "rol": "atardecer",
               "nota": "~30 min andando con cuesta, o el bus 115.",
-              "por_que": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo."
+              "por_que": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo.",
+              "traslado": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
+              "traslado_min": 20
             },
             {
               "lugar": "Fontana dell'Acqua Paola",
@@ -8831,13 +8900,13 @@
                 "rol": "de_paso",
                 "minutos": 10,
                 "nota": "De San Pedro al Castillo: el camino del viajero.",
-                "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+                "por_que": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto."
               },
               {
                 "lugar": "Puente Sant'Angelo",
                 "rol": "parada",
                 "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere."
               },
               {
                 "lugar": "Castillo de Sant'Angelo",
@@ -8852,40 +8921,37 @@
                     "min_dias": 5
                   }
                 ],
-                "por_que": {
-                  "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                  "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-                }
+                "por_que": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
               },
               {
                 "lugar": "Iglesia de Santa Maria in Trastevere",
                 "rol": "parada",
-                "por_que": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes."
+                "por_que": "Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes."
               },
               {
                 "lugar": "Trastevere",
                 "rol": "parada",
                 "estirar": true,
                 "nota": "Callejear: aquí va todo el tiempo que sobre antes del atardecer (aperitivo en el barrio), nunca arriba en el monte.",
-                "por_que": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador."
+                "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
               },
               {
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
                 "rol": "parada",
                 "si_cerrado": "de_paso",
                 "nota": "Antes de las 18:00; si ya cerró, de paso.",
-                "por_que": "El pequeño templo de Bramante, una joya del Renacimiento subiendo al Janículo, con entrada gratis."
+                "por_que": "Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis."
               },
               {
                 "lugar": "Fontana dell'Acqua Paola",
                 "rol": "parada",
-                "por_que": "El 'Fontanone', la gran fuente de mármol del Janículo, con Roma entera delante."
+                "por_que": "Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante."
               },
               {
                 "lugar": "Mirador del Janículo",
                 "rol": "atardecer",
                 "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo.",
-                "por_que": "El mejor atardecer de Roma: la ciudad entera a tus pies. Luego se baja a cenar a Trastevere, unos 20 min cuesta abajo."
+                "por_que": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo."
               }
             ]
           }
@@ -9583,7 +9649,14 @@
               "por_que": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos."
             }
           ],
-          "nombre": "Roma Antigua, el Ghetto y Trastevere"
+          "nombre": "Roma Antigua, el Ghetto y Trastevere",
+          "comida": {
+            "texto": "Monti o los Foros",
+            "restaurantes": [
+              "La Taverna dei Fori Imperiali",
+              "La Boccaccia"
+            ]
+          }
         }
       },
       "no_en": [
@@ -9825,45 +9898,38 @@
                 }
               ],
               "nota": "Turno de las 13:00, con reserva.",
-              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen."
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",
+              "fija": true
             },
             {
               "lugar": "Parque de Villa Borghese",
-              "rol": "de_paso",
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
-            },
-            {
-              "lugar": "Santa Maria del Popolo",
               "rol": "parada",
-              "nota": "En invierno, por la tarde (abre de 16:00 a 18:00), antes de subir al Pincio. Los dos Caravaggio.",
-              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-              "hora_ok": true
+              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
+              "minutos": 30,
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
             },
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
               "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+            },
+            {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "nota": "Abre de 16:00 a 18:00: después del atardecer en el Pincio, bajando.",
+              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+              "hora_ok": true
             }
           ]
         },
         "con_free_tour": {
           "manana": [
             {
-              "lugar": "Desayuno romano",
-              "rol": "parada",
-              "minutos": 45,
-              "hora": "09:00",
-              "solo": {
-                "ritmo": "completo"
-              },
-              "nota": "Sin prisas, que ayer fue un día largo: cappuccino y cornetto de pie en la barra.",
-              "por_que": "Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más."
-            },
-            {
               "lugar": "Iglesia de Santa Maria della Vittoria",
               "rol": "parada",
-              "nota": "El Éxtasis de Santa Teresa de Bernini, gratis y sin cola.",
-              "por_que": "Una iglesia pequeña que guarda una obra maestra: el Éxtasis de Santa Teresa, de Bernini. Mira a los lados: la familia que lo encargó está esculpida en palcos, como si miraran una obra de teatro. Se entra gratis y casi siempre está tranquila."
+              "nota": "Abre a las 8:00: se empieza aquí, sin desayuno suelto.",
+              "por_que": "Una iglesia pequeña que guarda una obra maestra: el Éxtasis de Santa Teresa, de Bernini. Mira a los lados: la familia que lo encargó está esculpida en palcos, como si miraran una obra de teatro. Se entra gratis y casi siempre está tranquila.",
+              "hora": "09:00"
             },
             {
               "lugar": "Fuente del Tritón",
@@ -9871,27 +9937,32 @@
               "por_que": "La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico."
             },
             {
-              "lugar": "Santa Maria del Popolo",
+              "lugar": "Parque de Villa Borghese",
               "rol": "parada",
-              "antes_de": "12:00",
-              "nota": "Los dos Caravaggio. Se llega bajando por Via Sistina y Via del Babuino.",
-              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-              "hora_ok": true
+              "nota": "El lago y su templete, camino de la Galería: aquí va lo que sobre hasta el turno.",
+              "minutos": 45,
+              "estirar": true,
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
             },
             {
-              "lugar": "Piazza del Popolo",
+              "lugar": "Galería Borghese",
               "rol": "parada",
-              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
-            },
-            {
-              "lugar": "Ara Pacis",
-              "rol": "parada",
+              "hora": "11:00",
               "pago": true,
-              "solo": {
-                "experiencia": "arte_museos",
-                "min_dias": 5
-              },
-              "por_que": "El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo."
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "experiencia": "arte_museos"
+                },
+                {
+                  "min_dias": 4
+                }
+              ],
+              "nota": "Turno de las 11:00 (hay turnos cada 2 h de 9:00 a 17:00), con reserva.",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",
+              "fija": true
             }
           ],
           "comida": {
@@ -9901,65 +9972,42 @@
               "Poldo e Gianna Osteria",
               "Sgarro Bistrot"
             ],
-            "temprana": "12:00"
+            "hora": "13:15"
           },
           "tarde": [
             {
-              "lugar": "Galería Borghese",
+              "lugar": "Piazza del Popolo",
               "rol": "parada",
-              "hora": "13:00",
-              "pago": true,
-              "solo": [
-                {
-                  "pool": true,
-                  "estacion": "invierno"
-                },
-                {
-                  "experiencia": "arte_museos",
-                  "estacion": "invierno"
-                },
-                {
-                  "min_dias": 4,
-                  "estacion": "invierno"
-                }
-              ],
-              "nota": "Turno de las 13:00, con reserva (en invierno, para llegar al Pincio con luz).",
-              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen."
+              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
             },
             {
-              "lugar": "Galería Borghese",
+              "lugar": "Santa Maria del Popolo",
               "rol": "parada",
-              "hora": "15:00",
-              "pago": true,
+              "nota": "Abre a las 16:00 por la tarde.",
+              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+              "hora_ok": true,
               "solo": [
                 {
-                  "pool": true,
-                  "estacion": "no_invierno"
-                },
-                {
-                  "experiencia": "arte_museos",
-                  "estacion": "no_invierno"
-                },
-                {
-                  "min_dias": 4,
                   "estacion": "no_invierno"
                 }
-              ],
-              "nota": "Turno de las 15:00, con reserva.",
-              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen."
-            },
-            {
-              "lugar": "Parque de Villa Borghese",
-              "rol": "parada",
-              "minutos": 30,
-              "estirar": true,
-              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete.",
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
+              ]
             },
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
               "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+            },
+            {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "nota": "En invierno, después del atardecer en el Pincio: abre de 16:00 a 18:00.",
+              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+              "hora_ok": true,
+              "solo": [
+                {
+                  "estacion": "invierno"
+                }
+              ]
             }
           ]
         },
@@ -9997,6 +10045,7 @@
           "insertar": [
             {
               "antes_de": "Terraza del Pincio",
+              "estacion": "no_invierno",
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
@@ -10004,6 +10053,82 @@
                 "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
                 "hora_ok": true
               }
+            },
+            {
+              "despues_de": "Terraza del Pincio",
+              "estacion": "invierno",
+              "parada": {
+                "lugar": "Santa Maria del Popolo",
+                "rol": "parada",
+                "nota": "El domingo solo abre de 16:30 a 18:00.",
+                "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+                "hora_ok": true
+              }
+            }
+          ],
+          "sin_estirar": [
+            "Parque de Villa Borghese"
+          ]
+        },
+        "tranquilo_invierno": {
+          "nombre": "La Borghese, el Pincio y la escalinata",
+          "comida": {
+            "texto": "Tridente o Spagna",
+            "restaurantes": [
+              "Edy",
+              "Poldo e Gianna Osteria",
+              "Sgarro Bistrot"
+            ],
+            "hora": "13:30"
+          },
+          "manana": [
+            {
+              "lugar": "Plaza de España",
+              "rol": "parada",
+              "nota": "Y la escalinata.",
+              "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
+              "hora": "10:00"
+            },
+            {
+              "lugar": "Galería Borghese",
+              "rol": "parada",
+              "hora": "11:00",
+              "pago": true,
+              "solo": [
+                {
+                  "pool": true
+                },
+                {
+                  "experiencia": "arte_museos"
+                },
+                {
+                  "min_dias": 4
+                }
+              ],
+              "nota": "Turno de las 11:00, con reserva: sin prisas para llegar.",
+              "por_que": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",
+              "fija": true
+            },
+            {
+              "lugar": "Parque de Villa Borghese",
+              "rol": "parada",
+              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
+              "minutos": 30,
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque."
+            }
+          ],
+          "tarde": [
+            {
+              "lugar": "Terraza del Pincio",
+              "rol": "atardecer",
+              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+            },
+            {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "nota": "Abre de 16:00 a 18:00: después del atardecer.",
+              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+              "hora_ok": true
             }
           ]
         }
@@ -10185,6 +10310,12 @@
               "lugar": "Piazza del Popolo",
               "rol": "parada",
               "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
+            },
+            {
+              "lugar": "Terraza del Pincio",
+              "rol": "parada",
+              "nota": "Sube por las rampas: Roma de día desde arriba.",
+              "por_que": "Sube desde la Piazza del Popolo y tendrás Roma entera delante, con la cúpula de San Pedro al fondo. Es uno de los miradores favoritos de los romanos, y no cuesta nada."
             }
           ],
           "nombre": "Trevi, el Pincio y la tarde en Monti"
@@ -10276,6 +10407,16 @@
           "nota": "Bajas del bus aquí: el Palatino enfrente con la luz de la tarde.",
           "por_que": "Bajas del bus aquí, donde corrían las cuadrigas. Con la luz de la tarde, el Palatino que tienes delante se vuelve dorado.",
           "estirar_max": 30
+        },
+        {
+          "lugar": "Isla Tiberina",
+          "rol": "parada",
+          "por_que": "La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años."
+        },
+        {
+          "lugar": "Teatro de Marcelo",
+          "rol": "parada",
+          "por_que": "Parece un Coliseo pequeño, y es más antiguo que el Coliseo. Lo curioso es que encima de las gradas romanas hay casas en las que hoy vive gente."
         },
         {
           "lugar": "Plaza del Campidoglio",
@@ -11171,7 +11312,9 @@
           "lugar": "Bendición Urbi et Orbi",
           "hora": "11:30",
           "nota": "Bendición Urbi et Orbi a las 12:00",
-          "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente."
+          "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
+          "traslado": "el metro A (hasta Ottaviano) o el bus 64",
+          "traslado_min": 25
         },
         "verificar": true,
         "fuente": "vatican.va (confirmar cada año)",
@@ -11314,7 +11457,9 @@
           "lugar": "Bendición Urbi et Orbi",
           "hora": "11:30",
           "dia": "12-25",
-          "nota": "Bendición Urbi et Orbi a las 12:00"
+          "nota": "Bendición Urbi et Orbi a las 12:00",
+          "traslado": "el metro A (hasta Ottaviano) o el bus 64",
+          "traslado_min": 25
         }
       },
       {

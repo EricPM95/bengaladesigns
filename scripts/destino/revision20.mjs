@@ -229,7 +229,9 @@ for (const [index, viaje] of VIAJES.entries()) {
       if (NOTAS_INTERNAS.some((nota) => porque.includes(cell(nota)) && !cell(stop.why ?? '').includes(cell(nota)))) recuento.notas.push(donde)
       if (sale === 'Por el camino' && stop.duration_minutes > 10) recuento.caminoLargo.push(`${donde} (${stop.duration_minutes} min)`)
       const conAviso = String(day.transfer_notice ?? '').includes(`→ ${stop.place_name ?? stop.name}:`)
-      if (!stop.transit && previous && walk != null && walk > 25 && !conAviso) recuento.tramosLargos.push(`${donde} (${Math.round(walk)} min andando)`)
+      // (Un aviso "o en bus o taxi" no es transporte: solo cuenta la línea en la parada, decisión del usuario 2026-09-28.)
+      void conAviso
+      if (!stop.transit && previous && walk != null && walk > 25) recuento.tramosLargos.push(`${donde} (${Math.round(walk)} min andando)`)
       previous = stop
     }
     // Comida: con su restaurante y su barrio; se llega andando desde la parada de antes.
