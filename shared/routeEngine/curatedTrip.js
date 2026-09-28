@@ -47,8 +47,6 @@ const MID_DAY_WAIT_MAX = 60
 const NIGHT_FIXED_DINNER_METERS = 1200
 /** Espera a la cena a partir de la cual la parada de barrio de antes se estira (decisión del usuario, 2026-09-28). */
 const APERITIVO_ABSORB_FROM = 15
-/** Un hueco así antes del sol (por un cierre) se llena primero con paradas de camino (decisión del usuario, 2026-09-28). */
-const CLOSURE_GAP_MINUTES = 90
 /** "De camino, en la misma zona": a esta distancia del mirador como mucho. */
 const ON_THE_WAY_METERS = 700
 /** Un imprescindible es parada de verdad: nunca menos de 20 min (decisión del usuario, 2026-09-28). */
@@ -572,16 +570,20 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       return (plan.schedule?.visits ?? []).some((visit) => (visit.place.sunset != null || miradores.has(visit.place.name)) && visit.start > sunset) || (plan.schedule?.dropped ?? []).some(({ reason }) => reason === 'missed_sunset')
     }
     const keyDropped = (plan) => (plan.schedule?.dropped ?? []).filter(({ unit }) => unit.places.some((place) => place.level === 1 || inPool(place.name))).length
-    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno')) {
-      const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
-      const restore = (state) => {
-        seen.clear(); for (const name of state.seen) seen.add(name)
-        notEnoughTime.clear(); for (const name of state.notEnoughTime) notEnoughTime.add(name)
-        notEnoughDay.clear(); for (const [name, value] of state.notEnoughDay) notEnoughDay.set(name, value)
-      }
-      restore(before)
-      let winterEntry = resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true })
-      let winterPlan = planDay(winterEntry, skeletonDay)
+    const restore = (state) => {
+      seen.clear(); for (const name of state.seen) seen.add(name)
+      notEnoughTime.clear(); for (const name of state.notEnoughTime) notEnoughTime.add(name)
+      notEnoughDay.clear(); for (const [name, value] of state.notEnoughDay) notEnoughDay.set(name, value)
+    }
+    /**
+     * La espera antes del sol, si pasa de una hora (decisión del usuario, 2026-09-28; antes, de 90 min): primero la subida por el barrio y
+     * luego, por dentro, el monumento que iba por fuera por tiempo. Vale para cualquier día con mirador, sea de invierno
+     * por la fecha o por el orden forzado (repaso de las 20 rutas: el D2 de marzo esperaba 100 min antes del Janículo).
+     */
+    // Llenar la espera nunca puede costar una parada (sin el mirador, la espera "baja" a 0).
+    const droppedCount = (plan) => (plan.schedule?.dropped ?? []).length
+    const fillSunWait = (start, opts) => {
+      let cur = start.plan ? start : { entry: start.entry, plan: planDay(start.entry, skeletonDay) }
       // Con el mirador primero, la espera hasta el sol (más de una hora) se llena como lo haría un local: el monumento
       // que iba por fuera por tiempo (el Castillo), por dentro.
       const waitBeforeSun = (plan) => {
@@ -590,11 +592,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         return at > 0 ? visits[at].start - visits[at - 1].end - (visits[at].walkMinutes ?? 0) : 0
       }
       const outsideForTime = (plan) => (plan.schedule?.visits ?? []).find((visit) => visit.place.visitOutside && visit.place.outsideKind === 'no_cabe')
-      // Un hueco de más de 90 min antes del sol (el Castillo cerrado el lunes, decisión del usuario 2026-09-28): primero
+      // Un hueco de más de una hora antes del sol (el Castillo cerrado el lunes, decisión del usuario 2026-09-28): primero
       // entran las paradas de nivel 2-3 de camino, en la misma zona (subir al Janículo por el barrio: el Tempietto y la
       // Fontana dell'Acqua Paola van antes del mirador); después se estira lo estirable; y solo entonces tiempo libre.
-      if (waitBeforeSun(winterPlan) > CLOSURE_GAP_MINUTES) {
-        const tarde = winterEntry.sections.tarde
+      if (waitBeforeSun(cur.plan) > MID_DAY_WAIT_MAX) {
+        const tarde = cur.entry.sections.tarde
         const at = tarde.findIndex((stop) => stop.rol === 'atardecer')
         const mirador = at >= 0 ? placeByName.get(tarde[at].lugar) : null
         const near = (stop) => {
@@ -609,30 +611,45 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
           const { traslado, traslado_min: trasladoMin, ...miradorStop } = tarde[at]
           const moved = climb.map((stop, index) => (index === 0 && traslado ? { ...stop, traslado, traslado_min: trasladoMin } : stop))
           const reordered = [...tarde.slice(0, at), ...moved, miradorStop, ...after.filter((stop) => !climb.includes(stop))]
-          const climbEntry = { ...winterEntry, sections: { ...winterEntry.sections, tarde: reordered } }
+          const climbEntry = { ...cur.entry, sections: { ...cur.entry.sections, tarde: reordered } }
           const climbPlan = planDay(climbEntry, skeletonDay)
-          if (!sunsetLate(climbPlan, climbEntry.sections) && keyDropped(climbPlan) <= keyDropped(winterPlan) && waitBeforeSun(climbPlan) < waitBeforeSun(winterPlan)) {
-            winterEntry = climbEntry
-            winterPlan = climbPlan
+          if (!sunsetLate(climbPlan, climbEntry.sections) && droppedCount(climbPlan) <= droppedCount(cur.plan) && waitBeforeSun(climbPlan) < waitBeforeSun(cur.plan)) {
+            cur = { entry: climbEntry, plan: climbPlan }
           } else restore(beforeClimb)
         }
       }
-      const filler = waitBeforeSun(winterPlan) > MID_DAY_WAIT_MAX && outsideForTime(winterPlan)
+      const filler = waitBeforeSun(cur.plan) > MID_DAY_WAIT_MAX && outsideForTime(cur.plan)
       if (filler) {
         const beforeFill = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
         autoInside.add(filler.place.name)
-        const fillEntry = resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true })
+        const fillEntry = resolveEntry(entry.id, resolvedIndex - 1, opts)
         const fillPlan = planDay(fillEntry, skeletonDay)
         autoInside.delete(filler.place.name)
-        if (!sunsetLate(fillPlan, fillEntry.sections) && keyDropped(fillPlan) <= keyDropped(winterPlan) && waitBeforeSun(fillPlan) < waitBeforeSun(winterPlan)) {
-          winterEntry = fillEntry
-          winterPlan = fillPlan
+        if (!sunsetLate(fillPlan, fillEntry.sections) && droppedCount(fillPlan) <= droppedCount(cur.plan) && waitBeforeSun(fillPlan) < waitBeforeSun(cur.plan)) {
+          cur = { entry: fillEntry, plan: fillPlan }
         } else restore(beforeFill)
       }
-      if (!sunsetLate(winterPlan, winterEntry.sections) && keyDropped(winterPlan) <= keyDropped(planned)) {
+      return cur
+    }
+    let forcedWinter = false
+    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno')) {
+      const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      restore(before)
+      const { entry: winterEntry, plan: winterPlan } = fillSunWait({ entry: resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true }), plan: null }, { tardeB: entry.tardeB, forceWinter: true })
+      if (!sunsetLate(winterPlan, winterEntry.sections) && keyDropped(winterPlan) <= keyDropped(planned) && droppedCount(winterPlan) <= droppedCount(planned)) {
         planned = winterPlan
         resolved[resolvedIndex - 1] = winterEntry
+        forcedWinter = true
       } else restore(after)
+    }
+    // Invierno por la fecha (o cualquier día con mirador): la misma espera se llena igual.
+    if (!sunsetLate(planned, resolved[resolvedIndex - 1].sections)) {
+      const beforeNatural = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
+      const filled = fillSunWait({ entry: resolved[resolvedIndex - 1], plan: planned }, { tardeB: entry.tardeB, forceWinter: forcedWinter || undefined })
+      if (filled.plan !== planned) {
+        planned = filled.plan
+        resolved[resolvedIndex - 1] = filled.entry
+      } else restore(beforeNatural)
     }
     days.push(planned)
   }
@@ -970,8 +987,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const dinner = dinnerOptions.find((zone) => zone.id === sections.cena?.barrio) ?? null
     const dinnerPoint = dinner?.coordinates ?? units.at(-1)?.places.at(-1)?.coordinates ?? null
     let result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
-    // `si_da_tiempo` (Trinità dei Monti antes del Free Tour): si por ella se pierde una parada a hora fija, sale.
-    if (result.dropped.some(({ reason }) => reason === 'fixed_start_missed') && units.some((unit) => unit.onlyIfTime)) {
+    // `si_da_tiempo` (Trinità dei Monti antes del Free Tour, Monti después de los Foros): si por ella se pierde algo, sale.
+    if (result.dropped.length > 0 && units.some((unit) => unit.onlyIfTime)) {
       const list = units.filter((unit) => !unit.onlyIfTime)
       const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
       if (trial.dropped.length < result.dropped.length) {

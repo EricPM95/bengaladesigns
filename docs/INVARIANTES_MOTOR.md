@@ -1472,3 +1472,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     1,5 km (`ideas_lejos`); y la espera antes de cenar a cualquier hora (`cena_espera`, antes solo desde las 20:00).
     Todo lo que queda fuera lleva su `day_number`. Un lugar con `aperitivo_antes_de_cenar` (Trastevere, Monti, Campo
     de' Fiori) se estira hasta la cena en vez de dejar un "Aperitivo y paseo" suelto detrás.
+
+304. **Repaso de las 20 rutas, comprobación: ningún arreglo puede vaciar una tarde** (2026-09-28):
+    - La espera antes del sol de más de una hora (antes, de 90 min) se llena en cualquier día con mirador, sea de
+      invierno por la fecha o por el orden forzado: primero la subida por el barrio y luego, por dentro, el monumento
+      que iba por fuera por tiempo. El D2 de marzo esperaba 100 min antes del Janículo; ahora sube por el Tempietto
+      (por dentro) y la Fontana, y recupera el paseo por Trastevere.
+    - Llenar la espera y el orden de invierno forzado solo se quedan si no se pierde ninguna parada más (sin el mirador,
+      la espera "bajaba" a 0 y se aceptaba una tarde vacía).
+    - Quedarse 15 min después del sol retrasa la cena lo mismo: la franja de la cena se alarga esos 15 min cuando el día
+      tiene atardecer (el 14 de abril, D1-FT perdía toda la tarde).
+    - `si_da_tiempo` sale si por ella se pierde cualquier cosa, no solo una hora fija (Monti después de los Foros en
+      D5C, en mayo).

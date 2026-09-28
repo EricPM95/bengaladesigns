@@ -650,7 +650,10 @@ function simulate(sequence, ctx) {
   // franja por arriba.
   const dinnerFrom = mode.dinnerWindow[0]
   // Hasta media hora de margen para bajar del mirador y llegar al barrio de la cena.
-  const dinnerUntil = lateDinner ? Math.max(dinnerLatest, LATE_DINNER_START + 30) : dinnerLatest
+  // Quedarse hasta que se enciendan las luces (`stayAfter`) retrasa la cena lo mismo: con el sol a las 19:51, del
+  // Janículo se baja a Trastevere a cenar a las 20:45 (repaso de las 20 rutas: sin este margen se caía la tarde entera).
+  const sunsetStay = sequence.some((element) => element !== LUNCH && element.places.some((place) => place.sunset != null)) ? SUNSET_WINDOW.stayAfter : 0
+  const dinnerUntil = lateDinner ? Math.max(dinnerLatest, LATE_DINNER_START + 30) : dinnerLatest + sunsetStay
   const visitLimit = pendingMeals.dinner ? dinnerUntil : mode.dayEndWithDinner
 
   let cursor = start.minutes

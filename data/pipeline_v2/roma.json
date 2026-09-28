@@ -11224,7 +11224,8 @@
           "estirar": true,
           "nota": "Después de los Foros al atardecer: el barrio de la cena, con su aperitivo.",
           "por_que": "El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber.",
-          "aperitivo": true
+          "aperitivo": true,
+          "si_da_tiempo": true
         }
       ],
       "cena": {
