@@ -200,14 +200,15 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 11:45 | Basílica de San Pedro | 75 min | Parada · por dentro | 3 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
 | 13:00 | Cúpula de San Pedro | 35 min | Parada · por dentro | 1 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
 | 13:45 | Comida: Borghiciana Pastificio Artigianale | 90 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
-| 15:15 | Puente Sant'Angelo | 10 min | Parada | 5 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
-| 15:30 | Castillo de Sant'Angelo | 80 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. · experiencia: Arte |
-| 17:15 | Tiempo libre antes de Mirador del Janículo | 35 min | 🕐 Tiempo libre |  | Pasear por Prati y el Borgo: los alrededores del Vaticano tienen más de lo que parece. |
-| 17:45 | Mirador del Janículo | 45 min | 🌅 Atardecer | 🚌 Bus 115 o el 870, 20 min | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
-| 19:00 | Fontana dell'Acqua Paola | 10 min | Parada | 16 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
-| 19:15 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 5 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. · experiencia: Arte |
-| 19:45 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 7 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. · experiencia: Arte |
-| 20:15 | Cena en Trastevere |  | 🍷 Cena | 5 min andando | en Trastevere |
+| 15:15 | Via della Conciliazione | 5 min | Por el camino | 4 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 15:30 | Puente Sant'Angelo | 25 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 16:00 | Castillo de Sant'Angelo | 15 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. · experiencia: Arte |
+| 16:30 | San Pietro in Montorio y Tempietto de Bramante | 25 min | Parada · por dentro | 🚌 Bus 115 o el 870, 20 min | Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis. · experiencia: Arte |
+| 17:00 | Fontana dell'Acqua Paola | 20 min | Parada | 5 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 17:45 | Mirador del Janículo | 45 min | 🌅 Atardecer | 16 min andando | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 19:00 | Iglesia de Santa Maria in Trastevere | 25 min | Parada · por dentro | 20 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. · experiencia: Arte |
+| 19:30 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
+| 20:15 | Cena en Trastevere |  | 🍷 Cena | 4 min andando | en Trastevere |
 | 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 3 — Trevi sin gente, el Popolo y la Borghese
@@ -226,13 +227,13 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 13:00 | Comida: Ristorante Arlù | 75 min | 🍝 Comida | 4 min andando | en Vaticano y Borgo |
 | 14:15 | Tiempo libre antes de Galería Borghese | 45 min | 🕐 Tiempo libre |  | Pasear por Villa Borghese: el pulmón verde de Roma. |
 | 15:00 | Galería Borghese | 125 min | Parada · por dentro | 🚇 Metro A, 25 min | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. · experiencia: Arte |
-| 17:15 | Parque de Villa Borghese | 70 min | Parada | 8 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 17:15 | Parque de Villa Borghese | 70 min | Parada | 8 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. |
 | 18:45 | Santa Maria del Popolo | 10 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 13 min andando | La iglesia de los Caravaggio, en una esquina de la Piazza del Popolo. Si está abierta, entra: dos cuadros suyos y una capilla de Rafael. · experiencia: Arte |
 | 19:00 | Terraza del Pincio | 26 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
 | 21:30 | Plaza de España (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada» · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
 
-**Lo que quedó fuera**: Trastevere (No te dio tiempo); Piazza del Popolo (No te dio tiempo).
+**Lo que quedó fuera**: Piazza del Popolo (No te dio tiempo).
 
 <a id="ruta-4"></a>
 ## 4. 3 días · completo · sin Free Tour · sin experiencias · desde el sábado 17 jul 2027
@@ -539,7 +540,7 @@ Motor v3 con los días curados, generado el 2026-09-28 con `node scripts/destino
 | 12:00 | Piazza del Popolo | 35 min | Parada | 2 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 13:00 | Comida: Edy | 90 min | 🍝 Comida | 5 min andando | en Tridente y Spagna |
 | 15:00 | Galería Borghese | 125 min | Parada · por dentro | 19 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
-| 17:15 | Parque de Villa Borghese | 105 min | Parada | 8 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 17:15 | Parque de Villa Borghese | 105 min | Parada | 8 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. |
 | 19:30 | Terraza del Pincio | 43 min | 🌅 Atardecer | 11 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 20:30 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
 | 21:30 | Plaza de España (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada» · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
@@ -638,17 +639,19 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
 | 09:00 | Iglesia de Santa Maria della Vittoria | 20 min | Parada | — | Una iglesia pequeña que guarda una obra maestra: el Éxtasis de Santa Teresa, de Bernini. Mira a los lados: la familia que lo encargó está esculpida en palcos, como si miraran una obra de teatro. Se entra gratis y casi siempre está tranquila. · experiencia: Arte |
-| 09:30 | Fuente del Tritón | 10 min | Por el camino | 6 min andando | La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico. |
-| 10:00 | Parque de Villa Borghese | 45 min | Parada | 19 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 09:30 | Via Veneto | 10 min | Por el camino | 8 min andando | La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo. |
+| 10:00 | Parque de Villa Borghese | 45 min | Parada | 12 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
 | 11:00 | Galería Borghese | 120 min | Parada · por dentro | 9 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. · experiencia: Arte |
 | 13:15 | Comida: Edy | 90 min | 🍝 Comida | 19 min andando | en Tridente y Spagna |
 | 14:45 | Piazza del Popolo | 35 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 15:30 | Tiempo libre antes de Terraza del Pincio | 33 min | 🕐 Tiempo libre |  | Pasear por Villa Borghese: el pulmón verde de Roma. |
 | 16:00 | Terraza del Pincio | 39 min | 🌅 Atardecer | 7 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
-| 16:45 | Santa Maria del Popolo | 30 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. · experiencia: Arte |
-| 17:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
-| 18:00 | Tarde libre | 114 min | 🕐 Tiempo libre |  | ideas: Via del Corso, Plaza Colonna |
-| 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 11 min andando | en Tridente y Spagna |
+| 16:45 | Santa Maria del Popolo | 35 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. · experiencia: Arte |
+| 17:30 | Via Margutta | 10 min | Por el camino | 6 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 17:45 | Via del Babuino | 10 min | Por el camino | 2 min andando | La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España. |
+| 18:00 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
+| 18:30 | Paseo por Via del Corso y Via Condotti iluminadas y aperitivo | 91 min | 🕐 Tiempo libre |  | ideas: Via del Corso, Plaza Colonna |
+| 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 4 min andando | en Tridente y Spagna |
 
 **Lo que quedó fuera**: nada.
 
@@ -730,11 +733,11 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 11:00 | Piazza del Popolo | 30 min | Parada | 12 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 12:00 | Comida: Edy | 60 min | 🍝 Comida | 5 min andando | en Tridente y Spagna |
 | 13:15 | Galería Borghese | 10 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 19 min andando | La villa del cardenal Borghese, en mitad del parque, con su fachada llena de estatuas. Dentro está la mejor colección de Bernini del mundo: si quieres entrar, añádela a tus imprescindibles. |
-| 13:30 | Parque de Villa Borghese | 140 min | Parada | 8 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 13:30 | Parque de Villa Borghese | 140 min | Parada | 8 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. |
 | 16:15 | Santa Maria del Popolo | 35 min | Parada · por dentro | 13 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 17:00 | Terraza del Pincio | 20 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 18:00 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
-| 18:30 | Tarde libre | 82 min | 🕐 Tiempo libre |  | ideas: Via del Corso |
+| 18:30 | Tarde libre | 82 min | 🕐 Tiempo libre |  | ideas: Via Margutta, Via del Babuino, Via del Corso |
 | 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
 
 **Lo que quedó fuera**: nada.
@@ -794,7 +797,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:00 | Terraza del Pincio | 39 min | 🌅 Atardecer | 11 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 16:45 | Santa Maria del Popolo | 30 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 18:00 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
-| 18:30 | Tarde libre | 84 min | 🕐 Tiempo libre |  | ideas: Via del Corso |
+| 18:30 | Tarde libre | 84 min | 🕐 Tiempo libre |  | ideas: Via Margutta, Via del Babuino, Via del Corso |
 | 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 11 min andando | en Tridente y Spagna |
 
 ### Día 3 — Excursión
@@ -876,10 +879,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 10:15 | Via Condotti | 5 min | Por el camino | 7 min andando | La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi. |
 | 10:30 | Plaza de España | 30 min | Parada | 7 min andando | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
 | 11:30 | Piazza del Popolo | 30 min | Parada | 12 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
-| 12:00 | Tiempo libre antes de la comida | 55 min | 🕐 Tiempo libre |  | Pasear por Villa Borghese: el pulmón verde de Roma. |
+| 12:00 | Tiempo libre antes de la comida | 55 min | 🕐 Tiempo libre |  | ideas: Via Margutta, Via del Babuino |
 | 13:00 | Comida: Edy | 90 min | 🍝 Comida | 5 min andando | en Tridente y Spagna |
 | 15:00 | Galería Borghese | 125 min | Parada · por dentro | 19 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
-| 17:15 | Parque de Villa Borghese | 130 min | Parada | 8 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 17:15 | Parque de Villa Borghese | 130 min | Parada | 8 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. |
 | 19:45 | Santa Maria del Popolo | 10 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 13 min andando | La iglesia de los Caravaggio, en una esquina de la Piazza del Popolo. Si está abierta, entra: dos cuadros suyos y una capilla de Rafael. |
 | 20:00 | Terraza del Pincio | 26 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 20:45 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
@@ -968,15 +971,18 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
 | 09:00 | Iglesia de Santa Maria della Vittoria | 20 min | Parada | — | Una iglesia pequeña que guarda una obra maestra: el Éxtasis de Santa Teresa, de Bernini. Mira a los lados: la familia que lo encargó está esculpida en palcos, como si miraran una obra de teatro. Se entra gratis y casi siempre está tranquila. |
-| 09:30 | Fuente del Tritón | 10 min | Por el camino | 6 min andando | La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico. |
-| 10:00 | Tiempo libre antes de Galería Borghese | 60 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
-| 11:00 | Galería Borghese | 120 min | Parada · por dentro | 20 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 09:30 | Fuente del Tritón | 5 min | Por el camino | 6 min andando | La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico. |
+| 09:45 | Via Veneto | 10 min | Por el camino | 7 min andando | La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo. |
+| 10:15 | Tiempo libre antes de Galería Borghese | 48 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
+| 11:00 | Galería Borghese | 120 min | Parada · por dentro | 12 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
 | 13:15 | Comida: Edy | 90 min | 🍝 Comida | 19 min andando | en Tridente y Spagna |
 | 14:45 | Piazza del Popolo | 30 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
-| 15:45 | Parque de Villa Borghese | 90 min | Parada | 18 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. · experiencia: Naturaleza |
+| 15:45 | Parque de Villa Borghese | 90 min | Parada | 18 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. · experiencia: Naturaleza |
 | 17:30 | Santa Maria del Popolo | 30 min | Parada · por dentro | 13 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
-| 18:30 | Terraza del Pincio | 43 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. · experiencia: Naturaleza |
-| 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
+| 18:30 | Terraza del Pincio | 38 min | 🌅 Atardecer | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. · experiencia: Naturaleza |
+| 19:15 | Via Margutta | 10 min | Por el camino | 5 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 19:30 | Via del Babuino | 10 min | Por el camino | 2 min andando | La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España. |
+| 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 4 min andando | en Tridente y Spagna |
 | 21:30 | Plaza de España (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada» · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
 
 ### Día 3 — Roma Antigua, el Ghetto y Trastevere al atardecer
@@ -1208,17 +1214,20 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
 | 09:00 | Iglesia de Santa Maria della Vittoria | 20 min | Parada | — | Una iglesia pequeña que guarda una obra maestra: el Éxtasis de Santa Teresa, de Bernini. Mira a los lados: la familia que lo encargó está esculpida en palcos, como si miraran una obra de teatro. Se entra gratis y casi siempre está tranquila. |
-| 09:30 | Fuente del Tritón | 10 min | Por el camino | 6 min andando | La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico. |
-| 10:00 | Tiempo libre antes de Galería Borghese | 60 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
-| 11:00 | Galería Borghese | 120 min | Parada · por dentro | 20 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 09:30 | Fuente del Tritón | 5 min | Por el camino | 6 min andando | La fuente de Bernini en la Plaza Barberini: un tritón soplando una caracola sobre cuatro delfines. Es de las que pasan desapercibidas entre el tráfico. |
+| 09:45 | Via Veneto | 10 min | Por el camino | 7 min andando | La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo. |
+| 10:15 | Tiempo libre antes de Galería Borghese | 48 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
+| 11:00 | Galería Borghese | 120 min | Parada · por dentro | 12 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
 | 13:15 | Comida: Edy | 90 min | 🍝 Comida | 19 min andando | en Tridente y Spagna |
 | 14:45 | Piazza del Popolo | 30 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
 | 15:15 | Tiempo libre antes de Santa Maria del Popolo | 42 min | 🕐 Tiempo libre |  | Pasear por Villa Borghese: el pulmón verde de Roma. |
 | 16:00 | Santa Maria del Popolo | 30 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
-| 17:00 | Parque de Villa Borghese | 120 min | Parada | 16 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
-| 19:30 | Terraza del Pincio | 42 min | 🌅 Atardecer | 11 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
-| 20:30 | Cena en Tridente y Spagna |  | 🍷 Cena | 13 min andando | en Tridente y Spagna |
-| 21:30 | Plaza de España (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada» · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
+| 17:00 | Parque de Villa Borghese | 120 min | Parada | 16 min andando | Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer. |
+| 19:30 | Terraza del Pincio | 37 min | 🌅 Atardecer | 11 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
+| 20:15 | Via Margutta | 10 min | Por el camino | 5 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 20:30 | Via del Babuino | 10 min | Por el camino | 2 min andando | La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España. |
+| 21:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 4 min andando | en Tridente y Spagna |
+| 22:00 | Plaza de España (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada» · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
 
 ### Día 3 — Excursión
 
@@ -1509,14 +1518,15 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 10:00 | Plaza de España | 30 min | Parada | — | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
-| 11:00 | Galería Borghese | 125 min | Parada · por dentro | 16 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 10:00 | Plaza de España | 25 min | Parada | — | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
+| 10:30 | Trinità dei Monti | 10 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 1 min andando | La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies. |
+| 11:00 | Galería Borghese | 125 min | Parada · por dentro | 18 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
 | 13:15 | Parque de Villa Borghese | 30 min | Parada | 8 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
 | 13:45 | Comida: Edy | 120 min | 🍝 Comida | 13 min andando | en Tridente y Spagna |
 | 16:00 | Terraza del Pincio | 39 min | 🌅 Atardecer | 4 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
 | 16:45 | Santa Maria del Popolo | 30 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
 | 17:30 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
-| 18:00 | Tarde libre | 114 min | 🕐 Tiempo libre |  | ideas: Via Condotti, Via del Corso, Plaza Colonna |
+| 18:00 | Tarde libre | 114 min | 🕐 Tiempo libre |  | ideas: Via Margutta, Via del Babuino, Via Condotti |
 | 20:00 | Cena en Tridente y Spagna |  | 🍷 Cena | 11 min andando | en Tridente y Spagna |
 
 **Lo que quedó fuera**: nada.
@@ -1599,9 +1609,7 @@ Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu
 Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.mjs). Tiene que salir todo a 0, o con la lista de lo que no se ha podido arreglar.
 
 - **Lugar repetido en el mismo día**: 0 ✅
-- **Lugar repetido otro día (salvo nocturnas y revisitas)**: 2
-  - ruta 11, día 5, 19:45 Plaza del Campidoglio — ya en el día 1
-  - ruta 12, día 5, 18:30 Plaza del Campidoglio — ya en el día 3
+- **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅

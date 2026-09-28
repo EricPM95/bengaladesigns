@@ -334,7 +334,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.pool == null || (cond.pool ? inPool(stop.lugar) : !inPool(stop.lugar))) &&
       (cond.min_dias == null || contentDays >= cond.min_dias) &&
       // `no_si_dia`: no, si el viaje lleva ese otro día (la Isla Tiberina de D5, que ya está en D1-FT).
-      (cond.no_si_dia == null || !order.includes(cond.no_si_dia)) &&
+      (cond.no_si_dia == null || ![cond.no_si_dia].flat().some((id) => order.includes(id))) &&
+      // `si_dia`: solo si el viaje lleva ese día (lo que llena en D5 el hueco del Altar, que ya salió en D1).
+      (cond.si_dia == null || [cond.si_dia].flat().some((id) => order.includes(id))) &&
       (cond.fecha == null || (Boolean(day) && realDateIso(day)?.slice(5) === cond.fecha)) &&
       (cond.cierra_antes_del_atardecer == null || (Boolean(day) && closesBeforeSunset(cond.cierra_antes_del_atardecer, day))) &&
       (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))) &&

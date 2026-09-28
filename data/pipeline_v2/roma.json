@@ -10795,9 +10795,14 @@
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
-              "solo": {
-                "estacion": "invierno"
-              },
+              "solo": [
+                {
+                  "no_si_dia": [
+                    "D1",
+                    "D1-FT"
+                  ]
+                }
+              ],
               "nota": "La terraza panorámica abre hasta las 19:30 (taquilla hasta las 18:45): Roma iluminada.",
               "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies."
             }
@@ -10837,7 +10842,44 @@
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "La terraza panorámica abre hasta las 19:30: Roma iluminada.",
-              "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies."
+              "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies.",
+              "solo": [
+                {
+                  "no_si_dia": [
+                    "D1",
+                    "D1-FT"
+                  ]
+                }
+              ]
+            },
+            {
+              "lugar": "Columna de Trajano",
+              "rol": "parada",
+              "solo": [
+                {
+                  "si_dia": [
+                    "D1",
+                    "D1-FT"
+                  ]
+                }
+              ],
+              "nota": "Si el Altar ya salió otro día: de camino a Monti.",
+              "por_que": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro."
+            },
+            {
+              "lugar": "Mercados de Trajano",
+              "rol": "parada",
+              "pago": true,
+              "solo": [
+                {
+                  "si_dia": [
+                    "D1",
+                    "D1-FT"
+                  ]
+                }
+              ],
+              "nota": "Si el Altar ya salió otro día: por fuera, desde Via dei Fori Imperiali.",
+              "por_que": "El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies."
             }
           ]
         }

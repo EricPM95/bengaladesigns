@@ -1412,3 +1412,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     por el Tempietto y la Fontana dell'Acqua Paola, y el bus pasa a la primera de la subida); después se estira lo
     estirable hasta su `estirar_max`; y solo entonces sale tiempo libre con nombre. (Si aún sobra más de una hora y hay
     un monumento por fuera por tiempo, ese va por dentro.)
+299. **Condiciones de día en las paradas curadas**: `no_si_dia` (una lista o un día) quita la parada si el viaje lleva
+    ese otro día (la Isla Tiberina y el Altar de D5, que ya salen en D1 o D1-FT); `si_dia` la pone solo si lo lleva (la
+    Columna y los Mercados de Trajano en D5 en invierno, de camino a Monti, cuando el Altar ya salió).
