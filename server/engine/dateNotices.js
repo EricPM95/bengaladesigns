@@ -94,8 +94,7 @@ const tagOf = (entry) => String(entry.titulo ?? '').split(' · ').at(-1)
 /**
  * @param {object} destData
  * @param {object} trip     la salida del planificador (días con `hours` y `schedule`, `dateMoves`, `unplacedEssentials`…)
- * @param {object} options  { poolNames, kept } — `kept`: la ruta del viajero se queda como estaba (fechas puestas
- *   después con "Mejor no", PROMPT_PENDIENTE G): no se dice "hemos ajustado", solo lo que pasa ese día.
+ * @param {object} options  { poolNames }
  * @returns {object[]} tarjetas { id, day_number, date_iso, icon, title, tag, texts, kind }
  */
 export function dateNoticesFor(destData, trip, options = {}) {
@@ -185,7 +184,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const place = placeByName.get(visit.place.name)
       if (!place || !matters(place.name) || !closedOnDay(place, day.hours.weekday ?? weekdayOf(iso), iso)) continue
       const g = grammar(place)
-      addAuto(iso, `${closureSentence(destData, place, iso)} ${options.kept ? `Tu ruta sigue como la tenías: ese día solo podrás ver${g.pronoun} por fuera.` : `Hemos ajustado el día para enseñárte${g.pronoun} por fuera sin perder tiempo.`}`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
+      addAuto(iso, `${closureSentence(destData, place, iso)} Hemos ajustado el día para enseñárte${g.pronoun} por fuera sin perder tiempo.`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
     }
   }
 
@@ -217,7 +216,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const special = place ? specialHoursOn(place, iso) : null
       if (!special || !matters(place.name)) continue
       const g = grammar(place)
-      addAuto(iso, `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}). ${options.kept ? 'Tu ruta sigue como la tenías: mira que tu visita caiga dentro.' : 'Hemos puesto tu visita dentro de ese horario.'}`, 'Horario especial', g.bare, 'luz')
+      addAuto(iso, `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}). Hemos puesto tu visita dentro de ese horario.`, 'Horario especial', g.bare, 'luz')
     }
   }
 
@@ -260,27 +259,30 @@ export function dateNoticesFor(destData, trip, options = {}) {
         icon: curated?.icono ?? first?.icon ?? 'cierre',
         title: curated?.titulo ?? `${capital(longDate(iso))} · ${capital([...new Set(auto.map((item) => item.subject))].join(' · '))}`,
         tag: curated ? tagOf(curated) : first.tag,
-        // Con la ruta de antes (`kept`), fuera la frase de "hemos ajustado tu ruta" del texto curado: no es verdad.
-        texts: [...auto.map((item) => item.text), ...(curated ? [options.kept ? curated.texto.replace(/\s*Hemos [^.]*\.\s*$/, '') : curated.texto] : [])],
+        texts: [...auto.map((item) => item.text), ...(curated ? [curated.texto] : [])],
         kind: curated && auto.length ? 'mixto' : curated ? 'curado' : 'auto',
       }
     })
 }
 
 /**
- * Los avisos de una ruta que se queda como estaba al ponerle fechas ("Mejor no", PROMPT_PENDIENTE G): sus paradas de
- * cada día con la fecha real, sin mover nada. Lo curado de esas fechas y lo que cierra o cambia de horario ese día.
+ * "Mejor no" al poner fechas (decisión del usuario, 2026-09-28): la ruta se queda exactamente igual y no sale ningún
+ * aviso. Solo el dato de cada parada: qué paradas cierran ese día (cierre semanal o festivo), para su marca roja
+ * "Hoy cierra" en la línea de horario.
  * @param {object} destData
- * @param {{ startIso: string, days: { day_number: number, stops: string[] }[], poolNames?: string[] }} kept
+ * @param {{ startIso: string, days: { day_number: number, stops: string[] }[] }} kept
+ * @returns {{ day_number: number, name: string }[]}
  */
-export function keptRouteNotices(destData, { startIso, days, poolNames = [] }) {
+export function keptRouteClosures(destData, { startIso, days }) {
+  const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
   const isoOf = (dayNumber) => new Date(Date.parse(`${startIso}T12:00:00Z`) + (dayNumber - 1) * 86400000).toISOString().slice(0, 10)
-  const trip = {
-    calendar: { hasDates: true, month: Number(startIso.slice(5, 7)) - 1 },
-    days: days.map((day) => {
-      const dateIso = isoOf(day.day_number)
-      return { dayNumber: day.day_number, hours: { dateIso, weekday: weekdayOf(dateIso) }, schedule: { visits: day.stops.map((name) => ({ place: { name } })) } }
-    }),
+  const closures = []
+  for (const day of days) {
+    const dateIso = isoOf(day.day_number)
+    for (const name of day.stops) {
+      const place = placeByName.get(name)
+      if (place && closedOnDay(place, weekdayOf(dateIso), dateIso)) closures.push({ day_number: day.day_number, name })
+    }
   }
-  return dateNoticesFor(destData, trip, { poolNames, kept: true })
+  return closures
 }

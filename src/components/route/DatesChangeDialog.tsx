@@ -1,51 +1,30 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { DateNotice, DateNoticeIcon, DateRange, Route } from '../../lib/types'
-import { DATE_NOTICE_ICONS } from '../../lib/dateNotices'
+import type { DateRange, Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
  * rehace como en el formulario, con la pantalla de carga y luego la ventana de avisos de fechas. Si el viajero ya la
- * había cambiado a mano, antes se pregunta: con "Mejor no" se guardan las fechas, la ruta se queda y salen los avisos
- * de esas fechas con su etiqueta en el día. En los demás destinos, como siempre: solo se guardan las fechas.
+ * había cambiado a mano, antes se pregunta: con "Mejor no" se guardan las fechas y la ruta se queda exactamente igual,
+ * sin ventana ni avisos; solo las paradas que cierran ese día llevan "Hoy cierra" en rojo (el dato de la parada). En los demás destinos, como siempre: solo se guardan las fechas.
  */
 
-interface KeptNotice {
-  id: string
-  day_number: number | null
-  date_iso: string | null
-  icon: string
-  title: string
-  tag: string
-  texts: string[]
-  kind: DateNotice['kind']
-}
-
-async function keptNotices(route: Route, dateRange: DateRange | undefined): Promise<DateNotice[]> {
+/** Las paradas que cierran ese día (cierre semanal o festivo): el dato de la parada, sin avisos. */
+async function keptClosures(route: Route, dateRange: DateRange | undefined): Promise<{ dayNumber: number; name: string }[]> {
   if (!dateRange) return []
   try {
-    const response = await fetch('/api/date-notices-kept', {
+    const response = await fetch('/api/kept-route-closures', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         destination: route.destination,
         start: dateRange.start,
         days: route.days.filter((day) => !day.isReturnLeg).map((day) => ({ day_number: day.dayNumber, stops: day.stops.map((stop) => stop.name) })),
-        must_include_places: route.mustIncludePlaces ?? [],
       }),
     })
-    const body = (await response.json()) as { notices?: KeptNotice[] }
-    return (body.notices ?? []).map((notice) => ({
-      id: notice.id,
-      dayNumber: notice.day_number,
-      dateIso: notice.date_iso,
-      icon: (DATE_NOTICE_ICONS.includes(notice.icon as DateNoticeIcon) ? notice.icon : 'fiesta') as DateNoticeIcon,
-      title: notice.title,
-      tag: notice.tag,
-      texts: notice.texts,
-      kind: notice.kind,
-    }))
+    const body = (await response.json()) as { closures?: { day_number: number; name: string }[] }
+    return (body.closures ?? []).map((closure) => ({ dayNumber: closure.day_number, name: closure.name }))
   } catch {
     return []
   }
@@ -73,7 +52,7 @@ export function useDatesChange(route: Route | null) {
   const keep = async () => {
     if (!route || !pending) return
     setSaving(true)
-    setRouteDatesKeepingRoute(pending.dateRange, await keptNotices(route, pending.dateRange))
+    setRouteDatesKeepingRoute(pending.dateRange, await keptClosures(route, pending.dateRange))
     setSaving(false)
     setPending(null)
   }

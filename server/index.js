@@ -28,7 +28,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor } from './engine/index.js'
 import { compareInside } from './engine/insideSwitch.js'
-import { keptRouteNotices } from './engine/dateNotices.js'
+import { keptRouteClosures } from './engine/dateNotices.js'
 
 config({ path: '.env.local' })
 
@@ -4868,21 +4868,21 @@ app.post('/api/curated-day-inside', async (req, res) => {
   }
 })
 
-// Fechas puestas después, con la ruta editada a mano y "Mejor no" (PROMPT_PENDIENTE G): la ruta se queda y solo
-// salen los avisos de esas fechas, con la etiqueta en su día. Sin Claude.
-app.post('/api/date-notices-kept', (req, res) => {
-  const { destination, start, days, must_include_places } = req.body ?? {}
+// Fechas puestas después, con la ruta editada a mano y "Mejor no": la ruta se queda igual y sin avisos; solo qué
+// paradas cierran ese día (su marca "Hoy cierra"). Sin Claude.
+app.post('/api/kept-route-closures', (req, res) => {
+  const { destination, start, days } = req.body ?? {}
   const destData = findPipelineV2Data(destination)
   if (!destData || !/^\d{4}-\d{2}-\d{2}$/.test(String(start ?? '')) || !Array.isArray(days)) {
-    res.json({ notices: [] })
+    res.json({ closures: [] })
     return
   }
   try {
     const clean = days.filter((day) => Number.isInteger(Number(day?.day_number))).map((day) => ({ day_number: Number(day.day_number), stops: (day.stops ?? []).map(String) }))
-    res.json({ notices: keptRouteNotices(destData, { startIso: start, days: clean, poolNames: must_include_places ?? [] }) })
+    res.json({ closures: keptRouteClosures(destData, { startIso: start, days: clean }) })
   } catch (error) {
-    console.error('[date-notices-kept]', error)
-    res.json({ notices: [] })
+    console.error('[kept-route-closures]', error)
+    res.json({ closures: [] })
   }
 })
 

@@ -49,7 +49,7 @@ export function DateNoticesModal({ route }: { route: Route }) {
           <span className="h-1 w-10 rounded-full bg-text/15" />
         </div>
         <p id="date-notices-heading" className="px-6 pt-4 text-center font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent md:pt-6">
-          {route.dateNoticesKept ? 'Lo que pasa en tus fechas' : 'Hemos preparado tu viaje para estas fechas'}
+          Hemos preparado tu viaje para estas fechas
         </p>
         <NoticeCarousel notices={shown} />
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">

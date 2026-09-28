@@ -8,7 +8,6 @@ import type {
   DayType,
   Budget,
   BudgetItem,
-  DateNotice,
   DateRange,
   DayPlan,
   DestinationArchetype,
@@ -382,8 +381,9 @@ interface RouteStoreState {
   /** Fechas puestas desde el mapa (PROMPT_PENDIENTE G): rehace la ruta como el formulario (pantalla de carga) con esas
       fechas, sin tocar reservas ni wishlist. `undefined` = quitar fechas (días normales del mismo mes). */
   regenerateRouteForDates: (dateRange: DateRange | undefined) => void
-  /** "Mejor no": se guardan las fechas y la ruta se queda; los avisos de esas fechas, con su etiqueta en el día. */
-  setRouteDatesKeepingRoute: (dateRange: DateRange | undefined, notices: DateNotice[]) => void
+  /** "Mejor no" (decisión del usuario, 2026-09-28): se guardan las fechas y la ruta se queda exactamente igual, sin
+      ventana ni avisos. Solo el dato de cada parada: las que cierran ese día llevan "Hoy cierra" en rojo. */
+  setRouteDatesKeepingRoute: (dateRange: DateRange | undefined, closures: { dayNumber: number; name: string }[]) => void
   /** La siguiente `setRoute` es la misma ruta rehecha: no resetea reservas ni wishlist. */
   keepBookingsOnNextRoute: boolean
   setActiveDayId: (dayId: string | null) => void
@@ -786,10 +786,24 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         screen: 'loading',
       }
     }),
-  setRouteDatesKeepingRoute: (dateRange, notices) =>
-    set((state) =>
-      state.route ? { route: { ...state.route, answers: { ...state.route.answers, dateRange }, dateNotices: notices, dateNoticesSeenKey: null, dateNoticesKept: true } } : state,
-    ),
+  setRouteDatesKeepingRoute: (dateRange, closures) =>
+    set((state) => {
+      if (!state.route) return state
+      const closed = new Set(closures.map((closure) => `${closure.dayNumber}|${closure.name}`))
+      return {
+        route: {
+          ...state.route,
+          answers: { ...state.route.answers, dateRange },
+          // Los avisos eran de las fechas de antes (o de solo el mes): con "Mejor no" no sale ninguno.
+          dateNotices: [],
+          days: state.route.days.map((day) => ({
+            ...day,
+            // "Hoy cierra" en su línea de horario; el aviso de sin fechas ("cerrado los lunes a esta hora") ya no vale.
+            stops: day.stops.map((stop) => ({ ...stop, hoursWarning: closed.has(`${day.dayNumber}|${stop.name}`) ? 'Hoy cierra' : null })),
+          })),
+        },
+      }
+    }),
   setActiveDayId: (dayId) => set({ activeDayId: dayId }),
   setMode: (mode) => set({ mode }),
   toggleDarkMode: () =>

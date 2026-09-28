@@ -1252,11 +1252,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     las reglas con fecha de los días curados (`no_en.fecha`, `cuando.fecha`, `si_fecha`). En curatedTrip todo pasa por
     `realDateIso(day)` (null sin fechas); en openingHours `specialHoursOn` recibe la fecha solo si hay `weekday`. Lo
     único del mes que sale sin fechas es la ventana de avisos "Si tu viaje coincide con…" (sin etiqueta en ningún día y sin
-    la última frase "Hemos ajustado / puesto…" del texto curado, que sin fechas no es verdad; con "Mejor no" tampoco).
+    la última frase "Hemos ajustado / puesto…" del texto curado, que sin fechas no es verdad).
     Al poner fechas desde el botón del mapa, la ruta se rehace como en el formulario y sale la ventana de avisos; si el
     viajero la había editado a mano, antes se pregunta ("Vamos a ajustar tu ruta a estas fechas y algunos días pueden
-    cambiar. ¿Seguimos?"): con "Mejor no" se guardan las fechas y la ruta se queda igual, con las etiquetas de los
-    días.
+    cambiar. ¿Seguimos?"): con "Mejor no" (decisión del 2026-09-28) se guardan las fechas y la ruta se queda
+    exactamente igual, sin ventana ni avisos ni etiquetas. Solo el dato de cada parada: las que cierran ese día (cierre
+    semanal o festivo, /api/kept-route-closures) llevan "Hoy cierra" en rojo en su línea de horario.
 277. **D2 no va en miércoles de invierno si el viaje tiene otro día para él** (decisión del usuario, 2026-09-28). En
     `no_en`, una regla con `evitar: true` (y `invierno: true`: solo con el sol antes de WINTER_SUNSET_BEFORE) no prohíbe
     el día: suma EVITAR_COST (300) al reparto, así que D2 se mueve si hay otro día sin cierres y, si no lo hay, se
