@@ -51,9 +51,10 @@ export function detalleDe(root, destino) {
   return Object.fromEntries(readdirSync(dir).filter((file) => file.endsWith('.json')).map((file) => [file, JSON.parse(readFileSync(join(dir, file), 'utf8'))]))
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+/** El listado por destino (lo que usa la revisión automática de cada 1 de diciembre). */
+export function listadoComprobado(destino = null) {
   const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
-  const destinos = process.argv[2] ? [process.argv[2]] : readdirSync(join(ROOT, 'data/pipeline_v2')).filter((file) => file.endsWith('.json')).map((file) => file.replace(/\.json$/, ''))
+  const destinos = destino ? [destino] : readdirSync(join(ROOT, 'data/pipeline_v2')).filter((file) => file.endsWith('.json')).map((file) => file.replace(/\.json$/, ''))
   for (const destino of destinos) {
     const D = JSON.parse(readFileSync(join(ROOT, `data/pipeline_v2/${destino}.json`), 'utf8'))
     if (!Array.isArray(D.places)) continue
@@ -62,3 +63,5 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     for (const item of pendientes) console.log(`- ${item.tipo} · ${item.nombre} (${item.motivo})`)
   }
 }
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) listadoComprobado(process.argv[2] ?? null)
