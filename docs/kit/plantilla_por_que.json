@@ -3,7 +3,7 @@
   "_como_se_aplica": "Para cada parada de un día curado (y de sus variantes): si existe por_dia[día][lugar], ese texto; si no y la parada es 'atardecer' en un mirador con texto propio en por_dia, ese; si no, por_lugar[lugar]. Se guarda como `por_que` en la parada.",
   "_temprano": "Si un texto depende de la hora, va como { texto, temprano }: 'temprano' se usa cuando la parada empieza antes de las 09:30; si no, 'texto'. Un texto sin 'temprano' no puede hablar de 'primera hora', 'a la apertura', 'sin gente' ni de una hora concreta: validar.mjs avisa. Si el umbral de ese texto es otro, temprano_antes: \"09:00\".",
   "_gratis": "Se puede decir 'gratis' cuando suma ('y la entrada es gratis: una joya que mucha gente se salta'). Nunca cifras ni precios fuera de la pestaña Tickets: validar.mjs los marca en rojo.",
-  "_estilo": "De tú a tú, una o dos frases: qué es y por qué merece la pena aquí y ahora. Nada de 'uno de los imprescindibles' ni 'te pilla de camino'.",
+  "_estilo": "Tono (decisión del usuario, 2026-09-28): como te lo contaría un amigo que vive allí: un poco de contexto y un detalle que poca gente sabe, sin enrollarse (dos o tres frases). De tú a tú. Nada de 'uno de los imprescindibles' ni 'te pilla de camino'. Se lee entero dentro de la ficha (la tarjeta del día no lleva texto).",
   "por_lugar": {
     "Nombre exacto del lugar": "Qué es y por qué merece la pena, en una o dos frases.",
     "Lugar que depende de la hora": {

@@ -1264,3 +1264,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     queda. No genera aviso de fecha. Si se queda, el Janículo llega de noche y sale como mirador nocturno ("Roma
     iluminada desde el Janículo", `night_view_text`): se vende como experiencia de noche, nunca como un atardecer
     perdido.
+278. **Tono de los textos** (decisión del usuario, 2026-09-28): los "Por qué aquí" (`por_lugar`, `por_dia`) y los
+    `por_fuera` se escriben como te lo contaría un amigo que vive allí: un poco de contexto y un detalle que poca gente
+    sabe, sin enrollarse (dos o tres frases). Se aplican tal cual desde docs/<destino>_por_que.json a las paradas de los
+    días curados (`por_que`), a `por_que_lugares` y a `minutos_fuera`/`por_fuera` de cada lugar. Siguen las reglas de
+    siempre: `temprano`/`temprano_antes`, `cifra_ok` solo donde el usuario lo pone, "gratis" solo cuando suma. Plantilla
+    en docs/kit/plantilla_por_que.json (`_estilo`) y docs/kit/plantilla_por_fuera.json (`_tono`).
+279. **Todo nivel 1-2 con algo que ver por fuera lleva `minutos_fuera`** (decisión del usuario, 2026-09-28): Santa Maria
+    del Popolo y San Pietro in Vincoli (10 min) no pueden desaparecer, así que salen siempre como parada, aunque sea por
+    fuera. El Ara Pacis no lleva: desde fuera apenas se entrevé tras la cristalera y no merece un desvío; si no se
+    entra, va a "No te dio tiempo".

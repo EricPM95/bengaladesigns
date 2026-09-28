@@ -3,6 +3,11 @@
   "_cuando_va_por_fuera": "En este orden: cerrado ese día ('Hoy cierra') o a esa hora ('A esta hora ya ha cerrado'); museo de pago que no cabe por el tope de museos de pago o por tiempo y que el viajero no ha elegido en el pool ('Hoy lo ves por fuera para llegar a todo lo del día'); si no, por dentro.",
   "_pide": "Para cada lugar de nivel 1 o 2 con interior (museos, iglesias, castillos, monumentos con entrada): ¿se ve algo desde fuera que merezca parar? Si sí, minutos_fuera (10-20) y por_fuera (una o dos frases: qué se ve y desde dónde). Si no (los Museos Vaticanos, un museo sin fachada), no se pone nada.",
   "por_fuera": {
-    "Nombre exacto del lugar": { "minutos": 15, "texto": "Qué se ve desde fuera y desde dónde: la fachada, el pórtico, la vista desde el puente." }
-  }
+    "Nombre exacto del lugar": {
+      "minutos": 15,
+      "texto": "Qué se ve desde fuera y desde dónde: la fachada, el pórtico, la vista desde el puente."
+    }
+  },
+  "_tono": "Mismo tono que los Por qué aquí: como te lo contaría un amigo que vive allí, dos o tres frases. Si merece volver para entrar, dilo ('Vuelve otro día: por dentro merece la pena').",
+  "_no_merece": "Si desde fuera apenas se ve nada (un museo tras una cristalera, como el Ara Pacis), sin minutos_fuera: no merece un desvío."
 }
