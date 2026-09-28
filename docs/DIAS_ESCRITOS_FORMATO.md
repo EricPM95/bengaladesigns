@@ -135,3 +135,59 @@ Avisa, sin arreglar nada, de:
 Lo que salga se arregla en el dato. Es la auditoría de ahora (`auditoria.mjs`), ejecutada sobre todas las fechas.
 
 El motor actual se queda hasta que los 56 viajes (`revision20.mjs` + `revisionCierre.mjs`) salgan igual o mejor con el nuevo.
+
+## 4. Lo que se ha añadido al escribir Roma entera (2026-09-29)
+
+**En cada versión de la tarde:**
+- `empieza`: su propia hora de empiezo, si no es la común (la comida llega hasta ahí).
+- `cena.hora`: la hora de la cena.
+  - En A y B deja entre 45 y 115 min para la segunda elástica, «luces y aperitivo»: primero la nocturna y luego el aperitivo, como mucho 90 min.
+  - En C y D es 19:30: se cena al llegar.
+- `"paradas": "igual que A"`: una versión que solo cambia la hora o la cena.
+
+**En cada parada:**
+
+| Campo | Qué hace |
+|---|---|
+| `turno` | Entrada con hora (Coliseo, Museos Vaticanos, Galería; también el Free Tour): se llega 10 min antes. |
+| `lead` | Cuántos minutos antes del sol se llega al mirador. Por defecto 25; los Foros, 20; el Castillo de invierno, 85, porque se recorre entero antes de la terraza. |
+| `traslado` | `{ "como": "el bus 118", "min": 25 }`: el tramo se hace en transporte. |
+| `texto` | El «Por qué aquí» propio, si no es el de siempre. |
+| `revisita` | Texto si el lugar ya salió otro día («Ya la viste {dia}; …»). |
+| `no_si_dia` / `si_dia` | La parada va solo si el viaje (no) tiene ese día: la Isla Tiberina en D5 no va con D1-FT. |
+| `desde_dias` | Solo en viajes de tantos días. |
+| `si_no_visto` / `si_visto` | No va si ya se vio por dentro / va solo si ya se vio otra (el Castillo de D7 y, si no, el Palazzo Doria Pamphilj). |
+| `si_cerrado: "camino"` | Si cierra, se pasa por delante. |
+| `si_cerrado: "quitar"` | Si cierra, no va, sin aviso (la Domus Aurea de lunes a jueves). |
+
+**Variantes:**
+- Nombre del día de la semana: `lunes`, `sabado`, `domingo`, `miercoles`.
+- `con_free_tour` y `tranquilo`.
+- `fecha:MM-DD`, `fecha:easter`, `fecha:primer_domingo`, `fecha:ultimo_domingo`.
+- `cerrado:<lugar>`: el día cambia si ese lugar cierra (los Museos Vaticanos en sus festivos).
+
+**Operaciones:**
+- `insertar`: `despues_de`, `antes_de` o `al_principio`. Si la parada ya está, no se duplica.
+- `ajustar`: `{ "lugar": { campo: valor } }`, cambia algún campo de una parada.
+
+**Experiencias:** en `experiencias.<id>`, con las mismas operaciones. No rehacen el día.
+
+**`_destino.json`:**
+- `cortes_luz`: los cortes de luz del destino.
+- `noches`: lo que los días escritos cambian de un paseo nocturno. La escalinata de D4 vale el mismo día que la Plaza de España de la mañana.
+- `pool`: cada extra con sus `sitios`, en orden, y cada sitio con:
+  - `dia`: el día escrito;
+  - `hueco`: si dos extras quieren el mismo hueco, gana el primero de `pool_lista` y el segundo va a su siguiente sitio;
+  - `cambios`: las operaciones sobre ese día.
+
+**Pool:**
+- Lo que ya va en la ruta sale como incluido y no cuenta.
+- Los extras tienen un límite: 2 días, 2; 3, 3; 4, 4; 5 o más, 5.
+- `/api/curated-places-pool` lo devuelve con `days` en la petición: `included` en cada lugar y `max_extras`.
+
+**Herramientas:**
+- `v4dia.mjs`: un viaje día a día.
+- `calibrar.mjs`: cada día en todas las fechas, con su elástica, la comida y la cena.
+- `prueba365.mjs`: la prueba de las 365 fechas.
+- `comparacion.mjs`: los 56 viajes con v3 y v4.
+- `reparto.mjs`: el mapa lugar → día.

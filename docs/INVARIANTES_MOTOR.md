@@ -1693,3 +1693,38 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 326. **Días escritos: la comprobación** (2026-09-28): en la prueba, no en la app. La app nunca inventa ni estira; la
     prueba recorre las 365 fechas de inicio con todas las duraciones, los dos ritmos, con y sin Free Tour y cada lugar
     del pool solo y en parejas, con las comprobaciones de `auditoria.mjs`, y lo que salga se arregla en el dato.
+
+
+327. **Motor v4 (días escritos)** (PROMPT_ROMA_COMPLETA, 2026-09-29): detrás de `ROUTE_ENGINE=v4` (o `engine: 'v4'` en la
+    petición); v3 no se toca y sigue por defecto mientras la prueba de las 365 fechas no dé 0. El motor coloca los días con la
+    tabla de siempre (`curated_routes`) y los ordena con los mismos costes (cierres de cada día de la semana, joyas pronto,
+    entradas cerradas, fechas especiales, medias jornadas en su día), elige la versión de la tarde por el sol, aplica variantes,
+    fechas, experiencias, pool y ritmo, calcula las horas desde las duraciones y las horas fijas con la matriz de tiempos y
+    ajusta la elástica. Nunca añade ni estira paradas por su cuenta; lo que está cerrado lo resuelve lo escrito
+    (`si_cerrado`) y, si no hay nada escrito, lo apunta y la prueba lo marca. Si el viaje necesita un día que no está
+    escrito, v3.
+
+328. **Días escritos: las cenas y la segunda elástica** (2026-09-29): en las tardes A y B, después del atardecer, primero la
+    nocturna (20-25 min) y luego «luces y aperitivo», 90 min como mucho: es la segunda elástica, y la cena lleva su hora para
+    que caiga ahí. En C y D la cena es al llegar (a partir de las 19:30). Con días escritos, el restaurante escrito manda: el
+    servidor no lo vuelve a elegir junto a la nocturna.
+
+329. **Días escritos: ninguna parada de paseo pasa de 90 min** (120 en tranquilo, 45 una avenida), ni en el borde de la
+    elástica: la base de una elástica de parque o barrio es de 60 como mucho.
+
+330. **Días escritos: lo que va por fuera dice por qué** (2026-09-29): lo escrito «por fuera» lleva el motivo real si a esa
+    hora está cerrado («A esta hora ya ha cerrado», «Todavía no ha abierto»), no «para llegar a todo».
+
+331. **Días escritos: las entradas** (2026-09-29): el Castillo va siempre por dentro en D2 y, con Free Tour, por la mañana
+    de D4 (con 4 días o más); el Panteón por dentro al acabar el Free Tour; los museos de pago según el día y la versión (Ara
+    Pacis en D4, Mercados de Trajano en D4M, D5 y D5C, Capitolinos en D5, Domus Aurea con Arte los fines de semana).
+
+332. **Días escritos: el pool** (2026-09-29, amplía la 324): lo que ya va en la ruta no cuenta como elección y queda
+    garantizado por dentro (lo opcional deja de serlo); los extras, hasta 2/3/4/5 según los días, en el orden de
+    `pool_lista`; cada extra en su primer sitio escrito cuyo día está en el viaje y cuyo hueco está libre. Lo que no tiene
+    sitio sale como no incluido con su motivo (el Castillo con Free Tour en 2-3 días).
+
+333. **Días escritos: fechas especiales** (2026-09-29): los cierres de las fichas (`closed_dates`) con lo escrito en
+    `si_cerrado` y el orden de los días resuelven la mayoría; tienen versión escrita el 1 de enero (D1, D1-FT, D4), el 25
+    de diciembre (D1 y D2, con la Bendición Urbi et Orbi), el Domingo de Pascua (D1) y el primer domingo de mes (el Coliseo
+    antes de que abra). La Girandola y el Vía Crucis van a su hora como nocturnas del día.
