@@ -10076,7 +10076,61 @@
                 "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
               }
             }
-          ]
+          ],
+          "si_espera": {
+            "_nota": "Con más de 45 min de espera antes del sol (octubre, marzo): se sube andando desde Trastevere por el Tempietto abierto (hasta las 18:00, última entrada 17:30) y la Fontana dell'Acqua Paola al Janículo; luego se baja a Santa Maria in Trastevere y a cenar. Con el sol pronto, el bus 115 (repaso de la ruta 3, 2026-09-28).",
+            "minutos": 45,
+            "tarde": [
+              {
+                "lugar": "Barrio Judío",
+                "rol": "parada",
+                "por_que": "Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio."
+              },
+              {
+                "lugar": "Isla Tiberina",
+                "rol": "parada",
+                "por_que": "La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años."
+              },
+              {
+                "lugar": "Trastevere",
+                "rol": "parada",
+                "nota": "Callejear y aperitivo: aquí va el tiempo que sobre antes del atardecer.",
+                "por_que": {
+                  "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
+                  "solo_si_sigue": [
+                    "Mirador del Janículo",
+                    "San Pietro in Montorio y Tempietto de Bramante",
+                    "Fontana dell'Acqua Paola"
+                  ],
+                  "general": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos."
+                },
+                "minutos": 30
+              },
+              {
+                "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                "rol": "parada",
+                "si_cerrado": "de_paso",
+                "nota": "Subiendo por Via Garibaldi.",
+                "por_que": "Subiendo al Janículo, en el patio de esta iglesia, está el Tempietto de Bramante: un templo pequeñísimo, construido donde se creía que crucificaron a san Pedro. Es una joya del Renacimiento y se entra gratis."
+              },
+              {
+                "lugar": "Fontana dell'Acqua Paola",
+                "rol": "parada",
+                "por_que": "Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante."
+              },
+              {
+                "lugar": "Mirador del Janículo",
+                "rol": "atardecer",
+                "nota": "Luego se baja a cenar a Trastevere: 15 min cuesta abajo.",
+                "por_que": "El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo."
+              },
+              {
+                "lugar": "Iglesia de Santa Maria in Trastevere",
+                "rol": "parada",
+                "por_que": "Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes."
+              }
+            ]
+          }
         },
         "pool_caracalla": {
           "manana": [

@@ -44,6 +44,7 @@ const VIAJES = [
   { dias: 3, ritmo: 'completo', ft: true, exps: [], fecha: '2027-05-21', nota: 'fin de semana C' },
   { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-06-12', nota: 'fin de semana D' },
   { dias: 4, ritmo: 'completo', ft: false, exps: [], fecha: '2027-09-17', nota: 'fin de semana E' },
+  { dias: 3, ritmo: 'completo', ft: true, exps: [], fecha: '2027-10-18', nota: 'tres días con Free Tour en octubre (huecos del día 2 y el día 3)' },
 ]
 
 const D = findPipelineV2Data('Roma')
