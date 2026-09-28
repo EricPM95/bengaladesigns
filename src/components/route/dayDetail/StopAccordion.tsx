@@ -66,10 +66,14 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
     meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
     meta.push({ text: stop.nightWalkName ? (stop.nightWalkName === 'Paseo nocturno' ? 'Paseo nocturno' : `Paseo nocturno: ${stop.nightWalkName}`) : 'Experiencia nocturna' })
   } else {
-    // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez.
+    // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez. Por fuera no hay horario de visita.
     const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
-    meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
-    meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+    if (stop.visitMode !== 'fuera') meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
+    // Un monumento con interior (PROMPT_PENDIENTE E): "Por dentro · 75 min" con la entrada, o "Por fuera · 15 min"
+    // con la cámara. Lo demás, su duración.
+    if (stop.visitMode === 'dentro') meta.push({ icon: 'ticket', text: `Por dentro · ${formatDuration(stop.durationMinutes)}` })
+    else if (stop.visitMode === 'fuera') meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}` })
+    else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
     // Atardecer y mirador de noche: su frase del destino ("El momento perfecto para ver el atardecer",
     // "Roma iluminada a tus pies"), sin hora de puesta de sol.
     if ((stop.isSunset || stop.isNightView) && stop.why) meta.push({ text: withoutLeadingEmoji(stop.why) })

@@ -86,6 +86,15 @@ function PinIcon() {
   )
 }
 
+/** Por fuera: la cámara (el mismo trazo fino que la cabecera de la parada, KIND_ICON.camera). */
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-text-soft">
+      <path d="M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+    </svg>
+  )
+}
+
 function MetroIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
@@ -343,7 +352,9 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
         : (description?.tips ?? [])
   const hasTips = tips.length > 0
 
-  const visibleTabs: Tab[] = ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])]
+  // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
+  // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
+  const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', 'tickets', 'tips']
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
   const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
@@ -466,7 +477,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {(
                     [
                       { id: 'resumen', label: 'Resumen' },
-                      { id: 'tickets', label: 'Tickets & Entradas' },
+                      { id: 'tickets', label: 'Entradas' },
                       { id: 'tips', label: 'Tips' },
                     ] as const
                   )
@@ -531,6 +542,15 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
+                  {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
+                  {stop.visitMode === 'fuera' && stop.outsideReason && (
+                    <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
+                      <CameraIcon />
+                      <span>
+                        <span className="font-medium">Por fuera</span> · {stop.outsideReason}
+                      </span>
+                    </p>
+                  )}
                   {descLoading ? (
                     <p className="flex items-center gap-2 text-small italic text-text-soft">
                       <Spinner className="text-accent" />
@@ -655,6 +675,9 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'tickets' && (
                 <div className="space-y-3">
+                  {ticketInfo.length === 0 && tickets.length === 0 && (
+                    <p className="text-small text-text-soft">Aquí saldrán las entradas y las visitas guiadas de este lugar.</p>
+                  )}
                   {ticketInfo.length > 0 && (
                     <div className="rounded-xl border border-border p-3">
                       <p className="text-small font-semibold text-text">Entrada</p>
@@ -675,6 +698,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'tips' && (
                 <div className="space-y-2">
+                  {tips.length === 0 && <p className="text-small text-text-soft">{descLoading ? 'Preparando los consejos…' : 'Todavía no tenemos consejos para este lugar.'}</p>}
                   {tips.map((tip, index) =>
                     tip.tipo === 'practico' ? (
                       <TipBox key={index}>{tip.texto}</TipBox>

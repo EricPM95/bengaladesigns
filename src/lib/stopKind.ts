@@ -36,6 +36,10 @@ export const KIND_ICON = {
   pin: 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
   walk: 'M13 4.6a1.6 1.6 0 1 0 0-.01M10 21l2-6 3 3v3M9 13l1.5-5 4 1 2 3M10.5 8L7 11',
   coffee: 'M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2',
+  /** Por dentro: la entrada. */
+  ticket: 'M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM15 7v10',
+  /** Por fuera: la cámara (se ve desde la calle). */
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
 } as const
 
 const oklch = (l: number, c: number, h: number, a?: number) => (a == null ? `oklch(${l} ${c} ${h})` : `oklch(${l} ${c} ${h} / ${a})`)

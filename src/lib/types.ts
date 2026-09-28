@@ -271,6 +271,8 @@ export interface Stop {
   isNightView?: boolean
   /** Su nombre de experiencia nocturna: "Roma iluminada desde el Janículo". */
   nightViewTitle?: string
+  /** Un monumento con interior: se visita por dentro o se ve por fuera (con su motivo en `outsideReason`). */
+  visitMode?: 'dentro' | 'fuera'
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
