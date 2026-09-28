@@ -51,10 +51,7 @@ Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 ruta
 
 ## c) Preguntas
 
-1. **Los días libres enseñan «Hora de comer» y «Hora de cenar» con restaurantes de la zona**, como los días nuestros.
-   - (a) Dejarlo así.
-   - (b) Quitarlos hasta que el viajero elija un restaurante.
-   - **Recomiendo (a).**
+Ninguna: con tu cambio, los días libres ya no enseñan comida ni cena automáticas (solo el restaurante que elija el viajero).
 
 # Repaso de las 20 rutas
 
