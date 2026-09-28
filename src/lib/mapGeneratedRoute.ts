@@ -91,6 +91,8 @@ interface GeneratedStop {
   night_view_title?: string | null
   /** Monumento con interior: por dentro o por fuera — Stop.visitMode. */
   visit_mode?: 'dentro' | 'fuera' | null
+  /** Por qué va por fuera: cerrado, ya cerrado o no cabe — Stop.outsideKind. */
+  outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_cabe' | null
   /** Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona — Stop.freeTourEnd. */
   free_tour_end?: string | null
   /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("🚌 Bus 118, unos 25 min"). */
@@ -403,6 +405,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.transit ? { transitLabel: `${generated.transit.icon} ${generated.transit.label}` } : {}),
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día' } : {}),
     ...(generated.visit_mode ? { visitMode: generated.visit_mode } : {}),
+    ...(generated.outside_kind ? { outsideKind: generated.outside_kind } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),
@@ -688,6 +691,24 @@ function mapDay(
     curatedAlternative: generated.curated_alternative ?? null,
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,
+  }
+}
+
+/**
+ * Un día que el motor ha rehecho solo (el "Quiero entrar", PROMPT_PENDIENTE F): el día nuevo, con lo que ya tenía el
+ * de antes y no depende de sus paradas (transporte, excursiones, avisos del viaje).
+ */
+export function mapSingleGeneratedDay(destination: string, generated: GeneratedDay, previous: DayPlan): DayPlan {
+  const day = mapDay(destination, generated, new Map(), new Map())
+  return {
+    ...day,
+    id: previous.id,
+    transport: previous.transport,
+    excursions: previous.excursions,
+    didntMakeCut: previous.didntMakeCut,
+    poolNotices: previous.poolNotices,
+    recommendedRevisits: previous.recommendedRevisits,
+    countryCode: day.countryCode ?? previous.countryCode,
   }
 }
 

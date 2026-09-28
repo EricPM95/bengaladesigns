@@ -7,6 +7,7 @@ import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { KIND_ICON, stopKindOf, withoutLeadingEmoji } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
+import { WantInsideSwitch } from './WantInsideDialog'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -17,6 +18,8 @@ interface StopAccordionProps {
   menu?: ReactNode
   /** Hora de inicio calculada para esta parada concreta ("09:00") — distinta de `stop.hours` (horario de apertura del lugar). */
   startTime?: string
+  /** "Quiero entrar": solo en una parada que va por fuera (WantInsideDialog.tsx). */
+  onWantInside?: () => void
 }
 
 const RESERVATION_NOTE: Record<string, string> = {
@@ -30,7 +33,7 @@ const RESERVATION_NOTE: Record<string, string> = {
  * tarjeta ni número: una fila discreta con la hora. Al pulsar abre la ficha a pantalla completa
  * (StopDetailSheet). Las notas (reserva, atardecer, avisos) van en la línea de horario y duración.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime, onWantInside }: StopAccordionProps) {
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -121,6 +124,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAcc
       iconPath={stop.isFreeTour ? KIND_ICON.walk : undefined}
       onOpen={onOpen}
       menu={menu}
+      action={stop.visitMode === 'fuera' && onWantInside ? <WantInsideSwitch onToggle={onWantInside} /> : undefined}
     />
   )
 }

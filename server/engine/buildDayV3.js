@@ -315,6 +315,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.visit_mode = 'fuera'
       stop.outside = true
       stop.outside_reason = visit.place.outsideReason
+      stop.outside_kind = visit.place.outsideKind ?? 'no_cabe'
     } else if (sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
     if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})

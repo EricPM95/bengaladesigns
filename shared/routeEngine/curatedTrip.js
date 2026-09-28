@@ -87,7 +87,7 @@ function permutations(list) {
 /**
  * @param {object} args  como planBlockTrip
  */
-export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }) {
+export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [] }) {
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const mode = modeV3For(pace)
   const tranquilo = mode.id === 'tranquilo'
@@ -96,6 +96,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const curatedById = new Map((destData.curated_days ?? []).map((day) => [day.id, day]))
   const selected = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
   const inPool = (name) => poolNames.includes(name)
+  // "Quiero entrar" (PROMPT_PENDIENTE F): por dentro y obligatorio, como si estuviera en el pool, pero sin sus reglas
+  // (no mueve días ni cambia paradas: solo recoloca horas).
+  const inside = (name) => insideNames.includes(name)
   const tour = destData.default_free_tour ?? null
   const tourCovers = new Set(hasFreeTour ? tour?.covers ?? [] : [])
   const joyaNames = new Set((destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name))
@@ -270,13 +273,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   function seenOutside(stop) {
     const place = placeByName.get(stop.lugar)
     const paid = stop.pago || !(place?.is_free_access ?? place?.type === 'exterior')
-    return Boolean(place) && (place.level ?? 3) <= 2 && place.type === 'interior' && place.minutos_fuera != null && paid && !inPool(stop.lugar)
+    return Boolean(place) && (place.level ?? 3) <= 2 && place.type === 'interior' && place.minutos_fuera != null && paid && !inPool(stop.lugar) && !inside(stop.lugar)
   }
   /** La misma parada, por fuera porque no cabe (no cuenta para el tope de museos de pago). */
   const asOutside = (stop) => ({ ...stop, rol: stop.rol === 'atardecer' ? stop.rol : 'de_paso', pago: false, fuera_motivo: OUTSIDE_REASONS.no_cabe, solo: undefined })
 
   function stopApplies(stop, day) {
-    if (inPool(stop.lugar)) return true
+    if (inPool(stop.lugar) || inside(stop.lugar)) return true
     if (!stop.solo) return true
     const conditions = Array.isArray(stop.solo) ? stop.solo : [stop.solo]
     return conditions.some((cond) =>
@@ -401,7 +404,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   if (museumRules) {
     const quota = (museumRules.tope ?? []).find((row) => contentDays <= row.hasta_dias)?.extra ?? 0
     const limit = quota + (selected.includes('arte_museos') ? museumRules.con_arte ?? 1 : 0)
-    const paid = () => resolved.flatMap((entry) => [...entry.sections.manana, ...entry.sections.tarde].filter((stop) => stop.pago && !inPool(stop.lugar) && !dropPaid.has(stop.lugar)).map((stop) => stop.lugar))
+    const paid = () => resolved.flatMap((entry) => [...entry.sections.manana, ...entry.sections.tarde].filter((stop) => stop.pago && !inPool(stop.lugar) && !inside(stop.lugar) && !dropPaid.has(stop.lugar)).map((stop) => stop.lugar))
     for (const name of museumRules.quitar_en_orden ?? []) {
       if (paid().length <= limit) break
       if (paid().includes(name)) dropPaid.add(name)
@@ -513,6 +516,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         ...source,
         visitOutside: true,
         outsideReason,
+        // Qué motivo es (cerrado / ya_cerrado / no_cabe): solo "no_cabe" deja pedir "Quiero entrar".
+        outsideKind: Object.keys(OUTSIDE_REASONS).find((key) => OUTSIDE_REASONS[key] === outsideReason) ?? 'no_cabe',
         coordinates: source.pass_by?.coordinates ?? source.coordinates,
         duration_minutes: outsideMinutes,
         windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
@@ -551,7 +556,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (why) ready = { ...ready, curatedWhy: why }
     const [scheduled] = placesForScheduler({ id: stop.lugar, places: [ready] }, destData, tour?.default_time ?? null)
     const level = source.level ?? 3
-    const dropRank = joyaNames.has(source.name) || level === 1 ? DROP_RANK.joya : inPool(source.name) ? DROP_RANK.pool : tranquilo ? (role === 'de_paso' ? DROP_RANK_BY_LEVEL.de_paso : DROP_RANK_BY_LEVEL[level] ?? DROP_RANK_BY_LEVEL[3]) : DROP_RANK[role] ?? DROP_RANK.parada
+    const dropRank = joyaNames.has(source.name) || level === 1 || inside(source.name) ? DROP_RANK.joya : inPool(source.name) ? DROP_RANK.pool : tranquilo ? (role === 'de_paso' ? DROP_RANK_BY_LEVEL.de_paso : DROP_RANK_BY_LEVEL[level] ?? DROP_RANK_BY_LEVEL[3]) : DROP_RANK[role] ?? DROP_RANK.parada
     const theme = selected.find((id) => (source.tags ?? []).some((tag) => TAG_INTEREST_MAP[id].includes(tag))) ?? null
     return {
       id: `${dayId}:${stop.lugar}`,

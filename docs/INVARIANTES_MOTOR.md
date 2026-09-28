@@ -1238,3 +1238,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     va en paralelo a la Conciliazione); **D1 y D1-FT: Plaza del Campidoglio → Plaza Venecia (de paso) → Altar (45 min)**.
     Si el programador quita algo para llegar al sol, la parada que se estira (Trastevere) devuelve 15 o 30 min antes
     (nunca por debajo de 20); y la tarde de `si_espera` convierte a "por fuera" lo de pago igual que la de siempre.
+275. **"Quiero entrar"** (decisión del usuario, 2026-09-28): una parada por fuera porque no cabe (`outside_kind:
+    'no_cabe'`; nunca si está cerrada) lleva un interruptor. `/api/curated-day-inside` rehace ese día curado con la
+    parada por dentro y obligatoria (`insideNames`: como si estuviera en el pool, sin sus reglas; no cambia paradas ni
+    orden, solo recoloca horas) y lo compara con el de antes (server/engine/insideSwitch.js). El tiempo sale de lo
+    estirable y de lo de menos nivel (pasa a por fuera o sale); la comida y la cena nunca se acortan, solo se mueven en
+    su franja. Si se pierde un imprescindible o el atardecer, se pregunta ("Para entrar hay que quitar el Janículo.
+    ¿Lo cambiamos?"). Antes de guardar, una línea con lo que cambia y "Vale" / "Mejor no". La ruta guarda
+    `insideNames`.

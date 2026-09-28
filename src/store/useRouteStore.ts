@@ -363,6 +363,8 @@ interface RouteStoreState {
   dismissContextBanner: () => void
   /** La ventana de fechas especiales ya se vio con estos avisos (DateNoticesModal.tsx): se guarda con la ruta. */
   markDateNoticesSeen: (key: string) => void
+  /** "Quiero entrar" (WantInsideDialog.tsx): el día rehecho por el motor y la parada que ahora va por dentro. */
+  replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
   /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
   openDateNoticeId: string | null
   setOpenDateNoticeId: (id: string | null) => void
@@ -698,6 +700,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => (state.route ? { route: { ...state.route, contextBannerDismissed: true } } : state)),
 
   markDateNoticesSeen: (key) => set((state) => (state.route ? { route: { ...state.route, dateNoticesSeenKey: key } } : state)),
+
+  replaceDayWithInside: (dayId, day, insideName) =>
+    set((state) =>
+      state.route
+        ? { route: { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? day : other)), insideNames: [...new Set([...(state.route.insideNames ?? []), insideName])] } }
+        : state,
+    ),
 
   openDateNoticeId: null,
   setOpenDateNoticeId: (id) => set({ openDateNoticeId: id }),

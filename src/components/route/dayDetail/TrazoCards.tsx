@@ -50,6 +50,8 @@ interface TrazoCardProps {
   menu?: ReactNode
   /** Contenido extra al final (sugerencias de la pausa…). */
   children?: ReactNode
+  /** Un control propio abajo a la derecha, fuera del botón de abrir ("Quiero entrar"). */
+  action?: ReactNode
 }
 
 const SUNSET_PANEL = 'linear-gradient(170deg, oklch(0.78 0.15 70), oklch(0.62 0.19 22))'
@@ -57,7 +59,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
@@ -84,7 +86,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
           {photoUrl && !noPhoto && <img src={photoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
         </div>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-[3px] py-[11px] pl-[18px] pr-9 text-left">
+      <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left ${action ? 'pb-10' : 'pb-[11px]'}`}>
         {time && (
           <span className="font-mono text-[10.5px] font-semibold tracking-[.04em]" style={{ color: timeColor }}>
             {time}
@@ -154,6 +156,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
         </span>
       )}
       {menu && <div className="absolute right-2 top-2 z-20">{menu}</div>}
+      {action && <div className="absolute bottom-2.5 right-3 z-20">{action}</div>}
     </div>
   )
 }

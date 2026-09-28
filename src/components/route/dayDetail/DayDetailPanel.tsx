@@ -53,6 +53,7 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
+import { WantInsideDialog, useWantInside } from './WantInsideDialog'
 import { StopConnector } from './StopConnector'
 import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
@@ -303,6 +304,8 @@ export function DayDetailPanel({
   const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
   const addBlankDayExcursion = useRouteStore((state) => state.addBlankDayExcursion)
   const route = useRouteStore((state) => state.route)
+  // "Quiero entrar" (PROMPT_PENDIENTE F): rehacer este día con una parada por dentro.
+  const wantInside = useWantInside(route, day)
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
   const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
@@ -963,6 +966,7 @@ export function DayDetailPanel({
               startTime={minutesToTime(startMinutes)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />}
+              onWantInside={realStop?.visitMode === 'fuera' && realStop.outsideKind === 'no_cabe' ? () => wantInside.ask(realStop.name) : undefined}
             />
           )}
         </div>
@@ -974,6 +978,7 @@ export function DayDetailPanel({
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
     <div className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
+      <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} />
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}

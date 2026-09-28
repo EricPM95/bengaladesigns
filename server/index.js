@@ -27,6 +27,7 @@ import {
 import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor } from './engine/index.js'
+import { compareInside } from './engine/insideSwitch.js'
 
 config({ path: '.env.local' })
 
@@ -4826,6 +4827,43 @@ app.post('/api/place-photo', async (req, res) => {
     // Nunca debe romper una pantalla: sin foto, el componente enseña su icono de categoría.
     console.error('[foto] fallo resolviendo la foto de', name, error)
     res.json({ photo_source: 'none' })
+  }
+})
+
+/**
+ * "Quiero entrar" (PROMPT_PENDIENTE F): rehace un día curado con una parada que iba por fuera, ahora por dentro y
+ * obligatoria (como si estuviera en el pool, sin sus reglas). No cambia paradas ni orden: solo recoloca horas. Devuelve
+ * el día nuevo y la línea con lo que cambia; si se perdería un imprescindible o el atardecer, `critical` para preguntar.
+ * Solo destinos curados (motor v3, sin Claude).
+ */
+app.post('/api/curated-day-inside', async (req, res) => {
+  const { destination, answers, all_days, day_number, must_include_places, inside_names, add } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destData || !answers || !Number.isInteger(Number(day_number)) || !add) {
+    res.status(400).json({ error: 'Faltan datos para rehacer el día.' })
+    return
+  }
+  try {
+    const totalDays = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : Number(day_number) + 1
+    const build = (insideNames) =>
+      buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), answers.pace, MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+        city: destination,
+        scheduler: 'v3',
+        month: Number.isInteger(answers.month) ? answers.month : null,
+        season: answers.season ?? null,
+        insideNames,
+      })
+    const already = Array.isArray(inside_names) ? inside_names : []
+    const before = await build(already)
+    const after = await build([...new Set([...already, add])])
+    if (!before || !after) {
+      res.status(422).json({ error: 'Este día no se puede rehacer.' })
+      return
+    }
+    res.json({ day: after, ...compareInside(destData, before, after, add) })
+  } catch (error) {
+    console.error('[curated-day-inside]', error)
+    res.status(500).json({ error: 'No se pudo rehacer el día.' })
   }
 })
 

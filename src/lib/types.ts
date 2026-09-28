@@ -273,6 +273,8 @@ export interface Stop {
   nightViewTitle?: string
   /** Un monumento con interior: se visita por dentro o se ve por fuera (con su motivo en `outsideReason`). */
   visitMode?: 'dentro' | 'fuera'
+  /** Por qué va por fuera: cerrado ese día, ya cerrado a esa hora o no cabe (solo este deja pedir "Quiero entrar"). */
+  outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_cabe'
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
@@ -685,6 +687,8 @@ export interface Route {
   dateNotices?: DateNotice[]
   /** La firma de los avisos que el viajero ya vio (dateNoticesKey): si la ruta se regenera y cambian, vuelven a salir. */
   dateNoticesSeenKey?: string | null
+  /** "Quiero entrar": las paradas que el viajero ha pedido ver por dentro (el motor las pone por dentro y obligatorias). */
+  insideNames?: string[]
 }
 
 /** Icono ilustrado de un aviso de fecha (DateNoticeIcons.tsx); 'cierre' = cierre resuelto por el motor. */

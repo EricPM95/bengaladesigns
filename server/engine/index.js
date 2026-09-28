@@ -131,6 +131,8 @@ export async function buildDayBlockV3(
     poolNames: mustIncludePlaces ?? [],
     experiencesPositive: experiencesPositive ?? [],
     dateRangeStartIso,
+    // "Quiero entrar": lo que el viajero ha pedido ver por dentro (PROMPT_PENDIENTE F).
+    insideNames: options.insideNames ?? [],
   }
   // Mañanas y tardes tipo (Parte B): con bloques curados en el destino, el viaje se monta con ellos.
   const curated = isV3 && Array.isArray(destData.curated_days) && destData.curated_days.length > 0 && plannerFor(options.planner) === 'dias'
