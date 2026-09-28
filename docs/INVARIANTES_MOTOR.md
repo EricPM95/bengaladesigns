@@ -1665,3 +1665,31 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       El tope es un techo (quita lo que sobra), no un mínimo.
     - D3 en ritmo tranquilo (empieza a las 10:00 con el tour): "Free Tour por el centro y el Vaticano por la tarde".
     - La auditoría avisa si un imprescindible de pago no sale nunca por dentro en el viaje.
+
+323. **Días escritos: la estructura** (decisión del usuario, 2026-09-28; formato en `docs/DIAS_ESCRITOS_FORMATO.md`;
+    todavía en borrador, el motor actual sigue hasta que los 56 viajes salgan igual o mejor):
+    - Cada día, en dos mitades: la mañana se escribe una vez; la tarde, en 4 versiones por la hora del sol, cada una de
+      unos 60 min de ancho (Roma: A antes de las 17:40, B hasta las 18:44, C hasta las 19:44, D desde las 19:45).
+      Cada tarde se escribe para el sol del centro de su versión.
+    - Una sola parada elástica por tarde, elegida a mano, de ±30 min. Ninguna otra parada cambia de duración.
+    - Solo se escriben duraciones y horas fijas (entradas, Free Tour); el resto de horas las calcula el motor.
+    - Variantes solo donde un cierre toca ese día (lunes, domingo con misa, miércoles de audiencia) y en los festivos
+      grandes; una variante dice qué cambia (quitar, cambiar, mover, restaurante), no reescribe el día.
+    - Cada parada lleva qué hacer si está cerrada: por fuera con su texto, o el cambio por otra parada concreta.
+    - Restaurantes escritos por día y mitad, con su alternativa; nunca el mismo dos veces en el viaje.
+    - Las entradas que se venden, marcadas en su parada; todo imprescindible de pago por dentro al menos una vez por viaje.
+
+324. **Días escritos: el pool** (2026-09-28): `pool_lista` es una lista cerrada y cada lugar tiene su sitio escrito
+    (día, mitad y qué sustituye), su sitio si ese día no está en el viaje y un segundo sitio; si dos chocan, manda el
+    orden de `pool_lista`. Lo que ya está siempre en las rutas, si se elige, queda garantizado por dentro. Lo que el
+    viajero añade después («+ Añadir», Explorar) no mueve la ruta.
+
+325. **Días escritos: el ritmo** (2026-09-28): paradas fijas (con hora; dos si cambia con el ritmo), normales (en los
+    dos) y opcionales (en tranquilo se quitan; pueden llevar a dónde pasan o una sugerencia). El tranquilo solo cambia la
+    mañana (empieza más tarde, quita las opcionales) y la comida llega hasta la hora escrita de empiezo de la tarde: lo
+    que sobra va a la comida o al paseo de esa mañana, nunca a un hueco. Las 4 tardes son las mismas en los dos ritmos.
+    El título y los textos llevan versión tranquila cuando mencionan algo opcional.
+
+326. **Días escritos: la comprobación** (2026-09-28): en la prueba, no en la app. La app nunca inventa ni estira; la
+    prueba recorre las 365 fechas de inicio con todas las duraciones, los dos ritmos, con y sin Free Tour y cada lugar
+    del pool solo y en parejas, con las comprobaciones de `auditoria.mjs`, y lo que salga se arregla en el dato.
