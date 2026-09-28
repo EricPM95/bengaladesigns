@@ -250,7 +250,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
   // automático de los demás días del rango se junta en su tarjeta: es la misma ocasión.
   for (const entry of specials) {
     // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
-    const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside)
+    // (De día o de noche: el mercadillo de Navona va en el día que pasa por la plaza, también en su nocturna.)
+    const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => entry.requiere_lugares.includes(night.name))
     const inRange = days.filter((day) => specialDateMatches(entry, day.hours.dateIso) && carriesPlaces(day)).map((day) => day.hours.dateIso)
     if (inRange.length === 0) continue
     const target = slot(inRange[0])

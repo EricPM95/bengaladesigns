@@ -570,11 +570,15 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
   const allLunchSpots = lunchSpots(destData)
   /** Las zonas de comida que abren ese día, una lista por conjunto (la misma lista siempre, para la memoria del programador). */
   const openSpotsCache = new Map()
-  const openLunchSpots = (named, hours) => {
+  /** Los restaurantes que ya salen en el viaje: nunca el mismo dos veces (cierre de Roma, 2026-09-28). */
+  const usedRestaurants = new Set()
+  const openLunchSpots = (named, hours, exclude = new Set()) => {
     const dateIso = calendar.hasDates ? hours.dateIso : null
-    const key = `${[...named].sort().join('|')}#${hours.weekday ?? ''}#${dateIso ?? ''}`
+    const key = `${[...named].sort().join('|')}#${hours.weekday ?? ''}#${dateIso ?? ''}#${[...exclude].sort().join('|')}`
     if (!openSpotsCache.has(key)) {
-      const open = allLunchSpots.filter((spot) => !closedOnDay(spot, hours.weekday, dateIso))
+      const openAll = allLunchSpots.filter((spot) => !closedOnDay(spot, hours.weekday, dateIso))
+      const unused = openAll.filter((spot) => !exclude.has(spot.name))
+      const open = unused.length > 0 ? unused : openAll
       const wanted = named.size > 0 ? open.filter((spot) => named.has(spot.name)) : open
       const zones = new Set(allLunchSpots.filter((spot) => named.has(spot.name)).map((spot) => mainZoneOf(spot.zone ?? '')))
       const sameZone = open.filter((spot) => zones.has(mainZoneOf(spot.zone ?? '')))
@@ -743,9 +747,16 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         resolved[resolvedIndex - 1] = recoveredEntry
       } else restore(beforeRecover)
     }
+    for (const meal of planned.schedule?.meals ?? []) if (meal.type === 'lunch' && meal.spot?.name) usedRestaurants.add(meal.spot.name)
+    if (planned.dinnerRestaurant?.name) usedRestaurants.add(planned.dinnerRestaurant.name)
     days.push(planned)
   }
 
+  // Para cambiar la cena de sitio sin repetir restaurante: los que salen el resto del viaje (y la comida del día).
+  const lunchOf = (day) => (day.schedule?.meals ?? []).find((meal) => meal.type === 'lunch')?.spot?.name ?? null
+  for (const day of days) {
+    day.otherRestaurants = days.flatMap((other) => [lunchOf(other), other === day ? null : other.dinnerRestaurant?.name ?? null]).filter(Boolean)
+  }
   // Revisitas marcadas (decisión del usuario, 2026-09-28): un lugar solo se repite otro día si su parada lo dice
   // (`revisita`), a otra hora y con su texto de revisita ("Ya estuviste el Día 1, pero al atardecer es otro sitio…").
   for (const [index, day] of days.entries()) {
@@ -1077,11 +1088,12 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const named = new Set(sections.comida?.restaurantes ?? [])
     // Los que cierran ese día no cuentan (días de cierre de los restaurantes curados); si cierran todos los del día,
     // otro de la misma zona que abra (decisión del usuario, 2026-09-28).
-    const spots = openLunchSpots(named, hours)
     const dinner = dinnerOptions.find((zone) => zone.id === sections.cena?.barrio) ?? null
     // La cena lleva su restaurante recomendado, y los paseos se miden desde él.
     const dinnerNear = dinner?.coordinates ?? units.at(-1)?.places.at(-1)?.coordinates ?? null
-    const dinnerRestaurant = recommendedRestaurant(destData, { names: dinner?.restaurants ?? null, meal: 'cena', near: dinnerNear, weekday: hours.weekday, dateIso: realDateIso(day) })
+    const dinnerRestaurant = recommendedRestaurant(destData, { names: dinner?.restaurants ?? null, meal: 'cena', near: dinnerNear, weekday: hours.weekday, dateIso: realDateIso(day), exclude: usedRestaurants })
+    // La comida, ni en el restaurante de la cena de ese día ni en uno que ya salió otro día.
+    const spots = openLunchSpots(named, hours, new Set([...usedRestaurants, ...(dinnerRestaurant ? [dinnerRestaurant.name] : [])]))
     const dinnerPoint = dinnerRestaurant?.coordinates ?? dinnerNear
     let result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     // `si_da_tiempo` (Trinità dei Monti antes del Free Tour, Monti después de los Foros): si por ella se pierde algo, sale.

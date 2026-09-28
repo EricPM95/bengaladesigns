@@ -18,7 +18,11 @@
     "Iglesia de Santa Maria sopra Minerva": "Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel.",
     "Iglesia de San Luigi dei Francesi": "A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo.",
     "Piazza Navona": "Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini.",
-    "Campo de' Fiori": "Por la mañana es mercado de frutas y flores, y por la tarde, el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí.",
+    "Campo de' Fiori": {
+      "texto": "Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí.",
+      "temprano": "Por la mañana es mercado de frutas y flores, y por la tarde, el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí.",
+      "temprano_antes": "13:00"
+    },
     "Plaza Farnese": "Una plaza tranquila a un minuto de Campo de' Fiori. Fíjate en las dos fuentes: están hechas con bañeras de granito de las Termas de Caracalla. El palacio, en el que trabajó Miguel Ángel, hoy es la embajada de Francia.",
     "Fontana de Trevi": {
       "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
@@ -36,7 +40,11 @@
     "Plaza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi.",
     "Plaza de España": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
-    "Santa Maria del Popolo": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+    "Santa Maria del Popolo": {
+      "texto": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael.",
+      "temprano": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+      "temprano_antes": "13:00"
+    },
     "Piazza del Popolo": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
     "Terraza del Pincio": "Sube desde la Piazza del Popolo y tendrás Roma entera delante, con la cúpula de San Pedro al fondo. Es uno de los miradores favoritos de los romanos, y no cuesta nada.",
     "Galería Borghese": "La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen.",

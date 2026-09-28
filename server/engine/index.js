@@ -381,7 +381,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     }
     for (const key of ['aperitivo', 'free_afternoon']) {
       if (!day[key]) continue
-      if (room < APERITIVO_MIN_MINUTES / 3) delete day[key]
+      if (room < APERITIVO_MIN_MINUTES) delete day[key]
       else day[key].minutes = Math.min(day[key].minutes, room)
     }
   }

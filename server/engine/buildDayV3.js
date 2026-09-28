@@ -87,7 +87,7 @@ function quarterHourStops(stops) {
   })
 }
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
-import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
+import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
@@ -537,11 +537,20 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // aperitivo", justo antes de la cena y hasta la hora de cenar (hasta 90 min, ver index.js).
     if (nightTiming(chain, nightTimingInput).beforeDinner) chainForNight = chain
   }
+  const nightStops = chainForNight.length > 0 ? nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput) : []
+  const lastNightBefore = nightStops.filter((stop) => stop.before_dinner).at(-1)
+  if (lastNightBefore && lastNightBefore.latitude != null) {
+    const dinnerMealOut = meals.find((meal) => meal.time === 'dinner')
+    const near = [lastNightBefore.latitude, lastNightBefore.longitude]
+    const pick = dinnerMealOut ? recommendedRestaurant(destData, { meal: 'cena', near, weekday: tripDay.hours?.weekday ?? null, dateIso: tripDay.hours?.dateIso ?? null, exclude: new Set(tripDay.otherRestaurants ?? []) }) : null
+    // (La cena va en la zona donde acaba la tarde: después de Navona y el Panteón de noche, cerca de ellos.)
+    if (pick && pick.name !== dinnerMealOut.restaurant) Object.assign(dinnerMealOut, { restaurant: pick.name, latitude: pick.coordinates[0], longitude: pick.coordinates[1], zone: pick.zone ?? dinnerMealOut.zone, zone_display: pick.zone ? `en ${String(pick.zone).replace(/\s*\/\s*/g, ' y ')}` : dinnerMealOut.zone_display })
+  }
   return {
     day_number: tripDay.dayNumber,
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
-    stops: quarterHourStops([...stops, ...(chainForNight.length > 0 ? nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput) : [])]),
+    stops: quarterHourStops([...stops, ...nightStops]),
     meals: meals.map((meal) => ({ ...meal, suggested_time: nearestQuarter(meal.suggested_time), ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end) } : {}) })),
     not_included: [],
     times_are_final: true,

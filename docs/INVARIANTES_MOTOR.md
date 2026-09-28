@@ -1604,3 +1604,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     corte de las 18:30 de la 311): el día elige el orden con el que el mirador del atardecer llega a su hora (el de
     siempre, el de invierno, la subida por el barrio, `si_espera`). Solo si ningún orden llega, sale la versión de noche
     («Roma iluminada desde…»).
+
+316. **Cierre de Roma, puntos 5 y 6: restaurantes y textos** (2026-09-28):
+    - Nunca el mismo restaurante dos veces en un viaje (ni la comida y la cena del mismo día): el motor planifica los
+      días en orden y no vuelve a proponer uno ya usado mientras quede otro que abra.
+    - Con la nocturna antes de cenar, el restaurante recomendado de la cena es el de cerca de donde acaba la nocturna.
+    - El rato de antes de cenar de menos de 20 min no sale.
+    - Un texto que habla de la mañana solo sale por la mañana: `temprano` + `temprano_antes: "13:00"` (Santa Maria del
+      Popolo "Ojo: por la mañana cierra a las 12:00"; Campo de' Fiori, "por la mañana es mercado").
+    - `requiere_lugares` de una fecha especial cuenta también las nocturnas: el aviso del mercadillo de Navona va en el
+      día que pasa por la plaza, de día o de noche; si ninguno, no sale.

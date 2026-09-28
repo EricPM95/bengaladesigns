@@ -138,10 +138,11 @@ function average(values) {
  * @param {{ names?: string[]|null, meal: 'comida'|'cena', near: [number, number]|null, weekday?: string|null, dateIso?: string|null }} options
  * @returns {{ name: string, coordinates: [number, number], zone: string|null } | null}
  */
-export function recommendedRestaurant(destData, { names = null, meal, near, weekday = null, dateIso = null }) {
+export function recommendedRestaurant(destData, { names = null, meal, near, weekday = null, dateIso = null, exclude = null }) {
   const serves = meal === 'cena' ? servesDinner : servesLunch
   const all = (destData?.restaurants ?? []).filter((restaurant) => serves(restaurant) && restaurantCoordinates(restaurant))
-  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso)
+  // (`exclude`: los que ya salen en el viaje; solo si no queda otro, se repite.)
+  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso) && !exclude?.has(restaurant.name)
   const wanted = names?.length ? all.filter((restaurant) => names.includes(restaurant.name)) : all
   const mains = new Set(wanted.map((restaurant) => mainZoneOf(restaurant.zone ?? '')))
   const sameZone = all.filter((restaurant) => mains.has(mainZoneOf(restaurant.zone ?? '')))
