@@ -822,7 +822,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const wait = result.visits[sunsetIndex].start - result.visits[sunsetIndex - 1].end - (result.visits[sunsetIndex].walkMinutes ?? 0)
       if (wait > (waitRule.minutos ?? 60)) {
         const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
-        const tarde = waitRule.tarde.filter((stop) => stopApplies(stop, day) && !morningNames.has(stop.lugar))
+        // (Lo de pago que este viaje no visita por dentro, por fuera: igual que en la tarde de siempre.)
+        const tarde = waitRule.tarde.map((stop) => (stopApplies(stop, day) ? stop : seenOutside(stop) ? asOutside(stop) : null)).filter((stop) => stop && !morningNames.has(stop.lugar))
         let list = [...units.filter((unit) => unit.slot === 'manana'), ...build(tarde, 'tarde')]
         let trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         // Lo que así llega cerrado y el día quiere de paso (el Tempietto después de su última entrada), de paso.
@@ -837,6 +838,22 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         if ([...had].every((name) => has.has(name)) && trial.visits.some((visit) => visit.place.sunset != null)) {
           units = list
           result = trial
+        }
+      }
+    }
+    // Lo que el programador ha quitado para llegar al sol (Via della Conciliazione en D2 en invierno): antes, la parada
+    // que se estira (Trastevere) devuelve 15 o 30 min, nunca por debajo de 20, si así vuelve sin perder nada ni el sol.
+    const lostForSun = result.dropped.filter(({ reason }) => reason === 'missed_sunset')
+    if (lostForSun.length > 0 && result.visits.some((visit) => visit.place.sunset != null) && units.some((unit) => unit.stretch)) {
+      for (const cut of [STRETCH_GIVE_BACK_MINUTES, STRETCH_GIVE_BACK_MINUTES * 2]) {
+        const list = units.map((unit) => (unit.stretch ? { ...unit, places: unit.places.map((place, index) => (index === unit.places.length - 1 ? { ...place, duration_minutes: Math.max(STRETCH_MIN_MINUTES, (place.duration_minutes ?? 30) - cut) } : place)) } : unit))
+        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
+        const recovered = lostForSun.every(({ unit }) => trial.visits.some((visit) => visit.unitId === unit.id))
+        if (keepsAll && recovered && trial.visits.some((visit) => visit.place.sunset != null)) {
+          units = list
+          result = trial
+          break
         }
       }
     }

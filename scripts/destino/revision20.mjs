@@ -11,7 +11,7 @@ import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
-import { curatedStops, textosConHora, tituloQueNoSeCumple } from './textChecks.mjs'
+import { curatedStops, grupoFueraDeOrdenEnDia, textosConHora, tituloQueNoSeCumple } from './textChecks.mjs'
 import { readFileSync, readdirSync } from 'node:fs'
 
 const VIAJES = [
@@ -62,7 +62,9 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 // Recuento de la Parte D (PROMPT_AJUSTES_20_RUTAS): lo que tiene que salir a 0.
 const NOTAS_INTERNAS = [...new Set((D.curated_days ?? []).flatMap((cfg) => [cfg, ...Object.values(cfg.variantes ?? {})]).flatMap((section) => [...(section.manana ?? []), ...(section.tarde ?? []), ...(section.tarde_antes ?? [])]).map((stop) => stop.nota).filter(Boolean))]
-const recuento = { titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
+const recuento = { sinLinea: [], nivelCamino: [], ordenGrupo: [], titulos: [], genericos: [], notas: [], precios: [], caminoLargo: [], tramosLargos: [] }
+/** Monumento = nivel 1 o 2 (PROMPT_PENDIENTE B). */
+const nivelDe = (name) => (D.places ?? []).find((place) => place.name === name)?.level ?? 3
 const sinEmoji = (text) => String(text ?? '').replace(/^[^\p{L}\p{N}¡¿"«(]+/u, '')
 
 /** Domingo de Pascua (algoritmo anónimo gregoriano). */
@@ -95,7 +97,8 @@ function comoSale(stop) {
   if (stop.is_night_experience) return '🌙 Noche'
   if (stop.night_view) return '🌙 Noche'
   if (stop.sunset_minutes != null) return '🌅 Atardecer'
-  if (stop.outside) return `Por fuera (${stop.outside_reason ?? 'hoy no toca entrar'})`
+  if (stop.visit_mode === 'fuera' || stop.outside) return `Por fuera (${stop.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día'})`
+  if (stop.visit_mode === 'dentro') return 'Parada · por dentro'
   if (stop.instead_of_visit) return 'Por fuera (en vez de la visita)'
   if (stop.pass_through || stop.is_pass_by) return 'Por el camino'
   if (stop.free_tour_covers) return 'Parada (Free Tour)'
@@ -155,6 +158,13 @@ for (const [index, viaje] of VIAJES.entries()) {
     const fiesta = festivo(iso)
     // El título que promete una hora que ese día no se cumple ("Trevi sin gente" con Trevi a las 10:00): aviso amarillo.
     for (const aviso of tituloQueNoSeCumple(day)) recuento.titulos.push(`ruta ${numero}, día ${n}: ${aviso}`)
+    // Todo monumento con su propia línea, nunca "Por el camino" ni escondido; y primero la plaza o el puente.
+    for (const stop of day?.stops ?? []) {
+      for (const name of [...(stop.outside_of ?? []), ...(stop.pass_by_includes ?? [])]) if (nivelDe(name) <= 2) recuento.sinLinea.push(`ruta ${numero}, día ${n}: ${name} dentro de ${stop.name}`)
+      const nombre = stop.place_name ?? stop.name
+      if ((stop.pass_through || stop.is_pass_by) && !stop.outside && !stop.is_night_experience && nivelDe(nombre) <= 2) recuento.nivelCamino.push(`ruta ${numero}, día ${n}: ${nombre} (${stop.suggested_time})`)
+    }
+    for (const aviso of grupoFueraDeOrdenEnDia(D, day)) recuento.ordenGrupo.push(`ruta ${numero}, día ${n}: ${aviso}`)
     const titulo = day?.curated_day?.name ?? (day?.type === 'excursion' || (day?.excursion_options?.length && !day?.stops?.length) ? 'Excursión' : day?.title ?? '')
     out.push(`### Día ${n} — ${cell(titulo)}`)
     out.push('')
@@ -280,7 +290,7 @@ for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json
 }
 for (const [index, line] of out.entries()) if (/€|\beuros?\b|\bEUR\b/i.test(line) && !CIFRA_OK.some((text) => line.includes(text))) recuento.precios.push(`línea ${index + 1}: ${line.slice(0, 120)}`)
 const lineaRecuento = (titulo, lista) => [`- **${titulo}**: ${lista.length}${lista.length ? '' : ' ✅'}`, ...lista.slice(0, 15).map((item) => `  - ${item}`), ...(lista.length > 15 ? [`  - … y ${lista.length - 15} más`] : [])]
-out.push('## Recuento (Parte D)', '', ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
+out.push('## Recuento (Parte D)', '', ...lineaRecuento('Monumentos (nivel 1-2) sin su propia línea', recuento.sinLinea), ...lineaRecuento('Lugares de nivel 1 o 2 como "Por el camino"', recuento.nivelCamino), ...lineaRecuento('Plazas o puentes después de su monumento, fuera de las excepciones', recuento.ordenGrupo), ...lineaRecuento('Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)', textosConHora(D)), ...lineaRecuento('Títulos del día que prometen una hora que no se cumple', recuento.titulos), ...lineaRecuento('Filas con "Por qué aquí" genérico', recuento.genericos), ...lineaRecuento('Notas internas que se ven', recuento.notas), ...lineaRecuento('Cifras y precios fuera de Tickets', recuento.precios), ...lineaRecuento('"Por el camino" de más de 10 min', recuento.caminoLargo), ...lineaRecuento('Tramos de más de 25 min andando sin transporte', recuento.tramosLargos), '', '### Cifras con permiso (`cifra_ok: true`)', '', 'Cada texto distinto una sola vez: lo que se queda con cifra a propósito.', '', ...[...conPermiso].map(([text, where]) => `- (${where}) ${text}`), '')
 console.log(JSON.stringify({ textosConHora: textosConHora(D).length, ...Object.fromEntries(Object.entries(recuento).map(([k, v]) => [k, v.length])) }))
 
 const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'

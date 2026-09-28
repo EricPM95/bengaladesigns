@@ -7937,10 +7937,18 @@
           "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
         },
         {
+          "lugar": "Plaza Venecia",
+          "rol": "de_paso",
+          "minutos": 10,
+          "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+          "nota": "Desde la plaza se ve entero el Altar antes de subir."
+        },
+        {
           "lugar": "Altar de la Patria",
           "rol": "parada",
           "nota": "Por dentro es gratis; sube a la terraza panorámica. Se come después, en el Ghetto.",
-          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
+          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
+          "minutos": 45
         }
       ],
       "comida": {
@@ -8048,6 +8056,13 @@
               "lugar": "Plaza del Campidoglio",
               "rol": "de_paso",
               "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
+            },
+            {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
             },
             {
               "lugar": "Altar de la Patria",
@@ -8164,6 +8179,13 @@
               "por_que": "La plaza barroca por excelencia, con la Fuente de los Cuatro Ríos de Bernini."
             },
             {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
+            {
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "minutos": 30,
@@ -8179,6 +8201,13 @@
         },
         "pool_borghese": {
           "tarde": [
+            {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
             {
               "lugar": "Altar de la Patria",
               "rol": "parada",
@@ -8294,6 +8323,13 @@
               "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
             },
             {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
+            {
               "lugar": "Altar de la Patria",
               "rol": "de_paso",
               "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
@@ -8379,6 +8415,13 @@
               "rol": "de_paso",
               "nota": "Por fuera: los museos cierran hoy.",
               "por_que": "La plaza que diseñó Miguel Ángel. Asómate por detrás: el Foro entero a tus pies."
+            },
+            {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
             },
             {
               "lugar": "Altar de la Patria",
@@ -8545,6 +8588,12 @@
           "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
         },
         {
+          "lugar": "Puente Sant'Angelo",
+          "rol": "parada",
+          "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
+          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+        },
+        {
           "lugar": "Castillo de Sant'Angelo",
           "rol": "parada",
           "pago": true,
@@ -8558,12 +8607,6 @@
             }
           ],
           "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "rol": "parada",
-          "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -8605,16 +8648,16 @@
         "invierno": {
           "tarde": [
             {
-              "lugar": "Borgo Pio",
-              "rol": "de_paso",
-              "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
-            },
-            {
               "lugar": "Via della Conciliazione",
               "rol": "de_paso",
               "minutos": 10,
               "nota": "De San Pedro al Castillo: el camino del viajero.",
               "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+            },
+            {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Castillo de Sant'Angelo",
@@ -8630,11 +8673,6 @@
                 }
               ],
               "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
-            },
-            {
-              "lugar": "Puente Sant'Angelo",
-              "rol": "parada",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Mirador del Janículo",
@@ -8672,16 +8710,17 @@
             "minutos": 60,
             "tarde": [
               {
-                "lugar": "Borgo Pio",
-                "rol": "de_paso",
-                "por_que": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre."
-              },
-              {
                 "lugar": "Via della Conciliazione",
                 "rol": "de_paso",
                 "minutos": 10,
                 "nota": "De San Pedro al Castillo: el camino del viajero.",
                 "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
+              },
+              {
+                "lugar": "Puente Sant'Angelo",
+                "rol": "parada",
+                "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
+                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
               },
               {
                 "lugar": "Castillo de Sant'Angelo",
@@ -8700,12 +8739,6 @@
                   "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
                   "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
                 }
-              },
-              {
-                "lugar": "Puente Sant'Angelo",
-                "rol": "parada",
-                "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
               },
               {
                 "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -8770,6 +8803,11 @@
               "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
             },
             {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
@@ -8777,11 +8815,6 @@
                 "pool": true
               },
               "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
-            },
-            {
-              "lugar": "Puente Sant'Angelo",
-              "rol": "parada",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Trastevere",
@@ -8816,6 +8849,12 @@
               "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
             },
             {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "nota": "Y por el río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
@@ -8823,12 +8862,6 @@
                 "pool": true
               },
               "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
-            },
-            {
-              "lugar": "Puente Sant'Angelo",
-              "rol": "parada",
-              "nota": "Y por el río hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -8906,6 +8939,12 @@
               "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
             },
             {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
@@ -8954,17 +8993,17 @@
               "por_que": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada."
             },
             {
+              "lugar": "Puente Sant'Angelo",
+              "rol": "parada",
+              "nota": "Y por el río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
+            },
+            {
               "lugar": "Castillo de Sant'Angelo",
               "rol": "parada",
               "pago": true,
               "nota": "Si abre ese día.",
               "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
-            },
-            {
-              "lugar": "Puente Sant'Angelo",
-              "rol": "parada",
-              "nota": "Y por el río hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere."
             },
             {
               "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -9182,10 +9221,18 @@
           "por_que": "Los museos más antiguos del mundo, en la plaza de Miguel Ángel."
         },
         {
+          "lugar": "Plaza Venecia",
+          "rol": "de_paso",
+          "minutos": 10,
+          "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+          "nota": "Desde la plaza se ve entero el Altar antes de subir."
+        },
+        {
           "lugar": "Altar de la Patria",
           "rol": "parada",
           "nota": "Por dentro es gratis; la terraza panorámica, en ascensor.",
-          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
+          "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
+          "minutos": 45
         }
       ],
       "comida": {
@@ -9294,10 +9341,18 @@
               "por_que": "Con la misma entrada del Coliseo: el corazón de la Roma antigua. Sales por el lado del Campidoglio, por donde sigue el día."
             },
             {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
+            {
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
+              "minutos": 45
             }
           ],
           "tarde": [
@@ -9375,10 +9430,18 @@
           ],
           "tarde": [
             {
+              "lugar": "Plaza Venecia",
+              "rol": "de_paso",
+              "minutos": 10,
+              "por_que": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir.",
+              "nota": "Desde la plaza se ve entero el Altar antes de subir."
+            },
+            {
               "lugar": "Altar de la Patria",
               "rol": "parada",
               "nota": "Por dentro es gratis; sube a la terraza panorámica.",
-              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies."
+              "por_que": "Al lado del Campidoglio y el interior es gratis: entra sin prisa. Si te animas, la terraza panorámica (aparte) tiene Roma entera a tus pies.",
+              "minutos": 45
             },
             {
               "lugar": "Barrio Judío",
@@ -11185,6 +11248,6 @@
     "Bendición Urbi et Orbi": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro. Llega con margen por los controles.",
     "Columna de Trajano": "La columna que cuenta en espiral las guerras de Trajano.",
     "Via della Conciliazione": "La gran avenida de San Pedro. Date la vuelta a mitad de calle: la cúpula, al fondo, perfectamente centrada.",
-    "Plaza Venecia": "La gran plaza a los pies del Altar de la Patria, con el Palazzo Venezia a un lado: el cruce de caminos del centro de Roma."
+    "Plaza Venecia": "La gran plaza a los pies del Altar de la Patria: desde aquí ves entera la mole de mármol blanco antes de subir."
   }
 }

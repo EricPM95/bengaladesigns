@@ -1234,3 +1234,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     la plaza o el puente que es el sitio del atardecer o de la noche (D7: el Castillo a las 17:30 y el Puente al
     atardecer). `textChecks.mjs` (`gruposFueraDeOrden` en los datos, `grupoFueraDeOrdenEnDia` en las rutas); lo que se
     ve desde su compañero también va en ese orden.
+274. **D2: Via della Conciliazione → Puente Sant'Angelo → Castillo** en todas sus variantes (en invierno, sin Borgo Pio:
+    va en paralelo a la Conciliazione); **D1 y D1-FT: Plaza del Campidoglio → Plaza Venecia (de paso) → Altar (45 min)**.
+    Si el programador quita algo para llegar al sol, la parada que se estira (Trastevere) devuelve 15 o 30 min antes
+    (nunca por debajo de 20); y la tarde de `si_espera` convierte a "por fuera" lo de pago igual que la de siempre.
