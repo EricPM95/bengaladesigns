@@ -21,6 +21,7 @@ import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { dateNoticesFor } from './dateNotices.js'
+import { seasonNoteFor } from './seasonNote.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
@@ -352,6 +353,16 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Los avisos de fechas especiales (PROMPT_AVISO_FECHAS), una vez por viaje y con el primer día de ciudad: la app
   // los enseña en una ventana al entrar en la ruta y deja una etiqueta en cada día afectado.
   if (tripDay.dayNumber === firstCityDay) day.date_notices = dateNoticesFor(destData, trip, options)
+  // La nota de temporada (decisión del usuario, 2026-09-28), una vez y con el primer día de ciudad. Si sale, el banner
+  // de invierno no (diría lo mismo).
+  if (tripDay.dayNumber === firstCityDay) {
+    const note = seasonNoteFor(destData, trip, { hasNight: [...nights.values()].some((list) => list.length > 0), dateNotices: day.date_notices })
+    if (note) {
+      day.season_note = note
+      const month = Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : null
+      if (month !== null && (destData.destination_config?.context_banners?.meses_invierno ?? []).includes(month)) day.context_banner = null
+    }
+  }
   return day
 }
 

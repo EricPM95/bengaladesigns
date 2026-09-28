@@ -688,6 +688,9 @@ export interface Route {
   contextBanner?: string | null
   /** El viajero lo cerró con la X: no vuelve a salir en este viaje. */
   contextBannerDismissed?: boolean
+  /** Nota de temporada (decisión del usuario, 2026-09-28): arriba de la ruta, con el efecto de temporada; se cierra. */
+  seasonNote?: { season: string; text: string } | null
+  seasonNoteDismissed?: boolean
   /** Motor v3: avisos de fechas especiales (festivos, cierres, eventos) — DateNoticesModal.tsx. */
   dateNotices?: DateNotice[]
   /** La firma de los avisos que el viajero ya vio (dateNoticesKey): si la ruta se regenera y cambian, vuelven a salir. */

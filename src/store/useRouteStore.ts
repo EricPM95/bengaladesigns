@@ -350,6 +350,8 @@ interface RouteStoreState {
   setRoute: (route: Route) => void
   /** Cierra el banner de contexto del viaje (ContextBanner.tsx): no vuelve a salir en este viaje. */
   dismissContextBanner: () => void
+  /** Cierra la nota de temporada (SeasonNote.tsx): no vuelve a salir en este viaje. */
+  dismissSeasonNote: () => void
   /** La ventana de fechas especiales ya se vio con estos avisos (DateNoticesModal.tsx): se guarda con la ruta. */
   markDateNoticesSeen: (key: string) => void
   /** "Quiero entrar" (WantInsideDialog.tsx): el día rehecho por el motor y la parada que ahora va por dentro. */
@@ -699,6 +701,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   dismissContextBanner: () =>
     set((state) => (state.route ? { route: { ...state.route, contextBannerDismissed: true } } : state)),
+  dismissSeasonNote: () => set((state) => (state.route ? { route: { ...state.route, seasonNoteDismissed: true } } : state)),
 
   markDateNoticesSeen: (key) => set((state) => (state.route ? { route: { ...state.route, dateNoticesSeenKey: key } } : state)),
 

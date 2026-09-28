@@ -1373,3 +1373,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       "Sin hora" (`DayPlan.untimed`: paradas en orden con el paseo entre ellas).
     - Los restaurantes no entran como parada. Pendiente (no se hace todavía): la pantalla de "día libre" después del
       formulario y el botón "+" para añadir un día.
+293. **Nota de temporada** (decisión del usuario, 2026-09-28, general para todos los destinos; sustituye a cualquier
+    "aviso de invierno"): no es un aviso de cuidado, cuenta que la ruta está pensada para su época. Una vez, arriba de
+    la ruta (encima del Día 1), con el efecto de temporada del formulario (SEASON_FX) y con X; no es ventana emergente
+    (SeasonNote.tsx, `Route.seasonNote`). Textos por época en `destination_config.nota_temporada` (server/engine/
+    seasonNote.js); sin textos, el de reserva del kit ("Tu ruta está pensada para disfrutar {destino} en {época}",
+    docs/kit/plantilla_nota_temporada.json). Época: la de los horarios (`by_period`): con el sol antes de las 17:30
+    es invierno (en Roma, de finales de octubre a febrero); si no, la del mes. {hora_atardecer}: la real, al cuarto de
+    hora. Solo promete lo que se cumple: "y veas Roma iluminada" si alguna noche lleva nocturna (si no, "para que
+    llegues a todo"); en verano "a primera hora de la mañana" si la mayoría de los días empieza por un imprescindible
+    antes de las 10:00 (si no, "para que la disfrutes sin agobios"). Sin fechas: "Si viajas en {mes}, …". Si un aviso
+    de fechas de temporada ya lo dice, sale uno; y si sale la nota, el banner de invierno no. La auditoría lo comprueba
+    ("Nota de temporada que promete algo que la ruta no hace") y la revisión pone la nota de cada viaje.

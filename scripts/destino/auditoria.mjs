@@ -41,6 +41,7 @@ export const TIPOS_AUDITORIA = {
   aviso_lugar_ajeno: 'Aviso de fecha que nombra un lugar que no está en el viaje',
   aviso_repetido: 'Avisos de fecha repetidos',
   titulo_hora: 'Texto de hora que no coincide con la hora real',
+  nota_promete: 'Nota de temporada que promete algo que la ruta no hace',
 }
 
 /**
@@ -196,6 +197,20 @@ export function auditarViaje(D, days, options = {}) {
       const day = days[dayIndex]
       const placed = (day?.stops ?? []).some((stop) => (stop.place_name ?? stop.name) === sug.lugar || stop.name === sug.lugar)
       if (!placed) add('aviso_promete', n, '', notice.title, `${sug.lugar} no está en la ruta de ese día`)
+    }
+  }
+  // Nota de temporada: "veas Roma iluminada" con alguna nocturna; "a primera hora" con la mayoría de los días
+  // empezando por un imprescindible antes de las 10:00.
+  const note = days.find((day) => day?.season_note)?.season_note
+  if (note) {
+    const cityDays = days.filter((day) => day?.stops?.length && day.type !== 'excursion')
+    if (/iluminada/.test(note.text) && !cityDays.some((day) => day.stops.some((stop) => stop.is_night_experience || stop.night_view))) add('nota_promete', '—', '', 'Nota de temporada', 'promete Roma iluminada y ninguna noche lleva nocturna')
+    if (/primera hora/.test(note.text)) {
+      const early = cityDays.filter((day) => {
+        const first = day.stops.find((stop) => !stop.is_night_experience && !stop.is_break && !stop.pass_through)
+        return first && levelOf(first.place_name ?? first.name) === 1 && t2m(first.suggested_time) < 10 * 60
+      })
+      if (early.length <= cityDays.length / 2) add('nota_promete', '—', '', 'Nota de temporada', `promete visitas a primera hora y solo ${early.length} de ${cityDays.length} días empiezan así`)
     }
   }
   return casos

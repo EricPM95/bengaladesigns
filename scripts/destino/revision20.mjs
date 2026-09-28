@@ -143,6 +143,9 @@ for (const [index, viaje] of VIAJES.entries()) {
   }
   // Auditoría automática (punto 14): todo lo que antes se miraba a mano, con su lista de casos.
   for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}` })) auditoria.push(caso)
+  // La nota de temporada que le sale a este viaje (o "sin nota").
+  const seasonNote = days.find((day) => day?.season_note)?.season_note
+  out.push(`**Nota de temporada**: ${seasonNote ? cell(seasonNote.text) : 'sin nota'}`, '')
   const banner = days.find((day) => day?.context_banner)?.context_banner
   if (banner) out.push(`> **Banner del viaje**: ${cell(banner)}`, '')
   // Los avisos de fechas especiales: la ventana que sale al entrar en la ruta (PROMPT_AVISO_FECHAS).

@@ -1,0 +1,10 @@
+{
+  "_que_es": "Nota de temporada de un destino nuevo (decisión del usuario, 2026-09-28): va en destination_config.nota_temporada. No es un aviso de cuidado: cuenta que la ruta está pensada para su época. Cada destino, sus textos (el calor de Roma no vale para Ámsterdam). Lo que promete tiene que ser verdad en el viaje (la auditoría lo comprueba).",
+  "_reserva": "Si el destino no trae textos, el motor usa: Tu ruta está pensada para disfrutar {destino} en {época}.",
+  "_variables": "{hora_atardecer}: la del viaje, al cuarto de hora. Sin fechas, el motor antepone \"Si viajas en {mes}, …\".",
+  "invierno": "Tu ruta está pensada para disfrutar {destino} en invierno.",
+  "invierno_sin_noche": "Tu ruta está pensada para disfrutar {destino} en invierno.",
+  "primavera_otono": "Tu ruta está pensada para disfrutar {destino} en {época}.",
+  "verano": "Tu ruta está pensada para disfrutar {destino} en verano.",
+  "verano_sin_manana": "Tu ruta está pensada para disfrutar {destino} en verano."
+}
