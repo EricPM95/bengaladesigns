@@ -99,7 +99,7 @@ const TRANSFER_NOTICE_MINUTES = 25
 /** Una tarde cuya ancla va de paso (ya salió otro día) tiene que traer al menos esto de paradas nuevas. */
 const ANCHOR_PASS_BY_MIN_NEW = 2
 /** Se ve desde la calle: un exterior, o algo con paso por fuera o visible desde fuera. */
-const fromStreet = (place) => Boolean(place) && (place.type === 'exterior' || Boolean(place.pass_by) || Boolean(place.visible_from_outside))
+const fromStreet = (place) => Boolean(place) && (place.type === 'exterior' || Boolean(place.pass_by) || Boolean((place.minutos_fuera != null)))
 /** Una espera de más de esto dentro del día se rellena con algo de camino. */
 const WAIT_FILL_MINUTES = 60
 /** Lo que rellena una espera, a esto andando como mucho de cada extremo de la espera original. */
@@ -612,7 +612,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       }
       // Cerrado ese día: se ve de paso si se ve por fuera; si no, se salta.
       if (closedThatDay(name, day)) {
-        if (place.visible_from_outside || place.pass_by || place.type === 'exterior') list.push({ name, role: 'de_paso', place })
+        if ((place.minutos_fuera != null) || place.pass_by || place.type === 'exterior') list.push({ name, role: 'de_paso', place })
         continue
       }
       list.push({ name, role: chosen ? 'pool' : stop.rol, place, beforeSunset: Boolean(stop.antes_del_atardecer), onlyIfOpen: Boolean(stop.solo_si_abierto) })
@@ -834,7 +834,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     const overflowOf = (candidate) => candidate.kept.filter((unit) => morningIds.has(unit.id) && unit.slot === 'tarde' && !levelOne(unit))
     if (overflowOf(result).length > 0) {
       const dayMode = modeFallback ? { ...normalMode, dayStart: modeFallback.dayStart } : mode
-      const seenFromStreet = (unit) => unit.places.every((place) => place.passThrough || place.type === 'exterior' || place.visible_from_outside || place.pass_by)
+      const seenFromStreet = (unit) => unit.places.every((place) => place.passThrough || place.type === 'exterior' || (place.minutos_fuera != null) || place.pass_by)
       // Con su grupo del JSON entero: si la Cerradura no llega, el Aventino (Boca, Naranjos, Cerradura) va junto.
       // Salvo que en el grupo haya un ancla o un imprescindible (el Vaticano: la Basílica sola va a la tarde).
       const heavyGroups = new Set(units.filter((unit) => morningIds.has(unit.id) && (unit.role === 'ancla' || essential(unit))).flatMap((unit) => unit.places.map((place) => place.group)).filter(Boolean))
@@ -1843,7 +1843,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // `upToDay`: lo mejor primero, una joya que ya sale pero tarde (Trevi el último día) entra también de
     // paso en un día temprano.
     if (seen.has(place.name) && upToDay === null) return true
-    const fromStreet = place.type === 'exterior' || place.pass_by || place.visible_from_outside
+    const fromStreet = place.type === 'exterior' || place.pass_by || (place.minutos_fuera != null)
     if (!fromStreet) return false
     const coordinates = place.pass_by?.coordinates ?? place.coordinates
     const minutes = place.pass_by?.minutes ?? OUTSIDE_ESSENTIAL_MINUTES
@@ -1934,7 +1934,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
     // Lo que se ve desde la calle (la Plaza de España, Trevi, Navona) entra de paso, 15 min (B.5); lo de
     // dentro (el Panteón, la Basílica), con su visita, de camino.
     // Una joya (el Panteón) va siempre por dentro si cabe.
-    const fromStreet = place.tier !== 'joya' && (place.type === 'exterior' || place.pass_by || place.visible_from_outside)
+    const fromStreet = place.tier !== 'joya' && (place.type === 'exterior' || place.pass_by || (place.minutos_fuera != null))
     // Una joya que se ve desde la calle y no va en ningún bloque (Trevi, con centro_temprano cambiado por
     // repetido): de paso, primero en un día temprano (lo mejor primero).
     if (contentDays >= 3 && joyaNames.has(place.name) && place.type === 'exterior' && rescueOutside(place, { upToDay: earlyLimit })) continue

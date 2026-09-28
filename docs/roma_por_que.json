@@ -44,10 +44,7 @@
     "Basílica de San Pedro": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
     "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies.",
     "Borgo Pio": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre.",
-    "Castillo de Sant'Angelo": {
-      "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-      "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-    },
+    "Castillo de Sant'Angelo": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere.",
     "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes.",
     "Trastevere": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador.",
@@ -137,5 +134,55 @@
     "añadir": "Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
     "cifra_ok": true
   },
-  "_por_fuera": "Si un texto es {texto, por_fuera}: 'por_fuera' se usa cuando la parada sale 'Por fuera' (un monumento que ese día no se visita por dentro); si no, 'texto'."
+  "_por_fuera": "Los lugares con interior que también se ven por fuera: 'minutos' (minutos_fuera en roma.json) y 'texto', que es el Por qué aquí cuando la parada va por fuera (cerrada, o museo de pago que no cabe).",
+  "por_fuera": {
+    "Coliseo": {
+      "minutos": 20,
+      "texto": "Rodéalo entero por fuera: tres pisos de arcos y, por el lado de Monti, la parte que aún conserva la fachada completa."
+    },
+    "Foro Romano y Palatino": {
+      "minutos": 15,
+      "texto": "Asómate desde Via dei Fori Imperiali o desde detrás del Campidoglio: el Foro entero a tus pies, con sus columnas y arcos."
+    },
+    "Panteón": {
+      "minutos": 15,
+      "texto": "El pórtico de columnas de granito y la fuente con obelisco de la plaza. Aunque no entres, merece pararse."
+    },
+    "Castillo de Sant'Angelo": {
+      "minutos": 15,
+      "texto": "El mausoleo de Adriano, convertido en fortaleza de los papas, con el ángel en lo alto. La mejor foto: desde el puente, con los ángeles de Bernini delante."
+    },
+    "Altar de la Patria": {
+      "minutos": 15,
+      "texto": "La mole de mármol blanco que preside Plaza Venecia, con la tumba del Soldado Desconocido y su guardia de honor."
+    },
+    "Galería Borghese": {
+      "minutos": 10,
+      "texto": "La villa del cardenal Borghese en mitad del parque, con su fachada llena de estatuas."
+    },
+    "Mercados de Trajano": {
+      "minutos": 10,
+      "texto": "Los mercados de la Roma imperial, en semicírculo, se ven enteros desde Via dei Fori Imperiali."
+    },
+    "Ara Pacis": {
+      "minutos": 10,
+      "texto": "Desde la calle, a través de la cristalera del edificio, ya ves el altar de Augusto."
+    },
+    "Termas de Caracalla": {
+      "minutos": 15,
+      "texto": "Sus muros de ladrillo, desde el parque de al lado: te haces una idea de lo enormes que eran."
+    },
+    "Basílica de Santa María la Mayor": {
+      "minutos": 10,
+      "texto": "La fachada con su logia de mosaicos y el campanario más alto de Roma."
+    },
+    "Basílica de San Juan de Letrán": {
+      "minutos": 10,
+      "texto": "La gran fachada, con Cristo y los apóstoles en lo alto, y en la plaza el obelisco más alto de Roma."
+    },
+    "San Pietro in Montorio y Tempietto de Bramante": {
+      "minutos": 10,
+      "texto": "La iglesia y, a través de la verja, el pequeño templo de Bramante. Y desde la puerta, Roma entera."
+    }
+  }
 }

@@ -637,7 +637,6 @@
           "Arco de Constantino"
         ]
       },
-      "visible_from_outside": true,
       "windows": [
         "08:30-16:30"
       ],
@@ -720,7 +719,9 @@
         "fuente": "https://colosseo.it/orari-e-biglietti/",
         "nota": "La web oficial publica 29 mar–30 sep, 1–24 oct y 25 oct 2026–28 feb 2027. Marzo antes del cambio de hora aún no está publicado para 2027: se usa el patrón de años anteriores (17:00 hasta el 15, 17:30 hasta el cambio de hora).",
         "fecha": "2026-09-25"
-      }
+      },
+      "minutos_fuera": 20,
+      "por_fuera": "Rodéalo entero por fuera: tres pisos de arcos y, por el lado de Monti, la parte que aún conserva la fachada completa."
     },
     {
       "name": "Foro Romano y Palatino",
@@ -847,7 +848,9 @@
         "fuente": "https://colosseo.it/orari-e-biglietti/",
         "nota": "Mismo calendario de cierres que el Coliseo; abre a las 09:00.",
         "fecha": "2026-09-25"
-      }
+      },
+      "minutos_fuera": 15,
+      "por_fuera": "Asómate desde Via dei Fori Imperiali o desde detrás del Campidoglio: el Foro entero a tus pies, con sus columnas y arcos."
     },
     {
       "name": "Arco de Constantino",
@@ -1043,7 +1046,9 @@
         "fuente": "https://www.pantheonroma.com/en/openings-info/ (web oficial del Capítulo: 09:00-19:00, última entrada 18:45, cierra 1 ene, 15 ago y 25 dic) + https://it.vatican-city.it/pantheon-roma/ (misas: sábado 17:00, domingo 10:30; venta suspendida 1 h antes)",
         "nota": "La web oficial no publica el horario de las misas. \"Sábados, solo de 09:00 a 16:00\" sale de la misa de las 17:00 con la venta cortada una hora antes; es posible que tras la misa se vuelva a entrar hasta las 19:00, sin confirmar: se deja lo prudente.",
         "fecha": "2026-09-25"
-      }
+      },
+      "minutos_fuera": 15,
+      "por_fuera": "El pórtico de columnas de granito y la fuente con obelisco de la plaza. Aunque no entres, merece pararse."
     },
     {
       "name": "Piazza Navona",
@@ -1398,7 +1403,7 @@
     },
     {
       "name": "Via della Conciliazione",
-      "level": 2,
+      "level": 3,
       "zone": "vaticano",
       "coordinates": [
         41.9024,
@@ -1453,7 +1458,6 @@
       "related_to": "Puente Sant'Angelo",
       "group": "castillo_santangelo_group",
       "group_order": 2,
-      "visible_from_outside": true,
       "windows": [
         "09:00-19:30"
       ],
@@ -1466,7 +1470,9 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada."
-      ]
+      ],
+      "minutos_fuera": 15,
+      "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas, con el ángel en lo alto. La mejor foto: desde el puente, con los ángeles de Bernini delante."
     },
     {
       "name": "Mirador del Janículo",
@@ -1543,7 +1549,9 @@
       "ticket_info": [
         "De pago.",
         "Reserva obligatoria."
-      ]
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "La villa del cardenal Borghese en mitad del parque, con su fachada llena de estatuas."
     },
     {
       "name": "Parque de Villa Borghese",
@@ -1798,7 +1806,9 @@
       "ticket_info": [
         "Gratis.",
         "La terraza panorámica con ascensor es de pago, de 09:30 a 19:30 (última subida 19:00)."
-      ]
+      ],
+      "minutos_fuera": 15,
+      "por_fuera": "La mole de mármol blanco que preside Plaza Venecia, con la tumba del Soldado Desconocido y su guardia de honor."
     },
     {
       "name": "Puente Sant'Angelo",
@@ -2020,7 +2030,9 @@
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
         "De pago."
-      ]
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "Los mercados de la Roma imperial, en semicírculo, se ven enteros desde Via dei Fori Imperiali."
     },
     {
       "name": "Cúpula de San Pedro",
@@ -2112,7 +2124,7 @@
         12.4797
       ],
       "level": 2,
-      "type": "exterior",
+      "type": "interior",
       "schedule": "07:30-12:30, 16:00-19:30",
       "tags": [
         "iglesia",
@@ -2148,7 +2160,8 @@
       },
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "is_free_access": true
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
@@ -2159,7 +2172,7 @@
         12.4747
       ],
       "level": 2,
-      "type": "exterior",
+      "type": "interior",
       "schedule": "09:30-12:45, 14:30-18:15",
       "tags": [
         "iglesia",
@@ -2203,7 +2216,8 @@
       "ticket_info": [
         "Gratis.",
         "La luz de los Caravaggio funciona con monedas."
-      ]
+      ],
+      "is_free_access": true
     },
     {
       "name": "Ara Pacis",
@@ -2240,7 +2254,9 @@
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
         "De pago."
-      ]
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "Desde la calle, a través de la cristalera del edificio, ya ves el altar de Augusto."
     },
     {
       "name": "Barrio Judío",
@@ -2282,7 +2298,7 @@
         12.477
       ],
       "level": 3,
-      "type": "exterior",
+      "type": "interior",
       "schedule": "07:00-19:00",
       "tags": [
         "iglesia",
@@ -2324,7 +2340,8 @@
       "card_text": "Entre semana abierta todo el día; sábado y domingo cierra a mediodía (12:30-15:30). Misa diaria a las 18:00 y el domingo también a las 11:00.",
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "is_free_access": true
     },
     {
       "name": "Iglesia de San Ignacio de Loyola",
@@ -2335,7 +2352,7 @@
         12.48
       ],
       "level": 3,
-      "type": "exterior",
+      "type": "interior",
       "schedule": "09:00-19:00",
       "tags": [
         "iglesia",
@@ -2364,7 +2381,8 @@
       "card_text": "Todos los días; misa diaria a las 18:30 y el domingo también a las 11:30.",
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "is_free_access": true
     },
     {
       "name": "Elefantino de Bernini",
@@ -2922,7 +2940,9 @@
         "fuente": "https://cultura.gov.it/index.php/luogo/terme-di-caracalla (horario actual de septiembre y cierre del lunes) + https://www.10cose.it/roma/le-terme-di-caracalla-a-roma (calendario completo)",
         "nota": "La web del Ministerio confirma el horario actual (9:00-19:00, última entrada 18:00) y que el lunes cierra. Otra fuente dice que el lunes abre por la mañana (hasta las 14:00): se deja como cerrado, que es lo que dice la oficial.",
         "fecha": "2026-09-25"
-      }
+      },
+      "minutos_fuera": 15,
+      "por_fuera": "Sus muros de ladrillo, desde el parque de al lado: te haces una idea de lo enormes que eran."
     },
     {
       "name": "Jardín de los Naranjos",
@@ -3062,7 +3082,9 @@
       "ticket_info": [
         "Gratis.",
         "El museo y la loggia de los mosaicos se pagan aparte."
-      ]
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "La fachada con su logia de mosaicos y el campanario más alto de Roma."
     },
     {
       "name": "Columna de Trajano",
@@ -3253,7 +3275,7 @@
         12.4697
       ],
       "level": 2,
-      "type": "exterior",
+      "type": "interior",
       "schedule": "09:00-20:00",
       "tags": [
         "iglesia",
@@ -3295,7 +3317,8 @@
       "contained_in": "Trastevere",
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "is_free_access": true
     },
     {
       "name": "Villa Farnesina",
@@ -3455,7 +3478,9 @@
       "card_text": "Todos los días de 07:00 a 18:30. Claustro de lunes a sábado 09:00-17:00; baptisterio 09:00-19:00.",
       "ticket_info": [
         "Gratis."
-      ]
+      ],
+      "minutos_fuera": 10,
+      "por_fuera": "La gran fachada, con Cristo y los apóstoles en lo alto, y en la plaza el obelisco más alto de Roma."
     },
     {
       "name": "Quartiere Coppedè",
@@ -3772,7 +3797,9 @@
       "uphill": {
         "transit": "el bus 115",
         "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
-      }
+      },
+      "minutos_fuera": 10,
+      "por_fuera": "La iglesia y, a través de la verja, el pequeño templo de Bramante. Y desde la puerta, Roma entera."
     },
     {
       "name": "Fontana dell'Acqua Paola",
@@ -8530,10 +8557,7 @@
               "min_dias": 5
             }
           ],
-          "por_que": {
-            "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-            "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-          }
+          "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
         },
         {
           "lugar": "Puente Sant'Angelo",
@@ -8605,10 +8629,7 @@
                   "min_dias": 5
                 }
               ],
-              "por_que": {
-                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-              }
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8755,10 +8776,7 @@
               "solo": {
                 "pool": true
               },
-              "por_que": {
-                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-              }
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8804,10 +8822,7 @@
               "solo": {
                 "pool": true
               },
-              "por_que": {
-                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-              }
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -8903,10 +8918,7 @@
                   "min_dias": 5
                 }
               ],
-              "por_que": {
-                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-              }
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             }
           ],
           "aviso_fecha": {
@@ -8946,10 +8958,7 @@
               "rol": "parada",
               "pago": true,
               "nota": "Si abre ese día.",
-              "por_que": {
-                "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-                "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-              }
+              "por_que": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel."
             },
             {
               "lugar": "Puente Sant'Angelo",
@@ -11135,10 +11144,7 @@
     "Basílica de San Pedro": "La iglesia más grande del mundo, y entrar es gratis: la Piedad de Miguel Ángel y el baldaquino de Bernini.",
     "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel: toda Roma y la plaza a tus pies.",
     "Borgo Pio": "La calle peatonal del Borgo, junto al Vaticano, con cafés y trattorias de siempre.",
-    "Castillo de Sant'Angelo": {
-      "texto": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
-      "por_fuera": "El mausoleo de Adriano, convertido en fortaleza de los papas. Hoy lo ves por fuera para llegar al atardecer del Janículo; si quieres subir a su terraza, añádelo a tus imprescindibles."
-    },
+    "Castillo de Sant'Angelo": "El mausoleo de Adriano convertido en fortaleza de los papas. Sube a la terraza del ángel.",
     "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Desde aquí sigues junto al río hasta Trastevere.",
     "Iglesia de Santa Maria in Trastevere": "Los mosaicos dorados más bonitos de Roma, en el corazón de Trastevere. La entrada es gratis: no te la saltes.",
     "Trastevere": "Callejea sin rumbo: ropa tendida, hiedra y trattorias. Aquí toca el aperitivo antes de subir al mirador.",

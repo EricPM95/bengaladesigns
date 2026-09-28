@@ -61,7 +61,9 @@ function quarterHourStops(stops) {
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
     // (Y un monumento "Por fuera" en su propia línea, que se ve desde su compañero: tampoco se rellena.)
     const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.instead_of_visit
-    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : rounded }
+    // Por fuera tampoco se rellena: su `minutos_fuera` como mucho.
+    const outsideCap = stop.visit_mode === 'fuera' ? stop.duration_minutes ?? rounded : Infinity
+    return { ...stop, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(rounded, outsideCap) }
   })
 }
 import { dinnerZoneOf, nightStopsFor } from '../../shared/routeEngine/nightWalk.js'
@@ -305,9 +307,16 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // "Por fuera" y dice por qué (PROMPT_RUTAS_CURADAS B2.3). Lo de acera (plazas, fuentes, ruinas) sí es camino.
     if (stop.pass_through && sourcePlace?.type === 'interior') {
       stop.outside = true
-      stop.outside_reason = visit.place.outsideReason ?? 'hoy no toca entrar'
+      stop.outside_reason = visit.place.outsideReason ?? 'Hoy lo ves por fuera para llegar a todo lo del día'
     }
-    if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy)) {
+    // Todo monumento es parada, por dentro o por fuera (PROMPT_PENDIENTE B): `visit_mode` para la cabecera del acordeón
+    // ("Por dentro · 75 min" / "Por fuera · 15 min") y el motivo, que la ficha enseña en Resumen.
+    if (visit.place.visitOutside) {
+      stop.visit_mode = 'fuera'
+      stop.outside = true
+      stop.outside_reason = visit.place.outsideReason
+    } else if (sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
+    if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
     }
@@ -350,6 +359,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.curatedWhy && !stop.night_view) {
       const why = visit.place.curatedWhy
       stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : curatedWhyAt(why, visit.start)
+      stop.why_source = 'curado'
+    }
+    // Por fuera, su texto de por fuera (el del lugar: `por_fuera` en el JSON del destino), si la parada no trae el suyo.
+    if (stop.visit_mode === 'fuera' && sourcePlace?.por_fuera && !(typeof visit.place.curatedWhy === 'object' && visit.place.curatedWhy?.por_fuera)) {
+      stop.why = sourcePlace.por_fuera
       stop.why_source = 'curado'
     }
     // Dónde acaba lo que no acaba donde empieza (el Free Tour, en Piazza Navona): el tramo siguiente sale de ahí.

@@ -1215,3 +1215,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 271. **La parada que se estira también devuelve tiempo**: antes de dar un atardecer por perdido, el callejeo (`estirar`,
     Trastevere) se acorta 15 o 30 min, nunca por debajo de 20. Así cabe lo que va de camino (Via della Conciliazione,
     "Por el camino" en D2 y todas sus variantes, antes del Castillo) sin perder el sol.
+272. **Todo monumento es parada, por dentro o por fuera** (decisión del usuario, 2026-09-28; todos los destinos).
+    Monumento = nivel 1 o 2 (imprescindibles y muy visitados: edificios, fuentes, plazas, parques). Sale con su propio
+    nombre y su acordeón; nunca "Por el camino" ni escondido en otra parada. Los de nivel 3 sí pueden ir por el camino.
+    - De exterior (Trevi, Navona, Plaza de España): parada normal; si el día lo ponía de paso, parada corta (15 min).
+    - Con interior: por dentro (su tiempo) o por fuera (`minutos_fuera` y su `por_fuera`, `visit_mode: 'fuera'`).
+      Por fuera, en este orden: cerrado ese día ("Hoy cierra") o a esa hora ("A esta hora ya ha cerrado"); museo de pago
+      que no cabe por el tope de museos de pago, por su `solo` o por tiempo, y no elegido en el pool ("Hoy lo ves por
+      fuera para llegar a todo lo del día"); si no, por dentro. Sin `minutos_fuera` no hay nada que ver por fuera: no
+      sale y va a "No te dio tiempo".
+    - `visible_from_outside` ya no existe: se deduce de tener `minutos_fuera`. El kit pide `minutos_fuera` y `por_fuera`
+      (docs/kit/plantilla_por_fuera.json) y `validar.mjs` lista los de interior sin él.
+    - Lo que se visita por dentro va como `type: interior` aunque la entrada sea libre (eso lo dice `is_free_access` /
+      `ticket_info`): San Luigi, el Gesù, Santa Maria in Trastevere, Santa Maria sopra Minerva, San Ignacio.

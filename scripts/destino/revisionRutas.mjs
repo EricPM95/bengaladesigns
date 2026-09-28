@@ -84,7 +84,7 @@ function maxHueco(day) {
   if (dinner && last) worst = Math.max(worst, t2m(dinner.suggested_time) - (t2m(last.suggested_time) + last.duration_minutes) - (day.dinner_walk_minutes ?? 0))
   return worst
 }
-const porFuera = (D.places ?? []).filter((place) => place.level === 1 && (place.type === 'exterior' || place.pass_by || place.visible_from_outside))
+const porFuera = (D.places ?? []).filter((place) => place.level === 1 && (place.type === 'exterior' || place.pass_by || (place.minutos_fuera != null)))
 const nombreBloque = (id) => [...(D.morning_flows ?? []), ...(D.afternoon_flows ?? [])].find((b) => b.id === id)?.nombre ?? id
 const nombre = (b) => (b ? (b.id ? `${nombreBloque(b.id)} (${b.id})` : '**medio día sin tipo**') : '—')
 head.push(`# Revisión de rutas de Roma — 16 viajes + ${VIAJES.length - 16} caso añadido`)

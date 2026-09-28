@@ -1,0 +1,8 @@
+{
+  "_que_es": "Plantilla de 'por fuera' para un destino nuevo (PROMPT_PENDIENTE, Parte B). Todo monumento (nivel 1 o 2: imprescindibles y muy visitados) es parada, por dentro o por fuera. Los que tienen interior y también se ven desde la calle llevan en su lugar de roma.json 'minutos_fuera' (el tiempo corto de la parada por fuera) y 'por_fuera' (su Por qué aquí cuando va por fuera). Sin 'minutos_fuera' no hay nada que ver por fuera: si no se entra, va a 'No te dio tiempo'.",
+  "_cuando_va_por_fuera": "En este orden: cerrado ese día ('Hoy cierra') o a esa hora ('A esta hora ya ha cerrado'); museo de pago que no cabe por el tope de museos de pago o por tiempo y que el viajero no ha elegido en el pool ('Hoy lo ves por fuera para llegar a todo lo del día'); si no, por dentro.",
+  "_pide": "Para cada lugar de nivel 1 o 2 con interior (museos, iglesias, castillos, monumentos con entrada): ¿se ve algo desde fuera que merezca parar? Si sí, minutos_fuera (10-20) y por_fuera (una o dos frases: qué se ve y desde dónde). Si no (los Museos Vaticanos, un museo sin fachada), no se pone nada.",
+  "por_fuera": {
+    "Nombre exacto del lugar": { "minutos": 15, "texto": "Qué se ve desde fuera y desde dónde: la fachada, el pórtico, la vista desde el puente." }
+  }
+}

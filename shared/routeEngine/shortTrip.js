@@ -341,7 +341,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
   /**
    * El bloque en modo exterior: lo gratis y abierto, tal cual; lo de pago o cerrado, por fuera — con su
    * paso (`pass_by`: el Foro desde la Via dei Fori Imperiali) o, si se ve desde la calle
-   * (`visible_from_outside`), 15 min por fuera. Lo que ni así se ve, fuera. Cada sitio va suelto: un
+   * (con `minutos_fuera`), 15 min por fuera. Lo que ni así se ve, fuera. Cada sitio va suelto: un
    * paso por fuera no arrastra a su grupo.
    */
   function exteriorUnitsForBlock(blockId, slot) {
@@ -352,7 +352,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       const place = placeByName.get(stop.name)
       if (!place || stop.removedBySubstitution) continue
       const outside = paidInterior(place) || closedAnyDay(place)
-      if (outside && !place.pass_by && !place.visible_from_outside) continue
+      if (outside && !place.pass_by && !(place.minutos_fuera != null)) continue
       const label = place.pass_by?.label ?? place.name
       const from = outside ? place.pass_by?.from ?? null : null
       const outsidePlace = outside
@@ -501,9 +501,9 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
         // Solo lo que de verdad se ha caído: si el grupo se partió (el Altar pasó a la tarde), lo que ya
         // se visita no sale otra vez de paso.
         const visited = new Set(schedule.kept.flatMap((unit) => unit.places.map((place) => place.name)))
-        // Solo lo que se ve desde la calle: una plaza, un monumento gratis o algo `visible_from_outside`.
+        // Solo lo que se ve desde la calle: una plaza, un monumento gratis o algo con `minutos_fuera`.
         // Un museo (los Capitolinos) por fuera no es nada: "No te dio tiempo".
-        const seenFromStreet = (place) => (place.is_free_access ?? place.type === 'exterior') || Boolean(place.visible_from_outside)
+        const seenFromStreet = (place) => (place.is_free_access ?? place.type === 'exterior') || Boolean((place.minutos_fuera != null))
         const outsideUnits = extras
           .map(({ unit }) => ({ ...unit, places: unit.places.filter((place) => !visited.has(place.name) && seenFromStreet(place)) }))
           .filter((unit) => unit.places.length > 0)

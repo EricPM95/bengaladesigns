@@ -151,7 +151,7 @@ const section = (title) => {
       const monument = byName.get(name)
       if (!monument) continue
       const free = monument.is_free_access ?? monument.type === 'exterior'
-      if (!free && !monument.visible_from_outside) continue
+      if (!free && monument.minutos_fuera == null) continue
       // Vecinos (`neighbor_of`): pueden ir en días distintos por decisión (Popolo y Pincio), no son un grupo.
       if ((access.neighbor_of ?? []).includes(monument.name) || (monument.neighbor_of ?? []).includes(access.name)) continue
       const group = access.group && access.group === monument.group ? D.groups[access.group] : null
@@ -388,6 +388,19 @@ const section = (title) => {
   if (existsSync(detalleDir)) for (const file of readdirSync(detalleDir).filter((name) => name.endsWith('.json'))) buscar(JSON.parse(readFileSync(join(detalleDir, file), 'utf8')), `detalle/${file}`)
   for (const ruta of precios) s.red.push(`cifra o precio en un texto que ve el viajero: ${ruta}`)
   s.info.push(`${sinPorQue.size} paradas curadas sin por_que; ${precios.length} precios a la vista`)
+}
+
+// ── 12. Por dentro o por fuera ──────────────────────────────────────────────────────────────
+// PROMPT_PENDIENTE B: todo monumento (nivel 1-2) es parada; los que tienen interior, por dentro o por fuera. Los de
+// interior sin `minutos_fuera` se listan para confirmar que no hay nada que ver por fuera; con `minutos_fuera`, su
+// `por_fuera` es obligatorio (es su Por qué aquí cuando va por fuera).
+{
+  const s = section('Por dentro o por fuera')
+  for (const place of places.filter((p) => (p.level ?? 3) <= 2 && p.type === 'interior')) {
+    if (place.minutos_fuera == null) s.warn.push(`${place.name}: sin minutos_fuera — si no se entra, va a "No te dio tiempo" (confírmalo)`)
+    else if (!place.por_fuera) s.red.push(`${place.name}: tiene minutos_fuera y le falta el texto por_fuera`)
+  }
+  s.info.push(`${places.filter((p) => p.minutos_fuera != null).length} lugares se ven por fuera`)
 }
 
 // ── 9. Mañanas y tardes tipo ────────────────────────────────────────────────────────────────

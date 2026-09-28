@@ -1508,7 +1508,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const outsideVariant = (unit) => {
     const free = unit.places.filter((place) => (place.is_free_access ?? place.type === 'exterior'))
     const paid = unit.places.filter((place) => !(place.is_free_access ?? place.type === 'exterior'))
-    if (free.length === 0 || paid.length === 0 || !paid.every((place) => place.visible_from_outside)) return null
+    if (free.length === 0 || paid.length === 0 || !paid.every((place) => (place.minutos_fuera != null))) return null
     const outsideOf = paid.map((place) => place.name)
     return {
       ...unit,

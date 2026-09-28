@@ -36,6 +36,10 @@ const OUTSIDE_MINUTES = 15
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Un mirador del atardecer que llega más tarde que esto después de la puesta de sol ya es de noche. */
 const MIRADOR_LATE_MINUTES = 30
+/** Por qué un monumento va por fuera (PROMPT_PENDIENTE B.4), en el orden en que se decide. */
+const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día' }
+/** Un monumento de exterior que el día ponía de paso: parada corta. */
+const SHORT_STOP_MINUTES = 15
 /** Lo que se ve desde el compañero (la Plaza Venecia desde el Altar): su propia línea, en un momento. */
 const SEEN_FROM_MINUTES = 5
 /** Lo que devuelve la parada que se estira para no perder el atardecer, y su mínimo (el callejeo por Trastevere). */
@@ -262,6 +266,15 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
 
   // ── 3 y 4. Variante y paradas de cada día ─────────────────────────────────────────────────────
   // ¿Va esta parada? (`solo`: una condición o una lista de condiciones, basta con una). Lo del pool va siempre.
+  /** Un museo de pago de nivel 1-2 que se ve por fuera (`minutos_fuera`) y el viajero no ha elegido en el pool. */
+  function seenOutside(stop) {
+    const place = placeByName.get(stop.lugar)
+    const paid = stop.pago || !(place?.is_free_access ?? place?.type === 'exterior')
+    return Boolean(place) && (place.level ?? 3) <= 2 && place.type === 'interior' && place.minutos_fuera != null && paid && !inPool(stop.lugar)
+  }
+  /** La misma parada, por fuera porque no cabe (no cuenta para el tope de museos de pago). */
+  const asOutside = (stop) => ({ ...stop, rol: stop.rol === 'atardecer' ? stop.rol : 'de_paso', pago: false, fuera_motivo: OUTSIDE_REASONS.no_cabe, solo: undefined })
+
   function stopApplies(stop, day) {
     if (inPool(stop.lugar)) return true
     if (!stop.solo) return true
@@ -351,8 +364,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (sin) closedAnchors.push(sin)
     // Lo que va este viaje (ritmo, experiencia, pool, días, estación). Lo que no, se apunta: su compañero de grupo
     // lo enseña por fuera (el Castillo desde el Puente).
-    const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day)).map((stop) => stop.lugar)
-    sections = { ...sections, manana: sections.manana.filter((stop) => stopApplies(stop, day)), tarde: sections.tarde.filter((stop) => stopApplies(stop, day)) }
+    // El museo de pago que este viaje no visita por dentro (su `solo`: sin pool ni Arte, pocos días) y se ve por fuera
+    // (`minutos_fuera`) no desaparece: va por fuera, en su sitio (PROMPT_PENDIENTE B.4b). Lo demás, fuera como antes.
+    const notToday = [...sections.manana, ...sections.tarde].filter((stop) => !stopApplies(stop, day) && !seenOutside(stop)).map((stop) => stop.lugar)
+    const keep = (stop) => (stopApplies(stop, day) ? stop : seenOutside(stop) ? asOutside(stop) : null)
+    sections = { ...sections, manana: sections.manana.map(keep).filter(Boolean), tarde: sections.tarde.map(keep).filter(Boolean) }
     // La tarde no repite lo que ya va por la mañana (el Cementerio, con la mañana sin Caracalla). Con la mañana YA
     // filtrada (PROMPT_RUTAS_CURADAS B.6): si la parada de la mañana no va este día, la de la tarde se queda.
     const morningNames = new Set(sections.manana.map((stop) => stop.lugar))
@@ -395,7 +411,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       resolved = resolveAll()
       for (const entry of resolved) {
         for (const name of dropPaid) if ([...entry.sections.manana, ...entry.sections.tarde].some((stop) => stop.lugar === name)) entry.notToday.push(name)
-        entry.sections = { ...entry.sections, manana: entry.sections.manana.filter((stop) => !dropPaid.has(stop.lugar)), tarde: entry.sections.tarde.filter((stop) => !dropPaid.has(stop.lugar)) }
+        // Lo que quita el tope y se ve por fuera, por fuera; lo demás, fuera.
+        const capped = (stop) => (!dropPaid.has(stop.lugar) ? stop : seenOutside(stop) ? asOutside(stop) : null)
+        entry.sections = { ...entry.sections, manana: entry.sections.manana.map(capped).filter(Boolean), tarde: entry.sections.tarde.map(capped).filter(Boolean) }
       }
     }
   }
@@ -448,6 +466,11 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     return whyByPlace.get(name) ?? destData.por_que_lugares?.[name] ?? null
   }
 
+  /** La unidad, o null si no sale (se salta: cerrada sin nada que ver por fuera). */
+  function usable(unit) {
+    return unit && !unit.skipped ? unit : null
+  }
+
   function unitOf(stop, slot, index, dayId, day) {
     const hours = hoursOf(day)
     // Las pausas con nombre del día curado (`curated_breaks`: el desayuno romano de D4) son paradas, no huecos.
@@ -456,18 +479,45 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (!source) return null
     let role = stop.rol ?? 'parada'
     let ready = { ...source }
-    // Cerrado ese día: lo imprescindible se enseña por fuera (su `pass_by`, con aviso); lo demás que se ve desde la
-    // calle va de paso; lo que no, se salta.
+    // Todo monumento es parada, por dentro o por fuera (decisión del usuario, 2026-09-28): un lugar de nivel 1 o 2
+    // (imprescindibles y muy visitados, sean edificios, fuentes, plazas o parques) nunca va "Por el camino" ni escondido
+    // en otra parada. Los que tienen interior van por dentro o, con `minutos_fuera`, por fuera (su tiempo corto, su
+    // `por_fuera` y el motivo); sin `minutos_fuera` no hay nada que ver por fuera y no salen ("No te dio tiempo").
+    const monument = (source.level ?? 3) <= 2 && !source.isFreeTour && !source.isBreak
+    const hasInside = source.type === 'interior'
+    const outsideMinutes = source.minutos_fuera ?? null
+    let outsideReason = null
     let closedSkip = false
     const closedToday = !source.isFreeTour && closedThatDay(stop.lugar, day)
-    if (closedToday && stop.por_fuera) role = 'de_paso'
-    else if (closedToday) {
-      if (source.level === 1 && (source.pass_by || source.type === 'exterior' || source.visible_from_outside)) role = 'de_paso'
-      else if (source.type === 'exterior' || source.visible_from_outside) role = 'de_paso'
-      else closedSkip = true
+    if (closedToday) {
+      // Cerrado ese día: por fuera si se ve desde fuera; lo de exterior (un parque con horario), de paso; lo demás, fuera.
+      if (hasInside) {
+        if (outsideMinutes != null) outsideReason = OUTSIDE_REASONS.cerrado
+        else closedSkip = true
+      } else role = 'de_paso'
     }
     if (closedSkip) return { skipped: true, stop, source }
-    if (role === 'de_paso') {
+    if (role === 'de_paso' && monument && !outsideReason) {
+      if (!hasInside) {
+        // Un monumento de exterior (la Plaza de España, Campo de' Fiori) que el día pone de paso: parada corta.
+        role = 'parada'
+        ready = { ...ready, duration_minutes: stop.minutos ?? Math.min(source.duration_minutes ?? SHORT_STOP_MINUTES, SHORT_STOP_MINUTES) }
+      } else if (outsideMinutes != null) {
+        outsideReason = stop.si_cerrado ? OUTSIDE_REASONS.ya_cerrado : stop.fuera_motivo ?? OUTSIDE_REASONS.no_cabe
+      } else return { skipped: true, stop, source }
+    }
+    if (outsideReason) {
+      // Por fuera: parada con su tiempo corto, desde donde se ve (su `pass_by` si lo trae), sin horario de visita.
+      role = stop.rol === 'atardecer' ? 'atardecer' : 'parada'
+      ready = {
+        ...source,
+        visitOutside: true,
+        outsideReason,
+        coordinates: source.pass_by?.coordinates ?? source.coordinates,
+        duration_minutes: outsideMinutes,
+        windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
+      }
+    } else if (role === 'de_paso') {
       const passBy = source.level === 1 ? source.pass_by : null
       ready = {
         ...source,
@@ -486,9 +536,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     if (stop.fija && stop.hora) ready = { ...ready, fixed_start: stop.hora }
     // `antes_de`: la visita tiene que haber acabado a esa hora (Santa Maria del Popolo, antes de las 12:00: nunca
     // se pasa a la tarde).
-    if (stop.antes_de && role !== 'de_paso') ready = { ...ready, latest_end: stop.antes_de }
+    if (stop.antes_de && role !== 'de_paso' && !ready.visitOutside) ready = { ...ready, latest_end: stop.antes_de }
     if (stop.no_calle) ready = { ...ready, notStreet: true }
-    if (stop.minutos) ready = { ...ready, duration_minutes: stop.minutos }
+    // (Por fuera manda su `minutos_fuera`, no los minutos de la visita por dentro.)
+    if (stop.minutos && !ready.visitOutside) ready = { ...ready, duration_minutes: stop.minutos }
     // `traslado_min`: se llega en transporte y el tramo no pasa de esos minutos (el metro B de Piramide a Colosseo
     // en la tarde B de D5, 20 min puerta a puerta frente a 30 andando).
     if (stop.traslado_min) ready = { ...ready, transitMinutes: stop.traslado_min, ...(stop.traslado ? { transitHow: stop.traslado } : {}) }
@@ -660,11 +711,6 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     {
       const names = () => new Set(units.flatMap((unit) => unit.places.map((place) => place.name)))
       const wanted = new Map()
-      for (const name of [...skipped.map(({ source }) => source?.name), ...(entry.notToday ?? [])]) {
-        if (!name || !groupOf(name) || names().has(name)) continue
-        const host = units.find((unit) => unit.places.some((place) => groupOf(place.name) === groupOf(name)))
-        if (host && !wanted.has(name)) wanted.set(name, host)
-      }
       for (const unit of units) {
         for (const place of unit.places) {
           for (const name of placeByName.get(place.name)?.pass_by?.includes ?? []) {
@@ -703,7 +749,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const closedAtHour = result.dropped.filter(({ unit, reason }) => unit.passIfClosed && HOURS_REASONS.has(reason))
     if (closedAtHour.length > 0) {
       const ids = new Set(closedAtHour.map(({ unit }) => unit.id))
-      units = units.map((unit) => (ids.has(unit.id) ? unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit : unit))
+      units = units.map((unit) => (ids.has(unit.id) ? usable(unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day)) ?? unit : unit))
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     }
     // El mirador del atardecer que a esa hora ya ha cerrado (el Jardín de los Naranjos cierra a las 18:00 en otoño):
@@ -745,9 +791,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       units = units.map((unit) => {
         if (!outside.has(unit.id)) return unit
         const place = placeByName.get(unit.places[0].name)
-        if (!place || !(place.pass_by || place.type === 'exterior' || place.visible_from_outside)) return unit
+        if (!place || !(place.pass_by || place.type === 'exterior' || place.minutos_fuera != null)) return unit
         const stop = [...sections.manana, ...sections.tarde].find((other) => other.lugar === place.name)
-        return unitOf({ ...stop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit
+        return usable(unitOf({ ...stop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day)) ?? unit
       })
       result = schedule(day, units, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
     }
@@ -778,7 +824,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // Lo que así llega cerrado y el día quiere de paso (el Tempietto después de su última entrada), de paso.
         const nowClosed = new Set(trial.dropped.filter(({ unit, reason }) => unit.passIfClosed && HOURS_REASONS.has(reason)).map(({ unit }) => unit.id))
         if (nowClosed.size > 0) {
-          list = list.map((unit) => (nowClosed.has(unit.id) ? unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit : unit))
+          list = list.map((unit) => (nowClosed.has(unit.id) ? usable(unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day)) ?? unit : unit))
           trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         }
         const names = (candidate) => new Set(candidate.visits.map((visit) => visit.place.name))
@@ -823,7 +869,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // Lo que así llega cerrado y el día quiere de paso (el Tempietto después de las 18:00), de paso.
         const nowClosed = new Set(trial.dropped.filter(({ unit, reason }) => unit.passIfClosed && HOURS_REASONS.has(reason)).map(({ unit }) => unit.id))
         if (nowClosed.size > 0) {
-          list = list.map((unit) => (nowClosed.has(unit.id) ? unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day) ?? unit : unit))
+          list = list.map((unit) => (nowClosed.has(unit.id) ? usable(unitOf({ ...unit.curatedStop, rol: 'de_paso' }, unit.slot, unit.curatedIndex % CURATED_AFTERNOON_OFFSET, dayId, day)) ?? unit : unit))
           trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         }
         const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
@@ -860,22 +906,29 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         }
       }
     }
-    // Lo que no ha llegado a su hora y tiene a su compañero de grupo en el día (el Castillo sin tiempo, el Puente): en
-    // su propia línea, visto desde él, si así cabe sin perder nada. Si era una visita de verdad, sigue en "No te dio
-    // tiempo" (por dentro no se ha visto).
+    // Lo que no ha llegado a su hora (PROMPT_PENDIENTE B.4b): el museo de pago que se ve por fuera (`minutos_fuera`, sin
+    // elegir en el pool) pasa a por fuera en su sitio; lo de nivel 3 con su compañero de grupo en el día (el Puente),
+    // a su propia línea vista desde él. Solo si así cabe sin perder nada.
     {
-      const droppedUnits = result.dropped.filter(({ unit }) => unit.role !== 'de_paso' && !unit.outsidePartner && !unit.places.some((place) => place.isFreeTour))
+      const droppedUnits = result.dropped.filter(({ unit }) => unit.role !== 'de_paso' && !unit.outsidePartner && !unit.places.some((place) => place.isFreeTour || place.visitOutside))
       const wanted = new Map()
+      const outside = new Map()
       for (const { unit } of droppedUnits) {
         for (const place of unit.places) {
+          if (unit.places.length === 1 && seenOutside({ lugar: place.name, pago: true })) {
+            const fuera = unitOf({ lugar: place.name, rol: 'de_paso', fuera_motivo: OUTSIDE_REASONS.no_cabe }, unit.slot, (unit.curatedIndex ?? 0) % CURATED_AFTERNOON_OFFSET, dayId, day)
+            if (fuera && !fuera.skipped) outside.set(unit.id, fuera)
+            continue
+          }
+          if ((placeByName.get(place.name)?.level ?? 3) <= 2) continue
           const hostVisit = result.visits.find((visit) => visit.place.name !== place.name && groupOf(visit.place.name) && groupOf(visit.place.name) === groupOf(place.name))
           const host = hostVisit ? units.find((other) => other.id === hostVisit.unitId) : null
           if (host && !wanted.has(place.name)) wanted.set(place.name, host)
         }
       }
-      if (wanted.size > 0) {
+      if (wanted.size > 0 || outside.size > 0) {
         const dropIds = new Set(droppedUnits.filter(({ unit }) => unit.places.some((place) => wanted.has(place.name))).map(({ unit }) => unit.id))
-        let list = withOutsideLines(units.filter((unit) => !dropIds.has(unit.id)), new Map(wanted))
+        let list = withOutsideLines(units.filter((unit) => !dropIds.has(unit.id)).map((unit) => outside.get(unit.id) ?? unit), new Map(wanted))
         let trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         const hadSunset = result.visits.some((visit) => visit.place.sunset != null)
         // Si así se pierde el atardecer, la parada que se estira (Trastevere) devuelve 15 min, nunca por debajo de 20.
@@ -884,13 +937,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
           trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
         }
         const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
-        const shown = [...wanted.keys()].every((name) => trial.visits.some((visit) => visit.place.name === name))
+        const shown = [...wanted.keys(), ...[...outside.values()].map((unit) => unit.places[0].name)].every((name) => trial.visits.some((visit) => visit.place.name === name))
         if (keepsAll && shown && trial.visits.some((visit) => visit.place.sunset != null) === hadSunset) {
-          for (const name of wanted.keys()) {
-            if (placeByName.get(name)?.type !== 'interior') continue
-            notEnoughTime.add(name)
-            if (!notEnoughDay.has(name)) notEnoughDay.set(name, day.dayNumber)
-          }
           units = list
           result = trial
         }
@@ -908,7 +956,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const droppedPlaces = result.dropped.filter(({ unit }) => unit.role !== 'de_paso').flatMap(({ unit }) => unit.places.map((place) => placeByName.get(place.name))).filter(Boolean)
     for (const source of [...skipped.map(({ source }) => source), ...(entry.notToday ?? []).map((name) => placeByName.get(name)).filter(Boolean), ...droppedPlaces]) {
       // (Lo que ya sale en su propia línea, no: "El Castillo, visto por fuera" no va además dentro del Puente.)
-      if (!source.group || result.visits.some((visit) => visit.place.name === source.name)) continue
+      if (!source.group || (source.level ?? 3) <= 2 || result.visits.some((visit) => visit.place.name === source.name)) continue
       const partner = result.visits.find((visit) => placeByName.get(visit.place.name)?.group === source.group)
       if (partner) partner.place = { ...partner.place, outsideOf: [...new Set([...(partner.place.outsideOf ?? []), source.name])] }
     }

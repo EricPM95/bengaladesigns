@@ -15,7 +15,7 @@ for (const n of which) {
   if (!day) continue
   console.log(`\n## Día ${n} · ${day.curated_day?.id} ${day.curated_day?.name ?? ''} · variantes ${JSON.stringify(day.curated_day?.variants ?? [])} · atardecer ${day.sunset_time ?? day.hours?.sunset ?? ''}`)
   for (const m of day.meals ?? []) console.log(`  [${m.type}] ${m.suggested_time ?? m.time ?? ''}-${m.end_time ?? ''} ${m.restaurant?.name ?? m.spot?.name ?? ''}`)
-  for (const s of day.stops ?? []) console.log(`  ${s.suggested_time} ${s.duration_minutes}m ${s.night_view_title ?? s.name}${s.pass_through ? ' (paso)' : ''}${s.sunset_minutes != null ? ' 🌅' : ''}${s.night_view ? ' 🌙' : ''}${s.transit ? ` 🚌${s.transit.label}` : ''}${s.is_night_experience ? ' (noche)' : ''}`)
+  for (const s of day.stops ?? []) console.log(`  ${s.suggested_time} ${s.duration_minutes}m ${s.night_view_title ?? s.name}${s.pass_through ? ' (paso)' : ''}${s.visit_mode === 'fuera' ? ` (por fuera: ${s.outside_reason})` : s.visit_mode === 'dentro' ? ' (dentro)' : ''}${s.sunset_minutes != null ? ' 🌅' : ''}${s.night_view ? ' 🌙' : ''}${s.transit ? ` 🚌${s.transit.label}` : ''}${s.is_night_experience ? ' (noche)' : ''}`)
   if (day.aperitivo) console.log(`  aperitivo ${day.aperitivo.minutes} ${day.aperitivo.title}`)
   if (day.free_afternoon) console.log(`  tarde libre ${day.free_afternoon.minutes}`)
   for (const f of day.free_times ?? []) console.log(`  libre ${f.minutes} antes de ${f.before}`)
