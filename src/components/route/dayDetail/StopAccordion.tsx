@@ -4,10 +4,9 @@ import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagLabel } from '../../../lib/tagColors'
 import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
-import { KIND_ICON, stopKindOf, withoutLeadingEmoji } from '../../../lib/stopKind'
+import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
-import { WantInsideSwitch } from './WantInsideDialog'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -18,8 +17,13 @@ interface StopAccordionProps {
   menu?: ReactNode
   /** Hora de inicio calculada para esta parada concreta ("09:00") — distinta de `stop.hours` (horario de apertura del lugar). */
   startTime?: string
-  /** "Quiero entrar": solo en una parada que va por fuera (WantInsideDialog.tsx). */
-  onWantInside?: () => void
+}
+
+/** El motivo corto de "Por fuera", en la línea de la tarjeta. */
+const OUTSIDE_SHORT: Record<string, string> = {
+  cerrado: 'Hoy cierra',
+  ya_cerrado: 'A esta hora ya ha cerrado',
+  no_cabe: 'para llegar a todo',
 }
 
 const RESERVATION_NOTE: Record<string, string> = {
@@ -31,11 +35,12 @@ const RESERVATION_NOTE: Record<string, string> = {
  * Una parada del día (diseño "Trazo Itinerario"): la tarjeta única, con la franja del color de su
  * tipo. El mirador del atardecer va en melocotón y lo nocturno en azul noche. "De paso" no lleva
  * tarjeta ni número: una fila discreta con la hora. Al pulsar abre la ficha a pantalla completa
- * (StopDetailSheet). Las notas (reserva, atardecer, avisos) van en la línea de horario y duración.
+ * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
+ * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime, onWantInside }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime }: StopAccordionProps) {
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
-  if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} />
+  if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
   // (calles, plazas, fuentes, ruinas que se ven desde la acera). Un monumento que ese día no se visita sale
   // "Por fuera" con su motivo (PROMPT_RUTAS_CURADAS B2).
@@ -75,13 +80,18 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, onWantIns
     // Un monumento con interior (PROMPT_PENDIENTE E): "Por dentro · 75 min" con la entrada, o "Por fuera · 15 min"
     // con la cámara. Lo demás, su duración.
     if (stop.visitMode === 'dentro') meta.push({ icon: 'ticket', text: `Por dentro · ${formatDuration(stop.durationMinutes)}` })
-    else if (stop.visitMode === 'fuera') meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}` })
-    else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
-    // Atardecer y mirador de noche: su frase del destino ("El momento perfecto para ver el atardecer",
-    // "Roma iluminada a tus pies"), sin hora de puesta de sol.
-    if ((stop.isSunset || stop.isNightView) && stop.why) meta.push({ text: withoutLeadingEmoji(stop.why) })
+    else if (stop.visitMode === 'fuera') {
+      // El motivo en la misma línea, a la vista sin abrir (decisión del usuario, 2026-09-28): cerrado, en rojo; por
+      // tiempo, en gris y corto.
+      const short = OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null
+      const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado'
+      // Por tiempo, todo en una pieza gris ("Por fuera · 15 min · para llegar a todo"); cerrado, el motivo en rojo.
+      meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}${short && !closed ? ` · ${short}` : ''}` })
+      if (short && closed) meta.push({ text: short, warn: true })
+    } else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   }
-  if (stop.reservation && RESERVATION_NOTE[stop.reservation]) meta.push({ text: RESERVATION_NOTE[stop.reservation] })
+  // Por fuera no hace falta reservar: la reserva va dentro, en Entradas.
+  if (stop.visitMode !== 'fuera' && stop.reservation && RESERVATION_NOTE[stop.reservation]) meta.push({ text: RESERVATION_NOTE[stop.reservation] })
   if (stop.isRevisit) meta.push({ text: 'Revisita' })
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
@@ -90,17 +100,9 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, onWantIns
   // Free Tour: dónde acaba (y que la comida es por esa zona).
   if (stop.freeTourEnd) meta.push({ icon: 'pin', text: stop.freeTourEnd })
 
-  // Por qué está en la ruta (Paso 6) o por qué merece la pena volver.
-  const sub =
-    stop.isRevisit && stop.revisitReason
-      ? stop.revisitReason
-      : stop.isSunset || stop.isNightView
-        ? null
-        : stop.why
-          ? withoutLeadingEmoji(stop.why)
-          : experienceTitle
-            ? `Por tu experiencia · ${experienceTitle}`
-            : null
+  // Tarjetas sin texto (decisión del usuario, 2026-09-28): el "Por qué aquí" va dentro de la ficha, como primer
+  // párrafo de Resumen. Fuera solo lo que se escanea de un vistazo; la experiencia, como etiqueta corta.
+  if (experienceTitle) meta.push({ text: `Por tu experiencia · ${experienceTitle}` })
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
   const tags =
@@ -117,14 +119,12 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, onWantIns
       number={number}
       time={startTime ? (stop.isNightExperience && endTime ? `${startTime} – ${endTime}` : startTime) : null}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
-      sub={sub}
       meta={meta}
       tags={tags}
       photoUrl={stop.photoUrl}
       iconPath={stop.isFreeTour ? KIND_ICON.walk : undefined}
       onOpen={onOpen}
       menu={menu}
-      action={stop.visitMode === 'fuera' && onWantInside ? <WantInsideSwitch onToggle={onWantInside} /> : undefined}
     />
   )
 }

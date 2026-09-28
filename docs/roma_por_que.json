@@ -146,56 +146,70 @@
   "por_fuera": {
     "Coliseo": {
       "minutos": 20,
-      "texto": "Hoy lo ves por fuera, y también impresiona. Rodéalo entero: por el lado de Monti está la parte que aún conserva sus tres pisos de arcos completos. Es la mejor foto."
+      "texto": "Hoy lo ves por fuera, y también impresiona. Rodéalo entero: por el lado de Monti está la parte que aún conserva sus tres pisos de arcos completos. Es la mejor foto.",
+      "lo_mejor_dentro": "recorrer sus gradas y asomarte a la arena"
     },
     "Foro Romano y Palatino": {
       "minutos": 15,
-      "texto": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos."
+      "texto": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos.",
+      "lo_mejor_dentro": "pasear por la Vía Sacra y subir al Palatino"
     },
     "Panteón": {
       "minutos": 15,
-      "texto": "Aunque hoy no entres, merece pararse. Fíjate en las 16 columnas de granito del pórtico: cada una es de una sola pieza y la trajeron desde Egipto. En la plaza tienes una fuente con obelisco."
+      "texto": "Aunque hoy no entres, merece pararse. Fíjate en las 16 columnas de granito del pórtico: cada una es de una sola pieza y la trajeron desde Egipto. En la plaza tienes una fuente con obelisco.",
+      "lo_mejor_dentro": "ponerte bajo el óculo y ver la tumba de Rafael"
     },
     "Castillo de Sant'Angelo": {
       "minutos": 15,
-      "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante."
+      "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante.",
+      "lo_mejor_dentro": "recorrerlo y subir a la terraza del ángel"
     },
     "Altar de la Patria": {
       "minutos": 15,
-      "texto": "La gran mole de mármol blanco que preside Plaza Venecia. Al pie está la tumba del Soldado Desconocido, con su guardia de honor siempre de pie."
+      "texto": "La gran mole de mármol blanco que preside Plaza Venecia. Al pie está la tumba del Soldado Desconocido, con su guardia de honor siempre de pie.",
+      "lo_mejor_dentro": "subir sus escaleras y asomarte a Roma desde arriba"
     },
     "Galería Borghese": {
       "minutos": 10,
-      "texto": "La villa del cardenal Borghese, en mitad del parque, con su fachada llena de estatuas. Dentro está la mejor colección de Bernini del mundo: si quieres entrar, añádela a tus imprescindibles."
+      "texto": "La villa del cardenal Borghese, en mitad del parque, con su fachada llena de estatuas. Dentro está la mejor colección de Bernini del mundo: si quieres entrar, añádela a tus imprescindibles.",
+      "lo_mejor_dentro": "ver los Bernini y los Caravaggio sin prisa"
     },
     "Mercados de Trajano": {
       "minutos": 10,
-      "texto": "El centro comercial de la Roma imperial. Desde Via dei Fori Imperiali lo ves entero, con sus tiendas en semicírculo, tal y como lo veían los romanos."
+      "texto": "El centro comercial de la Roma imperial. Desde Via dei Fori Imperiali lo ves entero, con sus tiendas en semicírculo, tal y como lo veían los romanos.",
+      "lo_mejor_dentro": "recorrer sus tiendas romanas y ver los Foros desde arriba"
     },
     "Termas de Caracalla": {
       "minutos": 15,
-      "texto": "Desde el parque de al lado ves sus muros de ladrillo, y te haces una idea de lo enormes que eran: aquí se bañaban miles de romanos a la vez."
+      "texto": "Desde el parque de al lado ves sus muros de ladrillo, y te haces una idea de lo enormes que eran: aquí se bañaban miles de romanos a la vez.",
+      "lo_mejor_dentro": "pasear entre sus muros y ver los mosaicos del suelo"
     },
     "Basílica de Santa María la Mayor": {
       "minutos": 10,
-      "texto": "Fíjate en la fachada, con su logia de mosaicos, y en el campanario: es el más alto de Roma. Si otro día pasas cerca, entra: es gratis y sus mosaicos merecen la pena."
+      "texto": "Fíjate en la fachada, con su logia de mosaicos, y en el campanario: es el más alto de Roma. Si otro día pasas cerca, entra: es gratis y sus mosaicos merecen la pena.",
+      "lo_mejor_dentro": "ver sus mosaicos del siglo V"
     },
     "Basílica de San Juan de Letrán": {
       "minutos": 10,
-      "texto": "Es la catedral de Roma. Mira la gran fachada, con Cristo y los apóstoles en lo alto; en la plaza tienes el obelisco egipcio más alto de Roma."
+      "texto": "Es la catedral de Roma. Mira la gran fachada, con Cristo y los apóstoles en lo alto; en la plaza tienes el obelisco egipcio más alto de Roma.",
+      "lo_mejor_dentro": "recorrer la catedral de Roma y su claustro"
     },
     "San Pietro in Montorio y Tempietto de Bramante": {
       "minutos": 10,
-      "texto": "A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante."
+      "texto": "A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante.",
+      "lo_mejor_dentro": "ver de cerca el Tempietto de Bramante"
     },
     "Santa Maria del Popolo": {
       "minutos": 10,
-      "texto": "La iglesia de los Caravaggio, en una esquina de la Piazza del Popolo. Si está abierta, entra: dos cuadros suyos y una capilla de Rafael."
+      "texto": "La iglesia de los Caravaggio, en una esquina de la Piazza del Popolo. Si está abierta, entra: dos cuadros suyos y una capilla de Rafael.",
+      "lo_mejor_dentro": "ver los dos Caravaggio y la capilla de Rafael"
     },
     "Iglesia de San Pietro in Vincoli": {
       "minutos": 10,
-      "texto": "La placita escondida sobre Monti donde está la iglesia del Moisés de Miguel Ángel. Vuelve otro día: por dentro merece la pena."
+      "texto": "La placita escondida sobre Monti donde está la iglesia del Moisés de Miguel Ángel. Vuelve otro día: por dentro merece la pena.",
+      "lo_mejor_dentro": "ver de cerca el Moisés de Miguel Ángel"
     }
   },
-  "_tono": "Tono (decisión del usuario, 2026-09-28): como te lo contaría un amigo que vive en Roma. Un poco de contexto y un detalle que poca gente sabe, sin enrollarse: dos o tres frases."
+  "_tono": "Tono (decisión del usuario, 2026-09-28): como te lo contaría un amigo que vive en Roma. Un poco de contexto y un detalle que poca gente sabe, sin enrollarse: dos o tres frases.",
+  "_lo_mejor_dentro": "lo_mejor_dentro: lo mejor de la visita por dentro, para la ventana de \"Quiero entrar\" (\"Si entras, tendrás unos 70 min para {esto}\"). Borradores de Claude (2026-09-28), salvo el del Castillo, que es del usuario."
 }

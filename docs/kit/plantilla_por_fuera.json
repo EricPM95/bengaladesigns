@@ -5,9 +5,11 @@
   "por_fuera": {
     "Nombre exacto del lugar": {
       "minutos": 15,
-      "texto": "Qué se ve desde fuera y desde dónde: la fachada, el pórtico, la vista desde el puente."
+      "texto": "Qué se ve desde fuera y desde dónde: la fachada, el pórtico, la vista desde el puente.",
+      "lo_mejor_dentro": "recorrerlo y subir a la terraza"
     }
   },
   "_tono": "Mismo tono que los Por qué aquí: como te lo contaría un amigo que vive allí, dos o tres frases. Si merece volver para entrar, dilo ('Vuelve otro día: por dentro merece la pena').",
-  "_no_merece": "Si desde fuera apenas se ve nada (un museo tras una cristalera, como el Ara Pacis), sin minutos_fuera: no merece un desvío."
+  "_no_merece": "Si desde fuera apenas se ve nada (un museo tras una cristalera, como el Ara Pacis), sin minutos_fuera: no merece un desvío.",
+  "_lo_mejor_dentro": "Para cada lugar con minutos_fuera, lo_mejor_dentro: lo mejor de la visita por dentro, en infinitivo y corto (\"recorrerlo y subir a la terraza del ángel\"). Sale en la ventana de \"Quiero entrar\"."
 }

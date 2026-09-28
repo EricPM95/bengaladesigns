@@ -1,10 +1,17 @@
 /**
  * "Quiero entrar" (PROMPT_PENDIENTE F): qué cambia en un día curado si una parada que iba por fuera pasa a por dentro.
  * El motor rehace el día con esa parada por dentro y obligatoria (`insideNames`); aquí se compara con el día de antes
- * para contárselo al viajero en una línea antes de guardar.
+ * para contárselo al viajero antes de guardar.
  *
- * El tiempo sale, por este orden, de lo estirable (callejeo, tiempo libre, aperitivo) y de lo de menos nivel (pasa a
- * por fuera o sale); si aun así se pierde un imprescindible o el atardecer, no se hace sin preguntar.
+ * El texto (decisión del usuario, 2026-09-28) va en tres piezas, en este orden:
+ *   a) lo que ganas: "Si entras, tendrás unos 70 min para recorrerlo y subir a la terraza del ángel."
+ *      (`lo_mejor_dentro` del lugar, curado por monumento);
+ *   b) lo que cambia, solo lo que de verdad se mueve: "Para que te dé tiempo, el paseo por Trastevere se queda en
+ *      45 min y cenas a las 21:30.";
+ *   c) lo que no pierdes: "Tranquilo: sigues llegando al Janículo para el atardecer."
+ * Si para entrar se pierde algo importante (un imprescindible o el atardecer), lo dice claro y ofrece la alternativa:
+ * "Si entras, no te da tiempo a llegar al Janículo para el atardecer. Lo verás ya de noche, con Roma iluminada, que
+ * también es precioso. ¿Lo cambiamos?"
  */
 
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
@@ -15,6 +22,7 @@ const toMin = (hhmm) => {
 }
 const nameOf = (stop) => stop.place_name ?? stop.name
 const dayStops = (day) => (day?.stops ?? []).filter((stop) => !stop.is_night_experience)
+const roundTo5 = (minutes) => Math.round(minutes / 5) * 5
 
 /**
  * @param {object} destData
@@ -31,12 +39,17 @@ export function compareInside(destData, before, after, name) {
   if (!target || target.visit_mode === 'fuera') {
     return { ok: false, critical: true, lost: [], message: `Ese día no cabe ${named(name)} por dentro sin cambiar el viaje.` }
   }
+
+  // a) Lo que ganas.
+  const best = placeOf(name).lo_mejor_dentro
+  const gain = `Si entras, tendrás unos ${roundTo5(target.duration_minutes ?? 0)} min para ${best ?? 'verlo por dentro'}.`
+
   const afterByName = new Map(dayStops(after).map((stop) => [nameOf(stop), stop]))
   const sunsetBefore = dayStops(before).find((stop) => stop.sunset_minutes != null)
   const sunsetAfter = dayStops(after).find((stop) => stop.sunset_minutes != null)
   const lost = []
   const toOutside = []
-  const changes = []
+  const shortened = []
   for (const stop of dayStops(before)) {
     const stopName = nameOf(stop)
     if (stopName === name) continue
@@ -46,31 +59,42 @@ export function compareInside(destData, before, after, name) {
       continue
     }
     if (stop.visit_mode === 'dentro' && now.visit_mode === 'fuera') toOutside.push(stopName)
-    // Lo que se acorta (lo estirable): "el callejeo por Trastevere pasa de 75 a 45 min".
+    // Lo que se acorta (lo estirable): "el paseo por Trastevere se queda en 45 min".
     if ((stop.duration_minutes ?? 0) - (now.duration_minutes ?? 0) >= 10 && !stop.pass_through) {
       const tags = placeOf(stopName).tags ?? []
-      const label = tags.includes('barrio') ? `el callejeo por ${stopName}` : named(stopName)
-      changes.push(`${label} pasa de ${stop.duration_minutes} a ${now.duration_minutes} min`)
+      const label = tags.includes('barrio') ? `el paseo por ${stopName}` : named(stopName)
+      shortened.push(`${label} se queda en ${now.duration_minutes} min`)
     }
   }
+
   // Lo que no se puede perder sin preguntar: un imprescindible o el atardecer.
   const criticalLost = lost.filter((stopName) => placeOf(stopName).level === 1)
   const sunsetLost = Boolean(sunsetBefore) && !sunsetAfter
   if (criticalLost.length > 0 || sunsetLost) {
-    // El mirador que sale del día entero: "quitar el Janículo"; el que se queda sin sol: "el atardecer en el Janículo".
-    const sunsetWhat = sunsetLost ? (lost.includes(nameOf(sunsetBefore)) ? named(nameOf(sunsetBefore)) : `el atardecer en ${named(nameOf(sunsetBefore))}`) : null
-    const what = [...criticalLost.map(named), ...(sunsetWhat ? [sunsetWhat] : [])]
-    return { ok: true, critical: true, lost, message: `Para entrar hay que quitar ${joinSpanish(what)}. ¿Lo cambiamos?` }
+    const parts = []
+    if (sunsetLost) {
+      const mirador = nameOf(sunsetBefore)
+      // El mirador sigue en el día, ya de noche: se dice y se vende como lo que es.
+      if (afterByName.has(mirador)) parts.push(`Si entras, no te da tiempo a llegar a ${named(mirador)} para el atardecer. Lo verás ya de noche, con Roma iluminada, que también es precioso.`)
+      else parts.push(`Si entras, no te da tiempo a llegar a ${named(mirador)} para el atardecer.`)
+    }
+    if (criticalLost.length > 0) parts.push(`${sunsetLost ? 'Y tampoco' : 'Si entras, no'} te da tiempo a ver ${joinSpanish(criticalLost.map(named))}.`)
+    return { ok: true, critical: true, lost, message: `${parts.join(' ')} ¿Lo cambiamos?`.replace(/\ba el\b/g, 'al') }
   }
-  for (const stopName of toOutside) changes.push(`${named(stopName)} pasa a verse por fuera`)
-  for (const stopName of lost) changes.push(`${named(stopName)} sale del día`)
-  // La cena y la comida no se acortan nunca: solo se mueven dentro de su franja.
+
+  // b) Lo que cambia, solo lo que de verdad se mueve.
+  const changes = [...shortened]
+  for (const stopName of toOutside) changes.push(`${named(stopName)} lo ves por fuera`)
+  for (const stopName of lost) changes.push(`${named(stopName)} se queda fuera del día`)
+  // La comida y la cena no se acortan nunca: solo se mueven dentro de su franja.
   for (const type of ['lunch', 'dinner']) {
     const was = (before.meals ?? []).find((meal) => meal.time === type)?.suggested_time
     const now = (after.meals ?? []).find((meal) => meal.time === type)?.suggested_time
-    if (was && now && toMin(was) !== toMin(now)) changes.push(`${type === 'dinner' ? 'la cena' : 'la comida'} a las ${now}`)
+    if (was && now && toMin(was) !== toMin(now)) changes.push(`${type === 'dinner' ? 'cenas' : 'comes'} a las ${now}`)
   }
-  const kept = sunsetAfter ? ` ${named(nameOf(sunsetAfter)).replace(/^./, (c) => c.toUpperCase())} sigue al atardecer.` : ''
-  const message = changes.length > 0 ? `Si entras, ${joinSpanish(changes)}.${kept}` : `Si entras, el resto del día queda igual.${kept}`
-  return { ok: true, critical: false, lost, message }
+  const change = changes.length > 0 ? ` Para que te dé tiempo, ${joinSpanish(changes)}.` : ' El resto del día queda igual.'
+
+  // c) Lo que no pierdes.
+  const keep = sunsetAfter ? ` Tranquilo: sigues llegando a ${named(nameOf(sunsetAfter))} para el atardecer.` : ''
+  return { ok: true, critical: false, lost, message: `${gain}${change}${keep}`.replace(/\ba el\b/g, 'al') }
 }

@@ -966,7 +966,6 @@ export function DayDetailPanel({
               startTime={minutesToTime(startMinutes)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />}
-              onWantInside={realStop?.visitMode === 'fuera' && realStop.outsideKind === 'no_cabe' ? () => wantInside.ask(realStop.name) : undefined}
             />
           )}
         </div>
@@ -978,7 +977,7 @@ export function DayDetailPanel({
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
     <div className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
-      <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} />
+      <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} onAccepted={() => setDetailIndex(null)} />
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
@@ -1303,6 +1302,7 @@ export function DayDetailPanel({
             : undefined
         }
         onClose={() => setDetailIndex(null)}
+        onWantInside={detailIndex !== null && stops[detailIndex]?.visitMode === 'fuera' && stops[detailIndex]?.outsideKind === 'no_cabe' ? () => wantInside.ask(stops[detailIndex].name) : undefined}
       />
 
       <ArrivalDetailSheet

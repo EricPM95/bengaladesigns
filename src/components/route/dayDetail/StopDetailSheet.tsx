@@ -19,6 +19,7 @@ import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
+import { withoutLeadingEmoji } from '../../../lib/stopKind'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -66,6 +67,9 @@ interface StopDetailSheetProps {
   externalContent?: { description: StopDescription | null; loading: boolean }
   /** Barra inferior fija con un único CTA — usado por AddStopScreen.tsx para "Añadir a Día {N} →". Ausente (por defecto) en el uso normal de una parada ya en la ruta, que no necesita ningún CTA aquí. */
   footerAction?: { label: string; onClick: () => void }
+  /** "Quiero entrar" (decisión del usuario, 2026-09-28): arriba del todo en Resumen, debajo del motivo, solo si la
+      parada va por fuera por tiempo (`outsideKind: 'no_cabe'`). */
+  onWantInside?: () => void
 }
 
 function GlobeIcon() {
@@ -136,7 +140,7 @@ function BusIcon() {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache); "Tickets &
  * Entradas" sigue siendo mock (mockStopTickets.ts) hasta conectar Civitatis/GetYourGuide reales.
  */
-export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>('resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
@@ -544,13 +548,28 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                 <div className="space-y-4">
                   {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
                   {stop.visitMode === 'fuera' && stop.outsideReason && (
-                    <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
-                      <CameraIcon />
-                      <span>
-                        <span className="font-medium">Por fuera</span> · {stop.outsideReason}
-                      </span>
-                    </p>
+                    <div className="space-y-2">
+                      <p className={`flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' ? 'text-accent-red' : 'text-text'}`}>
+                        <CameraIcon />
+                        <span>
+                          <span className="font-medium">Por fuera</span> · {stop.outsideReason}
+                        </span>
+                      </p>
+                      {stop.outsideKind === 'no_cabe' && onWantInside && (
+                        <button
+                          type="button"
+                          onClick={onWantInside}
+                          className="h-10 rounded-full bg-text px-5 text-[14px] font-medium text-bg transition-transform active:scale-[.98]"
+                        >
+                          Quiero entrar
+                        </button>
+                      )}
+                    </div>
                   )}
+                  {/* El "Por qué aquí" de la ruta, primer párrafo de Resumen (la tarjeta del día ya no lleva texto). */}
+                  {(stop.isRevisit && stop.revisitReason) || stop.why ? (
+                    <p className="text-body leading-relaxed text-text">{stop.isRevisit && stop.revisitReason ? stop.revisitReason : withoutLeadingEmoji(stop.why ?? '')}</p>
+                  ) : null}
                   {descLoading ? (
                     <p className="flex items-center gap-2 text-small italic text-text-soft">
                       <Spinner className="text-accent" />

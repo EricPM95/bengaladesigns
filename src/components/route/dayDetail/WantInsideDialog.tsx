@@ -55,7 +55,7 @@ export function useWantInside(route: Route | null, day: DayPlan) {
   return { state, ask, close: () => setState(null) }
 }
 
-export function WantInsideDialog({ route, day, state, onClose }: { route: Route | null; day: DayPlan; state: State | null; onClose: () => void }) {
+export function WantInsideDialog({ route, day, state, onClose, onAccepted }: { route: Route | null; day: DayPlan; state: State | null; onClose: () => void; onAccepted?: () => void }) {
   const replaceDayWithInside = useRouteStore((store) => store.replaceDayWithInside)
   const [saving, setSaving] = useState(false)
   if (!state || !route) return null
@@ -69,6 +69,8 @@ export function WantInsideDialog({ route, day, state, onClose }: { route: Route 
     replaceDayWithInside(day.id, next, state.stopName)
     setSaving(false)
     onClose()
+    // Con "Vale" se cierra la ficha y el día ya sale rehecho, con la tarjeta en "Por dentro".
+    onAccepted?.()
   }
 
   const text = state.phase === 'loading' ? 'Estamos rehaciendo tu día…' : state.phase === 'error' ? state.message : state.result.message
@@ -98,14 +100,3 @@ export function WantInsideDialog({ route, day, state, onClose }: { route: Route 
   )
 }
 
-/** El interruptor de la tarjeta: apagado (va por fuera); al tocarlo, pide entrar. */
-export function WantInsideSwitch({ onToggle }: { onToggle: () => void }) {
-  return (
-    <button type="button" role="switch" aria-checked={false} onClick={onToggle} className="flex items-center gap-1.5 rounded-full py-0.5 text-[11px] font-medium text-text/70 hover:text-text">
-      <span className="relative inline-flex h-[16px] w-[28px] items-center rounded-full bg-text/15 transition-colors">
-        <span className="absolute left-[2px] h-[12px] w-[12px] rounded-full bg-white shadow-sm" />
-      </span>
-      Quiero entrar
-    </button>
-  )
-}

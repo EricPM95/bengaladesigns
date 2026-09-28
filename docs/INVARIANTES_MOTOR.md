@@ -1281,3 +1281,19 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     volver a aplicarlos. validar.mjs (sección 13) avisa en amarillo de lo que no tiene fecha o la tiene de hace más de
     11 meses; `node scripts/destino/comprobado.mjs` saca la lista por destino, y es lo que usa la revisión automática de
     cada 1 de diciembre. Las plantillas del kit piden el campo (`_comprobado`).
+281. **Tarjetas sin texto** (decisión del usuario, 2026-09-28, para todas las paradas y todos los destinos): la tarjeta
+    cerrada del día no lleva el texto descriptivo ("Por qué aquí" / resumen). Fuera solo lo que se escanea de un
+    vistazo: hora, nombre, foto, horario, duración, "Por dentro / Por fuera" con su motivo corto, avisos en rojo y
+    etiquetas. El "Por qué aquí" es el primer párrafo de Resumen en la ficha. Vale también para las nocturnas, las
+    pausas (el desayuno romano ahora abre su ficha) y los "Por el camino".
+282. **"Por fuera" en la tarjeta**: el motivo va en la misma línea, a la vista sin abrir: "Por fuera · 15 min · Hoy
+    cierra" o "· A esta hora ya ha cerrado" en rojo; por tiempo, en gris y corto: "· para llegar a todo". Por fuera no
+    sale "Reserva recomendada" (no hace falta reservar para verlo desde fuera); dentro, en Entradas, sí. "Quiero
+    entrar" va dentro de la ficha, arriba del todo en Resumen, justo debajo del motivo, y solo si el motivo es de
+    tiempo (`outside_kind: 'no_cabe'`); con "Vale" se cierra la ficha y el día sale rehecho, con la parada "Por
+    dentro". La ventana se compone de tres piezas (server/engine/insideSwitch.js): lo que ganas ("Si entras, tendrás
+    unos 70 min para {lo_mejor_dentro}."), lo que cambia de verdad ("Para que te dé tiempo, el paseo por Trastevere se
+    queda en 45 min y cenas a las 21:30.") y lo que no pierdes ("Tranquilo: sigues llegando al Janículo para el
+    atardecer."). Si se pierde el atardecer o un imprescindible, lo dice claro y ofrece la alternativa ("…Lo verás ya
+    de noche, con Roma iluminada, que también es precioso. ¿Lo cambiamos?"). `lo_mejor_dentro` va en cada lugar con
+    `minutos_fuera` (y en docs/roma_por_que.json, `por_fuera`).
