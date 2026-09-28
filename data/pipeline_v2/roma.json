@@ -1966,7 +1966,8 @@
       "search_en_keywords": [
         "campo de fiori",
         "campo dei fiori"
-      ]
+      ],
+      "aperitivo_antes_de_cenar": true
     },
     {
       "name": "Borgo Pio",
@@ -3991,7 +3992,8 @@
       "search_en_keywords": [
         "trastevere"
       ],
-      "not_before": "11:00"
+      "not_before": "11:00",
+      "aperitivo_antes_de_cenar": true
     },
     {
       "name": "Monti",
@@ -4022,7 +4024,8 @@
         "monti",
         "rione monti"
       ],
-      "not_before": "11:00"
+      "not_before": "11:00",
+      "aperitivo_antes_de_cenar": true
     },
     {
       "name": "Santa Maria del Popolo",

@@ -289,7 +289,7 @@ for (const [index, viaje] of VIAJES.entries()) {
 // Lo que se queda con cifra a propósito (`cifra_ok: true`: la tasa de Trevi bien explicada) no cuenta.
 const CIFRA_OK = [
   ...curatedStops(D).filter(({ parada }) => parada.por_que?.cifra_ok).flatMap(({ parada }) => [parada.por_que.texto, parada.por_que.temprano]),
-  ...Object.values(D.night_walks ?? {}).filter((walk) => walk.cifra_ok).map((walk) => walk.texto),
+  ...Object.values(D.night_walks ?? {}).filter((walk) => walk.cifra_ok).flatMap((walk) => [walk.texto, walk.texto_si_va_segundo, walk.texto_despues_cenar]),
 ].filter(Boolean).map(cell)
 // "Cifras con permiso": cada texto distinto una vez (el de la revisión y los de las fichas), para ver de un vistazo que
 // no se cuela ninguna.

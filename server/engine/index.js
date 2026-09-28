@@ -301,7 +301,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     // (Si era del pool, se avisa como lo del pool: nunca desaparece en silencio.)
     // (Decisión del usuario, 2026-09-28: lo que la ruta pasa ese día no "quedó fuera"; y si fue un cierre, el motivo es el cierre.)
-    ...(trip.notEnoughTime ?? []).filter((item) => !passesThrough(destData, trip, item, nights)).map((item) => ({ name: item.name, reason: item.closed ? closedText(item.closed) : 'No te dio tiempo', suggestion: item.closed ? 'Cambia las fechas si quieres verlo por dentro' : 'Alarga el viaje medio día o elige el ritmo completo', ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true, day_number: item.dayNumber ?? null } : {}) })),
+    ...(trip.notEnoughTime ?? []).filter((item) => !passesThrough(destData, trip, item, nights)).map((item) => ({ name: item.name, reason: item.closed ? closedText(item.closed) : 'No te dio tiempo', suggestion: item.closed ? 'Cambia las fechas si quieres verlo por dentro' : 'Alarga el viaje medio día o elige el ritmo completo', day_number: item.dayNumber ?? null, ...((options.poolNames ?? []).includes(item.name) ? { from_pool: true } : {}) })),
   ]
   // El paseo nocturno curado: nombre propio y su texto (en la primera nocturna del día).
   if (tripDay.nightWalk && day.stops.some((stop) => stop.is_night_experience)) {

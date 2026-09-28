@@ -1293,7 +1293,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       const last = result.visits.at(-1)
       const lastUnit = last ? units.find((unit) => unit.id === last.unitId) : null
       const place = last ? placeByName.get(last.place.name) : null
-      const barrio = Boolean(lastUnit?.stretch || lastUnit?.aperitivo || (place?.tags ?? []).includes('barrio'))
+      const barrio = Boolean(lastUnit?.stretch || lastUnit?.aperitivo || place?.aperitivo_antes_de_cenar || (place?.tags ?? []).includes('barrio'))
       const idle = result.idleBeforeDinner ?? 0
       if (barrio && last.place.sunset == null && !last.place.visitOutside && idle > APERITIVO_ABSORB_FROM) {
         for (let extra = Math.floor(idle / 15) * 15; extra >= 15; extra -= 15) {

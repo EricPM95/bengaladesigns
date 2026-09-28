@@ -3,7 +3,8 @@
 // Los días libres del viajero ("lo organizo yo") no se revisan.
 import { closedOnDay, effectiveSchedule, parseHoursSessions, placeWindows } from '../../shared/routeEngine/openingHours.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
-import { tituloQueNoSeCumple } from './textChecks.mjs'
+import { grupoFueraDeOrdenEnDia, tituloQueNoSeCumple } from './textChecks.mjs'
+import { whyTexts } from '../../shared/routeEngine/whyTexts.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 
 /** Verano: el tiempo libre con nombre antes del atardecer vale hasta aquí (decisión del usuario, 2026-09-27). */
@@ -42,6 +43,13 @@ export const TIPOS_AUDITORIA = {
   aviso_repetido: 'Avisos de fecha repetidos',
   titulo_hora: 'Texto de hora que no coincide con la hora real',
   nota_promete: 'Nota de temporada que promete algo que la ruta no hace',
+  atardecer_corto: 'Parada de atardecer que acaba antes de que se ponga el sol',
+  nocturna_repite: 'Lugar de una nocturna que ya salió de día ese mismo día',
+  fuera_mal: '"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre',
+  plaza_despues: 'Iglesia o monumento antes que su plaza',
+  texto_generico: 'Texto genérico en una nocturna o en "Roma iluminada"',
+  texto_condicion: 'Texto con solo_si_viene_de / solo_si_sigue que no se cumple',
+  ideas_lejos: 'Tiempo libre con ideas de otra zona',
 }
 
 /**
@@ -163,12 +171,58 @@ export function auditarViaje(D, days, options = {}) {
     if (dinnerStart != null) {
       const arrive = lastEnd + (day.dinner_walk_minutes ?? 0)
       const idle = dinnerStart - arrive - (day.aperitivo?.minutes ?? 0) - (day.free_afternoon?.minutes ?? 0)
-      if (arrive >= dinnerWindowStart && idle > 20) add('cena_espera', n, dinner.suggested_time, 'cena', `${idle} min de espera`)
+      // (Decisión del usuario, 2026-09-28: también si se llega antes de la franja de la cena: es una espera sin nada.)
+      void dinnerWindowStart
+      if (idle > 20) add('cena_espera', n, dinner.suggested_time, 'cena', `${idle} min de espera`)
+    }
+    // Parte D del repaso (2026-09-28).
+    const generic = new Set([whyTexts.night(), whyTexts.nightBeforeDinner(), D.destination_config?.night_view_text].filter(Boolean))
+    const dayNames = new Set(dayStops.map(nameOf))
+    for (const stop of day.stops) {
+      const start = t2m(stop.suggested_time)
+      // El atardecer acaba antes de que se ponga el sol.
+      if (stop.sunset_minutes != null && sunset != null && start != null && start + (stop.duration_minutes ?? 0) < sunset - ROUNDING) add('atardecer_corto', n, stop.suggested_time, nameOf(stop), `acaba antes del sol (${Math.floor(sunset / 60)}:${String(sunset % 60).padStart(2, '0')})`)
+      // La nocturna repite lo que ya salió ese día.
+      if (stop.is_night_experience) {
+        const base = String(stop.name).replace(/s*(noche)$/, '').replace(/s+de noche$/, '')
+        if (dayNames.has(base)) add('nocturna_repite', n, stop.suggested_time, stop.name, `${base} ya salió de día`)
+      }
+      // Textos genéricos en las nocturnas y en "Roma iluminada".
+      if ((stop.is_night_experience || stop.night_view) && generic.has(stop.why)) add('texto_generico', n, stop.suggested_time, stop.night_view_title ?? stop.name, stop.why)
+      // Un texto con condición que no se cumple (el motor pone el general; si no lo tiene, sale el condicionado).
+      if (stop.why_condition && !stop.why_condition.cumple && !stop.why_condition.usa_general) add('texto_condicion', n, stop.suggested_time, nameOf(stop), stop.why_condition.tipo)
+    }
+    // Plaza o iglesia fuera de orden.
+    for (const aviso of grupoFueraDeOrdenEnDia(D, day)) add('plaza_despues', n, '', '', aviso)
+    // Ideas de tiempo libre de otra zona (a más de 1,5 km de donde se está).
+    for (const entry of day.free_times ?? []) {
+      const anchor = dayStops.find((stop) => nameOf(stop) === entry.before) ?? dayStops.find((stop) => nameOf(stop) === entry.after)
+      const here = anchor ? coordsOf(anchor) : null
+      for (const idea of entry.suggestions ?? []) {
+        const coords = byName.get(idea.name)?.coordinates
+        if (here && Array.isArray(coords) && straightLineMeters(here, coords) > 1500) add('ideas_lejos', n, '', idea.name, `idea de tiempo libre antes de ${entry.before}`)
+      }
     }
     // Títulos y textos con hora.
     for (const aviso of tituloQueNoSeCumple(day)) add('titulo_hora', n, '', '', aviso)
   }
 
+  // "Quedó fuera": nunca un lugar por el que pasa la ruta ese día; y si es un cierre, el motivo no es "No te dio tiempo".
+  const seenByDay = new Map(days.map((day, index) => [day?.day_number ?? index + 1, new Set((day?.stops ?? []).flatMap((stop) => [stop.place_name ?? stop.name, ...(stop.outside_of ?? [])]))]))
+  const reported = new Set()
+  for (const [index, day] of days.entries()) {
+    for (const item of day?.not_included ?? []) {
+      const key = `${item.name}|${item.reason}`
+      if (reported.has(key)) continue
+      reported.add(key)
+      const dayNumber = item.day_number ?? null
+      if (dayNumber != null && seenByDay.get(dayNumber)?.has(item.name)) add('fuera_mal', dayNumber, '', item.name, 'la ruta pasa por ahí ese día')
+      const place = byName.get(item.name)
+      const iso = dayNumber != null && startIso ? addDays(startIso, dayNumber - 1) : null
+      if (place && iso && item.reason === 'No te dio tiempo' && closedOnDay(place, WEEKDAYS[new Date(`${iso}T12:00:00Z`).getUTCDay()], iso)) add('fuera_mal', dayNumber, '', item.name, 'ese día cierra: el motivo es el cierre')
+      void index
+    }
+  }
   // Lo del pool que no ha entrado.
   for (const day of days) for (const item of day?.not_included ?? []) if (item.from_pool || poolNames.includes(item.name)) add('pool_fuera', item.day_number ?? day.day_number ?? '?', '', item.name, item.reason ?? '')
 

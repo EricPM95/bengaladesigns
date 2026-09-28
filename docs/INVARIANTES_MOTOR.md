@@ -1461,3 +1461,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     cualquier lugar con la salida lejos de la entrada); `solo_antes_de_cenar` + `si_no` en un lugar nocturno (el Janículo
     de noche no se sube a oscuras después de cenar: sale Trastevere de noche; el bus 115 deja de salir de Via Paola a las
     22:00).
+
+303. **Repaso de las 20 rutas, Parte D: la auditoría ve estos fallos sola** (decisión del usuario, 2026-09-28):
+    `auditarViaje` (scripts/destino/auditoria.mjs, la usan la revisión y el barrido) avisa de: el atardecer que acaba
+    antes de que se ponga el sol (`atardecer_corto`); la nocturna que repite un lugar del mismo día
+    (`nocturna_repite`); el "Quedó fuera" que es falso (el día pasa por el lugar) o con el motivo equivocado ("No te
+    dio tiempo" cuando ese día cierra) (`fuera_mal`); la plaza o el puente después de su monumento
+    (`plaza_despues`); el texto genérico en una nocturna o un mirador con texto propio (`texto_generico`); el texto con
+    `solo_si_viene_de`/`solo_si_sigue` que sale sin cumplirse (`texto_condicion`); las ideas del tiempo libre a más de
+    1,5 km (`ideas_lejos`); y la espera antes de cenar a cualquier hora (`cena_espera`, antes solo desde las 20:00).
+    Todo lo que queda fuera lleva su `day_number`. Un lugar con `aperitivo_antes_de_cenar` (Trastevere, Monti, Campo
+    de' Fiori) se estira hasta la cena en vez de dejar un "Aperitivo y paseo" suelto detrás.
