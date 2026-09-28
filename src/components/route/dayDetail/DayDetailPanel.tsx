@@ -59,6 +59,7 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
+import { ConfirmDialog } from '../ConfirmDialog'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
 const FREE_TIME_MIN_MINUTES = 45
@@ -292,6 +293,9 @@ export function DayDetailPanel({
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
+  const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
+  const setDayUntimed = useRouteStore((state) => state.setDayUntimed)
+  const [askRestore, setAskRestore] = useState(false)
   const reorderStops = useRouteStore((state) => state.reorderStops)
   const setLegToNext = useRouteStore((state) => state.setLegToNext)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
@@ -957,13 +961,13 @@ export function DayDetailPanel({
           {walkDismissed ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
-              <ZoneWalkCard stop={stop} startTime={minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
+              <ZoneWalkCard stop={stop} startTime={day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
             )
           ) : (
             <StopAccordion
               number={realStop ? (stopNumbers.get(realStop.id) ?? null) : null}
               stop={stop}
-              startTime={minutesToTime(startMinutes)}
+              startTime={day.untimed ? undefined : minutesToTime(startMinutes)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />}
             />
@@ -982,6 +986,30 @@ export function DayDetailPanel({
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
         {showsRoute && day.paceNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.paceNotice}</p>}
+        {/* Retocar la ruta (decisión del usuario, 2026-09-28): solo en un día nuestro con algún cambio del viajero. */}
+        {day.originalSnapshot && (day.dayType ?? 'normal') !== 'manual' && (
+          <button type="button" onClick={() => setAskRestore(true)} className="mt-1 px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover">
+            Volver a la ruta original
+          </button>
+        )}
+        {askRestore && (
+          <ConfirmDialog
+            eyebrow={`Día ${day.dayNumber}`}
+            text="Vuelves a la ruta que te propusimos. Perderás los cambios que has hecho en este día."
+            confirmLabel="Volver"
+            onCancel={() => setAskRestore(false)}
+            onConfirm={() => {
+              restoreOriginalDay(day.id)
+              setAskRestore(false)
+            }}
+          />
+        )}
+        {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
+        {(day.dayType ?? 'normal') === 'manual' && day.stops.length > 0 && (
+          <button type="button" onClick={() => setDayUntimed(day.id, !day.untimed)} className="mt-1 px-1 text-[12.5px] font-medium text-text/60 hover:text-text">
+            {day.untimed ? 'Poner horas' : 'Sin hora'}
+          </button>
+        )}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
         {showsRoute && stops.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 pt-1 text-[12px] text-text/60">

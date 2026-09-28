@@ -17,6 +17,7 @@ import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
+import { ConfirmDialog } from './ConfirmDialog'
 import { DateNoticeTag } from './DateNoticesModal'
 
 /** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
@@ -74,6 +75,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const reorderDays = useRouteStore((state) => state.reorderDays)
   const [regenerateDayId, setRegenerateDayId] = useState<string | null>(null)
+  const [pendingRegenerate, setPendingRegenerate] = useState<Stop[] | null>(null)
   const [dayReorderWarning, setDayReorderWarning] = useState<string | null>(null)
 
   // Mismos umbrales que al reordenar paradas (ver DayDetailPanel.tsx): 8 px de margen para que un
@@ -283,9 +285,22 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           onClose={() => setRegenerateDayId(null)}
           multiSelect={{
             initialSelected: regenerateDayRealStops,
-            onConfirm: handleConfirmRegenerate,
+            // Un día con cambios del viajero: antes se avisa (lo nuevo pasa a ser la ruta original).
+            onConfirm: (stops: Stop[]) => (regenerateDay.originalSnapshot ? setPendingRegenerate(stops) : handleConfirmRegenerate(stops)),
             confirmLabel: 'Regenerar día con esta selección',
             tightWarningThreshold: PACE_COMFORTABLE_MAX[route.answers.pace ?? 'balanced'],
+          }}
+        />
+      )}
+      {regenerateDay && pendingRegenerate && (
+        <ConfirmDialog
+          eyebrow={`Día ${regenerateDay.dayNumber}`}
+          text={`Perderás los cambios que hiciste en el día ${regenerateDay.dayNumber}.`}
+          confirmLabel="Regenerar"
+          onCancel={() => setPendingRegenerate(null)}
+          onConfirm={() => {
+            handleConfirmRegenerate(pendingRegenerate)
+            setPendingRegenerate(null)
           }}
         />
       )}

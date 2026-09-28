@@ -3,6 +3,7 @@ import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import type {
+  Coordinates,
   AccommodationMode,
   AppScreen,
   DayType,
@@ -66,12 +67,30 @@ function linkBudgetItem(budget: Budget, id: string, item: Omit<BudgetItem, 'id'>
  * tampoco empuja a las de después: lo único que calculamos es la hora de la parada NUEVA, que no
  * tenía ninguna.
  */
-function timeForStopAfter(previous: Stop | undefined, fallback: string): string {
+function timeForStopAfter(previous: Stop | undefined, fallback: string, next?: Stop): string {
   if (!previous) return fallback
   const previousStart = parseTimeToMinutes(previous.time)
   if (Number.isNaN(previousStart)) return fallback
-  return minutesToTime(roundToNearestQuarterHour(previousStart + previous.durationMinutes + (previous.walkingTimeToNextMinutes ?? 15)))
+  // Retocar la ruta (decisión del usuario, 2026-09-28): cuando acaba la anterior, más el paseo hasta la nueva,
+  // redondeado al cuarto de hora; con menos de 3 min andando, encadenada sin redondear.
+  const walk = next ? estimatedWalkMinutes(previous.coordinates, next.coordinates) : (previous.walkingTimeToNextMinutes ?? 15)
+  const end = previousStart + previous.durationMinutes
+  return minutesToTime(walk < 3 ? end + walk : roundUpToQuarterHour(end + walk))
 }
+
+/** Paseo estimado entre dos puntos (línea recta con el rodeo de la ciudad, a 80 m/min) hasta que Mapbox da el real. */
+function estimatedWalkMinutes(from: Coordinates | undefined, to: Coordinates | undefined): number {
+  if (!from || !to || !Number.isFinite(from.lat) || !Number.isFinite(to.lat) || (from.lat === 0 && from.lng === 0) || (to.lat === 0 && to.lng === 0)) return 15
+  const rad = Math.PI / 180
+  const dLat = (to.lat - from.lat) * rad
+  const dLng = (to.lng - from.lng) * rad
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(from.lat * rad) * Math.cos(to.lat * rad) * Math.sin(dLng / 2) ** 2
+  const meters = 2 * 6371000 * Math.asin(Math.sqrt(a))
+  return Math.round((meters * 1.3) / 80)
+}
+
+/** La primera parada de un día libre (lo organiza el viajero), si no trae hora. */
+const FREE_DAY_FIRST_STOP = '09:30'
 
 /**
  * Ninguna hora se pisa (revisión del 2026-09-24): si una parada empieza antes de que acabe la
@@ -117,50 +136,18 @@ function withoutStop(stops: Stop[], stopId: string): Stop[] {
   return rest
 }
 
-/** Hueco a partir del cual, al quitar una parada, la siguiente se adelanta. */
-const GAP_TO_PULL_FORWARD_MINUTES = 45
-
 /**
  * El tramo recalculado mueve la siguiente parada si ya no se llega a su hora (y detrás de ella, solo
  * las que entonces se pisen). Si se llega antes, las horas se quedan (ver LA REGLA), salvo un hueco de
  * más de 45 min: entonces se adelanta la siguiente, y solo ella.
  */
 function withLegToNext(stops: Stop[], stopId: string, minutes: number): Stop[] {
+  // Retocar la ruta (decisión del usuario, 2026-09-28): solo se recalcula el paseo; ninguna otra hora se mueve. Si algo
+  // se pisa, se ve, y el viajero cambia la hora él mismo.
   const index = stops.findIndex((stop) => stop.id === stopId)
   if (index < 0) return stops
   const updated = [...stops]
   updated[index] = { ...stops[index], walkingTimeToNextMinutes: minutes, nextLegPending: undefined }
-  // Lo que se retrasa cada parada; cada una lo absorbe con el margen que ya tenía antes de la
-  // siguiente, y en cuanto queda en cero no se toca nada más. Las nocturnas no se mueven.
-  // Si el tramo nuevo deja un hueco de más de 45 min antes de la siguiente, esa (solo esa) se adelanta a
-  // cuando se llega, sin pasar de su hora de apertura (decisión del 2026-09-26). Las demás no se mueven.
-  const following = updated[index + 1]
-  const previousStart = parseTimeToMinutes(stops[index].time)
-  if (following && !following.isNightExperience && !Number.isNaN(previousStart)) {
-    const arrival = roundUpToQuarterHour(previousStart + stops[index].durationMinutes + minutes)
-    const start = parseTimeToMinutes(following.time)
-    const opensAt = parseTimeToMinutes(/\d{1,2}:\d{2}/.exec(following.hours ?? '')?.[0] ?? '')
-    const earliest = Number.isNaN(opensAt) ? arrival : Math.max(arrival, opensAt)
-    if (!Number.isNaN(start) && start - arrival > GAP_TO_PULL_FORWARD_MINUTES && earliest < start) {
-      updated[index + 1] = { ...following, time: minutesToTime(earliest) }
-      return updated
-    }
-  }
-  let delay = 0
-  for (let next = index + 1; next < updated.length; next++) {
-    const previous = updated[next - 1]
-    const stop = updated[next]
-    if (stop.isNightExperience) break
-    const previousStart = parseTimeToMinutes(stops[next - 1].time)
-    const start = parseTimeToMinutes(stop.time)
-    if (Number.isNaN(previousStart) || Number.isNaN(start)) break
-    const walk = next === index + 1 ? minutes : (previous.walkingTimeToNextMinutes ?? 0)
-    const needed = next === index + 1 ? previousStart + previous.durationMinutes + walk - start : delay - Math.max(0, start - (previousStart + previous.durationMinutes + walk))
-    if (needed <= 0) break
-    const newStart = roundUpToQuarterHour(start + needed)
-    updated[next] = { ...stop, time: minutesToTime(newStart) }
-    delay = newStart - start
-  }
   return updated
 }
 
@@ -367,6 +354,10 @@ interface RouteStoreState {
   markDateNoticesSeen: (key: string) => void
   /** "Quiero entrar" (WantInsideDialog.tsx): el día rehecho por el motor y la parada que ahora va por dentro. */
   replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
+  /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
+  restoreOriginalDay: (dayId: string) => void
+  /** Día libre sin horas ("Sin hora"). */
+  setDayUntimed: (dayId: string, untimed: boolean) => void
   /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
   openDateNoticeId: string | null
   setOpenDateNoticeId: (id: string | null) => void
@@ -711,18 +702,32 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   markDateNoticesSeen: (key) => set((state) => (state.route ? { route: { ...state.route, dateNoticesSeenKey: key } } : state)),
 
+  // Rehecho por el motor: lo nuevo pasa a ser la ruta original de ese día (sin copia de antes).
   replaceDayWithInside: (dayId, day, insideName) =>
     set((state) =>
       state.route
-        ? { route: { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? day : other)), insideNames: [...new Set([...(state.route.insideNames ?? []), insideName])] } }
+        ? { route: { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)), insideNames: [...new Set([...(state.route.insideNames ?? []), insideName])] } }
         : state,
     ),
+  restoreOriginalDay: (dayId) =>
+    set((state) => {
+      if (!state.route) return state
+      const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, originalSnapshot: null } : day))
+      return { route: { ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) } }
+    }),
+  setDayUntimed: (dayId, untimed) =>
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (day) => ({ ...day, untimed })) } : state)),
 
   openDateNoticeId: null,
   setOpenDateNoticeId: (id) => set({ openDateNoticeId: id }),
 
-  setRoute: (route) =>
-    set((state) => ({
+  setRoute: (incoming) =>
+    set((state) => {
+      // Rehacer el viaje (fechas desde el mapa): los días libres del viajero ("lo organizo yo") no los toca el motor
+      // nunca (decisión del usuario, 2026-09-28): se quedan en su número de día.
+      const freeDays = state.keepBookingsOnNextRoute ? new Map((state.route?.days ?? []).filter((day) => (day.dayType ?? 'normal') === 'manual').map((day) => [day.dayNumber, day])) : new Map<number, DayPlan>()
+      const route = freeDays.size > 0 ? { ...incoming, days: incoming.days.map((day) => (freeDays.has(day.dayNumber) ? { ...freeDays.get(day.dayNumber)!, id: day.id } : day)) } : incoming
+      return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
         ? { ...route, days: route.days.map((day) => (day.countryCode ? day : { ...day, countryCode: dayCountryCode(null, day.city) })) }
@@ -740,7 +745,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, wishlist: [] }),
       keepBookingsOnNextRoute: false,
       dev_simulated_today_iso: null,
-    })),
+      }
+    }),
 
   hydrateTrip: (payload) =>
     set({
@@ -959,9 +965,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return {
+        // Solo cambia esa (decisión del usuario, 2026-09-28): las demás se quedan; si algo se pisa, se ve.
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: pushOverlapsForward(day.stops.map((stop) => (stop.id === stopId ? { ...stop, time: newTime } : stop))),
+          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, time: newTime } : stop)),
         })),
       }
     }),
@@ -971,10 +978,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return state
       return {
         // La parada NUEVA es la única a la que le ponemos hora (no tenía); las que ya estaban no se tocan.
-        route: updateDay(state.route, dayId, (day) => ({
-          ...day,
-          stops: pushOverlapsForward([...day.stops, { ...stop, time: timeForStopAfter(day.stops[day.stops.length - 1], stop.time) }]),
-        })),
+        route: updateDay(state.route, dayId, (day) => {
+          const previous = day.stops[day.stops.length - 1]
+          const fallback = (day.dayType ?? 'normal') === 'manual' && !previous ? FREE_DAY_FIRST_STOP : stop.time
+          const stops = day.stops.map((other, at) => (at === day.stops.length - 1 ? { ...other, nextLegPending: true } : other))
+          return { ...day, stops: [...stops, { ...stop, time: stop.isNightExperience ? stop.time : timeForStopAfter(previous, fallback, stop) }] }
+        }),
       }
     }),
 
@@ -996,10 +1005,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         route: updateDay(state.route, dayId, (day) => {
           // Igual que addStop pero en una posición concreta: hora para la que entra, calculada desde la
           // parada que le queda justo delante; las de detrás solo se mueven si se pisan (hacia delante).
-          const stops = [...day.stops]
-          // Una experiencia nocturna trae su hora (después de cenar): no se encadena a la última parada.
-          stops.splice(index, 0, stop.isNightExperience ? stop : { ...stop, time: timeForStopAfter(day.stops[index - 1], stop.time) })
-          return { ...day, stops: pushOverlapsForward(stops) }
+          const stops = day.stops.map((other, at) => (at === index - 1 ? { ...other, nextLegPending: true } : other))
+          const fallback = (day.dayType ?? 'normal') === 'manual' && index === 0 ? FREE_DAY_FIRST_STOP : stop.time
+          // Una experiencia nocturna trae su hora (después de cenar): no se encadena a la última parada. Las de detrás no
+          // se mueven (decisión del usuario, 2026-09-28): solo se recalculan los paseos con la anterior y la siguiente.
+          stops.splice(index, 0, stop.isNightExperience ? stop : { ...stop, time: timeForStopAfter(day.stops[index - 1], fallback, stop), nextLegPending: index < day.stops.length || undefined })
+          return { ...day, stops }
         }),
       }
     }),
@@ -1015,7 +1026,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   regenerateDayStops: (dayId, orderedStops) =>
     set((state) => {
       if (!state.route) return state
-      return { route: updateDay(state.route, dayId, (day) => ({ ...day, stops: retimeStops(orderedStops) })) }
+      // Regenerar el día: lo nuevo pasa a ser la ruta original (se avisa antes si tenía cambios).
+      return { route: updateDay(state.route, dayId, (day) => ({ ...day, stops: retimeStops(orderedStops), originalSnapshot: null })) }
     }),
 
   checkInStop: (dayId, stopId) =>
@@ -1249,7 +1261,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
   'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays',
-  'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops', 'regenerateDayStops', 'replaceDayWithInside',
+  'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'markDidntMakeCutAdded',
 ] as const
 for (const name of MANUAL_EDIT_ACTIONS) {
@@ -1259,7 +1271,17 @@ for (const name of MANUAL_EDIT_ACTIONS) {
       const before = useRouteStore.getState().route
       const result = original(...args)
       const after = useRouteStore.getState().route
-      if (after && after !== before && !after.editedManually) useRouteStore.setState({ route: { ...after, editedManually: true } })
+      if (!after || after === before) return result
+      // La copia del día que dio el motor, antes del primer cambio (solo en los días nuestros, no en los libres).
+      const beforeDays = new Map((before?.days ?? []).map((day) => [day.id, day]))
+      const days = after.days.map((day) => {
+        const previous = beforeDays.get(day.id)
+        if (!previous || previous === day || day.originalSnapshot || (previous.dayType ?? 'normal') === 'manual') return day
+        const { originalSnapshot: _ignored, ...plain } = previous
+        void _ignored
+        return { ...day, originalSnapshot: JSON.parse(JSON.stringify(plain)) as DayPlan }
+      })
+      useRouteStore.setState({ route: { ...after, days, editedManually: true } })
       return result
     },
   } as Partial<RouteStoreState>)

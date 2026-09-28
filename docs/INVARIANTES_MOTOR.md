@@ -1356,3 +1356,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     repiten; títulos con hora. Las horas de la app van al cuarto de hora: la auditoría da 7 min de margen. Los días
     libres del viajero no se revisan. La revisión solo sale con todo a 0 o con la lista de lo que no se ha podido
     arreglar y por qué (docs/INFORME_ULTIMO.md).
+292. **Retocar la ruta** (decisión del usuario, 2026-09-28, general para cualquier destino):
+    - Añadir una parada (en un hueco o al final): solo se calcula el paseo con la anterior y la siguiente; NO se
+      mueven las horas de las demás ni se reoptimiza el día. Si algo se pisa, se ve. Hora sugerida: cuando acaba la
+      anterior más el paseo, redondeada al cuarto de hora (con menos de 3 min andando, encadenada sin redondear). En
+      los días nuestros no hay "Sin hora".
+    - Quitar una parada o cambiar la hora de cualquiera: solo cambia esa; se recalcula el paseo con la anterior y la
+      siguiente (`withLegToNext` ya no empuja nada; `pushOverlapsForward` ya no se usa al añadir ni al cambiar hora).
+    - "Volver a la ruta original": solo en un día nuestro con algún cambio. `DayPlan.originalSnapshot` guarda el día
+      exacto que dio el motor antes del primer cambio (se guarda con el viaje); recuperarlo no regenera. Aviso antes:
+      "Vuelves a la ruta que te propusimos. Perderás los cambios que has hecho en este día."
+    - Regenerar un día ("Quiero entrar", "Regenerar día") o el viaje (fechas) con cambios del viajero: aviso antes,
+      "Perderás los cambios que hiciste en el día 2". Lo nuevo pasa a ser la ruta original.
+    - Días libres ("lo organizo yo", `dayType: 'manual'`): el motor no los toca nunca, ni al rehacer el viaje (se
+      quedan en su número de día); el semáforo, la auditoría y el barrido no los revisan. Primera parada a las 09:30 o
+      "Sin hora" (`DayPlan.untimed`: paradas en orden con el paseo entre ellas).
+    - Los restaurantes no entran como parada. Pendiente (no se hace todavía): la pantalla de "día libre" después del
+      formulario y el botón "+" para añadir un día.

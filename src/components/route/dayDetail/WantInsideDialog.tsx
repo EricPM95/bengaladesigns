@@ -73,7 +73,9 @@ export function WantInsideDialog({ route, day, state, onClose, onAccepted }: { r
     onAccepted?.()
   }
 
-  const text = state.phase === 'loading' ? 'Estamos rehaciendo tu día…' : state.phase === 'error' ? state.message : state.result.message
+  // Rehacer un día con cambios del viajero: se avisa (y lo nuevo pasa a ser la ruta original).
+  const lost = day.originalSnapshot ? `Perderás los cambios que hiciste en el día ${day.dayNumber}. ` : ''
+  const text = state.phase === 'loading' ? 'Estamos rehaciendo tu día…' : state.phase === 'error' ? state.message : `${lost}${state.result.message}`
   // En el body: el panel del día lleva una animación con transform, que encerraría el "fixed" dentro de él.
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="want-inside-heading">

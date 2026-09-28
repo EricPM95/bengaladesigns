@@ -583,6 +583,11 @@ export interface DayPlan {
   excursionHighlights?: Excursion[]
   /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
   curatedAlternative?: CuratedAlternative | null
+  /** El día tal como lo dio el motor, antes del primer cambio del viajero (decisión del usuario, 2026-09-28): "Volver a
+      la ruta original" lo recupera EXACTAMENTE, sin regenerar. Solo en los días nuestros; se guarda con el viaje. */
+  originalSnapshot?: DayPlan | null
+  /** Día libre (lo organiza el viajero) sin horas: las paradas en orden y el paseo entre ellas ("Sin hora"). */
+  untimed?: boolean
   /** Excursión que el motor deja ya marcada en un día de excursión — la más popular del destino. */
   excursionPreselectedId?: string | null
   /** Frase de prueba social del destino, del JSON. Ver destination_config. */
