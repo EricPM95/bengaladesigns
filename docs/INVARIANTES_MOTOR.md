@@ -1573,3 +1573,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - El orden de invierno forzado (el mirador primero) solo con el sol antes de las 18:30.
     - Lo estirable de la mañana (Testaccio) solo se estira hasta la comida, nunca con lo que sobra de la tarde; y la
       espera antes de una parada no cuenta si hay una comida o una cena en medio.
+
+312. **Repaso 3, puntos 2, 4, 5 y 6** (2026-09-28):
+    - D4 en domingo con Free Tour: de Via Veneto a la Galería por la Porta Pinciana y el parque ("De Via Veneto a la
+      Galería por el parque de Villa Borghese"), estirable, para no llegar con prisa a recoger la entrada.
+    - D4 con Free Tour fuera del invierno: Via del Babuino y Via Margutta, el Parque (el lago y la sombra), la Piazza del
+      Popolo y Santa Maria del Popolo cuando abre, los Jardines del Pincio hasta el atardecer (estirables) y la Terraza.
+      La espera antes de una parada que abre más tarde se queda en la estirable más cercana antes (hasta 3 paradas).
+    - En julio y agosto, más de 90 min libres entre las 14:00 y las 17:00 salen como "Descanso a la sombra".
+    - Lo que ya ha cerrado cuando se llega, con su plaza, no se baja a ver para volver a subir al mirador: va después del
+      atardecer, camino de la cena (la plaza, de nivel 2, sigue como parada corta).
+    - Una nocturna sin nombre propio se llama por sus lugares: «Trastevere y Navona de noche».

@@ -684,8 +684,18 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // Sin nada que proponer (la espera al atardecer del Pincio, con todo visto): una idea corta de la
         // zona, sin más paradas (decisión del 2026-09-26).
         ...(suggestions.length === 0 ? { hint: zoneHintFor(destData, gap.zone) } : {}),
+        // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
+        ...(isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes) ? { title: SIESTA_TITLE, hint: SIESTA_HINT } : {}),
       }
     })
+}
+
+const SIESTA_TITLE = 'Descanso a la sombra'
+const SIESTA_HINT = 'En verano los romanos se esconden del calor a estas horas.'
+/** Julio o agosto, más de 90 min libres y dentro de 13:45-17:15 (el calor del día). */
+function isSummerSiesta(tripDay, start, end, minutes) {
+  const month = Number(String(tripDay.hours?.dateIso ?? '').slice(5, 7))
+  return (month === 7 || month === 8) && minutes > 90 && start >= 13 * 60 + 45 && end <= 17 * 60 + 15
 }
 
 /** "Pasear por Villa Borghese: el pulmón verde de Roma." — el paseo de la zona, en una frase. */

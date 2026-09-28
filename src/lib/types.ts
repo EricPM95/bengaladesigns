@@ -635,7 +635,7 @@ export interface DayPlan {
   freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null } | null
   /** Motor v3: TODOS los huecos de más de 30 min, con nombre (decisión del 2026-09-26). `before`/`after` pueden
       ser "la comida": el hueco antes de comer o el de después. */
-  freeTimes?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null }[] | null
+  freeTimes?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo

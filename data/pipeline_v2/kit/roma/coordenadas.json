@@ -616,5 +616,21 @@
    12.47916667
   ],
   "mapbox": null
+ },
+ "Porta Pinciana": {
+  "version": 2,
+  "wikipedia": [
+   41.90944444,
+   12.48833333
+  ],
+  "mapbox": null
+ },
+ "Jardines del Pincio": {
+  "version": 2,
+  "wikipedia": [
+   41.91166667,
+   12.47972222
+  ],
+  "mapbox": null
  }
 }

@@ -25,6 +25,7 @@ import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
 import { lunchSpots } from './lunchSpots.js'
+import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 
 /** Lo que dura pasar por un sitio "de paso". */
@@ -1197,11 +1198,19 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // 2026-09-28: nada de horas muertas de más de una hora).
     const absorbWaits = () => {
       for (let guard = 0; guard < 4; guard++) {
-        const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30 && !(result.meals ?? []).some((meal) => meal.start >= result.visits[index - 1].end && meal.start < visit.start))
+        // La estirable más cercana antes de la espera (el Parque, aunque vaya la Piazza del Popolo en medio; repaso 3).
+        const stretchBefore = (index) => {
+          for (let k = index - 1; k >= Math.max(0, index - 3); k--) {
+            if ((result.meals ?? []).some((meal) => meal.start >= result.visits[k].end && meal.start < result.visits[index].start)) return -1
+            if (units.find((unit) => unit.id === result.visits[k].unitId)?.stretch) return k
+          }
+          return -1
+        }
+        const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && stretchBefore(index) >= 0 && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30 && !(result.meals ?? []).some((meal) => meal.start >= result.visits[index - 1].end && meal.start < visit.start))
         if (at < 0) break
-        const previous = result.visits[at - 1]
+        const previous = result.visits[stretchBefore(at)]
         const unit = units.find((other) => other.id === previous.unitId)
-        const wait = result.visits[at].start - previous.end - (result.visits[at].walkMinutes ?? 0)
+        const wait = result.visits[at].start - result.visits[at - 1].end - (result.visits[at].walkMinutes ?? 0)
         let done = false
         for (let extra = Math.floor((wait - 10) / 15) * 15; extra >= 15 && !done; extra -= 15) {
           const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place) => (place.name === previous.place.name ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
@@ -1432,6 +1441,44 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     for (const visit of result.visits) {
       seen.add(visit.place.name)
       for (const name of visit.place.outsideOf ?? []) seen.add(name)
+    }
+    // Lo que ya ha cerrado cuando se llega (Santa Maria del Popolo el domingo de Pascua), con su plaza, no se baja a ver
+    // para volver a subir al mirador: va después del atardecer, "por el camino" al bajar a cenar (repaso 3, 2026-09-28).
+    {
+      const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
+      const closed = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).find((visit) => {
+        if (!visit.place.visitOutside || visit.place.outsideKind !== 'no_abre') return false
+        const sessions = parseHoursSessions(effectiveSchedule(placeByName.get(visit.place.name) ?? visit.place, hours))
+        return !sessions.some((session) => session.open > visit.start)
+      }) : null
+      if (closed) {
+        const at = result.visits.indexOf(closed)
+        const partner = at > 0 && groupOf(result.visits[at - 1].place.name) && groupOf(result.visits[at - 1].place.name) === groupOf(closed.place.name) ? result.visits[at - 1] : null
+        const movedIds = new Set([closed.unitId, partner?.unitId].filter(Boolean))
+        const sunsetUnit = units.find((unit) => unit.id === result.visits[sunsetAt].unitId)
+        const movedUnits = units.filter((unit) => movedIds.has(unit.id)).map((unit) => (unit.id === partner?.unitId ? usable(unitOf({ ...(unit.curatedStop ?? { lugar: unit.places[0].name }), rol: 'de_paso', estirar: undefined, minutos: undefined }, unit.slot, (unit.curatedIndex ?? 0) % CURATED_AFTERNOON_OFFSET, dayId, day)) ?? unit : unit))
+        const rest = units.filter((unit) => !movedIds.has(unit.id))
+        const list = [...rest.slice(0, rest.indexOf(sunsetUnit) + 1), ...movedUnits, ...rest.slice(rest.indexOf(sunsetUnit) + 1)]
+        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        if (trial.visits.some((visit) => visit.place.sunset != null) && trial.dropped.length <= result.dropped.length) {
+          units = list
+          result = trial
+          // La espera que deja antes del atardecer, para la estirable de antes (el Parque).
+          const sunIndex = result.visits.findIndex((visit) => visit.place.sunset != null)
+          const before = sunIndex > 0 ? result.visits[sunIndex - 1] : null
+          const stretchUnit = before ? units.find((unit) => unit.id === before.unitId && unit.stretch) : null
+          const wait = before ? result.visits[sunIndex].start - before.end - (result.visits[sunIndex].walkMinutes ?? 0) : 0
+          for (let extra = Math.floor((wait - 10) / 15) * 15; stretchUnit && extra >= 15; extra -= 15) {
+            const longer = units.map((unit) => (unit === stretchUnit ? { ...unit, places: unit.places.map((place) => (place.name === before.place.name ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : unit))
+            const again = schedule(day, longer, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+            if (again.visits.some((visit) => visit.place.sunset != null) && again.dropped.length <= result.dropped.length) {
+              units = longer
+              result = again
+              break
+            }
+          }
+        }
+      }
     }
     // Otra vez al final: los turnos (la Galería a las 10:00) pueden haber abierto una espera nueva.
     absorbWaits()
@@ -1723,7 +1770,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       day.dayNumber,
       chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(fromAlternative && walk.alternativas_despues_de_cenar ? { afterDinnerOnly: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) && !(entry.conflicts_with ?? []).some((name) => wokeFor.has(name)) ? { replacesDayVisit: true } : {}) })),
     )
-    day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? 'Paseo nocturno' : walk.nombre, texto: text, recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
+    // (Sin nombre propio, el de sus lugares: «Trastevere y Piazza Navona de noche»; repaso 3, 2026-09-28.)
+    day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? nightNameOf(chain) : walk.nombre, texto: text, recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
   }
 
   // La noche de una fecha especial (la Girandola el 29 de junio, decisión del usuario 2026-09-28): esa noche la nocturna
@@ -1820,6 +1868,12 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
     dateMoves,
   }
+}
+
+/** «Trastevere y Piazza Navona de noche»: el nombre de una nocturna hecha de varios lugares. */
+function nightNameOf(chain) {
+  const bases = [...new Set(chain.map((entry) => String(entry.name).replace(/\s*\(noche\)$/, '').replace(/\s+de noche$/, '').replace(/^Piazza /, '')))]
+  return bases.length > 0 ? `${joinSpanish(bases)} de noche` : 'Paseo nocturno'
 }
 
 /** 960 → "16:00". */

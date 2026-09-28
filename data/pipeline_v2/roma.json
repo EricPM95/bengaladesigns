@@ -4209,6 +4209,9 @@
       "search_en": "Via Veneto Rome",
       "search_en_keywords": [
         "veneto"
+      ],
+      "neighbor_of": [
+        "Porta Pinciana"
       ]
     },
     {
@@ -4266,6 +4269,60 @@
       ],
       "neighbor_of": [
         "Via del Babuino"
+      ]
+    },
+    {
+      "name": "Porta Pinciana",
+      "duration_minutes": 20,
+      "zone": "villa_borghese",
+      "coordinates": [
+        41.9087,
+        12.4886
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "paseo",
+        "parque"
+      ],
+      "filter_category": "miradores",
+      "description": "La puerta de la muralla Aureliana al final de Via Veneto, por donde se entra a Villa Borghese camino de la Galería.",
+      "tip": "De Via Veneto a la Galería por el parque, con sombra de pinos.",
+      "search_aliases": [
+        "porta pinciana"
+      ],
+      "search_en": "Porta Pinciana Rome",
+      "search_en_keywords": [
+        "porta pinciana"
+      ]
+    },
+    {
+      "name": "Jardines del Pincio",
+      "duration_minutes": 30,
+      "zone": "villa_borghese",
+      "coordinates": [
+        41.9121,
+        12.4792
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "parque",
+        "paseo"
+      ],
+      "filter_category": "miradores",
+      "description": "Los jardines que rodean la Terraza del Pincio: paseos con los bustos de romanos ilustres, el reloj de agua y la Casina Valadier.",
+      "tip": "Buen sitio para esperar el atardecer a la sombra.",
+      "search_aliases": [
+        "pincio jardines",
+        "giardini del pincio"
+      ],
+      "search_en": "Pincio Gardens Rome",
+      "search_en_keywords": [
+        "pincio"
+      ],
+      "neighbor_of": [
+        "Terraza del Pincio"
       ]
     }
   ],
@@ -10523,13 +10580,24 @@
               "por_que": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
             },
             {
+              "lugar": "Parque de Villa Borghese",
+              "rol": "parada",
+              "nota": "En verano, después de Santa Maria del Popolo: se sube al parque y aquí va lo que sobre hasta el atardecer en el Pincio.",
+              "minutos": 30,
+              "estirar": true,
+              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "solo": [
+                {
+                  "estacion": "no_invierno"
+                }
+              ],
+              "estirar_titulo": "Villa Borghese: el lago y la sombra",
+              "estirar_texto": "Sube por el Pincio y entra al parque: barca en el lago, bici o un rato a la sombra de los pinos en las horas de más calor. Luego bajas a la Piazza del Popolo cuando abre Santa Maria del Popolo."
+            },
+            {
               "lugar": "Piazza del Popolo",
               "rol": "parada",
-              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
-              "estirar": true,
-              "estirar_max": 90,
-              "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
-              "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
+              "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
             },
             {
               "lugar": "Santa Maria del Popolo",
@@ -10544,19 +10612,17 @@
               ]
             },
             {
-              "lugar": "Parque de Villa Borghese",
+              "lugar": "Jardines del Pincio",
               "rol": "parada",
-              "nota": "En verano, después de Santa Maria del Popolo: se sube al parque y aquí va lo que sobre hasta el atardecer en el Pincio.",
-              "minutos": 30,
               "estirar": true,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
               "solo": [
                 {
                   "estacion": "no_invierno"
                 }
               ],
-              "estirar_titulo": "Tiempo libre en Villa Borghese",
-              "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
+              "estirar_titulo": "Los jardines del Pincio hasta el atardecer",
+              "estirar_texto": "Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines: los bustos de romanos ilustres, el reloj de agua y la Casina Valadier. Cuando baje el sol, a la terraza.",
+              "por_que": "Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines hasta que baje el sol."
             },
             {
               "lugar": "Terraza del Pincio",
@@ -10612,21 +10678,33 @@
           ],
           "insertar": [
             {
+              "en": "manana",
               "parada": {
-                "lugar": "Piazza del Popolo",
+                "lugar": "Porta Pinciana",
                 "rol": "parada",
                 "estirar": true,
-                "estirar_max": 90,
-                "estirar_titulo": "Tiempo libre en la Piazza del Popolo",
-                "estirar_texto": "Siéntate en la fuente de los leones o toma algo en una terraza de la plaza mientras abre Santa Maria del Popolo."
+                "estirar_max": 60,
+                "estirar_titulo": "De Via Veneto a la Galería por el parque de Villa Borghese",
+                "estirar_texto": "Sube por Via Veneto hasta la Porta Pinciana, la puerta de la muralla, y entra al parque por el paseo de los pinos hasta la Galería. Ve con margen: hay que recoger la entrada antes de tu turno.",
+                "por_que": "Al final de Via Veneto está la Porta Pinciana, una de las puertas de la muralla. Crúzala y sigue por el paseo de los pinos del parque hasta la Galería."
               },
               "sol_despues_de": "17:30",
               "despues_de": [
-                "Via Margutta",
-                "Galería Borghese",
-                "Parque de Villa Borghese"
+                "Via Veneto"
               ],
               "solo_si_esta": true
+            },
+            {
+              "parada": {
+                "lugar": "Piazza del Popolo",
+                "rol": "parada",
+                "minutos": 15
+              },
+              "sol_despues_de": "17:30",
+              "despues_de": [
+                "Galería Borghese",
+                "Parque de Villa Borghese"
+              ]
             },
             {
               "parada": {

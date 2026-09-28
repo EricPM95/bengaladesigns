@@ -148,7 +148,7 @@ function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
 }
 /** El otro extremo de un tiempo libre cuando es la comida (lo que manda el motor v3). */
 const LUNCH_FREE_LABEL = 'la comida'
-type FreeTimeEntry = NonNullable<DayPlan['freeTime']>
+type FreeTimeEntry = NonNullable<DayPlan['freeTime']> & { title?: string | null }
 /** Los huecos con nombre del día: la lista nueva o, de rutas guardadas antes, el único que había. */
 const freeTimesOf = (day: DayPlan): FreeTimeEntry[] => day.freeTimes ?? (day.freeTime ? [day.freeTime] : [])
 
@@ -730,7 +730,7 @@ export function DayDetailPanel({
         time={time}
         hours={0}
         city={day.city}
-        midDay={{ minutes: entry.minutes, before: entry.before, hint: entry.hint }}
+        midDay={{ minutes: entry.minutes, before: entry.before, hint: entry.hint, title: entry.title }}
         onOpenMap={() => {
           const here = realStops[index]?.coordinates
           setAddStopFocus(here && hasRealCoordinates(here) ? here : null)

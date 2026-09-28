@@ -31,7 +31,7 @@ interface FreeTimeBlockProps {
   onPickSuggestion?: (name: string) => void
   /** Hueco a mitad de día (no antes de cenar): minutos libres, la parada que viene después y, si no hay
       sugerencias de lugares, una idea corta de la zona. */
-  midDay?: { minutes: number; before: string; hint?: string | null }
+  midDay?: { minutes: number; before: string; hint?: string | null; title?: string | null }
   /** 90 min o menos antes de cenar en un barrio con ambiente: "Aperitivo y paseo por {barrio}". */
   aperitivo?: { title: string; minutes: number }
 }
@@ -66,10 +66,10 @@ export function FreeTimeBlock({ time, hours, city, onOpenMap, suggestions, onPic
   if (midDay && !(suggestions && suggestions.length > 0)) {
     return (
       <Row time={time}>
-        <p className="font-semibold text-text">Tiempo libre</p>
+        <p className="font-semibold text-text">{midDay.title ?? 'Tiempo libre'}</p>
         <p className="mt-0.5">
           Tienes {midDay.minutes} min libres antes de la siguiente parada ({midDay.before}).{' '}
-          {midDay.hint ? `Una idea: ${midDay.hint}` : 'Tómate algo o descansa un rato.'}
+          {midDay.title && midDay.hint ? midDay.hint : midDay.hint ? `Una idea: ${midDay.hint}` : 'Tómate algo o descansa un rato.'}
         </p>
       </Row>
     )
@@ -77,7 +77,7 @@ export function FreeTimeBlock({ time, hours, city, onOpenMap, suggestions, onPic
   if (suggestions && suggestions.length > 0) {
     return (
       <Row time={time}>
-        <p className="font-semibold text-text">{midDay ? 'Tiempo libre' : 'Tarde libre'}</p>
+        <p className="font-semibold text-text">{midDay ? (midDay.title ?? 'Tiempo libre') : 'Tarde libre'}</p>
         <p className="mt-0.5">
           {midDay ? (
             <>

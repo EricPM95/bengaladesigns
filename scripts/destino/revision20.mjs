@@ -263,7 +263,7 @@ for (const [index, viaje] of VIAJES.entries()) {
       })()
       if (before == null) continue
       const idea = entry.suggestions?.length ? `ideas: ${entry.suggestions.map((s) => s.name).join(', ')}` : entry.hint ?? ''
-      row(before - 0.7, m2t(quarter(before - entry.minutes)), `Tiempo libre antes de ${cell(entry.before)}`, `${entry.minutes} min`, '🕐 Tiempo libre', '', cell(idea))
+      row(before - 0.7, m2t(quarter(before - entry.minutes)), entry.title ? cell(`${entry.title} (antes de ${entry.before})`) : `Tiempo libre antes de ${cell(entry.before)}`, `${entry.minutes} min`, '🕐 Tiempo libre', '', cell(idea))
     }
     // Lo de antes de cenar: nocturnas, aperitivo o tarde libre; y la cena.
     const lastDay = dayStops.at(-1)
