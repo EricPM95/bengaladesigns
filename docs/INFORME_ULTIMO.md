@@ -2,6 +2,31 @@
 
 Dos trabajos: **«+ Añadir día»** (aquí arriba) y el **repaso de las 20 rutas** (más abajo). Todo en commits y **sin subir**.
 
+# Restaurantes en comidas y cenas
+
+## a) Qué he cambiado
+
+- **Cada comida y cada cena lleva un restaurante nuestro**, como pediste en tu último mensaje. Lo de «solo la zona» lo dejé a medias y lo he descartado.
+  - Si ese día cierra, el motor pone otro de los del día o, si cierran todos, uno de la misma zona.
+- **Días de cierre:**
+  - 29 de los 66 restaurantes cierran algún día de la semana. Lo he leído del horario que ya tenían comprobado en su fuente.
+  - L'Arcangelo cierra del 10 al 31 de agosto.
+- **En la línea sale «Comida · Armando al Pantheon»**, con los minutos andando desde la parada anterior y hasta la siguiente, y el botón «Cambiar».
+  - «Cambiar» abre el mapa de restaurantes centrado en esa zona, con los de la zona primero («Recomendado») y en gris los que cierran ese día («Hoy cierra»).
+  - Probado: elegí otro restaurante y la franja de la comida siguió en 13:30–14:45.
+- **Los paseos se miden desde el restaurante recomendado:** los «tramo largo» del barrido bajan de 385 a 2.
+
+## b) Lo que no he podido hacer o he hecho distinto
+
+- **Barrido: 749 de 768** (antes, 765). Los que empeoran son D4 en domingo: Edy cierra los domingos, el siguiente queda más lejos de la Galería, y se pierde el turno.
+  - Es justo el D4 que el segundo repaso pide reordenar (puntos 2 y 9), así que lo arreglo ahí.
+- **Vacaciones que no he puesto:**
+  - Li Rioni cierra «unas dos semanas en agosto», sin fechas.
+  - Ningún horario comprobado dice nada de Navidad.
+- **La auditoría saca 4 avisos nuevos:**
+  - Dos esperas antes de cenar de 22 y 25 min.
+  - Dos «Trastevere de noche» con el texto genérico, que es el punto 6 del segundo repaso.
+
 # «+ Añadir día»
 
 ## a) Qué he cambiado
