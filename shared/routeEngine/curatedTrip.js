@@ -150,6 +150,13 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     const close = place ? parseClosingMinutes(effectiveSchedule(place, hours)) : null
     return close != null && hours.sunset != null && close < hours.sunset
   }
+  const sunCondition = (cond, day) => {
+    const toMinutes = (hhmm) => Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1] ?? 0)
+    const sunset = day ? hoursOf(day).sunset : null
+    if (cond.sol_antes_de != null && !(sunset != null && sunset < toMinutes(cond.sol_antes_de))) return false
+    if (cond.sol_despues_de != null && !(sunset != null && sunset >= toMinutes(cond.sol_despues_de))) return false
+    return true
+  }
   const isWinter = (day) => {
     const sunset = hoursOf(day).sunset
     return sunset != null && sunset < WINTER_SUNSET_BEFORE
@@ -326,7 +333,10 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       (cond.no_si_dia == null || !order.includes(cond.no_si_dia)) &&
       (cond.fecha == null || (Boolean(day) && realDateIso(day)?.slice(5) === cond.fecha)) &&
       (cond.cierra_antes_del_atardecer == null || (Boolean(day) && closesBeforeSunset(cond.cierra_antes_del_atardecer, day))) &&
-      (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))),
+      (cond.estacion == null || !day || (cond.estacion === 'no_invierno' ? !isWinter(day) : isWinter(day))) &&
+      // `sol_antes_de` / `sol_despues_de`: por la hora del sol ese día (Santa Maria del Popolo, que abre de 16:00 a 18:00:
+      // después del Pincio solo si el sol se pone antes de las 17:00).
+      sunCondition(cond, day),
     )
   }
   // `nombre`: el título del día; una variante que mueve la parada que el título promete trae el suyo ("Trevi sin gente" en
@@ -352,6 +362,7 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
         // `estacion`: solo en invierno o fuera de él (D4 en domingo: Santa Maria del Popolo antes del Pincio en verano,
         // después en invierno, cuando abre a las 16:30 y el sol ya se ha puesto).
         if (insert.estacion && (insert.estacion === 'invierno') !== isWinter(day)) continue
+        if (!sunCondition(insert, day)) continue
         if (insert.despues_de) {
           const after = sections.tarde.findIndex((stop) => stop.lugar === insert.despues_de)
           sections = { ...sections, tarde: after >= 0 ? [...sections.tarde.slice(0, after + 1), insert.parada, ...sections.tarde.slice(after + 1)] : [...sections.tarde, insert.parada] }
@@ -362,7 +373,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       }
       if (variant.atardecer) sections = { ...sections, tarde: sections.tarde.map((stop) => (stop.lugar === variant.atardecer ? { ...stop, rol: 'atardecer' } : stop)) }
       // `sin_estirar`: ese día no se estira (D4 en domingo: el Parque, para que Santa Maria del Popolo llegue abierta).
-      if (variant.sin_estirar) sections = { ...sections, tarde: sections.tarde.map((stop) => (variant.sin_estirar.includes(stop.lugar) ? { ...stop, estirar: undefined } : stop)) }
+      // (Solo si lo que va detrás lo necesita: con Free Tour o con el sol pronto, Santa Maria del Popolo va antes o después.)
+      if (variant.sin_estirar && !hasFreeTour && sunCondition({ sol_despues_de: '17:00' }, day)) sections = { ...sections, tarde: sections.tarde.map((stop) => (variant.sin_estirar.includes(stop.lugar) ? { ...stop, estirar: undefined } : stop)) }
     }
     // Invierno de ESTE día: con `atardecer_antes_de`, solo si el sol se pone antes de esa hora (D2: 18:20 — antes, se
     // sube primero al Janículo). `tranquilo_invierno` sigue la condición de la suya o, si no la trae, la de invierno.
@@ -1022,6 +1034,29 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     // arriba en el mirador: se alarga de 15 en 15 min mientras no se caiga nada. Cada una hasta su `estirar_max`
     // (el Circo Máximo, un prado: 30 min); lo que pase, a la otra estirable del día (la Via Appia) y, si aún sobra,
     // se queda como tiempo libre con nombre antes del atardecer (PROMPT_AJUSTES_20_RUTAS B.4).
+    // La espera antes de una parada que abre más tarde (Santa Maria del Popolo, a las 16:30 el domingo) se queda en la
+    // estirable que va justo antes (el Parque), de 15 en 15 min y sin que se caiga nada (decisión del usuario,
+    // 2026-09-28: nada de horas muertas de más de una hora).
+    for (let guard = 0; guard < 4; guard++) {
+      const at = result.visits.findIndex((visit, index) => index > 0 && visit.place.sunset == null && units.find((unit) => unit.id === result.visits[index - 1].unitId)?.stretch && visit.start - result.visits[index - 1].end - (visit.walkMinutes ?? 0) > 30)
+      if (at < 0) break
+      const previous = result.visits[at - 1]
+      const unit = units.find((other) => other.id === previous.unitId)
+      const wait = result.visits[at].start - previous.end - (result.visits[at].walkMinutes ?? 0)
+      let done = false
+      for (let extra = Math.floor((wait - 10) / 15) * 15; extra >= 15 && !done; extra -= 15) {
+        const list = units.map((other) => (other === unit ? { ...other, places: other.places.map((place, index) => (index === other.places.length - 1 ? { ...place, duration_minutes: (place.duration_minutes ?? 30) + extra } : place)) } : other))
+        const trial = schedule(day, list, dinnerPoint, spots.length > 0 ? spots : allLunchSpots, morning)
+        const keepsAll = result.visits.every((visit) => trial.visits.some((other) => other.unitId === visit.unitId))
+        const sunKept = !result.visits.some((visit) => visit.place.sunset != null) || trial.visits.some((visit) => visit.place.sunset != null)
+        if (keepsAll && sunKept) {
+          units = list
+          result = trial
+          done = true
+        }
+      }
+      if (!done) break
+    }
     const sunsetAt = result.visits.findIndex((visit) => visit.place.sunset != null)
     const stretchVisits = sunsetAt > 0 ? result.visits.slice(0, sunsetAt).reverse().filter((visit) => units.find((unit) => unit.id === visit.unitId)?.stretch) : []
     const stretchVisit = stretchVisits[0] ?? null

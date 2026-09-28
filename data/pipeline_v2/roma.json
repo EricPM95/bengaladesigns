@@ -9918,6 +9918,18 @@
               "minutos": 30
             },
             {
+              "lugar": "Santa Maria del Popolo",
+              "rol": "parada",
+              "nota": "Abre de 16:00 a 18:00: con el sol después de las 17:00, antes del Pincio.",
+              "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
+              "hora_ok": true,
+              "solo": [
+                {
+                  "sol_despues_de": "17:00"
+                }
+              ]
+            },
+            {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
               "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
@@ -9927,7 +9939,12 @@
               "rol": "parada",
               "nota": "Abre de 16:00 a 18:00: después del atardecer en el Pincio, bajando.",
               "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-              "hora_ok": true
+              "hora_ok": true,
+              "solo": [
+                {
+                  "sol_antes_de": "17:00"
+                }
+              ]
             }
           ]
         },
@@ -10002,7 +10019,7 @@
               "hora_ok": true,
               "solo": [
                 {
-                  "estacion": "no_invierno"
+                  "sol_despues_de": "17:00"
                 }
               ]
             },
@@ -10032,7 +10049,7 @@
               "hora_ok": true,
               "solo": [
                 {
-                  "estacion": "invierno"
+                  "sol_antes_de": "17:00"
                 }
               ]
             }
@@ -10072,29 +10089,26 @@
           "insertar": [
             {
               "antes_de": "Terraza del Pincio",
-              "estacion": "no_invierno",
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
                 "nota": "El domingo solo abre de 16:30 a 18:00.",
                 "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
                 "hora_ok": true
-              }
+              },
+              "sol_despues_de": "17:00"
             },
             {
               "despues_de": "Terraza del Pincio",
-              "estacion": "invierno",
               "parada": {
                 "lugar": "Santa Maria del Popolo",
                 "rol": "parada",
                 "nota": "El domingo solo abre de 16:30 a 18:00.",
                 "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
                 "hora_ok": true
-              }
+              },
+              "sol_antes_de": "17:00"
             }
-          ],
-          "sin_estirar": [
-            "Parque de Villa Borghese"
           ]
         },
         "tranquilo_invierno": {

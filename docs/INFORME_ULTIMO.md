@@ -1,78 +1,128 @@
-# Informe de esta tanda (28 de septiembre de 2026)
+# Informe de esta tanda (28 de septiembre de 2026, tarde)
 
-Todo está guardado en commits separados (uno por parte) y **sin subir**. Las 20 rutas regeneradas están en `docs/REVISION_20_RUTAS.md`.
+Todo está guardado en commits separados, uno por punto, y **sin subir**. Las 20 rutas regeneradas están en `docs/REVISION_20_RUTAS.md`. Debajo de cada viaje sale su nota de temporada, y al final hay una sección nueva, «Auditoría automática».
 
 ## a) Qué he cambiado
 
-- **A — Títulos y Trevi.** Los títulos se quedan como acordamos (D3 sigue siendo "Trevi sin gente"). En las rutas, Trevi lleva mis textos. En la ficha va tu `trevi_ficha` tal cual (empieza por "No es una entrada" y lleva `cifra_ok`).
-- **B — Todo monumento es parada.** Todo lugar de nivel 1 o 2 sale con su propia línea, por dentro o por fuera. Nunca va "Por el camino" ni escondido en el texto de otra parada.
-  - Los 12 textos "por fuera" están en roma.json y en `docs/roma_por_que.json`.
-  - La Conciliazione pasa a nivel 3.
-  - San Luigi, el Gesù y Santa Maria in Trastevere pasan a "interior". Al revisar he encontrado otras dos en el mismo caso: Santa Maria sopra Minerva y San Ignacio. Las cinco siguen marcadas como entrada gratis.
-  - Si un lugar no tiene tiempo "por fuera", va a "No te dio tiempo".
-  - Queda apuntado en las normas del motor y en el kit de destino nuevo.
-- **C — Primero la plaza o el puente, luego el monumento.** Tiene las dos excepciones que pediste: el monumento con hora fija, y la plaza o el puente que es el sitio del atardecer o de la noche. La revisión lo cuenta: **0 casos** en las 20 rutas.
-- **D — D2 y D1.**
-  - D2, en todas sus variantes: Conciliazione (10 min) → Puente → Castillo. En invierno, sin Borgo Pio. El Janículo sigue al atardecer en verano, invierno y tranquilo.
-  - D1 y D1-FT: Campidoglio → Plaza Venecia (10 min) → Altar (45 min).
-  - Ningún otro día va de San Pedro al Castillo.
-- **E — La app.** Todas las paradas tienen las mismas pestañas: Resumen, Entradas y Tips.
-  - La cabecera cerrada dice "Por dentro · 75 min" con icono de entrada, o "Por fuera · 15 min" con icono de cámara.
-  - En Resumen, si la parada va por fuera, sale una línea con el motivo.
-  - Todo con el diseño Trazo. Hay capturas en `docs/diseno/por_dentro_fuera/`.
-- **F — "Quiero entrar".** Las paradas que van por fuera porque no caben llevan un interruptor. Al tocarlo, el motor rehace ese día con la parada por dentro, y antes de guardar enseña una frase con lo que cambia y los botones "Vale" / "Mejor no". Si hay que quitar un imprescindible o el atardecer, lo pregunta.
-  - Probado con la ruta 1: el Castillo por dentro (70 min), Trastevere se acorta, la cena pasa de 21:00 a 21:30 y el Janículo sigue al atardecer.
-- **G — Fechas.**
-  - Sin fechas, los días son siempre normales: ni festivos, ni cierres de un día concreto, ni horarios especiales. He encontrado y arreglado un caso: un horario especial por rangos de fechas podía colarse sin fechas.
-  - Si pones las fechas desde el botón del mapa, la ruta se rehace como en el formulario y luego sale la ventana de avisos. Las reservas se mantienen.
-  - Si la ruta estaba cambiada a mano, antes pregunta "Vamos a ajustar tu ruta a estas fechas y algunos días pueden cambiar. ¿Seguimos?". Con "Mejor no", se guardan las fechas, la ruta no cambia y el día lleva la etiqueta del aviso.
-  - La revisión incluye el caso de prueba de agosto: sin fechas sale normal, y del 13 al 15 sale con el aviso de Ferragosto y el Vaticano movido al viernes 13.
-  - Hay capturas en `docs/diseno/fechas/`.
-- **Comprobación.**
-  - Recuentos de la revisión, todos a 0: monumentos sin línea, nivel 1-2 "Por el camino" o escondidos, y plazas o puentes después de su monumento.
-  - Barrido (viajes de 2 a 5 días): **765 de 768** limpios, lo mismo que antes. Los 3 que fallan son los de siempre: le falta un imprescindible.
-  - Con viajes de hasta 7 días: 1149 de 1152 limpios.
+1. **Vaticano en miércoles de invierno.** Si el viaje tiene otro día posible para D2, ya no cae en miércoles de invierno. Si no lo hay, se queda así y el Janículo sale como «Roma iluminada desde el Janículo», con el texto «Roma iluminada a tus pies»: nunca como un atardecer perdido.
+2. **Ferragosto sin fechas.** Se mantiene el aviso «Si tu viaje coincide con…», como pediste.
+3. **D1 en Navidad.** El Panteón va antes de Piazza Navona.
+4. **D4 en domingo de invierno.** El Parque de Villa Borghese va antes de Santa Maria del Popolo, así que ya no llega cerrado.
+5. **«Mejor no» al poner fechas.** No sale ninguna ventana ni ningún aviso y la ruta queda exactamente igual. Lo único que se ve es la marca roja «Hoy cierra» en la parada que cierra ese día.
+6. **Santa Maria del Popolo y San Pietro in Vincoli** tienen su tiempo «por fuera» (10 min) con tus textos. Ya no desaparecen: salen siempre como parada.
+7. **Textos nuevos.** Aplicados tal cual en todas las paradas de los días curados (también en las listas internas de los días) y en las fichas.
+   - El tono («como te lo contaría un amigo que vive allí») está en las normas y en la plantilla del kit.
+   - Los textos «por fuera» también, incluido el Ara Pacis sin tiempo por fuera, como pediste.
+8. **Datos que caducan.** Todo lo de Roma revisado en septiembre lleva «comprobado: 2026-09-28»: fechas especiales, textos con cifra, horarios por temporada y restaurantes.
+   - El validador avisa en amarillo de lo que tiene más de 11 meses o no tiene fecha.
+   - Hay un listado por destino para la revisión del 1 de diciembre (`node scripts/destino/comprobado.mjs`).
+   - Las plantillas del kit piden el campo.
+9. **Tarjeta «Por fuera».**
+   - El motivo va en la misma línea: «Por fuera · 15 min · Hoy cierra» en rojo, o «… · para llegar a todo» en gris.
+   - Por fuera ya no sale «Reserva recomendada».
+   - «Quiero entrar» es un botón dentro de la ficha, debajo del motivo. Con «Vale» se cierra la ficha y el día sale rehecho, con la parada «Por dentro».
+   - **Tarjetas sin texto** en todas las paradas (también nocturnas, pausas y «Por el camino»): el «Por qué aquí» es el primer párrafo de Resumen. El desayuno romano ahora abre su ficha.
+   - El Castillo salía con 10 min por fuera: el redondeo al cuarto de hora y la línea «visto desde el Puente» le recortaban minutos. Ahora el tiempo por fuera es siempre el del JSON.
+10. **Ventana «Quiero entrar»** en tres piezas. Ejemplo de la ruta 1: «Si entras, tendrás unos 70 min para recorrerlo y subir a la terraza del ángel. Para que te dé tiempo, cenas a las 21:30. Tranquilo: sigues llegando al Janículo para el atardecer.»
+    - Si se pierde el atardecer, lo dice y ofrece la versión de noche.
+11. **Dos fallos.**
+    - Un lugar ya no sale dos veces el mismo día (la Galería de D4 con Free Tour).
+    - El Ara Pacis va a «No te dio tiempo» si no se entra.
+    - Los minutos «por fuera» no se recortan.
+12. **Revisión «como un local».** Todo con reglas generales:
+    - la Galería del pool vuelve a entrar en la ruta 20 (ese día se madruga un poco y la comida es más corta);
+    - la Galería y el Castillo cierran el 25/12 y el 1/1 (comprobado en sus webs); también Capitolinos, Mercados de Trajano y Ara Pacis el 25/12 y el 1/5, y Doria Pamphilj;
+    - el 25 de diciembre y el Domingo de Pascua, el día lleva la **Bendición Urbi et Orbi de 11:30 a 12:30**, con ida en metro A o bus 64. Ese día se come cerca de San Pedro y se vuelve en metro;
+    - el tiempo libre acaba cuando hay que salir a cenar, y la nocturna antes de cenar dura 25 min como mucho;
+    - Castillo → Janículo en el bus 115 o 870 desde Via Paola (comprobado en ATAC);
+    - el mirador que llega después del sol pasa a ser nocturno. Si con el orden normal llega tarde, se usa el de invierno;
+    - la cena empieza en el cuarto de hora siguiente a llegar;
+    - la Plaza de España dura 20 min como mínimo;
+    - órdenes nuevos en D4 (invierno, domingo, con Free Tour, tranquilo de invierno), D1 (tranquilo sábado y tranquilo invierno), D1-FT tranquilo (se come junto a los Foros), D5 (Isla Tiberina y Teatro de Marcelo de camino) y D4M tranquilo (Pincio de parada).
+13. **Avisos de fechas que cuadran con la ruta.**
+    - La promesa final («Hemos puesto…») solo sale si la sugerencia está de verdad en la ruta.
+    - La Girandola del 29 de junio es la nocturna de esa noche, a las 21:30 en el Puente Sant'Angelo.
+    - Si el aviso automático ya cuenta los cierres, del texto curado sale solo el contexto (tu texto sin la parte de cierres). Así no se repite y nunca nombra un lugar que no está en el viaje: el 1 de mayo ya no habla de Caracalla.
+14. **Auditoría automática** en la revisión y en el barrido, para cualquier destino, con todas las comprobaciones que listaste y la lista de casos de cada una.
+15. **Retocar la ruta.**
+    - Añadir, quitar o cambiar la hora de una parada solo toca esa parada y los paseos con la anterior y la siguiente: nada se empuja.
+    - La parada nueva entra con hora sugerida (fin de la anterior más el paseo, al cuarto de hora).
+    - «Volver a la ruta original» recupera exactamente el día que dimos, con su aviso.
+    - Antes de rehacer un día o el viaje con cambios sale «Perderás los cambios que hiciste en el día N».
+    - Los días libres no los toca el motor ni al rehacer el viaje. Su primera parada va a las 09:30, o se ponen «Sin hora».
+    - Todo se guarda con el viaje.
+16. **Nota de temporada** (tu añadido).
+    - Sale una vez, encima del Día 1, con el degradado de temporada del formulario, y se puede cerrar. Ese efecto ya existía en el formulario Trazo y lo he reutilizado.
+    - Solo promete lo que se cumple: «Roma iluminada» si hay nocturna; «a primera hora» si la mayoría de los días empieza por un imprescindible antes de las 10:00.
+    - Sin fechas dice «Si viajas en marzo, …».
+    - Si sale, no sale el banner de invierno.
+    - Capturas en `docs/diseno/nota_temporada/`.
+
+**Comprobación**
+- Auditoría de las 20 rutas: todo a 0 menos «lugar repetido otro día» (2 casos, ver pregunta 1).
+- Recuentos de siempre: todos a 0.
+- Barrido (viajes de 2 a 5 días): **759 de 768** limpios (antes, 765). Salen 7 huecos nuevos, explicados en el apartado b, más los 3 de siempre (falta un imprescindible). La auditoría automática también cuenta sus casos en el barrido.
 
 ## b) Lo que no he podido hacer o he hecho distinto
 
-- **Sube el número de lugares que se quedan en "No te dio tiempo".** Es consecuencia de la regla B.5: Santa Maria del Popolo y San Pietro in Vincoli no tienen tiempo "por fuera", así que cuando no caben ya no se ven de paso. Es lo que pediste, pero lo verás más en la revisión.
-- **Dos cosas de los datos que no he tocado, para que lo decidas tú:**
-  - D1 en Navidad (variante del 25 de diciembre) pone Piazza Navona antes del Panteón.
-  - D4 en domingo de invierno pone el Parque de Villa Borghese a una hora a la que ya cierra (17:00), justo después de Santa Maria del Popolo.
-- **"Mejor no" al poner fechas.** Tus textos de fechas dicen "Hemos ajustado tu ruta…" o "Hemos puesto tu visita…", y con "Mejor no" eso no es verdad. En ese caso:
-  - quito esa última frase de tu texto;
-  - en lo que genera el motor escribo "Tu ruta sigue como la tenías: ese día solo podrás verlo por fuera", o "…: mira que tu visita caiga dentro" si hay horario especial;
-  - la ventana se titula "Lo que pasa en tus fechas" en vez de "Hemos preparado tu viaje para estas fechas".
-
-  Son textos míos: cámbialos si quieres.
-- **Sin fechas también quito "Hemos ajustado…"** del aviso "Si tu viaje coincide con…", por la misma razón.
-- **En los destinos que no son curados**, el botón de fechas solo guarda las fechas, como antes. Rehacer esas rutas supondría llamadas nuevas a Claude.
-- **Al rehacer la ruta por fechas**, las paradas que el viajero había pasado a "por dentro" con "Quiero entrar" vuelven a lo que decida el motor para las fechas nuevas.
-- **Las capturas de la ficha a pantalla completa salen en blanco** con el navegador sin ventana. He comprobado el contenido leyendo el texto de la página.
+- **Lugares que no existen en los datos.** Trinità dei Monti, Via Veneto, Via del Babuino y Via Margutta no están en roma.json. No los he inventado sin coordenadas. Los órdenes nuevos de D4 van sin ellos.
+- **D4 con Free Tour.**
+  - En invierno el Parque va por la mañana, como pediste.
+  - En verano va por la tarde, entre Santa Maria del Popolo y el Pincio, para que absorba la espera hasta el atardecer (con el Parque por la mañana quedaban casi 3 h libres).
+  - En invierno, Santa Maria del Popolo va después del Pincio: abre a las 16:00 y el sol se pone a las 16:40.
+- **D1-FT tranquilo** come junto a los Foros en todas las épocas, no solo en invierno: el ir y volver al Ghetto pasaba igual todo el año.
+- **D1 tranquilo en invierno.** Con la comida larga del ritmo tranquilo, el Campidoglio llega a las 16:45 con el sol a las 16:43: sale como «Roma iluminada desde el Campidoglio».
+- **D4 en domingo de primavera o verano.** Santa Maria del Popolo cierra a las 18:00 y el turno de la Galería es a las 15:00: sale por fuera (su texto invita a entrar si está abierta).
+- **Ruta 3, 27 de marzo (D2).** Con el orden de invierno quedaba más de una hora de espera antes del Janículo. La he llenado con el Castillo por dentro, que es lo que haría un local. Se pierde el callejeo por Trastevere, pero esa noche se cena allí.
+- **Verano.** El tiempo libre con nombre antes del atardecer se acepta hasta 150 min, como decidimos el 27 de septiembre. La auditoría solo marca lo que pasa de ahí.
+- **Redondeo al cuarto de hora.** Las horas que ve el viajero pueden correr hasta 7 min respecto a las del motor, así que la auditoría da ese margen. Quedan dos casos al límite: Santa Maria in Trastevere de 19:45 a 20:05 con cierre a las 20:00, y los Foros a las 17:45 con el sol a las 17:43.
+- **Cierres del 25/12 y el 1/1 sin confirmar** (no los he tocado): Cúpula de San Pedro, Domus Aurea, Villa Farnesina, Galería de Arte Moderno y San Clemente.
+- **Textos míos para revisar:**
+  - «lo mejor de la visita» de 12 monumentos (el del Castillo es tuyo);
+  - el texto de la Bendición en Pascua;
+  - los «contexto», recortados de tus textos quitando la parte de cierres.
+  
+  Están en `docs/roma_por_que.json` (por_fuera) y `docs/roma_fechas_especiales.json`.
+- **San Ignacio lleva `cifra_ok`** (la moneda de 1 €) porque venía así en tu archivo, aunque dijiste «cifra_ok solo en Trevi».
+- **La revisión automática del 1 de diciembre** no la he programado: el listado está listo (`comprobado.mjs`), pero programarla es una tarea fija que prefiero que decidas tú.
+- **Nota de temporada en noviembre.** Pediste la época «de by_period». En Roma el horario de invierno empieza con el cambio de hora (25 de octubre), así que con el sol antes de las 17:30 la nota es la de invierno. Noviembre sale como invierno y no como «buena época».
+- **Huecos que quedan en el barrido (7):**
+  - Cinco lunes de octubre en D2: el Castillo cierra, así que con el orden de invierno no hay nada que ver por dentro para llenar la espera, y quedan unos 100 min de tiempo libre, con ideas, antes del Janículo.
+  - Un D4 con Free Tour en mayo: 94 min antes del Pincio. En mayo aún no aplica la regla de verano de los 150 min.
+  - Un D3 tranquilo en agosto con Free Tour: una tarde libre de 163 min.
+- **D4 en domingo de verano:** el Parque llena ahora la espera, pero Santa Maria del Popolo sigue por fuera (turno de la Galería a las 15:00 y cierre a las 18:00).
+- **No hecho, como pediste:** la pantalla de día libre después del formulario y el botón «+» para añadir un día.
 
 ## c) Preguntas y decisiones para ti
 
-1. **Janículo en D2.**
-   - **13 y 14 de octubre de 2026:** con los cambios de la Parte D ya no se cae. En todas las combinaciones que he probado (2, 3 y 4 días, completo y tranquilo) llega a las 18:45 con el atardecer. Antes se caía en tranquilo: el motor quitaba el Puente para llegar al sol y el Janículo llegaba tarde. Ahora Trastevere cede 15 o 30 min y todo cabe.
-   - **8 de diciembre de 2026 (viaje de 4 días):** D2 cae el miércoles 9. En invierno y en miércoles pasan dos cosas: por la audiencia del Papa, la Basílica y la Cúpula van después de comer, y el sol se pone a las 16:39. El Janículo llega a las 17:15 y sale como "Roma iluminada" (de noche), no al atardecer. Pasa en cualquier miércoles de invierno en que caiga D2.
+1. **El Campidoglio se repite en D5** (rutas 11 y 12). D5 acaba en el mirador del Campidoglio al atardecer («Terminas el día en la plaza de Miguel Ángel…»), y el viaje ya lo vio en D1 o D1-FT.
    - Opciones:
-     - (a) Si el viaje tiene otro día libre para D2, no ponerlo en miércoles en invierno.
-     - (b) En esos miércoles, ver la Cúpula por fuera o quitarla para llegar al sol.
-     - (c) Dejarlo así: se ve de noche, que también es bonito.
-   - **Recomiendo (a), y (c) cuando no haya otro día.**
-2. **Aviso de Ferragosto sin fechas.** Con 3 días de agosto sin fechas, la ruta sale normal, pero la ventana de avisos enseña "Si tu viaje coincide con los días del 14 al 15 de agosto: …", sin etiqueta en ningún día. Así lo decidimos en su día para los viajes sin fechas.
+     - (a) Marcarlo como revisita al atardecer.
+     - (b) Que D5 acabe en otro sitio (el Circo Máximo al atardecer) cuando el Campidoglio ya va en el viaje.
+   - **Recomiendo (a)**: de noche es otra vista y el texto lo vende.
+2. **El Gesù, San Luigi y Santa Maria in Trastevere** son de nivel 2, se visitan por dentro y no tienen tiempo «por fuera». Si un día no caben o cierran, desaparecen. Pasa lo mismo que con Santa Maria del Popolo.
    - Opciones:
-     - (a) Mantenerlo.
-     - (b) Sin fechas, no enseñar avisos de días concretos, solo los de temporada.
-   - **Recomiendo (a)**: avisa sin cambiar nada. Pero si "sin Ferragosto" significaba que no saliera ni el aviso, es un cambio de una línea.
-3. **D1 en Navidad (Navona antes del Panteón).**
-   - Opciones:
-     - (a) Poner el Panteón antes de Navona, como el resto de variantes.
-     - (b) Dejarlo, si ese orden tiene un motivo que yo no veo.
+     - (a) Darles `minutos_fuera` y `por_fuera` (los textos serían tuyos).
+     - (b) Dejarlos así.
    - **Recomiendo (a).**
-4. **D4 en domingo de invierno (el Parque cierra a las 17:00).**
+3. **Lugares que faltan** para tus órdenes de D4 (Trinità dei Monti, Via Veneto, Via del Babuino, Via Margutta).
    - Opciones:
-     - (a) Poner el Parque antes de Santa Maria del Popolo en esa variante.
-     - (b) Quitar el Parque en invierno en domingo.
+     - (a) Añadirlos al JSON, con coordenadas y textos.
+     - (b) Dejar los órdenes como están.
+   - **Recomiendo (a)**, sobre todo Trinità dei Monti y Via Margutta.
+4. **Tardes de verano en D4** con 1,5-2,5 h libres antes del atardecer en el Pincio.
+   - Opciones:
+     - (a) Aceptarlo, como el 27 de septiembre.
+     - (b) Llenarlo con algo más (el Ara Pacis por dentro, compras en Via del Corso).
+   - **Recomiendo (a)**, con las ideas del tiempo libre.
+5. **Nota de temporada en noviembre** como invierno (ver apartado b).
+   - Opciones:
+     - (a) Así, por la hora del sol.
+     - (b) Por meses: noviembre, otoño.
    - **Recomiendo (a).**
-5. **Textos míos para "Mejor no"** (apartado b): revísalos y cámbialos si quieres otra forma de decirlo.
+6. **Revisión automática del 1 de diciembre.**
+   - Opciones:
+     - (a) La programo con el listado de `comprobado.mjs`.
+     - (b) La lanzas tú.
+   - **Recomiendo (a).**
+7. **Textos míos** (apartado b): revísalos cuando puedas; si los cambias en tus archivos, los aplico tal cual.

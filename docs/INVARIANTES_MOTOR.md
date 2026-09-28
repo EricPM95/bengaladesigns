@@ -1385,3 +1385,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     antes de las 10:00 (si no, "para que la disfrutes sin agobios"). Sin fechas: "Si viajas en {mes}, …". Si un aviso
     de fechas de temporada ya lo dice, sale uno; y si sale la nota, el banner de invierno no. La auditoría lo comprueba
     ("Nota de temporada que promete algo que la ruta no hace") y la revisión pone la nota de cada viaje.
+294. **Santa Maria del Popolo en D4, por la hora del sol** (2026-09-28): abre de 16:00 a 18:00 (el domingo, desde las
+    16:30). Con el sol antes de las 17:00 va después del Pincio; si no, antes (`sol_antes_de` / `sol_despues_de`, en
+    `solo` y en `insertar`). La espera antes de una parada que abre más tarde se queda en la estirable que va justo
+    antes (el Parque), de 15 en 15 min y sin que se caiga nada; `sin_estirar` solo si hace falta (sin Free Tour y con
+    el sol después de las 17:00).
