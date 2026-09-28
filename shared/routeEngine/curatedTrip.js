@@ -19,7 +19,7 @@ import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones, mainZoneOf, recommendedRestaurant } from './dinnerZones.js'
 import { MODES_V3, modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
-import { closedOnDay, effectiveSchedule, matchesDateRange, parseClosingMinutes } from './openingHours.js'
+import { closedOnDay, effectiveSchedule, matchesDateRange, parseClosingMinutes, parseHoursSessions } from './openingHours.js'
 import { specialHoursToAvoid } from './specialDates.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
@@ -1388,6 +1388,16 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       seen.add(visit.place.name)
       for (const name of visit.place.outsideOf ?? []) seen.add(name)
     }
+    // "Por fuera" por el horario: dos textos según la hora real de la visita (segundo repaso, 2026-09-28). Si ese día
+    // todavía abre más tarde, "Todavía no ha abierto (abre a las 16:00)"; si ya no, "A esta hora ya ha cerrado".
+    for (const visit of result.visits) {
+      if (visit.place.outsideKind !== 'no_abre') continue
+      const sessions = parseHoursSessions(effectiveSchedule(placeByName.get(visit.place.name) ?? visit.place, hours))
+      const opensLater = sessions.map((session) => session.open).filter((open) => open > visit.start).sort((a, b) => a - b)[0]
+      visit.place = opensLater != null
+        ? { ...visit.place, outsideReason: `Todavía no ha abierto (abre a las ${toHHMMLocal(opensLater)})` }
+        : { ...visit.place, outsideKind: 'ya_cerrado', outsideReason: OUTSIDE_REASONS.ya_cerrado }
+    }
     const { run, ...schedulePlain } = result
     return {
       ...day,
@@ -1742,4 +1752,9 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
     dateMoves,
   }
+}
+
+/** 960 → "16:00". */
+function toHHMMLocal(minutes) {
+  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 }

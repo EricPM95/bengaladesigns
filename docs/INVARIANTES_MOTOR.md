@@ -1521,3 +1521,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       y la siguiente, y "Cambiar": el mapa de restaurantes centrado en esa zona, con los de la zona primero
       ("Recomendado") y en gris los que cierran ese día ("Hoy cierra").
     - Cambiar de restaurante no mueve ninguna hora: solo cambian los minutos andando que se enseñan.
+
+308. **Segundo repaso, puntos 4 y 5: la iglesia por dentro por la mañana y dos textos de "por fuera"** (2026-09-28):
+    - Por la mañana, dentro de un mismo bloque curado, se encadena hasta 12 min andando (antes 10) sin saltar a la
+      media hora siguiente. En D4 y D4M: Plaza de España 20 min, Piazza del Popolo 15 y Santa Maria del Popolo 25,
+      para entrar a las 11:30 (su horario, comprobado en santamariadelpopoloroma.it: lun-sáb 8:30-9:45, 10:30-12:00,
+      16:00-18:00; domingo y festivos 16:30-18:00).
+    - "Por fuera" por el horario tiene dos textos, según la hora real de la visita: si ese día todavía abre más tarde,
+      "Todavía no ha abierto (abre a las 16:30)"; si ya no, "A esta hora ya ha cerrado".

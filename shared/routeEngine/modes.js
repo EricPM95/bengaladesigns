@@ -35,7 +35,7 @@ const SHARED = {
   dinnerMinutes: 60,
   chainMaxWalkMinutes: 3,
   // Dentro de un mismo bloque curado se encadena hasta 10 min andando (decisión del 2026-09-26).
-  blockChainMaxWalkMinutes: 10,
+  blockChainMaxWalkMinutes: 12,
   groupChainMaxWalkMinutes: 15,
   longVisitMinutes: 180,
   // Día con excursión de medio día: la mañana (08:00-14:00) es la excursión, 14:00-16:00 es volver

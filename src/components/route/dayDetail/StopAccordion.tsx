@@ -89,7 +89,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     else if (stop.visitMode === 'fuera') {
       // El motivo en la misma línea, a la vista sin abrir (decisión del usuario, 2026-09-28): cerrado, en rojo; por
       // tiempo, en gris y corto.
-      const short = OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null
+      // "Todavía no ha abierto (abre a las 16:00)": el texto con la hora, no el genérico.
+      const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
       const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
       // Por tiempo, todo en una pieza gris ("Por fuera · 15 min · para llegar a todo"); cerrado, el motivo en rojo.
       meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}${short && !closed ? ` · ${short}` : ''}` })

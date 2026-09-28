@@ -10231,7 +10231,8 @@
           "lugar": "Plaza de España",
           "rol": "parada",
           "nota": "Y la escalinata.",
-          "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido."
+          "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
+          "minutos": 20
         },
         {
           "lugar": "Ara Pacis",
@@ -10246,7 +10247,8 @@
         {
           "lugar": "Piazza del Popolo",
           "rol": "parada",
-          "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
+          "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
+          "minutos": 15
         },
         {
           "lugar": "Santa Maria del Popolo",
@@ -10254,7 +10256,8 @@
           "antes_de": "12:00",
           "nota": "Caravaggio. Nada más llegar a la plaza por Via del Babuino: cierra a las 12:00.",
           "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-          "hora_ok": true
+          "hora_ok": true,
+          "minutos": 25
         }
       ],
       "comida": {
@@ -10769,12 +10772,14 @@
           "lugar": "Plaza de España",
           "rol": "parada",
           "nota": "Y la escalinata.",
-          "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido."
+          "por_que": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
+          "minutos": 20
         },
         {
           "lugar": "Piazza del Popolo",
           "rol": "parada",
-          "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad."
+          "por_que": "Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad.",
+          "minutos": 15
         },
         {
           "lugar": "Santa Maria del Popolo",
@@ -10782,7 +10787,8 @@
           "antes_de": "12:00",
           "nota": "Los dos Caravaggio, gratis. Cierra a las 12:00.",
           "por_que": "Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00.",
-          "hora_ok": true
+          "hora_ok": true,
+          "minutos": 25
         },
         {
           "lugar": "Terraza del Pincio",
