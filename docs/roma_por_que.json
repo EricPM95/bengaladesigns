@@ -21,8 +21,8 @@
     "Campo de' Fiori": "Mercado por la mañana y aperitivo por la tarde: aquí se queda Roma a tomar algo antes de cenar.",
     "Plaza Farnese": "La plaza tranquila junto a Campo de' Fiori, con sus dos fuentes hechas con bañeras romanas.",
     "Fontana de Trevi": {
-      "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-      "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+      "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+      "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
       "temprano_antes": "09:00",
       "cifra_ok": true
     },
@@ -93,8 +93,8 @@
   "por_dia": {
     "D3": {
       "Fontana de Trevi": {
-        "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00.",
-        "temprano": "A primera hora casi no hay nadie y puedes bajar hasta el agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour y estará llena.",
+        "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+        "temprano": "A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena.",
         "temprano_antes": "09:00",
         "cifra_ok": true
       },
@@ -134,7 +134,8 @@
   },
   "trevi_noche": {
     "_para": "Texto de la nocturna 'Fontana de Trevi (noche)' y del paseo 'La Roma de las fuentes'.",
-    "añadir": "A partir de las 22:00 puedes bajar junto al agua sin pagar."
+    "añadir": "Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
+    "cifra_ok": true
   },
   "_por_fuera": "Si un texto es {texto, por_fuera}: 'por_fuera' se usa cuando la parada sale 'Por fuera' (un monumento que ese día no se visita por dentro); si no, 'texto'."
 }

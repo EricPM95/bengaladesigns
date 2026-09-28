@@ -57,7 +57,7 @@
     {
       "name": "Fontana de Trevi (noche)",
       "duration": 45,
-      "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma. A partir de las 22:00 puedes bajar junto al agua sin pagar.",
+      "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
       "coordinates": [
         41.9009,
         12.4833
@@ -8163,8 +8163,8 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -9063,8 +9063,8 @@
           },
           "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00.",
-            "temprano": "A primera hora casi no hay nadie y puedes bajar hasta el agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour y estará llena.",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora casi no hay nadie y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00). Luego pasarás con el tour a media mañana y estará llena.",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9412,8 +9412,8 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-            "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9533,8 +9533,8 @@
               "hora": "08:00",
               "nota": "A las 08:00, sin gente.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -9764,8 +9764,8 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -9821,8 +9821,8 @@
           "hora": "08:00",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-            "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+            "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
             "temprano_antes": "09:00",
             "cifra_ok": true
           }
@@ -9949,8 +9949,8 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y verla es gratis. Solo para bajar junto al agua hay una tasa de 2 € de 9:00 a 22:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano": "A primera hora, sin gente, y puedes bajar hasta el agua sin pagar: la tasa de 2 € para la zona de abajo empieza a las 9:00. Haz la foto sin nadie delante.",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada.",
+                "temprano": "A primera hora, sin gente: la ves tranquila, haces la foto sin nadie delante y bajas junto al agua sin pagar (la tasa de 2 € empieza a las 9:00).",
                 "temprano_antes": "09:00",
                 "cifra_ok": true
               }
@@ -10531,8 +10531,9 @@
           "Plaza de España (noche)"
         ]
       },
-      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. A partir de las 22:00 puedes bajar junto al agua sin pagar.",
-      "maximo_tranquilo": 2
+      "texto": "A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.",
+      "maximo_tranquilo": 2,
+      "cifra_ok": true
     },
     "trastevere": {
       "nombre": "Trastevere de noche",
