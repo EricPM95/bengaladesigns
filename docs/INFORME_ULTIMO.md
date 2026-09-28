@@ -1,3 +1,54 @@
+# Ruta 3 de octubre y miradores de noche (28 de septiembre de 2026)
+
+Todo va en commits y **sin subir**. La revisión ya tiene **26 rutas** (la 26 es la de tres días con Free Tour desde el 18 de octubre de 2027).
+- **Auditoría: todo a 0.**
+- **Barrido: 765 de 768.**
+
+## a) Qué he cambiado
+
+1. **Día 3 (D5C):** recupera Letrán, entre San Clemente y Santa María la Mayor, y desaparecen los 42 min antes de los Foros.
+   - Regla general: antes de dejar más de 30 min de tiempo libre, el día recupera una parada suya que se había quedado fuera solo por el sol o la estación, si está abierta y cabe.
+2. **Día 2 (D1-FT de invierno):**
+   - Isla Tiberina, Trastevere (parada), el Tempietto por dentro (17:00), la Fontana dell'Acqua Paola y el Janículo al atardecer (18:15), andando.
+   - Luego se baja a Santa Maria in Trastevere y a cenar.
+   - Con el sol pronto (diciembre), sigue el bus 115.
+   - El Tempietto abre de martes a domingo de 10:00 a 18:00, con la última entrada a las 17:30 (Real Academia de España). He añadido la última entrada a los datos.
+3. **Miradores de noche:** sin corte fijo en las 18:30. El día elige el orden con el que el mirador llega a su hora, y solo si ninguno llega sale «Roma iluminada desde…».
+
+## b) Los miradores de noche, comparados con antes del corte
+
+- **Antes del corte** había 94 casos distintos (viaje, día y mirador) en el barrido. **Ahora hay 71.**
+- **No hay ninguno nuevo.** Los 37 de más que salían con el corte ya no están: eran del corte.
+- **Estos 23 salían de noche antes y ahora llegan al atardecer:**
+
+- 2 días, completo, con Free Tour, naturaleza, desde el 2026-10-13 · día 2 (D1-FT) · Mirador del Janículo
+- 3 días, completo, con Free Tour, ninguna, desde el 2026-10-13 · día 2 (D1-FT) · Mirador del Janículo
+- 3 días, completo, con Free Tour, ninguna, desde el 2026-11-14 · día 3 (D5C) · Via dei Fori Imperiali
+- 3 días, completo, con Free Tour, naturaleza, desde el 2026-11-10 · día 3 (D5C) · Via dei Fori Imperiali
+- 3 días, completo, con Free Tour, barrios, desde el 2026-11-08 · día 3 (D5C) · Via dei Fori Imperiali
+- 3 días, tranquilo, con Free Tour, arte, desde el 2026-11-10 · día 3 (D4) · Terraza del Pincio
+- 4 días, completo, sin Free Tour, naturaleza, desde el 2026-10-13 · día 2 (D2) · Mirador del Janículo
+- 4 días, completo, con Free Tour, ninguna, desde el 2026-10-09 · día 4 (D1-FT) · Mirador del Janículo
+- 4 días, completo, con Free Tour, naturaleza, desde el 2026-10-12 · día 2 (D1-FT) · Mirador del Janículo
+- 4 días, tranquilo, con Free Tour, ninguna, desde el 2026-11-08 · día 4 (D4) · Terraza del Pincio
+- 4 días, tranquilo, con Free Tour, arte, desde el 2026-11-13 · día 2 (D4) · Terraza del Pincio
+- 4 días, tranquilo, con Free Tour, naturaleza, desde el 2026-11-11 · día 4 (D4) · Terraza del Pincio
+- 4 días, tranquilo, con Free Tour, barrios, desde el 2026-11-09 · día 4 (D4) · Terraza del Pincio
+- 5 días, completo, sin Free Tour, ninguna, desde el 2027-03-13 · día 5 (D5) · Plaza del Campidoglio
+- 5 días, completo, sin Free Tour, ninguna, desde el 2026-10-13 · día 2 (D2) · Mirador del Janículo
+- 5 días, completo, con Free Tour, ninguna, desde el 2026-10-12 · día 2 (D1-FT) · Mirador del Janículo
+- 5 días, completo, con Free Tour, arte, desde el 2026-10-10 · día 3 (D1-FT) · Mirador del Janículo
+- 5 días, completo, con Free Tour, naturaleza, desde el 2026-10-08 · día 5 (D1-FT) · Mirador del Janículo
+- 5 días, completo, con Free Tour, barrios, desde el 2027-03-13 · día 5 (D5) · Plaza del Campidoglio
+- 5 días, completo, con Free Tour, barrios, desde el 2026-10-13 · día 2 (D1-FT) · Mirador del Janículo
+- 5 días, tranquilo, con Free Tour, ninguna, desde el 2026-11-11 · día 3 (D4) · Terraza del Pincio
+- 5 días, tranquilo, con Free Tour, arte, desde el 2026-11-09 · día 3 (D4) · Terraza del Pincio
+- 5 días, tranquilo, con Free Tour, barrios, desde el 2026-11-12 · día 2 (D4) · Terraza del Pincio
+
+## c) Preguntas
+
+Ninguna.
+
 # Repaso 3 (28 de septiembre de 2026)
 
 Todo va en commits y **sin subir**. La revisión de las 25 rutas está regenerada.

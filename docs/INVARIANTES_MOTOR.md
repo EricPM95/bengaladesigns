@@ -1599,3 +1599,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       se sube andando por el Tempietto abierto (10:00-18:00, última entrada 17:30, cerrado el lunes) y la Fontana
       dell'Acqua Paola al Janículo al atardecer, y se baja a Santa Maria in Trastevere y a cenar. Con el sol pronto
       (diciembre), el bus 115.
+
+315. **Miradores al atardecer: sin corte fijo por la hora del sol** (decisión del usuario, 2026-09-28; sustituye el
+    corte de las 18:30 de la 311): el día elige el orden con el que el mirador del atardecer llega a su hora (el de
+    siempre, el de invierno, la subida por el barrio, `si_espera`). Solo si ningún orden llega, sale la versión de noche
+    («Roma iluminada desde…»).

@@ -48,8 +48,6 @@ const MID_DAY_WAIT_MAX = 60
 const FILL_INSIDE_MIN_IDLE = 20
 /** Con una espera así o más, el día recupera lo suyo que se había quedado fuera (Letrán). */
 const RECOVER_MIN_GAP = 30
-/** El orden de invierno forzado (el mirador primero) solo con el sol antes de esta hora. */
-const FORCED_WINTER_SUNSET_BEFORE = 18 * 60 + 30
 /** Lo que se cuenta para llegar andando a comer al estirar el barrio de antes de la comida. */
 const LUNCH_WALK_ALLOWANCE = 5
 /** La cena de una noche con nocturna a hora fija, a esta distancia de ella como mucho (unos 15 min andando). */
@@ -707,8 +705,8 @@ export function planCuratedTrip({ destData, totalDays, pace, hasFreeTour = false
       return cur
     }
     let forcedWinter = false
-    // (Solo con el sol antes de las 18:30: en mayo, el orden de invierno nunca; repaso 3, 2026-09-28.)
-    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno') && (planned.hours?.sunset ?? Infinity) < FORCED_WINTER_SUNSET_BEFORE) {
+    // (Sin corte fijo por la hora del sol: el día elige el orden con el que el mirador llega a su hora; repaso 3.)
+    if (sunsetLate(planned, entry.sections) && entry.cfg.variantes?.invierno && !entry.applied.includes('invierno')) {
       const after = { seen: new Set(seen), notEnoughTime: new Set(notEnoughTime), notEnoughDay: new Map(notEnoughDay) }
       restore(before)
       const { entry: winterEntry, plan: winterPlan } = fillSunWait({ entry: resolveEntry(entry.id, resolvedIndex - 1, { tardeB: entry.tardeB, forceWinter: true }), plan: null }, { tardeB: entry.tardeB, forceWinter: true })
