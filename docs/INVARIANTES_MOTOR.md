@@ -1955,3 +1955,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 372. **La cena, también a 15 min andando como mucho de lo último** (2026-09-29, PROMPT_ROMA_V4_REPASO 10): la escrita o
     su alternativa si están a 15 min. Si no, la más cercana, y solo si ninguna está a 15 min, la escrita. En D4M, desde
     los Foros: La Boccaccia (8 min) o Trattoria Valentino (10), en Monti, en vez de Trattoria Monti (20).
+
+373. **Los ratos con nombre, también de 5 en 5** (2026-09-29, PROMPT_ROMA_V4_REPASO 11): aperitivo, tarde libre y tiempo
+    libre se redondean hacia abajo a 5 min al final del día (salían 43, 53 o 57 min), para no pisar lo siguiente.

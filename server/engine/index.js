@@ -486,6 +486,11 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // las versiones de antes).
   const freeTimes = freeTimesFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTimes.length > 0) day.free_times = freeTimes
+  // Todos los ratos con nombre (aperitivo, tarde libre, tiempo libre), de 5 en 5 como el resto de lo que se ve
+  // (PROMPT_ROMA_V4_REPASO 11: salían aperitivos de 43, 53 o 57 min). Hacia abajo, para no pisar lo siguiente.
+  const step5 = (minutes) => Math.max(5, Math.floor(minutes / 5) * 5)
+  for (const key of ['aperitivo', 'free_afternoon', 'free_time']) if (day[key]?.minutes != null) day[key].minutes = step5(day[key].minutes)
+  for (const entry of day.free_times ?? []) entry.minutes = step5(entry.minutes)
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
   if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)
