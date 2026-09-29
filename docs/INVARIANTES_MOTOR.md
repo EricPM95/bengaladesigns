@@ -2048,3 +2048,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     foto del barrio al anochecer (la misma búsqueda «de noche» que las nocturnas), la hora, el nombre, el tiempo («90
     min») y la etiqueta «Aperitivo». Sin número de orden, como la comida. Las ideas de camino («Plaza Trilussa · 3
     min») van dentro de su ficha (`AperitivoCard.tsx`).
+
+385. **Desde el bloque de justo antes** (2026-09-29, PROMPT_UI_REPASO 14): la comida y la cena dicen los minutos andando
+    desde lo de justo antes (con aperitivo antes de cenar, «desde el aperitivo», no desde la última parada), y a menos
+    de 1 min, «Justo al lado de…», nunca «0 min andando».

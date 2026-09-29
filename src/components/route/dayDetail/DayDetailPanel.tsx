@@ -64,6 +64,7 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
+import { AperitivoCard } from './AperitivoCard'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
@@ -557,8 +558,13 @@ export function DayDetailPanel({
     if (!restaurant) return null
     const before = realStops[index]
     const after = realStops.slice(index + 1).find((candidate) => !candidate.isNightExperience)
+    // Desde el bloque de justo antes (PROMPT_UI_REPASO 14): con aperitivo antes de cenar, desde el aperitivo, no desde la
+    // última parada; y a menos de 1 min, «Justo al lado».
+    const fromAperitivo = mealTime === 'dinner' && Boolean(day.aperitivo)
+    const fromName = fromAperitivo ? 'el aperitivo' : before?.name
+    const walkFrom = before ? estimatedWalkMinutes(before.coordinates, restaurant.coordinates) : null
     const parts = [
-      before ? `${estimatedWalkMinutes(before.coordinates, restaurant.coordinates)} min andando desde ${before.name}` : null,
+      before && fromName ? (walkFrom != null && walkFrom < 1 ? `Justo al lado de ${fromName}` : `${walkFrom} min andando desde ${fromName}`) : null,
       after ? `${estimatedWalkMinutes(restaurant.coordinates, after.coordinates)} min hasta ${after.name}` : null,
     ].filter(Boolean)
     return parts.length > 0 ? parts.join(' · ') : null
@@ -1036,6 +1042,23 @@ export function DayDetailPanel({
       const firstStart = schedule[0]?.startMinutes ?? lastEnd
       return (
         <div key={`dinner-free-${index}`}>
+          {/* El aperitivo, como una tarjeta más (PROMPT_UI_REPASO 13); sin él, el tiempo libre de siempre. */}
+          {day.aperitivo ? (
+            <AperitivoCard
+              time={minutesToTime(lastEnd)}
+              title={day.aperitivo.title}
+              minutes={day.aperitivo.minutes}
+              barrio={day.aperitivo.barrio}
+              city={day.city}
+              suggestions={day.aperitivo.suggestions}
+              onPickSuggestion={(name) => {
+                const here = realStops[index]?.coordinates
+                setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
+                setAddStopInitialQuery(name)
+                setInsertAt(index + 1)
+              }}
+            />
+          ) : (
           <FreeTimeBlock
             time={minutesToTime(lastEnd)}
             hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
@@ -1054,6 +1077,7 @@ export function DayDetailPanel({
               setInsertAt(index + 1)
             }}
           />
+          )}
         </div>
       )
     }
