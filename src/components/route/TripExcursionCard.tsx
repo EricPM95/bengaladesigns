@@ -80,7 +80,8 @@ function ExcursionSheet({ route, excursion, onClose }: { route: Route; excursion
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const photo = usePhoto(mainPlaceOf(excursion), route.country || route.destination)
   // Los días que se pueden cambiar: de ciudad, sin viaje ni vuelta.
-  const candidates = route.days.filter((day, index) => !day.isReturnLeg && !computeDayTravelInfo(route, index) && (day.dayType ?? 'normal') !== 'excursion')
+  // (El de la oferta, sí, aunque sea el de la vuelta: en Roma en 4 días, el de D5C es el último.)
+  const candidates = route.days.filter((day, index) => !day.isReturnLeg && (!computeDayTravelInfo(route, index) || Boolean(day.excursionOffer)) && (day.dayType ?? 'normal') !== 'excursion')
   // Propone el día de la oferta (Roma en 4 días: el de D5C); si no, el último.
   const proposed: DayPlan | undefined = candidates.find((day) => day.excursionOffer) ?? candidates.at(-1)
   const [step, setStep] = useState<'info' | 'day'>('info')
