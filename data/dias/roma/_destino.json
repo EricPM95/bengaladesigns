@@ -97,29 +97,27 @@
     "Parque de Villa Borghese": {
       "sitios": [
         {
-          "dia": "D4",
-          "cambios": {
-            "tarde.A": {
-              "insertar": [
-                {
-                  "antes_de": "Jardines del Pincio",
-                  "parada": {
-                    "lugar": "Parque de Villa Borghese",
-                    "titulo": "El lago de Villa Borghese",
-                    "min": 25
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
           "dia": "D4M",
           "cambios": {
             "manana": {
               "ajustar": {
                 "Parque de Villa Borghese": {
                   "tipo": "normal"
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D4",
+          "cambios": {
+            "tarde.A": {
+              "cambiar": {
+                "Jardines del Pincio": {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese y los jardines del Pincio",
+                  "min": 15,
+                  "elastica": 30
                 }
               }
             }
@@ -147,6 +145,28 @@
                   }
                 }
               ]
+            },
+            "tarde.B": {
+              "cambiar": {
+                "San Pietro in Montorio y Tempietto de Bramante": {
+                  "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                  "modo": "fuera"
+                }
+              }
+            },
+            "tarde.C": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 35
+                }
+              }
+            },
+            "tarde.D": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 35
+                }
+              }
             }
           }
         },
@@ -213,6 +233,31 @@
                   }
                 }
               ]
+            },
+            "tarde.B": {
+              "cambiar": {
+                "San Pietro in Montorio y Tempietto de Bramante": {
+                  "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                  "modo": "fuera"
+                }
+              }
+            },
+            "tarde.C": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 25
+                }
+              }
+            },
+            "tarde.D": {
+              "quitar": [
+                "Basílica de Santa Cecilia in Trastevere"
+              ],
+              "ajustar": {
+                "Trastevere": {
+                  "min": 25
+                }
+              }
             }
           }
         },
@@ -284,7 +329,20 @@
                     "si_cerrado": "fuera"
                   }
                 }
-              ]
+              ],
+              "quitar": [
+                "Isla Tiberina",
+                "Catacumbas de San Calixto"
+              ],
+              "ajustar": {
+                "Via Appia Antica": {
+                  "min": 40,
+                  "traslado": {
+                    "como": "el bus 118 (desde la Pirámide)",
+                    "min": 25
+                  }
+                }
+              }
             },
             "tarde.B": {
               "insertar": [
@@ -298,7 +356,15 @@
                     "si_cerrado": "fuera"
                   }
                 }
-              ]
+              ],
+              "quitar": [
+                "Isla Tiberina"
+              ],
+              "ajustar": {
+                "Via Appia Antica": {
+                  "min": 30
+                }
+              }
             }
           }
         },
@@ -579,5 +645,9 @@
       "_nota": "Días escritos (2026-09-29): la escalinata iluminada vale el mismo día que la Plaza de España de la mañana (D4): de noche es otra cosa.",
       "excepcion_mismo_dia": true
     }
+  },
+  "solo_explorar": {
+    "_nota": "Lugares de nivel 2 sin sitio en los días, a propósito, con el motivo: salen en Explorar y en Añadir parada.",
+    "Villa Farnesina": "Solo abre por la mañana (de 9:00 a 14:00, cerrada el domingo) y los días de Trastevere son de tarde: meterla obliga a ir y volver al otro lado del río."
   }
 }

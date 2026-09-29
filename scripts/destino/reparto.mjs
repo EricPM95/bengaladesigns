@@ -49,10 +49,11 @@ for (const level of [1, 2, 3]) {
     if (list) {
       const uniq = [...new Set(list)]
       lines.push(`- **${place.name}**: ${uniq.slice(0, 8).join(' · ')}${uniq.length > 8 ? ` · y ${uniq.length - 8} más` : ''}${extra.length ? ` · también ${extra.join(' y ')}` : ''}`)
-    } else if (level <= 2) lines.push(`- **${place.name}**: ⚠ SIN SITIO${extra.length ? ` (solo ${extra.join(' y ')})` : ''}`)
+    } else if (written.destino?.solo_explorar?.[place.name]) lines.push(`- **${place.name}**: solo en Explorar, a propósito: ${written.destino.solo_explorar[place.name]}`)
+    else if (level <= 2) lines.push(`- **${place.name}**: ⚠ SIN SITIO${extra.length ? ` (solo ${extra.join(' y ')})` : ''}`)
     else lines.push(`- ${place.name}: Explorar y sugerencias${extra.length ? ` · ${extra.join(' y ')}` : ''}`)
   }
   lines.push('')
 }
 writeFileSync(a.out ?? 'docs/REPARTO_ROMA.md', lines.join('\n') + '\n')
-console.log('sin sitio:', (D.places ?? []).filter((place) => place.level <= 2 && !sites.has(place.name)).map((place) => place.name).join(', ') || 'ninguno')
+console.log('sin sitio:', (D.places ?? []).filter((place) => place.level <= 2 && !sites.has(place.name) && !written.destino?.solo_explorar?.[place.name]).map((place) => place.name).join(', ') || 'ninguno')

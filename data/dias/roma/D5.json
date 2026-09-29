@@ -82,9 +82,22 @@
         },
         {
           "lugar": "Via Appia Antica",
-          "min": 45,
+          "min": 54,
           "elastica": 30,
-          "no_calle": true
+          "no_calle": true,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 40,
+          "elastica": 30,
+          "no_calle": true,
+          "si_dia": [
+            "D1-FT"
+          ],
+          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
         },
         {
           "lugar": "Plaza del Campidoglio",
@@ -130,9 +143,22 @@
         },
         {
           "lugar": "Via Appia Antica",
-          "min": 60,
+          "min": 55,
           "elastica": 30,
-          "no_calle": true
+          "no_calle": true,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 30,
+          "elastica": 30,
+          "no_calle": true,
+          "si_dia": [
+            "D1-FT"
+          ],
+          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
         },
         {
           "lugar": "Circo Máximo",
@@ -200,7 +226,20 @@
           "lugar": "Via Appia Antica",
           "min": 60,
           "elastica": 30,
-          "no_calle": true
+          "no_calle": true,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 40,
+          "elastica": 30,
+          "no_calle": true,
+          "si_dia": [
+            "D1-FT"
+          ],
+          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
         },
         {
           "lugar": "Circo Máximo",
@@ -276,7 +315,20 @@
           "lugar": "Via Appia Antica",
           "min": 120,
           "elastica": 30,
-          "no_calle": true
+          "no_calle": true,
+          "no_si_dia": [
+            "D1-FT"
+          ]
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 110,
+          "elastica": 30,
+          "no_calle": true,
+          "si_dia": [
+            "D1-FT"
+          ],
+          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
         },
         {
           "lugar": "Circo Máximo",
@@ -344,6 +396,13 @@
         "restaurante": {
           "comida": "Felice a Testaccio",
           "alternativa": "Da Remo"
+        }
+      },
+      "tarde.B": {
+        "ajustar": {
+          "Via Appia Antica": {
+            "min": 50
+          }
         }
       }
     },

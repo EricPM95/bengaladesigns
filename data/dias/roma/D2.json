@@ -120,7 +120,7 @@
         },
         {
           "lugar": "Trastevere",
-          "min": 30,
+          "min": 20,
           "elastica": 30
         },
         {
@@ -366,14 +366,40 @@
         "empieza": "14:25"
       },
       "tarde.B": {
-        "empieza": "14:20"
+        "empieza": "14:20",
+        "ajustar": {
+          "Trastevere": {
+            "traslado": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
+          }
+        }
       },
       "tarde.C": {
-        "empieza": "14:30"
+        "empieza": "14:30",
+        "ajustar": {
+          "Iglesia de Santa Maria in Trastevere": {
+            "traslado": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
+          }
+        }
+      },
+      "tarde.D": {
+        "ajustar": {
+          "Iglesia de Santa Maria in Trastevere": {
+            "traslado": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
+          }
+        }
       }
     },
     "lunes": {
-      "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, Santa Cecilia y más Trastevere.",
+      "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, Santa Cecilia y más Trastevere. En D, con más luz, la tarde empieza por Borgo Pio.",
       "tarde.A": {
         "paradas": [
           {
@@ -440,8 +466,52 @@
                 "min": 15
               }
             }
+          },
+          {
+            "antes_de": "Basílica de Santa Cecilia in Trastevere",
+            "parada": {
+              "lugar": "Isla Tiberina",
+              "min": 20,
+              "traslado": {
+                "como": "un taxi",
+                "min": 15
+              },
+              "no_si_dia": [
+                "D5"
+              ]
+            }
           }
         ]
+      },
+      "tarde.D": {
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Borgo Pio",
+              "min": 30
+            }
+          }
+        ],
+        "ajustar": {
+          "Trastevere": {
+            "min": 55
+          },
+          "Basílica de Santa Cecilia in Trastevere": {
+            "traslado": {
+              "como": "un taxi",
+              "min": 15
+            }
+          }
+        },
+        "mover": {
+          "Iglesia de Santa Maria in Trastevere": "despues_de:Basílica de Santa Cecilia in Trastevere"
+        }
+      },
+      "tarde.C": {
+        "mover": {
+          "Iglesia de Santa Maria in Trastevere": "despues_de:Basílica de Santa Cecilia in Trastevere"
+        }
       }
     },
     "domingo": {
@@ -594,6 +664,16 @@
             }
           }
         ]
+      }
+    },
+    "tranquilo": {
+      "_nota": "En tranquilo, los días que el Castillo va por la mañana (miércoles de audiencia, domingo), se recorre en 50 min: la mañana empieza media hora más tarde y la comida no se queda corta.",
+      "manana": {
+        "ajustar": {
+          "Castillo de Sant'Angelo": {
+            "min": 50
+          }
+        }
       }
     }
   },

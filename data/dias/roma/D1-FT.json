@@ -56,7 +56,7 @@
       },
       {
         "lugar": "Altar de la Patria",
-        "min": 40,
+        "min": 30,
         "modo": "dentro",
         "si_cerrado": "fuera"
       }
@@ -73,7 +73,7 @@
       "paradas": [
         {
           "lugar": "Barrio Judío",
-          "min": 15
+          "min": 10
         },
         {
           "lugar": "Fuente de las Tortugas",
@@ -94,7 +94,7 @@
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 15,
+          "min": 10,
           "modo": "dentro",
           "si_cerrado": "fuera"
         },
@@ -174,7 +174,7 @@
     },
     "C": {
       "_sol": "de 18:45 a 19:44: Santa Cecilia y Santa Maria in Trastevere antes de subir; el Tempietto ya ha cerrado (por fuera)",
-      "empieza": "14:50",
+      "empieza": "15:00",
       "paradas": [
         {
           "lugar": "Barrio Judío",
@@ -206,7 +206,7 @@
         },
         {
           "lugar": "Trastevere",
-          "min": 45,
+          "min": 31,
           "elastica": 30
         },
         {

@@ -197,7 +197,7 @@
         },
         {
           "lugar": "Jardines del Pincio",
-          "min": 20
+          "min": 29
         },
         {
           "lugar": "Terraza del Pincio",
@@ -312,7 +312,7 @@
         "empieza": "14:25"
       },
       "tarde.D": {
-        "empieza": "15:25"
+        "empieza": "15:15"
       }
     },
     "con_free_tour": {
@@ -371,14 +371,22 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": {
-              "completo": "08:30",
-              "tranquilo": "09:30"
+              "completo": "09:30",
+              "tranquilo": "10:00"
             },
-            "min": 25
+            "min": 25,
+            "no_si_dia": [
+              "D3"
+            ]
           },
           {
             "lugar": "Via Condotti",
-            "modo": "camino"
+            "modo": "camino",
+            "tipo": "fija",
+            "hora": {
+              "completo": "10:05",
+              "tranquilo": "10:35"
+            }
           },
           {
             "lugar": "Plaza de España",
@@ -401,25 +409,42 @@
         "quitar": [
           "Ara Pacis",
           "Parque de Villa Borghese"
-        ],
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Iglesia de San Ignacio de Loyola",
-              "min": 20,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
+        ]
+      },
+      "nombre": "Año Nuevo: Trevi, el Pincio y el Popolo",
+      "nombre_tranquilo": "Año Nuevo: Trevi, el Pincio y el Popolo",
+      "tarde.A": {
+        "ajustar": {
+          "Jardines del Pincio": {
+            "min": 37
+          }
+        }
+      }
+    },
+    "fecha:12-25": {
+      "_nota": "Navidad: la Galería Borghese y el Castillo cierran. Con Free Tour, la mañana empieza más tarde (el Castillo por fuera desde el puente) y el parque es el paseo largo de la mañana.",
+      "manana": {
+        "ajustar": {
+          "Puente Sant'Angelo": {
+            "hora": "10:15"
           },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza Colonna",
-              "min": 10
+          "Castillo de Sant'Angelo": {
+            "hora": "10:30"
+          },
+          "Galería Borghese": {
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 85,
+                "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
+                "traslado": {
+                  "como": "un taxi (unos 15 min)",
+                  "min": 20
+                }
+              }
             }
           }
-        ]
+        }
       }
     }
   }

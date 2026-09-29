@@ -1,7 +1,8 @@
 // La prueba de las 365 fechas (motor v4, días escritos): el viaje empezando cada día del año, de 2 a 7 días, en los dos
 // ritmos, con y sin Free Tour; cada experiencia; cada extra del pool solo y en parejas. Todo lo de auditoria.mjs y lo
 // propio de los días escritos. No arregla nada: cuenta y enseña ejemplos, y lo que salga se arregla en los datos.
-//   node scripts/destino/prueba365.mjs [año=2027] [rapida] [out=docs/PRUEBA365.md]
+//   node scripts/destino/prueba365.mjs [año=2027] [rapida] [out=docs/PRUEBA365.md] [volcar=<tipo>]
+// (volcar: todos los casos de ese tipo en el scratch que se diga con volcado=<fichero>, no solo 6 ejemplos.)
 import { writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
@@ -23,7 +24,7 @@ const EXTRA_TIPOS = {
   v4_cerrado_sin_solucion: 'Cerrado ese día y sin nada escrito',
   v4_comida_corta: 'Comida de menos de 45 min',
   v4_lugar_desconocido: 'Lugar escrito que no existe en las fichas',
-  v4_elastica: 'La elástica tendría que pasar de su margen (el mirador no llega a su hora)',
+  v4_elastica: 'La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)',
   v4_sin_gente_tranquilo: '«Sin gente» en el título en ritmo tranquilo',
   v4_antes_de_cenar: '«Antes de cenar» en una parada que va después de cenar',
   v4_titulo: 'Título del día que no se cumple',
@@ -40,12 +41,14 @@ const tally = (tipo, key) => {
   byDay.set(tipo, map)
 }
 const examples = new Map()
+const dumped = []
 let trips = 0
 const add = (tipo, where, detail) => {
   counts.set(tipo, (counts.get(tipo) ?? 0) + 1)
   const list = examples.get(tipo) ?? []
   if (list.length < 6) list.push(`${where}${detail ? ` — ${detail}` : ''}`)
   examples.set(tipo, list)
+  if (args.volcar === tipo) dumped.push(`${where}${detail ? ` — ${detail}` : ''}`)
 }
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const hh = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
@@ -110,9 +113,9 @@ function planChecks({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
     if (!w) continue
     const where = `${label}, día ${day.dayNumber} (${day.curatedDay?.id} ${w.version}, ${day.hours?.weekday})`
     for (const problem of w.problems ?? []) tally(`v4_${problem.tipo}`, `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''} ${day.hours?.weekday ?? ''}`)
-    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 5) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
+    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 10) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
     for (const problem of w.problems ?? []) add(`v4_${problem.tipo}`, where, [problem.lugar, problem.llega ? `llega ${problem.llega} para las ${problem.hora}` : problem.hora, problem.minutos != null ? `${problem.minutos} min` : null].filter(Boolean).join(' · '))
-    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 5) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
+    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 10) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
   }
 }
 
@@ -158,4 +161,5 @@ const lines = [
   ...[...counts.keys()].filter((tipo) => !(tipo in TIPOS)).map((tipo) => `- **${tipo}**: ${counts.get(tipo)}\n${(examples.get(tipo) ?? []).map((example) => `  - ${example}`).join('\n')}`),
 ]
 writeFileSync(out, lines.join('\n') + '\n')
+if (args.volcar) writeFileSync(args.volcado ?? `volcado_${args.volcar}.txt`, dumped.join('\n') + '\n')
 console.log(JSON.stringify({ viajes: trips, total, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))

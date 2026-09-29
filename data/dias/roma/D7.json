@@ -179,19 +179,19 @@
         },
         {
           "lugar": "Piazza Navona",
-          "min": 40,
+          "min": 50,
           "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
         },
         {
           "lugar": "Campo de' Fiori",
-          "min": 75,
+          "min": 60,
           "elastica": 30,
           "titulo": "Campo de' Fiori, a la hora del aperitivo",
           "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
         },
         {
           "lugar": "Plaza Farnese",
-          "modo": "camino"
+          "min": 15
         },
         {
           "lugar": "Puente Sant'Angelo",
@@ -213,6 +213,38 @@
         "restaurante": {
           "cena": "Pizzeria Da Baffetto",
           "alternativa": "Tonnarello"
+        }
+      }
+    },
+    "cerrado:Palazzo Doria Pamphilj": {
+      "_nota": "El Palazzo Doria Pamphilj cierra (miércoles, 1 de enero, Pascua, Navidad): por fuera, y el rato va a la Plaza Colonna y a Via del Corso, que están al lado.",
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Palazzo Doria Pamphilj",
+            "parada": {
+              "lugar": "Via del Corso",
+              "min": 25,
+              "no_calle": true,
+              "si_visto": "Castillo de Sant'Angelo",
+              "titulo": "Via del Corso, la calle de las tiendas"
+            }
+          },
+          {
+            "despues_de": "Via del Corso",
+            "parada": {
+              "lugar": "Plaza Colonna",
+              "min": 15,
+              "si_visto": "Castillo de Sant'Angelo"
+            }
+          }
+        ]
+      },
+      "tarde.D": {
+        "ajustar": {
+          "Piazza Navona": {
+            "min": 65
+          }
         }
       }
     }

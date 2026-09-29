@@ -311,7 +311,7 @@
       }
     },
     "fecha:easter": {
-      "_nota": "Domingo de Pascua: la Bendición Urbi et Orbi a las 12:00 en la Plaza de San Pedro. El Coliseo y el Foro a primera hora; el Altar de la Patria, a la vuelta.",
+      "_nota": "Domingo de Pascua: la Bendición Urbi et Orbi a las 12:00 en la Plaza de San Pedro. El Coliseo y el Foro a primera hora; el Altar de la Patria no cabe ese día (volver a él es ir y volver): la tarde empieza en el Ghetto, en taxi.",
       "manana": {
         "paradas": [
           {
@@ -352,21 +352,14 @@
         }
       },
       "tarde.*": {
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Altar de la Patria",
-              "min": 40,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "traslado": {
-                "como": "un taxi",
-                "min": 20
-              }
+        "ajustar": {
+          "Barrio Judío": {
+            "traslado": {
+              "como": "un taxi",
+              "min": 20
             }
           }
-        ]
+        }
       }
     },
     "fecha:primer_domingo": {
@@ -444,7 +437,10 @@
               "min": 60,
               "modo": "dentro",
               "entrada": true,
-              "si_cerrado": "fuera"
+              "si_cerrado": "fuera",
+              "no_si_dia": [
+                "D5"
+              ]
             }
           }
         ]

@@ -34,6 +34,9 @@ const DEFAULT_CUTS = ['17:40', '18:45', '19:45']
 const VERSIONS = ['A', 'B', 'C', 'D']
 /** El mirador: se llega 25 min antes del sol (el paseo al atardecer por la avenida, 30) y se queda 15 después. */
 const SUNSET_LEAD = 25
+const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minutos o menos
+const NEIGHBOUR_WINDOW = 15 // en la frontera entre dos versiones de luz, si la elástica no llega, la vecina
+const LEAD_FLEX = 10 // al mirador se llega entre 15 y 35 min antes del sol: lo que la elástica no llega a absorber
 const SUNSET_STAY = 15
 /** A la entrada con turno se llega 10 min antes (recoger la entrada). */
 const TICKET_MARGIN = 10
@@ -315,11 +318,10 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     return value ?? null
   }
 
-  const drafts = order.map((id, index) => {
+  const makeDraft = (id, index, version) => {
     const w = written.days[id]
     const day = cityDays[index]
     const hours = hoursOf(day)
-    const version = lightVersionOf(hours.sunset, cuts)
     const tardeVersion = versionOf(w.tarde, version) ?? {}
     const draft = {
       id,
@@ -336,6 +338,9 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
       cena: clone(tardeVersion.cena ?? w.tarde?.cena ?? null),
       applied: [version],
       suggestions: [],
+      index,
+      poolOps: [],
+      poolInside: [],
     }
     const variants = w.variantes ?? {}
     if (hasFreeTour && variants.con_free_tour) applyOps(draft, variants.con_free_tour, 'con_free_tour')
@@ -352,7 +357,15 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     draft.manana = draft.manana.filter(keep)
     draft.tarde = draft.tarde.filter(keep)
     return draft
-  })
+  }
+  const drafts = order.map((id, index) => makeDraft(id, index, lightVersionOf(hoursOf(cityDays[index]).sunset, cuts)))
+  /** Lo que ya va en la ruta y está en el pool: por dentro y no opcional. */
+  const forceInside = (draft, name) => {
+    for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === name && (stop.modo === 'fuera' || stop.tipo === 'opcional')) {
+      if (stop.modo === 'fuera') stop.modo = 'dentro'
+      if (stop.tipo === 'opcional') stop.tipo = 'normal'
+    }
+  }
 
   // El pool: cada lugar elegido en su sitio escrito (el primero cuyo día está en el viaje y cuyo hueco no ha cogido
   // otro antes; manda el orden de `pool_lista`). Lo que ya está en la ruta queda garantizado por dentro.
@@ -367,10 +380,8 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
   for (const name of orderedPool) {
     const already = drafts.find((draft) => [...draft.manana, ...draft.tarde].some((stop) => stop.lugar === name && stop.modo !== 'camino'))
     if (already) {
-      for (const list of [already.manana, already.tarde]) for (const stop of list) if (stop.lugar === name && (stop.modo === 'fuera' || stop.tipo === 'opcional')) {
-        if (stop.modo === 'fuera') stop.modo = 'dentro'
-        if (stop.tipo === 'opcional') stop.tipo = 'normal'
-      }
+      forceInside(already, name)
+      already.poolInside.push(name)
       continue
     }
     if (hasFreeTour && tourCovers.has(name) && placeByName.get(name)?.type !== 'interior') continue
@@ -388,12 +399,13 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     const draft = drafts.find((candidate) => candidate.id === site.dia)
     if (site.hueco) takenHoles.add(`${site.dia}:${site.hueco}`)
     applyOps(draft, site.cambios, `pool:${name}`)
+    draft.poolOps.push([site.cambios, `pool:${name}`])
   }
-  // "Quiero entrar": lo que el viajero pide ver por dentro.
-  for (const draft of drafts) for (const stop of [...draft.manana, ...draft.tarde]) if (insideNames.includes(stop.lugar) && stop.modo === 'fuera') stop.modo = 'dentro'
-  // Ritmo tranquilo: solo la mañana (empieza más tarde y quita las opcionales).
-  if (tranquilo) {
-    for (const draft of drafts) {
+  const finishDraft = (draft) => {
+    // "Quiero entrar": lo que el viajero pide ver por dentro.
+    for (const stop of [...draft.manana, ...draft.tarde]) if (insideNames.includes(stop.lugar) && stop.modo === 'fuera') stop.modo = 'dentro'
+    // Ritmo tranquilo: solo la mañana (empieza más tarde y quita las opcionales).
+    if (tranquilo) {
       const kept = []
       for (const stop of draft.manana) {
         if (stop.tipo === 'opcional') {
@@ -405,6 +417,21 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
       draft.manana = kept
       if (draft.nombre_tranquilo) draft.nombre = draft.nombre_tranquilo
     }
+  }
+  for (const draft of drafts) finishDraft(draft)
+  /** El mismo día escrito con otra versión de la tarde (y lo mismo del pool). */
+  const redraft = (draft, version) => {
+    const other = makeDraft(draft.id, draft.index, version)
+    for (const [ops, label] of draft.poolOps) {
+      applyOps(other, ops, label)
+      other.poolOps.push([ops, label])
+    }
+    for (const name of draft.poolInside) {
+      forceInside(other, name)
+      other.poolInside.push(name)
+    }
+    finishDraft(other)
+    return other
   }
 
   // ── 4. Las horas ─────────────────────────────────────────────────────────────────────────────
@@ -548,6 +575,12 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
       }
       let place = readyPlace(stop, source, outsideReason, ctx.hours)
       const legRaw = walkLeg(coords, place.coordinates)
+      // (Un traslado escrito no se usa si andando es un paseo corto: la Isla Tiberina y Santa Cecilia, cuando van seguidas.)
+      if (place.transitMinutes && legRaw <= SHORT_WALK) {
+        place = { ...place }
+        delete place.transitMinutes
+        delete place.transitHow
+      }
       const leg = place.transitMinutes ? Math.min(legRaw, place.transitMinutes) : legRaw
       let at = t + leg
       const fixed = hourOf(stop)
@@ -561,7 +594,7 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
       if (original.elastica != null && elasticDelta) duration = Math.max(10, duration + elasticDelta)
       // El mirador: se llega a su hora (el sol menos 25 min) y se queda hasta 15 min después del sol.
       if (place.sunset != null) {
-        const target = place.sunset - (place.sunsetLead ?? SUNSET_LEAD)
+        const target = place.sunset - (place.sunsetLead ?? SUNSET_LEAD) - (ctx.earlyBy ?? 0)
         ctx.sunsetArrival = at
         if (at < target) at = target
         if (at > place.sunset) place = { ...place, sunset: undefined, nightView: true }
@@ -627,6 +660,50 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     return { visits, units, cursor: { t, coords } }
   }
 
+  /** El día empieza a la hora de su primera parada fija, si la trae (el Coliseo a las 9:00 en tranquilo). */
+  function morningStartOf(draft) {
+    const firstFixed = draft.manana[0] ? hourOf(draft.manana[0]) : null
+    if (draft.manana_empieza) return toMin(draft.manana_empieza)
+    if (firstFixed == null) return mode.dayStart
+    return firstFixed - (draft.manana[0].turno || draft.manana[0].lugar === tour?.name || placeByName.get(draft.manana[0].lugar)?.turnos ? TICKET_MARGIN : 0)
+  }
+  /** La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje), de cuándo a cuándo. */
+  function lunchOf(draft, cursor, skeletonDay, hours) {
+    const pick = (names) => recommendedRestaurant(destData, { names, meal: 'comida', near: cursor.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
+    const spot = pick([draft.comida.restaurante].filter(Boolean)) ?? pick([draft.comida.alternativa].filter(Boolean)) ?? pick(null)
+    const walk = spot ? walkLeg(cursor.coords, spot.coordinates) : 5
+    // (En un cuarto de hora exacto, como la cena: la app pinta las comidas redondeadas.)
+    const start = Math.max(roundUp15(cursor.t + walk), LUNCH_EARLIEST)
+    const written = draft.empieza ? toMin(draft.empieza) : null
+    let end = written != null ? written : start + LUNCH_DEFAULT[paceKey]
+    let short = null
+    if (end - start < LUNCH_MIN) {
+      short = end - start
+      end = start + LUNCH_MIN
+    }
+    return { spot, start, end, short }
+  }
+  /** Lo que querría la elástica ese día con ese borrador, sin apuntar nada (null si la tarde no tiene elástica y mirador). */
+  function elasticNeed(draft, skeletonDay, hours, half) {
+    const elasticStop = draft.tarde.find((stop) => stop.elastica != null)
+    const sunsetStop = draft.tarde.find((stop) => stop.modo === 'atardecer')
+    if (!elasticStop || !sunsetStop || hours.sunset == null) return null
+    const probe = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null, probe: true }
+    let after
+    if (half) after = { t: draft.empieza ? toMin(draft.empieza) : HALF_DAY_AFTERNOON, coords: null }
+    else {
+      const morning = runList(draft.manana, 'manana', { t: morningStartOf(draft), coords: null }, probe)
+      if (!draft.comida) after = morning.cursor
+      else {
+        const lunch = lunchOf(draft, morning.cursor, skeletonDay, hours)
+        after = { t: lunch.end, coords: lunch.spot?.coordinates ?? morning.cursor.coords }
+      }
+    }
+    runList(draft.tarde, 'tarde', after, probe)
+    if (probe.sunsetArrival == null) return null
+    return { wanted: hours.sunset - (sunsetStop.lead ?? SUNSET_LEAD) - probe.sunsetArrival, max: elasticStop.elastica }
+  }
+
   const days = []
   const cityPlanned = []
   for (const skeletonDay of skeleton) {
@@ -635,29 +712,36 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
       days.push({ ...skeletonDay, units: [], schedule: null })
       continue
     }
-    const draft = drafts[index]
     const hours = hoursOf(skeletonDay)
-    const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
     const half = Boolean(skeletonDay.halfDayExcursion)
-    // (El día empieza a la hora de su primera parada fija, si la trae: el Coliseo a las 9:00 en tranquilo.)
-    const firstFixed = draft.manana[0] ? hourOf(draft.manana[0]) : null
-    const startMorning = draft.manana_empieza ? toMin(draft.manana_empieza) : firstFixed != null ? firstFixed - (draft.manana[0].turno || draft.manana[0].lugar === tour?.name || placeByName.get(draft.manana[0].lugar)?.turnos ? TICKET_MARGIN : 0) : mode.dayStart
+    let draft = drafts[index]
+    // En la frontera entre dos versiones (el sol a menos de NEIGHBOUR_WINDOW min del corte), si la elástica no llega en la
+    // suya y en la vecina llega mejor, el día va con la vecina: los cortes son una raya, no una pared.
+    const need = elasticNeed(draft, skeletonDay, hours, half)
+    if (need && Math.abs(need.wanted) > need.max + LEAD_FLEX && hours.sunset != null) {
+      const at = VERSIONS.indexOf(draft.version)
+      const otherAt = need.wanted < 0 ? at - 1 : at + 1
+      const cut = cuts[need.wanted < 0 ? at - 1 : at]
+      if (otherAt >= 0 && otherAt < VERSIONS.length && cut && Math.abs(hours.sunset - toMin(cut)) <= NEIGHBOUR_WINDOW) {
+        const other = redraft(draft, VERSIONS[otherAt])
+        const otherNeed = elasticNeed(other, skeletonDay, hours, half)
+        if (otherNeed && Math.abs(otherNeed.wanted) < Math.abs(need.wanted)) {
+          other.applied.push(`luz:${draft.version}→${other.version}`)
+          draft = other
+          drafts[index] = other
+        }
+      }
+    }
+    const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
+    const startMorning = morningStartOf(draft)
     const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
     // La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje).
     const meals = []
     let afterLunch = morning.cursor
     let lunchName = null
     if (!half && draft.comida) {
-      const pick = (names) => recommendedRestaurant(destData, { names, meal: 'comida', near: morning.cursor.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
-      const spot = pick([draft.comida.restaurante].filter(Boolean)) ?? pick([draft.comida.alternativa].filter(Boolean)) ?? pick(null)
-      const walk = spot ? walkLeg(morning.cursor.coords, spot.coordinates) : 5
-      const start = Math.max(morning.cursor.t + walk, LUNCH_EARLIEST)
-      const written = draft.empieza ? toMin(draft.empieza) : null
-      let end = written != null ? written : start + LUNCH_DEFAULT[paceKey]
-      if (end - start < LUNCH_MIN) {
-        ctx.problems.push({ tipo: 'comida_corta', minutos: end - start })
-        end = start + LUNCH_MIN
-      }
+      const { spot, start, end, short } = lunchOf(draft, morning.cursor, skeletonDay, hours)
+      if (short != null) ctx.problems.push({ tipo: 'comida_corta', minutos: short })
       // (Si a la primera parada de la tarde se va en bus o taxi, ese rato no es tiempo libre: `transitAfter`.)
       const firstAfternoon = draft.tarde[0]
       meals.push({ type: 'lunch', start, end, eatMinutes: end - start, coordinates: spot?.coordinates ?? morning.cursor.coords, ...(spot ? { spot: { name: spot.name, zone: spot.zone } } : {}), eatStart: start, ...(firstAfternoon?.traslado?.min ? { transitAfter: firstAfternoon.traslado.min } : {}) })
@@ -683,6 +767,11 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
         elasticUsed = Math.max(-elasticStop.elastica, Math.min(elasticStop.elastica, elasticWanted))
       }
     }
+    // Lo que la elástica no llega a absorber (hasta LEAD_FLEX min), lo absorbe la llegada al mirador: de 15 a 35 min antes del
+    // sol en vez de 25. Si se llega tarde ya pasa solo; si se llegaría pronto, se llega antes y se queda más.
+    // (Por menos de 5 min no se adelanta: esa espera en el mirador no se nota.)
+    const early = elasticWanted - elasticUsed
+    ctx.earlyBy = early >= 5 ? Math.min(LEAD_FLEX, early) : 0
     const afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
     const visits = [...morning.visits, ...afternoon.visits]
     const units = [...morning.units, ...afternoon.units]
