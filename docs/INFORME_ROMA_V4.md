@@ -48,3 +48,5 @@ Sigue a `PROMPT_ROMA_V4_RETOQUES.md`. Commits del `441359e` al último, **sin pu
 - **Cena con espera (8):** D4M D en lunes.
 - **Comida corta (4):** D1-FT A.
 - **Tramo largo (2):** D2 D con los Museos cerrados.
+
+v4 encendido y subido (commit 157b919).
