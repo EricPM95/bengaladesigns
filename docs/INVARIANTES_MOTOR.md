@@ -1801,3 +1801,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     20 min y la Isla 15, sin recortes. **D4 B en domingo**: Santa Maria del Popolo 20 min y el lago de 20, con la tarde
     desde las 14:45 (abre a las 16:30). El mirador solo se alarga si la cena espera en C y D: en A y B ese rato es de la
     nocturna y del aperitivo (la Terraza del Pincio de 70 min del 14 de marzo).
+
+351. **Nunca dos bloques seguidos del mismo barrio antes de cenar** (2026-09-29): el barrio de la tarde, su nocturna y el
+    aperitivo del mismo barrio («Trastevere» + «Trastevere de noche» + «Paseo por Trastevere iluminado y aperitivo») se
+    juntan en uno, «Trastevere al anochecer y aperitivo»; la nocturna de ese barrio va después de cenar.
+
+352. **El aperitivo, 90 min como mucho, siempre** (2026-09-29): si el rato hasta la cena es más largo, la cena se
+    adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar se mueve con ella.

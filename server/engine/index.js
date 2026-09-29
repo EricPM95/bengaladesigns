@@ -428,6 +428,48 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       if (room < APERITIVO_MIN_MINUTES) delete day[key]
       else day[key].minutes = Math.min(day[key].minutes, room)
     }
+    // Nunca dos bloques seguidos del mismo barrio antes de cenar (decisión del usuario, 2026-09-29): «Trastevere» +
+    // «Trastevere de noche» + «Paseo por Trastevere iluminado y aperitivo» se juntan en uno, «Trastevere al anochecer y
+    // aperitivo», de 90 min como mucho, y la nocturna de ese barrio pasa a después de cenar.
+    const stops = day.stops ?? []
+    const dayStops = stops.filter((stop) => !stop.is_night_experience && toMinutes(stop.suggested_time) != null && toMinutes(stop.suggested_time) < dinnerStart)
+    const lastStop = dayStops.at(-1)
+    const lastPlace = lastStop ? (destData.places ?? []).find((place) => place.name === (lastStop.place_name ?? lastStop.name)) : null
+    const lastIsBarrio = Boolean(lastPlace && (lastPlace.tags ?? []).includes('barrio') && day.aperitivo && norm(day.aperitivo.title).includes(norm(lastPlace.name)))
+    // (El barrio: el de la última parada o el de una nocturna de antes de cenar, si el aperitivo es del mismo.)
+    const nightBarrio = stops.filter((stop) => stop.is_night_experience && stop.before_dinner).map((stop) => String(stop.name ?? '').replace(/\s+de noche$/i, '')).find((name) => day.aperitivo && norm(day.aperitivo.title).includes(norm(name)))
+    const barrioName = lastIsBarrio ? lastPlace.name : nightBarrio ?? null
+    if (barrioName && day.aperitivo) {
+      const sameNight = stops.filter((stop) => stop.is_night_experience && stop.before_dinner && norm(stop.name ?? '').startsWith(norm(barrioName)))
+      const merged = (lastIsBarrio ? lastStop.duration_minutes ?? 0 : 0) + sameNight.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0) + day.aperitivo.minutes
+      if (lastIsBarrio) day.stops = stops.filter((stop) => stop !== lastStop)
+      for (const stop of sameNight) {
+        stop.before_dinner = false
+        stop.after_dinner = true
+      }
+      day.aperitivo = { ...day.aperitivo, title: `${barrioName} al anochecer y aperitivo`, minutes: merged }
+    }
+    // El aperitivo, 90 min como mucho, siempre (decisión del usuario, 2026-09-29): si el rato hasta la cena es más largo,
+    // la cena se adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar con ella.
+    if (day.aperitivo) {
+      const before = (day.stops ?? []).filter((stop) => toMinutes(stop.suggested_time) != null && toMinutes(stop.suggested_time) < dinnerStart && !stop.after_dinner)
+      const lastEnd2 = Math.max(0, ...before.map((stop) => toMinutes(stop.suggested_time) + (stop.duration_minutes ?? 0)))
+      const walk = dinnerMeal.walkMinutes ?? 0
+      const room2 = dinnerStart - walk - lastEnd2
+      const floor = tripDay.written?.version === 'D' ? 20 * 60 + 30 : 19 * 60 + 30
+      let newDinner = dinnerStart
+      if (room2 > WINTER_FREE_MAX_MINUTES) newDinner = Math.min(dinnerStart, Math.max(floor, Math.ceil((lastEnd2 + WINTER_FREE_MAX_MINUTES + walk) / 5) * 5))
+      day.aperitivo.minutes = Math.max(0, Math.min(WINTER_FREE_MAX_MINUTES, newDinner - walk - lastEnd2))
+      const shift = dinnerStart - newDinner
+      const dinnerOut = (day.meals ?? []).find((meal) => meal.time === 'dinner')
+      if (shift > 0 && dinnerOut) {
+        dinnerOut.suggested_time = toHHMM(newDinner)
+        for (const stop of day.stops ?? []) if (toMinutes(stop.suggested_time) != null && toMinutes(stop.suggested_time) >= dinnerStart) stop.suggested_time = toHHMM(toMinutes(stop.suggested_time) - shift)
+      }
+      // (La nocturna del barrio que ha pasado a después de cenar, al acabar la cena.)
+      for (const stop of day.stops ?? []) if (stop.after_dinner && toMinutes(stop.suggested_time) < newDinner + DINNER_BLOCK_MINUTES) stop.suggested_time = toHHMM(newDinner + DINNER_BLOCK_MINUTES)
+      day.stops?.sort((a, b) => (toMinutes(a.suggested_time) ?? 0) - (toMinutes(b.suggested_time) ?? 0))
+    }
   }
   const freeTime = midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames)
   if (freeTime) day.free_time = freeTime
@@ -613,6 +655,10 @@ const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 const WINTER_NIGHT_STRETCH_MAX = 45
 /** En invierno, con la nocturna antes de cenar, el rato de luces y aperitivo de después: 90 min como mucho. */
 const WINTER_FREE_MAX_MINUTES = 90
+/** Lo que dura la cena: la nocturna del barrio que pasa a después de cenar empieza al acabar. */
+const DINNER_BLOCK_MINUTES = 90
+const toHHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 /** Una nocturna antes de cenar, como mucho (decisión del usuario, 2026-09-28). */
 const NIGHT_BEFORE_DINNER_MAX = 25
 
