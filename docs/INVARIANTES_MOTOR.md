@@ -2002,3 +2002,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 377. **Sin tarjeta «Sal de Roma un día» ni banner de excursión** (2026-09-29, PROMPT_UI_REPASO 2): de la excursión solo
     queda el enlace pequeño «¿Prefieres una excursión este día?», al final del día de la oferta (o del día completo más
     cercano, nunca el de llegada ni el de vuelta). Ningún otro día habla de excursiones.
+
+378. **La varita, siempre a la vista** (2026-09-29, PROMPT_UI_REPASO 3):
+    - **Flotando encima del mapa, haya cambios o no.** Si no hay cambios, al tocarla sale «Tu ruta está tal como te la
+      preparamos».
+    - **En móvil, con el mapa plegado**, va en la columna de botones flotantes.
+    - **La columna:** presupuesto abajo (20 px), mapa encima (80 px) y varita arriba (140 px), con 12 px entre ellos. La
+      lista de días deja 208 px debajo para que nunca tapen nada.
+
+379. **El aire del día** (2026-09-29, PROMPT_UI_REPASO 4-8):
+    - **Cabeceras de tramo:** 50 px encima de cada una y 12 px debajo, hasta el primer «+ Añadir parada».
+    - **Comida y cena:** 50 px encima y 50 debajo, como la noche.
+    - **Barra de llegada:** 50 px hasta «MAÑANA».
+    - **Las cifras del día:** tres en fila, separadas por una línea fina; el número en Instrument Serif (18 px) y la
+      palabra en mono y en mayúsculas («13 PARADAS | 10,6 KM A PIE | 7 H 30 DE ACTIVIDAD»). Sin iconos ni caja, centradas.
+    - **«De camino»:** del mismo ancho que las paradas, con 16 px arriba y abajo.

@@ -4,7 +4,7 @@ import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
 import { MagicWandIcon } from './MagicWandIcon'
 import { ConfirmDialog } from './ConfirmDialog'
-import { withUndo } from '../../store/useAddFlowStore'
+import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
@@ -84,6 +84,11 @@ export function RouteView() {
   // "Volver a mi ruta original": la pregunta, y si la varita ya se vio con su texto (luego va sola).
   const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
   const [askRestoreRoute, setAskRestoreRoute] = useState(false)
+  /** La varita: con cambios, pregunta si se vuelve a la original; sin cambios, lo dice (PROMPT_UI_REPASO 3). */
+  const onWand = () => {
+    if (route?.editedManually && route.originalRoute) setAskRestoreRoute(true)
+    else useAddFlowStore.setState({ toast: { message: 'Tu ruta está tal como te la preparamos', previous: null, id: Date.now() } })
+  }
   const [wandLabelSeen, setWandLabelSeen] = useState(() => {
     try {
       return window.localStorage.getItem(WAND_LABEL_KEY) === '1'
@@ -239,11 +244,11 @@ export function RouteView() {
                 <CollapseMapIcon />
               </button>
             )}
-            {/* "Volver a mi ruta original" (PROMPT_UI, Parte 1): debajo de la flecha, con su estilo; solo si hay cambios. */}
-            {mode === 'days' && route.editedManually && route.originalRoute && (
+            {/* "Volver a mi ruta original": flotando encima del mapa, siempre, haya cambios o no (PROMPT_UI_REPASO 3). */}
+            {(
               <button
                 type="button"
-                onClick={() => setAskRestoreRoute(true)}
+                onClick={onWand}
                 aria-label="Volver a mi ruta original"
                 title="Volver a mi ruta original"
                 className="absolute right-3.5 top-[70px] z-10 flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border-[1.5px] border-accent bg-bg-card px-2.5 text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
@@ -322,8 +327,21 @@ export function RouteView() {
       {/* Ocultos en la pantalla completa de detalle de un día (DayDetailPanel, ver DayList.tsx): ya tiene su propio mini-mapa arriba, y el presupuesto no aplica en ese contexto — solo visibles en las pantallas principales. */}
       {!(mode === 'days' && activeDayId) && (
         <>
+          {/* Una sola columna, 12 px entre botones (PROMPT_UI_REPASO 3): presupuesto abajo (móvil), mapa encima y, con el
+              mapa plegado en el móvil, la varita arriba del todo. */}
           <FloatingCombinedMapButton onClick={() => setMode('route')} />
           <FloatingBudget />
+          {mapHidden && canCollapseMap && (
+            <button
+              type="button"
+              onClick={onWand}
+              aria-label="Volver a mi ruta original"
+              title="Volver a mi ruta original"
+              className="fixed bottom-[140px] right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-accent shadow-md"
+            >
+              <MagicWandIcon />
+            </button>
+          )}
         </>
       )}
       {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
