@@ -186,3 +186,18 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   .trazo-notice-backdrop,
   .trazo-notice-panel { animation: none; }
 }
+
+/* El efecto de temporada dentro de la ventana de los avisos (PROMPT_UI_REPASO_2, 2): la franja es baja, así que la
+   caída es corta; el sol de verano se pone despacio. Con «reducir movimiento», quieto. */
+@keyframes trazo-fall-sm {
+  from { transform: translateY(-16px); }
+  to { transform: translateY(150px); }
+}
+@keyframes trazo-sunset {
+  from { transform: translateY(-14px); }
+  to { transform: translateY(30px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trazo-season-fx,
+  .trazo-season-fx * { animation: none !important; transition: none !important; }
+}

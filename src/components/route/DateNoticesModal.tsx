@@ -1,8 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
-import type { DateNotice, Route } from '../../lib/types'
+import type { DateNotice, Route, Season } from '../../lib/types'
 import { MAX_DATE_NOTICE_CARDS, dateNoticesKey } from '../../lib/dateNotices'
 import { useRouteStore } from '../../store/useRouteStore'
+import { SEASON_FX } from '../trazo/trazoUi'
 import { DateNoticeIllustration, DateNoticeSmallIcon } from './DateNoticeIcons'
+
+/** La época del motor (`invierno`, `primavera`, `verano`, `otono`) → la del efecto visual del formulario. */
+const FX_OF: Record<string, Season> = { invierno: 'winter', primavera: 'spring', verano: 'summer', otono: 'autumn' }
+/** El id de la tarjeta de la nota de temporada: no es un aviso de fechas y va siempre la primera. */
+const SEASON_NOTICE_ID = '__temporada'
+
+/** La nota de temporada como una tarjeta más: «Invierno en Roma» y su texto (PROMPT_UI_REPASO_2, 2). */
+function seasonNoticeOf(route: Route): DateNotice | null {
+  const note = route.seasonNote
+  if (!note?.text) return null
+  const fx = SEASON_FX[FX_OF[note.season] ?? 'spring']
+  const city = route.destination.split(',')[0].trim()
+  return { id: SEASON_NOTICE_ID, dayNumber: null, dateIso: null, icon: 'luz', title: `${fx.name} en ${city}`, tag: '', texts: [note.text], kind: 'auto' }
+}
 
 /**
  * La ventana de fechas especiales (PROMPT_AVISO_FECHAS, Parte B). Sale sola la PRIMERA vez que el viajero abre su
@@ -13,17 +28,23 @@ import { DateNoticeIllustration, DateNoticeSmallIcon } from './DateNoticeIcons'
  * Móvil: hoja que sube desde abajo; ordenador: tarjeta centrada. Tarjetas deslizables con puntitos, como mucho 3:
  * con más, la tercera dice "y N más" y los lista. Con más de una, flechas ‹ › a los lados y "1 de 3"; el botón dice
  * "Siguiente" hasta la última y en la última "Entendido" (PROMPT_UI, Parte 2): así nadie cierra sin ver el resto.
+ *
+ * La nota de temporada va aquí, siempre la primera y con el efecto de su época (PROMPT_UI_REPASO_2, 2); sin avisos de
+ * fechas, la ventana sale igual, solo con ella.
  */
 export function DateNoticesModal({ route }: { route: Route }) {
   const markDateNoticesSeen = useRouteStore((state) => state.markDateNoticesSeen)
   const openDateNoticeId = useRouteStore((state) => state.openDateNoticeId)
   const setOpenDateNoticeId = useRouteStore((state) => state.setOpenDateNoticeId)
   const notices = route.dateNotices ?? []
-  const key = dateNoticesKey(notices)
+  const seasonNotice = seasonNoticeOf(route)
+  const all = seasonNotice ? [seasonNotice, ...notices] : notices
+  const key = dateNoticesKey(all)
   const single = openDateNoticeId ? notices.find((notice) => notice.id === openDateNoticeId) ?? null : null
-  const firstTime = notices.length > 0 && route.dateNoticesSeenKey !== key
+  const firstTime = all.length > 0 && route.dateNoticesSeenKey !== key
   const open = Boolean(single) || firstTime
-  const shown = single ? [single] : notices
+  const shown = single ? [single] : all
+  const season = route.seasonNote ? FX_OF[route.seasonNote.season] ?? 'spring' : undefined
   const slides = slidesOf(shown)
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
@@ -63,7 +84,7 @@ export function DateNoticesModal({ route }: { route: Route }) {
         <p id="date-notices-heading" className="px-6 pt-4 text-center font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent md:pt-6">
           Hemos preparado tu viaje para estas fechas
         </p>
-        <NoticeCarousel slides={slides} trackRef={trackRef} active={active} onActive={setActive} goTo={goTo} />
+        <NoticeCarousel slides={slides} trackRef={trackRef} active={active} onActive={setActive} goTo={goTo} season={season} />
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
           <button
             type="button"
@@ -103,7 +124,7 @@ function ArrowButton({ direction, disabled, onClick }: { direction: 'prev' | 'ne
 }
 
 /** Las tarjetas, deslizables, con flechas a los lados, "1 de 3" y puntitos. */
-function NoticeCarousel({ slides, trackRef, active, onActive, goTo }: { slides: DateNotice[][]; trackRef: React.RefObject<HTMLDivElement | null>; active: number; onActive: (index: number) => void; goTo: (index: number) => void }) {
+function NoticeCarousel({ slides, trackRef, active, onActive, goTo, season }: { slides: DateNotice[][]; season?: Season; trackRef: React.RefObject<HTMLDivElement | null>; active: number; onActive: (index: number) => void; goTo: (index: number) => void }) {
   return (
     <>
       <div className="relative flex min-h-0 flex-1">
@@ -119,7 +140,7 @@ function NoticeCarousel({ slides, trackRef, active, onActive, goTo }: { slides: 
       >
         {slides.map((slide, index) => (
           <div key={slide[0].id} className="w-full shrink-0 snap-center overflow-y-auto px-12 pb-3 pt-4">
-            {slide.length === 1 ? <NoticeCard notice={slide[0]} /> : <MoreCard notices={slide} />}
+            {slide.length === 1 ? <NoticeCard notice={slide[0]} season={slide[0].id === SEASON_NOTICE_ID ? season : undefined} /> : <MoreCard notices={slide} />}
             <span className="sr-only">{`Aviso ${index + 1} de ${slides.length}`}</span>
           </div>
         ))}
@@ -143,10 +164,56 @@ function NoticeCarousel({ slides, trackRef, active, onActive, goTo }: { slides: 
   )
 }
 
-function NoticeCard({ notice }: { notice: DateNotice }) {
+/** Unas posiciones fijas para las partículas (como PARTS del formulario, pero estables entre renders). */
+const BAND_PARTS = Array.from({ length: 22 }, (_, i) => [((i * 37) % 100) / 100, ((i * 53) % 97) / 97, ((i * 29) % 89) / 89, ((i * 71) % 83) / 83])
+
+/**
+ * La franja de la nota de temporada, en el sitio del dibujo de los demás avisos: el degradado de su época y el efecto
+ * del formulario, suave y solo dentro de la franja, así que nunca tapa el texto (PROMPT_UI_REPASO_2, 2). Invierno, nieve
+ * cayendo; verano, el sol poniéndose; primavera, pétalos; otoño, hojas. Con «reducir movimiento», quieta (index.css).
+ */
+function SeasonBand({ season }: { season: Season }) {
+  const fall = (seconds: number, delay: number) => `trazo-fall-sm ${seconds}s linear ${-delay}s infinite`
+  let kids: React.ReactNode[] = []
+  if (season === 'winter')
+    kids = BAND_PARTS.map((r, i) => (
+      <div key={i} style={{ position: 'absolute', left: `${r[0] * 100}%`, top: 0, animation: fall(6 + r[1] * 5, r[2] * 11) }}>
+        <div style={{ width: 2 + r[3] * 3, height: 2 + r[3] * 3, borderRadius: '50%', background: '#fff', opacity: 0.45 + r[3] * 0.4, animation: `trazo-sway ${3 + r[1] * 3}s ease-in-out infinite` }} />
+      </div>
+    ))
+  if (season === 'spring')
+    kids = BAND_PARTS.slice(0, 12).map((r, i) => (
+      <div key={i} style={{ position: 'absolute', left: `${r[0] * 100}%`, top: 0, animation: fall(8 + r[1] * 5, r[2] * 13) }}>
+        <div style={{ width: 6 + r[3] * 3, height: 8 + r[3] * 3, borderRadius: '60% 40% 60% 40%', background: i % 3 ? 'oklch(0.88 0.06 10)' : 'oklch(0.93 0.04 90)', opacity: 0.75, animation: `trazo-sway ${4 + r[1] * 3}s ease-in-out infinite` }} />
+      </div>
+    ))
+  if (season === 'autumn')
+    kids = BAND_PARTS.slice(0, 12).map((r, i) => (
+      <div key={i} style={{ position: 'absolute', left: `${r[0] * 100}%`, top: 0, animation: fall(6 + r[1] * 5, r[2] * 11) }}>
+        <div style={{ width: 10 + r[3] * 5, height: 7 + r[3] * 3, borderRadius: '0 100% 0 100%', background: ['oklch(0.7 0.15 50)', 'oklch(0.6 0.14 35)', 'oklch(0.78 0.13 80)'][i % 3], opacity: 0.85, animation: `trazo-sway ${2.5 + r[1] * 2.5}s ease-in-out infinite` }} />
+      </div>
+    ))
+  if (season === 'summer')
+    kids = [
+      // El sol baja despacio hacia el horizonte (y vuelve, sin salto) con su halo.
+      <div key="sun" style={{ position: 'absolute', left: '50%', top: 26, marginLeft: -60, width: 120, height: 120, animation: 'trazo-sunset 9s ease-in-out infinite alternate' }}>
+        <div style={{ position: 'absolute', inset: -40, borderRadius: '50%', background: 'radial-gradient(circle,oklch(0.92 0.12 85 / .55),transparent 65%)' }} />
+        <div style={{ position: 'absolute', inset: 30, borderRadius: '50%', background: 'oklch(0.9 0.13 80)', opacity: 0.9 }} />
+      </div>,
+      // El horizonte tapa la mitad de abajo del sol.
+      <div key="horizon" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 34, background: 'linear-gradient(180deg,oklch(0.5 0.13 38),oklch(0.42 0.11 35))' }} />,
+    ]
+  return (
+    <div className="trazo-season-fx relative h-[118px] w-full overflow-hidden rounded-[20px]" style={{ background: SEASON_FX[season].gradient }} aria-hidden="true">
+      {kids}
+    </div>
+  )
+}
+
+function NoticeCard({ notice, season }: { notice: DateNotice; season?: Season }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <DateNoticeIllustration icon={notice.icon} />
+      {season ? <SeasonBand season={season} /> : <DateNoticeIllustration icon={notice.icon} />}
       <h2 className="mt-3 font-display text-[28px] leading-[1.1] text-text">{notice.title}</h2>
       <div className="mt-3 space-y-2.5">
         {notice.texts.map((text) => (

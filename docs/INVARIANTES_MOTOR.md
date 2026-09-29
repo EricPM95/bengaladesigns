@@ -2065,3 +2065,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       marcado), mapa (abre el mapa; sustituye a «Mostrar mapa») y reservas (con su «!» naranja mientras falte algo).
     - **Arriba quedan cuatro pestañas:** Hoy, Ruta, Días y Explorar. No queda ningún botón flotante suelto, y las listas
       dejan 144 px abajo para que la barra no tape nunca la última tarjeta.
+
+387. **La nota de temporada vive en la ventana de los avisos de fechas** (PROMPT_UI_REPASO_2, 2), no en la pestaña Días.
+    - Es la **primera tarjeta**, siempre; los festivos y días especiales van detrás. Si no hay ningún aviso de fechas, la
+      ventana sale igual, solo con ella (una vez por ruta: su texto entra en la firma de lo ya visto).
+    - Título: la temporada y el destino («Invierno en Roma»); su texto, el de siempre.
+    - En el sitio del dibujo, una franja con el degradado y el efecto de su época, como en el formulario: invierno, nieve
+      cayendo; verano, el sol poniéndose; primavera, pétalos; otoño, hojas. Suave y solo dentro de la franja: nunca tapa
+      el texto. Con «reducir movimiento», quieta.

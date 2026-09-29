@@ -22,7 +22,6 @@ import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
 import { ConfirmDialog } from './ConfirmDialog'
-import { SeasonNote } from './SeasonNote'
 import { DateNoticeTag } from './DateNoticesModal'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { dayName } from './freeDay/AddToDaySheet'
@@ -175,8 +174,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           </button>
         </div>
       )}
-      {/* Por qué la ruta es como es: uno solo, encima del Día 1. */}
-      <SeasonNote route={route} />
+      {/* Por qué la ruta es como es: uno solo, encima del Día 1 (la nota de temporada pasa a la ventana de los avisos). */}
       <ContextBanner route={route} />
       <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleDayDragEnd}>
       <SortableContext items={route.days.map((day) => day.id)} strategy={verticalListSortingStrategy}>
