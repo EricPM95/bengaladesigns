@@ -11,40 +11,40 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 
 | Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
 |---|---|---|---|---|---|---|---|
-| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 15 may 2027 · fin de semana A | Domingo 16 de mayo · Museos Vaticanos |
-| [2](#ruta-2) | 3 | completo | no | sin experiencias | — | viernes 8 oct 2027 · fin de semana B | Domingo 10 de octubre · Museos Vaticanos |
-| [3](#ruta-3) | 3 | completo | sí | sin experiencias | — | viernes 21 may 2027 · fin de semana C | Domingo 23 de mayo · Museos Vaticanos |
-| [4](#ruta-4) | 3 | completo | no | sin experiencias | — | sábado 12 jun 2027 · fin de semana D | Domingo 13 de junio · Museos Vaticanos |
-| [5](#ruta-5) | 4 | completo | no | sin experiencias | — | viernes 17 sep 2027 · fin de semana E | Domingo 19 de septiembre · Museos Vaticanos |
+| [1](#ruta-1) | 2 | completo | no | sin experiencias | — | sábado 15 may 2027 · fin de semana A | Domingo 16 · Museos Vaticanos cerrados |
+| [2](#ruta-2) | 3 | completo | no | sin experiencias | — | viernes 8 oct 2027 · fin de semana B | Domingo 10 · Museos Vaticanos cerrados |
+| [3](#ruta-3) | 3 | completo | sí | sin experiencias | — | viernes 21 may 2027 · fin de semana C | Domingo 23 · Museos Vaticanos cerrados |
+| [4](#ruta-4) | 3 | completo | no | sin experiencias | — | sábado 12 jun 2027 · fin de semana D | Domingo 13 · Museos Vaticanos cerrados |
+| [5](#ruta-5) | 4 | completo | no | sin experiencias | — | viernes 17 sep 2027 · fin de semana E | Domingo 19 · Museos Vaticanos cerrados |
 | [6](#ruta-6) | 2 | completo | no | sin experiencias | — | jueves 21 ene 2027 | — |
-| [7](#ruta-7) | 3 | completo | no | sin experiencias | — | viernes 15 ene 2027 | Domingo 17 de enero · Museos Vaticanos |
-| [8](#ruta-8) | 4 | completo | no | sin experiencias | — | jueves 4 feb 2027 | Domingo 7 de febrero · Museos Vaticanos |
-| [9](#ruta-9) | 3 | completo | no | sin experiencias | — | viernes 19 feb 2027 | Domingo 21 de febrero · Museos Vaticanos |
+| [7](#ruta-7) | 3 | completo | no | sin experiencias | — | viernes 15 ene 2027 | Domingo 17 · Museos Vaticanos cerrados |
+| [8](#ruta-8) | 4 | completo | no | sin experiencias | — | jueves 4 feb 2027 | Domingo 7 · Museos Vaticanos cerrados |
+| [9](#ruta-9) | 3 | completo | no | sin experiencias | — | viernes 19 feb 2027 | Domingo 21 · Museos Vaticanos cerrados |
 | [10](#ruta-10) | 2 | completo | no | sin experiencias | — | martes 2 mar 2027 · 3 mar: audiencia papal (miércoles por la mañana) | — |
-| [11](#ruta-11) | 3 | completo | sí | sin experiencias | — | sábado 6 mar 2027 | Primer domingo de mes · Museos gratis |
-| [12](#ruta-12) | 4 | completo | no | sin experiencias | — | viernes 12 mar 2027 | Domingo 14 de marzo · Museos Vaticanos |
-| [13](#ruta-13) | 2 | completo | sí | sin experiencias | — | sábado 10 abr 2027 | Domingo 11 de abril · Museos Vaticanos |
+| [11](#ruta-11) | 3 | completo | sí | sin experiencias | — | sábado 6 mar 2027 | Domingo 7 · Museos Vaticanos cerrados · Domingo 7 · El Coliseo y los museos del Estado, gratis |
+| [12](#ruta-12) | 4 | completo | no | sin experiencias | — | viernes 12 mar 2027 | Domingo 14 · Museos Vaticanos cerrados |
+| [13](#ruta-13) | 2 | completo | sí | sin experiencias | — | sábado 10 abr 2027 | Domingo 11 · Museos Vaticanos cerrados |
 | [14](#ruta-14) | 3 | tranquilo | no | sin experiencias | — | jueves 15 abr 2027 | — |
 | [15](#ruta-15) | 5 | completo | no | Barrios | — | lunes 19 abr 2027 · 21 abr: audiencia papal (miércoles por la mañana) | — |
-| [16](#ruta-16) | 3 | completo | no | sin experiencias | — | domingo 2 may 2027 | Primer domingo de mes · Museos gratis |
+| [16](#ruta-16) | 3 | completo | no | sin experiencias | — | domingo 2 may 2027 | Domingo 2 · Museos Vaticanos cerrados · Domingo 2 · El Coliseo y los museos del Estado, gratis |
 | [17](#ruta-17) | 3 | completo | no | Arte | — | jueves 6 may 2027 | — |
-| [18](#ruta-18) | 4 | completo | sí | sin experiencias | — | viernes 28 may 2027 | Domingo 30 de mayo · Museos Vaticanos |
-| [19](#ruta-19) | 3 | tranquilo | sí | sin experiencias | — | viernes 4 jun 2027 | Domingo 6 de junio · Museos Vaticanos |
-| [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | — | sábado 19 jun 2027 | Domingo 20 de junio · Museos Vaticanos |
+| [18](#ruta-18) | 4 | completo | sí | sin experiencias | — | viernes 28 may 2027 | Domingo 30 · Último domingo de mes |
+| [19](#ruta-19) | 3 | tranquilo | sí | sin experiencias | — | viernes 4 jun 2027 | Domingo 6 · Museos Vaticanos cerrados |
+| [20](#ruta-20) | 2 | tranquilo | no | sin experiencias | — | sábado 19 jun 2027 | Domingo 20 · Museos Vaticanos cerrados |
 | [21](#ruta-21) | 3 | completo | no | Naturaleza | — | miércoles 23 jun 2027 · 23 jun: audiencia papal (miércoles por la mañana) | — |
-| [22](#ruta-22) | 3 | completo | sí | sin experiencias | — | viernes 2 jul 2027 | Domingo 4 de julio · Museos Vaticanos |
-| [23](#ruta-23) | 4 | tranquilo | no | sin experiencias | — | jueves 8 jul 2027 | Domingo 11 de julio · Museos Vaticanos |
-| [24](#ruta-24) | 3 | completo | no | sin experiencias | — | sábado 24 jul 2027 | Domingo 25 de julio · Museos Vaticanos |
-| [25](#ruta-25) | 2 | completo | no | sin experiencias | — | sábado 7 ago 2027 | Domingo 8 de agosto · Museos Vaticanos |
+| [22](#ruta-22) | 3 | completo | sí | sin experiencias | — | viernes 2 jul 2027 | Domingo 4 · Museos Vaticanos cerrados |
+| [23](#ruta-23) | 4 | tranquilo | no | sin experiencias | — | jueves 8 jul 2027 | Domingo 11 · Museos Vaticanos cerrados |
+| [24](#ruta-24) | 3 | completo | no | sin experiencias | — | sábado 24 jul 2027 | Domingo 25 · Último domingo de mes |
+| [25](#ruta-25) | 2 | completo | no | sin experiencias | — | sábado 7 ago 2027 | Domingo 8 · Museos Vaticanos cerrados |
 | [26](#ruta-26) | 5 | completo | sí | sin experiencias | — | lunes 23 ago 2027 · 25 ago: audiencia papal (miércoles por la mañana) | — |
-| [27](#ruta-27) | 3 | completo | no | Barrios | — | viernes 3 sep 2027 | Domingo 5 de septiembre · Museos Vaticanos |
-| [28](#ruta-28) | 3 | completo | sí | Arte | — | viernes 10 sep 2027 | Domingo 12 de septiembre · Museos Vaticanos |
-| [29](#ruta-29) | 2 | completo | no | sin experiencias | — | martes 28 sep 2027 · 29 sep: audiencia papal (miércoles por la mañana) | Miércoles 29 de septiembre · Audiencia papal |
-| [30](#ruta-30) | 4 | completo | no | Naturaleza | — | viernes 1 oct 2027 | Domingo 3 de octubre · Museos Vaticanos |
-| [31](#ruta-31) | 3 | completo | no | sin experiencias | — | viernes 29 oct 2027 | Domingo 31 de octubre · Museos Vaticanos |
-| [32](#ruta-32) | 3 | completo | sí | sin experiencias | — | viernes 12 nov 2027 | Domingo 14 de noviembre · Museos Vaticanos |
-| [33](#ruta-33) | 2 | completo | no | sin experiencias | — | sábado 27 nov 2027 | Domingo 28 de noviembre · Museos Vaticanos |
-| [34](#ruta-34) | 3 | completo | no | sin experiencias | — | viernes 10 dic 2027 | Mercadillo de Navidad en Piazza Navona · Domingo 12 de diciembre · Museos Vaticanos |
+| [27](#ruta-27) | 3 | completo | no | Barrios | — | viernes 3 sep 2027 | Domingo 5 · Museos Vaticanos cerrados |
+| [28](#ruta-28) | 3 | completo | sí | Arte | — | viernes 10 sep 2027 | Domingo 12 · Museos Vaticanos cerrados |
+| [29](#ruta-29) | 2 | completo | no | sin experiencias | — | martes 28 sep 2027 · 29 sep: audiencia papal (miércoles por la mañana) | Miércoles 29 · Audiencia papal |
+| [30](#ruta-30) | 4 | completo | no | Naturaleza | — | viernes 1 oct 2027 | Domingo 3 · Museos Vaticanos cerrados |
+| [31](#ruta-31) | 3 | completo | no | sin experiencias | — | viernes 29 oct 2027 | Domingo 31 · Último domingo de mes |
+| [32](#ruta-32) | 3 | completo | sí | sin experiencias | — | viernes 12 nov 2027 | Domingo 14 · Museos Vaticanos cerrados |
+| [33](#ruta-33) | 2 | completo | no | sin experiencias | — | sábado 27 nov 2027 | Domingo 28 · Último domingo de mes |
+| [34](#ruta-34) | 3 | completo | no | sin experiencias | — | viernes 10 dic 2027 | Domingo 12 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona |
 | [35](#ruta-35) | 5 | tranquilo | sí | sin experiencias | — | lunes 13 dic 2027 · 15 dic: audiencia papal (miércoles por la mañana) | — |
 
 <a id="ruta-1"></a>
@@ -55,7 +55,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 16 de mayo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **Domingo 16 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 15 para que no los pierdas.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -116,7 +116,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 18:45. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 10 de octubre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 10 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 9 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -205,7 +205,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 20:30. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 23 de mayo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 23 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 21 para que no los pierdas.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -284,7 +284,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: En verano Roma aprieta: hemos intentado poner las visitas principales a primera hora de la mañana para que evites la multitud y el calor.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 13 de junio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **Domingo 13 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 12 para que no los pierdas.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -374,7 +374,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 19:15. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 19 de septiembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 19 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 18 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -539,7 +539,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: En tus fechas anochece sobre las 17:00 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 17 de enero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 17 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 16 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -625,7 +625,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: En tus fechas anochece sobre las 17:30 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 7 de febrero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 4
+- **Domingo 7 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 4
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 5 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -731,7 +731,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: En tus fechas anochece sobre las 17:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 21 de febrero · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 21 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 20 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -881,9 +881,10 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 18:00. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Primer domingo de mes · Museos gratis** · etiqueta «Museos gratis» en el día 2
+- **Domingo 7 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 6 para que no los pierdas.
-  - El primer domingo de mes la entrada al Coliseo es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
+- **Domingo 7 · El Coliseo y los museos del Estado, gratis** · etiqueta «El Coliseo y los museos del Estado, gratis» en el día 2
+  - El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
 
@@ -906,7 +907,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 
 ### Día 2 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
-**domingo 7 mar 2027** · 🏷️ Museos gratis · 🌅 atardecer 18:07 · día curado D1-FT (B, domingo, fecha:primer_domingo)
+**domingo 7 mar 2027** · 🏷️ Museos Vaticanos cerrados · 🏷️ El Coliseo y los museos del Estado, gratis · 🌅 atardecer 18:07 · día curado D1-FT (B, domingo, fecha:primer_domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -961,7 +962,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 18:15. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 14 de marzo · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 14 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 13 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -1072,7 +1073,7 @@ Motor v4 (días escritos), generado el 2026-09-29 con `node scripts/destino/revi
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 11 de abril · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **Domingo 11 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 10 para que no los pierdas.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -1320,13 +1321,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 20:15. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Primer domingo de mes · Museos gratis** · etiqueta «Museos gratis» en el día 1
+- **Domingo 2 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 1
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el martes 4 para que no los pierdas.
-  - El primer domingo de mes la entrada al Coliseo es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
+- **Domingo 2 · El Coliseo y los museos del Estado, gratis** · etiqueta «El Coliseo y los museos del Estado, gratis» en el día 1
+  - El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
-**domingo 2 may 2027** · 🏷️ Museos gratis · 🌅 atardecer 20:09 · día curado D1 (D, domingo, fecha:primer_domingo)
+**domingo 2 may 2027** · 🏷️ Museos Vaticanos cerrados · 🏷️ El Coliseo y los museos del Estado, gratis · 🌅 atardecer 20:09 · día curado D1 (D, domingo, fecha:primer_domingo)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1491,7 +1493,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 20:30. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 30 de mayo · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 3
+- **Domingo 30 · Último domingo de mes** · etiqueta «Último domingo de mes» en el día 3
   - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el viernes 28.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -1593,7 +1595,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 > **Banner del viaje**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 6 de junio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 6 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 4 para que no los pierdas.
 
 ### Día 1 — Free Tour por el centro y el Vaticano por la tarde
@@ -1670,7 +1672,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 20 de junio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **Domingo 20 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 19 para que no los pierdas.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -1815,7 +1817,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En verano Roma aprieta: hemos intentado poner las visitas principales a primera hora de la mañana para que evites la multitud y el calor.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 4 de julio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 4 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 2 para que no los pierdas.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -1896,7 +1898,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 > **Banner del viaje**: Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 11 de julio · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 4
+- **Domingo 11 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 4
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 9 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -1996,7 +1998,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En verano Roma aprieta: hemos intentado poner las visitas principales a primera hora de la mañana para que evites la multitud y el calor.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 25 de julio · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 2
+- **Domingo 25 · Último domingo de mes** · etiqueta «Último domingo de mes» en el día 2
   - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 24.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -2087,7 +2089,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 8 de agosto · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 2
+- **Domingo 8 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 7 para que no los pierdas.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -2252,7 +2254,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 19:45. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 5 de septiembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 5 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 4 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -2341,7 +2343,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 19:30. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 12 de septiembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 12 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 10 para que no los pierdas.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -2417,7 +2419,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 > **Banner del viaje**: 2 días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Miércoles 29 de septiembre · Audiencia papal** · etiqueta «Audiencia papal» en el día 2
+- **Miércoles 29 · Audiencia papal** · etiqueta «Audiencia papal» en el día 2
   - Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -2477,7 +2479,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 19:00. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 3 de octubre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 3 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 2 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -2584,7 +2586,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: Buena época para Roma: se camina a gusto y hay luz hasta las 18:15. Hemos pensado tu ruta para que aproveches cada hora.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 31 de octubre · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 3
+- **Domingo 31 · Último domingo de mes** · etiqueta «Último domingo de mes» en el día 3
   - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 30.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -2673,7 +2675,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 14 de noviembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
+- **Domingo 14 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
   - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el viernes 12 para que no los pierdas.
 
 ### Día 1 — Trevi sin gente, Free Tour y Vaticano por la tarde
@@ -2751,7 +2753,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Domingo 28 de noviembre · Museos Vaticanos** · etiqueta «Último domingo de mes» en el día 2
+- **Domingo 28 · Último domingo de mes** · etiqueta «Último domingo de mes» en el día 2
   - El último domingo de mes los Museos Vaticanos abren solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el sábado 27.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
@@ -2810,10 +2812,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
+- **Domingo 12 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
+  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 11 para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
-- **Domingo 12 de diciembre · Museos Vaticanos** · etiqueta «Museos Vaticanos cerrados» en el día 3
-  - Los domingos los Museos Vaticanos cierran. Hemos puesto tu visita el sábado 11 para que no los pierdas.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -3004,7 +3006,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ### Los mismos 3 días, del 13 al 15 de agosto de 2027
 
 **Avisos de fechas**: 
-- **Ferragosto** · etiqueta «Ferragosto» en el día 2: Los Museos Vaticanos cierran el sábado 14 (Ferragosto) y el domingo 15 (Ferragosto). Hemos puesto tu visita el viernes 13 para que no los pierdas. El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer. El 15 de agosto el Panteón cierra por Ferragosto. Hemos puesto tu visita el sábado 14 para que no lo pierdas. Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+- **Sábado 14 y domingo 15 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2: Los Museos Vaticanos cierran el sábado 14, Ferragosto y el domingo 15, Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
+- **Sábado 14 · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 2: El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
+- **Domingo 15 · Panteón cerrado** · etiqueta «Panteón cerrado» en el día 2: El 15 de agosto el Panteón cierra por Ferragosto. Hemos puesto tu visita el sábado 14 para que no lo pierdas.
+- **Ferragosto** · etiqueta «Ferragosto» en el día 2: Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 - **Día 1 (viernes 13 ago 2027) — Vaticano, Castillo y Trastevere al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:05 Via della Conciliazione · 15:25 Puente Sant'Angelo · 15:35 Castillo de Sant'Angelo · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Basílica de Santa Cecilia in Trastevere · 18:00 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (por fuera: A esta hora ya ha cerrado) · 19:20 Fontana dell'Acqua Paola · 19:50 Mirador del Janículo · 22:30 Trastevere de noche
 - **Día 2 (sábado 14 ago 2027) — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 15:10 Panteón · 15:45 Elefantino de Bernini · 15:55 Iglesia de Santa Maria sopra Minerva · 16:20 Iglesia de San Luigi dei Francesi · 16:40 Piazza Navona · 17:20 Largo di Torre Argentina · 17:40 Iglesia del Gesù · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 19:50 Ponte Sisto · 22:30 Fontana de Trevi (noche)

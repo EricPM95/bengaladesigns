@@ -738,7 +738,7 @@ export interface Route {
 }
 
 /** Icono ilustrado de un aviso de fecha (DateNoticeIcons.tsx); 'cierre' = cierre resuelto por el motor. */
-export type DateNoticeIcon = 'fiesta' | 'religioso' | 'fuegos' | 'luz' | 'navidad' | 'bandera' | 'musica' | 'calma' | 'cierre'
+export type DateNoticeIcon = 'fiesta' | 'religioso' | 'fuegos' | 'luz' | 'navidad' | 'bandera' | 'musica' | 'calma' | 'cierre' | 'entrada'
 
 /** Una tarjeta de la ventana de fechas especiales: lo que hemos hecho por un cierre y/o lo que hay ese día. */
 export interface DateNotice {

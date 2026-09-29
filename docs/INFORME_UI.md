@@ -154,3 +154,19 @@ Regla 362 en INVARIANTES. Capturas con **v4** a 375 px; el ordenador no cambia.
 | El «···» del último día, libre | [ultimo_dia_botones.jpg](capturas_ui/ultimo_dia_botones.jpg) |
 | Final de la lista | [final_lista_botones.jpg](capturas_ui/final_lista_botones.jpg) |
 | «¿Qué día la haces?» sin llegada ni vuelta | [excursion_sin_llegada_vuelta.jpg](capturas_ui/excursion_sin_llegada_vuelta.jpg) |
+
+# Repaso del diseño (PROMPT_UI_REPASO)
+
+## 1 · Avisos de fechas: un aviso, un tema (regla 376)
+
+Antes, el motor juntaba en una sola tarjeta por día lo automático (los cierres) y lo curado, con el título del curado.
+Ahora va una tarjeta por tema: primero los cierres, con sus días en el título, y después lo informativo.
+
+Avisos de Roma que he separado o cambiado de título:
+- **Primer domingo de mes.** Antes: «Primer domingo de mes · Museos gratis», con los cierres de los Vaticanos dentro.
+  Ahora son dos avisos: «Domingo 6 y martes 8 · Museos Vaticanos cerrados» y «Domingo 6 · El Coliseo y los museos del
+  Estado, gratis», este con el icono de la entrada.
+- **Cualquier día con un cierre y una fecha curada** (Año Nuevo, Reyes, Pasquetta, 1 de mayo, San Pedro, Ferragosto,
+  la Inmaculada, Navidad): el cierre sale aparte, con su título («… · Museos Vaticanos cerrados»). Luego va la fiesta,
+  con su `contexto`, que ya no habla de cierres.
+- El icono del cierre pasa a ser un calendario tachado.

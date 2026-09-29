@@ -1989,3 +1989,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       en…», de 90 min como mucho.
     - **Una calle o un paseo nunca pasa de su máximo** por el redondeo de la pantalla (Via della Conciliazione, 45).
     - **Un rato libre de 30 min o menos no gasta las ideas de paseo**: le hacen falta al rato largo.
+
+376. **Un aviso, un tema** (2026-09-29, PROMPT_UI_REPASO 1):
+    - **Cada aviso habla de una sola cosa y su título dice exactamente esa cosa.**
+    - **Cada cierre en su tarjeta**, con sus días y lo cerrado en el título: «Domingo 6 y martes 8 · Museos Vaticanos
+      cerrados». Con un festivo, «… el martes 8, la Inmaculada».
+    - **Cada fecha curada en la suya.** Las que se repiten llevan el día real delante (`titulo_con_fecha`): «Domingo 6 ·
+      El Coliseo y los museos del Estado, gratis». Nunca «museos» a secas.
+    - **Primero lo que cambia la ruta** (cierres), después lo informativo.
+    - **Iconos:** confeti solo para fiestas y eventos; calendario tachado para los cierres; entrada para los días gratis.

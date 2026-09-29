@@ -150,9 +150,10 @@ export function dateNoticesFor(destData, trip, options = {}) {
     return byDate.get(dateIso)
   }
   /** `tag`: la etiqueta del día; `subject`: de qué va, para el título ("Domingo 26 de septiembre · Museos Vaticanos"). */
-  const addAuto = (dateIso, text, tag, subject, icon = 'cierre') => {
+  // (`dates`: los días de los que habla, para el título: «Domingo 6 y martes 8 · Museos Vaticanos cerrados».)
+  const addAuto = (dateIso, text, tag, subject, icon = 'cierre', dates = [dateIso]) => {
     const entry = slot(dateIso)
-    if (!entry.auto.some((item) => item.text === text)) entry.auto.push({ text, tag, subject, icon })
+    if (!entry.auto.some((item) => item.text === text)) entry.auto.push({ text, tag, subject, icon, dates })
   }
 
   // 1. Día movido: lo que otro día del viaje cierra (o no debe ir) está en este. Un aviso por lugar, en el primer
@@ -182,7 +183,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
     else if (closed.length > 1) {
       const fechas = joinSpanish(closed.map((iso) => {
         const name = holidayName(destData, places[0], iso)
-        return `el ${shortDate(iso)}${name ? ` (${name.replace(/^(el|la|los|las)\s+/i, '')})` : ''}`
+        return `el ${shortDate(iso)}${name ? `, ${name}` : ''}`
       }))
       text = `${capital(g.named)} ${g.cierra} ${fechas}. ${done}`
     } else {
@@ -190,7 +191,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       // mañana y con muchísima gente.
       text = `El último ${weekdayOf(blocked[0])} de mes ${g.named} ${g.abre} solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el ${shortDate(placedIso)}.`
     }
-    addAuto(closed[0] ?? blocked[0], text, closed.length ? `${capital(g.bare)} ${g.cerrado}` : 'Último domingo de mes', g.bare)
+    addAuto(closed[0] ?? blocked[0], text, closed.length ? `${capital(g.bare)} ${g.cerrado}` : 'Último domingo de mes', g.bare, 'cierre', closed.length ? closed : blocked.slice(0, 1))
   }
 
   // 2. Por fuera: un imprescindible cerrado ese día que se enseña desde fuera.
@@ -221,7 +222,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       : joinSpanish(closedDays.map((iso) => `el ${dayOfMonth(iso)}`))
     const names = [...new Set(closedDays.map((iso) => holidayName(destData, place, iso)).filter(Boolean).map((text) => text.replace(/^(el|la|los|las)\s+/i, '')))]
     const why = names.length === 1 ? ` (${names[0]})` : ''
-    addAuto(closedDays[0], `${capital(g.named)} ${g.cierra} ${fechas}${why}, que son los días de tu viaje. ${capital(g.pronoun)} hemos dejado en «No te dio tiempo» por si cambias de fechas.`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
+    addAuto(closedDays[0], `${capital(g.named)} ${g.cierra} ${fechas}${why}, que son los días de tu viaje. ${capital(g.pronoun)} hemos dejado en «No te dio tiempo» por si cambias de fechas.`, `${capital(g.bare)} ${g.cerrado}`, g.bare, 'cierre', closedDays)
   }
 
   // 4. Horario especial (`fechas_especiales[].horario_especial` confirmado): la visita va dentro de ese horario.
@@ -282,24 +283,47 @@ export function dateNoticesFor(destData, trip, options = {}) {
     }
   }
 
-  // Una tarjeta por día, en orden de fecha.
+  // Un aviso, un tema (PROMPT_UI_REPASO 1): cada cierre en su tarjeta, con sus días y lo cerrado en el título («Domingo 6 y
+  // martes 8 · Museos Vaticanos cerrados»), y cada fecha curada en la suya («Domingo 6 · El Coliseo, gratis»). Primero
+  // lo que cambia la ruta, después lo informativo. Antes iban juntos en una tarjeta con el título del curado.
   const dayOfDate = new Map(days.map((day) => [day.hours.dateIso, day.dayNumber]))
-  return [...byDate.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([iso, { auto, curated }]) => {
-      const first = auto[0]
-      return {
-        id: `${iso}:${curated?.id ?? first?.tag ?? ''}`,
+  /** «Domingo 6 y martes 8» (con el mes si cambia). */
+  const datesTitle = (isos) => {
+    const sorted = [...new Set(isos)].sort()
+    const sameMonth = sorted.every((iso) => iso.slice(0, 7) === sorted[0].slice(0, 7))
+    return capital(joinSpanish(sorted.map((iso) => (sameMonth ? shortDate(iso) : longDate(iso)))))
+  }
+  const routeCards = []
+  const infoCards = []
+  for (const [iso, { auto, curated }] of [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    for (const item of auto) {
+      routeCards.push({
+        id: `${iso}:${item.tag}`,
         day_number: dayOfDate.get(iso) ?? null,
         date_iso: iso,
-        icon: curated?.icono ?? first?.icon ?? 'cierre',
-        title: curated?.titulo ?? `${capital(longDate(iso))} · ${capital([...new Set(auto.map((item) => item.subject))].join(' · '))}`,
-        tag: curated ? tagOf(curated) : first.tag,
+        icon: item.icon ?? 'cierre',
+        title: `${datesTitle(item.dates ?? [iso])} · ${item.tag}`,
+        tag: item.tag,
+        texts: [item.text],
+        kind: 'auto',
+      })
+    }
+    if (curated) {
+      infoCards.push({
+        id: `${iso}:${curated.id}`,
+        day_number: dayOfDate.get(iso) ?? null,
+        date_iso: iso,
+        icon: curated.icono ?? 'fiesta',
+        // (`titulo_con_fecha`: las fechas que se repiten, el primer domingo de mes, llevan el día real delante.)
+        title: curated.titulo_con_fecha ? `${datesTitle([iso])} · ${curated.titulo_con_fecha}` : curated.titulo,
+        tag: tagOf(curated),
         // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; una frase aparte, fuera de las 35 palabras.)
-        texts: [...auto.map((item) => item.text), ...(curated ? [curatedText(curated)] : []), ...(curated?.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
-        kind: curated && auto.length ? 'mixto' : curated ? 'curado' : 'auto',
-      }
-    })
+        texts: [curatedText(curated), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
+        kind: 'curado',
+      })
+    }
+  }
+  return [...routeCards, ...infoCards]
 }
 
 /**

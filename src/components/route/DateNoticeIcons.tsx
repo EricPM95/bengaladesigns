@@ -96,13 +96,22 @@ const DRAWINGS: Record<DateNoticeIcon, ReactNode> = {
       <path d="M18 45 c3 -2 6 -2 9 0 s6 2 9 0 s6 -2 9 0" />
     </>
   ),
-  // Un calendario con la marca de resuelto: el cierre que ya hemos arreglado.
+  // Un calendario tachado: un cierre (PROMPT_UI_REPASO 1).
   cierre: (
     <>
       <rect x="16" y="18" width="32" height="28" rx="4" fill={SOFT} />
       <rect x="16" y="18" width="32" height="28" rx="4" />
       <path d="M16 26 h32 M24 14 v7 M40 14 v7" />
-      <path d="M25 36 l5 5 l10 -10" stroke={GOLD} strokeWidth="2.2" />
+      <path d="M26 31 l12 11 M38 31 l-12 11" stroke={GOLD} strokeWidth="2.2" />
+    </>
+  ),
+  // Una entrada: un día gratis.
+  entrada: (
+    <>
+      <path d="M14 24 h36 v5 a3 3 0 0 0 0 6 v5 h-36 v-5 a3 3 0 0 0 0 -6 z" fill={SOFT} />
+      <path d="M14 24 h36 v5 a3 3 0 0 0 0 6 v5 h-36 v-5 a3 3 0 0 0 0 -6 z" />
+      <path d="M40 24 v16" strokeDasharray="2 2.5" />
+      <path d="M21 32 h12" stroke={GOLD} strokeWidth="2.2" />
     </>
   ),
 }

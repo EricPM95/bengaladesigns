@@ -12544,16 +12544,17 @@
         "id": "domenica_al_museo",
         "fecha": "primer_domingo",
         "tipo": "evento",
-        "icono": "fiesta",
-        "titulo": "Primer domingo de mes · Museos gratis",
-        "texto": "El primer domingo de mes la entrada al Coliseo es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.",
+        "icono": "entrada",
+        "titulo": "Primer domingo de mes · El Coliseo y los museos del Estado, gratis",
+        "texto": "El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.",
         "requiere_lugares": [
           "Coliseo",
           "Foro Romano y Palatino"
         ],
         "verificar": true,
         "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "titulo_con_fecha": "El Coliseo y los museos del Estado, gratis"
       },
       {
         "id": "mercadillo_navona",

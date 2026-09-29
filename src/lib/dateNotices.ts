@@ -1,7 +1,7 @@
 import type { DateNotice, DateNoticeIcon } from './types'
 
 /** Los iconos ilustrados que existen (DateNoticeIcons.tsx); uno desconocido del JSON cae a 'fiesta'. */
-export const DATE_NOTICE_ICONS: DateNoticeIcon[] = ['fiesta', 'religioso', 'fuegos', 'luz', 'navidad', 'bandera', 'musica', 'calma', 'cierre']
+export const DATE_NOTICE_ICONS: DateNoticeIcon[] = ['fiesta', 'religioso', 'fuegos', 'luz', 'navidad', 'bandera', 'musica', 'calma', 'cierre', 'entrada']
 
 /** Como mucho tantas tarjetas en la ventana: con más, la última dice "y N más" y los lista. */
 export const MAX_DATE_NOTICE_CARDS = 3
