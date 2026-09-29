@@ -1923,8 +1923,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Solo en tranquilo son opcionales el Gesù, la Fuente de las Tortugas y también el Largo di Torre Argentina. Con el
       Coliseo a las 10:00 (regla 366), San Luigi (cierra a las 18:15) no llegaba después del Panteón.
     - En tranquilo, una sola nocturna, aunque el paseo escrito admita más.
-    - En tranquilo, la comida dura al menos 60 min. Si la mañana acaba tarde, la tarde espera; antes, la comida se quedaba
-      en 45 min.
+    - (Se probó una comida de al menos 60 min en tranquilo y se quitó: en diciembre el Castillo llegaba después del sol.
+      Sigue el mínimo de 45 de siempre.)
 
 368. **En tranquilo, las opcionales no vuelven nunca** (2026-09-29, PROMPT_ROMA_V4_REPASO 6; sustituye a la parte de
     la regla 353 que las devolvía). El rato que sobra va al barrio elástico, hasta su máximo de paseo (Monti, 120 min), y
@@ -1958,3 +1958,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 373. **Los ratos con nombre, también de 5 en 5** (2026-09-29, PROMPT_ROMA_V4_REPASO 11): aperitivo, tarde libre y tiempo
     libre se redondean hacia abajo a 5 min al final del día (salían 43, 53 o 57 min), para no pisar lo siguiente.
+
+374. **Ajustes tras la prueba de las 365 fechas** (2026-09-29, PROMPT_ROMA_V4_REPASO):
+    - **La rejilla de 5 min va en la pantalla, no en el motor.** Esto corrige la regla 363: en el motor, los redondeos
+      se sumaban y se llegaba tarde a los turnos (la Galería a las 10:55 para las 11:00). El motor cuenta con los minutos
+      exactos. La pantalla redondea cada llegada hacia arriba (como mucho 4 min, sin acumular), así el paseo siempre se
+      ve (Arco 10:00-10:20, Foro 10:25). El mínimo de 20 min de un imprescindible puede comerse 4 min del paseo, nunca más.
+    - **En tranquilo, toda la mañana se corre lo mismo que la primera hora** (regla 366), ya sin las opcionales: las
+      demás horas fijas, al turno siguiente si hay turnos (la Galería de las 11:00, a las 12:00), y el comienzo de la tarde.
+    - **`si_cerrado: "quitar"` también si cierra a esa hora**, no solo ese día: el lago de Villa Borghese de noche.
+      Con la Galería del pool en el D1 en tranquilo, turno de las 17:00 y Navona opcional.
+    - **En tranquilo, también el «centro en dos días» da una sola nocturna**: la que cubre algo que falta.
+    - **La prueba de la elástica.** Cuando sobra tiempo, solo avisa si sobra más de lo que absorbe un rato con nombre (60
+      min), porque ese rato ya lo vigila la auditoría. Cuando falta, avisa igual que antes. La comida de 90 min en completo
+      deja tarde de sobra en verano, y eso ya no es un error.

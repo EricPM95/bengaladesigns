@@ -60,7 +60,6 @@ const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
-const LUNCH_MIN_TRANQUILO = 60 // en tranquilo, al menos una hora
 const TRANQUILO_EARLIEST = 10 * 60 // en tranquilo, la primera parada nunca antes de las 10:00
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
@@ -436,6 +435,25 @@ export function planWrittenTrip(args) {
         kept.push(stop)
       }
       draft.manana = kept
+      // Tranquilo desde las 10:00 (regla 366), ya sin las opcionales: si la primera hora escrita de la mañana era antes, TODA la mañana se corre lo
+      // mismo — las demás horas fijas (al turno siguiente si el lugar tiene turnos: la Galería Borghese) y el comienzo de la
+      // tarde —, para que el día escrito siga cuadrando (sin esto, la Galería de las 11:00 se perdía y la comida se quedaba
+      // en nada). La hora de la primera la pone hourOf.
+      const rawHour = (stop) => (stop.hora == null ? null : toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo))
+      const firstFixed = draft.manana.findIndex((stop) => stop.hora != null)
+      const firstAt = firstFixed >= 0 ? rawHour(draft.manana[firstFixed]) : null
+      const delta = firstAt != null && firstAt < TRANQUILO_EARLIEST ? TRANQUILO_EARLIEST - firstAt : 0
+      if (delta > 0) {
+        draft.manana = draft.manana.map((stop, index) => {
+          const at = index > firstFixed ? rawHour(stop) : null
+          if (at == null) return stop
+          const turnos = placeByName.get(stop.lugar)?.turnos
+          let shifted = at + delta
+          if (turnos?.cada_minutos && turnos.desde) shifted = toMin(turnos.desde) + Math.ceil((shifted - toMin(turnos.desde)) / turnos.cada_minutos) * turnos.cada_minutos
+          return { ...stop, hora: toHHMM(shifted) }
+        })
+        if (draft.empieza) draft.empieza = toHHMM(toMin(draft.empieza) + delta)
+      }
       // (Y las opcionales de la tarde, las más prescindibles de las tardes largas: decisión del usuario, 2026-09-29; al
       // poner las horas vuelven las que hagan falta para que la elástica llegue.)
       draft.tardeFull = draft.tarde
@@ -649,9 +667,9 @@ export function planWrittenTrip(args) {
       // (Un tramo de más de LONG_WALK min andando nunca va a pie: si no trae su bus o taxi escrito, en taxi.)
       if (!place.transitMinutes && legRaw > LONG_WALK && t != null && coords) place = { ...place, transitMinutes: Math.max(10, Math.round(legRaw / 2.5) + 5), transitHow: 'un taxi' }
       const leg = place.transitMinutes ? Math.min(legRaw, place.transitMinutes) : legRaw
-      // Cada llegada, en la rejilla de 5 min (los 5 más cercanos): así lo que ve el viajero es lo que calcula el motor y la
-      // hora de una parada es la anterior + su duración + el paseo (el Arco de 15-20 min ya no se come el paseo al Foro).
-      let at = t != null ? Math.round((t + leg) / 5) * 5 : t
+      // (Con sus minutos exactos: una rejilla de 5 min aquí sumaba redondeos y se llegaba tarde a los turnos; la pantalla
+      // redondea y la hora de una parada sigue siendo la anterior + su duración + el paseo, con 4 min de margen.)
+      let at = t + leg
       const fixed = hourOf(stop)
       if (fixed != null) {
         // (A la entrada con turno se llega 10 min antes: `turno` en lo escrito, los turnos de la ficha o el Free Tour.)
@@ -691,6 +709,10 @@ export function planWrittenTrip(args) {
               stop = swapped
               duration = place.duration_minutes ?? 30
             }
+          } else if (rule === 'quitar') {
+            // (Cerrado a esa hora y sin sentido por fuera, un parque con verja de noche: no va, como si cerrase ese día.)
+            if (stop.traslado) carry = stop.traslado
+            return
           } else if (rule === 'camino') {
             place = readyPlace({ ...stop, modo: 'camino' }, source, null, ctx.hours)
             duration = place.duration_minutes
@@ -758,8 +780,6 @@ export function planWrittenTrip(args) {
     // (La comida dura como mucho 90 min en completo y 105 en tranquilo, aunque lo escrito empiece la tarde más tarde:
     // lo demás es tarde. Antes, Nonna Betta de 13:30 a 15:30 en completo, más que en tranquilo.)
     end = Math.min(end, start + (tranquilo ? LUNCH_MAX_TRANQUILO : LUNCH_MAX_COMPLETO))
-    // (En tranquilo, si la mañana acaba tarde, la tarde espera a que haya al menos una hora para comer.)
-    if (tranquilo && end - start < LUNCH_MIN_TRANQUILO) end = start + LUNCH_MIN_TRANQUILO
     let short = null
     if (end - start < LUNCH_MIN) {
       short = end - start
@@ -843,6 +863,7 @@ export function planWrittenTrip(args) {
     const elasticStop = draft.tarde.find((stop) => stop.elastica != null)
     const sunsetStop = draft.tarde.find((stop) => stop.modo === 'atardecer')
     let elasticUsed = 0
+    let elasticGrow = null
     let elasticWanted = 0
     if (elasticStop && sunsetStop && hours.sunset != null) {
       const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
@@ -858,6 +879,7 @@ export function planWrittenTrip(args) {
         // (En tranquilo, un barrio o un parque crece hasta su máximo de paseo: Monti, hasta 120.)
         // (Y en completo, un barrio o un parque también puede crecer hasta su máximo de paseo, 90, antes que dejar tiempo libre.)
         const grow = Math.min(pmax != null ? Math.max(tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax - baseMin) : tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
+        elasticGrow = grow
         elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(grow, elasticWanted)) / 5) * 5
         // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
         const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
@@ -940,7 +962,7 @@ export function planWrittenTrip(args) {
       reorderedBlocks: [],
       closedAnchors: [],
       otherRestaurants,
-      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica, grow: tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null },
+      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica, grow: elasticGrow ?? (tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica) } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null },
     }
     problems.push(...ctx.problems.map((problem) => ({ ...problem, dayNumber: skeletonDay.dayNumber })))
     days.push(dayPlan)
@@ -1033,6 +1055,11 @@ export function planWrittenTrip(args) {
         .map((name) => catalogue.get(name))
         .filter((entry) => entry && (entry.conflicts_with ?? []).some((name) => wanted.has(name)))
         .filter((entry) => !(entry.conflicts_with ?? []).some((name) => missing.includes(name)) || ![...nightsByDay.entries()].some(([dayNumber, list]) => dayNumber !== host.dayNumber && list.some((other) => other.name === entry.name)))
+      // (En tranquilo, también aquí una sola nocturna: la que cubre algo que falta; PROMPT_ROMA_V4_REPASO 5.)
+      if (tranquilo && chain.length > 1) {
+        const coversMissing = (entry) => (entry.conflicts_with ?? []).some((name) => missing.includes(name))
+        chain.splice(0, chain.length, ...[...chain.filter(coversMissing), ...chain.filter((entry) => !coversMissing(entry))].slice(0, 1))
+      }
       if (chain.length > 0) {
         for (const [dayNumber, list] of nightsByDay) if (dayNumber !== host.dayNumber) nightsByDay.set(dayNumber, list.filter((entry) => !chain.some((other) => other.name === entry.name)))
         nightsByDay.set(host.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true })))

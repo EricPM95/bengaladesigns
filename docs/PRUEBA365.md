@@ -1,36 +1,45 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-10560 viajes (todas las fechas de 2027), en 497 s. **Total: 155.**
+10560 viajes (todas las fechas de 2027), en 543 s. **Total: 10217.**
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
-- **Tramo de más de 25 min andando sin transporte**: 3
-  - 2027-08-14 · 2 días · completo, día 1, 15:25 Iglesia de Santa Maria in Trastevere — 27 min andando
-  - 2027-08-14 · 2 días · tranquilo, día 1, 15:15 Iglesia de Santa Maria in Trastevere — 27 min andando
-  - 2027-12-25 · 2 días · tranquilo, día 1, 16:00 Basílica de Santa Cecilia in Trastevere — 33 min andando
+- **Tramo de más de 25 min andando sin transporte**: 386
+  - 2027-02-25 · 2 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+  - 2027-02-25 · 3 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+  - 2027-02-25 · 4 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+  - 2027-02-25 · 5 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+  - 2027-02-26 · 2 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+  - 2027-02-26 · 3 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — 28 min andando
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 385
+  - 2027-02-25 · 2 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
+  - 2027-02-25 · 3 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
+  - 2027-02-25 · 4 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
+  - 2027-02-25 · 5 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
+  - 2027-02-26 · 2 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
+  - 2027-02-26 · 3 días · tranquilo, día 2, 17:45 San Pietro in Montorio y Tempietto de Bramante — acaba Castillo de Sant'Angelo a las 17:30 y hay 28 min andando
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 13
-  - 2027-01-31 · 2 días · completo, día 2 antes de Mirador del Janículo — 35 min
-  - 2027-01-31 · 2 días · tranquilo, día 2 antes de Mirador del Janículo — 35 min
-  - 2027-02-07 · 2 días · completo, día 2 antes de Mirador del Janículo — 44 min
-  - 2027-02-07 · 2 días · tranquilo, día 2 antes de Mirador del Janículo — 44 min
-  - 2027-05-01 · 2 días · completo, día 1 antes de Mirador del Janículo — 62 min
-  - 2027-05-01 · 2 días · tranquilo, día 1 antes de Mirador del Janículo — 42 min
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 1709
+  - 2027-01-01 · 4 días · tranquilo · FT, día 3 antes de Galería Borghese — 60 min
+  - 2027-01-01 · 5 días · tranquilo · FT, día 5 antes de Galería Borghese — 60 min
+  - 2027-01-02 · 4 días · tranquilo · FT, día 2 antes de Galería Borghese — 60 min
+  - 2027-01-02 · 5 días · tranquilo · FT, día 2 antes de Galería Borghese — 60 min
+  - 2027-01-02 · 6 días · tranquilo · FT, día 5 antes de Galería Borghese — 60 min
+  - 2027-01-02 · 7 días · tranquilo · FT, día 5 antes de Galería Borghese — 60 min
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
-- **Cena que empieza más de 20 min después de llegar, sin motivo**: 3
-  - 2027-08-14 · 2 días · completo · FT, día 1, 20:30 cena — 26 min de espera
-  - 2027-08-14 · 2 días · tranquilo · FT, día 1, 20:30 cena — 26 min de espera
-  - 2027-12-25 · 2 días · completo, día 1, 19:30 cena — 34 min de espera
-- **Zigzag: volver a una zona que ya se dejó ese día**: 20
-  - 2027-03-27 · 2 días · completo, día 2, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
-  - 2027-03-27 · 2 días · tranquilo, día 2, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
-  - 2027-03-27 · 3 días · completo, día 2, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
-  - 2027-03-27 · 3 días · tranquilo, día 2, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
-  - 2027-03-28 · 2 días · completo, día 1, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
-  - 2027-03-28 · 2 días · tranquilo, día 1, 14:50 Altar de la Patria — vuelve junto a Foro Romano y Palatino
+- **Cena que empieza más de 20 min después de llegar, sin motivo**: 2
+  - 2027-08-14 · 2 días · completo · FT, día 1, 20:30 cena — 21 min de espera
+  - 2027-08-14 · 2 días · tranquilo · FT, día 1, 20:30 cena — 21 min de espera
+- **Zigzag: volver a una zona que ya se dejó ese día**: 9
+  - 2027-01-01 · 5 días · completo · arte_museos, día 2, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+  - 2027-04-27 · 5 días · completo · arte_museos, día 5, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+  - 2027-04-29 · 3 días · completo · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+  - 2027-04-29 · 5 días · completo · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+  - 2027-05-01 · 3 días · completo · arte_museos, día 1, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+  - 2027-05-01 · 5 días · completo · arte_museos, día 1, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
 - **Nivel 1-2 como "Por el camino"**: 0 ✅
 - **Nivel 1-2 como "idea" de tiempo libre**: 0 ✅
 - **Imprescindible de menos de 20 min**: 0 ✅
@@ -44,35 +53,58 @@
 - **Lugar de una nocturna que ya salió de día ese mismo día**: 0 ✅
 - **"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre**: 0 ✅
 - **Iglesia o monumento antes que su plaza**: 0 ✅
-- **Texto genérico en una nocturna o en "Roma iluminada"**: 0 ✅
+- **Texto genérico en una nocturna o en "Roma iluminada"**: 464
+  - 2027-01-01 · 2 días · tranquilo, día 2, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
+  - 2027-01-01 · 3 días · tranquilo, día 2, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
+  - 2027-01-01 · 4 días · tranquilo, día 2, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
+  - 2027-01-01 · 5 días · tranquilo, día 5, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
+  - 2027-01-01 · 6 días · tranquilo, día 2, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
+  - 2027-01-01 · 7 días · tranquilo, día 2, 17:10 Castillo de Sant'Angelo — 🌃 Roma iluminada a tus pies
 - **Texto con solo_si_viene_de / solo_si_sigue que no se cumple**: 0 ✅
 - **Tiempo libre con ideas de otra zona**: 0 ✅
-- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: 0 ✅
+- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: 1
+  - 2027-02-10 · 2 días · completo, día 1, 16:05 Via della Conciliazione — 50 min (máximo 45)
 - **El mismo restaurante dos veces en el viaje**: 0 ✅
-- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
+- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 2
+  - 2027-05-01 · 2 días · completo, día 1, 17:00 San Pietro in Montorio y Tempietto de Bramante — con tiempo libre ese día
+  - 2027-08-14 · 2 días · completo, día 1, 16:50 San Pietro in Montorio y Tempietto de Bramante — con tiempo libre ese día
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
-- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
-- **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 21
+  - 2027-04-27 · 5 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+  - 2027-04-27 · 6 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+  - 2027-04-27 · 7 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+  - 2027-04-28 · 4 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+  - 2027-04-29 · 3 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+  - 2027-04-29 · 4 días · tranquilo, todo el viaje Panteón — ningún día por dentro
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: 64
+  - 2027-01-29 · 4 días · tranquilo, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 17:16 para las 16:30
+  - 2027-01-29 · 4 días · tranquilo · FT, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 18:16 para las 16:30
+  - 2027-01-29 · 5 días · tranquilo, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 17:16 para las 16:30
+  - 2027-01-29 · 5 días · tranquilo · FT, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 18:16 para las 16:30
+  - 2027-01-29 · 6 días · tranquilo, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 17:16 para las 16:30
+  - 2027-01-29 · 6 días · tranquilo · FT, día 3 (D4 A, domingo) — Santa Maria del Popolo · llega 18:16 para las 16:30
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
-- **Comida de menos de 45 min**: 4
-  - 2027-01-01 · 2 días · completo · FT, día 1 (D1-FT A, viernes) — 40 min
-  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — 10 min
-  - 2027-12-31 · 2 días · completo · FT, día 2 (D1-FT A, sábado) — 40 min
-  - 2027-12-31 · 2 días · tranquilo · FT, día 2 (D1-FT A, sábado) — 10 min
+- **Comida de menos de 45 min**: 1122
+  - 2027-01-01 · 2 días · completo · FT, día 1 (D1-FT A, viernes) — 25 min
+  - 2027-01-01 · 2 días · tranquilo, día 1 (D1 A, viernes) — 30 min
+  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — -5 min
+  - 2027-01-01 · 4 días · tranquilo, día 3 (D4 A, domingo) — 30 min
+  - 2027-01-01 · 4 días · tranquilo · FT, día 3 (D4 A, domingo) — 15 min
+  - 2027-01-01 · 5 días · tranquilo, día 3 (D4 A, domingo) — 30 min
 - **Lugar escrito que no existe en las fichas**: 0 ✅
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 60
-  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — Trastevere: quería -46 (margen ±30); sol 16:49
-  - 2027-02-17 · 3 días · completo, día 3 (D4M B, viernes) — Monti: quería -41 (margen ±30); sol 17:48
-  - 2027-03-27 · 2 días · completo, día 2 (D1 C, domingo) — Campo de' Fiori: quería -59 (margen ±30); sol 19:31
-  - 2027-03-27 · 2 días · tranquilo, día 2 (D1 C, domingo) — Campo de' Fiori: quería -59 (margen ±30); sol 19:31
-  - 2027-03-27 · 3 días · completo, día 2 (D1 C, domingo) — Campo de' Fiori: quería -59 (margen ±30); sol 19:31
-  - 2027-03-27 · 3 días · tranquilo, día 2 (D1 C, domingo) — Campo de' Fiori: quería -59 (margen ±30); sol 19:31
+- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 5991
+  - 2027-01-01 · 2 días · tranquilo, día 2 (D2 A, sábado) — Borgo Pio: quería -105 (margen ±25); sol 16:50
+  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — Trastevere: quería -61 (margen ±30); sol 16:49
+  - 2027-01-01 · 3 días · tranquilo, día 2 (D2 A, sábado) — Borgo Pio: quería -105 (margen ±25); sol 16:50
+  - 2027-01-01 · 3 días · tranquilo · FT, día 3 (D1-FT A, domingo) — Trastevere: quería -99 (margen ±30); sol 16:51
+  - 2027-01-01 · 4 días · tranquilo, día 2 (D2 A, sábado) — Borgo Pio: quería -105 (margen ±25); sol 16:50
+  - 2027-01-01 · 4 días · tranquilo, día 3 (D4 A, domingo) — Jardines del Pincio: quería -69 (margen ±30); sol 16:51
 - **«Sin gente» en el título en ritmo tranquilo**: 0 ✅
 - **«Antes de cenar» en una parada que va después de cenar**: 0 ✅
 - **Título del día que no se cumple**: 0 ✅
 - **El motor falla**: 0 ✅
-- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: 52
+- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: 61
   - 2027-01-01 · 2 días · completo, todo el viaje Coliseo — ningún día por dentro
   - 2027-01-01 · 2 días · completo, todo el viaje Foro Romano y Palatino — ningún día por dentro
   - 2027-01-01 · 2 días · completo, todo el viaje Panteón — ningún día por dentro
@@ -82,10 +114,16 @@
 
 ## Dónde caen (día escrito, versión y variantes; T = tranquilo)
 
-- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×52
-- **Comida de menos de 45 min**: D1-FT A viernes ×1 · D1-FT A T viernes ×1 · D1-FT A sábado ×1 · D1-FT A T sábado ×1
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D5C A +arte_museos ×13 · D1 D +pool:Termas de Caracalla ×7 · D1 C +domingo+fecha:easter ×5 · D1 D +sabado+arte_museos ×5 · D1 C T +domingo+fecha:easter ×4 · D5C A +domingo+arte_museos ×4 · D1 C +pool:Termas de Caracalla ×3 · D1-FT A T +fecha:01-01 ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×2 · D2 D T +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo ×2 · D5C D +domingo+arte_museos ×2 · D1 C +pool:Museos Capitolinos ×2 · D4M B ×1 · D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina+luz:C→D ×1
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 D +pool:Termas de Caracalla ×3 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×2 · D1-FT A ×1 · D1-FT A T ×1
-- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D1 A +sabado+arte_museos ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1 · D1 A +sabado+pool:Museos Capitolinos ×1 · D1 B +pool:Museos Capitolinos+pool:Termas de Caracalla ×1
-- **Tramo de más de 25 min andando sin transporte**: D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1
-- **Cena que empieza más de 20 min después de llegar, sin motivo**: D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1
+- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×61
+- **Comida de menos de 45 min**: D4 A T domingo ×266 · D4 A T miércoles ×262 · D4 A T viernes ×182 · D4 A T jueves ×74 · D4 A T martes ×72 · D4 B T viernes ×58 · D4 A T sábado ×56 · D4 B T miércoles ×54 · D4 B T martes ×36 · D4 B T jueves ×36 · D4 B T sábado ×20 · D1-FT A viernes ×1 · D1 A T viernes ×1 · D1-FT A T viernes ×1
+- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D2 A T +tranquilo ×603 · D2 D T +tranquilo ×439 · D1-FT A T ×380 · D4 A T +con_free_tour ×321 · D2 B T +tranquilo ×319 · D4 D T +con_free_tour ×312 · D4 A T ×215 · D1-FT B T ×212 · D1-FT D T ×202 · D2 C T +tranquilo ×187 · D4 B T +con_free_tour ×178 · D4 A ×157 · D1-FT C T ×150 · D4 A T +domingo ×149
+- **Texto genérico en una nocturna o en "Roma iluminada"**: D2 A +tranquilo T ×464
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D4 D +con_free_tour T ×374 · D4 A +con_free_tour T ×321 · D4 B +con_free_tour T ×178 · D4 C +con_free_tour T ×120 · D4 D +con_free_tour+domingo T ×102 · D4 A +con_free_tour+domingo T ×85 · D4 C +con_free_tour+luz:D→C T ×72 · D4M D T ×67 · D1-FT D ×66 · D4 C +con_free_tour+domingo T ×44 · D4 B +con_free_tour+domingo T ×42 · D4 A +con_free_tour+luz:B→A T ×38 · D1-FT D +lunes ×36 · D4M D +lunes T ×28
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: D4 A T domingo ×64
+- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: D2 A +miercoles ×1
+- **Tramo de más de 25 min andando sin transporte**: D2 B +tranquilo T ×319 · D2 B +tranquilo+luz:C→B T ×46 · D2 B +miercoles+tranquilo T ×12 · D2 B +miercoles+tranquilo+luz:C→B T ×6 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D2 B +tranquilo T ×319 · D2 B +tranquilo+luz:C→B T ×46 · D2 B +miercoles+tranquilo T ×12 · D2 B +miercoles+tranquilo+luz:C→B T ×6 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×21
+- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×2
+- **Cena que empieza más de 20 min después de llegar, sin motivo**: D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1
+- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1

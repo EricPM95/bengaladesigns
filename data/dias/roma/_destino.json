@@ -24,7 +24,8 @@
                 },
                 {
                   "lugar": "Piazza Navona",
-                  "min": 20
+                  "min": 20,
+                  "tipo": "opcional"
                 },
                 {
                   "lugar": "Galería Borghese",
@@ -33,7 +34,10 @@
                   "entrada": true,
                   "si_cerrado": "fuera",
                   "tipo": "fija",
-                  "hora": "16:00",
+                  "hora": {
+                    "completo": "16:00",
+                    "tranquilo": "17:00"
+                  },
                   "turno": true,
                   "traslado": {
                     "como": "un taxi",
@@ -44,7 +48,8 @@
                   "lugar": "Parque de Villa Borghese",
                   "titulo": "El lago de Villa Borghese",
                   "min": 30,
-                  "elastica": 30
+                  "elastica": 30,
+                  "si_cerrado": "quitar"
                 },
                 {
                   "lugar": "Terraza del Pincio",

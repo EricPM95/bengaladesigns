@@ -113,11 +113,18 @@ function planChecks({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
     if (!w) continue
     const where = `${label}, día ${day.dayNumber} (${day.curatedDay?.id} ${w.version}, ${day.hours?.weekday})`
     for (const problem of w.problems ?? []) tally(`v4_${problem.tipo}`, `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''} ${day.hours?.weekday ?? ''}`)
-    if (w.elastic && (w.elastic.wanted > (w.elastic.grow ?? w.elastic.max) + 10 || -w.elastic.wanted > w.elastic.max + 10)) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
+    if (w.elastic && elasticOut(w.elastic)) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
     for (const problem of w.problems ?? []) add(`v4_${problem.tipo}`, where, [problem.lugar, problem.llega ? `llega ${problem.llega} para las ${problem.hora}` : problem.hora, problem.minutos != null ? `${problem.minutos} min` : null].filter(Boolean).join(' · '))
-    if (w.elastic && (w.elastic.wanted > (w.elastic.grow ?? w.elastic.max) + 10 || -w.elastic.wanted > w.elastic.max + 10)) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
+    if (w.elastic && elasticOut(w.elastic)) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
   }
 }
+
+/**
+ * La elástica fuera de su margen. Si falta tarde (se llegaría tarde al sol), fuera de ±margen + 10. Si sobra, lo que no
+ * absorbe sale como rato con nombre (regla 370) y la auditoría ya lo vigila (tiempo libre de hasta 60 min con nombre):
+ * solo cuenta si sobra más que eso (PROMPT_ROMA_V4_REPASO: la comida de 90 min en completo deja tarde de sobra en verano).
+ */
+const elasticOut = (e) => e.wanted > (e.grow ?? e.max) + 10 + 60 || -e.wanted > e.max + 10
 
 const started = Date.now()
 const starts = Array.from({ length: 365 }, (_, i) => addDays(`${year}-01-01`, i))

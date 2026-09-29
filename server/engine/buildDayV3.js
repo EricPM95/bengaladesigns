@@ -78,11 +78,13 @@ function quarterHourStops(stops) {
   function stepStop(stop, index) {
     const start = exact[index]
     if (!Number.isFinite(start)) return stop
-    const roundedStart = Math.round(start / DISPLAY_STEP) * DISPLAY_STEP
+    // (Hacia arriba: una llegada nunca se enseña antes de que se llegue, así el paseo se ve; como mucho 4 min, y no se
+    // acumula porque el motor cuenta con los minutos exactos. PROMPT_ROMA_V4_REPASO 1.)
+    const roundedStart = Math.ceil(start / DISPLAY_STEP) * DISPLAY_STEP
     const next = index + 1 < stops.length && !stops[index + 1].is_night_experience && !stop.is_night_experience ? exact[index + 1] : NaN
     if (!Number.isFinite(next)) return { ...stop, suggested_time: toHHMM(roundedStart) }
     const gap = next - (start + (stop.duration_minutes ?? 0))
-    const duration = Math.round(next / DISPLAY_STEP) * DISPLAY_STEP - gap - roundedStart
+    const duration = Math.ceil(next / DISPLAY_STEP) * DISPLAY_STEP - gap - roundedStart
     const rounded = duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes
     // "Por el camino" dura 10 min como mucho: el sobrante del redondeo no se mete ahí, se queda esperando la hora de
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
@@ -93,7 +95,7 @@ function quarterHourStops(stops) {
     // (El mínimo nunca se come el paseo hasta la siguiente: la hora de una parada es la anterior + su duración + el paseo.)
     const { min_minutes: floor, max_minutes: ceiling, ...clean } = stop
     // (`max_minutes`: el puente no se queda con lo que sobra del redondeo.)
-    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity, Math.max(rounded, duration)) }
+    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity, Math.max(rounded, duration + 4)) }
   }
 }
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'

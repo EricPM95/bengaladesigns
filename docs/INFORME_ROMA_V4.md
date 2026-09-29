@@ -73,3 +73,38 @@ v4 encendido y subido (commit 157b919).
 - **D5C, segundo sitio del pool:** para Caracalla (por la mañana) y los Capitolinos (en lugar de los Mercados de Trajano). Sin él, en viajes de 5 días se quedaban fuera.
 - **Elástica en tranquilo:** nunca pasa del máximo de su paseo (Borgo Pio, 45).
 - **Adelantar la llegada al atardecer:** solo en los miradores, nunca en una avenida (los Foros).
+
+## Repaso de los 35 viajes (29 de septiembre de 2026)
+
+Once partes, con un commit por parte y sin push (reglas 363-374).
+
+1. **Arco → Foro.** Se entra por la Vía Sacra, así que el tramo es de 4 min (corregido a mano en
+   `travel/roma.ajustes.json`, que manda sobre la matriz). La hora de cada parada es la anterior + su duración + el
+   paseo: ahora el Arco va de 10:00 a 10:20 y el Foro empieza a las 10:25. En la auditoría hay un aviso nuevo, `no_cuadra`.
+2. **D1:** Minerva → Elefantino → Panteón → San Luigi → Navona.
+3. **La comida:** como mucho 90 min en completo y 105 en tranquilo.
+4. **Tranquilo:** nunca antes de las 10:00. Toda la mañana y la tarde se corren con la primera hora.
+5. **D1 en tranquilo:** el Gesù, las Tortugas y Torre Argentina son opcionales, y hay una sola nocturna.
+6. **Tranquilo:** las opcionales no vuelven. El rato que sobra va a Monti (hasta 120 min) y al aperitivo.
+7. **D4M:** metro A a San Giovanni, y Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados → Monti.
+8. **Ningún rato de más de 20 min sin nombre.** La nocturna va de 5 en 5, hay «Aperitivo en Monti» antes de los Foros
+   y en invierno la tarde libre pasa a ser un aperitivo de 90 min con la cena adelantada. Los huecos antes de las
+   nocturnas en los 35 viajes pasan de 11 a 0.
+9. **Comida cerca de la Galería Borghese:** Girarrosto Fiorentino, Via Sicilia 46, a unos 10 min.
+10. **La cena, a 15 min andando como mucho:** en Monti salen La Boccaccia o Valentino.
+11. **Aperitivos y ratos libres de 5 en 5.**
+
+**Números**
+
+- **Los 35 viajes (`revision/REVISION_V4_FINAL.md`):** 0 huecos sin nombre; en la auditoría, solo 1 aviso (1 h libre
+  antes de la Galería en el viaje 35, tranquilo).
+- **Los 56 viajes:** v4 mejor en 4, igual en 48 y peor en 4. Los 4 peores son de tranquilo en invierno.
+- **Las 365 fechas:** **10.217** (antes, 155).
+  - En completo, unos 276 (antes, alrededor de la mitad de los 155).
+  - En tranquilo, unos 7.550.
+  - La causa es la parte 4: los días de tranquilo están escritos para empezar entre las 8:30 y las 9:30 (Vaticano a las
+    8:30, Coliseo a las 9:00, Puente Sant'Angelo a las 8:45). Con la primera parada a las 10:00:
+    - en invierno no se llega al atardecer (el D2 llega al Castillo después del sol);
+    - la comida se queda corta;
+    - aparecen horas libres antes de la Galería.
+  - Esto no tiene arreglo general en el motor. Hay que decidir qué hacer con esas mañanas.
