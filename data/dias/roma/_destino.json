@@ -514,7 +514,15 @@
                     "si_cerrado": "fuera"
                   }
                 }
-              ]
+              ],
+              "quitar": [
+                "Iglesia de San Pietro in Vincoli"
+              ],
+              "ajustar": {
+                "Monti": {
+                  "min": 20
+                }
+              }
             }
           }
         },

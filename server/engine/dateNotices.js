@@ -248,7 +248,24 @@ export function dateNoticesFor(destData, trip, options = {}) {
 
   // 6. Curados: la tarjeta va en el primer día del viaje que cae en su fecha. Con rango (Navidad, del 24 al 26), lo
   // automático de los demás días del rango se junta en su tarjeta: es la misma ocasión.
+  // Lo que el viaje ve, cualquier día: las paradas, las nocturnas y lo que recorre el Free Tour.
+  const tour = destData.default_free_tour ?? null
+  const tripNames = new Set()
+  for (const day of trip.days ?? []) {
+    for (const visit of day.schedule?.visits ?? []) {
+      tripNames.add(visit.place.name)
+      if (tour && visit.place.name === tour.name) for (const name of tour.covers ?? []) tripNames.add(name)
+    }
+    for (const night of trip.nightsByDay?.get(day.dayNumber) ?? []) tripNames.add(night.name)
+  }
+  const namedPlaces = (destData.places ?? []).filter((place) => (place.level ?? 3) <= 2)
+  // (Un aviso curado que nombra un lugar que no está en el viaje, ningún día, no sale: decisión del usuario, 2026-09-29.)
+  const namesAbsent = (entry) => {
+    const text = [entry.contexto ?? entry.texto, entry.titulo].filter(Boolean).join(' ')
+    return namedPlaces.some((place) => (text.includes(place.name) || (place.short_name && text.includes(place.short_name))) && !tripNames.has(place.name))
+  }
   for (const entry of specials) {
+    if (namesAbsent(entry)) continue
     // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
     // (De día o de noche: el mercadillo de Navona va en el día que pasa por la plaza, también en su nocturna.)
     const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => entry.requiere_lugares.includes(night.name))

@@ -478,7 +478,6 @@
         ],
         "insertar": [
           {
-            "al_principio": true,
             "parada": {
               "lugar": "Museos Capitolinos",
               "min": 60,
@@ -488,9 +487,30 @@
               "no_si_dia": [
                 "D5"
               ]
-            }
+            },
+            "antes_de": "Largo di Torre Argentina"
           }
         ]
+      },
+      "tarde.C": {
+        "quitar": [
+          "Iglesia de Santa Maria sopra Minerva"
+        ],
+        "ajustar": {
+          "Campo de' Fiori": {
+            "min": 20
+          }
+        }
+      },
+      "tarde.D": {
+        "quitar": [
+          "Iglesia de Santa Maria sopra Minerva"
+        ],
+        "ajustar": {
+          "Campo de' Fiori": {
+            "min": 20
+          }
+        }
       }
     },
     "barrios_sabores": {
@@ -499,6 +519,20 @@
         "ajustar": {
           "Barrio Judío": {
             "min": 45
+          }
+        }
+      },
+      "tarde.C": {
+        "ajustar": {
+          "Campo de' Fiori": {
+            "min": 15
+          }
+        }
+      },
+      "tarde.D": {
+        "ajustar": {
+          "Campo de' Fiori": {
+            "min": 15
           }
         }
       }

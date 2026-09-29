@@ -1773,3 +1773,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     domingo: con el sol desde las 17:20, Santa Maria del Popolo a las 16:30 (los festivos abre de 16:30 a 18:00), entre el
     Popolo y la Terraza; antes, después del atardecer. (17:20 y no 17:10: con 20 min dentro y 10 de subida, a la Terraza
     se llega 15 min antes del sol solo desde las 17:20.)
+
+344. **Un aviso de fecha que nombra un lugar que no está en el viaje no sale** (2026-09-29): cualquier día, de día, de
+    noche o en el Free Tour. Si el lugar está, el aviso sale como siempre.
+
+345. **Un extra del pool nunca le quita a un imprescindible de pago su visita por dentro** (2026-09-29): si el día de un
+    extra deja uno por fuera por la hora, el viaje se vuelve a montar con el extra en su siguiente sitio, y se queda así
+    solo si mejora.
+
+346. **Ningún tramo de más de 25 min andando va a pie** (2026-09-29): lleva su bus o taxi escrito y, si no lo trae, va en
+    taxi con su tiempo estimado.
+
+347. **Días escritos: la variante de fecha va después de la de cierre** (2026-09-29): es lo más concreto y manda (Navidad
+    en D2, con los Museos cerrados, conserva la Bendición). Y un extra o una experiencia que entra en un día con una
+    parada que tiene hora (el Panteón del sábado) se escribe con `antes_de`, no `al_principio`.

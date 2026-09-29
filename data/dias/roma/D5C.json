@@ -286,20 +286,106 @@
   },
   "experiencias": {
     "arte_museos": {
-      "_nota": "Arte: la Domus Aurea de Nerón (solo abre de viernes a domingo, con visita guiada) después de San Clemente.",
-      "tarde.*": {
-        "insertar": [
-          {
-            "despues_de": "Basílica de San Clemente",
-            "parada": {
-              "lugar": "Domus Aurea",
-              "min": 75,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "quitar"
+      "_nota": "Arte: la Domus Aurea de Nerón (solo abre de viernes a domingo, con visita guiada) en lugar de San Clemente, que está al lado; si no abre, San Clemente.",
+      "tarde.A": {
+        "ajustar": {
+          "Basílica de San Clemente": {
+            "lugar": "Domus Aurea",
+            "min": 75,
+            "entrada": true,
+            "modo": "dentro",
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Basílica de San Clemente",
+                "tipo": "fija",
+                "hora": "14:00",
+                "min": 45,
+                "modo": "dentro",
+                "entrada": true,
+                "si_cerrado": "fuera",
+                "traslado": {
+                  "como": "el metro B (Piramide → Colosseo)",
+                  "min": 20
+                }
+              }
             }
           }
-        ]
+        }
+      },
+      "tarde.B": {
+        "ajustar": {
+          "Basílica de San Clemente": {
+            "lugar": "Domus Aurea",
+            "min": 75,
+            "entrada": true,
+            "modo": "dentro",
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Basílica de San Clemente",
+                "tipo": "fija",
+                "hora": "14:00",
+                "min": 45,
+                "modo": "dentro",
+                "entrada": true,
+                "si_cerrado": "fuera",
+                "traslado": {
+                  "como": "el metro B (Piramide → Colosseo)",
+                  "min": 20
+                }
+              }
+            }
+          }
+        }
+      },
+      "tarde.C": {
+        "ajustar": {
+          "Basílica de San Clemente": {
+            "lugar": "Domus Aurea",
+            "min": 75,
+            "entrada": true,
+            "modo": "dentro",
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Basílica de San Clemente",
+                "tipo": "fija",
+                "hora": "14:00",
+                "min": 45,
+                "modo": "dentro",
+                "entrada": true,
+                "si_cerrado": "fuera",
+                "traslado": {
+                  "como": "el metro B (Piramide → Colosseo)",
+                  "min": 20
+                }
+              }
+            }
+          }
+        }
+      },
+      "tarde.D": {
+        "ajustar": {
+          "Basílica de San Clemente": {
+            "lugar": "Domus Aurea",
+            "min": 75,
+            "entrada": true,
+            "modo": "dentro",
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Basílica de San Clemente",
+                "tipo": "fija",
+                "hora": "14:30",
+                "min": 45,
+                "modo": "dentro",
+                "entrada": true,
+                "si_cerrado": "fuera",
+                "traslado": {
+                  "como": "el metro B (Piramide → Colosseo)",
+                  "min": 20
+                }
+              }
+            }
+          }
+        }
       }
     },
     "barrios_sabores": {

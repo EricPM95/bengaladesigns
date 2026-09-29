@@ -35,6 +35,7 @@ const VERSIONS = ['A', 'B', 'C', 'D']
 /** El mirador: se llega 25 min antes del sol (el paseo al atardecer por la avenida, 30) y se queda 15 después. */
 const SUNSET_LEAD = 25
 const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minutos o menos
+const LONG_WALK = 25 // más de esto andando, en taxi si no hay otro transporte escrito
 const NEIGHBOUR_WINDOW = 15 // en la frontera entre dos versiones de luz, si la elástica no llega, la vecina
 const LEAD_FLEX = 10 // al mirador se llega entre 15 y 35 min antes del sol: lo que la elástica no llega a absorber
 const SUNSET_STAY = 15
@@ -126,7 +127,8 @@ function dateKeyMatches(key, dateIso) {
  * @param {object} args  como planCuratedTrip, más `written` ({ destino, days }: server/engine/writtenDays.js)
  * @returns el plan (misma forma que planCuratedTrip), o null si falta algún día escrito
  */
-export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null }) {
+export function planWrittenTrip(args) {
+  const { destData, written, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [] } = args
   if (!written?.days) return null
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const mode = modeV3For(pace)
@@ -349,9 +351,10 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     if (hasFreeTour && variants.con_free_tour) applyOps(draft, variants.con_free_tour, 'con_free_tour')
     const weekdayKey = hours.weekday && calendar.hasDates ? norm(hours.weekday) : null
     if (weekdayKey && variants[weekdayKey]) applyOps(draft, variants[weekdayKey], weekdayKey)
-    for (const [key, ops] of Object.entries(variants)) if (key.startsWith('fecha:') && calendar.hasDates && dateKeyMatches(key, hours.dateIso)) applyOps(draft, ops, key)
     // `cerrado:<lugar>`: el día cambia si ese lugar cierra ese día (los Museos Vaticanos en sus festivos).
     for (const [key, ops] of Object.entries(variants)) if (key.startsWith('cerrado:') && closedThatDay(key.slice('cerrado:'.length), day)) applyOps(draft, ops, key)
+    // (La fecha, después del cierre: es lo más concreto y manda; Navidad en D2 con los Museos cerrados.)
+    for (const [key, ops] of Object.entries(variants)) if (key.startsWith('fecha:') && calendar.hasDates && dateKeyMatches(key, hours.dateIso)) applyOps(draft, ops, key)
     for (const exp of selected) if (w.experiencias?.[exp]) applyOps(draft, w.experiencias[exp], exp)
     if (tranquilo && variants.tranquilo) applyOps(draft, variants.tranquilo, 'tranquilo')
     // Lo que depende del viaje: `no_si_dia` (la Isla Tiberina en D5 si el viaje ya lleva D1-FT) y `desde_dias` (solo en
@@ -396,7 +399,7 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     }
     extrasUsed++
     const sites = written.destino?.pool?.[name]?.sitios ?? []
-    const site = sites.find((candidate) => drafts.some((draft) => draft.id === candidate.dia) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)))
+    const site = sites.find((candidate) => drafts.some((draft) => draft.id === candidate.dia) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
     if (!site) {
       unplacedPool.push({ unitId: name, name, reason: sites.length === 0 ? 'no_room' : 'no_room_day', dayNumber: null })
       continue
@@ -587,6 +590,8 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
         delete place.transitMinutes
         delete place.transitHow
       }
+      // (Un tramo de más de LONG_WALK min andando nunca va a pie: si no trae su bus o taxi escrito, en taxi.)
+      if (!place.transitMinutes && legRaw > LONG_WALK && t != null && coords) place = { ...place, transitMinutes: Math.max(10, Math.round(legRaw / 2.5) + 5), transitHow: 'un taxi' }
       const leg = place.transitMinutes ? Math.min(legRaw, place.transitMinutes) : legRaw
       let at = t + leg
       const fixed = hourOf(stop)
@@ -963,6 +968,15 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name) && !seenAtNight.has(place.name))
     .map((place) => ({ unitId: place.name, name: place.name, reason: closedAllTrip(place.name) ? 'closed_every_day' : 'no_room', closedOn: place.closed_on ?? [] }))
+  // Un extra del pool nunca le quita a un imprescindible de pago su visita por dentro (decisión del usuario, 2026-09-29): si
+  // el día de un extra deja uno por fuera por la hora, el viaje se vuelve a montar con ese extra en su siguiente sitio
+  // (y se queda así solo si mejora).
+  const lostInside = (dayList) => dayList.flatMap((day) => (day.schedule?.visits ?? []).filter((visit) => visit.ticket && placeByName.get(visit.place.name)?.level === 1 && visit.place.visitOutside && visit.place.outsideKind !== 'cerrado').map(() => day))
+  const clashes = [...new Set(lostInside(cityPlanned).flatMap((day) => (day.curatedDay.variantes ?? []).filter((label) => label.startsWith('pool:')).map((label) => `${day.curatedDay.id}:${label.slice(5)}`)))].filter((key) => !blockedPoolSites.includes(key))
+  if (clashes.length > 0 && blockedPoolSites.length < 8) {
+    const again = planWrittenTrip({ ...args, blockedPoolSites: [...blockedPoolSites, ...clashes] })
+    if (again && lostInside(again.days.filter((day) => day.schedule)).length < lostInside(cityPlanned).length) return again
+  }
   const tourDay = hasFreeTour ? cityPlanned.find((day) => day.schedule.visits.some((visit) => visit.place.isFreeTour))?.dayNumber ?? 1 : null
 
   return {

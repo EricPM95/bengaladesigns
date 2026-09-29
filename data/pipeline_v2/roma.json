@@ -7592,7 +7592,8 @@
       "Plaza del Campidoglio": "el Campidoglio",
       "Via dei Fori Imperiali": "los Foros",
       "Puente Sant'Angelo": "el Puente Sant'Angelo",
-      "Jardín de los Naranjos": "el Aventino"
+      "Jardín de los Naranjos": "el Aventino",
+      "Ponte Sisto": "el Ponte Sisto"
     },
     "nota_temporada": {
       "_nota": "Nota de temporada (decisión del usuario, 2026-09-28): una vez, arriba de la ruta, con el efecto de temporada del formulario; se puede cerrar. Época = la de by_period (invierno: diciembre-febrero; primavera; verano: junio-agosto; otoño). {hora_atardecer}: la real, al cuarto de hora. Lo que promete tiene que ser verdad: iluminada solo si alguna noche lleva nocturna; a primera hora solo si la mayoría de los días empieza por un imprescindible antes de las 10:00.",
@@ -7623,7 +7624,8 @@
       "Terraza del Pincio": "Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo.",
       "Plaza del Campidoglio": "Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor.",
       "Puente Sant'Angelo": "Ya es de noche: los ángeles de Bernini iluminados, el Castillo encendido y el Tíber reflejándolo todo.",
-      "Via dei Fori Imperiali": "La avenida de los Foros de noche: las ruinas iluminadas a los dos lados y el Coliseo encendido al fondo."
+      "Via dei Fori Imperiali": "La avenida de los Foros de noche: las ruinas iluminadas a los dos lados y el Coliseo encendido al fondo.",
+      "Ponte Sisto": "Ya ha anochecido: el Tíber refleja las luces del puente y, al fondo, la cúpula de San Pedro iluminada."
     }
   },
   "museos_de_pago": {
