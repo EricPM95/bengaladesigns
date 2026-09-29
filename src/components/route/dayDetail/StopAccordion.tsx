@@ -3,7 +3,6 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagLabel } from '../../../lib/tagColors'
-import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
@@ -33,11 +32,6 @@ const OUTSIDE_SHORT: Record<string, string> = {
   ya_cerrado: 'A esta hora ya ha cerrado',
   no_abre: 'A esta hora no abre',
   no_cabe: 'para llegar a todo',
-}
-
-const RESERVATION_NOTE: Record<string, string> = {
-  obligatoria: 'Reserva obligatoria',
-  recomendada: 'Reserva recomendada',
 }
 
 /**
@@ -79,36 +73,22 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
-  const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
 
+  // La tarjeta, más limpia (PROMPT_UI_REPASO 11): la hora, el nombre, una línea con el horario y el tiempo de visita, y las
+  // etiquetas. «Reserva…» va en la ficha (Entradas) y «Por dentro / Por fuera» también (Resumen). En la tarjeta solo se
+  // queda lo rojo, cuando hay un problema («Hoy cierra», «Cerrado a esa hora», «Llegas después»…).
   const meta: CardMeta[] = []
   if (tripWarning) meta.push({ text: tripWarning, warn: true })
-  if (stop.isNightExperience) {
-    // Lo nocturno: su franja horaria y el paseo nocturno curado al que pertenece.
-    meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
-    meta.push({ text: stop.nightWalkName ? (stop.nightWalkName === 'Paseo nocturno' ? 'Paseo nocturno' : `Paseo nocturno: ${stop.nightWalkName}`) : 'Experiencia nocturna' })
-  } else {
-    // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez. Por fuera no hay horario de visita.
-    const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
-    if (stop.visitMode !== 'fuera') meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
-    // Un monumento con interior (PROMPT_PENDIENTE E): "Por dentro · 75 min" con la entrada, o "Por fuera · 15 min"
-    // con la cámara. Lo demás, su duración.
-    if (stop.visitMode === 'dentro') meta.push({ icon: 'ticket', text: `Por dentro · ${formatDuration(stop.durationMinutes)}` })
-    else if (stop.visitMode === 'fuera') {
-      // El motivo en la misma línea, a la vista sin abrir (decisión del usuario, 2026-09-28): cerrado, en rojo; por
-      // tiempo, en gris y corto.
-      // "Todavía no ha abierto (abre a las 16:00)": el texto con la hora, no el genérico.
-      const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
-      const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
-      // Por tiempo, todo en una pieza gris ("Por fuera · 15 min · para llegar a todo"); cerrado, el motivo en rojo.
-      meta.push({ icon: 'camera', text: `Por fuera · ${formatDuration(stop.durationMinutes)}${short && !closed ? ` · ${short}` : ''}` })
-      if (short && closed) meta.push({ text: short, warn: true })
-    } else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+  // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez. Por fuera no hay horario de visita.
+  const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
+  if (!stop.isNightExperience && stop.visitMode !== 'fuera') meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
+  meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+  // Por fuera porque cierra: el motivo, en rojo. (Por falta de tiempo no es un problema: va en la ficha.)
+  if (stop.visitMode === 'fuera') {
+    const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
+    const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
+    if (closed && short) meta.push({ text: short, warn: true })
   }
-  // Por fuera no hace falta reservar: la reserva va dentro, en Entradas.
-  if (stop.visitMode !== 'fuera' && stop.reservation && RESERVATION_NOTE[stop.reservation]) meta.push({ text: RESERVATION_NOTE[stop.reservation] })
-  if (stop.isRevisit) meta.push({ text: 'Revisita' })
-  if (addedByUser) meta.push({ text: 'Añadida por ti' })
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
     if (freeDayWarning) meta.push({ text: freeDayWarning, warn: true })
@@ -116,13 +96,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
   }
-  if (stop.closedNotice) meta.push({ text: stop.closedNotice })
-  // Free Tour: dónde acaba (y que la comida es por esa zona).
-  if (stop.freeTourEnd) meta.push({ icon: 'pin', text: stop.freeTourEnd })
-
-  // Tarjetas sin texto (decisión del usuario, 2026-09-28): el "Por qué aquí" va dentro de la ficha, como primer
-  // párrafo de Resumen. Fuera solo lo que se escanea de un vistazo; la experiencia, como etiqueta corta.
-  if (experienceTitle) meta.push({ text: `Por tu experiencia · ${experienceTitle}` })
+  void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
   const tags =

@@ -2029,3 +2029,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Qué no se mueve:** el día sintético de vuelta y un cambio de ciudad a mitad de un viaje con varios destinos.
     - **La marca roja:** si un día movido (respecto a la ruta original) cae en una fecha en la que una parada cierra o
       está cerrada a esa hora, sale la marca de siempre («Hoy cierra», «Cerrado a esa hora»).
+
+382. **La tarjeta de parada, más limpia** (2026-09-29, PROMPT_UI_REPASO 11).
+    - **En la tarjeta solo va:** la hora, el nombre, una línea con el horario (reloj) y el tiempo de visita (reloj de
+      arena), y las etiquetas.
+    - **Va a la ficha:** «Reserva obligatoria / recomendada» a Entradas; «Por dentro / Por fuera» a Resumen.
+    - **Fuera de la tarjeta:** «Añadida por ti», «Revisita», «Por tu experiencia», el paseo nocturno y el final del
+      Free Tour.
+    - **Solo se queda lo rojo** cuando hay un problema: «Hoy cierra», «Cerrado a esa hora», «Llegas después», «Ya te
+      has ido», el motivo de un «por fuera» por cierre.

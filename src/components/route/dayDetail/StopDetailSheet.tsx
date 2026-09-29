@@ -546,6 +546,12 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
+                  {/* Por dentro: con su tiempo (PROMPT_UI_REPASO 11: ya no va en la tarjeta). */}
+                  {stop.visitMode === 'dentro' && (
+                    <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
+                      <span className="font-medium">Por dentro</span> · {stop.durationMinutes} min
+                    </p>
+                  )}
                   {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
                   {stop.visitMode === 'fuera' && stop.outsideReason && (
                     <div className="space-y-2">
@@ -696,6 +702,13 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                 <div className="space-y-3">
                   {ticketInfo.length === 0 && tickets.length === 0 && (
                     <p className="text-small text-text-soft">Aquí saldrán las entradas y las visitas guiadas de este lugar.</p>
+                  )}
+                  {/* «Reserva recomendada» (PROMPT_UI_REPASO 11: ya no va en la tarjeta); la obligatoria ya la dice la entrada. */}
+                  {stop.reservation === 'recomendada' && !ticketInfo.some((line) => /reserva/i.test(line)) && (
+                    <p className="rounded-xl bg-bg-hover px-3 py-2 text-small text-text">Reserva recomendada.</p>
+                  )}
+                  {stop.reservation === 'obligatoria' && !ticketInfo.some((line) => /reserva/i.test(line)) && (
+                    <p className="rounded-xl bg-bg-hover px-3 py-2 text-small text-text">Reserva obligatoria.</p>
                   )}
                   {ticketInfo.length > 0 && (
                     <div className="rounded-xl border border-border p-3">
