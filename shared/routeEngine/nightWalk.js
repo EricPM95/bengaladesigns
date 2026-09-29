@@ -247,9 +247,10 @@ export function planNightWalks(destData, plan) {
 export function nightTiming(chain, timing = {}) {
   // La noche de una fecha especial va a su hora (la Girandola, a las 21:30), antes o después de cenar.
   if (Number.isFinite(chain[0]?.fixedStart)) return { entries: chain, start: chain[0].fixedStart, beforeDinner: Number.isFinite(timing.dinnerStart) && chain[0].fixedStart < timing.dinnerStart }
-  // En punto o y media, como el resto de horas de la ruta (18:59 → 19:00).
+  // De 5 en 5, como el resto de horas (PROMPT_ROMA_V4_REPASO 8): antes, en punto o y media, y quedaban huecos de 25-35 min
+  // sin nada antes de la nocturna (los Mercados de Trajano → 30 min → el Coliseo de noche).
   const exactStart = nightStartsAt(timing.sunset)
-  const nightStart = exactStart === null ? null : roundUpToSlot(exactStart)
+  const nightStart = exactStart === null ? null : roundUpToFive(exactStart)
   const { lastEnd, lastCoords, dinnerStart, dinnerCoords } = timing
   // (Lo que sale en lugar de la nocturna del día, el centro iluminado, va después de cenar: antes, el rato con nombre.)
   if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart && !chain[0]?.afterDinnerOnly) {
@@ -257,7 +258,7 @@ export function nightTiming(chain, timing = {}) {
     let entries = [...chain].reverse()
     while (entries.length > 0) {
       const first = coordsOf(entries[0])
-      const start = Math.max(nightStart, roundUpToSlot(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
+      const start = Math.max(nightStart, roundUpToFive(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
       const timed = timeChain(entries, start)
       const last = timed.at(-1)
       const toDinner = dinnerCoords ? walkMinutes(coordsOf(last.entry), dinnerCoords) : 0

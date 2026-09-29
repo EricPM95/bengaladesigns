@@ -449,6 +449,15 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       }
       day.aperitivo = { ...day.aperitivo, title: `${barrioName} al anochecer y aperitivo`, minutes: merged }
     }
+    // La «Tarde libre» de justo antes de cenar es el aperitivo, con su nombre (PROMPT_ROMA_V4_REPASO 8: 135 min de tarde
+    // libre en el D5C de invierno en tranquilo); así también se adelanta la cena si sobra.
+    if (!day.aperitivo && day.free_afternoon) {
+      const named = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, 0, Math.min(WINTER_FREE_MAX_MINUTES, day.free_afternoon.minutes))
+      if (named) {
+        day.aperitivo = named
+        delete day.free_afternoon
+      }
+    }
     // El aperitivo, 90 min como mucho, siempre (decisión del usuario, 2026-09-29): si el rato hasta la cena es más largo,
     // la cena se adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar con ella.
     if (day.aperitivo) {
@@ -648,7 +657,7 @@ function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, bus
 /** Desde aquí, el rato antes de cenar ya se dice (FreeTimeBlock del cliente, 45 min). */
 const APERITIVO_MIN_MINUTES = 20
 /** Hasta aquí, el rato antes de cenar es aperitivo (decisión del 2026-09-26: los 99 min de 6 días en invierno). */
-const APERITIVO_MAX_MINUTES = 120
+const APERITIVO_MAX_MINUTES = 90 // (PROMPT_ROMA_V4_REPASO 8: el aperitivo con su nombre, 90 min como mucho; antes, 120)
 /** Con el sol antes de esta hora, el rato antes de cenar es de noche: paseo iluminado y aperitivo (PROMPT_RUTAS_CURADAS B3.1). */
 const WINTER_EVENING_SUNSET_BEFORE = 18 * 60
 /** Lo más que se alarga el paseo nocturno de antes de cenar en invierno para no pasar de 2 h (C.1). */
@@ -724,7 +733,7 @@ function midDayFreeFor(destData, trip, tripDay, options, dayVisitedNames) {
 }
 
 /** Un hueco de más de esto (sin la comida ni lo de antes de cenar) sale como "Tiempo libre" (decisión del 2026-09-26). */
-const FREE_GAP_MINUTES = 30
+const FREE_GAP_MINUTES = 20 // (PROMPT_ROMA_V4_REPASO 8: ningún rato de más de 20 min sin nombre; antes, 30)
 /** El otro extremo de un hueco cuando es la comida. */
 const LUNCH_LABEL = 'la comida'
 
@@ -756,7 +765,8 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
     }
     // Si a la siguiente se va en metro o bus, el tiempo libre es al llegar: sus ideas y su paseo, de la zona de la siguiente.
     const byTransit = Boolean(next.place.transitMinutes)
-    gaps.push({ minutes: next.start - previous.end - (next.walkMinutes ?? 0), ...(byTransit ? { fromCoords: next.place.coordinates, fromEnd: previous.end + (next.walkMinutes ?? 0) } : { from: previous }), after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (byTransit ? 0 : next.walkMinutes ?? 0), zone: byTransit ? next.place.zone ?? previous.place.zone : previous.place.zone ?? next.place.zone })
+    const aperitivoIn = next.place.sunset != null && (previous.place.tags ?? []).includes('barrio') ? previous.place.name : null
+    gaps.push({ ...(aperitivoIn ? { aperitivoIn } : {}), minutes: next.start - previous.end - (next.walkMinutes ?? 0), ...(byTransit ? { fromCoords: next.place.coordinates, fromEnd: previous.end + (next.walkMinutes ?? 0) } : { from: previous }), after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (byTransit ? 0 : next.walkMinutes ?? 0), zone: byTransit ? next.place.zone ?? previous.place.zone : previous.place.zone ?? next.place.zone })
   }
   const seenToday = new Set(dayVisitedNames)
   return gaps
@@ -778,6 +788,9 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // Con una idea clara de paseo de la misma zona, sale con su nombre (cierre de Roma, punto 1d): "Via Margutta y
         // Via del Babuino", no "Tiempo libre antes de la comida".
         ...(namedWalkTitle(destData, suggestions, gap.zone) ? { title: namedWalkTitle(destData, suggestions, gap.zone) } : {}),
+        // Antes del atardecer y viniendo de un barrio (Monti antes de los Foros en verano): el aperitivo en ese barrio, con su
+        // nombre y 90 min como mucho, como haría un local (PROMPT_ROMA_V4_REPASO 8).
+        ...(gap.aperitivoIn ? { title: `Aperitivo en ${gap.aperitivoIn}`, aperitivo: true } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
         ...(isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes) ? { title: SIESTA_TITLE, hint: SIESTA_HINT } : {}),
       }

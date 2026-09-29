@@ -855,7 +855,8 @@ export function planWrittenTrip(args) {
         const baseMin = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
         // (Y nunca por encima del máximo de su paseo: Borgo Pio, una calle, 45.)
         // (En tranquilo, un barrio o un parque crece hasta su máximo de paseo: Monti, hasta 120.)
-        const grow = Math.min(tranquilo ? (pmax != null ? Math.max(elasticStop.elastica * 2, pmax - baseMin) : elasticStop.elastica * 2) : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
+        // (Y en completo, un barrio o un parque también puede crecer hasta su máximo de paseo, 90, antes que dejar tiempo libre.)
+        const grow = Math.min(pmax != null ? Math.max(tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax - baseMin) : tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
         elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(grow, elasticWanted)) / 5) * 5
         // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
         const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30

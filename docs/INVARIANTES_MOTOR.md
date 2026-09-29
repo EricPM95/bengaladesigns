@@ -1934,3 +1934,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 369. **Cada tramo hacia delante, también entre basílicas** (2026-09-29, PROMPT_ROMA_V4_REPASO 7): D4M con Letrán va en
     metro A de Spagna a San Giovanni y sigue Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados de Trajano
     → Monti (la comida queda cerca de Spagna). San Clemente sale del D4M, porque ahí sería de ida y vuelta; va en D5C.
+
+370. **Ningún rato de más de 20 min sin nombre** (2026-09-29, PROMPT_ROMA_V4_REPASO 8):
+    - **La nocturna antes de cenar**, de 5 en 5, nada más oscurecer o al llegar. Antes se redondeaba a la media hora y
+      quedaban 25-35 min sin nada (los Mercados de Trajano → 30 min → el Coliseo de noche).
+    - **Todo hueco de más de 20 min** sale con nombre (antes, de más de 30).
+    - **Antes del atardecer, viniendo de un barrio**, el rato es «Aperitivo en {barrio}» (Monti antes de los Foros en
+      verano).
+    - **El barrio elástico** crece hasta su máximo de paseo también en completo (90).
+    - **La «Tarde libre» de justo antes de cenar** es el aperitivo con su nombre, de 90 min como mucho. Si aun así
+      sobra, la cena se adelanta, nunca antes de las 19:30. Ejemplo: D5C de invierno en tranquilo, Coliseo de noche a
+      las 17:10, aperitivo de 90 min y cena a las 19:30, en vez de 135 min de tarde libre.
