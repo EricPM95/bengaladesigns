@@ -2118,3 +2118,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - La prueba solo lo marca si no hay ni opcional ni elástica que lo absorba.
     - Las variantes por fecha conservan la marca `opcional` de la versión normal. El 1 de enero, la Plaza del Campidoglio
       la había perdido.
+
+393. **El bus o taxi de un tramo largo se queda aunque la parada cambie al llegar** (PROMPT_TEXTOS_RITMO 7). A más de 25
+    min andando, el tramo va en bus o taxi, con su tiempo real, y la hora de llegada es la anterior + su duración + ese
+    trayecto. Esto vale también cuando, al llegar, la parada está cerrada y pasa a «por fuera» o se cambia por otra: el
+    transporte del tramo no se pierde. Antes la hora contaba el taxi, pero la pantalla pintaba «33 min andando» de San
+    Pedro a Santa Cecilia en Navidad, y 27 a Santa Maria in Trastevere el 14 de agosto.

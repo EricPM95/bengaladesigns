@@ -664,6 +664,9 @@ export function planWrittenTrip(args) {
         if (at > place.sunset) place = { ...place, sunset: undefined, nightView: true }
         else duration = Math.max(20, place.sunset + SUNSET_STAY - at)
       }
+      // (El tramo en bus o taxi de antes de llegar se queda aunque la parada cambie aquí a "por fuera" o por otra: si no, la hora
+      // contaba el taxi y la pantalla pintaba 33 min andando, de San Pedro a Santa Cecilia en Navidad. PROMPT_TEXTOS_RITMO 7.)
+      const arrivalTransit = place.transitMinutes ? { transitMinutes: place.transitMinutes, transitHow: place.transitHow } : null
       if (!place.visitOutside && !place.passThrough) {
         const check = openCheck(place, at, duration, ctx.hours)
         if (check.wait) at += check.wait
@@ -693,6 +696,7 @@ export function planWrittenTrip(args) {
             ctx.problems.push({ tipo: 'fuera_de_horario', lugar: stop.lugar, hora: toHHMM(at) })
           }
         }
+        if (arrivalTransit && !place.transitMinutes) place = { ...place, ...arrivalTransit }
       }
       const unitId = `${ctx.id}:${stop.lugar}${units.some((unit) => unit.id === `${ctx.id}:${stop.lugar}`) ? `#${index}` : ''}`
       const level = source.level ?? 3
