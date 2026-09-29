@@ -1907,3 +1907,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       `data/pipeline_v2/travel/<destino>.ajustes.json` y mandan para todos: del Arco de Constantino al Foro, por la Vía
       Sacra, 4 min (no 9).
     - La auditoría avisa cuando no cuadra (`no_cuadra`: más de 4 min de diferencia).
+
+364. **Nunca pasar por delante de un sitio para volver a él** (2026-09-29, PROMPT_ROMA_V4_REPASO 2): el orden escrito va
+    siempre hacia delante. D1: Minerva → Elefantino → Panteón → San Luigi → Navona (la plaza de la Minerva da al
+    Panteón; San Luigi queda camino de Navona).

@@ -160,16 +160,16 @@
           "modo": "camino"
         },
         {
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
           "lugar": "Panteón",
           "min": 30,
           "modo": "dentro",
           "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "min": 20,
+          "modo": "dentro",
           "si_cerrado": "fuera"
         },
         {
