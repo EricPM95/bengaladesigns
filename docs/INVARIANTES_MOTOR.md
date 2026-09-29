@@ -1751,3 +1751,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     día, el de `excursion_oferta.dia`, con su texto y sin precios; los demás días no llevan banner. Si el viajero la
     elige, ese día pasa a ser la excursión (convertDayType) y nada más cambia. Con 5 días, los 4 y la excursión; con 6 y
     7, D5 (Via Appia), D6 y D7.
+
+339. **Días escritos: toda parada lleva su «Por qué aquí»** (2026-09-29): el texto escrito en la parada; si no, el de los
+    días curados; si no, el del destino (`_destino.json` → `textos`). Nunca el genérico «Te pilla de camino» en un día
+    escrito. Y `engine: 'v4'` en una petición va al v3 con días escritos (antes caía en el motor «nuevo»).

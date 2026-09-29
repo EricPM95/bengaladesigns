@@ -649,5 +649,12 @@
   "solo_explorar": {
     "_nota": "Lugares de nivel 2 sin sitio en los días, a propósito, con el motivo: salen en Explorar y en Añadir parada.",
     "Villa Farnesina": "Solo abre por la mañana (de 9:00 a 14:00, cerrada el domingo) y los días de Trastevere son de tarde: meterla obliga a ir y volver al otro lado del río."
+  },
+  "textos": {
+    "_nota": "El «Por qué aquí» de las paradas escritas que no lo tienen en la parada ni en los días curados (2026-09-29).",
+    "Iglesia del Gesù": "La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli.",
+    "Palazzo Doria Pamphilj": "Un palacio en el que todavía vive la familia: la galería de espejos y oro y, en su sala, el retrato del papa Inocencio X que pintó Velázquez.",
+    "Via del Corso": "La calle larga del centro, de la Piazza del Popolo a la Plaza Venecia: tiendas, palacios y romanos de paseo a última hora.",
+    "Domus Aurea": "Lo que queda del palacio de Nerón, enterrado bajo la colina Oppia: salas pintadas que copiaron Rafael y los artistas del Renacimiento."
   }
 }

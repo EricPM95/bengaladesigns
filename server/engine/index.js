@@ -104,7 +104,7 @@ export function engineFor(requestEngine, destData = null) {
   // Motor v3 en construcción (repartidor que pregunta al programador + programador con reloj
   // real, ver shared/routeEngine/). Solo bajo petición: el defecto sigue siendo 'nuevo' hasta que
   // las métricas digan que gana.
-  if (choice === 'v3') return 'v3'
+  if (choice === 'v3' || choice === 'v4') return 'v3' // (v4 = días escritos, que corren dentro del v3)
   return 'nuevo'
 }
 

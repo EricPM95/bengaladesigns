@@ -503,7 +503,8 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     if (stop.traslado?.min) ready = { ...ready, transitMinutes: stop.traslado.min, ...(stop.traslado.como ? { transitHow: stop.traslado.como } : {}) }
     if (stop.aviso) ready.stopNotice = stop.aviso
     if (Array.isArray(source.salida) && !ready.visitOutside && !ready.passThrough) ready.end_coordinates = source.salida
-    const why = stop.texto ?? curatedWhyOf(stop.lugar)
+    // (El texto escrito en la parada; si no, el de los días curados; si no, el del destino: `_destino.json` → `textos`.)
+    const why = stop.texto ?? curatedWhyOf(stop.lugar) ?? written.destino?.textos?.[stop.lugar] ?? null
     if (why) ready.curatedWhy = why
     const [scheduled] = placesForScheduler({ id: stop.lugar, places: [ready] }, destData, null)
     return scheduled
