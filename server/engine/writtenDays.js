@@ -41,6 +41,23 @@ export function clearWrittenDaysCache() {
 const arrivalCache = new Map()
 
 /**
+ * Los tips del viaje (PROMPT_UI_REPASO_2, 3): `data/dias/<destino>/_tips.json`, en su orden, con el gentilicio para la
+ * cabecera («8 cosas que un romano te diría»). Null si el destino no los tiene.
+ */
+export function tipsFor(destinationKey) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key) return null
+  if (tipsCache.has(key)) return tipsCache.get(key)
+  const file = join(DIAS_DIR, key, '_tips.json')
+  const raw = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  const value = raw?.tips?.length ? { local: raw.local ?? null, tips: [...raw.tips].sort((a, b) => a.orden - b.orden) } : null
+  tipsCache.set(key, value)
+  return value
+}
+
+const tipsCache = new Map()
+
+/**
  * La llegada y la vuelta de un destino (PROMPT_UI, Parte 3): `data/dias/<destino>/_llegada.json`, una sección por medio
  * y por punto de llegada, con sus precios, fuentes y fechas. Null si el destino no lo tiene.
  */

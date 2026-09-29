@@ -1,0 +1,71 @@
+{
+  "_nota": "Los tips del viaje (la bombilla de la cabecera, PROMPT_UI_REPASO_2 3): de 5 a 8, solo los que ahorran dinero, tiempo o un mal rato, o que el viajero no sabía; nada que ya diga una parada. etiqueta: dinero | tiempo | mal_rato. enlace: 'entradas' lleva a «Ver entradas de tu viaje ›». Aquí sí pueden ir precios, comprobados en la web oficial (fuente + comprobado).",
+  "local": "un romano",
+  "tips": [
+    {
+      "orden": 1,
+      "etiqueta": "dinero",
+      "titulo": "La Fontana de Trevi, gratis y casi para ti",
+      "texto": "Bajar junto al agua cuesta 2 €, pero solo de 9:00 a 22:00 (lunes y viernes, desde las 11:30). Ve antes o después: no pagas y la tienes casi vacía.",
+      "fuente": "https://fontanaditrevi.roma.it",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 2,
+      "etiqueta": "dinero",
+      "titulo": "El café, de pie en la barra",
+      "texto": "Es lo que hacen los romanos. Sentarte en la terraza, sobre todo en una plaza famosa, puede costarte el triple por el mismo café.",
+      "fuente": "Costumbre local: los bares de Roma cobran distinto en barra y en mesa (servizio al tavolo), con los dos precios a la vista.",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 3,
+      "etiqueta": "dinero",
+      "titulo": "El agua de las fuentes es gratis, y buena",
+      "texto": "Roma está llena de \"nasoni\", fuentecillas con agua fresca. Lleva una botella y rellénala. Truco: tapa el grifo con el dedo y el agua sale por arriba para beber.",
+      "fuente": "https://www.acea.it/en/water/nasoni-drinking-fountains",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 4,
+      "etiqueta": "dinero",
+      "titulo": "El «coperto» sí; la propina, no hace falta",
+      "texto": "En la cuenta verás el \"coperto\" (el pan y el cubierto): es normal y legal. La propina no es obligatoria: si te ha gustado, redondea y listo.",
+      "fuente": "https://www.turismoroma.it",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 5,
+      "etiqueta": "dinero",
+      "titulo": "Huye de los menús con fotos",
+      "texto": "Junto a los monumentos, el menú con fotos y el camarero en la puerta suelen ser caros y malos. Aléjate dos calles y comerás mejor por bastante menos.",
+      "fuente": "Consejo de viaje (sin cifras).",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 6,
+      "etiqueta": "tiempo",
+      "titulo": "Los primeros turnos se agotan semanas antes",
+      "texto": "El Coliseo, los Museos Vaticanos y la Galería Borghese a primera hora vuelan. Reserva en cuanto tengas las fechas y te ahorras horas de cola.",
+      "enlace": "entradas",
+      "fuente": "https://galleriaborghese.cultura.gov.it/info/ (reserva obligatoria, turnos con aforo)",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 7,
+      "etiqueta": "mal_rato",
+      "titulo": "Hombros y rodillas tapados en las iglesias",
+      "texto": "En San Pedro y en muchas iglesias no te dejan pasar con tirantes o pantalón corto. Lleva un pañuelo fino en la mochila y listo.",
+      "fuente": "https://www.basilicasanpietro.va/en/faq/what-is-the-dress-code-to-visit-st-peter-s-basilica",
+      "comprobado": "2026-09-29"
+    },
+    {
+      "orden": 8,
+      "etiqueta": "mal_rato",
+      "titulo": "El autobús 64, el de los carteristas",
+      "texto": "Va de Termini al Vaticano lleno de turistas, y los romanos lo conocen por eso. Mochila por delante, o mejor, ve en metro.",
+      "fuente": "https://www.atac.roma.it (línea 64: Termini – Stazione San Pietro)",
+      "comprobado": "2026-09-29"
+    }
+  ]
+}

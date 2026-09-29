@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
@@ -17,6 +17,7 @@ import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
+import { TripTipsSheet } from './TripTipsSheet'
 import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
@@ -72,7 +73,7 @@ export function RouteView() {
   const [askRestoreRoute, setAskRestoreRoute] = useState(false)
   // Los tips del viaje (la bombilla de la cabecera, PROMPT_UI_REPASO_2 3).
   const [tipsOpen, setTipsOpen] = useState(false)
-  void tipsOpen // (la ventana de los tips llega en la parte 3)
+  const closeTips = useCallback(() => setTipsOpen(false), [])
   /** La varita: con cambios, pregunta si se vuelve a la original; sin cambios, lo dice (PROMPT_UI_REPASO 3). */
   const onWand = () => {
     if (route?.editedManually && route.originalRoute) setAskRestoreRoute(true)
@@ -290,6 +291,7 @@ export function RouteView() {
 
       {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
       <DateNoticesModal route={route} />
+      <TripTipsSheet open={tipsOpen} destination={route.destination} onClose={closeTips} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
       <UndoToast />

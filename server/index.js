@@ -4,7 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
-import { arrivalInfoFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, tipsFor } from './engine/writtenDays.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -4889,6 +4889,16 @@ app.post('/api/arrival-info', (req, res) => {
   const destination = req.body?.destination
   const key = destination ? findPipelineV2Key(destination) : null
   res.json({ info: key ? arrivalInfoFor(key) : null })
+})
+
+/**
+ * Los tips del viaje (la bombilla, PROMPT_UI_REPASO_2 3): data/dias/<destino>/_tips.json, en su orden. null si el destino
+ * no los tiene: la ventana lo dice.
+ */
+app.post('/api/destination-tips', (req, res) => {
+  const destination = req.body?.destination
+  const key = destination ? findPipelineV2Key(destination) : null
+  res.json({ tips: key ? tipsFor(key) : null })
 })
 
 app.post('/api/place-photo', async (req, res) => {

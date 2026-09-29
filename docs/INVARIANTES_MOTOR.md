@@ -2073,3 +2073,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - En el sitio del dibujo, una franja con el degradado y el efecto de su época, como en el formulario: invierno, nieve
       cayendo; verano, el sol poniéndose; primavera, pétalos; otoño, hojas. Suave y solo dentro de la franja: nunca tapa
       el texto. Con «reducir movimiento», quieta.
+
+388. **Los tips del viaje** (PROMPT_UI_REPASO_2, 3): la bombilla de la cabecera abre una ventana a pantalla completa con
+    los de su destino, en `data/dias/<destino>/_tips.json` (servidos por `/api/destination-tips`).
+    - **Pocos y buenos: de 5 a 8.** Solo los que ahorran dinero, tiempo o un mal rato, o que el viajero no sabía; nada que
+      ya diga una parada.
+    - Cada uno con su orden, su etiqueta (`dinero` verde «Ahorras dinero», `tiempo` azul «Ahorras tiempo», `mal_rato`
+      terracota «Te evitas un mal rato»), su título, dos o tres líneas de tú a tú, su fuente y su fecha de comprobación.
+    - Cabecera oscura con la bombilla, «N COSAS QUE <gentilicio> TE DIRÍA» (`local`, «un romano») y «Lo que ojalá te
+      hubieran contado». Si el tip tiene que ver con algo que se reserva (`enlace: "entradas"`), lleva «Ver entradas de
+      tu viaje ›», que abre Reservas.
+    - **Aquí sí pueden ir precios**, como en Entradas, siempre comprobados en la web oficial y con la fecha.
+    - Un destino sin tips: la ventana lo dice («Aún no tenemos los tips de X»), sin inventarlos.
