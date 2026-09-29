@@ -175,3 +175,26 @@ Avisos de Roma que he separado o cambiado de título:
 
 Ya no está la tarjeta del final de la lista ni el banner de la oferta. Queda solo el enlace pequeño al final del día de
 la oferta. El componente (`TripExcursionCard.tsx`) se queda en el repo, sin usar, por si sirve para la versión discreta.
+
+## 3-14 · El resto del repaso (reglas 378-385)
+
+3. **La varita, siempre a la vista**, encima del mapa, haya cambios o no. Sin cambios, dice «Tu ruta está tal como te la
+   preparamos». Con el mapa plegado en el móvil, va en la columna de botones: presupuesto abajo, mapa encima y varita
+   arriba, a 12 px, y la lista deja sitio debajo.
+4. **Barra de llegada:** 50 px hasta «MAÑANA».
+5. **Cifras del día:** tres en fila, separadas por una línea fina, con el número en Instrument Serif y la palabra en mono:
+   «13 PARADAS | 10,6 KM A PIE | 7 H 30 DE ACTIVIDAD». Sin iconos.
+6. **«De camino»:** del ancho de las paradas, con 16 px arriba y abajo.
+7. **Cabeceras de tramo:** 50 px encima y 12 debajo.
+8. **Comida y cena:** 50 px encima y 50 debajo.
+9. **La ventana de llegada y vuelta:** lleva arriba el mapa del viaje entero, en vez de la foto.
+10. **Todos los días se mueven**, también llegada y vuelta, con sus fechas por posición. Si al moverlo una parada cae en
+    un día en que cierra, sale la marca roja.
+11. **Tarjeta de parada:** hora, nombre, horario y tiempo, y etiquetas. «Reserva…» pasa a Entradas y «Por dentro/fuera»
+    a Resumen. Solo se queda lo rojo.
+12. **Bus y metro** como la fila de andar: «Bus 115 · 20 min», «Rutas» y «+ Añadir parada».
+13. **El aperitivo** es una tarjeta: copa, foto del barrio al anochecer, hora, nombre, tiempo y etiqueta. Las ideas van
+    en su ficha.
+14. **La cena cuenta desde el bloque de justo antes** (el aperitivo), y pone «Justo al lado» en vez de «0 min andando».
+
+Pendiente: las capturas a 375 px. El panel del navegador estaba oculto y no deja comprobarlo a la vista.
