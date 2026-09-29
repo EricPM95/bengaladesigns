@@ -113,9 +113,9 @@ function planChecks({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
     if (!w) continue
     const where = `${label}, día ${day.dayNumber} (${day.curatedDay?.id} ${w.version}, ${day.hours?.weekday})`
     for (const problem of w.problems ?? []) tally(`v4_${problem.tipo}`, `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''} ${day.hours?.weekday ?? ''}`)
-    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 10) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
+    if (w.elastic && (w.elastic.wanted > (w.elastic.grow ?? w.elastic.max) + 10 || -w.elastic.wanted > w.elastic.max + 10)) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${ritmo === 'tranquilo' ? ' T' : ''}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)
     for (const problem of w.problems ?? []) add(`v4_${problem.tipo}`, where, [problem.lugar, problem.llega ? `llega ${problem.llega} para las ${problem.hora}` : problem.hora, problem.minutos != null ? `${problem.minutos} min` : null].filter(Boolean).join(' · '))
-    if (w.elastic && Math.abs(w.elastic.wanted) > w.elastic.max + 10) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
+    if (w.elastic && (w.elastic.wanted > (w.elastic.grow ?? w.elastic.max) + 10 || -w.elastic.wanted > w.elastic.max + 10)) add('v4_elastica', where, `${w.elastic.lugar}: quería ${w.elastic.wanted > 0 ? '+' : ''}${w.elastic.wanted} (margen ±${w.elastic.max}); sol ${hh(day.hours.sunset)}`)
   }
 }
 

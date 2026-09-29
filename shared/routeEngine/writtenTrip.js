@@ -55,6 +55,7 @@ const LUNCH_DEFAULT = { completo: 60, tranquilo: 90 }
 const DINNER_MINUTES = 90
 const DINNER_EARLIEST = 19 * 60 + 30
 const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
+const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 const TRANSFER_NOTICE_MINUTES = 25
@@ -426,6 +427,10 @@ export function planWrittenTrip(args) {
         kept.push(stop)
       }
       draft.manana = kept
+      // (Y las opcionales de la tarde, las más prescindibles de las tardes largas: decisión del usuario, 2026-09-29; al
+      // poner las horas vuelven las que hagan falta para que la elástica llegue.)
+      draft.tardeFull = draft.tarde
+      draft.tarde = draft.tarde.filter((stop) => stop.tipo !== 'opcional')
       if (draft.nombre_tranquilo) draft.nombre = draft.nombre_tranquilo
     }
   }
@@ -707,6 +712,8 @@ export function planWrittenTrip(args) {
     const start = Math.max(roundUp15(cursor.t + walk), LUNCH_EARLIEST)
     const written = draft.empieza ? toMin(draft.empieza) : null
     let end = written != null ? written : start + LUNCH_DEFAULT[paceKey]
+    // (En tranquilo, la comida dura como mucho LUNCH_MAX_TRANQUILO: lo demás es tarde.)
+    if (tranquilo) end = Math.min(end, start + LUNCH_MAX_TRANQUILO)
     let short = null
     if (end - start < LUNCH_MIN) {
       short = end - start
@@ -763,6 +770,15 @@ export function planWrittenTrip(args) {
         }
       }
     }
+    // Tranquilo: las opcionales de la tarde se quitan mientras la elástica pueda con el rato que dejan; si no, vuelven, en
+    // orden (en verano la tarde es larga y alguna hace falta).
+    if (tranquilo && draft.tardeFull) {
+      for (const optional of draft.tardeFull.filter((stop) => stop.tipo === 'opcional')) {
+        const need = elasticNeed(draft, skeletonDay, hours, half)
+        if (!need || need.wanted <= need.max * 2 + LEAD_FLEX) break
+        draft.tarde = draft.tardeFull.filter((stop) => stop.tipo !== 'opcional' || stop === optional || draft.tarde.includes(stop))
+      }
+    }
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
     const startMorning = morningStartOf(draft)
     const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
@@ -796,7 +812,9 @@ export function planWrittenTrip(args) {
         const target = hours.sunset - (sunsetStop.lead ?? SUNSET_LEAD)
         elasticWanted = target - probe.sunsetArrival
         // (De 5 en 5, como todo lo que ve el viajero.)
-        elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(elasticStop.elastica, elasticWanted)) / 5) * 5
+        // (En tranquilo la elástica puede crecer el doble: la tarde es más lenta.)
+        const grow = tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica
+        elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(grow, elasticWanted)) / 5) * 5
         // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
         const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
         // (Solo si después hay un bloque del mismo barrio que se queda su rato, Monti con el aperitivo en Monti, y nunca un
@@ -873,7 +891,7 @@ export function planWrittenTrip(args) {
       reorderedBlocks: [],
       closedAnchors: [],
       otherRestaurants,
-      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null },
+      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica, grow: tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null },
     }
     problems.push(...ctx.problems.map((problem) => ({ ...problem, dayNumber: skeletonDay.dayNumber })))
     days.push(dayPlan)

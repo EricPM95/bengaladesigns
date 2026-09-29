@@ -92,7 +92,8 @@
           "min": 60,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         }
       ],
       "cena": {
@@ -192,7 +193,8 @@
           "min": 60,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Monti",
@@ -252,7 +254,8 @@
           "min": 78,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Monti",

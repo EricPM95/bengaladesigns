@@ -18,7 +18,7 @@
       {
         "lugar": "Fontana de Trevi",
         "tipo": "opcional",
-        "hora": "08:45",
+        "hora": "08:30",
         "min": 25,
         "tranquilo": {
           "pasa_a": "Trevi de noche, después de cenar",
@@ -28,7 +28,7 @@
       {
         "lugar": "Desayuno romano",
         "tipo": "opcional",
-        "min": 25
+        "min": 35
       },
       {
         "lugar": "Free Tour Centro Histórico",

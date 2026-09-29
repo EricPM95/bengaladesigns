@@ -187,14 +187,16 @@
           "lugar": "Basílica de San Juan de Letrán",
           "min": 30,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Basílica de San Clemente",
           "min": 40,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -238,14 +240,16 @@
           "lugar": "Basílica de San Juan de Letrán",
           "min": 30,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Basílica de San Clemente",
           "min": 40,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",

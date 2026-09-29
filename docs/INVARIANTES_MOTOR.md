@@ -1808,3 +1808,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 352. **El aperitivo, 90 min como mucho, siempre** (2026-09-29): si el rato hasta la cena es más largo, la cena se
     adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar se mueve con ella.
+
+353. **Ritmo tranquilo por la tarde** (2026-09-29): la comida, como mucho 105 min; las paradas `opcional` de la tarde
+    (las más prescindibles: Letrán y San Clemente en D4M, los Mercados de Trajano en D5C) se quitan mientras la elástica,
+    que en tranquilo puede crecer el doble, absorba el rato; si no, vuelven en orden (en verano la tarde es larga).
+    Trevi en D3 a las 8:30, como en D4 (el texto habla de antes de la tasa de las 9:00).
