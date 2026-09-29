@@ -60,7 +60,7 @@ export function plannerFor(requestPlanner) {
  * opciones de una petición; `engine: 'v3'` fuerza el de días curados. Con `WRITTEN_DAYS_DEFAULT` a true, v4 es el
  * de por defecto en los destinos con días escritos. Si el viaje necesita un día que no está escrito, v3.
  */
-export const WRITTEN_DAYS_DEFAULT = false
+export const WRITTEN_DAYS_DEFAULT = true
 export function useWrittenDays(requestEngine) {
   const choice = (requestEngine ?? process.env.ROUTE_ENGINE ?? '').toString().trim().toLowerCase()
   if (choice === 'v4') return true
