@@ -212,40 +212,15 @@ function formatWalkKm(totalMeters: number): string {
   return `${(totalMeters / 1000).toFixed(1).replace('.', ',')} km`
 }
 
+/** «7 h 30», «45 min» (de 5 en 5). */
 function formatActivityDuration(totalMinutes: number): string {
-  if (totalMinutes <= 0) return '0h'
-  if (totalMinutes < 60) return `${totalMinutes} min`
-  const hours = Math.round((totalMinutes / 60) * 2) / 2
-  return `${Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')}h`
+  const minutes = Math.round(totalMinutes / 5) * 5
+  if (minutes <= 0) return '0 min'
+  if (minutes < 60) return `${minutes} min`
+  const rest = minutes % 60
+  return rest === 0 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 60)} h ${String(rest).padStart(2, '0')}`
 }
 
-/** Los 3 iconos de la fila resumen (paradas/km a pie/horas de actividad) — mismo estilo lineal fino, sin relleno, y se pintan todos del mismo verde oscuro (text-accent-hover) desde quien los usa, ver el JSX del resumen más abajo. */
-function SummaryPinIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
-      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  )
-}
-
-function SummaryWalkIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
-      <ellipse cx="8" cy="15.5" rx="2.6" ry="4.4" transform="rotate(-12 8 15.5)" />
-      <ellipse cx="16" cy="8.5" rx="2.6" ry="4.4" transform="rotate(12 16 8.5)" />
-    </svg>
-  )
-}
-
-function SummaryClockIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 ${className}`}>
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="12 7 12 12 15.5 14" />
-    </svg>
-  )
-}
 
 /**
  * Pantalla completa de un día en la pestaña DIAS — navegación desde DayList.tsx (ya no es un
@@ -1153,20 +1128,20 @@ export function DayDetailPanel({
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
+        {/* Las cifras del día (PROMPT_UI_REPASO 5): tres en fila, separadas por una línea fina, el número en Instrument Serif y
+            la palabra debajo en mono; sin iconos ni caja, centradas. */}
         {showsRoute && stops.length > 0 && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 pt-1 text-[12px] text-text/60">
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <SummaryPinIcon />
-              {visitCount} parada{visitCount === 1 ? '' : 's'}
-            </span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <SummaryWalkIcon />
-              {formatWalkKm(totalWalkMeters)} a pie
-            </span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <SummaryClockIcon />
-              {formatActivityDuration(totalActivityMinutes)} actividad
-            </span>
+          <div className="flex items-stretch justify-center pt-2">
+            {[
+              { value: String(visitCount), label: visitCount === 1 ? 'parada' : 'paradas' },
+              { value: formatWalkKm(totalWalkMeters).replace(' km', ''), label: 'km a pie' },
+              { value: formatActivityDuration(totalActivityMinutes), label: 'de actividad' },
+            ].map((figure, index) => (
+              <div key={figure.label} className={`flex flex-col items-center px-4 max-[479px]:px-3 ${index > 0 ? 'border-l border-text/[.12]' : ''}`}>
+                <span className="font-display text-[18px] leading-none text-text">{figure.value}</span>
+                <span className="mt-1 whitespace-nowrap font-mono text-[9.5px] font-semibold uppercase tracking-[.1em] text-text/50">{figure.label}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -1274,7 +1249,8 @@ export function DayDetailPanel({
           {/* Llegada o vuelta: la misma tarjeta, en azul petróleo, sin número (no es una parada). */}
           {/* La llegada: el primer día, después del alojamiento y antes del primer tramo. */}
           {isFirstDayOfTrip && route && (
-            <div className="space-y-1.5 pt-2">
+            // (50 px hasta «MAÑANA», como entre los demás bloques: PROMPT_UI_REPASO 4.)
+            <div className="mb-[50px] space-y-1.5 pt-2">
               <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               {arrivalConflict && centerMinutes != null && (
                 <button
@@ -1349,7 +1325,8 @@ export function DayDetailPanel({
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
           {periodGroups.map((group, groupIndex) => (
             // (50 px encima de cada tramo y de la comida y la cena: cinco bloques bien separados.)
-            <div key={`${group.period}-${groupIndex}`} className={groupIndex > 0 && !freeDay ? 'mt-[50px]' : ''}>
+            // (PROMPT_UI_REPASO 7-8: 50 px encima de cada cabecera; la comida y la cena, 50 encima y 50 debajo, como bloque propio.)
+            <div key={`${group.period}-${groupIndex}`} className={freeDay ? '' : `${groupIndex > 0 ? 'mt-[50px]' : ''} ${group.period === 'comida' || group.period === 'cena' ? 'mb-[50px]' : ''}`}>
               {!freeDay && PERIOD_WITH_HEADER.has(group.period) && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
               {/* La línea punteada del día; las tarjetas cuelgan de ella. La comida y la cena, sin ella. */}
               <div className={`relative flex flex-col ${PERIOD_WITH_HEADER.has(group.period) || freeDay ? 'pl-[26px]' : ''}`}>

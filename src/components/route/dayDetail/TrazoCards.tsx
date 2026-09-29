@@ -167,7 +167,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
 export function PeriodHeader({ period, range }: { period: DayPeriod; range?: string | null }) {
   const style = PERIOD_STYLE[period]
   return (
-    <div className="flex items-center gap-2 pl-0.5 pt-1">
+    // (12 px hasta el primer «+ Añadir parada»: PROMPT_UI_REPASO 7.)
+    <div className="mb-3 flex items-center gap-2 pl-0.5 pt-1">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>
@@ -263,7 +264,8 @@ export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChan
  */
 export function OnTheWayCard({ name, photoUrl, onOpen, menu }: { name: string; photoUrl?: string | null; onOpen?: () => void; menu?: ReactNode }) {
   return (
-    <div className="relative ml-4 flex min-h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] py-1 pl-2 pr-2 max-[479px]:min-h-[52px] max-[479px]:gap-2.5">
+    // (Alineada con las tarjetas de las paradas y con 16 px de aire arriba y abajo: PROMPT_UI_REPASO 6.)
+    <div className="relative my-4 flex min-h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] py-1 pl-2 pr-2 max-[479px]:min-h-[52px] max-[479px]:gap-2.5">
       <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left">
         <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-bg-hover max-[479px]:h-9 max-[479px]:w-9">
           {photoUrl && <img src={photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}

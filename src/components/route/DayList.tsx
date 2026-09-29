@@ -161,7 +161,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-44 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-52 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
