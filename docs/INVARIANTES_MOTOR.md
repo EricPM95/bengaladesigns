@@ -1755,3 +1755,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 339. **Días escritos: toda parada lleva su «Por qué aquí»** (2026-09-29): el texto escrito en la parada; si no, el de los
     días curados; si no, el del destino (`_destino.json` → `textos`). Nunca el genérico «Te pilla de camino» en un día
     escrito. Y `engine: 'v4'` en una petición va al v3 con días escritos (antes caía en el motor «nuevo»).
+
+340. **Días escritos: toda tarde de verano (C y D) acaba en un atardecer** (2026-09-29): si el sol se pone después de
+    cenar la hora de siempre, la tarde lleva su mirador antes de la cena (D1: el Ponte Sisto, a 5 min de Campo de'
+    Fiori, con Campo como elástica).

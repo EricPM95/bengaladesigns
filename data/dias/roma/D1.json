@@ -129,7 +129,7 @@
     },
     "B": "igual que A",
     "C": {
-      "empieza": "15:00",
+      "empieza": "14:30",
       "paradas": [
         {
           "lugar": "Barrio Judío",
@@ -178,7 +178,13 @@
         },
         {
           "lugar": "Campo de' Fiori",
-          "min": 30
+          "min": 30,
+          "elastica": 30
+        },
+        {
+          "lugar": "Ponte Sisto",
+          "modo": "atardecer",
+          "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
         }
       ],
       "cena": {
@@ -186,10 +192,10 @@
         "alternativa": "Pizzeria Da Baffetto",
         "hora": "19:30"
       },
-      "_sol": "la tarde empieza más tarde: San Luigi dei Francesi antes del Panteón (cierra a las 18:15)"
+      "_sol": "la tarde empieza más tarde: San Luigi dei Francesi antes del Panteón (cierra a las 18:15); el atardecer en el Ponte Sisto, a 5 min de Campo de' Fiori, y la cena después"
     },
     "D": {
-      "empieza": "15:15",
+      "empieza": "15:30",
       "_sol": "en verano la comida va sin prisa y la tarde empieza a las 15:30",
       "paradas": "igual que C",
       "cena": {

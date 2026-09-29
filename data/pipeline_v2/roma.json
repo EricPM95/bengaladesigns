@@ -3470,6 +3470,35 @@
       ]
     },
     {
+      "name": "Ponte Sisto",
+      "level": 3,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8923,
+        12.4709
+      ],
+      "duration_minutes": 15,
+      "type": "exterior",
+      "tip": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
+      "photo_tip": "Desde el centro del puente, mirando río arriba: la cúpula de San Pedro al fondo.",
+      "tags": [
+        "monumento",
+        "mirador"
+      ],
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "ponte sisto",
+        "puente sisto"
+      ],
+      "search_en": "Ponte Sisto Rome",
+      "search_en_keywords": [
+        "ponte",
+        "bridge",
+        "sisto"
+      ],
+      "is_free_access": true
+    },
+    {
       "name": "Plaza Trilussa",
       "duration_minutes": 15,
       "zone": "trastevere",
