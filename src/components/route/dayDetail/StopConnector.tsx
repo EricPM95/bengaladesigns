@@ -55,9 +55,21 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
  * quedaba sin su botón y no había forma de insertar nada justo ahí. Lo que se muestra dentro del
  * hueco es opcional; el hueco no.
  */
+/**
+ * «Bus 115 o el 870, unos 20 min» → { line: 'Bus 115', minutes: 20, mode: 'transit' }; «Un taxi, unos 20 min» → taxi en coche.
+ * La primera opción es la que se enseña; las demás (y el taxi) siguen en la ficha.
+ */
+function parseTransitLabel(label: string): { line: string; minutes: number | null; mode: TransportMode } {
+  const minutes = /(\d+)\s*min/.exec(label)
+  const head = label.split(',')[0].split(/\s+o\s+/)[0].trim().replace(/^(un|una|el|la)\s+/i, '')
+  const line = head.charAt(0).toUpperCase() + head.slice(1)
+  return { line, minutes: minutes ? Number(minutes[1]) : null, mode: /taxi/i.test(head) ? 'driving' : 'transit' }
+}
+
 export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel }: StopConnectorProps) {
   const [modeSheetOpen, setModeSheetOpen] = useState(false)
   const [mapsSheetOpen, setMapsSheetOpen] = useState(false)
+  const transitRow = transitLabel ? parseTransitLabel(transitLabel) : null
 
   // Si el modo pedido no está (el transporte que no ahorra tiempo no se ofrece), a pie.
   const selectedOption =
@@ -70,7 +82,26 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
   return (
     // Diseño "Trazo Itinerario": la línea punteada del día la pinta el contenedor; aquí solo la fila.
     <div className="flex min-h-[44px] items-center gap-1.5 text-[12.5px] text-text/60">
-      {transitLabel && <span className="font-mono text-[12px] font-medium text-text/60">{transitLabel}</span>}
+      {/* El bus o el metro escrito, como la fila de andar (PROMPT_UI_REPASO 12): su icono, «Bus 115 · 20 min», «Rutas»
+          (Maps en transporte público, hasta la parada) y «+ Añadir parada». */}
+      {transitLabel && transitRow && (
+        <>
+          <span className="flex items-center gap-1.5 text-text/60">
+            <TransportModeIcon mode={transitRow.mode} className="h-[15px] w-[15px] shrink-0" />
+            <span className="font-mono text-[12px] font-medium">
+              {transitRow.line}
+              {transitRow.minutes ? ` · ${transitRow.minutes} min` : ''}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setMapsSheetOpen(true)}
+            className="ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover"
+          >
+            Rutas
+          </button>
+        </>
+      )}
 
       {!transitLabel && connector && !selectedOption && <span className="text-[12.5px] text-text/55">{connector.label}</span>}
 
@@ -106,6 +137,9 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
 
       <AddStopButton onAddStop={onAddStop} />
 
+      {transitLabel && transitRow && !(connector?.modeOptions && selectedOption) && (
+        <OpenInMapsSheet open={mapsSheetOpen} onClose={() => setMapsSheetOpen(false)} origin={fromName} destination={toName} mode={transitRow.mode} />
+      )}
       {connector?.modeOptions && selectedOption && (
         <>
           <TransportModeSheet

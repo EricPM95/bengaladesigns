@@ -2038,3 +2038,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       Free Tour.
     - **Solo se queda lo rojo** cuando hay un problema: «Hoy cierra», «Cerrado a esa hora», «Llegas después», «Ya te
       has ido», el motivo de un «por fuera» por cierre.
+
+383. **El bus y el metro, como la fila de andar** (2026-09-29, PROMPT_UI_REPASO 12): el tramo en transporte escrito sale
+    con su icono y el número de línea («Bus 115 · 20 min», «Metro B · 20 min», «Taxi · 20 min»), el enlace «Rutas», que
+    abre Maps en transporte público hasta la parada para ver dónde se coge, y «+ Añadir parada» a la derecha. Las
+    alternativas («o el 870», «o un taxi») siguen en la ficha.
