@@ -449,7 +449,8 @@
           },
           {
             "lugar": "Plaza del Campidoglio",
-            "min": 15
+            "min": 15,
+            "tipo": "opcional"
           },
           {
             "lugar": "Museos Capitolinos",

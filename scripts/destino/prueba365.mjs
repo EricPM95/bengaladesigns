@@ -22,7 +22,7 @@ const EXTRA_TIPOS = {
   v4_llega_tarde: 'Se llega tarde a una hora fija (o a recoger la entrada)',
   v4_fuera_de_horario: 'Parada fuera de su horario sin solución escrita',
   v4_cerrado_sin_solucion: 'Cerrado ese día y sin nada escrito',
-  v4_comida_corta: 'Comida de menos de 45 min',
+  v4_comida_corta: 'La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba',
   v4_lugar_desconocido: 'Lugar escrito que no existe en las fichas',
   v4_elastica: 'La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)',
   v4_sin_gente_tranquilo: '«Sin gente» en el título en ritmo tranquilo',

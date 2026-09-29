@@ -2108,3 +2108,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       los viajes de la muestra.
     - Un aviso por día («Hoy toca madrugar… a las {hora}») usa la hora real de ese día.
     - Al cambiar los días escritos o el motor, se vuelve a pasar paceStats.
+
+392. **La comida dura como mínimo 45 min, y nunca se acorta para que quepa lo demás** (PROMPT_TEXTOS_RITMO 6).
+    - Si la mañana llega tan tarde que la comida no cabe antes de la hora escrita de la tarde, se hace esto, en orden:
+      1. se quitan las opcionales de la mañana, de la última hacia atrás, hasta que quepa;
+      2. se quitan las de la tarde, hasta cubrir lo que falta;
+      3. lo que quede lo absorbe la elástica, porque la tarde empieza más tarde.
+    - Cada opcional quitada queda anotada en las variantes del día (`comida:sin <lugar>`).
+    - La prueba solo lo marca si no hay ni opcional ni elástica que lo absorba.
+    - Las variantes por fecha conservan la marca `opcional` de la versión normal. El 1 de enero, la Plaza del Campidoglio
+      la había perdido.

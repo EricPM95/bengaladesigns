@@ -325,7 +325,7 @@
       }
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Coliseo y el Foro cierran (se ven por fuera); los Museos Capitolinos abren.",
+      "_nota": "1 de enero: el Coliseo y el Foro cierran (se ven por fuera); los Museos Capitolinos abren. En tranquilo, el Coliseo por fuera a las 09:45: sin opcionales que quitar, así la comida cabe y el Janículo llega al sol (PROMPT_TEXTOS_RITMO 6).",
       "manana": {
         "paradas": [
           {
@@ -333,7 +333,7 @@
             "tipo": "fija",
             "hora": {
               "completo": "09:30",
-              "tranquilo": "10:00"
+              "tranquilo": "09:45"
             },
             "modo": "fuera"
           },
@@ -347,7 +347,8 @@
           },
           {
             "lugar": "Plaza del Campidoglio",
-            "min": 15
+            "min": 15,
+            "tipo": "opcional"
           },
           {
             "lugar": "Museos Capitolinos",

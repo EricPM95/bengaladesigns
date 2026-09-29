@@ -809,6 +809,43 @@ export function planWrittenTrip(args) {
     // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
     const startMorning = morningStartOf(draft)
+    // La comida dura como mínimo LUNCH_MIN (PROMPT_TEXTOS_RITMO 6). Si no cabe antes de la hora escrita de la tarde, se
+    // quitan primero las opcionales (las de la mañana, de la última hacia atrás; luego las de la tarde, hasta cubrir lo que
+    // falta) y lo que quede lo absorbe la elástica. Nunca se acorta la comida. (El 1 de enero, con los Capitolinos y el
+    // Altar por dentro, la mañana se comía la comida: -5 min.)
+    if (!half && draft.comida) {
+      const shortNow = () => {
+        const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+        const run = runList(draft.manana, 'manana', { t: startMorning, coords: null }, probe)
+        return lunchOf(draft, run.cursor, skeletonDay, hours).short
+      }
+      const withoutAt = (list, at) => {
+        const removed = list[at]
+        const next = list[at + 1]
+        const rest = list.filter((_, i) => i !== at)
+        // (Si la opcional traía el traslado, lo hereda la siguiente, como en tranquilo.)
+        if (removed.traslado && next && !next.traslado) rest[at] = { ...next, traslado: next.traslado_si_va_primera ?? removed.traslado }
+        return rest
+      }
+      const lastOptional = (list) => list.findLastIndex((stop) => stop.tipo === 'opcional')
+      let short = shortNow()
+      while (short != null) {
+        const at = lastOptional(draft.manana)
+        if (at < 0) break
+        draft.applied.push(`comida:sin ${draft.manana[at].lugar}`)
+        draft.manana = withoutAt(draft.manana, at)
+        short = shortNow()
+      }
+      let missing = short != null ? LUNCH_MIN - short : 0
+      while (missing > 0) {
+        const at = lastOptional(draft.tarde)
+        if (at < 0) break
+        const stop = draft.tarde[at]
+        missing -= (stop.min ?? placeByName.get(stop.lugar)?.duration_minutes ?? 15) + 5
+        draft.applied.push(`comida:sin ${stop.lugar}`)
+        draft.tarde = withoutAt(draft.tarde, at)
+      }
+    }
     const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
     // La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje).
     const meals = []
@@ -816,7 +853,9 @@ export function planWrittenTrip(args) {
     let lunchName = null
     if (!half && draft.comida) {
       const { spot, start, end, short } = lunchOf(draft, morning.cursor, skeletonDay, hours)
-      if (short != null) ctx.problems.push({ tipo: 'comida_corta', minutos: short })
+      // (La comida ya dura LUNCH_MIN; la tarde empieza más tarde y lo absorbe la elástica. Solo es un problema si no hay
+      // elástica que lo absorba: entonces la tarde va con retraso.)
+      if (short != null && !draft.tarde.some((stop) => stop.elastica != null)) ctx.problems.push({ tipo: 'comida_corta', minutos: short })
       // (Si a la primera parada de la tarde se va en bus o taxi, ese rato no es tiempo libre: `transitAfter`.)
       const firstAfternoon = draft.tarde[0]
       meals.push({ type: 'lunch', start, end, eatMinutes: end - start, coordinates: spot?.coordinates ?? morning.cursor.coords, ...(spot ? { spot: { name: spot.name, zone: spot.zone } } : {}), eatStart: start, ...(firstAfternoon?.traslado?.min ? { transitAfter: firstAfternoon.traslado.min } : {}) })
