@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
+import { APP_LANGUAGE } from '../../lib/appLanguage'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Coordinates, DayPlan } from '../../lib/types'
 import { segmentCentroid, type DestinationSegment } from '../../lib/destinationSegments'
@@ -37,6 +38,8 @@ export function RouteOverviewMap({ segments, days, arrivalMarkers = [] }: RouteO
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
+      // Los nombres del mapa en el idioma de la app (Roma, Coliseo), no en inglés.
+      language: APP_LANGUAGE,
       center: [points[0].lng, points[0].lat],
       zoom: 11,
     })

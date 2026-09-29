@@ -3,7 +3,7 @@ import { DayPicker, type DateRange as PickerRange } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
 import type { DateRange } from '../../lib/types'
-import { daysBetweenInclusive, formatHeaderDateRangeEs, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
+import { daysBetweenInclusive, formatHeaderDateRangeEs, formatHeaderDateRangeShortEs, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
 
 interface MapDestinationHeaderProps {
   destination: string
@@ -45,11 +45,15 @@ export function MapDestinationHeader({ destination, dateRange, onChangeDateRange
       <button
         type="button"
         onClick={() => setShowCalendar((value) => !value)}
-        className="flex flex-col items-center gap-[3px] rounded-[22px] border-[1.5px] border-accent bg-bg-card px-[22px] pb-[10px] pt-[9px] text-center shadow-[0_10px_28px_-10px_rgba(28,34,48,.35)] transition-colors hover:bg-bg-hover"
+        className="flex flex-col items-center gap-[3px] rounded-[22px] border-[1.5px] border-accent bg-bg-card px-[22px] pb-[10px] pt-[9px] text-center shadow-[0_10px_28px_-10px_rgba(28,34,48,.35)] transition-colors hover:bg-bg-hover max-[479px]:h-[38px] max-[479px]:flex-row max-[479px]:gap-1.5 max-[479px]:rounded-full max-[479px]:px-3.5 max-[479px]:py-0"
       >
-        <p className="whitespace-nowrap font-display text-[26px] leading-none text-text">{destination}</p>
+        {/* En el móvil, una línea: "Roma · 9 – 12 jun", sin tapar el mapa (decisión del usuario, 2026-09-29). */}
+        <p className="whitespace-nowrap font-display text-[26px] leading-none text-text max-[479px]:text-[20px]">{destination}</p>
         {dateRange ? (
-          <p className="whitespace-nowrap text-[12px] font-medium text-accent">{formatHeaderDateRangeEs(dateRange.start, dateRange.end)}</p>
+          <>
+            <p className="whitespace-nowrap text-[12px] font-medium text-accent max-[479px]:hidden">{formatHeaderDateRangeEs(dateRange.start, dateRange.end)}</p>
+            <p className="hidden whitespace-nowrap text-[12px] font-medium text-accent max-[479px]:block">· {formatHeaderDateRangeShortEs(dateRange.start, dateRange.end)}</p>
+          </>
         ) : (
           <p className="text-[12px] font-medium text-accent">Añadir fechas</p>
         )}

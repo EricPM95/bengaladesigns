@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
+import { APP_LANGUAGE } from '../../lib/appLanguage'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Coordinates } from '../../lib/types'
 
@@ -121,6 +122,8 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
+      // Los nombres del mapa en el idioma de la app (Roma, Coliseo), no en inglés.
+      language: APP_LANGUAGE,
       center: [origin.lng, origin.lat],
       zoom: markers.length === 0 ? 12 : 14,
     })
@@ -152,6 +155,16 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
             geometry: { type: 'LineString', coordinates: line.coordinates.map((c) => [c.lng, c.lat]) },
           },
         })
+        // Un borde blanco debajo de cada línea continua, como el de los pines: así se ven sobre cualquier calle.
+        if (!line.dashed) {
+          map.addLayer({
+            id: `${sourceId}-casing`,
+            type: 'line',
+            source: sourceId,
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: { 'line-color': '#FFFFFF', 'line-width': (line.width ?? 3) + 3, 'line-opacity': line.opacity ?? 1 },
+          })
+        }
         map.addLayer({
           id: sourceId,
           type: 'line',

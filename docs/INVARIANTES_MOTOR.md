@@ -1888,3 +1888,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 361. **Una visita por dentro cabe entera en un tramo abierto** (2026-09-29, `nextOpenSlotMinutes`): San Clemente
     (09:00–12:30 / 14:00–18:00) a las 12:30 con 45 min dentro pasa a las 14:00.
+
+362. **Retoques de la UI** (2026-09-29):
+    - **Excursiones.** Una excursión de día entero nunca va el día de llegada ni el de vuelta (ni en la lista ni en el
+      enlace del día). Si el día de la oferta es uno de ellos, se propone el día completo más cercano
+      (`excursionOffer.ts`).
+    - **Botones flotantes.** Nunca tapan el «···» del último día (espacio debajo de la lista) y llevan iconos de línea.
+    - **Mapa.** En el idioma de la app. La línea de todos los días va gruesa y con borde blanco.
+    - **Móvil (<480 px).** Escala compacta, con títulos de dos líneas como mucho y la tarjeta del mapa en una línea.
+    - **Día abierto y cerrado.** Abierto, sin línea de color; cerrado, con su franja y el número neutro.
+    - **Horas de los tramos.** Van de 5 en 5, como las de las paradas.

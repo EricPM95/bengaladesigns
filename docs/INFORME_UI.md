@@ -62,7 +62,7 @@ Commits por parte, **sin push**. Las reglas generales están en INVARIANTES (354
 
 ## Lo que no he podido hacer, o conviene saber
 
-- **En local la app sigue sirviendo v3.** Tu `.env.local` tiene `ROUTE_ENGINE=v3`, que manda sobre el v4 por defecto. Las capturas de arriba salen de v3.
+- ~~**En local la app sigue sirviendo v3.**~~ *Resuelto el 29 de septiembre: tu `.env.local` ya tiene `ROUTE_ENGINE=v4` y las capturas de las partes 3 y de los retoques salen de v4. Las de arriba siguen siendo de v3.*
   - El diseño es el mismo con los dos motores, pero los días de v4 se ven distintos (por ejemplo, D2 A con el atardecer en el Castillo).
   - No lo he cambiado: es tu configuración. Si quieres v4 en local, quita esa línea o ponla a `v4`.
   - Conviene revisar también que Vercel no tenga `ROUTE_ENGINE` puesto.
@@ -120,3 +120,37 @@ Regla 358 en INVARIANTES (y 359-361, arreglos que salieron al probar). Las captu
 
 - **Lo que no está.** El traslado privado sigue con el enlace de afiliado pendiente («#»), como antes.
 - **Qué falta para usar la vuelta en otro medio.** La app ya lo sabe pintar, pero el formulario todavía no pregunta por el medio de la vuelta: falta ese campo.
+
+# Retoques de las partes 1 y 2 (29 de septiembre de 2026)
+
+Regla 362 en INVARIANTES. Capturas con **v4** a 375 px; el ordenador no cambia.
+
+1. **La excursión nunca el día de llegada ni el de vuelta.** No salen en «¿Qué día la haces?» ni llevan «¿Prefieres una excursión este día?». Si el día de la oferta (D5C) es uno de ellos, se propone el día completo más cercano. En 4 días salen el 2 y el 3, y propone el 3.
+2. **La comida en móvil.** «COMIDA · 13:15 – 14:20» en una línea, el restaurante en 18 px y dos líneas como mucho, y «Cambiar» más pequeño.
+3. **«De camino» en móvil.** La etiqueta en una línea y el nombre entero (dos líneas si hace falta).
+4. **Los botones del mapa y del presupuesto.** Hay espacio debajo de la lista, así que nunca tapan el «···» del último día. Llevan iconos de línea en vez de emojis.
+5. **El mapa en español.** Mapbox en el idioma de la app (`APP_LANGUAGE`), en todos los destinos.
+6. **v4 en local.** `ROUTE_ENGINE=v4` en tu `.env.local` y las capturas rehechas con v4.
+7. **Las líneas del mapa con todos los días**, más gruesas (5 px) y con borde blanco.
+8. **La tarjeta «Roma · fechas» en móvil.** Una línea («Roma · 13 – 16 oct»), el nombre en 20 px y 38 px de alto.
+9. **Escala compacta en móvil (<480 px).**
+   - Títulos de parada en 17 px, restaurante en 18, mono en 11 y textos de apoyo en 12.
+   - La franja de la foto es más estrecha.
+   - Los títulos van en dos líneas como mucho.
+10. **El día abierto, sin la línea de color** de la izquierda: dentro, el color solo en los números y los pines. El día cerrado conserva su franja, y el número del día va neutro (oscuro) en todos.
+11. **Revisión final con v4.** Los 35 viajes (las 5 fechas normales y los 30 del cierre), con horas de 5 en 5, están en [revision/REVISION_V4_FINAL.md](revision/REVISION_V4_FINAL.md) (`node scripts/destino/revisionV4Final.mjs`).
+    - La auditoría no da ningún aviso, y el recuento de la Parte D sale a 0 en todo.
+    - Las filas de tiempo libre del script redondeaban a 15 min; ahora van de 5 en 5, como la app.
+    - Solo hay horas que no acaban en 0 o 5 en el atardecer, que es la hora real del sol.
+
+**De paso:** la cabecera de cada tramo («TARDE · 14:30») redondeaba a cuartos, y la primera parada era a las 14:25. Ahora va de 5 en 5.
+
+| | |
+|---|---|
+| Días cerrados: número neutro, iconos de línea y la tarjeta del mapa en una línea | [dias_cerrados_v4.jpg](capturas_ui/dias_cerrados_v4.jpg) |
+| Día abierto sin línea de color; mapa en español | [dia_abierto_sin_linea.jpg](capturas_ui/dia_abierto_sin_linea.jpg) |
+| «De camino» y tarjeta de parada compacta | [de_camino_movil.jpg](capturas_ui/de_camino_movil.jpg) |
+| Comida en móvil | [comida_movil.jpg](capturas_ui/comida_movil.jpg) |
+| El «···» del último día, libre | [ultimo_dia_botones.jpg](capturas_ui/ultimo_dia_botones.jpg) |
+| Final de la lista | [final_lista_botones.jpg](capturas_ui/final_lista_botones.jpg) |
+| «¿Qué día la haces?» sin llegada ni vuelta | [excursion_sin_llegada_vuelta.jpg](capturas_ui/excursion_sin_llegada_vuelta.jpg) |

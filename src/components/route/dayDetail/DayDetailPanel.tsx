@@ -1006,7 +1006,9 @@ export function DayDetailPanel({
     if (timed.length === 0) continue
     const from = Math.min(...timed.map((entry) => entry.start))
     const to = Math.max(...timed.map((entry) => entry.end))
-    group.range = `${minutesToTime(roundToNearestQuarterHour(from))} — ${minutesToTime(roundToNearestQuarterHour(to))}`
+    // De 5 en 5, como las horas de las paradas: con cuartos, la Tarde decía 14:30 y su primera parada era a las 14:25.
+    const step5 = (minutes: number) => Math.round(minutes / 5) * 5
+    group.range = `${minutesToTime(step5(from))} — ${minutesToTime(step5(to))}`
   }
 
   /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */

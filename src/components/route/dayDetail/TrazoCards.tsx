@@ -79,7 +79,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
   const body = (
     <>
       {/* Franja de color con el icono + la foto en paralelogramo (diseño "Trazo Itinerario"). */}
-      <div className="relative w-[104px] shrink-0 overflow-hidden rounded-l-[17px]" style={{ marginRight: -14 }}>
+      <div className="relative w-[104px] shrink-0 overflow-hidden rounded-l-[17px] max-[479px]:w-[84px]" style={{ marginRight: -14 }}>
         <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0, 58px 0, 32px 100%, 0 100%)', background: panel }} />
         <span className="absolute bottom-0 left-0 top-0 flex w-9 items-center justify-center text-white">
           <Icon d={iconPath ?? style.icon} size={20} />
@@ -88,16 +88,16 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
           {photoUrl && !noPhoto && <img src={photoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
         </div>
       </div>
-      <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left ${action ? 'pb-10' : 'pb-[11px]'}`}>
+      <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
         {time && (
-          <span className="font-mono text-[10.5px] font-semibold tracking-[.04em]" style={{ color: timeColor }}>
+          <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[11px]" style={{ color: timeColor }}>
             {time}
           </span>
         )}
         {/* El nombre en una línea si cabe; si no, la tarjeta crece (nunca se corta). */}
-        <span className="font-display text-[17px] leading-[1.12] [overflow-wrap:anywhere]">{name}</span>
+        <span className="line-clamp-2 font-display text-[17px] leading-[1.12] [overflow-wrap:anywhere]">{name}</span>
         {sub && (
-          <span title={sub} className={`truncate text-[11px] leading-[1.3] ${night ? '' : 'text-text/60'}`} style={{ color: ink2 }}>
+          <span title={sub} className={`line-clamp-2 text-[11px] leading-[1.3] max-[479px]:text-[12px] ${night ? '' : 'text-text/60'}`} style={{ color: ink2 }}>
             {sub}
           </span>
         )}
@@ -221,28 +221,28 @@ export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChan
         Cambiar
       </button>
     ) : (
-      <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 rounded-full border-[1.5px] border-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+      <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 rounded-full border-[1.5px] border-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft max-[479px]:px-2.5 max-[479px]:py-1 max-[479px]:text-[11.5px]">
         Cambiar
       </button>
     )
   ) : null
   const content = (
     <>
-      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent text-white ${small ? 'h-8 w-8' : 'h-10 w-10'}`}>
+      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent text-white ${small ? 'h-8 w-8' : 'h-10 w-10 max-[479px]:h-8 max-[479px]:w-8'}`}>
         <Icon d={iconPath} size={small ? 15 : 18} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
-        <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[.08em] text-accent">
+        <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold uppercase tracking-[.08em] text-accent max-[479px]:text-[10px] max-[479px]:tracking-[.04em]">
           {label}
           {timeRange ? ` · ${timeRange}` : ''}
         </span>
-        <span className={small ? 'text-[14px] font-medium leading-[1.25] text-text [overflow-wrap:anywhere]' : 'font-display text-[22px] leading-[1.1] text-text [overflow-wrap:anywhere]'}>{name}</span>
-        {sub && <span className="truncate text-[12px] leading-[1.3] text-text/60">{sub}</span>}
+        <span className={small ? 'text-[14px] font-medium leading-[1.25] text-text [overflow-wrap:anywhere]' : 'line-clamp-2 font-display text-[22px] leading-[1.1] text-text [overflow-wrap:anywhere] max-[479px]:text-[18px]'}>{name}</span>
+        {sub && <span className="line-clamp-2 text-[12px] leading-[1.3] text-text/60">{sub}</span>}
       </span>
     </>
   )
   return (
-    <div className={`relative flex w-full items-center gap-3 rounded-[18px] border border-[#F1D6C9] bg-[#FCEFE8] ${small ? 'px-3 py-2.5' : 'px-3.5 py-3.5'}`}>
+    <div className={`relative flex w-full items-center gap-3 rounded-[18px] border border-[#F1D6C9] bg-[#FCEFE8] max-[479px]:gap-2.5 ${small ? 'px-3 py-2.5' : 'px-3.5 py-3.5 max-[479px]:px-3 max-[479px]:py-2.5'}`}>
       {onOpen ? (
         <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3">
           {content}
@@ -263,14 +263,14 @@ export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChan
  */
 export function OnTheWayCard({ name, photoUrl, onOpen, menu }: { name: string; photoUrl?: string | null; onOpen?: () => void; menu?: ReactNode }) {
   return (
-    <div className="relative ml-4 flex h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] pl-2 pr-2">
+    <div className="relative ml-4 flex min-h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] py-1 pl-2 pr-2 max-[479px]:min-h-[52px] max-[479px]:gap-2.5">
       <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-        <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-bg-hover">
+        <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-bg-hover max-[479px]:h-9 max-[479px]:w-9">
           {photoUrl && <img src={photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50">De camino · sin desvío</span>
-          <span className="truncate font-display text-[17px] leading-[1.15] text-text">{name}</span>
+          <span className="whitespace-nowrap font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50 max-[479px]:tracking-[.06em]">De camino · sin desvío</span>
+          <span className="line-clamp-2 font-display text-[17px] leading-[1.15] text-text max-[479px]:text-[16px]">{name}</span>
         </span>
         <span className="shrink-0 pr-1 text-[12.5px] font-semibold text-accent">Ver ›</span>
       </button>

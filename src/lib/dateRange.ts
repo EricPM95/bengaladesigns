@@ -81,3 +81,12 @@ export function formatHeaderDateRangeEs(startIso: string, endIso: string): strin
   const endLabel = `${end.getDate()} ${endMonth}${crossesYears ? ` ${end.getFullYear()}` : ''}`
   return `${startLabel} — ${endLabel}`
 }
+
+/** "9 – 12 jun" (mismo mes) o "30 sep – 3 oct": la tarjeta del mapa en el móvil, en una línea (decisión del 2026-09-29). */
+export function formatHeaderDateRangeShortEs(startIso: string, endIso: string): string {
+  const start = new Date(`${startIso}T00:00:00`)
+  const end = new Date(`${endIso}T00:00:00`)
+  const startMonth = MONTH_ABBR_FORMAT.format(start).replace('.', '')
+  const endMonth = MONTH_ABBR_FORMAT.format(end).replace('.', '')
+  return startMonth === endMonth && start.getFullYear() === end.getFullYear() ? `${start.getDate()} – ${end.getDate()} ${endMonth}` : `${start.getDate()} ${startMonth} – ${end.getDate()} ${endMonth}`
+}

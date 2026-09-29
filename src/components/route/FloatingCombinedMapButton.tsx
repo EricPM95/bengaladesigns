@@ -1,3 +1,4 @@
+import { MapLineIcon } from '../ui/LineIcons'
 interface FloatingCombinedMapButtonProps {
   onClick: () => void
 }
@@ -17,9 +18,9 @@ export function FloatingCombinedMapButton({ onClick }: FloatingCombinedMapButton
       type="button"
       onClick={onClick}
       title="Ver mapa de todos los días"
-      className="fixed bottom-20 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-xl shadow-md"
+      className="fixed bottom-20 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-accent shadow-md"
     >
-      🗺️
+      <MapLineIcon />
     </button>
   )
 }

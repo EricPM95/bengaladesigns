@@ -7,7 +7,7 @@
  */
 
 import { writeFileSync } from 'node:fs'
-import { buildDayBlockV3 } from '../../server/engine/index.js'
+import { buildDayBlockV3, useWrittenDays } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
@@ -63,7 +63,8 @@ const t2m = (hhmm) => {
   return h * 60 + m
 }
 const m2t = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(Math.round(minutes) % 60).padStart(2, '0')}`
-const quarter = (minutes) => Math.round(minutes / 15) * 15
+/** De 5 en 5, como la app (DISPLAY_STEP en buildDayV3.js). */
+const quarter = (minutes) => Math.round(minutes / 5) * 5
 const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
 const coordsOf = (item) => (item?.latitude != null ? [item.latitude, item.longitude] : null)
 /** De dónde sale el tramo siguiente: donde ACABA la parada (el Free Tour, en Piazza Navona). */
@@ -344,9 +345,9 @@ const path = process.argv[2] ?? 'docs/REVISION_20_RUTAS.md'
 writeFileSync(path, [
   globalThis.__REVISION_TITULO ?? `# ${VIAJES.length} rutas de Roma, tal como salen en la app`,
   '',
-  `Motor v3 con los días curados, generado el ${new Date().toISOString().slice(0, 10)} con \`node scripts/destino/revision20.mjs\`. Sin arreglar nada: es para revisar que las rutas son bonitas.`,
+  `${useWrittenDays() ? 'Motor v4 (días escritos)' : 'Motor v3 con los días curados'}, generado el ${new Date().toISOString().slice(0, 10)} con \`node ${globalThis.__REVISION_SCRIPT ?? 'scripts/destino/revision20.mjs'}\`. Sin arreglar nada: es para revisar que las rutas son bonitas.`,
   '',
-  '- **Hora**: la que ve el usuario (:00/:15/:30/:45). **Tiempo**: minutos de visita.',
+  '- **Hora**: la que ve el usuario, de 5 en 5. **Tiempo**: minutos de visita (el atardecer es la hora real del sol).',
   '- **Cómo sale en la app**: Parada / Por el camino / Por fuera (con su motivo) / 🌅 Atardecer / 🌙 Noche / 🍝 Comida / 🍷 Cena / 🕐 Tiempo libre.',
   '- **Cómo llegas**: andando desde lo anterior (la comida, si va en medio), o el bus/metro del día ("🚌 Bus 118, 25 min").',
   '- **Por qué aquí**: el `por_que` de la parada (lo que ve el viajero; la nota es interna) y sus avisos (⚠️). Al final, el recuento de la Parte D.',

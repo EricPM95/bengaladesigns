@@ -177,6 +177,6 @@ export function buildCombinedDaysLines(days: DayPlan[], highlightDayId?: string 
       const coordinates = realStops(day).map(({ stop }) => stop.coordinates)
       if (coordinates.length < 2) return []
       const isHighlighted = !highlightDayId || day.id === highlightDayId
-      return [{ id: day.id, coordinates, color: dayColor(dayIndex), opacity: isHighlighted ? 1 : DIMMED_LINE_OPACITY, width: isHighlighted ? 4 : 2.5 }]
+      return [{ id: day.id, coordinates, color: dayColor(dayIndex), opacity: isHighlighted ? 1 : DIMMED_LINE_OPACITY, width: isHighlighted ? 5 : 3.5 }]
     })
 }

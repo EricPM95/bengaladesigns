@@ -1,3 +1,4 @@
+import { WalletLineIcon } from '../ui/LineIcons'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { subscribeBudgetFly } from '../../lib/budgetFlyBus'
@@ -52,7 +53,7 @@ export function FloatingBudget() {
     <>
       <div className="relative hidden shrink-0 items-center justify-between border-t border-border bg-bg-card px-6 py-3 md:flex">
         <span className="relative text-body font-semibold text-text">
-          💰 {budget.total}€
+          <WalletLineIcon className="mr-1.5 inline h-4 w-4 align-[-2px] text-accent" />{budget.total}€
           <BudgetFlyBadges events={flyEvents} />
         </span>
         <button type="button" onClick={() => setExpanded((v) => !v)} className="text-small font-medium text-accent hover:text-accent-hover">
@@ -73,9 +74,9 @@ export function FloatingBudget() {
         type="button"
         onClick={() => setMobileOpen(true)}
         title={`Ver presupuesto (${budget.total}€)`}
-        className="fixed bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-xl shadow-md md:hidden"
+        className="fixed bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-accent shadow-md md:hidden"
       >
-        💰
+        <WalletLineIcon />
         <BudgetFlyBadges events={flyEvents} />
       </button>
 
