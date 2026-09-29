@@ -1925,3 +1925,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - En tranquilo, una sola nocturna, aunque el paseo escrito admita más.
     - En tranquilo, la comida dura al menos 60 min. Si la mañana acaba tarde, la tarde espera; antes, la comida se quedaba
       en 45 min.
+
+368. **En tranquilo, las opcionales no vuelven nunca** (2026-09-29, PROMPT_ROMA_V4_REPASO 6; sustituye a la parte de
+    la regla 353 que las devolvía). El rato que sobra va al barrio elástico, hasta su máximo de paseo (Monti, 120 min), y
+    al aperitivo (hasta 90). Si una opcional quitada traía el traslado, lo hereda la siguiente (`traslado_si_va_primera`,
+    si tiene el suyo). En D4M, los Mercados de Trajano también son opcionales: en tranquilo, la tarde es Monti.
+
+369. **Cada tramo hacia delante, también entre basílicas** (2026-09-29, PROMPT_ROMA_V4_REPASO 7): D4M con Letrán va en
+    metro A de Spagna a San Giovanni y sigue Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados de Trajano
+    → Monti (la comida queda cerca de Spagna). San Clemente sale del D4M, porque ahí sería de ida y vuelta; va en D5C.

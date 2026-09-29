@@ -438,7 +438,18 @@ export function planWrittenTrip(args) {
       // (Y las opcionales de la tarde, las más prescindibles de las tardes largas: decisión del usuario, 2026-09-29; al
       // poner las horas vuelven las que hagan falta para que la elástica llegue.)
       draft.tardeFull = draft.tarde
-      draft.tarde = draft.tarde.filter((stop) => stop.tipo !== 'opcional')
+      // (Si la opcional traía el traslado, lo hereda la siguiente, con el suyo propio si lo tiene: `traslado_si_va_primera`.)
+      const keptTarde = []
+      let carried = null
+      for (const stop of draft.tarde) {
+        if (stop.tipo === 'opcional') {
+          if (stop.traslado) carried = stop.traslado
+          continue
+        }
+        keptTarde.push(carried && !stop.traslado ? { ...stop, traslado: stop.traslado_si_va_primera ?? carried } : stop)
+        carried = null
+      }
+      draft.tarde = keptTarde
       if (draft.nombre_tranquilo) draft.nombre = draft.nombre_tranquilo
     }
   }
@@ -618,7 +629,7 @@ export function planWrittenTrip(args) {
           return
         }
       }
-      if (carry && !stop.traslado) stop = { ...stop, traslado: carry }
+      if (carry && !stop.traslado) stop = { ...stop, traslado: stop.traslado_si_va_primera ?? carry }
       carry = null
       // Lo escrito "por fuera": con su motivo real si a esa hora está cerrado (el Tempietto después de las 18:00).
       if (!outsideReason && stop.modo === 'fuera' && !source.isFreeTour) {
@@ -804,15 +815,8 @@ export function planWrittenTrip(args) {
         }
       }
     }
-    // Tranquilo: las opcionales de la tarde se quitan mientras la elástica pueda con el rato que dejan; si no, vuelven, en
-    // orden (en verano la tarde es larga y alguna hace falta).
-    if (tranquilo && draft.tardeFull) {
-      for (const optional of draft.tardeFull.filter((stop) => stop.tipo === 'opcional')) {
-        const need = elasticNeed(draft, skeletonDay, hours, half)
-        if (!need || need.wanted <= need.max * 2 + LEAD_FLEX) break
-        draft.tarde = draft.tardeFull.filter((stop) => stop.tipo !== 'opcional' || stop === optional || draft.tarde.includes(stop))
-      }
-    }
+    // Tranquilo: las opcionales no vuelven nunca (PROMPT_ROMA_V4_REPASO 6); el rato que sobra va al barrio elástico (hasta
+    // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
     const startMorning = morningStartOf(draft)
     const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
@@ -850,7 +854,8 @@ export function planWrittenTrip(args) {
         const pmax = paseoMaxOf(placeByName.get(elasticStop.lugar), tranquilo)
         const baseMin = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
         // (Y nunca por encima del máximo de su paseo: Borgo Pio, una calle, 45.)
-        const grow = Math.min(tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
+        // (En tranquilo, un barrio o un parque crece hasta su máximo de paseo: Monti, hasta 120.)
+        const grow = Math.min(tranquilo ? (pmax != null ? Math.max(elasticStop.elastica * 2, pmax - baseMin) : elasticStop.elastica * 2) : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
         elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(grow, elasticWanted)) / 5) * 5
         // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
         const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30

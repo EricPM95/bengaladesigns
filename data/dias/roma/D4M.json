@@ -1,5 +1,5 @@
 {
-  "_nota": "D4M escrito (2026-09-29): el tercer día de 3 sin Galería. Mañana de Trevi al Pincio; tarde de basílicas (el Moisés y Santa María la Mayor), Monti y los Foros al atardecer. San Pietro in Vincoli antes que Santa María la Mayor (cierra a las 18:00).",
+  "_nota": "D4M escrito (2026-09-29): el tercer día de 3 sin Galería. Mañana de Trevi al Pincio; tarde de basílicas (el Moisés y Santa María la Mayor), Monti y los Foros al atardecer. San Pietro in Vincoli antes que Santa María la Mayor (cierra a las 18:00). Repaso 2026-09-29: en C y D, metro A de Spagna a San Giovanni y Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados → Monti (sin San Clemente, que va en D5C); los Mercados, opcionales (en tranquilo, la tarde es Monti).",
   "id": "D4M",
   "nombre": "Trevi sin gente, el Pincio y la tarde en Monti",
   "nombre_tranquilo": "Trevi, el Pincio y la tarde en Monti",
@@ -117,7 +117,8 @@
           "min": 60,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         }
       ],
       "cena": {
@@ -150,7 +151,8 @@
           "min": 50,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Monti",
@@ -171,32 +173,28 @@
       }
     },
     "C": {
-      "_sol": "de 18:45 a 19:44: las cuatro basílicas (Santa María la Mayor, Letrán, San Clemente y el Moisés), Monti y los Foros al atardecer",
+      "_sol": "de 18:45 a 19:44: Letrán, Santa María la Mayor y el Moisés, siempre hacia delante, Monti y los Foros al atardecer",
       "paradas": [
-        {
-          "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "traslado": {
-            "como": "el metro A (Spagna → Termini) o un taxi",
-            "min": 25
-          }
-        },
         {
           "lugar": "Basílica de San Juan de Letrán",
           "min": 30,
           "modo": "dentro",
           "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "tipo": "opcional",
+          "traslado": {
+            "como": "el metro A (Spagna → San Giovanni) o un taxi",
+            "min": 25
+          }
         },
         {
-          "lugar": "Basílica de San Clemente",
-          "min": 40,
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
           "modo": "dentro",
-          "entrada": true,
           "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "traslado_si_va_primera": {
+            "como": "el metro A (Spagna → Termini) o un taxi",
+            "min": 25
+          }
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -224,32 +222,28 @@
       "empieza": "14:45"
     },
     "D": {
-      "_sol": "desde las 19:45: las cuatro basílicas, los Mercados de Trajano (museo de pago), Monti y los Foros al atardecer",
+      "_sol": "desde las 19:45: Letrán, Santa María la Mayor, el Moisés, los Mercados de Trajano (museo de pago), Monti y los Foros al atardecer",
       "paradas": [
-        {
-          "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "traslado": {
-            "como": "el metro A (Spagna → Termini) o un taxi",
-            "min": 25
-          }
-        },
         {
           "lugar": "Basílica de San Juan de Letrán",
           "min": 30,
           "modo": "dentro",
           "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "tipo": "opcional",
+          "traslado": {
+            "como": "el metro A (Spagna → San Giovanni) o un taxi",
+            "min": 25
+          }
         },
         {
-          "lugar": "Basílica de San Clemente",
-          "min": 40,
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
           "modo": "dentro",
-          "entrada": true,
           "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "traslado_si_va_primera": {
+            "como": "el metro A (Spagna → Termini) o un taxi",
+            "min": 25
+          }
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -262,7 +256,8 @@
           "min": 50,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Monti",
