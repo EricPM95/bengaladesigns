@@ -37,7 +37,6 @@ const VERSIONS = ['A', 'B', 'C', 'D']
 const SUNSET_LEAD = 25
 const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minutos o menos
 const LONG_WALK = 25 // más de esto andando, en taxi si no hay otro transporte escrito
-const IMPRESCINDIBLE_MIN = 20 // un imprescindible (nivel 1) nunca dura menos (el mismo número que la pantalla)
 const STOP_MIN = 15 // una parada no se recorta por debajo de 15 min (ni del 75 % de lo escrito)
 const BARRIO_MIN = 20 // un barrio, 20
 const ELASTIC_DROP = 15 // si la elástica tendría que bajar de 15 min, se quita
@@ -60,7 +59,8 @@ const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
-const TRANQUILO_EARLIEST = 10 * 60 // en tranquilo, la primera parada nunca antes de las 10:00
+const REST_AFTER_LUNCH_MAX = 60 // en completo, el descanso después de comer, como mucho
+const APERITIVO_BEFORE_SUNSET_MAX = 90 // el aperitivo con nombre antes del atardecer, como mucho (index.js)
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
@@ -435,25 +435,6 @@ export function planWrittenTrip(args) {
         kept.push(stop)
       }
       draft.manana = kept
-      // Tranquilo desde las 10:00 (regla 366), ya sin las opcionales: si la primera hora escrita de la mañana era antes, TODA la mañana se corre lo
-      // mismo — las demás horas fijas (al turno siguiente si el lugar tiene turnos: la Galería Borghese) y el comienzo de la
-      // tarde —, para que el día escrito siga cuadrando (sin esto, la Galería de las 11:00 se perdía y la comida se quedaba
-      // en nada). La hora de la primera la pone hourOf.
-      const rawHour = (stop) => (stop.hora == null ? null : toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo))
-      const firstFixed = draft.manana.findIndex((stop) => stop.hora != null)
-      const firstAt = firstFixed >= 0 ? rawHour(draft.manana[firstFixed]) : null
-      const delta = firstAt != null && firstAt < TRANQUILO_EARLIEST ? TRANQUILO_EARLIEST - firstAt : 0
-      if (delta > 0) {
-        draft.manana = draft.manana.map((stop, index) => {
-          const at = index > firstFixed ? rawHour(stop) : null
-          if (at == null) return stop
-          const turnos = placeByName.get(stop.lugar)?.turnos
-          let shifted = at + delta
-          if (turnos?.cada_minutos && turnos.desde) shifted = toMin(turnos.desde) + Math.ceil((shifted - toMin(turnos.desde)) / turnos.cada_minutos) * turnos.cada_minutos
-          return { ...stop, hora: toHHMM(shifted) }
-        })
-        if (draft.empieza) draft.empieza = toHHMM(toMin(draft.empieza) + delta)
-      }
       // (Y las opcionales de la tarde, las más prescindibles de las tardes largas: decisión del usuario, 2026-09-29; al
       // poner las horas vuelven las que hagan falta para que la elástica llegue.)
       draft.tardeFull = draft.tarde
@@ -523,13 +504,7 @@ export function planWrittenTrip(args) {
     if (pause) return { ...pause, isBreak: true, level: 3, type: 'exterior', is_free_access: true }
     return placeByName.get(stop.lugar) ?? null
   }
-  // En tranquilo, nada antes de las 10:00 (PROMPT_ROMA_V4_REPASO 4): una hora escrita más temprana pasa a las 10:00 (el
-  // turno del Coliseo de las 10:00-10:30, el Vaticano a las 10:00). Las horas de la tarde y de la noche no se tocan.
-  const hourOf = (stop) => {
-    if (stop.hora == null) return null
-    const at = toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo)
-    return tranquilo && at != null && at < TRANQUILO_EARLIEST ? TRANQUILO_EARLIEST : at
-  }
+  const hourOf = (stop) => (stop.hora == null ? null : toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo))
 
   /** El lugar listo para el formato, según cómo sale (`modo`) y por qué va por fuera si va. */
   function readyPlace(stop, source, outsideReason, hours) {
@@ -678,12 +653,6 @@ export function planWrittenTrip(args) {
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
-      // Un imprescindible nunca dura menos de 20 min: se cuenta aquí, antes del paseo a la siguiente (si lo pusiera la
-      // pantalla, el Arco de 15 se alargaba a 20 comiéndose el paseo al Foro).
-      if ((source.level ?? 3) === 1 && !place.visitOutside && !place.passThrough && !place.isNightExperience && duration < IMPRESCINDIBLE_MIN) {
-        duration = IMPRESCINDIBLE_MIN
-        place = { ...place, duration_minutes: duration }
-      }
       if (original.elastica != null && elasticDelta) duration = Math.max(shrinkFloor(stop, duration), duration + elasticDelta)
       // (Un barrio escrito por debajo de su mínimo, o una elástica que no llega: la prueba lo marca.)
       if (!ctx.probe && !place.visitOutside && !place.passThrough && place.sunset == null && duration < shrinkFloor(stop, stop.min ?? source.duration_minutes ?? duration, true)) ctx.problems.push({ tipo: 'parada_corta', lugar: stop.lugar, minutos: duration })
@@ -762,7 +731,7 @@ export function planWrittenTrip(args) {
   /** El día empieza a la hora de su primera parada fija, si la trae (el Coliseo a las 9:00 en tranquilo). */
   function morningStartOf(draft) {
     const firstFixed = draft.manana[0] ? hourOf(draft.manana[0]) : null
-    if (draft.manana_empieza) return tranquilo ? Math.max(toMin(draft.manana_empieza), TRANQUILO_EARLIEST - TICKET_MARGIN) : toMin(draft.manana_empieza)
+    if (draft.manana_empieza) return toMin(draft.manana_empieza)
     if (firstFixed == null) return mode.dayStart
     return firstFixed - (draft.manana[0].turno || draft.manana[0].lugar === tour?.name || placeByName.get(draft.manana[0].lugar)?.turnos ? TICKET_MARGIN : 0)
   }
@@ -896,6 +865,39 @@ export function planWrittenTrip(args) {
     // Lo que la elástica no llega a absorber (hasta LEAD_FLEX min), lo absorbe la llegada al mirador: de 15 a 35 min antes del
     // sol en vez de 25. Si se llega tarde ya pasa solo; si se llegaría pronto, se llega antes y se queda más.
     // (Por menos de 5 min no se adelanta: esa espera en el mirador no se nota.)
+    // Si la tarde no llega al sol ni con la elástica, la comida se acorta (hasta 45 min en completo y 60
+    // en tranquilo) antes de perder el atardecer: comer junto a la Galería Borghese deja luego 25 min hasta el Ara Pacis.
+    if (elasticStop && elasticWanted < -(elasticStop.elastica + LEAD_FLEX)) {
+      const lunchMeal = meals.find((meal) => meal.type === 'lunch')
+      const room = lunchMeal ? lunchMeal.end - lunchMeal.start - (tranquilo ? 60 : LUNCH_MIN) : 0
+      const cut = Math.floor(Math.min(room, -elasticWanted - elasticStop.elastica) / 5) * 5
+      if (cut >= 5) {
+        lunchMeal.end -= cut
+        lunchMeal.eatMinutes -= cut
+        afterLunch = { ...afterLunch, t: afterLunch.t - cut }
+        elasticWanted += cut
+        elasticUsed = Math.max(elasticUsed, Math.round(Math.max(-elasticStop.elastica, elasticWanted) / 5) * 5)
+        // (Y si con el rato ganado la elástica ya no baja de ELASTIC_DROP, vuelve: Monti no se quita por nada.)
+        const elasticBase = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
+        if (ctx.dropElastic && elasticBase + elasticWanted >= ELASTIC_DROP) {
+          ctx.dropElastic = false
+          elasticUsed = Math.max(shrinkFloor(elasticStop, elasticBase) - elasticBase, Math.round(Math.max(-elasticStop.elastica, elasticWanted) / 5) * 5)
+        }
+      }
+    }
+    // Tranquilo (PROMPT_ROMA_V4_REPASO 6): lo que sobra después del barrio (hasta su máximo) y del aperitivo (hasta 90) no
+    // se queda suelto antes del atardecer: es un descanso después de comer, con su nombre, y la tarde empieza después.
+    let restAfterLunch = 0
+    // (En completo, igual, hasta 60 min: la comida escrita de 140 min en verano pasa a 90 y la tarde empezaba antes de que
+    // abriese Santa Cecilia; el descanso va antes que el aperitivo.)
+    if (elasticStop && lunchName) {
+      const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX - (tranquilo ? APERITIVO_BEFORE_SUNSET_MAX : 0)
+      if (spare > 20) {
+        restAfterLunch = Math.floor(Math.min(spare, tranquilo ? Infinity : REST_AFTER_LUNCH_MAX) / 5) * 5
+        afterLunch = { ...afterLunch, t: afterLunch.t + restAfterLunch }
+        elasticWanted -= restAfterLunch
+      }
+    }
     const early = elasticWanted - elasticUsed
     // (Solo en un mirador: una avenida al atardecer, los Foros, tiene su máximo.)
     const sunsetIsMirador = sunsetStop && (placeByName.get(sunsetStop.lugar)?.tags ?? []).includes('mirador')
@@ -962,7 +964,7 @@ export function planWrittenTrip(args) {
       reorderedBlocks: [],
       closedAnchors: [],
       otherRestaurants,
-      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica, grow: elasticGrow ?? (tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica) } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null },
+      written: { version: draft.version, elastic: elasticStop ? { lugar: elasticStop.lugar, wanted: elasticWanted, used: elasticUsed, max: elasticStop.elastica, grow: elasticGrow ?? (tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica) } : null, sunsetArrival: ctx.sunsetArrival, problems: ctx.problems, suggestions: draft.suggestions, dinnerHour: draft.cena?.hora ?? null, ...(restAfterLunch ? { restAfterLunch } : {}) },
     }
     problems.push(...ctx.problems.map((problem) => ({ ...problem, dayNumber: skeletonDay.dayNumber })))
     days.push(dayPlan)

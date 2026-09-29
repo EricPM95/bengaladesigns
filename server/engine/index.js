@@ -765,12 +765,13 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
       // Después: desde que acaba la franja de la comida (que ya lleva el paseo) hasta la siguiente.
       // Con metro o bus después de comer (`transitAfter`), el tiempo libre es al llegar, ya en la zona de la siguiente
       // (segundo repaso, 2026-09-28: el parque de la Borghese, no el Borgo antes de 25 min de metro).
-      gaps.push({ minutes: next.start - lunch.end - (lunch.transitAfter ?? 0), fromCoords: next.place.coordinates, fromEnd: lunch.end + (lunch.transitAfter ?? 0), after: LUNCH_LABEL, before: next.place.name, to: next.place.coordinates, end: next.start, zone: next.place.zone })
+      gaps.push({ ...(tripDay.written?.restAfterLunch ? { rest: true } : {}), minutes: next.start - lunch.end - (lunch.transitAfter ?? 0), fromCoords: next.place.coordinates, fromEnd: lunch.end + (lunch.transitAfter ?? 0), after: LUNCH_LABEL, before: next.place.name, to: next.place.coordinates, end: next.start, zone: next.place.zone })
       continue
     }
     // Si a la siguiente se va en metro o bus, el tiempo libre es al llegar: sus ideas y su paseo, de la zona de la siguiente.
     const byTransit = Boolean(next.place.transitMinutes)
-    const aperitivoIn = next.place.sunset != null && (previous.place.tags ?? []).includes('barrio') ? previous.place.name : null
+    // (Un barrio o una plaza de ambiente, con bares: Monti, Campo de' Fiori.)
+    const aperitivoIn = next.place.sunset != null && (previous.place.tags ?? []).some((tag) => tag === 'barrio' || tag === 'gastronomia') ? previous.place.name : null
     gaps.push({ ...(aperitivoIn ? { aperitivoIn } : {}), minutes: next.start - previous.end - (next.walkMinutes ?? 0), ...(byTransit ? { fromCoords: next.place.coordinates, fromEnd: previous.end + (next.walkMinutes ?? 0) } : { from: previous }), after: previous.place.name, before: next.place.name, to: next.place.coordinates, end: next.start - (byTransit ? 0 : next.walkMinutes ?? 0), zone: byTransit ? next.place.zone ?? previous.place.zone : previous.place.zone ?? next.place.zone })
   }
   const seenToday = new Set(dayVisitedNames)
@@ -781,9 +782,11 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
       const startMinutes = gap.from ? gap.from.end : gap.fromEnd
       const suggestions = nearbySuggestions(destData, trip, options, seenToday, from, { startMinutes, endMinutes: gap.end, to: gap.to, hours: tripDay.hours ?? {} })
       // Lo que se propone en un hueco no se vuelve a proponer en otro del mismo día.
-      for (const item of suggestions) seenToday.add(item.name)
+      // (Un rato corto, de 30 min o menos, no gasta las ideas: le hacen falta al rato largo, que sin ellas se queda sin nombre.)
+      if (gap.minutes > 30) for (const item of suggestions) seenToday.add(item.name)
       return {
-        minutes: gap.minutes,
+        // (Un aperitivo con nombre, 90 min como mucho: lo que pase se queda de margen antes del atardecer.)
+        minutes: gap.aperitivoIn ? Math.min(APERITIVO_MAX_MINUTES, gap.minutes) : gap.minutes,
         after: gap.after,
         before: gap.before,
         suggestions,
@@ -796,6 +799,8 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // Antes del atardecer y viniendo de un barrio (Monti antes de los Foros en verano): el aperitivo en ese barrio, con su
         // nombre y 90 min como mucho, como haría un local (PROMPT_ROMA_V4_REPASO 8).
         ...(gap.aperitivoIn ? { title: `Aperitivo en ${gap.aperitivoIn}`, aperitivo: true } : {}),
+        // En tranquilo, la tarde larga empieza con un descanso después de comer (lo que no cabe en el barrio ni en el aperitivo).
+        ...(gap.rest ? { title: REST_TITLE, hint: REST_HINT, descanso: true } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
         ...(isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes) ? { title: SIESTA_TITLE, hint: SIESTA_HINT } : {}),
       }
@@ -811,6 +816,8 @@ function namedWalkTitle(destData, suggestions, zone) {
   return walks.length > 0 && walks.length === places.length ? joinSpanish(walks.slice(0, 2).map((place) => place.name)) : null
 }
 
+const REST_TITLE = 'Descanso después de comer'
+const REST_HINT = 'Sin prisa: un café, volver un rato al alojamiento o sentarse a la sombra antes de seguir.'
 const SIESTA_TITLE = 'Descanso a la sombra'
 const SIESTA_HINT = 'En verano los romanos se esconden del calor a estas horas.'
 /** Julio o agosto, más de 90 min libres y dentro de 13:45-17:15 (el calor del día). */

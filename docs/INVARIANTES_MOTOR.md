@@ -1972,3 +1972,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **La prueba de la elástica.** Cuando sobra tiempo, solo avisa si sobra más de lo que absorbe un rato con nombre (60
       min), porque ese rato ya lo vigila la auditoría. Cuando falta, avisa igual que antes. La comida de 90 min en completo
       deja tarde de sobra en verano, y eso ya no es un error.
+
+375. **Se deshace la regla 366** (2026-09-29, decisión del usuario): en tranquilo, las mañanas vuelven a empezar a la
+    hora escrita de cada día. También se deshacen los cambios que solo venían de ella: Torre Argentina vuelve a ser
+    parada en el D1 y la Galería del pool en el D1 vuelve a las 16:00 con Navona. Lo demás de la 374 se queda, salvo:
+    - **El mínimo de 20 min de los imprescindibles no va en el motor**, porque retrasaba la llegada a los turnos. Va en lo
+      escrito: el Arco, 20 min en D1 y D1-FT (también en Pascua); la Plaza de España, 20 min en D4, con Via Condotti
+      opcional para que en tranquilo se llegue al turno de las 11:00.
+    - **Si la tarde no llega al sol**, la comida se acorta (hasta 45 min en completo y 60 en tranquilo). Comer junto a la
+      Galería Borghese deja después 25 min hasta el Ara Pacis. Si con ese rato la elástica ya no bajaría de 15 min,
+      vuelve: Monti no se quita por nada.
+    - **Lo que sobra por la tarde** después del barrio elástico es un «Descanso después de comer» con nombre (hasta 60
+      min en completo; en tranquilo, lo que no quepa tampoco en el aperitivo). La comida escrita de 140 min en verano
+      pasa a 90, y así la tarde no empieza antes de que abra Santa Cecilia.
+    - **Antes del atardecer, viniendo de un barrio o de una plaza de ambiente** (Campo de' Fiori), el rato es «Aperitivo
+      en…», de 90 min como mucho.
+    - **Una calle o un paseo nunca pasa de su máximo** por el redondeo de la pantalla (Via della Conciliazione, 45).
+    - **Un rato libre de 30 min o menos no gasta las ideas de paseo**: le hacen falta al rato largo.

@@ -186,7 +186,7 @@ export function auditarViaje(D, days, options = {}) {
 
     // Tiempo libre: largo, o que pisa la comida o la cena; ideas de nivel 1-2.
     const libres = [
-      ...(day.free_times ?? []).map((entry) => ({ minutes: entry.minutes, before: entry.before, ideas: entry.suggestions ?? [], title: entry.title ?? null, aperitivo: Boolean(entry.aperitivo) })),
+      ...(day.free_times ?? []).map((entry) => ({ minutes: entry.minutes, before: entry.before, ideas: entry.suggestions ?? [], title: entry.title ?? null, aperitivo: Boolean(entry.aperitivo), descanso: Boolean(entry.descanso) })),
       ...(day.aperitivo ? [{ minutes: day.aperitivo.minutes, before: 'la cena', ideas: day.aperitivo.suggestions ?? [], evening: true }] : []),
       ...(day.free_afternoon ? [{ minutes: day.free_afternoon.minutes, before: 'la cena', ideas: day.free_afternoon.suggestions ?? [], evening: true }] : []),
     ]
@@ -198,7 +198,7 @@ export function auditarViaje(D, days, options = {}) {
       void beforeSun
       // (El paso d del relleno: el rato con nombre de paseo de la zona, "Via Margutta y Via del Babuino", vale hasta 60 min.)
       // (Un aperitivo con su nombre, 90 como mucho: PROMPT_ROMA_V4_REPASO 8.)
-      if (libre.minutes > (libre.aperitivo ? 90 : libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
+      if (libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
     }

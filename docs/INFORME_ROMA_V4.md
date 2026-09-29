@@ -108,3 +108,25 @@ Once partes, con un commit por parte y sin push (reglas 363-374).
     - la comida se queda corta;
     - aparecen horas libres antes de la Galería.
   - Esto no tiene arreglo general en el motor. Hay que decidir qué hacer con esas mañanas.
+
+### Parte 4 deshecha (decisión del usuario) y números finales
+
+En tranquilo, las mañanas vuelven a la hora escrita. Con la misma auditoría (que ahora también mira si las horas
+cuadran), antes y después del repaso:
+
+| | Antes del repaso | Ahora |
+|---|---|---|
+| Las 365 fechas, total | 142 | **100** |
+| Completo | 95 | 54 |
+| Tranquilo | 47 | 46 |
+| Los 56 viajes | — | v4 mejor en 5, igual en 51, peor en 0; 0 avisos |
+| Los 35 viajes | — | 0 huecos sin nombre, auditoría a 0 |
+
+- **Completo, en detalle:** 28 avisos reales, frente a los 27 de antes, y 26 informativos (Navidad, 1 de enero).
+  - De los 28, solo 1 sale por la comprobación nueva de las horas: el tramo de 33 min del 25 de diciembre, de San Pedro
+    a Santa Cecilia, que ya salía como tramo largo.
+  - No hay avisos reales nuevos: el resto son los mismos casos de antes, algunos con la hora corrida.
+- **Los 41 avisos de la elástica que había antes en completo** eran días de verano con tarde de sobra. Ahora ese rato
+  sale con nombre (descanso o aperitivo), y la prueba solo lo cuenta si sobra más de lo que absorben (regla 374).
+- **Tranquilo:** hay 2 comidas «cortas» nuevas (el 1 de enero y el 31 de diciembre, D1 A). Como el Arco ahora dura
+  20 min, la mañana acaba 5 min más tarde que la tarde escrita. La comida sigue durando 45 min.

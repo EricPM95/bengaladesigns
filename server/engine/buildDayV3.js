@@ -105,6 +105,7 @@ import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
+import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
 import { closedAnchorNotice, closedOutsideNotice } from '../../shared/routeEngine/closedNotices.js'
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
@@ -363,6 +364,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Un imprescindible es parada de verdad: 20 min como mínimo (la Plaza de España no se ve en 10), salvo por fuera.
     if (sourcePlace?.level === 1 && !visit.place.visitOutside && !stop.pass_through && !visit.place.passBy && !stop.is_night_experience) stop.min_minutes = IMPRESCINDIBLE_MIN_MINUTES
     if (visit.place.maxMinutes) stop.max_minutes = visit.place.maxMinutes
+    // (Y una calle o un paseo, nunca por encima de su máximo aunque el redondeo de la pantalla sume: Via della
+    // Conciliazione, 45. Solo cuando el máximo es el mismo en los dos ritmos.)
+    const walkMax = paseoMaxOf(sourcePlace, false)
+    if (walkMax != null && walkMax === paseoMaxOf(sourcePlace, true)) stop.max_minutes = Math.min(stop.max_minutes ?? Infinity, walkMax)
     if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice

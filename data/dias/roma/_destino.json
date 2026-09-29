@@ -24,8 +24,7 @@
                 },
                 {
                   "lugar": "Piazza Navona",
-                  "min": 20,
-                  "tipo": "opcional"
+                  "min": 20
                 },
                 {
                   "lugar": "Galería Borghese",
@@ -34,10 +33,7 @@
                   "entrada": true,
                   "si_cerrado": "fuera",
                   "tipo": "fija",
-                  "hora": {
-                    "completo": "16:00",
-                    "tranquilo": "17:00"
-                  },
+                  "hora": "16:00",
                   "turno": true,
                   "traslado": {
                     "como": "un taxi",

@@ -41,6 +41,7 @@ const tally = (tipo, key) => {
   byDay.set(tipo, map)
 }
 const examples = new Map()
+const byPace = new Map()
 const dumped = []
 let trips = 0
 const add = (tipo, where, detail) => {
@@ -48,7 +49,10 @@ const add = (tipo, where, detail) => {
   const list = examples.get(tipo) ?? []
   if (list.length < 6) list.push(`${where}${detail ? ` — ${detail}` : ''}`)
   examples.set(tipo, list)
-  if (args.volcar === tipo) dumped.push(`${where}${detail ? ` — ${detail}` : ''}`)
+  if (args.volcar === tipo || args.volcar === 'todos') dumped.push(`${args.volcar === 'todos' ? `${tipo} | ` : ''}${where}${detail ? ` — ${detail}` : ''}`)
+  // (Por ritmo: tranquilo tiene que quedar igual o mejor que antes.)
+  const pace = / tranquilo/.test(where) ? 'tranquilo' : / completo/.test(where) ? 'completo' : 'otro'
+  byPace.set(pace, (byPace.get(pace) ?? 0) + 1)
 }
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const hh = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
@@ -121,10 +125,10 @@ function planChecks({ fecha, dias, ritmo, ft, exps = [], pool = [] }) {
 
 /**
  * La elástica fuera de su margen. Si falta tarde (se llegaría tarde al sol), fuera de ±margen + 10. Si sobra, lo que no
- * absorbe sale como rato con nombre (regla 370) y la auditoría ya lo vigila (tiempo libre de hasta 60 min con nombre):
+ * absorbe sale como rato con nombre (regla 370; el aperitivo, hasta 90, más 20 sin nombre) y la auditoría ya lo vigila:
  * solo cuenta si sobra más que eso (PROMPT_ROMA_V4_REPASO: la comida de 90 min en completo deja tarde de sobra en verano).
  */
-const elasticOut = (e) => e.wanted > (e.grow ?? e.max) + 10 + 60 || -e.wanted > e.max + 10
+const elasticOut = (e) => e.wanted > (e.grow ?? e.max) + 10 + 90 + 20 || -e.wanted > e.max + 10
 
 const started = Date.now()
 const starts = Array.from({ length: 365 }, (_, i) => addDays(`${year}-01-01`, i))
@@ -155,7 +159,7 @@ const total = [...counts.values()].reduce((a, b) => a + b, 0)
 const lines = [
   `# Prueba de las 365 fechas (motor v4, días escritos)`,
   '',
-  `${trips} viajes (${quick ? 'rápida: una fecha por semana' : `todas las fechas de ${year}`}), en ${Math.round((Date.now() - started) / 1000)} s. **Total: ${total}.**`,
+  `${trips} viajes (${quick ? 'rápida: una fecha por semana' : `todas las fechas de ${year}`}), en ${Math.round((Date.now() - started) / 1000)} s. **Total: ${total}** (completo ${byPace.get('completo') ?? 0}, tranquilo ${byPace.get('tranquilo') ?? 0}).`,
   '',
   ...Object.entries(TIPOS).map(([tipo, texto]) => {
     const count = counts.get(tipo) ?? 0
@@ -169,4 +173,4 @@ const lines = [
 ]
 writeFileSync(out, lines.join('\n') + '\n')
 if (args.volcar) writeFileSync(args.volcado ?? `volcado_${args.volcar}.txt`, dumped.join('\n') + '\n')
-console.log(JSON.stringify({ viajes: trips, total, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))
+console.log(JSON.stringify({ viajes: trips, total, ritmos: Object.fromEntries(byPace), tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))

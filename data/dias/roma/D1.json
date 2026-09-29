@@ -33,7 +33,7 @@
       },
       {
         "lugar": "Arco de Constantino",
-        "min": 15
+        "min": 20
       },
       {
         "lugar": "Foro Romano y Palatino",
@@ -82,8 +82,7 @@
         },
         {
           "lugar": "Largo di Torre Argentina",
-          "min": 15,
-          "tipo": "opcional"
+          "min": 15
         },
         {
           "lugar": "Iglesia del Gesù",
@@ -145,8 +144,7 @@
         },
         {
           "lugar": "Largo di Torre Argentina",
-          "min": 15,
-          "tipo": "opcional"
+          "min": 15
         },
         {
           "lugar": "Iglesia del Gesù",
@@ -322,7 +320,7 @@
           },
           {
             "lugar": "Arco de Constantino",
-            "min": 15
+            "min": 20
           },
           {
             "lugar": "Foro Romano y Palatino",
@@ -371,7 +369,7 @@
           },
           {
             "lugar": "Arco de Constantino",
-            "min": 10
+            "min": 20
           },
           {
             "lugar": "Foro Romano y Palatino",
@@ -443,7 +441,7 @@
           },
           {
             "lugar": "Arco de Constantino",
-            "min": 15
+            "min": 20
           },
           {
             "lugar": "Foro Romano y Palatino",
