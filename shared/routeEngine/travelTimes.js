@@ -33,10 +33,24 @@ export function straightLineMeters(a, b) {
 
 /**
  * @param {object|null} matrix  El JSON de la matriz del destino (formato travel-matrix/1), o null.
+ * @param {Array<{desde: string, hasta: string, minutos: number, metros?: number, ida_y_vuelta?: boolean}>} [adjustments]
+ *   Tramos corregidos a mano (data/pipeline_v2/travel/<destino>.ajustes.json): la matriz va al punto del lugar, pero
+ *   a veces se entra por otro sitio (del Arco de Constantino al Foro, por la Vía Sacra, 4 min y no 9). Por nombre,
+ *   con los nombres de la matriz; mandan sobre ella para todos (motor, programador, revisión).
  * @returns {{ leg: Function, modes: string[] }}
  */
-export function createTravelTimes(matrix) {
+export function createTravelTimes(matrix, adjustments = []) {
   const indexByKey = new Map((matrix?.points ?? []).map((point, index) => [keyOf(point.coordinates), index]))
+  const coordsByName = new Map((matrix?.points ?? []).flatMap((point) => (point.refs ?? []).filter((ref) => ref.kind === 'place').map((ref) => [ref.name, point.coordinates])))
+  const fixed = new Map()
+  for (const adjustment of adjustments ?? []) {
+    const from = coordsByName.get(adjustment.desde)
+    const to = coordsByName.get(adjustment.hasta)
+    if (!from || !to) continue
+    const value = { minutes: adjustment.minutos, meters: adjustment.metros ?? Math.round(adjustment.minutos * 75), source: 'adjusted' }
+    fixed.set(`${keyOf(from)}|${keyOf(to)}`, value)
+    if (adjustment.ida_y_vuelta) fixed.set(`${keyOf(to)}|${keyOf(from)}`, value)
+  }
   const modes = matrix?.modes ?? {}
 
   /**
@@ -60,7 +74,10 @@ export function createTravelTimes(matrix) {
   }
 
   function computeLeg(a, b, mode) {
-
+    if (mode === 'walking') {
+      const adjusted = fixed.get(`${keyOf(a)}|${keyOf(b)}`)
+      if (adjusted) return adjusted
+    }
     const table = modes[mode]
     const i = indexByKey.get(keyOf(a))
     const j = indexByKey.get(keyOf(b))

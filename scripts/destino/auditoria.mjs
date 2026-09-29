@@ -29,6 +29,7 @@ export const TIPOS_AUDITORIA = {
   fuera_de_horario: 'Parada fuera de su horario real de ese día',
   atardecer_tarde: 'Mirador de atardecer después del sol (o texto de atardecer de noche)',
   tramo_largo: 'Tramo de más de 25 min andando sin transporte',
+  no_cuadra: 'Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada',
   hueco: 'Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)',
   libre_largo: 'Tiempo libre de más de 30 min (60 si sale con nombre de paseo)',
   libre_pisa_comida: 'Tiempo libre que pisa la comida o la cena',
@@ -153,6 +154,9 @@ export function auditarViaje(D, days, options = {}) {
         // se llega a la hora dorada o a recoger la entrada.)
         const margin = stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
         if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > margin) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
+        // La hora de una parada es la anterior + su duración + el paseo (PROMPT_ROMA_V4_REPASO 1): con las horas de 5 en 5
+        // pueden bailar hasta 4 min; más, no cuadra (el Arco acababa a las 10:20 y el Foro empezaba a las 10:20 con 9 min).
+        if (!fromLunch && !stop.transit && walk != null && start - prevEnd < walk - 4) add('no_cuadra', n, stop.suggested_time, name, `acaba ${previous.name} a las ${String(Math.floor(prevEnd / 60)).padStart(2, '0')}:${String(prevEnd % 60).padStart(2, '0')} y hay ${Math.round(walk)} min andando`)
       }
       // Nivel 1-2 "Por el camino".
       if (passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)

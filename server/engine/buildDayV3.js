@@ -90,9 +90,10 @@ function quarterHourStops(stops) {
     const onTheWay = (stop.pass_through || stop.is_pass_by) && !stop.instead_of_visit
     // Por fuera, sus `minutos_fuera` exactos: ni se rellena ni se recorta con el redondeo (decisión del 2026-09-28).
     if (stop.visit_mode === 'fuera' && stop.duration_minutes != null) return { ...stop, suggested_time: toHHMM(roundedStart) }
+    // (El mínimo nunca se come el paseo hasta la siguiente: la hora de una parada es la anterior + su duración + el paseo.)
     const { min_minutes: floor, max_minutes: ceiling, ...clean } = stop
     // (`max_minutes`: el puente no se queda con lo que sobra del redondeo.)
-    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity) }
+    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity, Math.max(rounded, duration)) }
   }
 }
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
@@ -120,7 +121,9 @@ export function travelTimesFor(destinationKey) {
     const path = join(TRAVEL_DIR, `${destinationKey}.json`)
     const matrix = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null
     if (!matrix) console.warn(`[motor v3] "${destinationKey}" sin matriz de tiempos: se estimarán todos los tramos`)
-    travelByDestination.set(destinationKey, createTravelTimes(matrix))
+    const adjustmentsPath = join(TRAVEL_DIR, `${destinationKey}.ajustes.json`)
+    const adjustments = existsSync(adjustmentsPath) ? JSON.parse(readFileSync(adjustmentsPath, 'utf8')).tramos ?? [] : []
+    travelByDestination.set(destinationKey, createTravelTimes(matrix, adjustments))
   }
   return travelByDestination.get(destinationKey)
 }

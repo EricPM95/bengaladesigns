@@ -1,0 +1,19 @@
+{
+  "_nota": "Tramos a pie corregidos a mano (PROMPT_ROMA_V4_REPASO, 2026-09-29). La matriz mide hasta el punto del lugar; aquí van los tramos en los que se entra por otro sitio. Por nombre (los de la matriz); mandan sobre ella en el motor, el programador y la revisión (travelTimes.js).",
+  "tramos": [
+    {
+      "desde": "Arco de Constantino",
+      "hasta": "Foro Romano y Palatino",
+      "minutos": 4,
+      "metros": 300,
+      "por_que": "Se entra por la Vía Sacra, junto al Arco de Tito: del Arco de Constantino son unos 3-5 min. La matriz iba al centro del Foro (9 min)."
+    },
+    {
+      "desde": "Coliseo",
+      "hasta": "Foro Romano y Palatino",
+      "minutos": 5,
+      "metros": 380,
+      "por_que": "La misma entrada de la Vía Sacra, subiendo desde el Coliseo."
+    }
+  ]
+}

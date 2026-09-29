@@ -1898,3 +1898,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Móvil (<480 px).** Escala compacta, con títulos de dos líneas como mucho y la tarjeta del mapa en una línea.
     - **Día abierto y cerrado.** Abierto, sin línea de color; cerrado, con su franja y el número neutro.
     - **Horas de los tramos.** Van de 5 en 5, como las de las paradas.
+
+363. **La hora de una parada es la anterior + su duración + el paseo** (2026-09-29, PROMPT_ROMA_V4_REPASO 1):
+    - v4 pone cada llegada en la rejilla de 5 min (los 5 más cercanos), así lo que se ve es lo que calcula el motor.
+    - El mínimo de 20 min de un imprescindible se cuenta en el motor, antes del paseo; la pantalla nunca alarga una
+      visita comiéndose el paseo a la siguiente.
+    - Los tramos a pie que la matriz mide mal (se entra por otro sitio) se corrigen por nombre en
+      `data/pipeline_v2/travel/<destino>.ajustes.json` y mandan para todos: del Arco de Constantino al Foro, por la Vía
+      Sacra, 4 min (no 9).
+    - La auditoría avisa cuando no cuadra (`no_cuadra`: más de 4 min de diferencia).

@@ -37,6 +37,7 @@ const VERSIONS = ['A', 'B', 'C', 'D']
 const SUNSET_LEAD = 25
 const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minutos o menos
 const LONG_WALK = 25 // más de esto andando, en taxi si no hay otro transporte escrito
+const IMPRESCINDIBLE_MIN = 20 // un imprescindible (nivel 1) nunca dura menos (el mismo número que la pantalla)
 const STOP_MIN = 15 // una parada no se recorta por debajo de 15 min (ni del 75 % de lo escrito)
 const BARRIO_MIN = 20 // un barrio, 20
 const ELASTIC_DROP = 15 // si la elástica tendría que bajar de 15 min, se quita
@@ -627,7 +628,9 @@ export function planWrittenTrip(args) {
       // (Un tramo de más de LONG_WALK min andando nunca va a pie: si no trae su bus o taxi escrito, en taxi.)
       if (!place.transitMinutes && legRaw > LONG_WALK && t != null && coords) place = { ...place, transitMinutes: Math.max(10, Math.round(legRaw / 2.5) + 5), transitHow: 'un taxi' }
       const leg = place.transitMinutes ? Math.min(legRaw, place.transitMinutes) : legRaw
-      let at = t + leg
+      // Cada llegada, en la rejilla de 5 min (los 5 más cercanos): así lo que ve el viajero es lo que calcula el motor y la
+      // hora de una parada es la anterior + su duración + el paseo (el Arco de 15-20 min ya no se come el paseo al Foro).
+      let at = t != null ? Math.round((t + leg) / 5) * 5 : t
       const fixed = hourOf(stop)
       if (fixed != null) {
         // (A la entrada con turno se llega 10 min antes: `turno` en lo escrito, los turnos de la ficha o el Free Tour.)
@@ -636,6 +639,12 @@ export function planWrittenTrip(args) {
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
+      // Un imprescindible nunca dura menos de 20 min: se cuenta aquí, antes del paseo a la siguiente (si lo pusiera la
+      // pantalla, el Arco de 15 se alargaba a 20 comiéndose el paseo al Foro).
+      if ((source.level ?? 3) === 1 && !place.visitOutside && !place.passThrough && !place.isNightExperience && duration < IMPRESCINDIBLE_MIN) {
+        duration = IMPRESCINDIBLE_MIN
+        place = { ...place, duration_minutes: duration }
+      }
       if (original.elastica != null && elasticDelta) duration = Math.max(shrinkFloor(stop, duration), duration + elasticDelta)
       // (Un barrio escrito por debajo de su mínimo, o una elástica que no llega: la prueba lo marca.)
       if (!ctx.probe && !place.visitOutside && !place.passThrough && place.sunset == null && duration < shrinkFloor(stop, stop.min ?? source.duration_minutes ?? duration, true)) ctx.problems.push({ tipo: 'parada_corta', lugar: stop.lugar, minutos: duration })
