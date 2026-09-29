@@ -264,3 +264,34 @@ móvil. Lo más importante:
   - tranquilo pasa de ≈ 6 a **≈ 10**, con un rango de 9-11.
 - Lo he comprobado a mano en un día cualquiera: v3 y v4 dan las mismas 11 paradas reales. El 8 que había venía de una
   medición antigua, así que ahora el formulario dice «≈ 11 planes al día» y «≈ 10».
+
+## Partes 6 y 7: la comida mínima y los tramos largos (reglas 392 y 393)
+
+- **La comida de −5 min** (1 de enero, D1-FT A).
+  - Causa: el Coliseo y el Foro estaban cerrados y entraban los Capitolinos (90 min) y el Altar (40), así que la mañana
+    se comía la comida.
+  - Ahora la comida nunca baja de 45 min. Si no cabe, se quitan primero las opcionales (primero las de la mañana y
+    luego las de la tarde) y lo que quede lo absorbe la elástica.
+  - El Campidoglio vuelve a ser opcional el 1 de enero; la variante había perdido la marca.
+  - En tranquilo con Free Tour ya no quedaba nada que quitar, así que el Coliseo por fuera pasa a las 09:45 (antes,
+    10:00).
+  - Las de 25 y 30 min de esas fechas también llegan ya a 45.
+- **Navidad y 14 de agosto.** El motor ya ponía el taxi y la hora ya lo contaba, pero al pasar la parada a «por fuera»
+  se perdía el transporte y la pantalla pintaba 33 y 27 min andando. Ahora sale «Un taxi, unos 18 min» y «unos 16 min»,
+  y la hora cuadra.
+
+**La prueba de las 365 fechas** (10 560 viajes), antes y después de las partes 6 y 7:
+
+| | Antes (3ffca85) | Después |
+|---|---|---|
+| Total | 100 (completo 54, tranquilo 46) | **86** (completo 49, tranquilo 37) |
+| Comida que no cabe en 45 min | 6 | **0** |
+| Tramo de más de 25 min andando | 4 | **0** |
+| Hora que no cuadra | 2 | **0** |
+| Elástica fuera de su margen | 2 | **0** |
+
+- Comparando caso a caso: 14 arreglados y 0 nuevos.
+- Lo que queda es lo de antes: 52 avisos informativos de cierres, 23 ratos libres largos, 9 zigzags y 2 esperas a la
+  cena.
+
+**Los 56 viajes (v4 frente a v3):** 5 mejor, 51 igual y 0 peor. Avisos: 7 en v3 y 0 en v4.

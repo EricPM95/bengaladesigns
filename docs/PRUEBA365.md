@@ -1,20 +1,14 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-10560 viajes (todas las fechas de 2027), en 535 s. **Total: 100** (completo 54, tranquilo 46).
+10560 viajes (todas las fechas de 2027), en 804 s. **Total: 86** (completo 49, tranquilo 37).
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
-- **Tramo de más de 25 min andando sin transporte**: 4
-  - 2027-08-14 · 2 días · completo, día 1, 15:35 Iglesia de Santa Maria in Trastevere — 27 min andando
-  - 2027-08-14 · 2 días · tranquilo, día 1, 15:20 Iglesia de Santa Maria in Trastevere — 27 min andando
-  - 2027-12-25 · 2 días · completo, día 1, 15:25 Basílica de Santa Cecilia in Trastevere — 33 min andando
-  - 2027-12-25 · 2 días · tranquilo, día 1, 15:40 Basílica de Santa Cecilia in Trastevere — 33 min andando
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 2
-  - 2027-12-25 · 2 días · completo, día 1, 15:25 Basílica de Santa Cecilia in Trastevere — acaba Basílica de San Pedro a las 15:05 y hay 33 min andando
-  - 2027-12-25 · 2 días · tranquilo, día 1, 15:40 Basílica de Santa Cecilia in Trastevere — acaba Basílica de San Pedro a las 15:20 y hay 33 min andando
+- **Tramo de más de 25 min andando sin transporte**: 0 ✅
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
 - **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 23
   - 2027-01-31 · 2 días · completo, día 2 antes de Mirador del Janículo — 35 min
@@ -58,17 +52,9 @@
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
-- **Comida de menos de 45 min**: 6
-  - 2027-01-01 · 2 días · completo · FT, día 1 (D1-FT A, viernes) — 25 min
-  - 2027-01-01 · 2 días · tranquilo, día 1 (D1 A, viernes) — 30 min
-  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — -5 min
-  - 2027-12-31 · 2 días · completo · FT, día 2 (D1-FT A, sábado) — 25 min
-  - 2027-12-31 · 2 días · tranquilo, día 2 (D1 A, sábado) — 30 min
-  - 2027-12-31 · 2 días · tranquilo · FT, día 2 (D1-FT A, sábado) — -5 min
+- **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
 - **Lugar escrito que no existe en las fichas**: 0 ✅
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 2
-  - 2027-01-01 · 2 días · tranquilo · FT, día 1 (D1-FT A, viernes) — Trastevere: quería -61 (margen ±30); sol 16:49
-  - 2027-12-31 · 2 días · tranquilo · FT, día 2 (D1-FT A, sábado) — Trastevere: quería -61 (margen ±30); sol 16:49
+- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 0 ✅
 - **«Sin gente» en el título en ritmo tranquilo**: 0 ✅
 - **«Antes de cenar» en una parada que va después de cenar**: 0 ✅
 - **Título del día que no se cumple**: 0 ✅
@@ -84,10 +70,6 @@
 ## Dónde caen (día escrito, versión y variantes; T = tranquilo)
 
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×52
-- **Comida de menos de 45 min**: D1-FT A viernes ×1 · D1 A T viernes ×1 · D1-FT A T viernes ×1 · D1-FT A sábado ×1 · D1 A T sábado ×1 · D1-FT A T sábado ×1
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D1-FT A T +fecha:01-01 ×2
 - **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1 · D1 A +sabado+fecha:12-25 ×1 · D1-FT A ×1 · D1 A +sabado+fecha:12-25 T ×1 · D1-FT A T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
-- **Tramo de más de 25 min andando sin transporte**: D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1
 - **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
