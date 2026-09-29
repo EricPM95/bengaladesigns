@@ -21,6 +21,11 @@ const DAY_COLORS = [
   '#607D8B', // gris azulado
 ]
 
+/** El índice de color de un día: el suyo, fijado al crear el viaje (va con el día, no con su posición); si no lo tiene, su posición. */
+export function dayColorIndex(day: { colorIndex?: number }, fallbackIndex: number): number {
+  return day.colorIndex ?? Math.max(0, fallbackIndex)
+}
+
 /** Tono de referencia del día — el usado por los chips de filtro del mapa combinado (fondo sólido + texto blanco, ver CombinedDaysMapView.tsx). */
 export function dayColor(dayIndex: number): string {
   return DAY_COLORS[dayIndex % DAY_COLORS.length]

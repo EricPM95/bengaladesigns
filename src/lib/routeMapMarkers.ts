@@ -1,6 +1,6 @@
 import type { Coordinates, DayPlan } from './types'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../components/map/StopsMapView'
-import { dayColor, dayColorPastel, dayColorStrong } from './dayColors'
+import { dayColor, dayColorIndex, dayColorPastel, dayColorStrong } from './dayColors'
 import { hasRealCoordinates } from './distanceMock'
 import { KIND_STYLE, numberedStopsOf, stopKindOf } from './stopKind'
 
@@ -147,7 +147,8 @@ export function buildSingleDayLine(day: DayPlan, _dayIndex?: number): StopsMapMa
 export function buildCombinedDaysMarkers(days: DayPlan[], highlightDayId?: string | null): StopsMapMarker[] {
   const withDuplicatesFlat = days
     .filter((day) => !day.isReturnLeg)
-    .flatMap((day, dayIndex) => {
+    .flatMap((day, position) => {
+      const dayIndex = dayColorIndex(day, position)
       const isHighlighted = !highlightDayId || day.id === highlightDayId
       return realStops(day).map(
         ({ stop, number }): StopsMapMarker => ({
@@ -172,7 +173,8 @@ export function buildCombinedDaysMarkers(days: DayPlan[], highlightDayId?: strin
 export function buildCombinedDaysLines(days: DayPlan[], highlightDayId?: string | null): StopsMapMarkerLine[] {
   return days
     .filter((day) => !day.isReturnLeg)
-    .flatMap((day, dayIndex) => {
+    .flatMap((day, position) => {
+      const dayIndex = dayColorIndex(day, position)
       const coordinates = realStops(day).map(({ stop }) => stop.coordinates)
       if (coordinates.length < 2) return []
       const isHighlighted = !highlightDayId || day.id === highlightDayId

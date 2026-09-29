@@ -2,17 +2,16 @@ import { useState } from 'react'
 import { closestCenter, DndContext, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import type { DayPlan, Route, Stop, TripPace } from '../../lib/types'
+import type { DayPlan, Route } from '../../lib/types'
 import { addDaysToIso } from '../../lib/dateRange'
 import { KIND_STYLE, numberedStopsOf, stopKindOf } from '../../lib/stopKind'
+import { dayColor, dayColorIndex, dayColorPastel, dayColorStrong } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
-import { orderStopsGeographically } from '../../lib/geographicStopOrder'
 import { useRouteStore } from '../../store/useRouteStore'
-import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
@@ -24,9 +23,6 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
-
-/** Techo "cómodo" de paradas/día según el ritmo elegido en el cuestionario (mismos rangos que paceOptions en Questionnaire.tsx: zen 2-3, balanced 4-5, nonstop 6+) — a partir de aquí, "Regenerar este día" avisa (sin bloquear) que el día queda apretado. */
-const PACE_COMFORTABLE_MAX: Record<TripPace, number> = { zen: 3, balanced: 5, nonstop: 8 }
 
 interface DayListProps {
   route: Route
@@ -76,16 +72,13 @@ function ChevronIcon() {
  * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
 export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
-  const regenerateDayStops = useRouteStore((state) => state.regenerateDayStops)
-  const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const reorderDays = useRouteStore((state) => state.reorderDays)
-  const [regenerateDayId, setRegenerateDayId] = useState<string | null>(null)
-  const [pendingRegenerate, setPendingRegenerate] = useState<Stop[] | null>(null)
   const [dayReorderWarning, setDayReorderWarning] = useState<string | null>(null)
   const addFreeDay = useRouteStore((state) => state.addFreeDay)
   const renameDay = useRouteStore((state) => state.renameDay)
   const moveFreeDay = useRouteStore((state) => state.moveFreeDay)
-  const removeFreeDay = useRouteStore((state) => state.removeFreeDay)
+  const deleteDay = useRouteStore((state) => state.deleteDay)
+  const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   /** La ventana del nombre: crear un día o cambiar el de uno libre. */
   const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
@@ -106,10 +99,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const stayByFirstDayId = new Map(segments.map((segment) => [segment.dayIds[0], segment]))
   /** Segmento (con su alojamiento) al que pertenece CADA día del tramo, no solo su primer día — para saber qué alojamiento cubre la noche de un día cualquiera (ver DayDetailPanel.tsx, punto 4). */
   const segmentByDayId = new Map(segments.flatMap((segment) => segment.dayIds.map((dayId) => [dayId, segment])))
+  const nonReturnIndex = new Map(route.days.filter((candidate) => !candidate.isReturnLeg).map((candidate, position) => [candidate.id, position]))
   const allDays = route.days.filter((candidate) => !candidate.isReturnLeg).map((candidate) => ({ id: candidate.id, dayNumber: candidate.dayNumber, city: candidate.city }))
-
-  const regenerateDay = route.days.find((day) => day.id === regenerateDayId) ?? null
-  const regenerateDayRealStops: Stop[] = regenerateDay ? (regenerateDay.stops.length > 0 ? regenerateDay.stops : seedStopsFromTemplate(regenerateDay)) : []
 
   /**
    * Un día se puede mover si no es de llegada, traslado ni vuelta. Esos tres son el esqueleto del
@@ -164,17 +155,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
     return `El Día ${primero.dayNumber} pasa a caer en ${weekdayNameEs(primero.weekday)} y ${primero.stopName} cierra ese día.${extra}`
   }
 
-  const handleConfirmRegenerate = (stops: Stop[]) => {
-    if (!regenerateDay) return
-    // Primer edición de este día en concreto: "cristaliza" el pool de plantilla en Stop[] reales
-    // antes de sustituirlo — no-op si el día ya tenía paradas reales (mismo patrón que StopMenu.tsx).
-    seedDayStops(regenerateDay.id, regenerateDayRealStops)
-    regenerateDayStops(regenerateDay.id, orderStopsGeographically(stops))
-    setRegenerateDayId(null)
-  }
-
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-28 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-28 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -197,13 +179,23 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const title = travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
+        // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
+        const colorIndex = dayColorIndex(day, nonReturnIndex.get(day.id) ?? index)
 
         return (
           <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index)}>
             {(dragHandle) => (
           <div
-            className={`relative rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+            className={`relative ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
+            {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). */}
+            {!day.isReturnLeg && (
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
+                <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
+              </span>
+            )}
+            {/* El asa, a la izquierda del todo y asomando por el borde (44 × 44 de zona de toque). */}
+            {dragHandle && <span className="absolute -left-[34px] top-[18px] z-10">{dragHandle}</span>}
             <div
               role="button"
               tabIndex={0}
@@ -216,8 +208,10 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               }}
               className="flex min-h-20 w-full cursor-pointer items-center gap-3.5 py-3 pl-4 pr-3 text-left"
             >
+              {/* El cuadrado, como siempre; el número, del color del día (claro sobre oscuro, fuerte sobre claro). */}
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text' : 'bg-bg-hover'}`}
+                style={{ color: day.isReturnLeg ? undefined : expanded ? dayColorPastel(colorIndex) : dayColorStrong(colorIndex) }}
               >
                 {day.dayNumber}
               </span>
@@ -247,26 +241,22 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 )}
               </div>
 
-              {dragHandle}
-
-              {!day.isReturnLeg && (
-                <span onClick={(event) => event.stopPropagation()}>
-                  <DayMenu
-                    onRegenerate={() => setRegenerateDayId(day.id)}
-                    freeDay={
-                      isFreeDay(day) || day.userAdded
-                        ? {
-                            onAddPlaces: () => openAddFlow(day.id),
-                            onRename: () => setNameSheet({ dayId: day.id }),
-                            onMoveBefore: canMoveDay(route, day.id, -1) ? () => moveFreeDay(day.id, -1) : null,
-                            onMoveAfter: canMoveDay(route, day.id, 1) ? () => moveFreeDay(day.id, 1) : null,
-                            onRemove: day.userAdded ? () => setRemoveDayId(day.id) : null,
-                          }
-                        : undefined
-                    }
-                  />
-                </span>
-              )}
+              <span onClick={(event) => event.stopPropagation()}>
+                <DayMenu
+                  onRestore={day.originalSnapshot ? () => withUndo(`Día ${day.dayNumber} como lo preparamos`, () => restoreOriginalDay(day.id)) : null}
+                  onDelete={() => setRemoveDayId(day.id)}
+                  freeDay={
+                    isFreeDay(day) || day.userAdded
+                      ? {
+                          onAddPlaces: () => openAddFlow(day.id),
+                          onRename: () => setNameSheet({ dayId: day.id }),
+                          onMoveBefore: canMoveDay(route, day.id, -1) ? () => moveFreeDay(day.id, -1) : null,
+                          onMoveAfter: canMoveDay(route, day.id, 1) ? () => moveFreeDay(day.id, 1) : null,
+                        }
+                      : undefined
+                  }
+                />
+              </span>
 
               <span className="flex w-[22px] justify-center text-text/45 transition-transform duration-[400ms]" style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>
                 <ChevronIcon />
@@ -325,42 +315,14 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {removeDay && (
         <ConfirmDialog
           eyebrow={`Día ${removeDay.dayNumber} · ${dayName(removeDay)}`}
-          text="Quitas este día y todo lo que tiene. El viaje acaba un día antes."
-          confirmLabel="Quitar"
+          text={`¿Eliminar el día ${removeDay.dayNumber}? Puedes recuperarlo con «Volver a mi ruta original».`}
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
           onCancel={() => setRemoveDayId(null)}
           onConfirm={() => {
             if (activeDayId === removeDay.id) onSelectDay(null)
-            withUndo(`Día ${removeDay.dayNumber} quitado`, () => removeFreeDay(removeDay.id))
+            withUndo('Día eliminado', () => deleteDay(removeDay.id))
             setRemoveDayId(null)
-          }}
-        />
-      )}
-
-      {regenerateDay && (
-        <AttractionsFinder
-          route={route}
-          city={regenerateDay.city}
-          open
-          title={`Regenerar el Día ${regenerateDay.dayNumber} · ${regenerateDay.city}`}
-          onClose={() => setRegenerateDayId(null)}
-          multiSelect={{
-            initialSelected: regenerateDayRealStops,
-            // Un día con cambios del viajero: antes se avisa (lo nuevo pasa a ser la ruta original).
-            onConfirm: (stops: Stop[]) => (regenerateDay.originalSnapshot ? setPendingRegenerate(stops) : handleConfirmRegenerate(stops)),
-            confirmLabel: 'Regenerar día con esta selección',
-            tightWarningThreshold: PACE_COMFORTABLE_MAX[route.answers.pace ?? 'balanced'],
-          }}
-        />
-      )}
-      {regenerateDay && pendingRegenerate && (
-        <ConfirmDialog
-          eyebrow={`Día ${regenerateDay.dayNumber}`}
-          text={`Perderás los cambios que hiciste en el día ${regenerateDay.dayNumber}.`}
-          confirmLabel="Regenerar"
-          onCancel={() => setPendingRegenerate(null)}
-          onConfirm={() => {
-            handleConfirmRegenerate(pendingRegenerate)
-            setPendingRegenerate(null)
           }}
         />
       )}

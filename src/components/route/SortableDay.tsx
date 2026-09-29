@@ -15,8 +15,7 @@ interface SortableDayProps {
  * Un día entero que se puede arrastrar para cambiarlo de sitio en el viaje.
  *
  * Hermano de SortableStop, pero con el asa por render prop en vez de flotando a la izquierda: la
- * fila del día es una tarjeta blanca sobre fondo gris, y un asa en posición absoluta fuera de ella
- * quedaría suelta en el fondo. Aquí el asa vive DENTRO de la fila, junto al menú "⋯".
+ * fila decide dónde va: a la izquierda del todo, asomando por el borde (PROMPT_UI, Parte 1), con 44 × 44 de toque.
  *
  * El arrastre va por el asa y no por la fila entera por el mismo motivo que en las paradas: tocar
  * la fila ya significa "abre este día", y mezclar los dos gestos convierte cada toque en una
@@ -34,9 +33,9 @@ export function SortableDay({ id, disabled, children }: SortableDayProps) {
       onClick={(event) => event.stopPropagation()}
       aria-label="Mover este día"
       title="Mover este día"
-      className="shrink-0 cursor-grab touch-none rounded-lg p-1 text-text-muted transition-colors hover:text-text-soft active:cursor-grabbing"
+      className="flex h-11 w-11 shrink-0 cursor-grab touch-none items-center justify-center rounded-lg text-text-muted transition-colors hover:text-text-soft active:cursor-grabbing"
     >
-      <GripIcon />
+      <GripIcon className="h-5 w-5" />
     </button>
   )
 

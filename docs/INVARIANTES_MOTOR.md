@@ -1813,3 +1813,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     (las más prescindibles: Letrán y San Clemente en D4M, los Mercados de Trajano en D5C) se quitan mientras la elástica,
     que en tranquilo puede crecer el doble, absorba el rato; si no, vuelven en orden (en verano la tarde es larga).
     Trevi en D3 a las 8:30, como en D4 (el texto habla de antes de la tasa de las 9:00).
+
+354. **UI · Pestaña Días** (2026-09-29, PROMPT_UI Parte 1):
+    - **Color del día.** Cada día tiene su color (`colorIndex`), fijado al crear el viaje. Va con el día, no con su
+      posición: si se mueve, su franja y sus pines se mueven con él.
+    - **Dónde se ve.** Una franja diagonal fina a la izquierda del acordeón, el número del día y los pines y la línea
+      del mapa. Sin ningún día abierto, el mapa enseña todos los días, cada uno con su línea; con uno abierto, solo ese.
+      Sin leyenda.
+    - **Asa de arrastre.** A la izquierda del todo, asomando por el borde, con 44 × 44 px de toque; solo en los días que
+      se pueden mover.
+    - **Menú de cada día.** «Volver al día original» (la varita), solo si el día tiene cambios, y «Eliminar día» en todos
+      los días (también llegada y vuelta), con ventana de la app y «Día eliminado · Deshacer».
+    - **«Volver a mi ruta original».** La varita del mapa, solo si hay cambios. Recupera la copia guardada al crear el
+      viaje (`originalRoute`: días, orden, paradas, horas, restaurantes y fechas), sin recalcular.
+    - **Confirmaciones.** Siempre en ventanas de la app, nunca alertas del navegador.

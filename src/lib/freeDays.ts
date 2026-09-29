@@ -127,6 +127,45 @@ export function removeFreeDay(route: Route, dayId: string): Route {
   return withDayCount(route, route.days.filter((candidate) => candidate.id !== dayId), -1)
 }
 
+/**
+ * "Eliminar día" (PROMPT_UI, Parte 1): cualquier día, también el de llegada y el de vuelta. Los demás se renumeran y el
+ * viaje acaba un día antes (o empieza uno después, si era el primero). Se recupera con "Volver a mi ruta original".
+ */
+export function removeAnyDay(route: Route, dayId: string): Route {
+  const index = route.days.findIndex((candidate) => candidate.id === dayId)
+  if (index < 0 || route.days.length <= 1) return route
+  const days = route.days.filter((candidate) => candidate.id !== dayId)
+  const range = route.answers.dateRange
+  if (index === 0 && range) {
+    const moved = withDayCount({ ...route, answers: { ...route.answers, dateRange: { ...range, start: addDaysToIso(range.start, 1), end: addDaysToIso(range.end, 1) } } }, days, -1)
+    return moved
+  }
+  return withDayCount(route, days, -1)
+}
+
+/**
+ * El color de cada día va con el día, no con su posición (PROMPT_UI, Parte 1): el que no lo tiene todavía recibe el
+ * primero libre de la paleta, en el orden del viaje. Los que ya lo tienen no cambian nunca.
+ */
+export function withDayColors(route: Route): Route {
+  if (route.days.every((day) => day.isReturnLeg || day.colorIndex != null)) return route
+  const used = new Set(route.days.map((day) => day.colorIndex).filter((index): index is number => index != null))
+  let next = 0
+  const days = route.days.map((day) => {
+    if (day.isReturnLeg || day.colorIndex != null) return day
+    while (used.has(next)) next++
+    used.add(next)
+    return { ...day, colorIndex: next }
+  })
+  return { ...route, days }
+}
+
+/** La copia de la ruta tal como se crea: la que recupera "Volver a mi ruta original". Sin copias de copias. */
+export function originalRouteOf(route: Route): NonNullable<Route['originalRoute']> {
+  const days = route.days.map(({ originalSnapshot: _snapshot, ...day }) => (void _snapshot, day as DayPlan))
+  return JSON.parse(JSON.stringify({ days, answers: route.answers })) as NonNullable<Route['originalRoute']>
+}
+
 export function renameDay(route: Route, dayId: string, name: string): Route {
   const title = name.trim().slice(0, FREE_DAY_NAME_MAX) || FREE_DAY_DEFAULT_NAME
   return { ...route, days: route.days.map((day) => (day.id === dayId ? { ...day, title, curatedTitle: title } : day)) }

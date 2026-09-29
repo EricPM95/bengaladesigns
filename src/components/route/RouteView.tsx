@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
+import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
+import { MagicWandIcon } from './MagicWandIcon'
+import { ConfirmDialog } from './ConfirmDialog'
+import { withUndo } from '../../store/useAddFlowStore'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
@@ -27,6 +30,9 @@ import { UndoToast } from './freeDay/UndoToast'
 // panel (con su tirador y la barra de pestañas) siempre deja al menos 100-MOBILE_MAP_MAX_VH.
 const MOBILE_MAP_MIN_VH = 15
 const MOBILE_MAP_MAX_VH = 75
+
+/** La varita del mapa sale con su texto hasta que se usa una vez. */
+const WAND_LABEL_KEY = 'trazo-varita-vista'
 
 function CollapseMapIcon() {
   return (
@@ -75,6 +81,16 @@ export function RouteView() {
   const [dayOverlayOpen, setDayOverlayOpen] = useState(false)
   // "Ver todo": todos los días a la vez en vez de solo el abierto (Ronda 9, Mejora 1C).
   const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
+  // "Volver a mi ruta original": la pregunta, y si la varita ya se vio con su texto (luego va sola).
+  const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
+  const [askRestoreRoute, setAskRestoreRoute] = useState(false)
+  const [wandLabelSeen, setWandLabelSeen] = useState(() => {
+    try {
+      return window.localStorage.getItem(WAND_LABEL_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
@@ -202,6 +218,7 @@ export function RouteView() {
               <>
                 <StopsMapView
                   markers={buildCombinedDaysMarkers(route.days, activeDayId)}
+                  lines={buildCombinedDaysLines(route.days, activeDayId)}
                   activeStopId={activeStopId}
                   onSelectStop={setActiveStopId}
                 />
@@ -220,6 +237,19 @@ export function RouteView() {
                 className="absolute right-3.5 top-[22px] z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
               >
                 <CollapseMapIcon />
+              </button>
+            )}
+            {/* "Volver a mi ruta original" (PROMPT_UI, Parte 1): debajo de la flecha, con su estilo; solo si hay cambios. */}
+            {mode === 'days' && route.editedManually && route.originalRoute && (
+              <button
+                type="button"
+                onClick={() => setAskRestoreRoute(true)}
+                aria-label="Volver a mi ruta original"
+                title="Volver a mi ruta original"
+                className="absolute right-3.5 top-[70px] z-10 flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border-[1.5px] border-accent bg-bg-card px-2.5 text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
+              >
+                <MagicWandIcon />
+                {!wandLabelSeen && <span className="pr-0.5 text-[12.5px] font-semibold">Ruta original</span>}
               </button>
             )}
           </div>
@@ -301,6 +331,27 @@ export function RouteView() {
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
       <UndoToast />
+      {askRestoreRoute && (
+        <ConfirmDialog
+          eyebrow="Ruta original"
+          text="¿Volver a tu ruta original? Tus días quedarán tal como te los preparamos y se perderán los cambios que has hecho."
+          confirmLabel="Volver a la original"
+          cancelLabel="Cancelar"
+          onCancel={() => setAskRestoreRoute(false)}
+          onConfirm={() => {
+            setAskRestoreRoute(false)
+            setDayMap(null)
+            withUndo('Ruta original recuperada', () => restoreOriginalRoute())
+            // (La primera vez sale con su texto; después, solo la varita.)
+            try {
+              window.localStorage.setItem(WAND_LABEL_KEY, '1')
+            } catch {
+              /* sin almacenamiento: vuelve a salir con texto, nada más */
+            }
+            setWandLabelSeen(true)
+          }}
+        />
+      )}
       {datesDialog}
     </div>
   )

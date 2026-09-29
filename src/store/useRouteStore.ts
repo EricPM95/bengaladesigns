@@ -41,6 +41,9 @@ import {
   isFreeDay,
   moveDay,
   removeFreeDay as removeFreeDayFrom,
+  removeAnyDay,
+  withDayColors,
+  originalRouteOf,
   renameDay as renameDayIn,
   suggestedTimeFor,
   timeForStopAfter,
@@ -348,6 +351,10 @@ interface RouteStoreState {
   replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
   /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
   restoreOriginalDay: (dayId: string) => void
+  /** "Volver a mi ruta original" (la varita del mapa): el viaje entero como se creó, su copia guardada, sin recalcular. */
+  restoreOriginalRoute: () => void
+  /** "Eliminar día": cualquier día, también el de llegada y el de vuelta. */
+  deleteDay: (dayId: string) => void
   /** Día libre sin horas ("Sin hora"). */
   setDayUntimed: (dayId: string, untimed: boolean) => void
   /** "+ Añadir día": un día libre detrás del último día de ruta. Devuelve su id (null si ya hay 14). */
@@ -716,7 +723,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   restoreOriginalDay: (dayId) =>
     set((state) => {
       if (!state.route) return state
-      const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, originalSnapshot: null } : day))
+      // (Con su número y su color de ahora: si el día se movió, se queda donde está.)
+      const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, dayNumber: day.dayNumber, colorIndex: day.colorIndex, originalSnapshot: null } : day))
       return { route: { ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) } }
     }),
   setDayUntimed: (dayId, untimed) =>
@@ -731,10 +739,18 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     const route = get().route
     const added = route ? addFreeDayTo(route, name) : null
     if (!added) return null
-    set({ route: added.route })
+    set({ route: withDayColors(added.route) })
     return added.dayId
   },
   removeFreeDay: (dayId) => set((state) => (state.route ? { route: removeFreeDayFrom(state.route, dayId) } : state)),
+  deleteDay: (dayId) => set((state) => (state.route ? { route: removeAnyDay(state.route, dayId) } : state)),
+  restoreOriginalRoute: () =>
+    set((state) => {
+      const original = state.route?.originalRoute
+      if (!state.route || !original) return state
+      const copy = JSON.parse(JSON.stringify(original)) as NonNullable<Route['originalRoute']>
+      return { route: { ...state.route, days: copy.days, answers: copy.answers, editedManually: false }, activeDayId: null }
+    }),
   renameDay: (dayId, name) => set((state) => (state.route ? { route: renameDayIn(state.route, dayId, name) } : state)),
   moveFreeDay: (dayId, direction) => set((state) => (state.route ? { route: moveDay(state.route, dayId, direction) } : state)),
   addPlaceToDay: (dayId, stop, time) =>
@@ -761,7 +777,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       const freeDays = state.keepBookingsOnNextRoute ? new Map((state.route?.days ?? []).filter((day) => (day.dayType ?? 'normal') === 'manual' && !day.userAdded).map((day) => [day.dayNumber, day])) : new Map<number, DayPlan>()
       const replanned = freeDays.size > 0 ? { ...incoming, days: incoming.days.map((day) => (freeDays.has(day.dayNumber) ? { ...freeDays.get(day.dayNumber)!, id: day.id } : day)) } : incoming
       // Los días añadidos ("+ Añadir día") no pasan por el motor: vuelven tal cual, con su número de día.
-      const route = state.keepBookingsOnNextRoute ? withUserDaysBack(replanned, userAddedDays(state.route)) : replanned
+      const rebuilt = state.keepBookingsOnNextRoute ? withUserDaysBack(replanned, userAddedDays(state.route)) : replanned
+      // Cada día con su color, y la copia de la ruta tal como se crea ("Volver a mi ruta original").
+      const colored = withDayColors(rebuilt)
+      const route = { ...colored, editedManually: false, originalRoute: originalRouteOf(colored) }
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
@@ -786,7 +805,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   hydrateTrip: (payload) =>
     set({
       screen: 'route',
-      route: payload.route,
+      // (Viajes guardados antes de los colores fijos y de la copia original: se completan al abrirlos.)
+      route: (() => {
+        const colored = withDayColors(payload.route)
+        return colored.originalRoute || colored.editedManually ? colored : { ...colored, originalRoute: originalRouteOf(colored) }
+      })(),
       accommodationSelections: payload.bookings.accommodationSelections,
       transportBookings: payload.bookings.transportBookings,
       insuranceBooking: payload.bookings.insuranceBooking,
@@ -1307,7 +1330,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
-  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays',
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
+  'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',
 ] as const
@@ -1324,6 +1348,8 @@ for (const name of MANUAL_EDIT_ACTIONS) {
       const days = after.days.map((day) => {
         const previous = beforeDays.get(day.id)
         if (!previous || previous === day || day.originalSnapshot || (previous.dayType ?? 'normal') === 'manual') return day
+        // (Solo cambia el número porque se movió otro día: no es un cambio del día.)
+        if (JSON.stringify({ ...previous, dayNumber: 0 }) === JSON.stringify({ ...day, dayNumber: 0 })) return day
         const { originalSnapshot: _ignored, ...plain } = previous
         void _ignored
         return { ...day, originalSnapshot: JSON.parse(JSON.stringify(plain)) as DayPlan }

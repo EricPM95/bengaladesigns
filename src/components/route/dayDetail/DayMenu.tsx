@@ -1,32 +1,34 @@
 import { useState } from 'react'
+import { MagicWandIcon } from '../MagicWandIcon'
 
-/** Las acciones de un día libre (decisión del usuario, 2026-09-28). Sin ellas, el menú es el de un día nuestro. */
+/** Las acciones de un día libre (decisión del usuario, 2026-09-28). */
 export interface FreeDayMenuActions {
   onAddPlaces: () => void
   onRename: () => void
   onMoveBefore: (() => void) | null
   onMoveAfter: (() => void) | null
-  /** Solo en los días que ha añadido el viajero: los nuestros no se quitan. */
-  onRemove: (() => void) | null
 }
 
 interface DayMenuProps {
-  onRegenerate?: () => void
+  /** "Volver al día original" (la varita): solo si el día tiene cambios; null, no sale. */
+  onRestore: (() => void) | null
+  /** "Eliminar día": en todos los días, también el de llegada y el de vuelta (PROMPT_UI, Parte 1). */
+  onDelete: () => void
   freeDay?: FreeDayMenuActions
 }
 
 /** Menú oscuro del diseño "Trazo Itinerario". */
-const menuItemClass = 'flex h-[42px] w-full items-center rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
+const menuItemClass = 'flex h-[42px] w-full items-center gap-2.5 rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
- * Menú "..." de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): "Regenerar este día" en
- * los días nuestros; en un día libre, añadir lugares, cambiar el nombre, moverlo y quitarlo.
+ * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): "Volver al día original"
+ * si el día tiene cambios; en un día libre, añadir lugares, cambiar el nombre y moverlo; y en todos, "Eliminar día".
  */
-export function DayMenu({ onRegenerate, freeDay }: DayMenuProps) {
+export function DayMenu({ onRestore, onDelete, freeDay }: DayMenuProps) {
   const [open, setOpen] = useState(false)
 
   const close = () => setOpen(false)
-  const item = (label: string, action: (() => void) | null | undefined, danger = false) =>
+  const item = (label: string, action: (() => void) | null | undefined, options: { danger?: boolean; wand?: boolean } = {}) =>
     action === undefined ? null : (
       <button
         key={label}
@@ -38,7 +40,8 @@ export function DayMenu({ onRegenerate, freeDay }: DayMenuProps) {
         }}
         className={menuItemClass}
       >
-        {danger ? <span className="text-[oklch(0.75_0.15_25)]">{label}</span> : label}
+        {options.wand && <MagicWandIcon className="h-4 w-4 text-[#F3EEE4]/70" />}
+        {options.danger ? <span className="text-[oklch(0.75_0.15_25)]">{label}</span> : label}
       </button>
     )
 
@@ -62,19 +65,18 @@ export function DayMenu({ onRegenerate, freeDay }: DayMenuProps) {
           <div className="fixed inset-0 z-20" onClick={(event) => (event.stopPropagation(), close())} />
           <div
             onClick={(event) => event.stopPropagation()}
-            className="absolute right-0 top-[44px] z-30 flex min-w-[210px] flex-col rounded-2xl bg-[#1C2230] p-1.5 shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
+            className="absolute right-0 top-[44px] z-30 flex min-w-[220px] flex-col rounded-2xl bg-[#1C2230] p-1.5 shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
-            {freeDay ? (
+            {onRestore && item('Volver al día original', onRestore, { wand: true })}
+            {freeDay && (
               <>
                 {item('Añadir lugares', freeDay.onAddPlaces)}
                 {item('Cambiar el nombre', freeDay.onRename)}
                 {item('Mover el día antes', freeDay.onMoveBefore)}
                 {item('Mover el día después', freeDay.onMoveAfter)}
-                {freeDay.onRemove && item('Quitar este día', freeDay.onRemove, true)}
               </>
-            ) : (
-              item('Regenerar este día', onRegenerate)
             )}
+            {item('Eliminar día', onDelete, { danger: true })}
           </div>
         </>
       )}

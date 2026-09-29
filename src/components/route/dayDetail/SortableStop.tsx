@@ -47,9 +47,9 @@ export function SortableStop({ id, disabled, children }: { id: string; disabled?
  * Líneas y no los seis puntos del asa habitual: a 16 px cada punto mide punto y medio y el asa
  * quedaba invisible sobre blanco. Estas tres líneas se leen igual de finas y sí se ven.
  */
-export function GripIcon() {
+export function GripIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="h-4 w-4">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className={className}>
       <path d="M5 8h14M5 12h14M5 16h14" />
     </svg>
   )

@@ -609,6 +609,9 @@ export interface DayPlan {
   untimed?: boolean
   /** Día que el viajero ha añadido al final del viaje ("+ Añadir día"): el motor no lo toca nunca y se puede quitar. */
   userAdded?: boolean
+  /** El color del día (índice de la paleta de dayColors.ts), fijado al crear el viaje: va con el día, no con su
+      posición — si el viajero lo mueve, su franja y sus pines se mueven con él (PROMPT_UI, Parte 1). */
+  colorIndex?: number
   /** Excursión que el motor deja ya marcada en un día de excursión — la más popular del destino. */
   excursionPreselectedId?: string | null
   /** Frase de prueba social del destino, del JSON. Ver destination_config. */
@@ -720,6 +723,9 @@ export interface Route {
   insideNames?: string[]
   /** El viajero ha cambiado la ruta a mano (añadir, quitar, mover, cambiar horas…): antes de rehacerla por fechas se pregunta. */
   editedManually?: boolean
+  /** La ruta tal como se le dio al crear el viaje (días, orden, paradas, horas y restaurantes, y sus respuestas): "Volver a
+      mi ruta original" la recupera sin recalcular nada. Se guarda al crearla y no cambia al editar (PROMPT_UI, Parte 1). */
+  originalRoute?: { days: DayPlan[]; answers: Route['answers'] } | null
   /** Lo que el viajero marcó del pool al generarla: para rehacerla igual (fechas, "Quiero entrar") aunque se abra otro día. */
   mustIncludePlaces?: string[]
 }
