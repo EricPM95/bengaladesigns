@@ -22,7 +22,6 @@ import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
 import { ConfirmDialog } from './ConfirmDialog'
-import { TripExcursionCard } from './TripExcursionCard'
 import { SeasonNote } from './SeasonNote'
 import { DateNoticeTag } from './DateNoticesModal'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
@@ -301,7 +300,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       </DndContext>
 
       {/* Un día fuera: al final de la lista, solo si el viaje no lleva ya una excursión (PROMPT_UI, Parte 2). */}
-      <TripExcursionCard route={route} />
       {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
       <AddDayButton onClick={() => setNameSheet({ dayId: null })} disabled={!canAddDay(route)} />
       {nameSheet && (

@@ -1998,3 +1998,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       El Coliseo y los museos del Estado, gratis». Nunca «museos» a secas.
     - **Primero lo que cambia la ruta** (cierres), después lo informativo.
     - **Iconos:** confeti solo para fiestas y eventos; calendario tachado para los cierres; entrada para los días gratis.
+
+377. **Sin tarjeta «Sal de Roma un día» ni banner de excursión** (2026-09-29, PROMPT_UI_REPASO 2): de la excursión solo
+    queda el enlace pequeño «¿Prefieres una excursión este día?», al final del día de la oferta (o del día completo más
+    cercano, nunca el de llegada ni el de vuelta). Ningún otro día habla de excursiones.

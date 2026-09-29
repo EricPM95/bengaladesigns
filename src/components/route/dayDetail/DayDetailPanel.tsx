@@ -36,7 +36,6 @@ import { dinnerWindowFor } from '../../../lib/todayMode'
 import {
   CuratedAlternativeBanner,
   BlankDayFullExcursion,
-  ExcursionBanner,
   ExcursionDayProposal,
   FreeAfternoonBlock,
   HalfDayExcursionBlock,
@@ -1190,9 +1189,7 @@ export function DayDetailPanel({
               medio día por la mañana: "muchos viajeros aprovechan este día para salir de Roma"
               encima de una mañana que ya sale de Roma es contradecirse en dos centímetros. */}
           {/* (Nunca en el día de llegada ni en el de vuelta: la oferta pasa al día completo más cercano.) */}
-          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && bannerOffer && (
-            <ExcursionBanner destination={day.city} highlights={bannerOffer.highlights} offer={bannerOffer.offer} onSeeAll={() => convertDay('excursion')} />
-          )}
+          {/* (El banner de la oferta ya no sale: PROMPT_UI_REPASO 2. Queda solo el enlace pequeño al final del día de la oferta.) */}
 
           {/* Día en blanco al que el viajero le ha puesto una excursión de jornada completa: el día
               está resuelto y no hay hueco que ofrecer. */}
@@ -1404,7 +1401,8 @@ export function DayDetailPanel({
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
-          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && prominence === 'subtle' && !day.excursionDeclined && (
+          {/* Solo en el día de la oferta (PROMPT_UI_REPASO 2): el resto de días, nada de excursiones. */}
+          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && bannerOffer && !day.excursionDeclined && (
             <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />
           )}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}

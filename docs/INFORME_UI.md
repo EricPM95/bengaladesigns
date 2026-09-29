@@ -170,3 +170,8 @@ Avisos de Roma que he separado o cambiado de título:
   la Inmaculada, Navidad): el cierre sale aparte, con su título («… · Museos Vaticanos cerrados»). Luego va la fiesta,
   con su `contexto`, que ya no habla de cierres.
 - El icono del cierre pasa a ser un calendario tachado.
+
+## 2 · Fuera «Sal de Roma un día» (regla 377)
+
+Ya no está la tarjeta del final de la lista ni el banner de la oferta. Queda solo el enlace pequeño al final del día de
+la oferta. El componente (`TripExcursionCard.tsx`) se queda en el repo, sin usar, por si sirve para la versión discreta.
