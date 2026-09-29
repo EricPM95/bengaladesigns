@@ -3,6 +3,7 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagLabel } from '../../../lib/tagColors'
+import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
@@ -96,6 +97,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
   }
+  // «Añadida por ti», fuera de la tarjeta (PROMPT_UI_REPASO_2, 5).
   void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
@@ -105,6 +107,10 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       : stop.category
         ? [{ label: stop.category, kind }]
         : []
+  // «Revisita» y «Por tu experiencia», útiles de un vistazo: etiquetas, con el mismo estilo que las demás (PROMPT_UI_REPASO_2, 5).
+  const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
+  if (stop.isRevisit) tags.push({ label: 'Revisita', kind })
+  if (experienceTitle) tags.push({ label: `Por tu experiencia · ${experienceTitle}`, kind })
 
   return (
     <TrazoCard

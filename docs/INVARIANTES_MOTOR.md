@@ -2092,3 +2092,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     `siempre`; sin fechas, `sin_fecha`, que cuenta las excepciones. Ejemplo: la tasa de la Fontana de Trevi (2 €, de 9:00
     a 22:00; lunes y viernes desde las 11:30; algunos lunes desde las 14:00; fontanaditrevi.roma.it, 2026-09-29): el
     lunes a las 9:30 la parada ya dice que bajas sin pagar, porque la tasa empieza a las 11:30.
+
+390. **Lo que vuelve a la tarjeta de parada, y lo que va a la ficha** (PROMPT_UI_REPASO_2, 5; retoca la regla 382):
+    «Revisita» y «Por tu experiencia · <experiencia>» son etiquetas, con el mismo estilo que las demás (útiles de un
+    vistazo). El nombre del paseo nocturno y dónde acaba el Free Tour («El tour acaba en Piazza Navona…») van dentro de
+    la ficha, arriba del Resumen. «Añadida por ti» no sale.

@@ -504,6 +504,13 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
               {activeTab === 'resumen' && stop.isFreeTour && (
                 <div className="space-y-4">
                   <p className="text-small text-text-soft">{stop.description}</p>
+                  {/* Dónde acaba el tour (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
+                  {stop.freeTourEnd && (
+                    <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
+                      <PinIcon />
+                      <span>{stop.freeTourEnd}</span>
+                    </p>
+                  )}
 
                   {stop.freeTourMeetingPoint && (
                     <div className="space-y-1">
@@ -546,6 +553,12 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
+                  {/* El paseo nocturno al que pertenece (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
+                  {stop.isNightExperience && (
+                    <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
+                      <span className="font-medium">{stop.nightWalkName && stop.nightWalkName !== 'Paseo nocturno' ? `Paseo nocturno: ${stop.nightWalkName}` : stop.nightWalkName ? 'Paseo nocturno' : 'Experiencia nocturna'}</span>
+                    </p>
+                  )}
                   {/* Por dentro: con su tiempo (PROMPT_UI_REPASO 11: ya no va en la tarjeta). */}
                   {stop.visitMode === 'dentro' && (
                     <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">
