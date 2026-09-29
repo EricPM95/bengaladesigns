@@ -8860,11 +8860,49 @@
               "lugar": "Fontana de Trevi",
               "rol": "parada",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano_antes": "09:00",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano_antes": "{umbral}",
                 "cifra_ok": true,
-                "comprobado": "2026-09-28"
+                "comprobado": "2026-09-29",
+                "variables": {
+                  "tasa": {
+                    "siempre": "de 9:00 a 22:00",
+                    "lunes": "de 11:30 a 22:00",
+                    "viernes": "de 11:30 a 22:00",
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                    "2026-10-12": "de 14:00 a 22:00",
+                    "2026-10-26": "de 14:00 a 22:00",
+                    "2026-11-09": "de 14:00 a 22:00",
+                    "2026-11-23": "de 14:00 a 22:00",
+                    "2026-12-07": "de 14:00 a 22:00",
+                    "2026-12-21": "de 14:00 a 22:00"
+                  },
+                  "desde": {
+                    "siempre": "9:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  },
+                  "umbral": {
+                    "siempre": "09:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  }
+                },
+                "fuente_tasa": "https://fontanaditrevi.roma.it"
               }
             },
             {
@@ -9919,11 +9957,49 @@
           },
           "nota": "A las 08:00 casi no hay nadie: la ves tranquila y con la foto limpia. Luego pasarás con el tour a media mañana y estará llena.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Con el tour volverás a pasar por aquí a media mañana.",
-            "temprano": "A primera hora casi no hay nadie, y bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Disfrútala ahora: con el tour volverás a pasar a media mañana y estará llena.",
-            "temprano_antes": "09:00",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Con el tour volverás a pasar por aquí a media mañana.",
+            "temprano": "A primera hora casi no hay nadie, y bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Disfrútala ahora: con el tour volverás a pasar a media mañana y estará llena.",
+            "temprano_antes": "{umbral}",
             "cifra_ok": true,
-            "comprobado": "2026-09-28"
+            "comprobado": "2026-09-29",
+            "variables": {
+              "tasa": {
+                "siempre": "de 9:00 a 22:00",
+                "lunes": "de 11:30 a 22:00",
+                "viernes": "de 11:30 a 22:00",
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                "2026-10-12": "de 14:00 a 22:00",
+                "2026-10-26": "de 14:00 a 22:00",
+                "2026-11-09": "de 14:00 a 22:00",
+                "2026-11-23": "de 14:00 a 22:00",
+                "2026-12-07": "de 14:00 a 22:00",
+                "2026-12-21": "de 14:00 a 22:00"
+              },
+              "desde": {
+                "siempre": "9:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              },
+              "umbral": {
+                "siempre": "09:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              }
+            },
+            "fuente_tasa": "https://fontanaditrevi.roma.it"
           }
         },
         {
@@ -10457,11 +10533,49 @@
           "hora": "08:30",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-            "temprano_antes": "09:00",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano_antes": "{umbral}",
             "cifra_ok": true,
-            "comprobado": "2026-09-28"
+            "comprobado": "2026-09-29",
+            "variables": {
+              "tasa": {
+                "siempre": "de 9:00 a 22:00",
+                "lunes": "de 11:30 a 22:00",
+                "viernes": "de 11:30 a 22:00",
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                "2026-10-12": "de 14:00 a 22:00",
+                "2026-10-26": "de 14:00 a 22:00",
+                "2026-11-09": "de 14:00 a 22:00",
+                "2026-11-23": "de 14:00 a 22:00",
+                "2026-12-07": "de 14:00 a 22:00",
+                "2026-12-21": "de 14:00 a 22:00"
+              },
+              "desde": {
+                "siempre": "9:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              },
+              "umbral": {
+                "siempre": "09:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              }
+            },
+            "fuente_tasa": "https://fontanaditrevi.roma.it"
           }
         },
         {
@@ -10592,11 +10706,49 @@
               "hora": "08:30",
               "nota": "A las 08:00, sin gente.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano_antes": "09:00",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano_antes": "{umbral}",
                 "cifra_ok": true,
-                "comprobado": "2026-09-28"
+                "comprobado": "2026-09-29",
+                "variables": {
+                  "tasa": {
+                    "siempre": "de 9:00 a 22:00",
+                    "lunes": "de 11:30 a 22:00",
+                    "viernes": "de 11:30 a 22:00",
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                    "2026-10-12": "de 14:00 a 22:00",
+                    "2026-10-26": "de 14:00 a 22:00",
+                    "2026-11-09": "de 14:00 a 22:00",
+                    "2026-11-23": "de 14:00 a 22:00",
+                    "2026-12-07": "de 14:00 a 22:00",
+                    "2026-12-21": "de 14:00 a 22:00"
+                  },
+                  "desde": {
+                    "siempre": "9:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  },
+                  "umbral": {
+                    "siempre": "09:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  }
+                },
+                "fuente_tasa": "https://fontanaditrevi.roma.it"
               }
             },
             {
@@ -10871,11 +11023,49 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano_antes": "09:00",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano_antes": "{umbral}",
                 "cifra_ok": true,
-                "comprobado": "2026-09-28"
+                "comprobado": "2026-09-29",
+                "variables": {
+                  "tasa": {
+                    "siempre": "de 9:00 a 22:00",
+                    "lunes": "de 11:30 a 22:00",
+                    "viernes": "de 11:30 a 22:00",
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                    "2026-10-12": "de 14:00 a 22:00",
+                    "2026-10-26": "de 14:00 a 22:00",
+                    "2026-11-09": "de 14:00 a 22:00",
+                    "2026-11-23": "de 14:00 a 22:00",
+                    "2026-12-07": "de 14:00 a 22:00",
+                    "2026-12-21": "de 14:00 a 22:00"
+                  },
+                  "desde": {
+                    "siempre": "9:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  },
+                  "umbral": {
+                    "siempre": "09:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  }
+                },
+                "fuente_tasa": "https://fontanaditrevi.roma.it"
               }
             },
             {
@@ -11109,11 +11299,49 @@
           "hora": "08:30",
           "nota": "A las 08:00, sin gente.",
           "por_que": {
-            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-            "temprano_antes": "09:00",
+            "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano_antes": "{umbral}",
             "cifra_ok": true,
-            "comprobado": "2026-09-28"
+            "comprobado": "2026-09-29",
+            "variables": {
+              "tasa": {
+                "siempre": "de 9:00 a 22:00",
+                "lunes": "de 11:30 a 22:00",
+                "viernes": "de 11:30 a 22:00",
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                "2026-10-12": "de 14:00 a 22:00",
+                "2026-10-26": "de 14:00 a 22:00",
+                "2026-11-09": "de 14:00 a 22:00",
+                "2026-11-23": "de 14:00 a 22:00",
+                "2026-12-07": "de 14:00 a 22:00",
+                "2026-12-21": "de 14:00 a 22:00"
+              },
+              "desde": {
+                "siempre": "9:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              },
+              "umbral": {
+                "siempre": "09:00",
+                "lunes": "11:30",
+                "viernes": "11:30",
+                "2026-10-12": "14:00",
+                "2026-10-26": "14:00",
+                "2026-11-09": "14:00",
+                "2026-11-23": "14:00",
+                "2026-12-07": "14:00",
+                "2026-12-21": "14:00"
+              }
+            },
+            "fuente_tasa": "https://fontanaditrevi.roma.it"
           }
         },
         {
@@ -11250,11 +11478,49 @@
               "rol": "parada",
               "aviso": "A esta hora ya hay gente; si puedes, pásate temprano.",
               "por_que": {
-                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-                "temprano_antes": "09:00",
+                "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano_antes": "{umbral}",
                 "cifra_ok": true,
-                "comprobado": "2026-09-28"
+                "comprobado": "2026-09-29",
+                "variables": {
+                  "tasa": {
+                    "siempre": "de 9:00 a 22:00",
+                    "lunes": "de 11:30 a 22:00",
+                    "viernes": "de 11:30 a 22:00",
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+                    "2026-10-12": "de 14:00 a 22:00",
+                    "2026-10-26": "de 14:00 a 22:00",
+                    "2026-11-09": "de 14:00 a 22:00",
+                    "2026-11-23": "de 14:00 a 22:00",
+                    "2026-12-07": "de 14:00 a 22:00",
+                    "2026-12-21": "de 14:00 a 22:00"
+                  },
+                  "desde": {
+                    "siempre": "9:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  },
+                  "umbral": {
+                    "siempre": "09:00",
+                    "lunes": "11:30",
+                    "viernes": "11:30",
+                    "2026-10-12": "14:00",
+                    "2026-10-26": "14:00",
+                    "2026-11-09": "14:00",
+                    "2026-11-23": "14:00",
+                    "2026-12-07": "14:00",
+                    "2026-12-21": "14:00"
+                  }
+                },
+                "fuente_tasa": "https://fontanaditrevi.roma.it"
               }
             },
             {
@@ -12599,11 +12865,49 @@
     },
     "Plaza Farnese": "Una plaza tranquila a un minuto de Campo de' Fiori. Fíjate en las dos fuentes: están hechas con bañeras de granito de las Termas de Caracalla. El palacio, en el que trabajó Miguel Ángel, hoy es la embajada de Francia.",
     "Fontana de Trevi": {
-      "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-      "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.",
-      "temprano_antes": "09:00",
+      "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
+      "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+      "temprano_antes": "{umbral}",
       "cifra_ok": true,
-      "comprobado": "2026-09-28"
+      "comprobado": "2026-09-29",
+      "variables": {
+        "tasa": {
+          "siempre": "de 9:00 a 22:00",
+          "lunes": "de 11:30 a 22:00",
+          "viernes": "de 11:30 a 22:00",
+          "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
+          "2026-10-12": "de 14:00 a 22:00",
+          "2026-10-26": "de 14:00 a 22:00",
+          "2026-11-09": "de 14:00 a 22:00",
+          "2026-11-23": "de 14:00 a 22:00",
+          "2026-12-07": "de 14:00 a 22:00",
+          "2026-12-21": "de 14:00 a 22:00"
+        },
+        "desde": {
+          "siempre": "9:00",
+          "lunes": "11:30",
+          "viernes": "11:30",
+          "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
+          "2026-10-12": "14:00",
+          "2026-10-26": "14:00",
+          "2026-11-09": "14:00",
+          "2026-11-23": "14:00",
+          "2026-12-07": "14:00",
+          "2026-12-21": "14:00"
+        },
+        "umbral": {
+          "siempre": "09:00",
+          "lunes": "11:30",
+          "viernes": "11:30",
+          "2026-10-12": "14:00",
+          "2026-10-26": "14:00",
+          "2026-11-09": "14:00",
+          "2026-11-23": "14:00",
+          "2026-12-07": "14:00",
+          "2026-12-21": "14:00"
+        }
+      },
+      "fuente_tasa": "https://fontanaditrevi.roma.it"
     },
     "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más.",
     "Iglesia de San Ignacio de Loyola": {

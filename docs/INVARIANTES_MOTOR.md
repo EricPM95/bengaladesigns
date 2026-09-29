@@ -2085,3 +2085,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       tu viaje ›», que abre Reservas.
     - **Aquí sí pueden ir precios**, como en Entradas, siempre comprobados en la web oficial y con la fecha.
     - Un destino sin tips: la ventana lo dice («Aún no tenemos los tips de X»), sin inventarlos.
+
+389. **Un texto curado que depende del día dice la hora de ESE día** (PROMPT_UI_REPASO_2, 4). El `por_que` puede llevar
+    `variables` ({nombre: {siempre, <día de la semana>, <AAAA-MM-DD>, sin_fecha}}) y usarlas en su texto como `{nombre}`;
+    `temprano_antes` también puede ser una variable. Con fechas manda el día exacto, luego el día de la semana, luego
+    `siempre`; sin fechas, `sin_fecha`, que cuenta las excepciones. Ejemplo: la tasa de la Fontana de Trevi (2 €, de 9:00
+    a 22:00; lunes y viernes desde las 11:30; algunos lunes desde las 14:00; fontanaditrevi.roma.it, 2026-09-29): el
+    lunes a las 9:30 la parada ya dice que bajas sin pagar, porque la tasa empieza a las 11:30.

@@ -50,11 +50,31 @@ function generalWhyOf(destData, name) {
   return why.general ?? (why.solo_si_viene_de || why.solo_si_sigue ? null : why)
 }
 
-function curatedWhyAt(why, startMinutes) {
+/**
+ * Las `variables` de un texto curado que cambian con el día (PROMPT_UI_REPASO_2, 4: la tasa de la Fontana de Trevi se
+ * cobra desde las 9:00, y los lunes y viernes desde las 11:30). Cada una: { siempre, <día de la semana>, <AAAA-MM-DD>,
+ * sin_fecha }. Con fecha manda la de ese día exacto, luego la del día de la semana, luego `siempre`; sin fechas,
+ * `sin_fecha` (que dice las excepciones) o `siempre`.
+ */
+function whyVariablesOf(why, hours) {
+  const values = {}
+  for (const [name, byDay] of Object.entries(why?.variables ?? {})) {
+    const dated = hours?.dateIso || hours?.weekday
+    values[name] = dated ? (byDay[hours?.dateIso] ?? byDay[hours?.weekday] ?? byDay.siempre) : (byDay.sin_fecha ?? byDay.siempre)
+  }
+  return values
+}
+
+const fillWhy = (text, values) => (typeof text === 'string' ? text.replace(/\{(\w+)\}/g, (all, name) => values[name] ?? all) : text)
+
+function curatedWhyAt(why, startMinutes, hours = null) {
   if (typeof why === 'string') return why
   // `temprano_antes` ("09:00"): el umbral de ESE texto, si no es el de siempre (la Fontana de Trevi: antes de la tasa).
-  const before = why?.temprano_antes ? toMinutes(why.temprano_antes) : EARLY_WHY_BEFORE
-  return startMinutes < before && why?.temprano ? why.temprano : why?.texto ?? why?.temprano ?? null
+  // Puede ser una variable ("{umbral}"): el de ESE día (sin fechas, el de `siempre`: antes de él no se paga ningún día).
+  const values = whyVariablesOf(why, hours)
+  const threshold = why?.temprano_antes?.startsWith?.('{') ? (hours?.dateIso || hours?.weekday ? values[why.temprano_antes.slice(1, -1)] : why.variables?.[why.temprano_antes.slice(1, -1)]?.siempre) : why?.temprano_antes
+  const before = threshold ? toMinutes(threshold) : EARLY_WHY_BEFORE
+  return fillWhy(startMinutes < before && why?.temprano ? why.temprano : why?.texto ?? why?.temprano ?? null, values)
 }
 
 /** Lo más que dura un "Por el camino" (B.1): lo que merece más es una parada. */
@@ -420,7 +440,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const condition = typeof why === 'object' && why ? (why.solo_si_viene_de ? { lista: why.solo_si_viene_de, nombre: previousName, tipo: 'viene_de' } : why.solo_si_sigue ? { lista: why.solo_si_sigue, nombre: nextName, tipo: 'sigue' } : null) : null
       const holds = !condition || condition.lista.includes(condition.nombre)
       const general = condition && !holds ? (why.general ?? generalWhyOf(destData, visit.place.name)) : null
-      stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : general ? curatedWhyAt(general, visit.start) : curatedWhyAt(why, visit.start)
+      stop.why = stop.outside && typeof why === 'object' && why.por_fuera ? why.por_fuera : general ? curatedWhyAt(general, visit.start, tripDay.hours) : curatedWhyAt(why, visit.start, tripDay.hours)
       stop.why_source = 'curado'
       if (condition) stop.why_condition = { tipo: condition.tipo, cumple: holds, usa_general: Boolean(general) }
     }
