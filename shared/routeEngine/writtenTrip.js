@@ -56,6 +56,7 @@ const LUNCH_DEFAULT = { completo: 60, tranquilo: 90 }
 const DINNER_MINUTES = 90
 const DINNER_EARLIEST = 19 * 60 + 30
 const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
+const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
@@ -404,7 +405,9 @@ export function planWrittenTrip(args) {
     }
     extrasUsed++
     const sites = written.destino?.pool?.[name]?.sitios ?? []
-    const site = sites.find((candidate) => drafts.some((draft) => draft.id === candidate.dia) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
+    // (Nunca en un día en que ese lugar cierra: pasa a su siguiente sitio.)
+    const siteDraft = (candidate) => drafts.find((draft) => draft.id === candidate.dia)
+    const site = sites.find((candidate) => siteDraft(candidate) && !closedThatDay(name, siteDraft(candidate).day) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`)) ?? sites.find((candidate) => siteDraft(candidate) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
     if (!site) {
       unplacedPool.push({ unitId: name, name, reason: sites.length === 0 ? 'no_room' : 'no_room_day', dayNumber: null })
       continue
@@ -573,6 +576,15 @@ export function planWrittenTrip(args) {
       }
       // `si_no_visto`: no va si el viaje ya lo vio por dentro otro día (el Castillo de D7 con el de D2 o D4); `si_visto`: va
       // solo si ya se vio ese otro (el Palazzo Doria Pamphilj en su lugar).
+      // El desayuno (una pausa, `isBreak`): solo en completo, y solo después de una visita temprana con hora (Trevi a las
+      // 8:30) o para llenar el rato hasta algo con hora fija (el Free Tour de las 10:00). Nunca como bloque de todas las
+      // mañanas; en tranquilo el día empieza a las 10:00 y no lleva (decisión del usuario, 2026-09-29).
+      if (source.isBreak) {
+        const previousHour = index > 0 ? hourOf(list[index - 1]) : null
+        const nextHour = index + 1 < list.length ? hourOf(list[index + 1]) : null
+        const afterEarly = previousHour != null && previousHour <= BREAKFAST_AFTER_BEFORE
+        if (tranquilo || !(afterEarly || nextHour != null)) return
+      }
       if (stop.si_no_visto && seenInside.has(stop.lugar)) return
       if (stop.si_visto && !seenInside.has(stop.si_visto)) return
       let outsideReason = null

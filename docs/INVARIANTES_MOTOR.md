@@ -1844,3 +1844,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       no hay, el mismo lugar de día; nunca otro. La revisión está en `docs/FOTOS_ROMA.html`
       (`scripts/destino/fotosRoma.mjs`).
     - **Avisos de fechas.** Flechas ‹ ›, «1 de 3» y «Siguiente» hasta el último, que dice «Entendido».
+
+356. **El desayuno** (2026-09-29): solo en ritmo completo (en tranquilo el día empieza a las 10:00 y no lleva), y solo
+    después de una visita temprana con hora (Trevi a las 8:30) o para llenar el rato hasta algo con hora fija (el Free
+    Tour de las 10:00). Nunca como bloque de todas las mañanas. Se ve con la tarjeta de siempre (franja y diagonal), sin
+    número, y en la diagonal la misma foto en todos los destinos: un café (`BREAKFAST_PHOTO_URL`, enlazada de Unsplash).
+
+357. **Un extra del pool nunca va a un sitio en un día en que ese lugar cierra** (2026-09-29): pasa a su siguiente
+    sitio (Caracalla el lunes, por fuera, en D5C).

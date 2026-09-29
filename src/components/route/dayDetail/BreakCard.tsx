@@ -2,7 +2,8 @@ import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { KIND_ICON } from '../../../lib/stopKind'
-import { MealCard } from './TrazoCards'
+import { TrazoCard } from './TrazoCards'
+import { BREAKFAST_PHOTO_URL } from '../../../lib/breakfastPhoto'
 
 interface BreakCardProps {
   stop: MockStopDetail
@@ -14,25 +15,24 @@ interface BreakCardProps {
 }
 
 /**
- * Una pausa con nombre del día curado (el desayuno romano): no es un lugar, así que se pinta como la
- * comida (terracota, sin número ni foto), con su franja y dos cafés cerca. Su texto va en la ficha (la tarjeta no
- * lleva texto); la ficha de una pausa nunca pide nada al servidor ni a Claude.
+ * Una pausa con nombre del día curado (el desayuno romano): no es un lugar. La tarjeta de siempre, con su franja de
+ * color y la diagonal, sin número de orden; en la diagonal, la misma foto en todos los destinos, un café
+ * (BREAKFAST_PHOTO_URL; decisión del usuario, 2026-09-29). Su texto va en la ficha; la ficha de una pausa nunca pide nada
+ * al servidor ni a Claude.
  */
 export function BreakCard({ stop, startTime, menu, onOpen }: BreakCardProps) {
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
   const suggestions = stop.breakSuggestions ?? []
-  // El desayuno, como la comida pero en pequeño (PROMPT_UI, Parte 2): sin número, "Cambiar" como enlace.
   return (
-    <MealCard
-      small
-      label="Desayuno"
-      timeRange={startTime ? (endTime ? `${startTime} – ${endTime}` : startTime) : null}
-      name={stop.name}
-      sub={suggestions.length > 0 ? suggestions.map((item) => `${item.name} · ${item.walkMinutes} min`).join(' · ') : null}
+    <TrazoCard
+      kind="comida"
       iconPath={KIND_ICON.coffee}
-      onOpen={onOpen}
-      onChange={onOpen}
+      time={startTime ? (endTime ? `${startTime} – ${endTime}` : startTime) : null}
+      name={stop.name}
+      meta={suggestions.map((item) => ({ icon: 'pin' as const, text: `${item.name} · ${item.walkMinutes} min` }))}
+      photoUrl={BREAKFAST_PHOTO_URL}
       menu={menu}
+      onOpen={onOpen}
     />
   )
 }
