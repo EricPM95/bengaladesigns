@@ -94,10 +94,13 @@ export function ExcursionBanner({
   destination,
   highlights,
   onSeeAll,
+  offer = null,
 }: {
   destination: string
   highlights: Excursion[]
   onSeeAll: () => void
+  /** Viaje sin excursión: su propio título y texto, y sin precios. */
+  offer?: { title: string; text: string } | null
 }) {
   const [dismissed, setDismissed] = useState(false)
   if (highlights.length === 0) return null
@@ -107,8 +110,8 @@ export function ExcursionBanner({
     <section className="rounded-xl border border-accent/30 bg-accent-soft/50 p-3">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
-          <h2 className="text-body font-semibold text-text">🌍 ¿Te apetece una excursión?</h2>
-          <p className="mt-0.5 text-caption text-text-soft">Tienes tu ruta preparada, pero muchos viajeros aprovechan este día para salir de {destination}.</p>
+          <h2 className="text-body font-semibold text-text">🌍 {offer?.title ?? '¿Te apetece una excursión?'}</h2>
+          <p className="mt-0.5 text-caption text-text-soft">{offer?.text ?? `Tienes tu ruta preparada, pero muchos viajeros aprovechan este día para salir de ${destination}.`}</p>
         </div>
         <button
           type="button"
@@ -129,7 +132,7 @@ export function ExcursionBanner({
                 {excursion.emoji ?? '🚌'}
               </span>
               <span className="min-w-0 flex-1 truncate text-small font-medium text-text">{excursion.title}</span>
-              {formatPrice(excursion) && <span className="shrink-0 whitespace-nowrap text-caption text-text-soft">desde {formatPrice(excursion)}</span>}
+              {!offer && formatPrice(excursion) && <span className="shrink-0 whitespace-nowrap text-caption text-text-soft">desde {formatPrice(excursion)}</span>}
               <RatingLabel excursion={excursion} />
             </button>
           </li>

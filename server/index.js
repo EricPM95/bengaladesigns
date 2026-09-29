@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
+import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -4995,9 +4996,20 @@ app.post('/api/generate-day-block', async (req, res) => {
         const dayConfig = getDayConfig(blockDayNumbers[0], pipelineV2Data)
         if (dayConfig.type === 'smart_route') dayBlockV2.type = 'smart_route'
         dayBlockV2.excursion_prominence = dayConfig.excursionProminence
+        // Un viaje sin excursión (Roma en 4 días) la ofrece en un solo día, el de `excursion_oferta.dia`, con su texto y
+        // sin precios; los demás días no llevan banner (decisión del usuario, 2026-09-29).
+        const offer = pipelineV2Data.destination_config?.excursion_oferta
+        if (offer?.dia) {
+          const tripHasExcursion = tripDays({ destData: pipelineV2Data, totalDays: totalDaysV2, hasFreeTour: hasFreeTourFromAnswers(answers) }).some((day) => day.isExcursion)
+          if (!tripHasExcursion) {
+            const isOfferDay = dayBlockV2.curated_day?.id === offer.dia
+            dayBlockV2.excursion_prominence = isOfferDay ? 'prominent' : 'subtle'
+            if (isOfferDay) dayBlockV2.excursion_offer = { title: offer.titulo, text: offer.texto }
+          }
+        }
         // Solo los días prominentes llevan las destacadas: en los sutiles el banner no existe y
         // mandarlas sería peso muerto en la respuesta.
-        if (dayConfig.excursionProminence === 'prominent') {
+        if (dayBlockV2.excursion_prominence === 'prominent') {
           dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3, totalDaysV2, answers.pace))
         }
         console.log(

@@ -202,6 +202,8 @@ export interface GeneratedDay {
   free_times?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
+  /** Viaje sin excursión: el día en que se ofrece, con su texto — ver DayPlan.excursionOffer. */
+  excursion_offer?: { title: string; text: string } | null
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
   curated_alternative?: { title: string; places: string[] } | null
 }
@@ -700,6 +702,7 @@ function mapDay(
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,
+    excursionOffer: generated.excursion_offer ?? null,
     curatedAlternative: generated.curated_alternative ?? null,
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,

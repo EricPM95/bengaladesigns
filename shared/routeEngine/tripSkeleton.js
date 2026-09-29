@@ -49,7 +49,11 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   //
   // Nunca el ÚLTIMO día del viaje (revisión del 2026-09-25): suele ser el de la vuelta. Si `core_days`
   // cae ahí (4 días en Roma), la excursión se adelanta un día y ese día curado pasa al último.
-  const excursionAtCore = contentDays >= coreDays ? coreDays : null
+  //
+  // Y solo desde `excursion_desde_dias` días de contenido, si el destino lo fija (Roma, 5; decisión del
+  // 2026-09-29): con 4 días todo es ciudad y la excursión se ofrece, no se pone.
+  const excursionFrom = Math.max(coreDays, config.excursion_desde_dias ?? coreDays)
+  const excursionAtCore = contentDays >= excursionFrom ? coreDays : null
   const excursionDay = excursionAtCore !== null && excursionAtCore === contentDays && contentDays > 2 ? excursionAtCore - 1 : excursionAtCore
   const excursionMoved = excursionDay !== excursionAtCore
 

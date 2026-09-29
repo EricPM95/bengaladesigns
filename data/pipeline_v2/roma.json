@@ -7396,6 +7396,13 @@
   ],
   "destination_config": {
     "core_days": 4,
+    "excursion_desde_dias": 5,
+    "excursion_oferta": {
+      "_nota": "Viajes sin excursión (4 días): en el día de D5C se ofrece cambiarlo por una excursión (decisión del usuario, 2026-09-29). Sin precios.",
+      "dia": "D5C",
+      "titulo": "¿Te apetece salir de Roma un día?",
+      "texto": "Puedes cambiar este día por una excursión: Pompeya, Florencia, la Costa Amalfitana…"
+    },
     "max_auto_days": 7,
     "size": "grande",
     "category_cap_selected": 4,
@@ -12189,13 +12196,13 @@
           "D1",
           "D2",
           "D4",
-          "D5"
+          "D5C"
         ],
         "con_free_tour": [
           "D3",
           "D1-FT",
           "D4",
-          "D5"
+          "D5C"
         ]
       },
       "5": {

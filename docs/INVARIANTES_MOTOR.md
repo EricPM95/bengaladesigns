@@ -1745,3 +1745,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     atardecer, su sitio quita o acorta algo de esa versión (el Aventino en D2 acorta Trastevere; los Capitolinos en D5 A
     quitan las Catacumbas y la Isla; el Parque en D4 A es el lago en lugar de los jardines), para que el mirador siga
     llegando a su hora.
+
+338. **La excursión, desde `excursion_desde_dias` días** (2026-09-29; Roma, 5): con menos días de contenido todo es
+    ciudad (Roma en 4 días: D1, D2, D4 y D5C; con Free Tour, D3, D1-FT, D4 y D5C) y la excursión se ofrece en un solo
+    día, el de `excursion_oferta.dia`, con su texto y sin precios; los demás días no llevan banner. Si el viajero la
+    elige, ese día pasa a ser la excursión (convertDayType) y nada más cambia. Con 5 días, los 4 y la excursión; con 6 y
+    7, D5 (Via Appia), D6 y D7.

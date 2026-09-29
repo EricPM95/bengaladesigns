@@ -1115,7 +1115,7 @@ export function DayDetailPanel({
               medio día por la mañana: "muchos viajeros aprovechan este día para salir de Roma"
               encima de una mañana que ya sale de Roma es contradecirse en dos centímetros. */}
           {showsRoute && !halfDayExcursion && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && (
-            <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} onSeeAll={() => convertDay('excursion')} />
+            <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} offer={day.excursionOffer ?? null} onSeeAll={() => convertDay('excursion')} />
           )}
 
           {/* Día en blanco al que el viajero le ha puesto una excursión de jornada completa: el día

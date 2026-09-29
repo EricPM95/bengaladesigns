@@ -598,6 +598,8 @@ export interface DayPlan {
   excursionProminence?: ExcursionProminence
   /** Solo días prominentes: las 2-3 destacadas del banner. */
   excursionHighlights?: Excursion[]
+  /** Viaje sin excursión (Roma en 4 días): el día en que se ofrece cambiarlo por una, con su título y texto, sin precios. */
+  excursionOffer?: { title: string; text: string } | null
   /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
   curatedAlternative?: CuratedAlternative | null
   /** El día tal como lo dio el motor, antes del primer cambio del viajero (decisión del usuario, 2026-09-28): "Volver a
