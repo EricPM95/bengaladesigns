@@ -1787,3 +1787,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 347. **Días escritos: la variante de fecha va después de la de cierre** (2026-09-29): es lo más concreto y manda (Navidad
     en D2, con los Museos cerrados, conserva la Bendición). Y un extra o una experiencia que entra en un día con una
     parada que tiene hora (el Panteón del sábado) se escribe con `antes_de`, no `al_principio`.
+
+348. **Ninguna parada se recorta de más** (2026-09-29): la elástica no baja del 75 % de lo escrito ni de 15 min (20 un
+    barrio), y un barrio nunca se escribe por debajo de 20. Si la elástica tendría que quedarse en menos de 15, se quita,
+    solo si después hay un bloque del mismo barrio (Monti con el aperitivo en Monti) y nunca si es del pool. La prueba
+    marca `parada_corta`. La llegada al mirador solo se adelanta en un mirador, nunca en una avenida (los Foros).
+
+349. **Horas y duraciones de 5 en 5** (2026-09-29): todo lo que ve el viajero (hora de llegada, duración, comidas) va de 5
+    en 5 minutos, y la elástica se ajusta de 5 en 5; los minutos andando entre paradas, exactos. (Antes, al cuarto de
+    hora: el redondeo se comía minutos de las visitas y el Barrio Judío de 20 min salía de 11.)
+
+350. **D1-FT A**: al Janículo en el bus 115 y se baja por la Fontana dell'Acqua Paola y el Tempietto; el Barrio Judío
+    20 min y la Isla 15, sin recortes. **D4 B en domingo**: Santa Maria del Popolo 20 min y el lago de 20, con la tarde
+    desde las 14:45 (abre a las 16:30). El mirador solo se alarga si la cena espera en C y D: en A y B ese rato es de la
+    nocturna y del aperitivo (la Terraza del Pincio de 70 min del 14 de marzo).

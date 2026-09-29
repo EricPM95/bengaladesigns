@@ -69,11 +69,11 @@
   "tarde": {
     "empieza": "15:00",
     "A": {
-      "_sol": "antes de las 17:40: Trastevere, el Tempietto abierto y el Janículo al atardecer; se baja a Santa Maria in Trastevere",
+      "_sol": "antes de las 17:40: el Ghetto y la Isla sin prisas, Trastevere como elástica, al Janículo en el bus 115 para el atardecer; se baja por la Fontana dell'Acqua Paola y el Tempietto (por fuera) hasta Santa Maria in Trastevere",
       "paradas": [
         {
           "lugar": "Barrio Judío",
-          "min": 10
+          "min": 20
         },
         {
           "lugar": "Fuente de las Tortugas",
@@ -85,26 +85,30 @@
         },
         {
           "lugar": "Isla Tiberina",
-          "min": 10
+          "min": 15
         },
         {
           "lugar": "Trastevere",
-          "min": 30,
+          "min": 45,
           "elastica": 30
         },
         {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 10,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer",
+          "traslado": {
+            "como": "el bus 115 (desde Viale Trastevere hasta el Piazzale Garibaldi)",
+            "min": 15
+          }
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
           "min": 10
         },
         {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "dentro",
+          "min": 10,
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",

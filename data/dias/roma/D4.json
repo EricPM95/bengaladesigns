@@ -366,7 +366,15 @@
         ]
       },
       "tarde.B": {
-        "empieza": "14:25"
+        "empieza": "14:45",
+        "ajustar": {
+          "Parque de Villa Borghese": {
+            "min": 20
+          },
+          "Santa Maria del Popolo": {
+            "min": 20
+          }
+        }
       },
       "tarde.D": {
         "empieza": "15:15"

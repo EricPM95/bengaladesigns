@@ -36,6 +36,9 @@ const VERSIONS = ['A', 'B', 'C', 'D']
 const SUNSET_LEAD = 25
 const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minutos o menos
 const LONG_WALK = 25 // más de esto andando, en taxi si no hay otro transporte escrito
+const STOP_MIN = 15 // una parada no se recorta por debajo de 15 min (ni del 75 % de lo escrito)
+const BARRIO_MIN = 20 // un barrio, 20
+const ELASTIC_DROP = 15 // si la elástica tendría que bajar de 15 min, se quita
 const NEIGHBOUR_WINDOW = 15 // en la frontera entre dos versiones de luz, si la elástica no llega, la vecina
 const LEAD_FLEX = 10 // al mirador se llega entre 15 y 35 min antes del sol: lo que la elástica no llega a absorber
 const SUNSET_STAY = 15
@@ -537,12 +540,25 @@ export function planWrittenTrip(args) {
    * Una lista de paradas, en orden, desde `cursor`. `elasticDelta`: lo que se alarga o acorta la parada elástica.
    * Devuelve las visitas y el cursor al final (sin tocar nada fuera de lo escrito).
    */
+  /**
+   * Lo menos que puede durar una parada recortada: el 75 % de lo escrito y nunca menos de 15 min (20 un barrio); lo que
+   * ya está escrito más corto (una plaza de 10 min) se queda como está. Salvo un barrio, que nunca baja de 20: en la
+   * comprobación (writtenCheck) un Barrio Judío escrito de 10 min es un error.
+   */
+  function shrinkFloor(stop, base, writtenCheck = false) {
+    const barrio = (placeByName.get(stop.lugar)?.tags ?? []).includes('barrio')
+    const abs = barrio ? BARRIO_MIN : STOP_MIN
+    if (writtenCheck && barrio) return Math.max(abs, Math.ceil(base * 0.75))
+    return Math.min(base, Math.max(Math.ceil(base * 0.75), abs))
+  }
   function runList(list, slot, cursor, ctx, elasticDelta = 0) {
     const visits = []
     const units = []
     let { t, coords } = cursor
     let carry = null
     list.forEach((original, index) => {
+      // (La elástica que se quedaría por debajo de ELASTIC_DROP min se quita: su rato va al bloque siguiente.)
+      if (original.elastica != null && ctx.dropElastic) return
       let stop = original
       let source = sourceOf(stop)
       if (!source) {
@@ -602,7 +618,9 @@ export function planWrittenTrip(args) {
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
-      if (original.elastica != null && elasticDelta) duration = Math.max(10, duration + elasticDelta)
+      if (original.elastica != null && elasticDelta) duration = Math.max(shrinkFloor(stop, duration), duration + elasticDelta)
+      // (Un barrio escrito por debajo de su mínimo, o una elástica que no llega: la prueba lo marca.)
+      if (!ctx.probe && !place.visitOutside && !place.passThrough && place.sunset == null && duration < shrinkFloor(stop, stop.min ?? source.duration_minutes ?? duration, true)) ctx.problems.push({ tipo: 'parada_corta', lugar: stop.lugar, minutos: duration })
       // El mirador: se llega a su hora (el sol menos 25 min) y se queda hasta 15 min después del sol.
       if (place.sunset != null) {
         const target = place.sunset - (place.sunsetLead ?? SUNSET_LEAD) - (ctx.earlyBy ?? 0)
@@ -777,14 +795,27 @@ export function planWrittenTrip(args) {
       if (probe.sunsetArrival != null) {
         const target = hours.sunset - (sunsetStop.lead ?? SUNSET_LEAD)
         elasticWanted = target - probe.sunsetArrival
-        elasticUsed = Math.max(-elasticStop.elastica, Math.min(elasticStop.elastica, elasticWanted))
+        // (De 5 en 5, como todo lo que ve el viajero.)
+        elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(elasticStop.elastica, elasticWanted)) / 5) * 5
+        // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
+        const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
+        // (Solo si después hay un bloque del mismo barrio que se queda su rato, Monti con el aperitivo en Monti, y nunca un
+        // lugar del pool.)
+        const elasticPlace = placeByName.get(elasticStop.lugar)
+        const sameBarrioAfter = Boolean(draft.barrio_cena) && (elasticPlace?.zone === draft.barrio_cena || norm(elasticStop.lugar) === norm(draft.barrio_cena))
+        if (base + elasticWanted < ELASTIC_DROP && sameBarrioAfter && !inPool(elasticStop.lugar)) {
+          ctx.dropElastic = true
+          elasticUsed = -base
+        } else elasticUsed = Math.max(shrinkFloor(elasticStop, base) - base, elasticUsed)
       }
     }
     // Lo que la elástica no llega a absorber (hasta LEAD_FLEX min), lo absorbe la llegada al mirador: de 15 a 35 min antes del
     // sol en vez de 25. Si se llega tarde ya pasa solo; si se llegaría pronto, se llega antes y se queda más.
     // (Por menos de 5 min no se adelanta: esa espera en el mirador no se nota.)
     const early = elasticWanted - elasticUsed
-    ctx.earlyBy = early >= 5 ? Math.min(LEAD_FLEX, early) : 0
+    // (Solo en un mirador: una avenida al atardecer, los Foros, tiene su máximo.)
+    const sunsetIsMirador = sunsetStop && (placeByName.get(sunsetStop.lugar)?.tags ?? []).includes('mirador')
+    ctx.earlyBy = early >= 5 && sunsetIsMirador ? Math.min(LEAD_FLEX, early) : 0
     const afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
     const visits = [...morning.visits, ...afternoon.visits]
     const units = [...morning.units, ...afternoon.units]
@@ -800,7 +831,8 @@ export function planWrittenTrip(args) {
     // Si la cena espera y lo último es el mirador, se queda más en el mirador (hasta SUNSET_STAY_EXTRA min): las luces.
     const lastVisit = afternoon.visits.at(-1)
     // (Solo un mirador: una avenida o un paseo tienen su máximo. Desde 10 min de espera, y deja 5.)
-    if (dinnerStart - readyAt > 10 && lastVisit?.place?.sunset != null && (lastVisit.place.tags ?? []).includes('mirador')) {
+    // (En C y D: en A y B ese rato es de la nocturna y de «luces y aperitivo».)
+    if ((draft.version === 'C' || draft.version === 'D') && dinnerStart - readyAt > 10 && lastVisit?.place?.sunset != null && (lastVisit.place.tags ?? []).includes('mirador')) {
       const extra = Math.min(SUNSET_STAY_EXTRA, dinnerStart - readyAt - 5)
       lastVisit.end += extra
       readyAt += extra

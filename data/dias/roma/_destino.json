@@ -416,6 +416,22 @@
               ]
             }
           }
+        },
+        {
+          "dia": "D5C",
+          "cambios": {
+            "tarde.*": {
+              "cambiar": {
+                "Mercados de Trajano": {
+                  "lugar": "Museos Capitolinos",
+                  "min": 60,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -491,6 +507,43 @@
                     "como": "un taxi",
                     "min": 15
                   }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D5C",
+          "hueco": "manana",
+          "cambios": {
+            "manana": {
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Termas de Caracalla",
+                    "tipo": "fija",
+                    "hora": {
+                      "completo": "09:00",
+                      "tranquilo": "10:00"
+                    },
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "quitar": [
+                "Cementerio Protestante"
+              ],
+              "ajustar": {
+                "Boca de la Verdad": {
+                  "tipo": "normal",
+                  "hora": null
+                },
+                "Testaccio": {
+                  "min": 30
                 }
               }
             }

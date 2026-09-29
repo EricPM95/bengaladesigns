@@ -16,15 +16,21 @@ import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 
-/** "10:07" → "10:00": el cuarto de hora más cercano (nunca siempre hacia arriba: el día acabaría con retraso). */
+/**
+ * Todas las horas y duraciones que ve el viajero, de 5 en 5 minutos (decisión del usuario, 2026-09-29; antes, al cuarto de
+ * hora, y el redondeo se comía minutos de las visitas: el Barrio Judío de 20 min salía de 11).
+ */
+const DISPLAY_STEP = 5
+
+/** "10:07" → "10:05": los 5 minutos más cercanos (nunca siempre hacia arriba: el día acabaría con retraso). */
 function nearestQuarter(hhmm) {
   const minutes = toMinutes(hhmm)
-  return Number.isFinite(minutes) ? toHHMM(Math.round(minutes / 15) * 15) : hhmm
+  return Number.isFinite(minutes) ? toHHMM(Math.round(minutes / DISPLAY_STEP) * DISPLAY_STEP) : hhmm
 }
 
 /**
- * Horas redondas (PROMPT_RUTAS_CURADAS B2.1): el motor calcula con los minutos exactos y aquí se enseña el cuarto de
- * hora más cercano de cada llegada (nunca siempre hacia arriba: el día acabaría con retraso). Lo que hay hasta la
+ * Horas redondas (PROMPT_RUTAS_CURADAS B2.1): el motor calcula con los minutos exactos y aquí se enseñan los 5 minutos
+ * más cercanos de cada llegada (nunca siempre hacia arriba: el día acabaría con retraso). Lo que hay hasta la
  * siguiente parada (el paseo, la comida, una espera) se queda con sus minutos exactos, y la visita dura lo que cuadra:
  * así la hora de salida más el paseo da la llegada a la siguiente (también lo de paso). Lo que no tiene siguiente se queda
  * con sus minutos; una visita nunca baja de la mitad de lo que dura (entonces, sus minutos de siempre).
@@ -66,14 +72,17 @@ const WINTER_IDLE_MAX = 90
 
 function quarterHourStops(stops) {
   const exact = stops.map((stop) => toMinutes(stop.suggested_time))
-  return stops.map((stop, index) => {
+  // (La duración, también de 5 en 5; el paseo entre paradas se queda con sus minutos exactos.)
+  const step = (stop) => (stop.duration_minutes == null ? stop : { ...stop, duration_minutes: Math.max(DISPLAY_STEP, Math.round(stop.duration_minutes / DISPLAY_STEP) * DISPLAY_STEP) })
+  return stops.map((stop, index) => step(stepStop(stop, index)))
+  function stepStop(stop, index) {
     const start = exact[index]
     if (!Number.isFinite(start)) return stop
-    const roundedStart = Math.round(start / 15) * 15
+    const roundedStart = Math.round(start / DISPLAY_STEP) * DISPLAY_STEP
     const next = index + 1 < stops.length && !stops[index + 1].is_night_experience && !stop.is_night_experience ? exact[index + 1] : NaN
     if (!Number.isFinite(next)) return { ...stop, suggested_time: toHHMM(roundedStart) }
     const gap = next - (start + (stop.duration_minutes ?? 0))
-    const duration = Math.round(next / 15) * 15 - gap - roundedStart
+    const duration = Math.round(next / DISPLAY_STEP) * DISPLAY_STEP - gap - roundedStart
     const rounded = duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes
     // "Por el camino" dura 10 min como mucho: el sobrante del redondeo no se mete ahí, se queda esperando la hora de
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
@@ -84,7 +93,7 @@ function quarterHourStops(stops) {
     const { min_minutes: floor, max_minutes: ceiling, ...clean } = stop
     // (`max_minutes`: el puente no se queda con lo que sobra del redondeo.)
     return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity) }
-  })
+  }
 }
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
