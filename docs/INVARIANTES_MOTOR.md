@@ -1951,3 +1951,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     Nuevo en los datos, con dirección y coordenada comprobadas (turismoroma.it y OSM): Girarrosto Fiorentino, Via
     Sicilia 46, arriba de Via Veneto, a unos 10 min por Porta Pinciana. Descartados: Molto de la Galería (ya no aparece
     en su web), Al Ceppo (Via Panama, 17 min) y Caffè delle Arti (16 min).
+
+372. **La cena, también a 15 min andando como mucho de lo último** (2026-09-29, PROMPT_ROMA_V4_REPASO 10): la escrita o
+    su alternativa si están a 15 min. Si no, la más cercana, y solo si ninguna está a 15 min, la escrita. En D4M, desde
+    los Foros: La Boccaccia (8 min) o Trattoria Valentino (10), en Monti, en vez de Trattoria Monti (20).

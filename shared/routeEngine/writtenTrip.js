@@ -62,6 +62,7 @@ const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
 const LUNCH_MIN_TRANQUILO = 60 // en tranquilo, al menos una hora
 const TRANQUILO_EARLIEST = 10 * 60 // en tranquilo, la primera parada nunca antes de las 10:00
+const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 const TRANSFER_NOTICE_MINUTES = 25
@@ -883,7 +884,12 @@ export function planWrittenTrip(args) {
     // La cena: su restaurante y su hora escritas (la hora es la de antes; si se llega más tarde, cuando se llega).
     const last = afternoon.cursor
     const pickDinner = (names) => recommendedRestaurant(destData, { names, meal: 'cena', near: last.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
-    const dinnerRestaurant = pickDinner([draft.cena?.restaurante].filter(Boolean)) ?? pickDinner([draft.cena?.alternativa].filter(Boolean)) ?? pickDinner(null)
+    // La cena, como la comida, a 15 min andando como mucho de lo último (PROMPT_ROMA_V4_REPASO 10: Trattoria Monti a 20 min
+    // de los Foros): la escrita o su alternativa si están a 15; si no, la más cercana; y si ninguna, la escrita.
+    const writtenDinners = [pickDinner([draft.cena?.restaurante].filter(Boolean)), pickDinner([draft.cena?.alternativa].filter(Boolean))].filter(Boolean)
+    const nearDinner = (spot) => spot && walkLeg(last.coords, spot.coordinates) <= DINNER_WALK_MAX
+    const nearestDinner = pickDinner(null)
+    const dinnerRestaurant = writtenDinners.find(nearDinner) ?? (nearDinner(nearestDinner) ? nearestDinner : null) ?? writtenDinners[0] ?? nearestDinner
     const dinnerWalk = dinnerRestaurant ? walkLeg(last.coords, dinnerRestaurant.coordinates) : 10
     let readyAt = last.t + dinnerWalk
     // Nunca antes de las 19:30 (ni de la hora escrita) y, en verano (versión D), nunca antes de las 20:30.
