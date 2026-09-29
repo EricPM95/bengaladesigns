@@ -2017,3 +2017,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Las cifras del día:** tres en fila, separadas por una línea fina; el número en Instrument Serif (18 px) y la
       palabra en mono y en mayúsculas («13 PARADAS | 10,6 KM A PIE | 7 H 30 DE ACTIVIDAD»). Sin iconos ni caja, centradas.
     - **«De camino»:** del mismo ancho que las paradas, con 16 px arriba y abajo.
+
+380. **La ventana de llegada y vuelta, con el mapa del viaje** (2026-09-29, PROMPT_UI_REPASO 9): arriba ya no va una foto,
+    sino el mapa de la pestaña Ruta, con el viaje entero (los días con sus líneas y el punto de llegada). Las fotos
+    comprobadas de `_llegada.json` quedan para la página de revisión.

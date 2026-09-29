@@ -1568,6 +1568,7 @@ export function DayDetailPanel({
       {route && (
         <ArrivalReturnSheet
           open={arrivalSheet !== null}
+          route={route}
           kind={arrivalSheet ?? 'llegada'}
           mode={arrivalSheet === 'vuelta' ? modes.departure : modes.arrival}
           info={arrivalInfo}

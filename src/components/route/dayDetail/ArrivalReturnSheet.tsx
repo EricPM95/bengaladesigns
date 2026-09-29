@@ -1,6 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { fetchPlacePhoto } from '../../../lib/placePhoto'
+import type { Route } from '../../../lib/types'
+import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../../lib/routeMapMarkers'
+import { buildDestinationSegments } from '../../../lib/destinationSegments'
+import { useArrivalMarkers } from '../../../lib/useArrivalMarkers'
+import { StopsMapView } from '../../map/StopsMapView'
 import {
   minutesToHHMM,
   type ArrivalInfo,
@@ -32,6 +36,8 @@ const ADD_LABEL: Record<ArrivalMode, string> = { avion: 'Añadir vuelo', tren: '
 export interface ArrivalReturnSheetProps {
   open: boolean
   kind: 'llegada' | 'vuelta'
+  /** El viaje: arriba va su mapa entero, el de la pestaña Ruta (PROMPT_UI_REPASO 9). */
+  route: Route
   mode: ArrivalMode
   info: ArrivalInfo
   medio: ArrivalMedio | null
@@ -129,40 +135,28 @@ function TipList({ tips }: { tips: ArrivalTip[] }) {
 }
 
 /**
- * La llegada o la vuelta abiertas (PROMPT_UI, Parte 3): foto arriba, X, «LLEGADA · MAR 29 SEP», el título y la reserva
+ * La llegada o la vuelta abiertas (PROMPT_UI, Parte 3): el mapa del viaje arriba (PROMPT_UI_REPASO 9: antes, una foto), X, «LLEGADA · MAR 29 SEP», el título y la reserva
  * con «Editar». Pestañas Resumen / Traslados / Tips, con el contenido del medio (data/dias/<destino>/_llegada.json):
  * a la llegada, todas las formas de ir al centro (la más cómoda primero), la estación, la consigna y la primera parada;
  * a la vuelta, la última tarde, las formas de ir al aeropuerto o la estación, la maleta y la última hora. Cada precio
  * con su fuente. Traslados, solo si ese punto tiene traslado privado (nunca en coche).
  */
 export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
-  const { open, kind, mode, info, medio, origin, dateIso, time, pointId, onPickPoint, keyMinutes, firstStop, onEditBooking, onClose } = props
+  const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, onPickPoint, keyMinutes, firstStop, onEditBooking, onClose } = props
   const [tab, setTab] = useState<Tab>('resumen')
-  const [photo, setPhoto] = useState<string | null>(null)
 
   const points = medio?.puntos ?? []
   const chosen: ArrivalPoint | null = points.find((point) => point.id === pointId) ?? null
   // Con reserva, un punto (el elegido o el primero); sin reserva, todos.
   const shownPoints: ArrivalPoint[] = time ? [chosen ?? points[0]].filter(Boolean) : points
-  const photoPoint = shownPoints[0] ?? null
 
   useEffect(() => {
     if (open) setTab('resumen')
   }, [open, kind])
 
-  useEffect(() => {
-    if (!open) return
-    if (photoPoint?.foto_url) {
-      setPhoto(photoPoint.foto_url)
-      return
-    }
-    if (!photoPoint?.foto) return
-    let alive = true
-    fetchPlacePhoto(photoPoint.foto, info.ciudad, null, 'regular').then((url) => alive && setPhoto(url))
-    return () => {
-      alive = false
-    }
-  }, [open, photoPoint?.foto, photoPoint?.foto_url, info.ciudad])
+  // Arriba, el mapa del viaje entero (el de la pestaña Ruta): los días con sus líneas y el punto de llegada.
+  const segments = buildDestinationSegments(route.days)
+  const arrivalMarkers = useArrivalMarkers(route, segments)
 
   if (!medio) return null
   const arrival = kind === 'llegada'
@@ -191,12 +185,8 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
       {open && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
           <div className="flex-1 overflow-y-auto">
-            <div className="relative h-[30vh] min-h-[180px] w-full overflow-hidden" style={{ background: ARRIVAL_PETROL }}>
-              {photo && <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/35" aria-hidden="true" />
-              {photo && photoPoint?.foto_credito && (
-                <span className="absolute bottom-2 right-3 text-[10px] text-white/80">Foto: {photoPoint.foto_credito}</span>
-              )}
+            <div className="relative h-[30vh] min-h-[180px] w-full overflow-hidden bg-bg-hover">
+              <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} lines={buildCombinedDaysLines(route.days)} />
               <button
                 type="button"
                 onClick={onClose}
