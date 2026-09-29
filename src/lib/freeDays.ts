@@ -175,7 +175,8 @@ export function renameDay(route: Route, dayId: string, name: string): Route {
 export function canMoveDay(route: Route, dayId: string, direction: -1 | 1): boolean {
   const index = route.days.findIndex((day) => day.id === dayId)
   const target = index + direction
-  return index >= 0 && target >= 1 && target < route.days.length && !route.days[target].isReturnLeg && route.days[target].city === route.days[index].city
+  // (También al primer puesto: el día de llegada se mueve como los demás, PROMPT_UI_REPASO 10.)
+  return index >= 0 && target >= 0 && target < route.days.length && !route.days[index].isReturnLeg && !route.days[target].isReturnLeg && route.days[target].city === route.days[index].city
 }
 
 export function moveDay(route: Route, dayId: string, direction: -1 | 1): Route {

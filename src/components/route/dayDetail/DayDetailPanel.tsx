@@ -870,6 +870,9 @@ export function DayDetailPanel({
   const timeline: TimelineItem[] = []
   /** Día libre (decisión del usuario, 2026-09-28): solo paradas, en el orden del viajero; la hora, la que él ponga. */
   const freeDay = (day.dayType ?? 'normal') === 'manual'
+  // Un día movido de su fecha (PROMPT_UI_REPASO 10): si en la nueva cae un cierre, la marca roja de siempre en esa parada.
+  const originalDayNumber = route?.originalRoute?.days.find((candidate) => candidate.id === day.id)?.dayNumber
+  const movedDay = !freeDay && originalDayNumber != null && originalDayNumber !== day.dayNumber
   /** «Llegas después» (empieza antes de que estés en el centro) o «Ya te has ido» (acaba después de la hora de salir). */
   const tripWarningOf = (start: number, end: number, passThrough?: boolean): string | null => {
     if (freeDay || day.untimed) return null
@@ -1105,7 +1108,7 @@ export function DayDetailPanel({
               stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
-              tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough)}
+              tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough) ?? (movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}

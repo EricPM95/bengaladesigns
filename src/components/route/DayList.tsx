@@ -112,8 +112,12 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
    * viaje: llevan el transporte y abren el tramo con su alojamiento, así que moverlos no reordena
    * el viaje, lo rompe. Lo que el viajero quiere mover son los días de ciudad, y esos sí se mueven.
    */
+  // Todos los días se mueven, también el de llegada y el de vuelta (PROMPT_UI_REPASO 10): el que queda primero hereda el
+  // alojamiento y la llegada, y el último la vuelta, porque van con la posición. Solo no se mueven el día sintético de
+  // vuelta ni un cambio de ciudad a mitad de un viaje con varios destinos.
+  const lastContentIndex = route.days.reduce((last, candidate, position) => (candidate.isReturnLeg ? last : position), 0)
   const isMovableDay = (day: DayPlan, index: number) =>
-    !day.isReturnLeg && !computeDayTravelInfo(route, index) && !stayByFirstDayId.has(day.id)
+    !day.isReturnLeg && (index === 0 || index === lastContentIndex || !computeDayTravelInfo(route, index))
 
   const handleDayDragEnd = (event: DragEndEvent) => {
     const { active, over } = event

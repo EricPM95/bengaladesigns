@@ -2021,3 +2021,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 380. **La ventana de llegada y vuelta, con el mapa del viaje** (2026-09-29, PROMPT_UI_REPASO 9): arriba ya no va una foto,
     sino el mapa de la pestaña Ruta, con el viaje entero (los días con sus líneas y el punto de llegada). Las fotos
     comprobadas de `_llegada.json` quedan para la página de revisión.
+
+381. **Todos los días se pueden mover** (2026-09-29, PROMPT_UI_REPASO 10), también el de llegada y el de vuelta, y todos
+    llevan el asa.
+    - **Qué va con la posición:** el que queda primero hereda el alojamiento y la llegada, el último la vuelta, y cada
+      uno toma la fecha de su puesto.
+    - **Qué no se mueve:** el día sintético de vuelta y un cambio de ciudad a mitad de un viaje con varios destinos.
+    - **La marca roja:** si un día movido (respecto a la ruta original) cae en una fecha en la que una parada cierra o
+      está cerrada a esa hora, sale la marca de siempre («Hoy cierra», «Cerrado a esa hora»).
