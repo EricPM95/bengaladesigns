@@ -60,6 +60,7 @@ const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
+const TRANQUILO_EARLIEST = 10 * 60 // en tranquilo, la primera parada nunca antes de las 10:00
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 const TRANSFER_NOTICE_MINUTES = 25
@@ -491,7 +492,13 @@ export function planWrittenTrip(args) {
     if (pause) return { ...pause, isBreak: true, level: 3, type: 'exterior', is_free_access: true }
     return placeByName.get(stop.lugar) ?? null
   }
-  const hourOf = (stop) => (stop.hora == null ? null : toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo))
+  // En tranquilo, nada antes de las 10:00 (PROMPT_ROMA_V4_REPASO 4): una hora escrita más temprana pasa a las 10:00 (el
+  // turno del Coliseo de las 10:00-10:30, el Vaticano a las 10:00). Las horas de la tarde y de la noche no se tocan.
+  const hourOf = (stop) => {
+    if (stop.hora == null) return null
+    const at = toMin(typeof stop.hora === 'string' ? stop.hora : stop.hora[paceKey] ?? stop.hora.completo)
+    return tranquilo && at != null && at < TRANQUILO_EARLIEST ? TRANQUILO_EARLIEST : at
+  }
 
   /** El lugar listo para el formato, según cómo sale (`modo`) y por qué va por fuera si va. */
   function readyPlace(stop, source, outsideReason, hours) {
@@ -720,7 +727,7 @@ export function planWrittenTrip(args) {
   /** El día empieza a la hora de su primera parada fija, si la trae (el Coliseo a las 9:00 en tranquilo). */
   function morningStartOf(draft) {
     const firstFixed = draft.manana[0] ? hourOf(draft.manana[0]) : null
-    if (draft.manana_empieza) return toMin(draft.manana_empieza)
+    if (draft.manana_empieza) return tranquilo ? Math.max(toMin(draft.manana_empieza), TRANQUILO_EARLIEST - TICKET_MARGIN) : toMin(draft.manana_empieza)
     if (firstFixed == null) return mode.dayStart
     return firstFixed - (draft.manana[0].turno || draft.manana[0].lugar === tour?.name || placeByName.get(draft.manana[0].lugar)?.turnos ? TICKET_MARGIN : 0)
   }

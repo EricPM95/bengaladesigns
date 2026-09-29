@@ -1914,3 +1914,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 365. **La comida, como mucho 90 min en completo y 105 en tranquilo** (2026-09-29, PROMPT_ROMA_V4_REPASO 3), aunque lo
     escrito empiece la tarde más tarde: lo que sobra pasa a la tarde (antes, Nonna Betta de 13:30 a 15:30 en completo).
+
+366. **En tranquilo, la primera parada nunca antes de las 10:00** (2026-09-29, PROMPT_ROMA_V4_REPASO 4): una hora escrita
+    más temprana pasa a las 10:00 (el turno del Coliseo de las 10:00-10:30, el Vaticano a las 10:00, el Puente
+    Sant'Angelo). Solo las horas de la mañana; en completo, las de siempre.
