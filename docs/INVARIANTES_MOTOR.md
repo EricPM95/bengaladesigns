@@ -2043,3 +2043,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     con su icono y el número de línea («Bus 115 · 20 min», «Metro B · 20 min», «Taxi · 20 min»), el enlace «Rutas», que
     abre Maps en transporte público hasta la parada para ver dónde se coge, y «+ Añadir parada» a la derecha. Las
     alternativas («o el 870», «o un taxi») siguen en la ficha.
+
+384. **El aperitivo, como una tarjeta más** (2026-09-29, PROMPT_UI_REPASO 13): su franja con el icono de la copa, una
+    foto del barrio al anochecer (la misma búsqueda «de noche» que las nocturnas), la hora, el nombre, el tiempo («90
+    min») y la etiqueta «Aperitivo». Sin número de orden, como la comida. Las ideas de camino («Plaza Trilussa · 3
+    min») van dentro de su ficha (`AperitivoCard.tsx`).
