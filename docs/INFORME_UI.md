@@ -198,3 +198,41 @@ la oferta. El componente (`TripExcursionCard.tsx`) se queda en el repo, sin usar
 14. **La cena cuenta desde el bloque de justo antes** (el aperitivo), y pone «Justo al lado» en vez de «0 min andando».
 
 Pendiente: las capturas a 375 px. El panel del navegador estaba oculto y no deja comprobarlo a la vista.
+
+# Repaso del diseño, 2.ª tanda (PROMPT_UI_REPASO_2)
+
+1. **Cabecera y barra de abajo** (0ec91b8, regla 386).
+   - Arriba: la bombilla (tips) y la varita, siempre igual. Sin cambios, la varita dice «Tu ruta está tal como te la
+     preparamos».
+   - Abajo, la píldora oscura con 5 iconos: nuevo viaje, presupuesto, perfil con MIS VIAJES, mapa y reservas con «!».
+   - Arriba quedan Hoy, Ruta, Días y Explorar. Ya no hay botones flotantes ni «Mostrar mapa».
+2. **La nota de temporada, en la ventana de los avisos** (23dcf5c, regla 387).
+   - Es la primera tarjeta, con el título «Invierno en Roma».
+   - En el sitio del dibujo lleva una franja con el degradado y el efecto de su época: nieve, sol poniéndose, pétalos u
+     hojas. Con «reducir movimiento», quieta.
+   - Sin avisos de fechas, la ventana sale solo con ella. Fuera de la pestaña Días.
+3. **Los tips del viaje** (f2244b3, regla 388). Al tocar la bombilla se abre una ventana a pantalla completa.
+   - Cabecera oscura: «8 cosas que un romano te diría» y «Lo que ojalá te hubieran contado».
+   - Cada tip en una tarjeta: número grande, etiqueta de color, título y texto. El de los turnos lleva «Ver entradas de
+     tu viaje ›», que abre Reservas.
+   - Los datos están en `data/dias/roma/_tips.json`, cada uno con su fuente y la fecha de comprobación (29-9-2026):
+     - Trevi: fontanaditrevi.roma.it;
+     - nasoni: Acea;
+     - vestimenta: basilicasanpietro.va;
+     - reserva obligatoria de la Borghese: galleriaborghese.cultura.gov.it;
+     - bus 64: ATAC.
+4. **La tasa de Trevi, según el día** (128b0fd, regla 389). La web oficial lo confirma: 2 €, de 9:00 a 22:00, y los
+   lunes y viernes desde las 11:30. Además, algunos lunes desde las 14:00 (12 y 26 oct, 9 y 23 nov, 7 y 21 dic).
+   - Los textos curados admiten `variables` por día. Un lunes a las 9:30, la parada ya dice «bajas sin pagar: la tasa
+     empieza a las 11:30».
+   - Sin fechas, el texto cuenta la excepción. Lo he comprobado con el motor, un día por cada caso.
+5. **Tarjeta de parada** (ef67a6f, regla 390).
+   - «Revisita» y «Por tu experiencia» vuelven como etiquetas.
+   - El paseo nocturno y «El tour acaba en…» van arriba del Resumen de la ficha.
+   - «Añadida por ti», fuera.
+
+Pendiente: capturas a 375 px. El panel del navegador seguía oculto (los clics no avanzan), así que hay que mirarlo en el
+móvil. Lo más importante:
+- la ventana de avisos, con la franja de temporada;
+- la bombilla;
+- las etiquetas nuevas.
