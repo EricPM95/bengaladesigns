@@ -59,6 +59,7 @@ const DINNER_EARLIEST = 19 * 60 + 30
 const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
+const LUNCH_MAX_COMPLETO = 90 // en completo, 90
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 const TRANSFER_NOTICE_MINUTES = 25
@@ -734,8 +735,9 @@ export function planWrittenTrip(args) {
     const start = Math.max(roundUp15(cursor.t + walk), LUNCH_EARLIEST)
     const written = draft.empieza ? toMin(draft.empieza) : null
     let end = written != null ? written : start + LUNCH_DEFAULT[paceKey]
-    // (En tranquilo, la comida dura como mucho LUNCH_MAX_TRANQUILO: lo demás es tarde.)
-    if (tranquilo) end = Math.min(end, start + LUNCH_MAX_TRANQUILO)
+    // (La comida dura como mucho 90 min en completo y 105 en tranquilo, aunque lo escrito empiece la tarde más tarde:
+    // lo demás es tarde. Antes, Nonna Betta de 13:30 a 15:30 en completo, más que en tranquilo.)
+    end = Math.min(end, start + (tranquilo ? LUNCH_MAX_TRANQUILO : LUNCH_MAX_COMPLETO))
     let short = null
     if (end - start < LUNCH_MIN) {
       short = end - start

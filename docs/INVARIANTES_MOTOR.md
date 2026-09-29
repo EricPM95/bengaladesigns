@@ -1911,3 +1911,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 364. **Nunca pasar por delante de un sitio para volver a él** (2026-09-29, PROMPT_ROMA_V4_REPASO 2): el orden escrito va
     siempre hacia delante. D1: Minerva → Elefantino → Panteón → San Luigi → Navona (la plaza de la Minerva da al
     Panteón; San Luigi queda camino de Navona).
+
+365. **La comida, como mucho 90 min en completo y 105 en tranquilo** (2026-09-29, PROMPT_ROMA_V4_REPASO 3), aunque lo
+    escrito empiece la tarde más tarde: lo que sobra pasa a la tarde (antes, Nonna Betta de 13:30 a 15:30 en completo).
