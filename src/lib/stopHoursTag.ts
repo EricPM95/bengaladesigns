@@ -83,6 +83,19 @@ export function nextOpenMinutes(hours: string | null | undefined, minutes: numbe
 }
 
 /**
+ * Como nextOpenMinutes, pero la visita ENTERA tiene que caber en un tramo: San Clemente (09:00–12:30 / 14:00–18:00) a
+ * las 12:30 con 45 min dentro no cabe, así que pasa a las 14:00. Sin un tramo en el que quepa, lo mismo que
+ * nextOpenMinutes (mejor una hora abierta que ninguna).
+ */
+export function nextOpenSlotMinutes(hours: string | null | undefined, minutes: number, durationMinutes: number): number | null {
+  const sessions = parseHoursSessions(hours)
+  if (sessions.length === 0) return minutes
+  if (sessions.some((session) => minutes >= session.open && minutes + durationMinutes <= session.close)) return minutes
+  const fits = sessions.filter((session) => session.open > minutes && session.open + durationMinutes <= session.close).map((session) => session.open)
+  return fits.length > 0 ? Math.min(...fits) : nextOpenMinutes(hours, minutes)
+}
+
+/**
  * Los tramos de UN día, en texto: "07:30–12:30 / 16:00–19:30". Del horario escrito se toma el primer
  * grupo de días ("Lun-Sáb 07:30-12:30, 16:00-19:30. Dom ...") y, de cada rango seguido de un
  * paréntesis de temporada ("07:00-18:00 (Abr-Sep), 07:30-17:00 (Oct-Mar)"), solo el primero: son

@@ -11,6 +11,7 @@ import type {
   BudgetItem,
   DateRange,
   DayPlan,
+  DidntMakeCutItem,
   DestinationArchetype,
   Excursion,
   ExperienceId,
@@ -30,7 +31,8 @@ import type {
 import type { TripPayload } from '../lib/tripPersistence'
 import { triggerBudgetFly } from '../lib/budgetFlyBus'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
-import { optimizeDayWithRealTransport as computeOptimizedDay } from '../lib/stopScheduling'
+import { optimizeDayWithRealTransport as computeOptimizedDay, overflowToDidntMakeCut } from '../lib/stopScheduling'
+import { fitMealsToStops } from '../lib/arrivalReturn'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
 import { daysBetweenInclusive } from '../lib/dateRange'
@@ -484,8 +486,12 @@ interface RouteStoreState {
   /** Reservas — hora "HH:MM" del vuelo de llegada/salida, o null para borrarla. */
   setArrivalFlightTime: (time: string | null) => void
   setDepartureFlightTime: (time: string | null) => void
+  /** El punto de llegada o de salida elegido en la ficha (Fiumicino o Ciampino…): lo enseña la barra. */
+  setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string) => void
   /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
   optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
+  /** «Ajustar este día a tu llegada / vuelta»: la llegada reprograma desde la hora en el centro; la vuelta quita lo que acaba después de la hora de salir. Las comidas siguen a las paradas. */
+  fitDayToTrip: (dayId: string, kind: 'arrival' | 'departure', keyMinutes: number) => Promise<void>
 }
 
 const updateDay = (route: Route, dayId: string, updater: (day: DayPlan) => DayPlan): Route => ({
@@ -1314,6 +1320,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => (state.route ? { route: { ...state.route, arrivalFlightTime: time } } : state)),
   setDepartureFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time } } : state)),
+  setArrivalPointId: (kind, pointId) =>
+    set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
 
   optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
     const state = get()
@@ -1324,6 +1332,37 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     if (Number.isNaN(flightTimeMinutes)) return
     const optimized = await computeOptimizedDay(day, kind, flightTimeMinutes, state.route.answers.pace)
     set((current) => (current.route ? { route: updateDay(current.route, dayId, (d) => ({ ...d, ...optimized })) } : current))
+  },
+
+  fitDayToTrip: async (dayId, kind, keyMinutes) => {
+    const state = get()
+    if (!state.route) return
+    const day = state.route.days.find((candidate) => candidate.id === dayId)
+    if (!day || day.stops.length === 0) return
+    let optimized: { stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }
+    if (kind === 'departure') {
+      // La vuelta no rehace el día: las horas del motor se quedan y sale lo que acaba después de la hora de salir.
+      const fits = (stop: Stop) => {
+        const start = parseTimeToMinutes(stop.time ?? '')
+        return Number.isNaN(start) || start + stop.durationMinutes <= keyMinutes
+      }
+      const overflow = day.stops.filter((stop) => !fits(stop))
+      optimized = { stops: day.stops.filter(fits), didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
+    } else {
+      // La llegada sí: el día empieza a la hora en el centro (optimizeDayWithRealTransport suma 60 min de traslado).
+      optimized = await computeOptimizedDay(day, 'arrival', keyMinutes - 60, state.route.answers.pace)
+    }
+    // Las comidas siguen a las paradas (la de las 13:30 no puede pisar el Coliseo que ahora empieza a las 12:30).
+    const meals = fitMealsToStops(day.meals, optimized.stops, kind === 'arrival' ? { from: keyMinutes } : { until: keyMinutes })
+    // Es un cambio del viajero: el día guarda su copia («Volver al día original») y la varita sale.
+    set((current) => {
+      if (!current.route) return current
+      const updated = updateDay(current.route, dayId, (d) => {
+        const { originalSnapshot, ...plain } = d
+        return { ...d, ...optimized, meals, originalSnapshot: originalSnapshot ?? (JSON.parse(JSON.stringify(plain)) as DayPlan) }
+      })
+      return { route: { ...updated, editedManually: true } }
+    })
   },
 }))
 

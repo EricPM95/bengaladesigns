@@ -118,7 +118,7 @@ export function RouteOverview({ route }: RouteOverviewProps) {
             </div>
 
             {open && (
-              <div className="border-t border-dashed border-text/[.12] px-3 pb-4 pt-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
+              <div className="border-t border-dashed border-text/[.12] px-3 pb-4 pt-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) backwards' }}>
                 {group.segments.map(({ segment, index }, positionInGroup) => (
                   <div key={segment.id}>
                     {positionInGroup > 0 && (

@@ -37,3 +37,19 @@ export function writtenDaysFor(destinationKey) {
 export function clearWrittenDaysCache() {
   cache.clear()
 }
+
+const arrivalCache = new Map()
+
+/**
+ * La llegada y la vuelta de un destino (PROMPT_UI, Parte 3): `data/dias/<destino>/_llegada.json`, una sección por medio
+ * y por punto de llegada, con sus precios, fuentes y fechas. Null si el destino no lo tiene.
+ */
+export function arrivalInfoFor(destinationKey) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key) return null
+  if (arrivalCache.has(key)) return arrivalCache.get(key)
+  const file = join(DIAS_DIR, key, '_llegada.json')
+  const value = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  arrivalCache.set(key, value)
+  return value
+}

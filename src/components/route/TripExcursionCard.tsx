@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Excursion, Route } from '../../lib/types'
 import { fetchPlacePhotoDetail } from '../../lib/placePhoto'
-import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
+import { excursionCandidateDays, excursionOfferDay } from '../../lib/excursionOffer'
 import { useRouteStore } from '../../store/useRouteStore'
 import { withUndo } from '../../store/useAddFlowStore'
 
@@ -80,10 +80,10 @@ function ExcursionSheet({ route, excursion, onClose }: { route: Route; excursion
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const photo = usePhoto(mainPlaceOf(excursion), route.country || route.destination)
   // Los días que se pueden cambiar: de ciudad, sin viaje ni vuelta.
-  // (El de la oferta, sí, aunque sea el de la vuelta: en Roma en 4 días, el de D5C es el último.)
-  const candidates = route.days.filter((day, index) => !day.isReturnLeg && (!computeDayTravelInfo(route, index) || Boolean(day.excursionOffer)) && (day.dayType ?? 'normal') !== 'excursion')
-  // Propone el día de la oferta (Roma en 4 días: el de D5C); si no, el último.
-  const proposed: DayPlan | undefined = candidates.find((day) => day.excursionOffer) ?? candidates.at(-1)
+  // Nunca el día de llegada ni el de vuelta (decisión del usuario, 2026-09-29); propone el de la oferta (Roma en 4 días,
+  // el de D5C) o, si es uno de esos dos, el día completo más cercano; sin oferta, el último día completo.
+  const candidates = excursionCandidateDays(route)
+  const proposed: DayPlan | undefined = excursionOfferDay(route)?.day ?? candidates.at(-1)
   const [step, setStep] = useState<'info' | 'day'>('info')
   const [dayId, setDayId] = useState<string | null>(proposed?.id ?? null)
 

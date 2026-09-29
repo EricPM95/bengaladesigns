@@ -23,6 +23,8 @@ interface StopAccordionProps {
   freeDayWarning?: string | null
   /** El número, en el color del día (como su pin): relleno claro y número fuerte. */
   numberColors?: { bg: string; text: string }
+  /** El primer o el último día: «Llegas después» o «Ya te has ido», en rojo (la llegada y la vuelta). */
+  tripWarning?: string | null
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -45,7 +47,7 @@ const RESERVATION_NOTE: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning, numberColors }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
@@ -80,6 +82,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
 
   const meta: CardMeta[] = []
+  if (tripWarning) meta.push({ text: tripWarning, warn: true })
   if (stop.isNightExperience) {
     // Lo nocturno: su franja horaria y el paseo nocturno curado al que pertenece.
     meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })

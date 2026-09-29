@@ -1,7 +1,7 @@
 import type { Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
-import { nextOpenMinutes } from './stopHoursTag'
+import { nextOpenSlotMinutes } from './stopHoursTag'
 import { minutesToTime, roundToNearestQuarterHour, roundUpToQuarterHour } from './time'
 
 /**
@@ -137,7 +137,8 @@ export async function computeRealStopSchedule(
     // Ronda 11: `nextOpenMinutes` en vez de solo la apertura — también respeta el cierre del
     // mediodía de media Roma (San Luigi dei Francesi cierra de 12:30 a 15:00), que el clamp anterior
     // no veía: las 13:00 ya son posteriores a su apertura de las 10:00, así que las daba por buenas.
-    const openAt = nextOpenMinutes(stop.hours, startMinutes)
+    // Por fuera no hay horario de visita; por dentro, la visita entera tiene que caber en un tramo abierto.
+    const openAt = stop.visitMode === 'fuera' ? null : nextOpenSlotMinutes(stop.hours, startMinutes, stop.durationMinutes)
     if (openAt != null && openAt > startMinutes) {
       startMinutes = roundUpToQuarterHour(openAt)
     }

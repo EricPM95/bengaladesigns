@@ -4,8 +4,13 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { DayPlan, Route } from '../../lib/types'
 import { addDaysToIso } from '../../lib/dateRange'
+import type { DateNotice } from '../../lib/types'
+
+/** Una fecha especial va con su FECHA, no con el número del día: si se borra el día 1, la audiencia del miércoles sigue en el miércoles. */
+const noticeIsForDay = (notice: DateNotice, dayNumber: number, dateIso: string | null) =>
+  notice.dateIso && dateIso ? notice.dateIso === dateIso : notice.dayNumber === dayNumber
 import { KIND_STYLE, numberedStopsOf, stopKindOf } from '../../lib/stopKind'
-import { dayColor, dayColorIndex, dayColorPastel, dayColorStrong } from '../../lib/dayColors'
+import { dayColor, dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
@@ -157,7 +162,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-28 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-44 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -189,8 +194,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           <div
             className={`relative ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
-            {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). */}
-            {!day.isReturnLeg && (
+            {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
+                cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
+            {!day.isReturnLeg && !expanded && (
               <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
                 <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
               </span>
@@ -209,10 +215,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               }}
               className="flex min-h-20 w-full cursor-pointer items-center gap-3.5 py-3 pl-4 pr-3 text-left"
             >
-              {/* El cuadrado, como siempre; el número, del color del día (claro sobre oscuro, fuerte sobre claro). */}
+              {/* El cuadrado y el número, en el color neutro de siempre en todos los días: la franja ya dice qué color es. */}
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text' : 'bg-bg-hover'}`}
-                style={{ color: day.isReturnLeg ? undefined : expanded ? dayColorPastel(colorIndex) : dayColorStrong(colorIndex) }}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
               >
                 {day.dayNumber}
               </span>
@@ -222,9 +227,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 {travel && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
                 {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
-                {(route.dateNotices ?? []).some((notice) => notice.dayNumber === day.dayNumber) && (
+                {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
                   <span className="mt-1 flex flex-wrap gap-1.5">
-                    {(route.dateNotices ?? []).filter((notice) => notice.dayNumber === day.dayNumber).map((notice) => (
+                    {(route.dateNotices ?? []).filter((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)).map((notice) => (
                       <DateNoticeTag key={notice.id} notice={notice} />
                     ))}
                   </span>

@@ -4,6 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
+import { arrivalInfoFor } from './engine/writtenDays.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -4879,6 +4880,16 @@ async function resolveNightPhoto(name, city, base, { force = false } = {}) {
   }
   return { ...fila, cached: false }
 }
+
+/**
+ * La llegada y la vuelta de un destino (PROMPT_UI, Parte 3): los textos, las opciones y los precios de cada medio y de
+ * cada punto de llegada (data/dias/<destino>/_llegada.json). null si el destino no los tiene: la app usa los de siempre.
+ */
+app.post('/api/arrival-info', (req, res) => {
+  const destination = req.body?.destination
+  const key = destination ? findPipelineV2Key(destination) : null
+  res.json({ info: key ? arrivalInfoFor(key) : null })
+})
 
 app.post('/api/place-photo', async (req, res) => {
   const { name, city, force, wikipedia_title: wikipediaTitleOverride } = req.body ?? {}

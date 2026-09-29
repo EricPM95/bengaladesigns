@@ -14,6 +14,7 @@ import { AccommodationRow } from './reservas/AccommodationRow'
 import { N26Row } from './reservas/N26Row'
 import { EsimRow } from './reservas/EsimRow'
 import { FloatingBudget } from '../layout/FloatingBudget'
+import { bookingLabelsOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 
 interface ReservasPanelProps {
   route: Route
@@ -37,7 +38,7 @@ const timeInputClasses = 'w-full rounded-xl border border-border bg-bg px-3 py-2
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
-  const optimizeDayWithRealTransport = useRouteStore((state) => state.optimizeDayWithRealTransport)
+  const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const transportBookings = useRouteStore((state) => state.transportBookings)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
@@ -50,6 +51,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const [manualAddDayId, setManualAddDayId] = useState<string | null>(null)
 
   const opportunities = detectFlightOpportunities(route)
+  const modes = tripModes(route)
+  const bookingLabels = bookingLabelsOf(modes)
+  const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
   const segments = buildDestinationSegments(route.days)
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
@@ -68,7 +72,12 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     // viaje no se toca.
     const kind = dayId === day1Id ? 'arrival' : 'departure'
     const flightTime = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
-    if (flightTime) await optimizeDayWithRealTransport(dayId, kind, flightTime)
+    // Las mismas horas que la barra del día: en el centro (llegada) o la de salir (vuelta).
+    const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
+    const pointId = kind === 'arrival' ? route.arrivalPointId : route.departurePointId
+    const point = medio?.puntos.find((candidate) => candidate.id === pointId) ?? medio?.puntos[0] ?? null
+    const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio)
+    if (keyMinutes != null) await fitDayToTrip(dayId, kind, keyMinutes)
     setRecalculatingId(null)
     setSimulatedIds((prev) => new Set(prev).add(dayId))
   }
@@ -119,14 +128,15 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             )}
 
             <div>
-              <h2 className="font-display text-h2 font-semibold text-text">Vuelos</h2>
-              <p className="mt-1 text-small text-text-soft">Si ya tienes el billete, indica las horas de llegada y salida para ajustar los traslados de la ruta.</p>
+              <h2 className="font-display text-h2 font-semibold text-text">{bookingLabels.heading}</h2>
+              <p className="mt-1 text-small text-text-soft">Si ya tienes el billete, indica las horas de llegada y de salida para ajustar el primer y el último día.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <label className="space-y-1.5">
-                <span className="text-small font-medium text-text">Vuelo de llegada</span>
+                <span className="text-small font-medium text-text">{bookingLabels.arrival}</span>
                 <input
+                  id="reservas-hora-llegada"
                   type="time"
                   value={route.arrivalFlightTime ?? ''}
                   onChange={(event) => setArrivalFlightTime(event.target.value || null)}
@@ -134,8 +144,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                 />
               </label>
               <label className="space-y-1.5">
-                <span className="text-small font-medium text-text">Vuelo de salida</span>
+                <span className="text-small font-medium text-text">{bookingLabels.departure}</span>
                 <input
+                  id="reservas-hora-salida"
                   type="time"
                   value={route.departureFlightTime ?? ''}
                   onChange={(event) => setDepartureFlightTime(event.target.value || null)}

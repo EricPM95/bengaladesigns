@@ -1852,3 +1852,39 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 357. **Un extra del pool nunca va a un sitio en un día en que ese lugar cierra** (2026-09-29): pasa a su siguiente
     sitio (Caracalla el lunes, por fuera, en D5C).
+
+358. **La llegada y la vuelta** (2026-09-29, PROMPT_UI Parte 3). Vale para avión, tren, autobús, ferry, crucero y coche, y
+    para todos los destinos: los datos de cada uno en `data/dias/<destino>/_llegada.json` (`/api/arrival-info`), las
+    reglas en `shared/arrival/arrivalRules.js` (la app y la página de revisión usan las mismas).
+    - **Van con la posición.** La llegada, en el primer día, después del bloque de alojamiento y antes del primer
+      tramo; la vuelta, en el último, al final del todo, con «Fin del viaje. {despedida en el idioma del destino}»
+      debajo. Si se borra o se mueve el primer o el último día, el nuevo primero hereda la llegada y el alojamiento y
+      el nuevo último, la vuelta.
+    - **La barra cerrada.** Tipo billete: 52 px (48 en móvil), bloque petróleo #1F5F78 con el icono del medio y una
+      diagonal clara, datos en mono mayúsculas (se cortan con «…»), la hora clave en terracota (nunca se corta) y la
+      línea de puntos con dos muescas y «›». Sin número y sin hora en la columna de paradas. Sin reserva, «+ AÑADIR
+      VUELO» en azul, que lleva a Reservas con la casilla de esa hora enfocada.
+    - **Las horas.** En el centro = llegada + traslado del punto, de 5 en 5. Salir = avión − 3 h, tren y autobús
+      − 45 min, ferry − embarque (2 h) − trayecto al puerto, crucero = a bordo − trayecto − 30 min; de 5 en 5 hacia
+      abajo. Coche: sin hora clave, el aviso de la ZTL. Un ferry de un solo día es un crucero. La vuelta puede ir en
+      otro medio (`returnTransportOptionId`).
+    - **Las marcas.** «Llegas después» en lo que empieza antes de la hora en el centro; «Ya te has ido» en lo que acaba
+      después de la hora de salir. Nada se mueve solo: «Ajustar este día a tu llegada / vuelta» lo hace al tocarlo.
+      La llegada reprograma desde la hora en el centro; la vuelta no rehace el día, quita lo que acaba después de salir.
+      Las comidas siguen a las paradas (se corren o se quitan). Cuenta como cambio: la varita lo devuelve todo.
+    - **La ventana.** Foto fija del punto (comprobada a mano: es ese sitio), «LLEGADA · MAR 29 SEP», el título y la
+      reserva con «Editar». Resumen: todas las formas de ir (la más cómoda primero, «EL MÁS CÓMODO»), cada una con
+      tiempo, frecuencia y precio; a la llegada, la estación, la consigna y la primera parada; a la vuelta, «Tu última
+      tarde, sin prisas», la maleta y «Tu última hora». Traslados solo si hay traslado privado (nunca en coche). Tips
+      con título corto en negrita. Cada precio con su fuente oficial y la fecha en que se comprobó; sin web oficial, sin
+      precio. Revisión: `docs/LLEGADAS_<DESTINO>.html` (`scripts/destino/llegadas.mjs`).
+
+359. **Las fichas a pantalla completa del día van en el body** (2026-09-29): parada, comida, llegada y vuelta se pintan
+    con un portal. Dentro del panel del día quedaban encerradas en la tarjeta (la animación de entrada dejaba un
+    `transform`) o debajo de la cabecera de la app. La animación de entrada del día es `backwards`, no `both`.
+
+360. **Una fecha especial va con su fecha, no con el número del día** (2026-09-29): si se borra el día 1, la audiencia
+    del miércoles sigue en el miércoles.
+
+361. **Una visita por dentro cabe entera en un tramo abierto** (2026-09-29, `nextOpenSlotMinutes`): San Clemente
+    (09:00–12:30 / 14:00–18:00) a las 12:30 con 45 min dentro pasa a las 14:00.

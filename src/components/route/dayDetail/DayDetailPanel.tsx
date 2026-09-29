@@ -4,6 +4,7 @@ import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { addDaysToIso } from '../../../lib/dateRange'
+import { displayStopName } from '../../../lib/format'
 import {
   buildCombinedDaysLines,
   buildCombinedDaysMarkers,
@@ -26,6 +27,7 @@ import {
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
+import { excursionOfferDay } from '../../../lib/excursionOffer'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { PeriodHeader, TrazoCard } from './TrazoCards'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
@@ -48,6 +50,9 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableStop } from './SortableStop'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
+import { ArrivalReturnBar } from './ArrivalReturnBar'
+import { ArrivalReturnSheet } from './ArrivalReturnSheet'
+import { barTextOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
@@ -381,6 +386,36 @@ export function DayDetailPanel({
   const arrivalTransportModeId =
     day.dayNumber === 1 || isLastDay ? (route?.transportContext.transport_option?.id ?? null) : (day.transport?.mode ?? null)
 
+  // La llegada y la vuelta (PROMPT_UI, Parte 3): van con la POSICIÓN, no con el día — la llegada en el primer día del
+  // viaje y la vuelta en el último, así que si se borra o se mueve uno, el nuevo primero o último las hereda. La hora
+  // en el centro y la de salir marcan las paradas que no caben («Llegas después», «Ya te has ido»).
+  const arrivalInfo = useArrivalInfo(route?.destination ?? day.city, day.city, origin)
+  const modes: { arrival: ArrivalMode; departure: ArrivalMode } = route ? tripModes(route) : { arrival: 'avion', departure: 'avion' }
+  const arrivalMedio = medioOf(arrivalInfo, modes.arrival)
+  const departureMedio = medioOf(arrivalInfo, modes.departure)
+  const arrivalPoint = arrivalMedio?.puntos.find((point) => point.id === route?.arrivalPointId) ?? arrivalMedio?.puntos[0] ?? null
+  const departurePoint = departureMedio?.puntos.find((point) => point.id === route?.departurePointId) ?? departureMedio?.puntos[0] ?? null
+  const arrivalTime = route?.arrivalFlightTime ?? null
+  const departureTime = route?.departureFlightTime ?? null
+  const centerMinutes = isFirstDayOfTrip && modes.arrival !== 'coche' ? centerMinutesOf(arrivalTime, arrivalPoint) : null
+  const leaveMinutes = isLastDay ? leaveMinutesOf(departureTime, modes.departure, departureMedio) : null
+  const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalPoint, origin, time: modes.arrival === 'coche' ? null : arrivalTime, keyMinutes: centerMinutes })
+  const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departurePoint, origin, time: modes.departure === 'coche' ? null : departureTime, keyMinutes: leaveMinutes })
+  const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
+  const setArrivalPointId = useRouteStore((state) => state.setArrivalPointId)
+  const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
+  const setMode = useRouteStore((state) => state.setMode)
+  /** «+ AÑADIR VUELO» y «Editar»: a Reservas, a la casilla de esa hora. */
+  const goToBooking = (which: 'llegada' | 'vuelta') => {
+    setArrivalSheet(null)
+    setMode('bookings')
+    window.setTimeout(() => {
+      const input = document.getElementById(which === 'llegada' ? 'reservas-hora-llegada' : 'reservas-hora-salida') as HTMLInputElement | null
+      input?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      input?.focus()
+    }, 450)
+  }
+
   const stops = resolveDisplayStops(day)
   // Un día LIBRE está vacío a propósito y no tiene plantilla que cristalizar — misma distinción que
   // hace resolveDisplayStops, y tiene que ser la misma o los dos arrays dejan de ir en paralelo.
@@ -664,11 +699,14 @@ export function DayDetailPanel({
   const lunchMeal = day.meals.find((meal) => meal.mealTime === 'lunch')
   const lunchStart = lunchMeal?.windowEnd ? parseTimeToMinutes(lunchMeal.time) : NaN
   const lastBeforeLunch = Number.isNaN(lunchStart) ? -1 : schedule.filter((item) => item.startMinutes < lunchStart).length - 1
-  const lunchInsertionIndex = lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW)
+  // «Ajustar este día a tu llegada / vuelta» quita la comida o la cena que ya no toca (antes de llegar, después de irte):
+  // sin ella en el día, el primer o el último día no la vuelven a poner por franja.
+  const mealDroppedByTrip = (mealTime: 'lunch' | 'dinner') => (centerMinutes != null || leaveMinutes != null) && day.meals.length > 0 && !day.meals.some((meal) => meal.mealTime === mealTime)
+  const lunchInsertionIndex = mealDroppedByTrip('lunch') ? null : lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW)
   const lunchTimeRange = lunchMeal?.windowEnd ? `${lunchMeal.time} – ${lunchMeal.windowEnd}` : null
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
-  const dinnerInsertionIndex = findMealInsertionIndex(schedule, dinnerWindowFor(day))
+  const dinnerInsertionIndex = mealDroppedByTrip('dinner') ? null : findMealInsertionIndex(schedule, dinnerWindowFor(day))
   const destino = route?.destination ?? day.city
 
   /**
@@ -764,6 +802,16 @@ export function DayDetailPanel({
   // poder volver a la ruta, pero el contenido del día es otro.
   const showsRoute = dayType === 'normal' || dayType === 'smart_route'
   const excursionOptions = day.excursions ?? []
+  // Los días de llegada y de vuelta no pueden ser una excursión (decisión del usuario, 2026-09-29).
+  const arrivalOrReturnDay = isFirstDayOfTrip || isLastDay || Boolean(day.isReturnLeg)
+  // El banner de la oferta: en su día, o en el día completo más cercano si el de la oferta es el de llegada o vuelta.
+  const offerPlacement = route ? excursionOfferDay(route) : null
+  const bannerOffer =
+    offerPlacement && offerPlacement.day.id === day.id && offerPlacement.offerFrom.excursionOffer
+      ? { offer: offerPlacement.offerFrom.excursionOffer, highlights: offerPlacement.offerFrom.excursionHighlights ?? [] }
+      : !offerPlacement && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && !day.excursionOffer
+        ? { offer: null, highlights: day.excursionHighlights }
+        : null
   const convertDay = (next: typeof dayType) => convertDayType(day.id, next)
 
   // ── El mapa se adapta al tipo de día ────────────────────────────────────────────────────────
@@ -848,6 +896,28 @@ export function DayDetailPanel({
   const timeline: TimelineItem[] = []
   /** Día libre (decisión del usuario, 2026-09-28): solo paradas, en el orden del viajero; la hora, la que él ponga. */
   const freeDay = (day.dayType ?? 'normal') === 'manual'
+  /** «Llegas después» (empieza antes de que estés en el centro) o «Ya te has ido» (acaba después de la hora de salir). */
+  const tripWarningOf = (start: number, end: number, passThrough?: boolean): string | null => {
+    if (freeDay || day.untimed) return null
+    if (centerMinutes != null && start < centerMinutes) return 'Llegas después'
+    if (leaveMinutes != null && end > leaveMinutes && !passThrough) return 'Ya te has ido'
+    if (leaveMinutes != null && start >= leaveMinutes) return 'Ya te has ido'
+    return null
+  }
+  const arrivalConflict = centerMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Llegas después')
+  // La primera parada de verdad del día (ni de paso ni una pausa), con su número del mapa, para la ficha de la llegada.
+  const firstVisitIndex = stops.findIndex((stop, index) => !stop.passThrough && !stop.isBreak && !realStops[index]?.isZoneWalk)
+  const firstVisit = firstVisitIndex >= 0 ? realStops[firstVisitIndex] : null
+  const firstStopForSheet = firstVisit
+    ? {
+        number: stopNumbers.get(firstVisit.id) ?? null,
+        name: displayStopName(firstVisit.name),
+        howTo: firstVisit.transitLabel
+          ? `Desde tu alojamiento: ${firstVisit.transitLabel}.`
+          : `El ${stopNumbers.get(firstVisit.id) ?? 1} en el mapa del día. Desde tu alojamiento, andando o en metro según dónde duermas.`,
+      }
+    : null
+  const departureConflict =leaveMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Ya te has ido')
   if (muestraParadas) {
     stops.forEach((_stop, index) => {
       timeline.push({ type: 'stop', index })
@@ -1059,6 +1129,7 @@ export function DayDetailPanel({
               stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
+              tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough)}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => setDetailIndex(index)}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}
@@ -1072,7 +1143,7 @@ export function DayDetailPanel({
   return (
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
-    <div ref={panelRef} className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) both' }}>
+    <div ref={panelRef} className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) backwards' }}>
       <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} onAccepted={() => setDetailIndex(null)} />
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
@@ -1116,8 +1187,9 @@ export function DayDetailPanel({
           {/* El banner de excursiones de jornada completa no sale en un día que YA tiene una de
               medio día por la mañana: "muchos viajeros aprovechan este día para salir de Roma"
               encima de una mañana que ya sale de Roma es contradecirse en dos centímetros. */}
-          {showsRoute && !halfDayExcursion && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && (
-            <ExcursionBanner destination={day.city} highlights={day.excursionHighlights} offer={day.excursionOffer ?? null} onSeeAll={() => convertDay('excursion')} />
+          {/* (Nunca en el día de llegada ni en el de vuelta: la oferta pasa al día completo más cercano.) */}
+          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && bannerOffer && (
+            <ExcursionBanner destination={day.city} highlights={bannerOffer.highlights} offer={bannerOffer.offer} onSeeAll={() => convertDay('excursion')} />
           )}
 
           {/* Día en blanco al que el viajero le ha puesto una excursión de jornada completa: el día
@@ -1201,7 +1273,24 @@ export function DayDetailPanel({
           {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
 
           {/* Llegada o vuelta: la misma tarjeta, en azul petróleo, sin número (no es una parada). */}
-          {arrivalDetail && (
+          {/* La llegada: el primer día, después del alojamiento y antes del primer tramo. */}
+          {isFirstDayOfTrip && route && (
+            <div className="space-y-1.5 pt-2">
+              <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
+              {arrivalConflict && centerMinutes != null && (
+                <button
+                  type="button"
+                  onClick={() => fitDayToTrip(day.id, 'arrival', centerMinutes)}
+                  className="px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
+                >
+                  Ajustar este día a tu llegada
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Un cambio de ciudad a mitad del viaje: la tarjeta de siempre. */}
+          {arrivalDetail && !isFirstDayOfTrip && !isLastDay && (
             <div className="pt-2">
               <TrazoCard kind="transporte" iconPath={KIND_ICON.plane} name={arrivalDetail.headline} sub={arrivalDetail.subtitle} noPhoto onOpen={() => setArrivalSheetOpen(true)} />
             </div>
@@ -1313,7 +1402,7 @@ export function DayDetailPanel({
 
           {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
               tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
-          {showsRoute && !halfDayExcursion && prominence === 'subtle' && !day.excursionDeclined && (
+          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && prominence === 'subtle' && !day.excursionDeclined && (
             <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />
           )}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
@@ -1370,6 +1459,25 @@ export function DayDetailPanel({
                     </button>
                   </div>
                 ))}
+            </div>
+          )}
+
+          {/* La vuelta: el último día, al final del todo, y la despedida en el idioma del destino. */}
+          {isLastDay && route && (
+            <div className="space-y-1.5 pt-6">
+              {departureConflict && leaveMinutes != null && (
+                <button
+                  type="button"
+                  onClick={() => fitDayToTrip(day.id, 'departure', leaveMinutes)}
+                  className="px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
+                >
+                  Ajustar este día a tu vuelta
+                </button>
+              )}
+              <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => setArrivalSheet('vuelta')} onAdd={() => goToBooking('vuelta')} />
+              <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
+                Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
+              </p>
             </div>
           )}
 
@@ -1438,6 +1546,10 @@ export function DayDetailPanel({
           )}
         </div>
 
+      {/* Las fichas a pantalla completa, en el body: dentro del panel del día quedaban por debajo de la cabecera de la app
+          (la hoja de abajo hace su propio contexto de apilamiento). */}
+      {createPortal(
+        <>
       <StopDetailSheet
         stop={detailIndex !== null ? stops[detailIndex] : null}
         visitTime={detailIndex !== null && schedule[detailIndex] ? minutesToTime(schedule[detailIndex].startMinutes) : null}
@@ -1476,6 +1588,25 @@ export function DayDetailPanel({
         onClose={() => setArrivalSheetOpen(false)}
       />
 
+      {route && (
+        <ArrivalReturnSheet
+          open={arrivalSheet !== null}
+          kind={arrivalSheet ?? 'llegada'}
+          mode={arrivalSheet === 'vuelta' ? modes.departure : modes.arrival}
+          info={arrivalInfo}
+          medio={arrivalSheet === 'vuelta' ? departureMedio : arrivalMedio}
+          origin={origin}
+          dateIso={dateIso}
+          time={arrivalSheet === 'vuelta' ? departureTime : arrivalTime}
+          pointId={arrivalSheet === 'vuelta' ? (route.departurePointId ?? null) : (route.arrivalPointId ?? null)}
+          onPickPoint={(pointId) => setArrivalPointId(arrivalSheet === 'vuelta' ? 'departure' : 'arrival', pointId)}
+          keyMinutes={arrivalSheet === 'vuelta' ? leaveMinutes : centerMinutes}
+          firstStop={firstStopForSheet}
+          onEditBooking={() => goToBooking(arrivalSheet ?? 'llegada')}
+          onClose={() => setArrivalSheet(null)}
+        />
+      )}
+
       <MealDetailSheet
         open={mealSheet !== null}
         destino={destino}
@@ -1487,6 +1618,9 @@ export function DayDetailPanel({
         dayStops={dayStopRefs}
         onClose={() => setMealSheet(null)}
       />
+        </>,
+        document.body,
+      )}
     </div>
   )
 }
