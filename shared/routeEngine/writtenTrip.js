@@ -38,6 +38,7 @@ const SHORT_WALK = 12 // un traslado escrito no se usa si andando son estos minu
 const NEIGHBOUR_WINDOW = 15 // en la frontera entre dos versiones de luz, si la elástica no llega, la vecina
 const LEAD_FLEX = 10 // al mirador se llega entre 15 y 35 min antes del sol: lo que la elástica no llega a absorber
 const SUNSET_STAY = 15
+const SUNSET_STAY_EXTRA = 30 // si la cena espera, el mirador se alarga hasta 30 min más
 /** A la entrada con turno se llega 10 min antes (recoger la entrada). */
 const TICKET_MARGIN = 10
 /** Si una parada abre dentro de estos minutos, se espera; si no, cuenta como cerrada a esa hora. */
@@ -49,6 +50,8 @@ const LUNCH_MIN = 45
 const LUNCH_DEFAULT = { completo: 60, tranquilo: 90 }
 const DINNER_MINUTES = 90
 const DINNER_EARLIEST = 19 * 60 + 30
+const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
+const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 const TRANSFER_NOTICE_MINUTES = 25
 const NIGHT_FALLBACK_METERS = 1200
@@ -353,7 +356,9 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     if (tranquilo && variants.tranquilo) applyOps(draft, variants.tranquilo, 'tranquilo')
     // Lo que depende del viaje: `no_si_dia` (la Isla Tiberina en D5 si el viaje ya lleva D1-FT) y `desde_dias` (solo en
     // viajes de tantos días o más).
-    const keep = (stop) => !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    // (`sol_desde` / `sol_hasta`: la parada va solo si el sol se pone a partir de / antes de esa hora; una versión abarca una hora de sol.)
+    const bySun = (stop) => hours.sunset == null || (!(stop.sol_desde && hours.sunset < toMin(stop.sol_desde)) && !(stop.sol_hasta && hours.sunset >= toMin(stop.sol_hasta)))
+    const keep = (stop) => bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     draft.manana = draft.manana.filter(keep)
     draft.tarde = draft.tarde.filter(keep)
     return draft
@@ -671,7 +676,9 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
   /** La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje), de cuándo a cuándo. */
   function lunchOf(draft, cursor, skeletonDay, hours) {
     const pick = (names) => recommendedRestaurant(destData, { names, meal: 'comida', near: cursor.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
-    const spot = pick([draft.comida.restaurante].filter(Boolean)) ?? pick([draft.comida.alternativa].filter(Boolean)) ?? pick(null)
+    // (El escrito o su alternativa, si están a LUNCH_WALK_MAX min andando de la parada de antes; si no, el más cercano.)
+    const writtenSpots = [draft.comida.restaurante, draft.comida.alternativa].filter(Boolean).map((name) => pick([name])).filter(Boolean)
+    const spot = writtenSpots.find((candidate) => walkLeg(cursor.coords, candidate.coordinates) <= LUNCH_WALK_MAX) ?? pick(null) ?? writtenSpots[0] ?? null
     const walk = spot ? walkLeg(cursor.coords, spot.coordinates) : 5
     // (En un cuarto de hora exacto, como la cena: la app pinta las comidas redondeadas.)
     const start = Math.max(roundUp15(cursor.t + walk), LUNCH_EARLIEST)
@@ -781,8 +788,18 @@ export function planWrittenTrip({ destData, written, totalDays, pace, hasFreeTou
     const pickDinner = (names) => recommendedRestaurant(destData, { names, meal: 'cena', near: last.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
     const dinnerRestaurant = pickDinner([draft.cena?.restaurante].filter(Boolean)) ?? pickDinner([draft.cena?.alternativa].filter(Boolean)) ?? pickDinner(null)
     const dinnerWalk = dinnerRestaurant ? walkLeg(last.coords, dinnerRestaurant.coordinates) : 10
-    const readyAt = last.t + dinnerWalk
-    const dinnerStart = Math.max(roundUp15(readyAt), draft.cena?.hora ? toMin(draft.cena.hora) : DINNER_EARLIEST)
+    let readyAt = last.t + dinnerWalk
+    // Nunca antes de las 19:30 (ni de la hora escrita) y, en verano (versión D), nunca antes de las 20:30.
+    const dinnerFloor = Math.max(DINNER_EARLIEST, draft.version === 'D' ? DINNER_EARLIEST_SUMMER : 0, draft.cena?.hora ? toMin(draft.cena.hora) : 0)
+    const dinnerStart = Math.max(roundUp15(readyAt), dinnerFloor)
+    // Si la cena espera y lo último es el mirador, se queda más en el mirador (hasta SUNSET_STAY_EXTRA min): las luces.
+    const lastVisit = afternoon.visits.at(-1)
+    // (Solo un mirador: una avenida o un paseo tienen su máximo. Desde 10 min de espera, y deja 5.)
+    if (dinnerStart - readyAt > 10 && lastVisit?.place?.sunset != null && (lastVisit.place.tags ?? []).includes('mirador')) {
+      const extra = Math.min(SUNSET_STAY_EXTRA, dinnerStart - readyAt - 5)
+      lastVisit.end += extra
+      readyAt += extra
+    }
     meals.push({ type: 'dinner', start: dinnerStart, end: dinnerStart + DINNER_MINUTES, coordinates: dinnerRestaurant?.coordinates ?? last.coords, walkMinutes: dinnerWalk })
     if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name)
     const otherRestaurants = [...usedRestaurants].filter((name) => name !== lunchName && name !== dinnerRestaurant?.name)

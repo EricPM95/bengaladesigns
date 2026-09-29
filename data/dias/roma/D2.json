@@ -35,7 +35,7 @@
       },
       {
         "lugar": "Plaza de San Pedro",
-        "min": 25
+        "min": 20
       },
       {
         "lugar": "Cúpula de San Pedro",
@@ -113,7 +113,7 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
+          "min": 55,
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"
@@ -252,7 +252,7 @@
       "cena": {
         "restaurante": "Tonnarello",
         "alternativa": "Trattoria Da Enzo al 29",
-        "hora": "19:30"
+        "hora": "20:30"
       }
     }
   },

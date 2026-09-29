@@ -201,13 +201,13 @@
       "cena": {
         "restaurante": "Armando al Pantheon",
         "alternativa": "Pizzeria Da Baffetto",
-        "hora": "19:30"
+        "hora": "20:30"
       }
     }
   },
   "variantes": {
     "sabado": {
-      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer.",
+      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer. En C y D, el atardecer en el Ponte Sisto al final; en D la tarde empieza a las 15:00 para llegar al Panteón antes de las 16:00.",
       "tarde.*": {
         "paradas": [
           {
@@ -260,6 +260,39 @@
             "min": 30
           }
         ]
+      },
+      "tarde.C": {
+        "ajustar": {
+          "Campo de' Fiori": {
+            "elastica": 30
+          }
+        },
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Ponte Sisto",
+              "modo": "atardecer",
+              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+            }
+          }
+        ]
+      },
+      "tarde.D": {
+        "ajustar": {
+          "Campo de' Fiori": {
+            "elastica": 30
+          }
+        },
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Ponte Sisto",
+              "modo": "atardecer",
+              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+            }
+          }
+        ],
+        "empieza": "15:00"
       }
     },
     "domingo": {

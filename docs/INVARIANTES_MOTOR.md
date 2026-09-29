@@ -1759,3 +1759,17 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 340. **Días escritos: toda tarde de verano (C y D) acaba en un atardecer** (2026-09-29): si el sol se pone después de
     cenar la hora de siempre, la tarde lleva su mirador antes de la cena (D1: el Ponte Sisto, a 5 min de Campo de'
     Fiori, con Campo como elástica).
+
+341. **Días escritos: la cena, nunca antes de las 19:30** (2026-09-29) **y en verano (versión D), nunca antes de las
+    20:30**. Si se llega antes, el rato va a la nocturna y a «luces y aperitivo» (90 min como mucho); si lo último del
+    día es un mirador (no una avenida), se queda en él hasta 30 min más, con las luces.
+
+342. **Días escritos: el restaurante de la comida, a 15 min andando como mucho de la parada de antes** (2026-09-29): el
+    escrito o su alternativa; si ninguno está a esa distancia (la Galería Borghese y Poldo e Gianna, a 29), el más cercano
+    que abra ese día.
+
+343. **Días escritos: paradas según la hora del sol** (2026-09-29): `sol_desde` / `sol_hasta` en una parada la dejan solo
+    si el sol se pone a partir de / antes de esa hora, porque una versión de la tarde abarca una hora de sol. D4 A en
+    domingo: con el sol desde las 17:20, Santa Maria del Popolo a las 16:30 (los festivos abre de 16:30 a 18:00), entre el
+    Popolo y la Terraza; antes, después del atardecer. (17:20 y no 17:10: con 20 min dentro y 10 de subida, a la Terraza
+    se llega 15 min antes del sol solo desde las 17:20.)

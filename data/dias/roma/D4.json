@@ -117,7 +117,7 @@
       "cena": {
         "restaurante": "Il Gabriello",
         "alternativa": "Sgarro Bistrot",
-        "hora": "19:00"
+        "hora": "19:30"
       },
       "empieza": "14:25"
     },
@@ -254,7 +254,7 @@
       "cena": {
         "restaurante": "Il Gabriello",
         "alternativa": "Sgarro Bistrot",
-        "hora": "19:30"
+        "hora": "20:30"
       },
       "empieza": "15:15"
     }
@@ -292,7 +292,7 @@
       }
     },
     "domingo": {
-      "_nota": "Santa Maria del Popolo abre el domingo a las 16:30: en las cuatro tardes ya va después. Edy e Il Gabriello cierran el domingo.",
+      "_nota": "Santa Maria del Popolo abre el domingo a las 16:30: en las cuatro tardes ya va después. Edy e Il Gabriello cierran el domingo. En A, con el sol a las 17:20 o más tarde, Santa Maria del Popolo va a las 16:30 (abre los festivos de 16:30 a 18:00), entre el Popolo y la Terraza; antes, después del atardecer, 20 min.",
       "manana": {
         "restaurante": {
           "comida": "Poldo e Gianna Osteria",
@@ -306,7 +306,64 @@
         }
       },
       "tarde.A": {
-        "empieza": "14:15"
+        "empieza": "14:15",
+        "paradas": [
+          {
+            "lugar": "Ara Pacis",
+            "min": 45,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via Margutta",
+            "titulo": "Via Margutta y Via del Babuino",
+            "min": 45,
+            "sol_desde": "17:20"
+          },
+          {
+            "lugar": "Via Margutta",
+            "titulo": "Via Margutta y Via del Babuino",
+            "min": 30,
+            "sol_hasta": "17:20"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "tipo": "fija",
+            "hora": "16:30",
+            "sol_desde": "17:20"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20,
+            "elastica": 20,
+            "sol_desde": "17:20"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 30,
+            "elastica": 30,
+            "sol_hasta": "17:20"
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "sol_hasta": "17:20"
+          }
+        ]
       },
       "tarde.B": {
         "empieza": "14:25"
