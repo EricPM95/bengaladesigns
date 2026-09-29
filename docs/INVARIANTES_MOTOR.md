@@ -1945,3 +1945,9 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **La «Tarde libre» de justo antes de cenar** es el aperitivo con su nombre, de 90 min como mucho. Si aun así
       sobra, la cena se adelanta, nunca antes de las 19:30. Ejemplo: D5C de invierno en tranquilo, Coliseo de noche a
       las 17:10, aperitivo de 90 min y cena a las 19:30, en vez de 135 min de tarde libre.
+
+371. **La comida cerca de la Galería Borghese** (2026-09-29, PROMPT_ROMA_V4_REPASO 9): la regla de siempre (la comida y su
+    alternativa a 15 min andando como mucho de la parada de antes) no se cumplía porque no había ningún restaurante cerca.
+    Nuevo en los datos, con dirección y coordenada comprobadas (turismoroma.it y OSM): Girarrosto Fiorentino, Via
+    Sicilia 46, arriba de Via Veneto, a unos 10 min por Porta Pinciana. Descartados: Molto de la Galería (ya no aparece
+    en su web), Al Ceppo (Via Panama, 17 min) y Caffè delle Arti (16 min).

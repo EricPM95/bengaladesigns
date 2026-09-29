@@ -6233,6 +6233,28 @@
       "comprobado": "2026-09-28"
     },
     {
+      "name": "Girarrosto Fiorentino",
+      "sub_category": "restaurante",
+      "meal": "ambos",
+      "address": "Via Sicilia, 46, 00187 Roma",
+      "coordinates": {
+        "lat": 41.90858,
+        "lng": 12.49081
+      },
+      "zone": "Via Veneto / Salario",
+      "price_range": "€€€",
+      "avg_price_person": "45-60€",
+      "what_to_order": "Bistecca alla fiorentina, carnes a la brasa, pasta fresca",
+      "tip": "Un clásico de la Dolce Vita en la parte alta de Via Veneto, desde los años 60, a unos 10 min andando de la Galería Borghese por Porta Pinciana.",
+      "hours": "Todos los días 12:00-15:00 y 19:00-23:30, según Páginas Blancas",
+      "best_for": "Comer cerca de la Galería Borghese",
+      "coordinates_checked": {
+        "fuente": "turismoroma.it (41° 54' 30.89\" N, 12° 29' 26.92\" E) y OpenStreetMap",
+        "fecha": "2026-09-29"
+      },
+      "comprobado": "2026-09-29"
+    },
+    {
       "name": "Pasticceria Regoli",
       "sub_category": "cafe",
       "address": "Via dello Statuto, 60, 00185 Roma",
