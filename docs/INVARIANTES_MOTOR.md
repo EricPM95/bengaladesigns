@@ -2052,3 +2052,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 385. **Desde el bloque de justo antes** (2026-09-29, PROMPT_UI_REPASO 14): la comida y la cena dicen los minutos andando
     desde lo de justo antes (con aperitivo antes de cenar, «desde el aperitivo», no desde la última parada), y a menos
     de 1 min, «Justo al lado de…», nunca «0 min andando».
+
+386. **Cabecera y barra de abajo** (2026-09-29, PROMPT_UI_REPASO_2 1; sustituye a la columna de botones de la regla 378 y a
+    la pestaña Reservas de arriba):
+    - **Cabecera:** junto al «● %», la bombilla (los tips del viaje) y la varita («Volver a mi ruta original»; sin
+      cambios, «Tu ruta está tal como te la preparamos»). La varita va siempre visible y siempre igual. La maleta y el
+      modo noche salen de aquí.
+    - **La barra de abajo:** una píldora oscura (#1F1B16) de 64 px, a 24 px de los lados y 26 del borde de abajo, flotando
+      sobre la lista (en escritorio, con el ancho de la lista), con sombra suave. Cinco sitios sin texto, iconos de línea
+      en crema, 44 × 44 px de toque y su `aria-label`: maleta (nuevo viaje), presupuesto (la bolsa, abre el panel del
+      presupuesto), perfil en el centro (círculo terracota de 50 px: «Hola, viajero» y MIS VIAJES, con el abierto
+      marcado), mapa (abre el mapa; sustituye a «Mostrar mapa») y reservas (con su «!» naranja mientras falte algo).
+    - **Arriba quedan cuatro pestañas:** Hoy, Ruta, Días y Explorar. No queda ningún botón flotante suelto, y las listas
+      dejan 144 px abajo para que la barra no tape nunca la última tarjeta.

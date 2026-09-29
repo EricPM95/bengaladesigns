@@ -45,7 +45,7 @@ export function RouteOverview({ route }: RouteOverviewProps) {
   const tripDays = route.days.filter((day) => !day.isReturnLeg)
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-10 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-36 pt-4">
       {groups.map((group, groupIndex) => {
         const open = openCountries.has(groupIndex)
         const days = tripDays.filter((day) => group.segments.some(({ segment }) => segment.dayIds.includes(day.id))).length

@@ -190,7 +190,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined || card.id === 'hotels')
 
   return (
-    <div className="flex-1 space-y-5 overflow-y-auto p-4">
+    <div className="flex-1 space-y-5 overflow-y-auto p-4 pb-36">
       <div>
         <h2 className="font-display text-h2 font-semibold text-text">Explorar {city}</h2>
         <p className="mt-1 text-small text-text-soft">Elige qué quieres descubrir.</p>

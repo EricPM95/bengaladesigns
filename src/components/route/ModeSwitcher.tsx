@@ -7,7 +7,7 @@ const BASE_MODES: { id: RouteMode; label: string }[] = [
   { id: 'route', label: 'Ruta' },
   { id: 'days', label: 'Días' },
   { id: 'explore', label: 'Explorar' },
-  { id: 'bookings', label: 'Reservas' },
+  // (Reservas pasa a la barra de abajo, con su «!»: PROMPT_UI_REPASO_2 1.)
 ]
 
 interface ModeSwitcherProps {

@@ -2,18 +2,16 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as R
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
-import { MagicWandIcon } from './MagicWandIcon'
 import { ConfirmDialog } from './ConfirmDialog'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
-import { FloatingBudget } from '../layout/FloatingBudget'
+import { BottomBar } from '../layout/BottomBar'
 import { StopsMapView, type StopsMapMarker } from '../map/StopsMapView'
 import { DayList } from './DayList'
 import type { DayMapView } from './dayDetail/DayDetailPanel'
 import { ExplorePanel } from './ExplorePanel'
-import { FloatingCombinedMapButton } from './FloatingCombinedMapButton'
 import { MapDestinationHeader } from './MapDestinationHeader'
 import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
@@ -31,22 +29,10 @@ import { UndoToast } from './freeDay/UndoToast'
 const MOBILE_MAP_MIN_VH = 15
 const MOBILE_MAP_MAX_VH = 75
 
-/** La varita del mapa sale con su texto hasta que se usa una vez. */
-const WAND_LABEL_KEY = 'trazo-varita-vista'
-
 function CollapseMapIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
       <polyline points="15 18 9 12 15 6" />
-    </svg>
-  )
-}
-
-function ExpandMapIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <path d="M3 3h7v7H3z" />
-      <path d="M14 14h7v7h-7z" />
     </svg>
   )
 }
@@ -84,18 +70,14 @@ export function RouteView() {
   // "Volver a mi ruta original": la pregunta, y si la varita ya se vio con su texto (luego va sola).
   const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
   const [askRestoreRoute, setAskRestoreRoute] = useState(false)
+  // Los tips del viaje (la bombilla de la cabecera, PROMPT_UI_REPASO_2 3).
+  const [tipsOpen, setTipsOpen] = useState(false)
+  void tipsOpen // (la ventana de los tips llega en la parte 3)
   /** La varita: con cambios, pregunta si se vuelve a la original; sin cambios, lo dice (PROMPT_UI_REPASO 3). */
   const onWand = () => {
     if (route?.editedManually && route.originalRoute) setAskRestoreRoute(true)
     else useAddFlowStore.setState({ toast: { message: 'Tu ruta está tal como te la preparamos', previous: null, id: Date.now() } })
   }
-  const [wandLabelSeen, setWandLabelSeen] = useState(() => {
-    try {
-      return window.localStorage.getItem(WAND_LABEL_KEY) === '1'
-    } catch {
-      return false
-    }
-  })
 
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
@@ -190,7 +172,7 @@ export function RouteView() {
 
   return (
     <div className="flex h-dvh flex-col bg-bg text-text">
-      <Header />
+      <Header onTips={() => setTipsOpen(true)} onWand={onWand} />
 
       <div ref={containerRef} style={splitStyle} className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {!mapHidden && (
@@ -244,19 +226,6 @@ export function RouteView() {
                 <CollapseMapIcon />
               </button>
             )}
-            {/* "Volver a mi ruta original": flotando encima del mapa, siempre, haya cambios o no (PROMPT_UI_REPASO 3). */}
-            {(
-              <button
-                type="button"
-                onClick={onWand}
-                aria-label="Volver a mi ruta original"
-                title="Volver a mi ruta original"
-                className="absolute right-3.5 top-[70px] z-10 flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border-[1.5px] border-accent bg-bg-card px-2.5 text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
-              >
-                <MagicWandIcon />
-                {!wandLabelSeen && <span className="pr-0.5 text-[12.5px] font-semibold">Ruta original</span>}
-              </button>
-            )}
           </div>
         )}
 
@@ -267,16 +236,8 @@ export function RouteView() {
         <div
           className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden bg-bg ${mapHidden ? 'md:w-full' : 'max-md:-mt-[22px] max-md:rounded-t-[26px] max-md:shadow-[0_-10px_30px_-18px_rgba(28,34,48,.3)] md:w-[var(--split-w)]'}`}
         >
-          {mapHidden ? (
-            <button
-              type="button"
-              onClick={() => setMapCollapsed(false)}
-              className="mx-4 mt-3 flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full border-[1.5px] border-accent bg-bg-card px-3 py-1.5 text-[12.5px] font-semibold text-text shadow-sm transition-colors hover:bg-bg-hover"
-            >
-              <ExpandMapIcon />
-              Mostrar mapa
-            </button>
-          ) : (
+          {/* (Sin «Mostrar mapa»: el mapa se abre desde la barra de abajo, PROMPT_UI_REPASO_2 1.) */}
+          {mapHidden ? null : (
             <div
               onPointerDown={handleMobilePanelDragStart}
               className="flex h-5 shrink-0 cursor-row-resize touch-none items-center justify-center md:hidden"
@@ -301,6 +262,9 @@ export function RouteView() {
             />
           )}
 
+          {/* La barra de abajo, flotando sobre la lista (PROMPT_UI_REPASO_2 1). */}
+          <BottomBar onMap={() => (mapHidden && canCollapseMap ? setMapCollapsed(false) : setMode('route'))} />
+
           {mode === 'days' && (
             <>
               {route.isPreview && (
@@ -324,26 +288,6 @@ export function RouteView() {
         </div>
       </div>
 
-      {/* Ocultos en la pantalla completa de detalle de un día (DayDetailPanel, ver DayList.tsx): ya tiene su propio mini-mapa arriba, y el presupuesto no aplica en ese contexto — solo visibles en las pantallas principales. */}
-      {!(mode === 'days' && activeDayId) && (
-        <>
-          {/* Una sola columna, 12 px entre botones (PROMPT_UI_REPASO 3): presupuesto abajo (móvil), mapa encima y, con el
-              mapa plegado en el móvil, la varita arriba del todo. */}
-          <FloatingCombinedMapButton onClick={() => setMode('route')} />
-          <FloatingBudget />
-          {mapHidden && canCollapseMap && (
-            <button
-              type="button"
-              onClick={onWand}
-              aria-label="Volver a mi ruta original"
-              title="Volver a mi ruta original"
-              className="fixed bottom-[140px] right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-accent shadow-md"
-            >
-              <MagicWandIcon />
-            </button>
-          )}
-        </>
-      )}
       {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
       <DateNoticesModal route={route} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
@@ -360,13 +304,6 @@ export function RouteView() {
             setAskRestoreRoute(false)
             setDayMap(null)
             withUndo('Ruta original recuperada', () => restoreOriginalRoute())
-            // (La primera vez sale con su texto; después, solo la varita.)
-            try {
-              window.localStorage.setItem(WAND_LABEL_KEY, '1')
-            } catch {
-              /* sin almacenamiento: vuelve a salir con texto, nada más */
-            }
-            setWandLabelSeen(true)
           }}
         />
       )}

@@ -1,16 +1,23 @@
-import { useRouteStore } from '../../store/useRouteStore'
 import { TripReadinessBadge } from '../route/reservas/TripReadinessBadge'
+import { MagicWandIcon } from '../route/MagicWandIcon'
 
 /** Botón redondo blanco de la cabecera (diseño "Trazo Itinerario"). */
 const ROUND_BUTTON =
   'flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-text/10 bg-bg-card text-text transition-colors hover:bg-bg-hover'
 
-/** Cabecera mínima (diseño "Trazo Itinerario"): brújula, nombre, % de viaje listo, Mis viajes y modo noche. Exportar a PDF y compartir enlace se retiraron de aquí — la lógica sigue en exportPdf.ts/shareUrl.ts. */
-export function Header() {
-  const darkMode = useRouteStore((state) => state.darkMode)
-  const toggleDarkMode = useRouteStore((state) => state.toggleDarkMode)
-  const setScreen = useRouteStore((state) => state.setScreen)
+interface HeaderProps {
+  /** La bombilla: los tips del viaje (PROMPT_UI_REPASO_2, 3). */
+  onTips: () => void
+  /** La varita: «Volver a mi ruta original» (o «Tu ruta está tal como te la preparamos» si no hay cambios). */
+  onWand: () => void
+}
 
+/**
+ * Cabecera mínima (diseño "Trazo Itinerario"): brújula, nombre, % de viaje listo, la bombilla de los tips y la varita
+ * (PROMPT_UI_REPASO_2, 1: sustituyen a «Mis viajes», que pasa al perfil de la barra de abajo, y al modo noche). La varita
+ * siempre visible y siempre igual, sin puntito ni aviso.
+ */
+export function Header({ onTips, onWand }: HeaderProps) {
   return (
     <header className="relative z-20 flex h-14 shrink-0 items-center gap-2.5 bg-bg pl-[18px] pr-4">
       <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-[#1C2230] text-[oklch(0.8_0.14_70)]" aria-hidden="true">
@@ -21,25 +28,14 @@ export function Header() {
       </span>
       <span className="min-w-0 flex-1 truncate font-display text-[26px] leading-none text-text">Route Planner</span>
       <TripReadinessBadge />
-      {/* Único punto de vuelta a "Mis viajes" — sin esto, un viaje que se auto-abre al arrancar
-          (retomar generación o Modo Hoy, ver TripSync.tsx) dejaba al viajero sin forma de ver sus
-          otros viajes guardados ni crear uno nuevo. */}
-      <button type="button" onClick={() => setScreen('myTrips')} title="Mis viajes" aria-label="Mis viajes" className={ROUND_BUTTON}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="4" y="8" width="16" height="12" rx="2" />
-          <path d="M9 8V5h6v3M9 12v4M15 12v4" />
+      <button type="button" onClick={onTips} title="Tips del viaje" aria-label="Tips del viaje" className={ROUND_BUTTON}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 18h6M10 21h4" />
+          <path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" />
         </svg>
       </button>
-      <button type="button" onClick={toggleDarkMode} title="Cambiar modo oscuro" aria-label="Modo noche" className={ROUND_BUTTON}>
-        {darkMode ? (
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-          </svg>
-        ) : (
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
-          </svg>
-        )}
+      <button type="button" onClick={onWand} title="Volver a mi ruta original" aria-label="Volver a mi ruta original" className={ROUND_BUTTON}>
+        <MagicWandIcon className="h-[18px] w-[18px]" />
       </button>
     </header>
   )

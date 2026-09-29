@@ -13,7 +13,6 @@ import { TransportRow } from './reservas/TransportRow'
 import { AccommodationRow } from './reservas/AccommodationRow'
 import { N26Row } from './reservas/N26Row'
 import { EsimRow } from './reservas/EsimRow'
-import { FloatingBudget } from '../layout/FloatingBudget'
 import { bookingLabelsOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 
 interface ReservasPanelProps {
@@ -116,7 +115,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
           ✕
         </button>
 
-        <FloatingBudget />
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-20">
           <div className="mx-auto w-full max-w-lg space-y-5">
