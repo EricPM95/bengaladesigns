@@ -99,6 +99,8 @@ export function auditarViaje(D, days, options = {}) {
     const lunchEnd = t2m(lunch?.window_end) ?? lunchStart
     const dinnerStart = t2m(dinner?.suggested_time)
     for (const stop of day.stops) allNames.add(nameOf(stop).replace(/\s*\(noche\)$/, ''))
+    // (Lo que recorre el Free Tour también está en el viaje: la Befana de Piazza Navona en un viaje con Free Tour.)
+    if (D.default_free_tour && day.stops.some((stop) => nameOf(stop) === D.default_free_tour.name)) for (const name of D.default_free_tour.covers ?? []) allNames.add(name)
 
     // Repetidos.
     const inDay = new Map()

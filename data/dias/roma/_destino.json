@@ -375,14 +375,14 @@
             "tarde.*": {
               "insertar": [
                 {
-                  "al_principio": true,
                   "parada": {
                     "lugar": "Museos Capitolinos",
                     "min": 60,
                     "modo": "dentro",
                     "entrada": true,
                     "si_cerrado": "fuera"
-                  }
+                  },
+                  "antes_de": "Largo di Torre Argentina"
                 }
               ],
               "quitar": [
@@ -471,7 +471,6 @@
               ],
               "insertar": [
                 {
-                  "al_principio": true,
                   "parada": {
                     "lugar": "Termas de Caracalla",
                     "min": 60,
@@ -482,7 +481,8 @@
                       "como": "un taxi",
                       "min": 15
                     }
-                  }
+                  },
+                  "al_principio": true
                 }
               ],
               "ajustar": {

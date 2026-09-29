@@ -249,7 +249,7 @@
         },
         {
           "lugar": "Mercados de Trajano",
-          "min": 70,
+          "min": 78,
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"

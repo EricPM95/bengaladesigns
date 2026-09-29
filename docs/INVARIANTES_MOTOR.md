@@ -1728,3 +1728,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     `si_cerrado` y el orden de los días resuelven la mayoría; tienen versión escrita el 1 de enero (D1, D1-FT, D4), el 25
     de diciembre (D1 y D2, con la Bendición Urbi et Orbi), el Domingo de Pascua (D1) y el primer domingo de mes (el Coliseo
     antes de que abra). La Girandola y el Vía Crucis van a su hora como nocturnas del día.
+
+334. **Días escritos: al mirador, de 15 a 35 min antes del sol** (2026-09-29): la elástica mueve ±30; lo que no llega a
+    absorber (hasta 10 min más) lo absorbe la llegada al mirador, que se adelanta o se retrasa respecto a los 25 de
+    siempre. Por menos de 5 min no se adelanta. La prueba de las 365 fechas marca la elástica solo si pasa de ±40.
+
+335. **Días escritos: un traslado escrito no se usa si andando son 12 min o menos** (2026-09-29): la parada lleva su taxi o
+    su bus para cuando viene de lejos; si esa vez viene de al lado (la Isla Tiberina y Santa Cecilia, cuando van seguidas),
+    se va andando.
+
+336. **Días escritos: la versión vecina en la frontera de luz** (2026-09-29): si el sol está a 15 min o menos del corte y la
+    elástica no llega en su versión, el día prueba la versión vecina (con lo mismo del pool) y se queda la que llegue
+    mejor. Sale en las variantes como `luz:B→A`.
+
+337. **Días escritos: un sitio del pool compensa lo que añade** (2026-09-29): si un extra mete tiempo en una tarde con
+    atardecer, su sitio quita o acorta algo de esa versión (el Aventino en D2 acorta Trastevere; los Capitolinos en D5 A
+    quitan las Catacumbas y la Isla; el Parque en D4 A es el lago en lugar de los jardines), para que el mirador siga
+    llegando a su hora.
