@@ -236,3 +236,31 @@ móvil. Lo más importante:
 - la ventana de avisos, con la franja de temporada;
 - la bombilla;
 - las etiquetas nuevas.
+
+# Textos del ritmo (PROMPT_TEXTOS_RITMO)
+
+**Textos que daban una hora de inicio** (lo que ve el viajero):
+
+| Dónde | Antes | Después |
+|---|---|---|
+| `context_banners.tranquilo` (banner de la ruta) | «…con calma: empiezas a las 10:00, comes sin prisa…» | «…con calma: menos paradas, comidas sin prisa y ratos libres… Algún día empieza pronto, para entrar al Vaticano o al Coliseo sin colas…» |
+| `context_banners.tranquilo_antes` + `n_dias` | « Solo {n} {n_dias} antes, para que no te quedes sin ver {lugares}.» | Fuera, en el JSON y en el código: solo servía para los días antes de las 10:00. |
+| `pace_stats.completo.inicio` (formulario: «El día empieza a las…» y el gráfico) | 08:00 | **08:30**: con v4, la mediana de la primera parada. El 08:00 no era verdad. |
+| `pace_stats.tranquilo.inicio` | 10:00 | **09:00**, con el rango **08:45-10:00**: «El día empieza entre las 08:45 y las 10:00». |
+
+**Sin cambios, porque no prometen nada falso:**
+- `pace_texts.tranquilo`: no da hora.
+- `pace_notices` («Hoy toca madrugar… a las {hora}»): usa la hora real de ese día.
+- `context_banners.madrugar` (invierno): «y algún día empieza un poco antes», sin hora.
+- El `FALLBACK_STATS` del cliente (08:00 y 10:00): solo vale para los destinos sin datos curados. Son los objetivos del
+  motor genérico.
+- Las notas internas (`_nota`, `note`) no las ve el viajero.
+
+**Comprobaciones:**
+- De los 144 viajes en tranquilo de la muestra (3-5 días, ocho fechas y seis combinaciones de experiencias), los 144
+  tienen al menos un día antes de las 10:00. El «Algún día empieza pronto» es verdad.
+- Las paradas por día también se han vuelto a medir con v4, y han cambiado:
+  - completo pasa de ≈ 8 a **≈ 11**, con un rango de 10-13;
+  - tranquilo pasa de ≈ 6 a **≈ 10**, con un rango de 9-11.
+- Lo he comprobado a mano en un día cualquiera: v3 y v4 dan las mismas 11 paradas reales. El 8 que había venía de una
+  medición antigua, así que ahora el formulario dice «≈ 11 planes al día» y «≈ 10».

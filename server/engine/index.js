@@ -566,14 +566,9 @@ export function contextBannerFor(destData, trip, options = {}) {
   const short = days <= 2
   const tranquilo = isTranquiloPace(options.pace)
   const usualStart = tranquilo ? MODES_V3.tranquilo.dayStart : MODES_V3.completo.dayStart
-  // Los días que empiezan antes de su hora, y lo que salvan.
+  // Los días que empiezan antes de su hora (el «y algún día empieza un poco antes» del invierno).
   const early = cityDays.filter((day) => day.schedule.modeFallback && (day.schedule.modeFallback.startedAt ?? usualStart) < usualStart)
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
-  // Solo lo que de verdad entra ese día (la reparación pasa la lista entera de lo que faltaba).
-  const savedNames = [...new Set(early.flatMap((day) => [
-    ...(day.schedule.modeFallback.recoveredNames ?? []),
-    ...(day.schedule.modeFallback.recoveredUnitIds ?? []).map((id) => String(id).split(':').slice(1).join(':') || String(id)),
-  ].filter((name) => (day.schedule.visits ?? []).some((visit) => visit.place.name === name && !visit.place.passThrough))))].filter((name) => placeByName.get(name)?.level === 1)
   const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => (values[key] ?? match))
 
   if (short && winter) return fill(days === 1 ? templates.invierno_corto_1 : templates.invierno_corto, { dias: days })
@@ -597,16 +592,9 @@ export function contextBannerFor(destData, trip, options = {}) {
       : fill(templates.invierno_sin_cierre ?? templates.invierno, { atardecer, madrugar })
   }
   if (short) return fill(days === 1 ? templates.corto_1 : templates.corto, { dias: days })
-  if (tranquilo) {
-    const antes = early.length > 0 && savedNames.length > 0
-      ? fill(templates.tranquilo_antes ?? '', {
-          n: early.length,
-          n_dias: early.length === 1 ? templates.n_dias?.uno ?? 'día empieza' : templates.n_dias?.varios ?? 'días empiezan',
-          lugares: joinSpanish(savedNames.map((name) => placeWithArticle(placeByName.get(name)))),
-        })
-      : ''
-    return `${templates.tranquilo}${antes}`
-  }
+  // Tranquilo, sin hora fija (PROMPT_TEXTOS_RITMO): cada día empieza a su hora escrita, y el texto ya dice que algún día
+  // empieza pronto. (Fuera «Solo N días empiezan antes…»: solo servía para los días antes de las 10:00.)
+  if (tranquilo) return templates.tranquilo
   return null
 }
 

@@ -6,7 +6,11 @@
 export interface PaceStat {
   /** Media de paradas reales por día en todos los viajes con ese ritmo (lo que se enseña). */
   media: number
+  /** La hora de la primera parada (mediana del motor v4, de 5 en 5): ahí empieza el gráfico. */
   inicio: string
+  /** Si no todos los días empiezan igual, el rango (cuartiles 25-75 %): «El día empieza entre las 08:45 y las 10:00». */
+  inicio_desde?: string
+  inicio_hasta?: string
 }
 
 export interface PaceTexts {

@@ -38,7 +38,8 @@ function dayBlocks(stops: number, startHour: number): [number, number][] {
 /**
  * 05 — Ritmo: "Completo" (Recomendado) y "Tranquilo". Textos del destino (destinationTextsApi) y "≈ N
  * planes al día" con la media real del motor para todos los viajes con ese ritmo (pace_stats). La barra
- * de horas empieza a la hora real de cada ritmo (Completo 08:00, Tranquilo 10:00).
+ * de horas empieza a la hora real de cada ritmo: la de la primera parada, medida con el motor (pace_stats.inicio); si
+ * no todos los días empiezan igual, el texto da el rango (PROMPT_TEXTOS_RITMO).
  */
 export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
   const open: TripPace = pace ?? 'nonstop'
@@ -124,8 +125,12 @@ export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
                 {card.text}
               </div>
               <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 14, display: active ? 'flex' : 'none', flexDirection: 'column', gap: 8, animation: 'trazo-chipIn .5s ease both' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.75 }}>
-                  <span>El día empieza a las {card.stat.inicio}</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', justifyContent: 'space-between', font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.75 }}>
+                  <span>
+                    {card.stat.inicio_desde && card.stat.inicio_hasta
+                      ? `El día empieza entre las ${card.stat.inicio_desde} y las ${card.stat.inicio_hasta}`
+                      : `El día empieza a las ${card.stat.inicio}`}
+                  </span>
                   <span>Comida y cena incluidas</span>
                 </div>
                 <div style={{ position: 'relative', height: active ? 46 : 26, transition: 'height .7s cubic-bezier(.2,.8,.2,1)' }}>

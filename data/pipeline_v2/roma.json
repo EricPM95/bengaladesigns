@@ -7516,7 +7516,7 @@
       "otono": "18:15"
     },
     "context_banners": {
-      "nota": "Banner de contexto (decisión del 2026-09-26): uno solo, encima del Día 1, del caso más importante al menos: invierno_corto, invierno, corto, tranquilo. Invierno = de noviembre a febrero; corto = 1-2 días. Variables: {dias}, {atardecer} (el del mes, redondeado al cuarto de hora siguiente), {lugar} y {cierre} (el nivel 1 de la ruta que cierra antes, con su artículo), {madrugar} (solo si algún día empieza antes de su hora), {n}, {n_dias} y {lugares} (los días de tranquilo que empiezan antes y lo que se salva). \"_1\": para un viaje de un día.",
+      "nota": "Banner de contexto (decisión del 2026-09-26): uno solo, encima del Día 1, del caso más importante al menos: invierno_corto, invierno, corto, tranquilo. Invierno = de noviembre a febrero; corto = 1-2 días. Variables: {dias}, {atardecer} (el del mes, redondeado al cuarto de hora siguiente), {lugar} y {cierre} (el nivel 1 de la ruta que cierra antes, con su artículo), {madrugar} (solo si algún día empieza antes de su hora). \"_1\": para un viaje de un día. Tranquilo no da hora fija: cada día empieza a su hora escrita (PROMPT_TEXTOS_RITMO).",
       "meses_invierno": [
         11,
         12,
@@ -7530,12 +7530,7 @@
       "madrugar": " y algún día empieza un poco antes",
       "corto": "{dias} días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
       "corto_1": "Un día en Roma da para mucho si se aprovecha bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
-      "tranquilo": "Hemos preparado tu ruta con calma: empiezas a las 10:00, comes sin prisa y tienes ratos libres para disfrutar de Roma a tu aire. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.",
-      "tranquilo_antes": " Solo {n} {n_dias} antes, para que no te quedes sin ver {lugares}.",
-      "n_dias": {
-        "uno": "día empieza",
-        "varios": "días empiezan"
-      }
+      "tranquilo": "Hemos preparado tu ruta con calma: menos paradas, comidas sin prisa y ratos libres para disfrutar de Roma a tu aire. Algún día empieza pronto, para entrar al Vaticano o al Coliseo sin colas. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas."
     },
     "pace_texts": {
       "nota": "Pantalla de ritmo del formulario (decisión del 2026-09-26): Completo preseleccionado y con la etiqueta. {destino} = el nombre del destino.",
@@ -7586,20 +7581,22 @@
       "paisajes_miradores"
     ],
     "pace_stats": {
-      "_nota": "Paradas reales por día de cada ritmo (sin lo de paso, nocturnas ni pausas), sacadas del motor con scripts/destino/paceStats.mjs. Rango = cuartiles 25-75 %. Lo enseña la pantalla de ritmo.",
+      "_nota": "Paradas reales por día de cada ritmo (sin lo de paso, nocturnas ni pausas), sacadas del motor v4 con scripts/destino/paceStats.mjs. Rango = cuartiles 25-75 %. inicio = la hora de la primera parada (mediana, de 5 en 5); inicio_desde/inicio_hasta = sus cuartiles si no coinciden. Lo enseña la pantalla de ritmo.",
       "completo": {
-        "min": 7,
-        "max": 9,
-        "media": 8,
-        "dias_medidos": 96,
-        "inicio": "08:00"
+        "min": 10,
+        "max": 13,
+        "media": 11.1,
+        "dias_medidos": 104,
+        "inicio": "08:30"
       },
       "tranquilo": {
-        "min": 5,
-        "max": 6,
-        "media": 5.9,
-        "dias_medidos": 96,
-        "inicio": "10:00"
+        "min": 9,
+        "max": 11,
+        "media": 9.6,
+        "dias_medidos": 104,
+        "inicio": "09:00",
+        "inicio_desde": "08:45",
+        "inicio_hasta": "10:00"
       }
     },
     "paseo_iluminado": {

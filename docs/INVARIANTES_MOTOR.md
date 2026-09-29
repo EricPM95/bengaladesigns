@@ -2097,3 +2097,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     «Revisita» y «Por tu experiencia · <experiencia>» son etiquetas, con el mismo estilo que las demás (útiles de un
     vistazo). El nombre del paseo nocturno y dónde acaba el Free Tour («El tour acaba en Piazza Navona…») van dentro de
     la ficha, arriba del Resumen. «Añadida por ti» no sale.
+
+391. **Ningún texto promete una hora que la ruta no cumple** (PROMPT_TEXTOS_RITMO).
+    - Las horas que se enseñan salen del motor, no de lo que el ritmo pretendía:
+      - `pace_stats.<ritmo>.inicio` es la hora de la primera parada de cada día con el motor v4: la mediana, de 5 en 5,
+        medida con `scripts/destino/paceStats.mjs --guardar`, igual que las paradas por día;
+      - si no todos los días empiezan igual, lleva `inicio_desde` / `inicio_hasta` (cuartiles 25-75 %). El formulario
+        dice «El día empieza entre las X y las Y», y el gráfico empieza en `inicio`.
+    - El banner de tranquilo no da hora fija. Solo dice que algún día empieza pronto, cosa que se ha comprobado en todos
+      los viajes de la muestra.
+    - Un aviso por día («Hoy toca madrugar… a las {hora}») usa la hora real de ese día.
+    - Al cambiar los días escritos o el motor, se vuelve a pasar paceStats.
