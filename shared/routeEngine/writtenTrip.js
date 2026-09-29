@@ -60,6 +60,7 @@ const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 const LUNCH_MAX_TRANQUILO = 105 // en tranquilo, la comida como mucho 105 min
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
+const LUNCH_MIN_TRANQUILO = 60 // en tranquilo, al menos una hora
 const TRANQUILO_EARLIEST = 10 * 60 // en tranquilo, la primera parada nunca antes de las 10:00
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
@@ -745,6 +746,8 @@ export function planWrittenTrip(args) {
     // (La comida dura como mucho 90 min en completo y 105 en tranquilo, aunque lo escrito empiece la tarde más tarde:
     // lo demás es tarde. Antes, Nonna Betta de 13:30 a 15:30 en completo, más que en tranquilo.)
     end = Math.min(end, start + (tranquilo ? LUNCH_MAX_TRANQUILO : LUNCH_MAX_COMPLETO))
+    // (En tranquilo, si la mañana acaba tarde, la tarde espera a que haya al menos una hora para comer.)
+    if (tranquilo && end - start < LUNCH_MIN_TRANQUILO) end = start + LUNCH_MIN_TRANQUILO
     let short = null
     if (end - start < LUNCH_MIN) {
       short = end - start
@@ -977,7 +980,8 @@ export function planWrittenTrip(args) {
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
       return true
     }
-    const max = tranquilo ? walk.maximo_tranquilo ?? 1 : walk.maximo ?? 2
+    // En tranquilo, una sola nocturna (PROMPT_ROMA_V4_REPASO 5), aunque el paseo escrito admita más.
+    const max = tranquilo ? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
     let fromAlternative = false
     if (chain.length === 0) {

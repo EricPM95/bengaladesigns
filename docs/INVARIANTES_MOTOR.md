@@ -1918,3 +1918,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 366. **En tranquilo, la primera parada nunca antes de las 10:00** (2026-09-29, PROMPT_ROMA_V4_REPASO 4): una hora escrita
     más temprana pasa a las 10:00 (el turno del Coliseo de las 10:00-10:30, el Vaticano a las 10:00, el Puente
     Sant'Angelo). Solo las horas de la mañana; en completo, las de siempre.
+
+367. **El D1 en tranquilo, más ligero** (2026-09-29, PROMPT_ROMA_V4_REPASO 5):
+    - Solo en tranquilo son opcionales el Gesù, la Fuente de las Tortugas y también el Largo di Torre Argentina. Con el
+      Coliseo a las 10:00 (regla 366), San Luigi (cierra a las 18:15) no llegaba después del Panteón.
+    - En tranquilo, una sola nocturna, aunque el paseo escrito admita más.
+    - En tranquilo, la comida dura al menos 60 min. Si la mañana acaba tarde, la tarde espera; antes, la comida se quedaba
+      en 45 min.

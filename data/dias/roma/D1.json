@@ -77,17 +77,20 @@
         },
         {
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "tipo": "opcional"
         },
         {
           "lugar": "Largo di Torre Argentina",
-          "min": 15
+          "min": 15,
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia del Gesù",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia de Santa Maria sopra Minerva",
@@ -137,17 +140,20 @@
         },
         {
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "tipo": "opcional"
         },
         {
           "lugar": "Largo di Torre Argentina",
-          "min": 15
+          "min": 15,
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia del Gesù",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "Iglesia de Santa Maria sopra Minerva",
