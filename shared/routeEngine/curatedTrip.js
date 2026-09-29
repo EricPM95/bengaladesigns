@@ -60,7 +60,7 @@ const FILL_ZONE_METERS = 1000
 const FILL_WALK_MAX = 25
 const FILL_LEG_MAX = 15
 /** El máximo de una parada de paseo: el suyo (`max_minutos_paseo`: la Via Appia), 45 una avenida, 90 un parque o un barrio (120 en tranquilo). */
-function paseoMaxOf(place, tranquilo) {
+export function paseoMaxOf(place, tranquilo) {
   const tags = new Set(place?.tags ?? [])
   if (place?.max_minutos_paseo != null) return place.max_minutos_paseo
   if (tags.has('calle')) return 45

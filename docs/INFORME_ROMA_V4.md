@@ -50,3 +50,26 @@ Sigue a `PROMPT_ROMA_V4_RETOQUES.md`. Commits del `441359e` al último, **sin pu
 - **Tramo largo (2):** D2 D con los Museos cerrados.
 
 v4 encendido y subido (commit 157b919).
+
+## Pulido (PROMPT_ROMA_V4_PULIDO, 29 de septiembre)
+
+| | Antes | Ahora |
+|---|---|---|
+| Prueba de las 365 fechas | 165 (113 de verdad) | **155 (103 de verdad)**, sin tipos nuevos |
+| Los 56 viajes: v4 mejor / igual / peor | 8 / 48 / 0 | **5 / 51 / 0** (v3 8 avisos, v4 0) |
+
+1. **Paradas encogidas** (reglas 348-350):
+   - Ninguna parada baja del 75 % de lo escrito ni de 15 min (20 un barrio).
+   - Si la elástica se quedaría en menos de 15 min, se quita, y su rato va al aperitivo del mismo barrio (Monti, Trastevere).
+   - La causa de fondo era el redondeo al cuarto de hora: el Barrio Judío escrito de 20 min salía de 11. **Ahora todas las horas y duraciones van de 5 en 5** (es el punto 9 del prompt de UI, adelantado), y los minutos andando, exactos.
+   - D1-FT A: el Ghetto 20 y la Isla 15, Trastevere como elástica, al Janículo en el bus 115, y se baja por la Fontana dell'Acqua Paola y el Tempietto.
+2. **Un solo bloque por barrio antes de cenar**: «Trastevere al anochecer y aperitivo»; «Trastevere de noche», después de cenar (regla 351).
+3. **Aperitivo, 90 min como mucho, siempre**: si sobra tiempo, la cena se adelanta, nunca antes de las 19:30, ni de las 20:30 en verano (regla 352).
+4. **Tranquilo** (regla 353): la comida, 105 min como mucho. Las opcionales de la tarde (Letrán y San Clemente en D4M, Mercados de Trajano en D5C) se quitan mientras la tarde pueda absorber ese rato. En invierno se quitan; en verano, con tardes tan largas, vuelven las que hagan falta.
+5. **Trevi en D3 a las 8:30**, con el desayuno de 35 min hasta el Free Tour.
+6. **D4 B, 14 de marzo**: Popolo 10, lago 25, Terraza 40. El mirador solo se alarga si la cena espera en C y D; en A y B ese rato es de la nocturna y del aperitivo.
+
+**Otros arreglos:**
+- **D5C, segundo sitio del pool:** para Caracalla (por la mañana) y los Capitolinos (en lugar de los Mercados de Trajano). Sin él, en viajes de 5 días se quedaban fuera.
+- **Elástica en tranquilo:** nunca pasa del máximo de su paseo (Borgo Pio, 45).
+- **Adelantar la llegada al atardecer:** solo en los miradores, nunca en una avenida (los Foros).

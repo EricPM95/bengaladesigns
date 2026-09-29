@@ -322,7 +322,7 @@
         "paradas": [
           {
             "lugar": "Plaza de San Pedro",
-            "min": 20
+            "min": 25
           },
           {
             "lugar": "Basílica de San Pedro",
@@ -331,10 +331,10 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino",
             "elastica": 20,
             "min": 20,
-            "titulo": "Por Via della Conciliazione y el Borgo"
+            "titulo": "Por Via della Conciliazione y el Borgo",
+            "no_calle": true
           },
           {
             "lugar": "Mirador del Janículo",

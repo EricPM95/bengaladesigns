@@ -27,6 +27,7 @@ import { availableForTrip } from './availability.js'
 import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
+import { paseoMaxOf } from './curatedTrip.js'
 
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día' }
 /** Cortes de luz por defecto (Roma, 2026-09-28): A antes de 17:40, B hasta 18:44, C hasta 19:44, D desde 19:45. */
@@ -813,7 +814,10 @@ export function planWrittenTrip(args) {
         elasticWanted = target - probe.sunsetArrival
         // (De 5 en 5, como todo lo que ve el viajero.)
         // (En tranquilo la elástica puede crecer el doble: la tarde es más lenta.)
-        const grow = tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica
+        const pmax = paseoMaxOf(placeByName.get(elasticStop.lugar), tranquilo)
+        const baseMin = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
+        // (Y nunca por encima del máximo de su paseo: Borgo Pio, una calle, 45.)
+        const grow = Math.min(tranquilo ? elasticStop.elastica * 2 : elasticStop.elastica, pmax != null ? Math.max(0, pmax - baseMin) : Infinity)
         elasticUsed = Math.round(Math.max(-elasticStop.elastica, Math.min(grow, elasticWanted)) / 5) * 5
         // Nunca por debajo del 75 % de lo escrito ni de 15 min (20 un barrio); si haría falta bajar de ELASTIC_DROP, se quita.
         const base = elasticStop.min ?? placeByName.get(elasticStop.lugar)?.duration_minutes ?? 30
