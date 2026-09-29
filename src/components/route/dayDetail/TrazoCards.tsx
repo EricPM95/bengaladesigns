@@ -52,6 +52,8 @@ interface TrazoCardProps {
   children?: ReactNode
   /** Un control propio abajo a la derecha, fuera del botón de abrir ("Quiero entrar"). */
   action?: ReactNode
+  /** El número en el color del día (PROMPT_UI, Parte 2): relleno claro, número fuerte y borde blanco. */
+  numberColors?: { bg: string; text: string }
 }
 
 const SUNSET_PANEL = 'linear-gradient(170deg, oklch(0.78 0.15 70), oklch(0.62 0.19 22))'
@@ -59,7 +61,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
@@ -149,8 +151,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
       )}
       {number != null && (
         <span
-          className="absolute -left-[9px] -top-[9px] z-[2] flex h-6 w-6 items-center justify-center rounded-full border-[2.5px] border-bg-card text-[11px] font-semibold text-white"
-          style={{ background: badge }}
+          className="absolute -left-[9px] -top-[9px] z-[2] flex h-6 w-6 items-center justify-center rounded-full border-[2.5px] border-white text-[11px] font-semibold text-white"
+          style={numberColors ? { background: numberColors.bg, color: numberColors.text } : { background: badge }}
         >
           {number}
         </span>
@@ -165,7 +167,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
 export function PeriodHeader({ period, range }: { period: DayPeriod; range?: string | null }) {
   const style = PERIOD_STYLE[period]
   return (
-    <div className="flex items-center gap-2 pb-2.5 pl-0.5 pt-4">
+    <div className="flex items-center gap-2 pl-0.5 pt-1">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>
@@ -193,5 +195,86 @@ export function TimelineNote({ time, children, onClick, photoUrl }: { time?: str
     </button>
   ) : (
     <div className="relative flex w-full items-start gap-2 py-2">{content}</div>
+  )
+}
+
+/**
+ * La comida, la cena y el desayuno (PROMPT_UI, Parte 2: "Comidas A · Mesa"): una tarjeta terracota suave, sin foto ni
+ * número. Arriba, "COMIDA · 13:15 – 14:15" en mono; el restaurante en grande (Instrument Serif); debajo, a cuántos
+ * minutos está; a la derecha, "Cambiar". El desayuno, en pequeño: más baja, el nombre en letra normal y "Cambiar" como
+ * enlace.
+ */
+export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChange, small = false, menu }: {
+  label: string
+  timeRange?: string | null
+  name: string
+  sub?: string | null
+  iconPath: string
+  onOpen?: () => void
+  onChange?: () => void
+  small?: boolean
+  menu?: ReactNode
+}) {
+  const change = onChange ? (
+    small ? (
+      <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 text-[12.5px] font-semibold text-accent underline underline-offset-2 hover:text-accent-hover">
+        Cambiar
+      </button>
+    ) : (
+      <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="shrink-0 rounded-full border-[1.5px] border-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+        Cambiar
+      </button>
+    )
+  ) : null
+  const content = (
+    <>
+      <span className={`flex shrink-0 items-center justify-center rounded-full bg-accent text-white ${small ? 'h-8 w-8' : 'h-10 w-10'}`}>
+        <Icon d={iconPath} size={small ? 15 : 18} />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
+        <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[.08em] text-accent">
+          {label}
+          {timeRange ? ` · ${timeRange}` : ''}
+        </span>
+        <span className={small ? 'text-[14px] font-medium leading-[1.25] text-text [overflow-wrap:anywhere]' : 'font-display text-[22px] leading-[1.1] text-text [overflow-wrap:anywhere]'}>{name}</span>
+        {sub && <span className="truncate text-[12px] leading-[1.3] text-text/60">{sub}</span>}
+      </span>
+    </>
+  )
+  return (
+    <div className={`relative flex w-full items-center gap-3 rounded-[18px] border border-[#F1D6C9] bg-[#FCEFE8] ${small ? 'px-3 py-2.5' : 'px-3.5 py-3.5'}`}>
+      {onOpen ? (
+        <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3">
+          {content}
+        </button>
+      ) : (
+        <div className="flex min-w-0 flex-1 items-center gap-3">{content}</div>
+      )}
+      {change}
+      {menu && <div className="shrink-0">{menu}</div>}
+    </div>
+  )
+}
+
+/**
+ * "De camino" (PROMPT_UI, Parte 2: "De camino B · Mini-tarjeta"): lo que se pilla andando de una parada a otra sin
+ * desviarse (una calle, una fuente pequeña, una plaza). Sin número ni hora, no suma tiempo: una tarjeta baja con borde
+ * discontinuo, un poco metida a la derecha, con su foto redonda, "DE CAMINO · SIN DESVÍO", el nombre y "Ver ›".
+ */
+export function OnTheWayCard({ name, photoUrl, onOpen, menu }: { name: string; photoUrl?: string | null; onOpen?: () => void; menu?: ReactNode }) {
+  return (
+    <div className="relative ml-4 flex h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] pl-2 pr-2">
+      <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+        <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-bg-hover">
+          {photoUrl && <img src={photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50">De camino · sin desvío</span>
+          <span className="truncate font-display text-[17px] leading-[1.15] text-text">{name}</span>
+        </span>
+        <span className="shrink-0 pr-1 text-[12.5px] font-semibold text-accent">Ver ›</span>
+      </button>
+      {menu && <div className="shrink-0">{menu}</div>}
+    </div>
   )
 }

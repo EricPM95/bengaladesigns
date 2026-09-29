@@ -7147,7 +7147,8 @@
         ],
         "civitatis_slug": "excursion-pompeya-sorrento",
         "civitatis_search": "pompeya sorrento desde roma",
-        "gyg_search": "pompeii sorrento from rome"
+        "gyg_search": "pompeii sorrento from rome",
+        "photo_name": "Pompeii ruins"
       },
       {
         "id": "florencia_pisa",
@@ -7168,7 +7169,8 @@
         ],
         "civitatis_slug": "excursion-florencia-pisa",
         "civitatis_search": "florencia pisa desde roma",
-        "gyg_search": "florence pisa from rome"
+        "gyg_search": "florence pisa from rome",
+        "photo_name": "Florence Duomo"
       },
       {
         "id": "napoles_pompeya_tren",
@@ -7189,7 +7191,8 @@
         ],
         "civitatis_slug": "excursion-napoles-pompeya-tren",
         "civitatis_search": "napoles pompeya desde roma",
-        "gyg_search": "naples pompeii from rome"
+        "gyg_search": "naples pompeii from rome",
+        "photo_name": "Naples Italy"
       },
       {
         "id": "costa_amalfitana",
@@ -7210,7 +7213,8 @@
         ],
         "civitatis_slug": "excursion-costa-amalfitana",
         "civitatis_search": "costa amalfitana desde roma",
-        "gyg_search": "amalfi coast from rome"
+        "gyg_search": "amalfi coast from rome",
+        "photo_name": "Amalfi Coast"
       },
       {
         "id": "florencia_tren",
@@ -7231,7 +7235,8 @@
         ],
         "civitatis_slug": "excursion-florencia-tren",
         "civitatis_search": "florencia tren desde roma",
-        "gyg_search": "florence train from rome"
+        "gyg_search": "florence train from rome",
+        "photo_name": "Florence Duomo"
       },
       {
         "id": "ostia_antica",
@@ -7252,7 +7257,8 @@
         ],
         "civitatis_slug": "excursion-ostia-antica",
         "civitatis_search": "ostia antica desde roma",
-        "gyg_search": "ostia antica from rome"
+        "gyg_search": "ostia antica from rome",
+        "photo_name": "Ostia Antica"
       },
       {
         "id": "tivoli_villas",
@@ -7273,7 +7279,8 @@
         ],
         "civitatis_slug": "excursion-villa-adriana-villa-este",
         "civitatis_search": "tivoli villa este villa adriana desde roma",
-        "gyg_search": "tivoli villa este hadrian villa from rome"
+        "gyg_search": "tivoli villa este hadrian villa from rome",
+        "photo_name": "Villa d'Este Tivoli"
       }
     ],
     "civitatis_city": "roma"

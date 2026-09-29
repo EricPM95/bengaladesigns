@@ -261,6 +261,8 @@ export interface GeneratedExcursion {
   duration: 'half_day' | 'full_day'
   duration_hours?: number | null
   emoji?: string | null
+  /** Con qué se busca su foto (en inglés, del JSON del destino). */
+  photo_name?: string | null
   rating?: number | null
   review_count?: number | null
   destination_coords?: { lat: number; lng: number } | null
@@ -530,6 +532,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       description: excursion.description,
       transportSuggestion: excursion.transport_suggestion,
       emoji: excursion.emoji ?? null,
+      photoName: excursion.photo_name ?? null,
       durationHours: excursion.duration_hours ?? null,
       // Nota y nº de reseñas SOLO si son reales. Mientras no esté integrada la API del operador,
       // buena parte del catálogo curado los lleva puestos a mano: un "⭐4,8 (2.340 reseñas)"

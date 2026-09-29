@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { KIND_ICON } from '../../../lib/stopKind'
-import { TrazoCard } from './TrazoCards'
+import { MealCard } from './TrazoCards'
 
 interface BreakCardProps {
   stop: MockStopDetail
@@ -21,16 +21,18 @@ interface BreakCardProps {
 export function BreakCard({ stop, startTime, menu, onOpen }: BreakCardProps) {
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
   const suggestions = stop.breakSuggestions ?? []
+  // El desayuno, como la comida pero en pequeño (PROMPT_UI, Parte 2): sin número, "Cambiar" como enlace.
   return (
-    <TrazoCard
-      kind="comida"
-      iconPath={KIND_ICON.coffee}
-      time={startTime ? (endTime ? `${startTime} – ${endTime}` : startTime) : null}
+    <MealCard
+      small
+      label="Desayuno"
+      timeRange={startTime ? (endTime ? `${startTime} – ${endTime}` : startTime) : null}
       name={stop.name}
-      meta={suggestions.map((item) => ({ icon: 'pin' as const, text: `${item.name} · ${item.walkMinutes} min` }))}
-      noPhoto
-      menu={menu}
+      sub={suggestions.length > 0 ? suggestions.map((item) => `${item.name} · ${item.walkMinutes} min`).join(' · ') : null}
+      iconPath={KIND_ICON.coffee}
       onOpen={onOpen}
+      onChange={onOpen}
+      menu={menu}
     />
   )
 }

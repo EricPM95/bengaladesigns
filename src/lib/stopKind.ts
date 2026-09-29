@@ -121,31 +121,23 @@ export function stopNumbersOf(day: DayPlan): Map<string, number> {
 
 // ── Franjas del día ─────────────────────────────────────────────────────────────────────────
 
-export type DayPeriod = 'manana' | 'mediodia' | 'tarde' | 'atardecer' | 'noche'
+/**
+ * Los tramos del día (PROMPT_UI, Parte 2): solo tres con cabecera, Mañana, Tarde y Noche; la comida y la cena van entre
+ * ellos, como bloques propios (Mañana → Comida → Tarde → Cena → Noche).
+ */
+export type DayPeriod = 'manana' | 'comida' | 'tarde' | 'cena' | 'noche'
 
-export const PERIOD_ORDER: DayPeriod[] = ['manana', 'mediodia', 'tarde', 'atardecer', 'noche']
+export const PERIOD_ORDER: DayPeriod[] = ['manana', 'comida', 'tarde', 'cena', 'noche']
+
+/** Los tramos con cabecera (la comida y la cena llevan su propia tarjeta). */
+export const PERIOD_WITH_HEADER: ReadonlySet<DayPeriod> = new Set(['manana', 'tarde', 'noche'])
 
 export const PERIOD_STYLE: Record<DayPeriod, { label: string; icon: string; color: string; soft: string }> = {
   manana: { label: 'Mañana', icon: KIND_ICON.sun, color: oklch(0.6, 0.15, 70), soft: oklch(0.72, 0.15, 70, 0.16) },
-  mediodia: { label: 'Mediodía', icon: KIND_ICON.fork, color: oklch(0.5, 0.15, 45), soft: oklch(0.62, 0.15, 45, 0.16) },
+  comida: { label: 'Comida', icon: KIND_ICON.fork, color: oklch(0.5, 0.15, 45), soft: oklch(0.62, 0.15, 45, 0.16) },
   tarde: { label: 'Tarde', icon: KIND_ICON.sun, color: oklch(0.5, 0.14, 45), soft: oklch(0.62, 0.14, 45, 0.16) },
-  atardecer: { label: 'Atardecer', icon: KIND_ICON.sunset, color: oklch(0.54, 0.17, 38), soft: oklch(0.66, 0.17, 38, 0.16) },
+  cena: { label: 'Cena', icon: KIND_ICON.fork, color: oklch(0.5, 0.15, 45), soft: oklch(0.62, 0.15, 45, 0.16) },
   noche: { label: 'Noche', icon: KIND_ICON.moon, color: oklch(0.38, 0.14, 285), soft: oklch(0.5, 0.14, 285, 0.16) },
-}
-
-const NOON = 12 * 60
-const AFTERNOON = 15 * 60
-
-/**
- * La franja de un elemento del día a partir de su hora. `atardecer` y `noche` los marca el propio
- * elemento (mirador del atardecer, cena, nocturnas). `floor` es la franja del elemento anterior: la
- * franja nunca retrocede, así las franjas salen SIEMPRE en orden de hora (una parada normal a las
- * 19:40 detrás del mirador del atardecer se queda en "Atardecer", no reabre "Tarde").
- */
-export function periodFor(startMinutes: number, flags: { sunset?: boolean; night?: boolean }, floor: DayPeriod | null): DayPeriod {
-  let period: DayPeriod = flags.night ? 'noche' : flags.sunset ? 'atardecer' : startMinutes < NOON ? 'manana' : startMinutes < AFTERNOON ? 'mediodia' : 'tarde'
-  if (floor && PERIOD_ORDER.indexOf(period) < PERIOD_ORDER.indexOf(floor)) period = floor
-  return period
 }
 
 /** "El momento perfecto…" sin el emoji del principio: en la tarjeta ya va el icono. */

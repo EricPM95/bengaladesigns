@@ -4700,6 +4700,8 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays, pac
     // menos. El enlace sigue yendo a la búsqueda y no al `civitatis_slug`: un slug equivocado es un
     // 404 delante del viajero, y una búsqueda no puede romperse.
     civitatis_search: option.civitatis_search ?? null,
+    // Con qué se busca su foto (en inglés: "Pompeii ruins"): con el nombre en español salía cualquier cosa.
+    photo_name: option.photo_name ?? null,
     suggested_day: dayNumber,
   }))
 }
@@ -4730,10 +4732,10 @@ function photoKeywords(searchEn, declared) {
     .filter((word) => word.length > 3 && !vacias.has(word))
 }
 
-async function searchUnsplashPhoto(searchEn, keywords) {
+async function searchUnsplashPhoto(searchEn, keywords, alsoOneOf = null) {
   const key = process.env.UNSPLASH_ACCESS_KEY
   if (!key || !searchEn) return null
-  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchEn)}&per_page=5&orientation=landscape&content_filter=high`
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchEn)}&per_page=${alsoOneOf ? 15 : 5}&orientation=landscape&content_filter=high`
   const response = await fetch(url, { headers: { Authorization: `Client-ID ${key}` } })
   if (!response.ok) {
     console.warn(`[foto] Unsplash devolvió ${response.status} para "${searchEn}"`)
@@ -4748,6 +4750,8 @@ async function searchUnsplashPhoto(searchEn, keywords) {
       [photo.description ?? '', photo.alt_description ?? '', ...(photo.tags ?? []).map((tag) => tag?.title ?? '')].join(' '),
     )
     if (!keywords.some((keyword) => texto.includes(keyword))) continue
+    // (Una foto de noche tiene que decir que es de noche: si no, se usa la de día del mismo lugar.)
+    if (alsoOneOf && !alsoOneOf.some((word) => texto.includes(word))) continue
     return {
       photo_source: 'unsplash',
       photo_url: photo.urls?.small ?? null,
@@ -4826,6 +4830,56 @@ async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOver
   return { ...fila, cached: false }
 }
 
+/**
+ * El lugar de una parada de noche ("Plaza de España (noche)", "Trastevere de noche", "Foro Romano desde el Campidoglio
+ * (noche)"): el de su nombre si existe; si no, el primero con el que choca la nocturna. Null si no es de noche.
+ */
+const NIGHT_WORDS = ['night', 'evening', 'dusk', 'illuminated', 'lights', 'noche', 'notte']
+
+function nightBaseOf(name, city) {
+  const match = String(name).match(/^(.*?)(?:\s*\(noche\)|\s+de noche)$/i)
+  if (!match) return null
+  const destData = findPipelineV2Data(city)
+  const base = match[1].trim()
+  if ((destData?.places ?? []).some((place) => place.name === base)) return base
+  const night = (destData?.night_experiences ?? []).find((entry) => entry.name === name)
+  return night?.conflicts_with?.[0] ?? base
+}
+
+/**
+ * La foto de una parada de noche (PROMPT_UI, Parte 2): ese lugar de noche; si no hay, la de día DEL MISMO lugar, nunca
+ * la de otro sitio (la Plaza de España de noche salía con la Fontana de Trevi). Su propia clave de caché ("noche:…"),
+ * para no heredar las fotos equivocadas que ya estaban guardadas con el nombre de la nocturna.
+ */
+async function resolveNightPhoto(name, city, base, { force = false } = {}) {
+  const cityKey = stripAccentsLowerServer(city)
+  const key = `noche:${base}`
+  if (supabaseAdmin && !force) {
+    const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', key).maybeSingle()
+    if (error) console.warn('[foto] no se pudo leer la caché:', error.message)
+    if (data) return { ...data, cached: true }
+  }
+  const destData = findPipelineV2Data(city)
+  const place = (destData?.places ?? []).find((candidate) => candidate.name === base) ?? null
+  const searchEn = place?.search_en ?? `${base} ${city}`
+  let resultado = await searchUnsplashPhoto(`${searchEn} at night`, photoKeywords(place?.search_en ?? base, place?.search_en_keywords), NIGHT_WORDS)
+  if (resultado) resultado = { ...resultado, photo_night: true }
+  else {
+    const day = await resolvePlacePhoto(base, city, { force })
+    const { cached: _cached, place_name: _placeName, city: _city, ...photo } = day
+    void _cached, void _placeName, void _city
+    resultado = { ...photo, photo_night: false }
+  }
+  const fila = { place_name: key, city: cityKey, ...resultado }
+  if (supabaseAdmin) {
+    const { photo_night: _night, ...row } = fila
+    void _night
+    const { error } = await supabaseAdmin.from('place_photo_cache').upsert(row, { onConflict: 'place_name,city' })
+    if (error) console.warn('[foto] no se pudo guardar en caché:', error.message)
+  }
+  return { ...fila, cached: false }
+}
+
 app.post('/api/place-photo', async (req, res) => {
   const { name, city, force, wikipedia_title: wikipediaTitleOverride } = req.body ?? {}
   if (!name || !city) {
@@ -4833,6 +4887,11 @@ app.post('/api/place-photo', async (req, res) => {
     return
   }
   try {
+    const nightBase = nightBaseOf(name, city)
+    if (nightBase) {
+      res.json(await resolveNightPhoto(name, city, nightBase, { force: Boolean(force) }))
+      return
+    }
     const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
     res.json(foto)
   } catch (error) {

@@ -502,6 +502,8 @@ export interface Excursion {
   bookUrl?: string
   /** Emoji curado de la excursión, del JSON del destino — la tarjeta lo usa en vez de un icono genérico. */
   emoji?: string | null
+  /** Con qué se busca su foto (del JSON del destino, en inglés: "Pompeii ruins"). */
+  photoName?: string | null
   /** Horas de puerta a puerta, para el "Xh" de la tarjeta. */
   durationHours?: number | null
   /** A dónde se va: el marcador del mapa del día cuando esta excursión está seleccionada. */

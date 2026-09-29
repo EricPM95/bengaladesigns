@@ -1,6 +1,7 @@
 import type { Coordinates } from '../../../lib/types'
 import { useZonaTuristica } from '../../../lib/useZonaTuristica'
-import { TrazoCard } from './TrazoCards'
+import { KIND_ICON } from '../../../lib/stopKind'
+import { MealCard } from './TrazoCards'
 
 interface MealTimeAccordionProps {
   /** Nombre del destino — usado para resolver el nombre de zona turístico (useZonaTuristica). */
@@ -49,32 +50,28 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
   // Diseño "Trazo Itinerario": la misma tarjeta alargada que las paradas, en terracota, sin número
   // (la comida no es un pin del mapa) y sin foto (no hay restaurante elegido todavía).
   // Con restaurante (el recomendado o el que ha elegido el viajero): "Comida · Giggetto al Portico d'Ottavia" y "Cambiar".
+  // "Comidas A · Mesa" (PROMPT_UI, Parte 2): tarjeta terracota suave, el restaurante en grande y "Cambiar".
+  const label = franja === 'cena' ? 'Cena' : 'Comida'
   if (chosenName) {
     return (
-      <TrazoCard
-        kind="comida"
-        time={timeRange ?? null}
-        name={`${franja === 'cena' ? 'Cena' : 'Comida'} · ${chosenName}`}
-        sub={walkNote ?? (zoneText ? zoneText.replace(/^en /, 'En ') : null) ?? undefined}
-        noPhoto
+      <MealCard
+        label={label}
+        timeRange={timeRange ?? null}
+        name={chosenName}
+        sub={walkNote ?? (zoneText ? zoneText.replace(/^en /, 'En ') : null)}
+        iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
         onOpen={onOpen}
-        action={
-          onChange ? (
-            <button type="button" onClick={(event) => (event.stopPropagation(), onChange())} className="rounded-full border border-accent px-3 py-1 text-[12px] font-semibold text-accent transition-colors hover:bg-accent-soft">
-              Cambiar
-            </button>
-          ) : undefined
-        }
+        onChange={onChange}
       />
     )
   }
   return (
-    <TrazoCard
-      kind="comida"
-      time={timeRange ?? null}
+    <MealCard
+      label={label}
+      timeRange={timeRange ?? null}
       name={zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}
       sub={subtitle ?? 'Recomendaciones de restaurantes cerca'}
-      noPhoto
+      iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
       onOpen={onOpen}
     />
   )

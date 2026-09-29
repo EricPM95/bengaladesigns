@@ -6,7 +6,7 @@ import { tagLabel } from '../../../lib/tagColors'
 import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
-import { TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
+import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -21,6 +21,8 @@ interface StopAccordionProps {
   addedByUser?: boolean
   /** Día libre: lo único en rojo es esto ("Hoy cierra" / "Cerrado a esa hora"); undefined = día nuestro. */
   freeDayWarning?: string | null
+  /** El número, en el color del día (como su pin): relleno claro y número fuerte. */
+  numberColors?: { bg: string; text: string }
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -43,13 +45,16 @@ const RESERVATION_NOTE: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning, numberColors }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
   // (calles, plazas, fuentes, ruinas que se ven desde la acera). Un monumento que ese día no se visita sale
   // "Por fuera" con su motivo (PROMPT_RUTAS_CURADAS B2).
+  if (stop.passThrough && !stop.outsideReason) {
+    return <OnTheWayCard name={displayStopName(stop.name)} photoUrl={stop.photoUrl} onOpen={onOpen} menu={menu} />
+  }
   if (stop.passThrough) {
     return (
       <div className="relative pr-8">
@@ -129,6 +134,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       kind={kind}
       variant={variant}
       number={number}
+      numberColors={numberColors}
       time={startTime ? (stop.isNightExperience && endTime ? `${startTime} – ${endTime}` : startTime) : null}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}

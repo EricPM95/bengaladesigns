@@ -115,6 +115,16 @@ export async function fetchPlacePhoto(
 }
 
 /**
+ * El nombre con el que se pide la foto de una parada: el suyo y, si es de noche (una nocturna o un mirador ya de noche),
+ * "… (noche)", para que el servidor busque ese lugar de noche (y, si no hay, ese mismo lugar de día; nunca otro).
+ */
+export function photoNameOf(stop: { name: string; photoName?: string | null; isNightExperience?: boolean; isNightView?: boolean }): string {
+  const name = stop.photoName ?? stop.name
+  const night = Boolean(stop.isNightExperience || stop.isNightView)
+  return night && !/\(noche\)$|\sde noche$/i.test(name) ? `${name} (noche)` : name
+}
+
+/**
  * Sustituye en el sitio el photoUrl placeholder de cada parada por una foto real cuando se
  * encuentra una — todas las paradas se resuelven EN PARALELO (Promise.allSettled), así que el
  * coste total añadido a la pantalla de carga es como mucho ~TIMEOUT_MS, no la suma de todas.
@@ -128,7 +138,7 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
       stop.isBreak || stop.fixedPhotoUrl
         ? Promise.resolve()
-        : fetchPlacePhoto(stop.photoName ?? stop.name, day.city, stop.wikipediaTitle, 'regular').then((photo) => {
+        : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular').then((photo) => {
             if (photo) stop.photoUrl = photo
           }),
     ),

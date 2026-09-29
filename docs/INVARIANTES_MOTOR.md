@@ -1827,3 +1827,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **«Volver a mi ruta original».** La varita del mapa, solo si hay cambios. Recupera la copia guardada al crear el
       viaje (`originalRoute`: días, orden, paradas, horas, restaurantes y fechas), sin recalcular.
     - **Confirmaciones.** Siempre en ventanas de la app, nunca alertas del navegador.
+
+355. **UI · Interior de cada día** (2026-09-29, PROMPT_UI Parte 2):
+    - **Color del día dentro.** El número del día y los números de las paradas van en el color del día, como sus pines:
+      relleno claro, número fuerte y borde blanco. Con el día abierto, pines y línea también.
+    - **Tramos.** Solo tres con cabecera, Mañana, Tarde y Noche: lo de antes de comer es la mañana. La comida y la cena
+      van entre tramos, como bloques propios; si la cena va después de las nocturnas, dentro de la Noche. Hay 50 px
+      encima de cada bloque, y el mismo espacio de la cabecera al primer «+ Añadir parada» que entre parada y parada.
+    - **Comida, cena y desayuno.** Formato «Mesa»: terracota suave, sin foto ni número y «Cambiar»; el desayuno, igual
+      en pequeño.
+    - **«De camino».** Mini-tarjeta con borde discontinuo, sin número ni hora.
+    - **Botones fuera del día.** «Volver al día original» va en el menú; no hay «Montar día manualmente».
+    - **Excursión.** Una tarjeta al final de la lista si el viaje no lleva excursión: tres escapadas sin repetir sitio,
+      con foto (`photo_name`) y sin precios. Al elegir una, se pregunta qué día y se propone el de la oferta.
+    - **Fotos.** La de cada parada es siempre de ese lugar. De noche, ese lugar de noche (Unsplash con «night»…) o, si
+      no hay, el mismo lugar de día; nunca otro. La revisión está en `docs/FOTOS_ROMA.html`
+      (`scripts/destino/fotosRoma.mjs`).
+    - **Avisos de fechas.** Flechas ‹ ›, «1 de 3» y «Siguiente» hasta el último, que dice «Entendido».

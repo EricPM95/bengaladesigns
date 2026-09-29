@@ -2,10 +2,8 @@ import type { Coordinates, DayPlan } from './types'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../components/map/StopsMapView'
 import { dayColor, dayColorIndex, dayColorPastel, dayColorStrong } from './dayColors'
 import { hasRealCoordinates } from './distanceMock'
-import { KIND_STYLE, numberedStopsOf, stopKindOf } from './stopKind'
+import { numberedStopsOf } from './stopKind'
 
-/** La línea del día abierto: terracota y punteada, como el diseño "Trazo Itinerario". */
-const DAY_LINE_COLOR = 'rgb(182 78 16)'
 
 /** Opacidad de los PINES de un día NO activo en "Ver todo" (Ronda 9, Mejora 1C) — atenuado, nunca
     oculto, conservando el color propio del día en vez de neutralizarlo. Ronda 10: era 0.4, y a esa
@@ -73,15 +71,16 @@ function realStops(day: DayPlan) {
  * (dayColorPastel/dayColorStrong, mismo criterio que el círculo numerado de StopAccordion.tsx),
  * opacidad completa siempre — para eso es la vista "solo este día".
  */
-export function buildSingleDayMarkers(day: DayPlan, _dayIndex?: number): StopsMapMarker[] {
-  // Día abierto: cada pin en el color de su tipo de parada, el mismo que la franja de su tarjeta.
+export function buildSingleDayMarkers(day: DayPlan, dayIndex = 0): StopsMapMarker[] {
+  // Día abierto: cada pin en el color de su día, igual que su número en la tarjeta (PROMPT_UI, Parte 2).
+  const colorIndex = dayColorIndex(day, dayIndex)
   return realStops(day).map(({ stop, number }) => ({
     id: stop.id,
     name: stop.name,
     coordinates: stop.coordinates,
     number,
-    bg: KIND_STYLE[stopKindOf(stop)].color,
-    text: '#FFFFFF',
+    bg: dayColorPastel(colorIndex),
+    text: dayColorStrong(colorIndex),
     photoUrl: stop.photoUrl,
   }))
 }
@@ -126,10 +125,10 @@ export function buildExcursionDayLines(dayId: string, dayIndex: number, base: Co
 }
 
 /** Línea recta uniendo las paradas de un día en orden — ver `buildSingleDayMarkers`. */
-export function buildSingleDayLine(day: DayPlan, _dayIndex?: number): StopsMapMarkerLine[] {
+export function buildSingleDayLine(day: DayPlan, dayIndex = 0): StopsMapMarkerLine[] {
   const coordinates = realStops(day).map(({ stop }) => stop.coordinates)
   if (coordinates.length < 2) return []
-  return [{ id: day.id, coordinates, color: DAY_LINE_COLOR, width: 3, dashed: true }]
+  return [{ id: day.id, coordinates, color: dayColor(dayColorIndex(day, dayIndex)), width: 3, dashed: true }]
 }
 
 /**

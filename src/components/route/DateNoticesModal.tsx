@@ -11,7 +11,8 @@ import { DateNoticeIllustration, DateNoticeSmallIcon } from './DateNoticeIcons'
  * (`openDateNoticeId`, DayList.tsx).
  *
  * Móvil: hoja que sube desde abajo; ordenador: tarjeta centrada. Tarjetas deslizables con puntitos, como mucho 3:
- * con más, la tercera dice "y N más" y los lista. Un solo botón, "¡Entendido!".
+ * con más, la tercera dice "y N más" y los lista. Con más de una, flechas ‹ › a los lados y "1 de 3"; el botón dice
+ * "Siguiente" hasta la última y en la última "Entendido" (PROMPT_UI, Parte 2): así nadie cierra sin ver el resto.
  */
 export function DateNoticesModal({ route }: { route: Route }) {
   const markDateNoticesSeen = useRouteStore((state) => state.markDateNoticesSeen)
@@ -23,6 +24,17 @@ export function DateNoticesModal({ route }: { route: Route }) {
   const firstTime = notices.length > 0 && route.dateNoticesSeenKey !== key
   const open = Boolean(single) || firstTime
   const shown = single ? [single] : notices
+  const slides = slidesOf(shown)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(0)
+  const goTo = (index: number) => {
+    const track = trackRef.current
+    if (track) track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' })
+    setActive(index)
+  }
+  const isLast = active >= slides.length - 1
+  // (Cada vez que se abre, desde el primero.)
+  useEffect(() => setActive(0), [open, openDateNoticeId])
 
   const close = () => {
     if (firstTime) markDateNoticesSeen(key)
@@ -51,15 +63,15 @@ export function DateNoticesModal({ route }: { route: Route }) {
         <p id="date-notices-heading" className="px-6 pt-4 text-center font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent md:pt-6">
           Hemos preparado tu viaje para estas fechas
         </p>
-        <NoticeCarousel notices={shown} />
+        <NoticeCarousel slides={slides} trackRef={trackRef} active={active} onActive={setActive} goTo={goTo} />
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
           <button
             type="button"
-            onClick={close}
+            onClick={isLast ? close : () => goTo(active + 1)}
             className="h-12 w-full rounded-full bg-text font-sans text-[15px] font-medium text-bg transition-transform active:scale-[.98]"
             autoFocus
           >
-            ¡Entendido!
+            {isLast ? 'Entendido' : 'Siguiente'}
           </button>
         </div>
       </div>
@@ -67,39 +79,55 @@ export function DateNoticesModal({ route }: { route: Route }) {
   )
 }
 
-/** Las tarjetas, deslizables con puntitos. Con más de 3, la tercera lista el resto. */
-function NoticeCarousel({ notices }: { notices: DateNotice[] }) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
-  const slides: DateNotice[][] =
-    notices.length > MAX_DATE_NOTICE_CARDS
-      ? [...notices.slice(0, MAX_DATE_NOTICE_CARDS - 1).map((notice) => [notice]), notices.slice(MAX_DATE_NOTICE_CARDS - 1)]
-      : notices.map((notice) => [notice])
+/** Las tarjetas: como mucho 3; con más, la tercera lista el resto. */
+function slidesOf(notices: DateNotice[]): DateNotice[][] {
+  return notices.length > MAX_DATE_NOTICE_CARDS
+    ? [...notices.slice(0, MAX_DATE_NOTICE_CARDS - 1).map((notice) => [notice]), notices.slice(MAX_DATE_NOTICE_CARDS - 1)]
+    : notices.map((notice) => [notice])
+}
 
-  const goTo = (index: number) => {
-    const track = trackRef.current
-    if (track) track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' })
-  }
+function ArrowButton({ direction, disabled, onClick }: { direction: 'prev' | 'next'; disabled: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={direction === 'prev' ? 'Aviso anterior' : 'Aviso siguiente'}
+      className={`absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-text/[.12] bg-bg-card text-text/60 shadow-sm transition-opacity hover:text-text disabled:opacity-0 ${direction === 'prev' ? 'left-2' : 'right-2'}`}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+        <path d={direction === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'} />
+      </svg>
+    </button>
+  )
+}
 
+/** Las tarjetas, deslizables, con flechas a los lados, "1 de 3" y puntitos. */
+function NoticeCarousel({ slides, trackRef, active, onActive, goTo }: { slides: DateNotice[][]; trackRef: React.RefObject<HTMLDivElement | null>; active: number; onActive: (index: number) => void; goTo: (index: number) => void }) {
   return (
     <>
+      <div className="relative flex min-h-0 flex-1">
+      {slides.length > 1 && <ArrowButton direction="prev" disabled={active === 0} onClick={() => goTo(active - 1)} />}
+      {slides.length > 1 && <ArrowButton direction="next" disabled={active >= slides.length - 1} onClick={() => goTo(active + 1)} />}
       <div
         ref={trackRef}
         onScroll={(event) => {
           const track = event.currentTarget
-          setActive(Math.round(track.scrollLeft / Math.max(1, track.clientWidth)))
+          onActive(Math.round(track.scrollLeft / Math.max(1, track.clientWidth)))
         }}
         className="flex min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {slides.map((slide, index) => (
-          <div key={slide[0].id} className="w-full shrink-0 snap-center overflow-y-auto px-6 pb-3 pt-4">
+          <div key={slide[0].id} className="w-full shrink-0 snap-center overflow-y-auto px-12 pb-3 pt-4">
             {slide.length === 1 ? <NoticeCard notice={slide[0]} /> : <MoreCard notices={slide} />}
             <span className="sr-only">{`Aviso ${index + 1} de ${slides.length}`}</span>
           </div>
         ))}
       </div>
+      </div>
       {slides.length > 1 && (
-        <div className="flex justify-center gap-1.5 pb-2 pt-1">
+        <div className="flex items-center justify-center gap-1.5 pb-2 pt-1">
+          <span className="mr-1.5 font-mono text-[11px] font-medium text-text/50">{`${active + 1} de ${slides.length}`}</span>
           {slides.map((slide, index) => (
             <button
               key={slide[0].id}

@@ -2,7 +2,7 @@ import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'rea
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { fetchPlacePhotoDetail, type PlacePhoto } from '../../../lib/placePhoto'
+import { fetchPlacePhotoDetail, photoNameOf, type PlacePhoto } from '../../../lib/placePhoto'
 import { displayStopName, formatDuration } from '../../../lib/format'
 import { tagColor, tagLabel } from '../../../lib/tagColors'
 import { formatShortDateEs } from '../../../lib/dateRange'
@@ -153,7 +153,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
       return
     }
     let cancelled = false
-    fetchPlacePhotoDetail(stop.photoName ?? stop.name, city).then((result) => {
+    fetchPlacePhotoDetail(photoNameOf(stop), city).then((result) => {
       if (!cancelled) setPhoto(result)
     })
     return () => {

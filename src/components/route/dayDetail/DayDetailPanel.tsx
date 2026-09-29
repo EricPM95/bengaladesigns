@@ -25,7 +25,8 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
-import { KIND_ICON, periodFor, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
+import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
+import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { PeriodHeader, TrazoCard } from './TrazoCards'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
@@ -39,7 +40,6 @@ import {
   HalfDayExcursionBlock,
   ExcursionLink,
   ExcursionOptions,
-  ManualDayLink,
   ManualDayOptions,
 } from './ExcursionBlocks'
 import { ZoneWalkCard } from './ZoneWalkCard'
@@ -60,7 +60,6 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
-import { ConfirmDialog } from '../ConfirmDialog'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
@@ -112,7 +111,9 @@ type TimelineItem =
   | { type: 'free'; index: number; entry: FreeTimeEntry }
   | { type: 'lunch'; index: number }
   | { type: 'dinnerFree'; index: number }
-  | { type: 'dinner'; index: number; withGap: boolean }
+  | { type: 'dinner'; index: number }
+  /** El hueco con "+ Añadir parada" antes de la comida o la cena: al final del tramo de antes. */
+  | { type: 'mealGap'; index: number }
   | { type: 'end' }
 
 interface PlacedItem {
@@ -133,6 +134,8 @@ const DEFAULT_MODE: TransportMode = 'walking'
 const LONG_WALK_MINUTES = 20
 /** Hora asumida de inicio de la jornada cuando la primera parada no trae una `time` real (rutas dev/plantilla) — ver `computeStopSchedule`. */
 const DAY_START_MINUTES = 9 * 60
+/** Sin comida en el día (media jornada, día libre), la tarde empieza aquí. */
+const AFTERNOON_FROM = 14 * 60
 /** Minutos a pie entre dos paradas cuando el conector no trae un `walkMinutes` real todavía (ni mock ni refinado por Mapbox) — mismo valor de reserva que `retimeStops` en useRouteStore.ts, para que el horario calculado aquí no se desvíe del que ya usa Modo Hoy. */
 const DEFAULT_WALK_MINUTES = 15
 /** Una nocturna añadida a mano empieza esto después de la hora de la cena (20:00 → 21:30, como el motor). */
@@ -297,8 +300,6 @@ export function DayDetailPanel({
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const convertDayType = useRouteStore((state) => state.convertDayType)
-  const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
-  const [askRestore, setAskRestore] = useState(false)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   const focusStopId = useAddFlowStore((state) => state.focusStopId)
   const setFocusStopId = useAddFlowStore((state) => state.setFocusStopId)
@@ -429,10 +430,9 @@ export function DayDetailPanel({
   // `findIndex` no lo encuentra (-1) — dayColor(-1) reventaría (DAY_COLORS[-1] es undefined). No
   // pasa nada con el fallback a 0: un día de vuelta nunca tiene paradas (buildMockStopsForDay corta
   // en seco con isReturnLeg), así que estos colores no llegan a pintarse ahí de todas formas.
-  const dayIndex = Math.max(
-    allDays.findIndex((candidate) => candidate.id === day.id),
-    0,
-  )
+  const dayIndex = dayColorIndex(day, allDays.findIndex((candidate) => candidate.id === day.id))
+  /** Los números de las paradas, del color del día, como sus pines (PROMPT_UI, Parte 2): relleno claro y número fuerte. */
+  const numberColors = { bg: dayColorPastel(dayIndex), text: dayColorStrong(dayIndex) }
   // El primero de los días en blanco por límite: es el único que lleva la explicación.
   // `allDays` viene recortado a id/número/ciudad, así que la marca se busca en la ruta entera.
   const isFirstBeyondAutoDay = (route?.days ?? []).find((candidate) => candidate.beyondAutoDays)?.id === day.id
@@ -550,7 +550,7 @@ export function DayDetailPanel({
     const after = realStops.slice(index + 1).find((candidate) => !candidate.isNightExperience)
     const parts = [
       before ? `${estimatedWalkMinutes(before.coordinates, restaurant.coordinates)} min andando desde ${before.name}` : null,
-      after ? `${estimatedWalkMinutes(restaurant.coordinates, after.coordinates)} hasta ${after.name}` : null,
+      after ? `${estimatedWalkMinutes(restaurant.coordinates, after.coordinates)} min hasta ${after.name}` : null,
     ].filter(Boolean)
     return parts.length > 0 ? parts.join(' · ') : null
   }
@@ -858,6 +858,7 @@ export function DayDetailPanel({
         for (const entry of freeTimesOf(day)) {
           if (realStops[index]?.name === entry.after && entry.before === LUNCH_FREE_LABEL) timeline.push({ type: 'free', index, entry })
         }
+        timeline.push({ type: 'mealGap', index })
         timeline.push({ type: 'lunch', index })
         for (const entry of freeTimesOf(day)) {
           if (entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index: -1 - index, entry })
@@ -865,8 +866,9 @@ export function DayDetailPanel({
       }
       if (dinnerInsertionIndex === index && !freeDay) {
         const hasFree = dinnerFreeMinutes(index) !== null
+        timeline.push({ type: 'mealGap', index })
         if (hasFree) timeline.push({ type: 'dinnerFree', index })
-        timeline.push({ type: 'dinner', index, withGap: !hasFree })
+        timeline.push({ type: 'dinner', index })
       }
     })
     if (stops.length > 0) timeline.push({ type: 'end' })
@@ -874,6 +876,11 @@ export function DayDetailPanel({
   // Los trayectos en bus o metro que se pintan antes del tiempo libre (no se repiten delante de su parada).
   const transitMovedBeforeFree = new Set<number>()
   const placed: PlacedItem[] = []
+  // Los tramos (PROMPT_UI, Parte 2): lo de antes de comer es la mañana (el Panteón a las 12:30 también); después, la
+  // tarde; las nocturnas y lo de después de cenar, la noche. La comida y la cena, entre tramos; en invierno, si la cena
+  // va después de las nocturnas, dentro de la noche, al final.
+  const hasLunch = timeline.some((item) => item.type === 'lunch')
+  let phase: DayPeriod = 'manana'
   for (const item of timeline) {
     const floor = placed.length > 0 ? placed[placed.length - 1].period : null
     let start = floor ? placed[placed.length - 1].end : DAY_START_MINUTES
@@ -903,7 +910,20 @@ export function DayDetailPanel({
       end = start + 90
       flags = { night: true }
     }
-    placed.push({ item, period: item.type === 'end' && floor ? floor : periodFor(start, flags, floor), start, end })
+    let period: DayPeriod = phase
+    if (item.type === 'lunch') {
+      period = 'comida'
+      phase = 'tarde'
+    } else if (item.type === 'dinner') {
+      period = phase === 'noche' ? 'noche' : 'cena'
+      phase = 'noche'
+    } else if (item.type === 'stop') {
+      // (Sin comida en el día —media jornada, día libre—, la tarde empieza a las 14:00.)
+      if (!hasLunch && phase === 'manana' && start >= AFTERNOON_FROM) phase = 'tarde'
+      if (flags.night && phase !== 'manana') phase = 'noche'
+      period = phase
+    }
+    placed.push({ item, period, start, end })
   }
   const periodGroups: { period: DayPeriod; range: string; items: PlacedItem[] }[] = []
   for (const entry of placed) {
@@ -912,7 +932,7 @@ export function DayDetailPanel({
     else periodGroups.push({ period: entry.period, range: '', items: [entry] })
   }
   for (const group of periodGroups) {
-    const timed = group.items.filter((entry) => entry.item.type !== 'end')
+    const timed = group.items.filter((entry) => entry.item.type !== 'end' && entry.item.type !== 'mealGap')
     if (timed.length === 0) continue
     const from = Math.min(...timed.map((entry) => entry.start))
     const to = Math.max(...timed.map((entry) => entry.end))
@@ -940,11 +960,11 @@ export function DayDetailPanel({
       }
       return renderFreeTime(item.entry, index, minutesToTime(start))
     }
+    if (item.type === 'mealGap') return <div key={`meal-gap-${item.index}-${start}`}>{renderMealGap(item.index + 1)}</div>
     if (item.type === 'lunch') {
       const index = item.index
       return (
         <div key={`lunch-${index}`}>
-          {renderMealGap(index + 1)}
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -967,7 +987,6 @@ export function DayDetailPanel({
       const firstStart = schedule[0]?.startMinutes ?? lastEnd
       return (
         <div key={`dinner-free-${index}`}>
-          {renderMealGap(index + 1)}
           <FreeTimeBlock
             time={minutesToTime(lastEnd)}
             hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
@@ -993,7 +1012,6 @@ export function DayDetailPanel({
       const index = item.index
       return (
         <div key={`dinner-${index}`}>
-          {item.withGap && renderMealGap(index + 1)}
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -1036,6 +1054,7 @@ export function DayDetailPanel({
           ) : (
             <StopAccordion
               number={realStop ? (stopNumbers.get(realStop.id) ?? null) : null}
+              numberColors={numberColors}
               // Día libre: el horario de ese día y de esa época (el mismo con el que sale "Cerrado a esa hora").
               stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
@@ -1059,24 +1078,7 @@ export function DayDetailPanel({
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
         {showsRoute && day.paceNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.paceNotice}</p>}
-        {/* Retocar la ruta (decisión del usuario, 2026-09-28): solo en un día nuestro con algún cambio del viajero. */}
-        {day.originalSnapshot && (day.dayType ?? 'normal') !== 'manual' && (
-          <button type="button" onClick={() => setAskRestore(true)} className="mt-1 px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover">
-            Volver a la ruta original
-          </button>
-        )}
-        {askRestore && (
-          <ConfirmDialog
-            eyebrow={`Día ${day.dayNumber}`}
-            text="Vuelves a la ruta que te propusimos. Perderás los cambios que has hecho en este día."
-            confirmLabel="Volver"
-            onCancel={() => setAskRestore(false)}
-            onConfirm={() => {
-              restoreOriginalDay(day.id)
-              setAskRestore(false)
-            }}
-          />
-        )}
+        {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
         {showsRoute && stops.length > 0 && (
@@ -1258,11 +1260,12 @@ export function DayDetailPanel({
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
           <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
           {periodGroups.map((group, groupIndex) => (
-            <div key={`${group.period}-${groupIndex}`}>
-              {!freeDay && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
-              {/* La línea punteada del día; las tarjetas cuelgan de ella. */}
-              <div className="relative flex flex-col pl-[26px]">
-                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
+            // (50 px encima de cada tramo y de la comida y la cena: cinco bloques bien separados.)
+            <div key={`${group.period}-${groupIndex}`} className={groupIndex > 0 && !freeDay ? 'mt-[50px]' : ''}>
+              {!freeDay && PERIOD_WITH_HEADER.has(group.period) && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
+              {/* La línea punteada del día; las tarjetas cuelgan de ella. La comida y la cena, sin ella. */}
+              <div className={`relative flex flex-col ${PERIOD_WITH_HEADER.has(group.period) || freeDay ? 'pl-[26px]' : ''}`}>
+                {(PERIOD_WITH_HEADER.has(group.period) || freeDay) && <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />}
                 {group.items.map((entry, itemIndex) => renderTimelineItem(entry, itemIndex === 0))}
               </div>
             </div>
@@ -1320,7 +1323,7 @@ export function DayDetailPanel({
           {dayType === 'excursion' && !esDiaEnBlanco && (
             <ExcursionLink label="Generar una ruta para este día" onClick={() => convertDay('smart_route')} />
           )}
-          {dayType !== 'manual' && prominence !== 'none' && <ManualDayLink onClick={() => convertDay('manual')} />}
+          {/* "Montar día manualmente" ya no sale: para eso está "+ Añadir día" (PROMPT_UI, Parte 2). */}
 
           {day.recommendedRevisits && day.recommendedRevisits.length > 0 && (
             <div className="space-y-2 pt-3">
