@@ -2192,3 +2192,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     a las 16:00 (hora fija en la variante de verano, `tarde.D`) y Santa Cecilia a las 16:30.
     - **En verano, un descanso largo después de comer no es un aviso:** la prueba no lo cuenta de junio a agosto, entre las
       14:00 y las 16:30.
+
+400. **Cierres con año** (2026-09-30): `closed_dates` admite, además de "MM-DD" (todos los años) y "easter±N", una fecha
+    completa "AAAA-MM-DD", que vale solo ese año (los Museos Vaticanos el lunes 1 de noviembre y el lunes 16 de agosto de
+    2027, del calendario oficial). Cada una con su fuente en `closed_dates_audit`. En los avisos se nombra por su día
+    ("11-01" → Todos los Santos).

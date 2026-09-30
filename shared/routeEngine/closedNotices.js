@@ -28,7 +28,8 @@ export function closedReason(place, hours = {}) {
   const dateIso = hours.dateIso ?? null
   if (!closedOnDay(place, hours.weekday ?? null, hours.weekday ? dateIso : null)) return null
   const token = dateIso ? (place.closed_dates ?? []).find((candidate) => matchesDateToken(candidate, dateIso)) : null
-  if (token) return { kind: 'festivo', token }
+  // (Una fecha con año, "2027-11-01", se nombra por su día: "11-01" → Todos los Santos.)
+  if (token) return { kind: 'festivo', token: /^\d{4}-\d{2}-\d{2}$/.test(token) ? token.slice(5) : token }
   return { kind: 'semanal', weekday: hours.weekday ?? (dateIso ? weekdayOf(dateIso) : null) }
 }
 

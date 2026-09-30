@@ -1317,7 +1317,9 @@
         "08-15",
         "12-08",
         "12-25",
-        "12-26"
+        "12-26",
+        "2027-08-16",
+        "2027-11-01"
       ],
       "last_sunday": {
         "windows": [
@@ -1366,9 +1368,17 @@
           "revisar": "cuando salga el calendario de 2028"
         }
       ],
-      "calendario_oficial_pendiente": {
-        "_nota": "Visto en el calendario oficial el 2026-09-30 y SIN aplicar (decisión del usuario): en 2027 también cierran el lunes 1 de noviembre y el lunes 16 de agosto (el 15 cae en domingo). closed_dates solo admite MM-DD, que valdría para todos los años.",
-        "fuente": "m.museivaticani.va/content/dam/museivaticani/pdf/utilities/calendario_musei.pdf"
+      "closed_dates_audit": {
+        "2027-08-16": {
+          "estado": "cierra (el 15 cae en domingo)",
+          "fuente": "Calendario oficial de los Museos Vaticanos 2027 (m.museivaticani.va/content/dam/museivaticani/pdf/utilities/calendario_musei.pdf), día marcado en rojo (cierre).",
+          "comprobado": "2026-09-30"
+        },
+        "2027-11-01": {
+          "estado": "cierra (lunes, Todos los Santos)",
+          "fuente": "Calendario oficial de los Museos Vaticanos 2027 (m.museivaticani.va/content/dam/museivaticani/pdf/utilities/calendario_musei.pdf), día marcado en rojo (cierre).",
+          "comprobado": "2026-09-30"
+        }
       }
     },
     {
@@ -7846,7 +7856,9 @@
         "08-15": "Ferragosto",
         "12-08": "la Inmaculada",
         "12-25": "Navidad",
-        "12-26": "San Esteban"
+        "12-26": "San Esteban",
+        "11-01": "Todos los Santos",
+        "08-16": "Ferragosto"
       }
     },
     "sunset_text": "🌅 El momento perfecto para ver el atardecer",

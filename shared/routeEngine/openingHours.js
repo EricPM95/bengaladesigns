@@ -262,10 +262,13 @@ export function specialHoursOn(place, dateIso) {
 }
 
 /**
- * ¿Es `dateIso` la fecha que dice `token`? MM-DD fija ("12-25") o móvil ("easter", "easter+1").
+ * ¿Es `dateIso` la fecha que dice `token`? MM-DD fija ("12-25"), móvil ("easter", "easter+1") o completa, de un solo
+ * año ("2027-11-01").
  */
 export function matchesDateToken(token, dateIso) {
   if (!dateIso) return false
+  // Una fecha completa ("2027-11-01"): solo ese año (los Museos Vaticanos, el lunes 1 de noviembre de 2027).
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(token).trim())) return String(token).trim() === String(dateIso).slice(0, 10)
   const movable = /^easter([+-]\d+)?$/.exec(String(token).trim())
   if (movable) {
     const year = Number(String(dateIso).slice(0, 4))
