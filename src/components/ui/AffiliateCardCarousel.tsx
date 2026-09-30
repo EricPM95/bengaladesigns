@@ -1,7 +1,8 @@
 export interface AffiliateCard {
   id: string
   name: string
-  price: number
+  /** Sin precio, la tarjeta no lo enseña: solo va en Entradas (la regla de precios). */
+  price?: number
   photoUrl: string
 }
 
@@ -20,7 +21,7 @@ export function AffiliateCardCarousel({ cards, priceSuffix = '' }: AffiliateCard
           <img src={card.photoUrl} alt="" className="h-24 w-full object-cover" />
           <div className="space-y-0.5 p-2">
             <p className="line-clamp-2 text-caption font-medium text-text">{card.name}</p>
-            <p className="text-small font-semibold text-text">{card.price === 0 ? 'Gratis' : `€${card.price}${priceSuffix}`}</p>
+            {card.price != null && <p className="text-small font-semibold text-text">{card.price === 0 ? 'Gratis' : `€${card.price}${priceSuffix}`}</p>}
           </div>
         </div>
       ))}

@@ -61,8 +61,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
               <div>
                 <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🏨 Alojamientos en {city}</p>
                 <AffiliateCardCarousel
-                  cards={hotels.map((hotel) => ({ id: hotel.id, name: hotel.name, price: hotel.pricePerNight, photoUrl: hotel.photoUrl }))}
-                  priceSuffix="/noche"
+                  cards={hotels.map((hotel) => ({ id: hotel.id, name: hotel.name, photoUrl: hotel.photoUrl }))}
                 />
                 <a href={buildHotelSearchUrl(city)} target="_blank" rel="noopener noreferrer">
                   <button
@@ -78,7 +77,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
 
             <div>
               <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🎟 Actividades en {city}</p>
-              <AffiliateCardCarousel cards={activities.map((activity) => ({ id: activity.id, name: activity.name, price: activity.price, photoUrl: activity.photoUrl }))} />
+              <AffiliateCardCarousel cards={activities.map((activity) => ({ id: activity.id, name: activity.name, photoUrl: activity.photoUrl }))} />
               <a href={buildActivitySearchUrl(city)} target="_blank" rel="noopener noreferrer">
                 <button
                   type="button"
