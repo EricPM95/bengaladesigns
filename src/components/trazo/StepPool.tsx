@@ -23,7 +23,7 @@ interface StepPoolProps {
 }
 
 /**
- * 07 — Pool: los lugares del destino con NUESTRAS fotos, en las baldosas del prototipo. Lo marcado entra
+ * 06 — Pool: los lugares del destino con NUESTRAS fotos, en las baldosas del prototipo. Lo marcado entra
  * seguro en la ruta (must_include_places). Tope por duración (poolSelectionLimit: 3 hasta 2 días, 5 de
  * 3 a 5, 7 desde 6) con contador visible; sin "Añadir todos". Destino curado: pool del JSON; no curado:
  * lo que sugiere /api/suggest-places, como siempre.
@@ -82,7 +82,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>07 — Lugares</span>
+        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>06 — Lugares</span>
         <span
           style={{
             font: `600 11px ${MONO}`,

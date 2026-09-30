@@ -253,6 +253,8 @@ export interface MockStopDetail {
   ticketInfo?: string[] | null
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
+  /** Ver Stop.optional. */
+  optional?: boolean
   revisitReason?: string
   /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
       sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
@@ -491,6 +493,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
     isRevisit: stop.isRevisit,
+    optional: stop.optional,
     revisitReason: stop.revisitReason,
     isBreak: stop.isBreak,
     breakIcon: stop.breakIcon ?? null,
@@ -577,6 +580,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       ticketInfo: detail.ticketInfo ?? null,
       tags: detail.tags,
       isRevisit: detail.isRevisit,
+      optional: detail.optional,
       revisitReason: detail.revisitReason,
       isNightExperience: detail.isNightExperience,
       isSunset: detail.isSunset,

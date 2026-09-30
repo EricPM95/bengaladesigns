@@ -110,7 +110,9 @@ function specificReason(route: Route, city: string): string | null {
   if (segmentIndex <= 0) return null
   const previousCity = segments[segmentIndex - 1].city
   if (previousCity === city) return null
-  return `No entra con tu ${PACE_LABEL[pace]} desde ${previousCity}.`
+  // (Sin ritmos, PROMPT_QUITAR_RITMOS: ya no se nombra el ritmo.)
+  void PACE_LABEL
+  return `No entra en el día viniendo desde ${previousCity}.`
 }
 
 /**

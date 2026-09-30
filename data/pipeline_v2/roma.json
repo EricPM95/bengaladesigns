@@ -7837,19 +7837,27 @@
       "madrugar": " y algún día empieza un poco antes",
       "corto": "{dias} días en Roma dan para mucho si se aprovechan bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
       "corto_1": "Un día en Roma da para mucho si se aprovecha bien. Hemos puesto los imprescindibles primero para que vuelvas a casa habiendo visto lo que de verdad importa. Si tienes otros planes, puedes cambiar cualquier parada desde los tres puntos.",
-      "tranquilo": "Hemos preparado tu ruta con calma: menos paradas, comidas sin prisa y ratos libres para disfrutar de Roma a tu aire. Algún día empieza pronto, para entrar al Vaticano o al Coliseo sin colas. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas."
+      "tranquilo": "Hemos preparado tu ruta con calma: menos paradas, comidas sin prisa y ratos libres para disfrutar de Roma a tu aire. Algún día empieza pronto, para entrar al Vaticano o al Coliseo sin colas. Lo imprescindible está todo; si te apetece añadir algo más, usa el + entre paradas.",
+      "_sin_uso_tranquilo": "SIN USO desde el 2026-09-30 (PROMPT_QUITAR_RITMOS: hay una sola ruta). Se queda apagado, no borrado. La clave `tranquilo` ya no se enseña."
     },
     "pace_texts": {
       "nota": "Pantalla de ritmo del formulario (decisión del 2026-09-26): Completo preseleccionado y con la etiqueta. {destino} = el nombre del destino.",
       "completo": "La experiencia completa: todo lo imprescindible y los rincones que hacen especial {destino}. ¿Te sobra algo? ¡Edítala a tu gusto!",
       "tranquilo": "Lo básico de {destino}, a ritmo lento. Ideal si viajas con niños o prefieres ir con calma, aunque te perderás rincones que merecen la pena.",
-      "recomendado": "Recomendado"
+      "recomendado": "Recomendado",
+      "_sin_uso": "SIN USO desde el 2026-09-30 (PROMPT_QUITAR_RITMOS: hay una sola ruta). Se queda apagado, no borrado. El formulario ya no tiene pantalla de ritmo."
     },
     "pace_notices": {
       "nota": "Aviso de madrugón en ritmo tranquilo (decisión del 2026-09-26). {hora}, {lugar} (el nivel 1 que se salva, con su artículo; varios: \"a y b\") y {cierre} (invierno: la hora a la que cierra, si es antes de las 18:00).",
-      "general": "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las {hora}: así te da tiempo a ver {lugar} sin prisas. El resto del día sigue a tu ritmo.",
-      "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.",
-      "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad. El resto del día sigue a tu ritmo."
+      "general": "Hoy toca madrugar un poco: merece la pena empezar a las {hora}, así te da tiempo a ver {lugar} sin prisas.",
+      "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad.",
+      "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad.",
+      "_nota_ritmos": "Se sigue usando: «Hoy toca madrugar… a las {hora}» no habla de ritmo (la frase «Sabemos que elegiste ir con calma» de `general` solo salía en tranquilo y ya no sale).",
+      "_antes": {
+        "general": "Hoy toca madrugar un poco. Sabemos que elegiste ir con calma, pero hoy merece la pena empezar a las {hora}: así te da tiempo a ver {lugar} sin prisas. El resto del día sigue a tu ritmo.",
+        "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad. El resto del día sigue a tu ritmo.",
+        "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad. El resto del día sigue a tu ritmo."
+      }
     },
     "night_view_text": "🌃 Roma iluminada a tus pies",
     "closed_notices": {
@@ -7906,7 +7914,8 @@
         "inicio": "09:00",
         "inicio_desde": "08:45",
         "inicio_hasta": "10:00"
-      }
+      },
+      "_sin_uso": "SIN USO desde el 2026-09-30 (PROMPT_QUITAR_RITMOS: hay una sola ruta). Se queda apagado, no borrado."
     },
     "paseo_iluminado": {
       "_nota": "Invierno, rato antes de cenar (B3.1): \"Paseo por {esto} y aperitivo\". Por barrio de cena (dinnerZones).",

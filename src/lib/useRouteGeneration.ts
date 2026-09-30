@@ -1,3 +1,4 @@
+import { SINGLE_PACE } from './singleRoute'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
@@ -42,7 +43,7 @@ export function useRouteGeneration(enabled: boolean) {
       for (const day of mapped.days) if (!day.countryCode) day.countryCode = destinationCountry.toLowerCase()
     }
     // El motor v3 ya trae las horas definitivas; los demás, el horario real por parada (stopScheduling.ts).
-    const scheduled = finalCheckpoint.skeleton?.times_are_final ? mapped : await applyRealStopSchedule(mapped, params.answers.pace ?? 'balanced')
+    const scheduled = finalCheckpoint.skeleton?.times_are_final ? mapped : await applyRealStopSchedule(mapped, SINGLE_PACE)
     await enrichRoutePhotos(scheduled).catch(() => {})
     return scheduled
   }

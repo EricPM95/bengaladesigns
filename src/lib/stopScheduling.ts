@@ -164,8 +164,8 @@ export function overflowToDidntMakeCut(overflow: Stop[]): DidntMakeCutItem[] {
   return overflow.map((stop) => ({
     id: stop.id,
     name: stop.name,
-    reason: 'No había hueco en el horario del día con el ritmo elegido.',
-    suggestion: 'Prueba a moverla a otro día, o a subir el ritmo del viaje en el cuestionario.',
+    reason: 'No había hueco en el horario del día.',
+    suggestion: 'Prueba a moverla a otro día, o quita otra parada para hacerle sitio.',
     added: false,
     coordinates: hasRealCoordinates(stop.coordinates) ? stop.coordinates : undefined,
   }))

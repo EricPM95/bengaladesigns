@@ -15,6 +15,8 @@ import { closedOnDay, withinMonthDays } from '../../shared/routeEngine/openingHo
 import { anyTransitRuns, publicTransitKind, transitRuns } from '../../shared/routeEngine/holidayTransit.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
+// (Una sola ruta, PROMPT_QUITAR_RITMOS: la que era «completo». Con ritmos=los-dos, también «tranquilo», que ya da lo mismo.)
+const RITMOS = args.ritmos === 'los-dos' ? ['completo', 'tranquilo'] : ['completo']
 const YEAR = Number(args['año'] ?? args.ano ?? 2026)
 const D = findPipelineV2Data('Roma')
 const travel = travelTimesFor('roma')
@@ -154,7 +156,7 @@ const started = Date.now()
 const first = `${YEAR}-12-01`
 for (let offset = 0; offset < 39; offset++) {
   const fecha = addDays(first, offset)
-  for (let dias = 1; dias <= 7; dias++) for (const ritmo of ['completo', 'tranquilo']) for (const ft of [false, true]) for (const mercadillos of [false, true]) await runTrip({ fecha, dias, ritmo, ft, mercadillos })
+  for (let dias = 1; dias <= 7; dias++) for (const ritmo of RITMOS) for (const ft of [false, true]) for (const mercadillos of [false, true]) await runTrip({ fecha, dias, ritmo, ft, mercadillos })
   if (offset % 5 === 0) process.stdout.write(`${fecha} (${Math.round((Date.now() - started) / 1000)} s)   `)
 }
 const total = Object.keys(TIPOS).reduce((sum, tipo) => sum + (counts.get(tipo) ?? 0), 0)

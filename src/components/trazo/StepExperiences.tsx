@@ -27,7 +27,7 @@ function isWinterTrip(season: Season | undefined, dateRange: DateRange | undefin
 }
 
 /**
- * 06 — Experiencias: nuestras categorías (sin números de lugares). "Imprescindibles" va siempre
+ * 05 — Experiencias: nuestras categorías (sin números de lugares). "Imprescindibles" va siempre
  * marcada y bloqueada; se pueden añadir hasta 2 más, o ninguna. Las de temporada siguen las ventanas
  * del destino (seasonalAvailability) y, sin ventana, la regla de invierno de siempre.
  */
@@ -74,7 +74,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>06 — Experiencias</span>
+        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>05 — Experiencias</span>
         <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(243,238,228,.7)' }}>
           {selected.length}/{MAX_POSITIVE_CATEGORIES}
         </span>

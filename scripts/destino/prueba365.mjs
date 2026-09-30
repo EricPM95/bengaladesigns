@@ -12,6 +12,8 @@ import { tituloQueNoSeCumple } from './textChecks.mjs'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
+// (Una sola ruta, PROMPT_QUITAR_RITMOS: la que era «completo». Con ritmos=los-dos, también «tranquilo», que ya da lo mismo.)
+const RITMOS = args.ritmos === 'los-dos' ? ['completo', 'tranquilo'] : ['completo']
 const year = Number(args['año'] ?? args.ano ?? 2027)
 const quick = Boolean(args.rapida)
 const out = args.out ?? 'docs/PRUEBA365.md'
@@ -135,7 +137,7 @@ const starts = Array.from({ length: 365 }, (_, i) => addDays(`${year}-01-01`, i)
 const grid = []
 // 1. Todas las fechas, de 2 a 7 días, los dos ritmos, con y sin Free Tour.
 for (const fecha of quick ? starts.filter((_, i) => i % 7 === 0) : starts) {
-  for (const dias of [2, 3, 4, 5, 6, 7]) for (const ritmo of ['completo', 'tranquilo']) for (const ft of [false, true]) grid.push({ fecha, dias, ritmo, ft })
+  for (const dias of [2, 3, 4, 5, 6, 7]) for (const ritmo of RITMOS) for (const ft of [false, true]) grid.push({ fecha, dias, ritmo, ft })
 }
 // 2. Cada experiencia (3 y 5 días, completo, sin Free Tour).
 for (const fecha of starts.filter((_, i) => i % (quick ? 14 : 2) === 0)) for (const exp of ['arte_museos', 'naturaleza_vistas', 'barrios_sabores']) for (const dias of [3, 5]) grid.push({ fecha, dias, ritmo: 'completo', ft: false, exps: [exp] })

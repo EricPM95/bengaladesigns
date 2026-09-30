@@ -134,7 +134,7 @@ function buildBlockSteps(
     key: 'blocks-single',
     icon: ClockIcon,
     circleClass: 'bg-sky-400',
-    title: 'Ajustando tu ritmo',
+    title: 'Poniendo las horas',
     subtitle: 'Organizando el mejor viaje de tu vida',
     state: reachedBlocks && (phase === 'done' || completedDayNumbers.length >= totalBlocks) ? 'done' : reachedBlocks ? 'active' : 'pending',
   }

@@ -7,7 +7,7 @@ import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
-import { defaultPaceTexts, fetchPaceTexts, type PaceTexts } from '../../lib/destinationTextsApi'
+import { SINGLE_PACE } from '../../lib/singleRoute'
 import { seasonOfMonth } from '../../lib/season'
 import { useRouteGeneration } from '../../lib/useRouteGeneration'
 import type { ConfirmedRoute } from '../destination/RouteSearch'
@@ -19,13 +19,13 @@ import { StepRoute } from './StepRoute'
 import { StepTransport } from './StepTransport'
 import { StepDates } from './StepDates'
 import { StepCompanion } from './StepCompanion'
-import { StepPace } from './StepPace'
 import { StepExperiences } from './StepExperiences'
 import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import './trazo.css'
 
-const STEP_NAMES = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Ritmo', 'Experiencias', 'Lugares']
+// (Sin «Ritmo»: hay una sola ruta, PROMPT_QUITAR_RITMOS. StepPace.tsx se queda sin usar.)
+const STEP_NAMES = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Experiencias', 'Lugares']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 /** Posiciones y ritmos al azar de las partículas de estación (una vez por carga). */
@@ -68,7 +68,6 @@ export function TrazoFlow() {
   const [previewMonth, setPreviewMonth] = useState<number | null>(null)
   const [land, setLand] = useState('')
   const [curatedPool, setCuratedPool] = useState<PoolPlace[] | null | false>(null)
-  const [paceTexts, setPaceTexts] = useState<PaceTexts | null>(null)
   const { w: vw, h: vh } = useViewport()
 
   const go = (next: number) => {
@@ -80,12 +79,10 @@ export function TrazoFlow() {
     loadLand().then(setLand)
   }, [])
 
-  // Textos de ritmo y pool curado del destino (lecturas del JSON, sin Claude).
+  // El pool curado del destino (lectura del JSON, sin Claude).
   useEffect(() => {
     if (!destinationName) return
     let alive = true
-    setPaceTexts(defaultPaceTexts(destinationName))
-    fetchPaceTexts(destinationName).then((texts) => alive && setPaceTexts(texts))
     setCuratedPool(null)
     fetchPoolLevel(destinationName, 'pool').then((result) => alive && setCuratedPool(result.found ? result.places : false))
     return () => {
@@ -98,7 +95,7 @@ export function TrazoFlow() {
     trimCuratedPlaceSelection(poolSelectionLimit(answers.days))
   }, [answers.days, trimCuratedPlaceSelection])
 
-  const generation = useRouteGeneration(step === 7)
+  const generation = useRouteGeneration(step === 6)
 
   // ---- acciones de cada paso ----
   const startTrip = () => {
@@ -113,7 +110,7 @@ export function TrazoFlow() {
       // Mismo destino, otro origen: el transporte hay que volver a decidirlo.
       state.setTransportOption(null)
     }
-    updateAnswers({ origin: origin.name, originPlace: origin })
+    updateAnswers({ origin: origin.name, originPlace: origin, pace: SINGLE_PACE })
     setProg(0)
     go(1)
   }
@@ -125,7 +122,7 @@ export function TrazoFlow() {
     state.setArchetype('roadtrip_exclusivo', true)
     state.setKnownCamperAccess(route.camperAccess)
     suggestExperiencesInBackground(route.name)
-    updateAnswers({ origin: origin.name, originPlace: origin })
+    updateAnswers({ origin: origin.name, originPlace: origin, pace: SINGLE_PACE })
     setDest(route.startPlace)
     setProg(0)
     go(1)
@@ -146,7 +143,7 @@ export function TrazoFlow() {
     // Destino no curado: se pide la sugerencia de lugares ya; curado: el pool del JSON, sin Claude.
     if (curatedPool === false) suggestPlacesOnDemand(destinationName, experiences)
     else store.getState().setPlacesStepStarted(true)
-    go(6)
+    go(5)
   }
 
   const openRoute = () => {
@@ -157,7 +154,7 @@ export function TrazoFlow() {
   }
 
   const back = () => {
-    if (step === 0 || step === 7) return
+    if (step === 0 || step === 6) return
     go(step - 1)
   }
 
@@ -203,7 +200,7 @@ export function TrazoFlow() {
       const isD = place === mapPlaceD
       return { x, y, isD, code: cityCode(place) }
     })
-  const mapO = step <= 1 ? 1 : step === 2 ? 0.5 : step === 7 ? 0.55 : 0.18
+  const mapO = step <= 1 ? 1 : step === 2 ? 0.5 : step === 6 ? 0.55 : 0.18
 
   // ---- estación ----
   const previewSeason = previewMonth !== null ? seasonOfMonth(previewMonth) : null
@@ -230,7 +227,7 @@ export function TrazoFlow() {
       ? `${answers.days} ${answers.days === 1 ? 'día' : 'días'} · ${MONTHS[answers.month]}`
       : ''
   const nExp = answers.experiencesPositive?.length ?? 0
-  const expLabel = step > 5 && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
+  const expLabel = step > 4 && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
   const nPlaces = useRouteStore((state) => state.selected_curated_place_names.length + state.selected_place_ids.length)
   const placesLabel = nPlaces ? `${nPlaces} ${nPlaces === 1 ? 'lugar' : 'lugares'}` : ''
   const reached = (i: number) => maxStep > i
@@ -239,11 +236,10 @@ export function TrazoFlow() {
     reached(1) ? modeName : '',
     reached(2) ? datesV : '',
     reached(3) && answers.companion ? COMPANION[answers.companion] : '',
-    reached(4) && answers.pace ? (answers.pace === 'zen' ? 'Tranquilo' : 'Completo') : '',
     expLabel,
-    reached(6) ? placesLabel : '',
+    reached(5) ? placesLabel : '',
   ]
-  const chips = [vals[0], vals[1], vals[2], reached(2) && answers.season ? SEASON_FX[answers.season].name : '', vals[3], vals[4], vals[5], vals[6]].filter(Boolean)
+  const chips = [vals[0], vals[1], vals[2], reached(2) && answers.season ? SEASON_FX[answers.season].name : '', vals[3], vals[4], vals[5]].filter(Boolean)
 
   const pt = desk ? 126 : 112
   const screen = (i: number, content: ReactNode) => {
@@ -411,8 +407,8 @@ export function TrazoFlow() {
                   color: INK,
                   fontSize: 16,
                   cursor: 'pointer',
-                  opacity: step === 0 || step === 7 ? 0 : 1,
-                  pointerEvents: step === 0 || step === 7 ? 'none' : 'auto',
+                  opacity: step === 0 || step === 6 ? 0 : 1,
+                  pointerEvents: step === 0 || step === 6 ? 'none' : 'auto',
                   transition: 'opacity .4s',
                 }}
               >
@@ -433,7 +429,7 @@ export function TrazoFlow() {
                   </div>
                 ))}
               </div>
-              <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(243,238,228,.7)', minWidth: 30, textAlign: 'right' }}>{step < 7 ? `${step + 1}/7` : 'LISTO'}</span>
+              <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(243,238,228,.7)', minWidth: 30, textAlign: 'right' }}>{step < 6 ? `${step + 1}/6` : 'LISTO'}</span>
             </div>
             <div
               className="trazo-noscroll"
@@ -507,9 +503,8 @@ export function TrazoFlow() {
               onNext={() => go(4)}
             />,
           )}
-          {screen(4, <StepPace pace={answers.pace} texts={paceTexts} onPick={(pace) => updateAnswers({ pace })} onNext={() => go(5)} />)}
           {screen(
-            5,
+            4,
             <StepExperiences
               destinationName={destinationName ?? ''}
               season={answers.season}
@@ -520,9 +515,9 @@ export function TrazoFlow() {
               onNext={confirmExperiences}
             />,
           )}
-          {screen(6, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(7)} />)}
+          {screen(5, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(6)} />)}
           {screen(
-            7,
+            6,
             <StepSummary
               origin={origin}
               destination={dest}

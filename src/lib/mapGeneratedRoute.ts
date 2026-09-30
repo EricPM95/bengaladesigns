@@ -45,6 +45,8 @@ interface GeneratedStop {
   /** Ver Stop.isZoneWalk — solo pipeline v2. */
   is_zone_walk?: boolean
   is_revisit?: boolean
+  /** Opcional en lo escrito: el viajero puede saltársela — Stop.optional. */
+  is_optional?: boolean
   revisit_reason?: string
   id: string
   name: string
@@ -392,6 +394,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     wikipediaTitle: generated.wikipedia_title ?? null,
     isZoneWalk: generated.is_zone_walk ?? false,
     isRevisit: generated.is_revisit ?? false,
+    ...(generated.is_optional ? { optional: true } : {}),
     revisitReason: generated.revisit_reason,
     category: (generated.category && CATEGORY_MAP[generated.category]) || 'sight',
     categoryLabel: generated.category_label,

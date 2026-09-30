@@ -81,7 +81,6 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
     { k: 'Fechas', v: datesLabel(answers.dateRange, answers.month) },
     { k: 'Estación', v: answers.season ? SEASON_FX[answers.season].name : '—' },
     { k: 'Compañía', v: answers.companion ? COMPANION[answers.companion] : '—' },
-    { k: 'Ritmo', v: answers.pace === 'zen' ? 'Tranquilo' : 'Completo' },
     { k: 'Duración', v: `${days} ${days === 1 ? 'día' : 'días'}` },
     { k: 'Lugares', v: chosen ? `${chosen} ${chosen === 1 ? 'lugar elegido' : 'lugares elegidos'}` : '—' },
     { k: 'Experiencias', v: experiences.join(' · ') || '—' },
@@ -93,7 +92,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
       : status === 'done' && stops !== null
         ? `${days} ${days === 1 ? 'día' : 'días'} · ${stops} planes a tu medida`
         : progress > 0.66
-          ? 'Ajustando al ritmo elegido…'
+          ? 'Poniendo las horas de cada día…'
           : progress > 0.3
             ? `Buscando planes para ${answers.companion ? COMPANION[answers.companion].toLowerCase() : 'ti'}…`
             : 'Cruzando fechas y estación…'

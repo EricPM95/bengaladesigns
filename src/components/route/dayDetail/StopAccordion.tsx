@@ -109,6 +109,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
         : []
   // «Revisita» y «Por tu experiencia», útiles de un vistazo: etiquetas, con el mismo estilo que las demás (PROMPT_UI_REPASO_2, 5).
   const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
+  // «Opcional» (PROMPT_QUITAR_RITMOS): hay una sola ruta y el viajero la aligera quitando paradas; estas son las primeras.
+  if (stop.optional) tags.push({ label: 'Opcional', kind })
   if (stop.isRevisit) tags.push({ label: 'Revisita', kind })
   if (experienceTitle) tags.push({ label: `Por tu experiencia · ${experienceTitle}`, kind })
 
