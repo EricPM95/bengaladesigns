@@ -9,17 +9,17 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ## Índice
 
-| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
-|---|---|---|---|---|---|---|---|
-| [1](#ruta-1) | 3 | completo | no |  | — | lunes 7 dic 2026 · 7-9 de diciembre, con mercadillos (el 8, la Inmaculada) | Martes 8 · Museos Vaticanos cerrados · Miércoles 9 · Audiencia papal · Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
-| [2](#ruta-2) | 5 | tranquilo | no |  | — | miércoles 23 dic 2026 · 23-27 de diciembre, con mercadillos (Nochebuena, Navidad y San Esteban) | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 · Coliseo y Panteón cerrados · Viernes 25 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · Navidad en Roma |
-| [3](#ruta-3) | 3 | completo | no | sin experiencias | — | jueves 24 dic 2026 · 24-26 de diciembre, sin mercadillos | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 y sábado 26 · Museos Vaticanos cerrados · Viernes 25 · Coliseo y Panteón cerrados · Sábado 26 · Misa en el Panteón · Navidad en Roma · Mercadillo de Navidad en Piazza Navona |
-| [4](#ruta-4) | 4 | completo | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
-| [5](#ruta-5) | 2 | tranquilo | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Viernes 1 · Horario especial · Viernes 1 · Horario especial · Viernes 1 · Horario especial · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
-| [6](#ruta-6) | 5 | tranquilo | no |  | — | lunes 4 ene 2027 · 4-8 de enero, con mercadillos (Reyes el 6; el 7 y el 8, ya fuera de fechas) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
+| Nº | Días | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
+|---|---|---|---|---|---|---|
+| [1](#ruta-1) | 3 | no |  | — | lunes 7 dic 2026 · 7-9 de diciembre, con mercadillos (el 8, la Inmaculada) | Martes 8 · Museos Vaticanos cerrados · Miércoles 9 · Audiencia papal · Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
+| [2](#ruta-2) | 5 | no |  | — | miércoles 23 dic 2026 · 23-27 de diciembre, con mercadillos (Nochebuena, Navidad y San Esteban) | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 · Coliseo y Panteón cerrados · Viernes 25 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · Navidad en Roma |
+| [3](#ruta-3) | 3 | no | sin experiencias | — | jueves 24 dic 2026 · 24-26 de diciembre, sin mercadillos | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 y sábado 26 · Museos Vaticanos cerrados · Viernes 25 · Coliseo y Panteón cerrados · Sábado 26 · Misa en el Panteón · Navidad en Roma · Mercadillo de Navidad en Piazza Navona |
+| [4](#ruta-4) | 4 | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [5](#ruta-5) | 2 | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Viernes 1 · Horario especial · Viernes 1 · Horario especial · Viernes 1 · Horario especial · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [6](#ruta-6) | 5 | no |  | — | lunes 4 ene 2027 · 4-8 de enero, con mercadillos (Reyes el 6; el 7 y el 8, ya fuera de fechas) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
 
 <a id="ruta-1"></a>
-## 1. 3 días · completo · sin Free Tour ·  · desde el lunes 7 dic 2026
+## 1. 3 días · sin Free Tour ·  · desde el lunes 7 dic 2026
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
@@ -112,7 +112,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-2"></a>
-## 2. 5 días · tranquilo · sin Free Tour ·  · desde el miércoles 23 dic 2026
+## 2. 5 días · sin Free Tour ·  · desde el miércoles 23 dic 2026
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
@@ -235,7 +235,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-3"></a>
-## 3. 3 días · completo · sin Free Tour · sin experiencias · desde el jueves 24 dic 2026
+## 3. 3 días · sin Free Tour · sin experiencias · desde el jueves 24 dic 2026
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
@@ -334,7 +334,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-4"></a>
-## 4. 4 días · completo · sin Free Tour · sin experiencias · desde el miércoles 30 dic 2026
+## 4. 4 días · sin Free Tour · sin experiencias · desde el miércoles 30 dic 2026
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
@@ -451,7 +451,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-5"></a>
-## 5. 2 días · tranquilo · sin Free Tour · sin experiencias · desde el jueves 31 dic 2026
+## 5. 2 días · sin Free Tour · sin experiencias · desde el jueves 31 dic 2026
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 
@@ -526,7 +526,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-6"></a>
-## 6. 5 días · tranquilo · sin Free Tour ·  · desde el lunes 4 ene 2027
+## 6. 5 días · sin Free Tour ·  · desde el lunes 4 ene 2027
 
 **Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
 

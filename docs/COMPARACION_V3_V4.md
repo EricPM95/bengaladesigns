@@ -2,16 +2,15 @@
 
 Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditoría (`auditoria.mjs`) y las paradas de cada día. **v4 igual o mejor** = no tiene más avisos que v3.
 
-**Resumen:** v4 mejor en 5, igual en 51, peor en 0. Avisos de la auditoría: v3 7, v4 0.
+**Resumen:** v4 mejor en 4, igual en 52, peor en 0. Avisos de la auditoría: v3 6, v4 0.
 
 | Tipo | v3 | v4 |
 |---|---|---|
 | Tramo de más de 25 min andando sin transporte | 1 | 0 |
 | Tiempo libre de más de 30 min (60 si sale con nombre de paseo) | 3 | 0 |
-| Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo | 1 | 0 |
 | Imprescindible de pago que no sale nunca por dentro en el viaje | 2 | 0 |
 
-## ruta 1: 2 días · completo · desde el 2027-04-24 (domingo Vaticano cerrado + 25 de abril) — v4 igual (0 → 0)
+## ruta 1: 2 días · desde el 2027-04-24 (domingo Vaticano cerrado + 25 de abril) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo (fuera) · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Trastevere · 18:35 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:50 Fontana dell'Acqua Paola · 19:35 Mirador del Janículo 🌅 · 20:30 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -20,7 +19,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 15:05 Barrio Judío · 15:35 Fuente de las Tortugas · 15:50 Largo di Torre Argentina · 16:10 Iglesia del Gesù · 16:35 Iglesia de Santa Maria sopra Minerva · 16:50 Elefantino de Bernini · 17:05 Panteón · 17:40 Iglesia de San Luigi dei Francesi · 18:05 Piazza Navona · 18:40 Campo de' Fiori · 19:40 Ponte Sisto 🌅 · 20:30 🍷 Pizzeria Da Baffetto · 22:00 Fontana de Trevi (noche) 🌙 · 22:55 Plaza de España (noche) 🌙
 
-## ruta 2: 2 días · completo · Free Tour · desde el 2027-06-26 — v4 igual (0 → 0)
+## ruta 2: 2 días · Free Tour · desde el 2027-06-26 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -29,7 +28,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1-FT] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:10 Teatro de Marcelo · 16:30 Isla Tiberina · 16:55 Basílica de Santa Cecilia in Trastevere · 17:35 Trastevere · 19:10 Iglesia de Santa Maria in Trastevere · 19:40 San Pietro in Montorio y Tempietto de Bramante (fuera) · 20:25 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
   - v4: [D1-FT D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:15 🍝 Giggetto al Portico d'Ottavia · 14:50 Barrio Judío · 15:15 Fuente de las Tortugas · 15:35 Teatro de Marcelo · 15:55 Isla Tiberina · 16:30 Basílica de Santa Cecilia in Trastevere · 17:05 Iglesia de Santa Maria in Trastevere · 17:25 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:20 Fontana dell'Acqua Paola · 20:00 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 23:00 Trastevere de noche 🌙
 
-## ruta 3: 3 días · completo · arte_museos · desde el 2027-03-26 (Pascua el domingo 28) — v4 igual (0 → 0)
+## ruta 3: 3 días · arte_museos · desde el 2027-03-26 (Pascua el domingo 28) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -41,7 +40,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4 domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:05 Via Condotti · 10:25 Plaza de España · 10:50 Trinità dei Monti · 11:30 Bendición Urbi et Orbi · 13:00 🍝 Ristorante Arlù · 14:45 Galería Borghese · 17:00 Porta Pinciana · 17:30 Tiempo libre en Villa Borghese · 19:10 Terraza del Pincio 🌅 · 19:55 Piazza del Popolo · 20:15 Santa Maria del Popolo (fuera) · 20:45 🍷 Sgarro Bistrot · 22:00 Panteón (noche) 🌙 · 22:55 Piazza Navona (noche) 🌙 · libre 25
   - v4: [D4 C+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 11:00 Galería Borghese · 13:15 🍝 Girarrosto Fiorentino · 15:10 Ara Pacis · 16:00 Via Margutta y Via del Babuino · 16:35 Piazza del Popolo · 16:50 Santa Maria del Popolo · 17:35 El lago de Villa Borghese · 18:40 Jardines del Pincio · 19:10 Terraza del Pincio 🌅 · 20:00 🍷 Sgarro Bistrot · 21:30 Plaza de España (noche) 🌙 · libre 20
 
-## ruta 4: 3 días · completo · desde el 2027-07-17 (verano) — v4 igual (0 → 0)
+## ruta 4: 3 días · desde el 2027-07-17 (verano) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1 sabado] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Enoteca Corsi · 15:15 Panteón · 15:50 Elefantino de Bernini · 16:05 Iglesia de Santa Maria sopra Minerva · 16:35 Iglesia de San Luigi dei Francesi · 17:00 Piazza Navona · 17:40 Largo di Torre Argentina · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -53,7 +52,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo (fuera) · 17:00 Iglesia de Santa Maria in Trastevere · 17:30 Isla Tiberina · 18:00 Trastevere · 19:10 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:25 Fontana dell'Acqua Paola · 20:20 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙 · libre 20
   - v4: [D4M D+lunes] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Edy · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 18:35 Monti · 20:25 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙 · libre 35
 
-## ruta 5: 3 días · completo · Free Tour · barrios_sabores · desde el 2027-10-09 — v4 igual (0 → 0)
+## ruta 5: 3 días · Free Tour · barrios_sabores · desde el 2027-10-09 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -65,7 +64,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:10 Via dei Fori Imperiali 🌅 · 19:05 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C B+barrios_sabores] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:00 Monti · 18:20 Via dei Fori Imperiali 🌅 · 20:00 🍷 Trattoria Valentino · 21:30 Coliseo (noche) 🌙 · 🍸 55 min
 
-## ruta 6: 3 días · completo · naturaleza_vistas · pool Castillo de Sant'Angelo · desde el 2027-06-28 (Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro) — v4 igual (0 → 0)
+## ruta 6: 3 días · naturaleza_vistas · pool Castillo de Sant'Angelo · desde el 2027-06-28 (Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D4M] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo · 12:10 Terraza del Pincio · 13:00 🍝 Edy · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:25 Monti · 20:20 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 25 · libre 20
@@ -77,7 +76,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2 miercoles] 08:00 Museos Vaticanos y Capilla Sixtina · 11:10 Borgo Pio · 11:30 Puente Sant'Angelo · 11:50 Castillo de Sant'Angelo · 13:15 🍝 Borghiciana Pastificio Artigianale · 14:45 Plaza de San Pedro · 15:20 Cúpula de San Pedro · 16:05 Basílica de San Pedro · 17:25 Via della Conciliazione · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:25 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
   - v4: [D2 D+miercoles+naturaleza_vistas] 08:00 Museos Vaticanos y Capilla Sixtina · 11:10 Borgo Pio · 11:30 Puente Sant'Angelo · 11:45 Castillo de Sant'Angelo · 13:15 🍝 Borghiciana Pastificio Artigianale · 14:55 Plaza de San Pedro · 15:20 Basílica de San Pedro · 16:50 Iglesia de Santa Maria in Trastevere · 17:20 Basílica de Santa Cecilia in Trastevere · 17:50 Trastevere · 19:30 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:45 Fontana dell'Acqua Paola · 20:15 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 23:00 Trastevere de noche 🌙
 
-## ruta 7: 4 días · completo · desde el 2027-04-30 (1 de mayo) — v4 igual (0 → 0)
+## ruta 7: 4 días · desde el 2027-04-30 (1 de mayo) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:20 Fontana dell'Acqua Paola · 20:00 Mirador del Janículo 🌅 · 21:00 🍷 Tonnarello · 22:00 Trastevere de noche 🌙
@@ -92,7 +91,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 17:55 Monti · 19:40 Via dei Fori Imperiali 🌅 · 20:45 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙
   - v4: [D5C D] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 19:50 Via dei Fori Imperiali 🌅 · 20:45 🍷 Trattoria Valentino · 22:30 Coliseo (noche) 🌙
 
-## ruta 8: 4 días · completo · Free Tour · arte_museos · desde el 2027-12-04 (invierno, domingo) — v4 igual (0 → 0)
+## ruta 8: 4 días · Free Tour · arte_museos · desde el 2027-12-04 (invierno, domingo) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -107,7 +106,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Roma iluminada desde los Foros · 18:30 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A+arte_museos] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Iglesia de San Pietro in Vincoli · 16:20 Via dei Fori Imperiali 🌅 · 17:05 Mercados de Trajano · 18:15 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 70 min
 
-## ruta 9: 4 días · completo · barrios_sabores · desde el 2027-11-01 (Todos los Santos, lunes) — v4 igual (0 → 0)
+## ruta 9: 4 días · barrios_sabores · desde el 2027-11-01 (Todos los Santos, lunes) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Nonna Betta · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -122,7 +121,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Roma iluminada desde los Foros · 18:30 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A+barrios_sabores] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Iglesia de San Pietro in Vincoli · 16:10 Monti · 16:45 Via dei Fori Imperiali 🌅 · 17:25 Mercados de Trajano · 18:40 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 45 min
 
-## ruta 10: 4 días · completo · desde el 2027-12-24 (Navidad) — v4 igual (0 → 0)
+## ruta 10: 4 días · desde el 2027-12-24 (Navidad) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo · 17:30 Roma iluminada desde el Janículo · 18:30 Fontana dell'Acqua Paola · 18:50 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:10 Iglesia de Santa Maria in Trastevere · 19:35 Trastevere · 20:30 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -137,7 +136,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Nonna Betta · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
   - v4: [D1 A] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 14:50 Barrio Judío · 15:20 Fuente de las Tortugas · 15:35 Largo di Torre Argentina · 16:00 Iglesia del Gesù · 16:30 Iglesia de Santa Maria sopra Minerva · 16:45 Elefantino de Bernini · 16:55 Panteón · 17:35 Iglesia de San Luigi dei Francesi · 17:55 Piazza Navona · 18:35 Campo de' Fiori · 20:00 🍷 Armando al Pantheon · 21:30 Fontana de Trevi (noche) 🌙 · 🍸 45 min
 
-## ruta 11: 5 días · completo · desde el 2027-05-22 — v4 mejor (3 → 0)
+## ruta 11: 5 días · desde el 2027-05-22 — v4 mejor (3 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:15 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
@@ -157,7 +156,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - Avisos v3: tramo_largo (día 2, 14:00 Galería Borghese — 29 min andando); libre_largo (día 2 antes de Galería Borghese — 45 min); libre_largo (día 2 «Via del Babuino y Via Margutta» antes de Terraza del Pincio — 70 min)
 - Avisos v4: ninguno
 
-## ruta 12: 5 días · completo · Free Tour · naturaleza_vistas · desde el 2027-09-18 — v4 igual (0 → 0)
+## ruta 12: 5 días · Free Tour · naturaleza_vistas · desde el 2027-09-18 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -175,7 +174,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 16:00 Basílica de Santa María la Mayor · 16:45 Iglesia de San Pietro in Vincoli · 17:10 Monti · 18:40 Via dei Fori Imperiali 🌅 · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · 🍸 25 min
   - v4: [D5C C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:05 Mercados de Trajano · 18:15 Monti · 18:50 Via dei Fori Imperiali 🌅 · 19:45 🍷 Trattoria Valentino · 21:30 Coliseo (noche) 🌙
 
-## ruta 13: 3 días · completo · desde el 2027-06-02 (Fiesta de la República + audiencia papal) — v4 igual (0 → 0)
+## ruta 13: 3 días · desde el 2027-06-02 (Fiesta de la República + audiencia papal) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2 miercoles] 08:00 Museos Vaticanos y Capilla Sixtina · 11:10 Borgo Pio · 11:30 Puente Sant'Angelo · 11:50 Castillo de Sant'Angelo · 13:15 🍝 Borghiciana Pastificio Artigianale · 14:45 Plaza de San Pedro · 15:20 Cúpula de San Pedro · 16:05 Basílica de San Pedro · 17:25 Via della Conciliazione · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:15 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
@@ -187,7 +186,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo · 12:10 Terraza del Pincio · 13:00 🍝 Edy · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:25 Monti · 20:15 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 25
   - v4: [D4M D] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Girarrosto Fiorentino · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 18:35 Monti · 20:25 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙 · libre 35
 
-## ruta 14: 2 días · completo · arte_museos · pool Galería Borghese · desde el 2027-09-26 (domingo + lunes con la Galería cerrada) — v4 mejor (1 → 0)
+## ruta 14: 2 días · arte_museos · pool Galería Borghese · desde el 2027-09-26 (domingo + lunes con la Galería cerrada) — v4 mejor (1 → 0)
 
 - **Día 1**
   - v3: [D1 pool_borghese] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 La Taverna dei Fori Imperiali · 15:15 Fontana de Trevi · 15:55 Plaza de España · 16:45 Galería Borghese · 19:15 Roma iluminada desde el Pincio · 20:00 🍷 Sgarro Bistrot · 21:30 Panteón (noche) 🌙 · 22:25 Piazza Navona (noche) 🌙
@@ -198,7 +197,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - Avisos v3: pago_sin_dentro (todo el viaje Panteón — ningún día por dentro)
 - Avisos v4: ninguno
 
-## ruta 15: 4 días · completo · Free Tour · desde el 2027-08-13 (Ferragosto) — v4 igual (0 → 0)
+## ruta 15: 4 días · Free Tour · desde el 2027-08-13 (Ferragosto) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -213,7 +212,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 17:55 Monti · 19:40 Via dei Fori Imperiali 🌅 · 20:45 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙
   - v4: [D5C D] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 19:50 Via dei Fori Imperiali 🌅 · 20:45 🍷 Trattoria Valentino · 22:30 Coliseo (noche) 🌙
 
-## ruta 16: 2 días · tranquilo · desde el 2027-01-16 — v4 igual (0 → 0)
+## ruta 16: 2 días · desde el 2027-01-16 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo (fuera) · 16:40 Mirador del Janículo 🌅 · 17:45 Fontana dell'Acqua Paola · 18:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:25 Iglesia de Santa Maria in Trastevere · 18:50 Trastevere · 20:00 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -222,7 +221,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 A+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 14:50 Barrio Judío · 15:20 Fuente de las Tortugas · 15:35 Largo di Torre Argentina · 16:00 Iglesia del Gesù · 16:30 Iglesia de Santa Maria sopra Minerva · 16:45 Elefantino de Bernini · 16:55 Panteón · 17:35 Iglesia de San Luigi dei Francesi · 17:55 Piazza Navona · 18:35 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙 · 🍸 45 min
 
-## ruta 17: 3 días · tranquilo · Free Tour · desde el 2027-02-13 — v4 igual (0 → 0)
+## ruta 17: 3 días · Free Tour · desde el 2027-02-13 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -234,7 +233,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 12:30 🍝 Felice a Testaccio · 14:15 Basílica de San Clemente · 15:15 Basílica de San Juan de Letrán · 16:15 Basílica de Santa María la Mayor · 17:00 Iglesia de San Pietro in Vincoli · 17:30 Via dei Fori Imperiali 🌅 · 18:05 Mercados de Trajano · 19:15 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C B] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:00 Monti · 17:40 Via dei Fori Imperiali 🌅 · 18:15 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 70 min
 
-## ruta 18: 3 días · tranquilo · barrios_sabores · desde el 2027-10-23 — v4 igual (0 → 0)
+## ruta 18: 3 días · barrios_sabores · desde el 2027-10-23 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1 sabado] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Enoteca Corsi · 15:15 Panteón · 15:50 Elefantino de Bernini · 16:05 Iglesia de Santa Maria sopra Minerva · 16:35 Iglesia de San Luigi dei Francesi · 17:00 Piazza Navona · 17:40 Largo di Torre Argentina · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -246,7 +245,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo (fuera) · 16:30 San Pietro in Montorio y Tempietto de Bramante (fuera) · 16:45 Fontana dell'Acqua Paola · 17:10 Iglesia de Santa Maria in Trastevere · 18:00 Mirador del Janículo 🌅 · 19:15 Trastevere · 20:15 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
   - v4: [D4M B+lunes] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Edy · 14:55 Basílica de Santa María la Mayor · 15:40 Iglesia de San Pietro in Vincoli · 16:10 Mercados de Trajano · 17:10 Monti · 18:00 Via dei Fori Imperiali 🌅 · 18:45 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 40 min
 
-## ruta 19: 4 días · tranquilo · desde el 2027-12-06 (8 de diciembre, la Inmaculada) — v4 igual (0 → 0)
+## ruta 19: 4 días · desde el 2027-12-06 (8 de diciembre, la Inmaculada) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Nonna Betta · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -261,7 +260,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Roma iluminada desde los Foros · 18:30 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Iglesia de San Pietro in Vincoli · 16:20 Via dei Fori Imperiali 🌅 · 17:05 Mercados de Trajano · 18:15 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 70 min
 
-## ruta 20: 2 días · tranquilo · pool Galería Borghese · desde el 2027-11-20 — v4 mejor (1 → 0)
+## ruta 20: 2 días · pool Galería Borghese · desde el 2027-11-20 — v4 mejor (1 → 0)
 
 - **Día 1**
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo (fuera) · 16:30 Mirador del Janículo 🌅 · 17:30 Fontana dell'Acqua Paola · 17:50 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:10 Iglesia de Santa Maria in Trastevere · 18:35 Trastevere · 20:00 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -272,7 +271,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - Avisos v3: pago_sin_dentro (todo el viaje Panteón — ningún día por dentro)
 - Avisos v4: ninguno
 
-## ruta 21: 2 días · completo · desde el 2027-05-15 (fin de semana A) — v4 igual (0 → 0)
+## ruta 21: 2 días · desde el 2027-05-15 (fin de semana A) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:15 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
@@ -281,7 +280,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 15:05 Barrio Judío · 15:35 Fuente de las Tortugas · 15:50 Largo di Torre Argentina · 16:10 Iglesia del Gesù · 16:35 Iglesia de Santa Maria sopra Minerva · 16:50 Elefantino de Bernini · 17:05 Panteón · 17:40 Iglesia de San Luigi dei Francesi · 18:05 Piazza Navona · 18:40 Campo de' Fiori · 19:50 Ponte Sisto 🌅 · 21:00 🍷 Pizzeria Da Baffetto · 22:30 Fontana de Trevi (noche) 🌙
 
-## ruta 22: 3 días · completo · desde el 2027-10-08 (fin de semana B) — v4 igual (0 → 0)
+## ruta 22: 3 días · desde el 2027-10-08 (fin de semana B) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -293,7 +292,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Basílica de Santa María la Mayor · 18:15 Iglesia de San Pietro in Vincoli (fuera) · 18:35 Via dei Fori Imperiali 🌅 · 19:05 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M B+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de Santa María la Mayor · 15:20 Iglesia de San Pietro in Vincoli · 15:50 Mercados de Trajano · 16:50 Monti · 18:20 Via dei Fori Imperiali 🌅 · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · 🍸 55 min
 
-## ruta 23: 3 días · completo · Free Tour · desde el 2027-05-21 (fin de semana C) — v4 igual (0 → 0)
+## ruta 23: 3 días · Free Tour · desde el 2027-05-21 (fin de semana C) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -305,7 +304,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Mercados de Trajano · 19:10 Monti · 20:05 Via dei Fori Imperiali 🌅 · 21:00 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙
   - v4: [D5C D+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 20:15 Via dei Fori Imperiali 🌅 · 21:00 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙
 
-## ruta 24: 3 días · completo · desde el 2027-06-12 (fin de semana D) — v4 igual (0 → 0)
+## ruta 24: 3 días · desde el 2027-06-12 (fin de semana D) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1 sabado] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Enoteca Corsi · 15:15 Panteón · 15:50 Elefantino de Bernini · 16:05 Iglesia de Santa Maria sopra Minerva · 16:35 Iglesia de San Luigi dei Francesi · 17:00 Piazza Navona · 17:40 Largo di Torre Argentina · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -317,7 +316,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo (fuera) · 17:00 Iglesia de Santa Maria in Trastevere · 17:30 Isla Tiberina · 18:00 Trastevere · 19:25 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:40 Fontana dell'Acqua Paola · 20:25 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
   - v4: [D4M D+lunes] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Edy · 15:35 Basílica de San Juan de Letrán · 16:30 Basílica de Santa María la Mayor · 17:10 Iglesia de San Pietro in Vincoli · 17:40 Mercados de Trajano · 18:40 Monti · 20:30 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙 · libre 40
 
-## ruta 25: 4 días · completo · desde el 2027-09-17 (fin de semana E) — v4 igual (0 → 0)
+## ruta 25: 4 días · desde el 2027-09-17 (fin de semana E) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -332,7 +331,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 16:00 Basílica de Santa María la Mayor · 16:45 Iglesia de San Pietro in Vincoli · 17:10 Monti · 18:45 Via dei Fori Imperiali 🌅 · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · 🍸 25 min
   - v4: [D5C C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:05 Mercados de Trajano · 18:15 Monti · 18:55 Via dei Fori Imperiali 🌅 · 19:45 🍷 Trattoria Valentino · 21:30 Coliseo (noche) 🌙
 
-## ruta 26: 3 días · completo · Free Tour · desde el 2027-10-18 (tres días con Free Tour en octubre (huecos del día 2 y el día 3)) — v4 igual (0 → 0)
+## ruta 26: 3 días · Free Tour · desde el 2027-10-18 (tres días con Free Tour en octubre (huecos del día 2 y el día 3)) — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:15 🍷 Il Sorpasso · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -344,7 +343,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Via dei Fori Imperiali 🌅 · 18:50 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C B] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:00 Monti · 18:05 Via dei Fori Imperiali 🌅 · 18:55 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 30 min
 
-## cierre 1: 2 días · completo · desde el 2027-01-21 — v4 igual (0 → 0)
+## cierre 1: 2 días · desde el 2027-01-21 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -353,7 +352,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo · 17:00 Mirador del Janículo 🌅 · 18:00 Fontana dell'Acqua Paola · 18:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:40 Iglesia de Santa Maria in Trastevere · 19:05 Trastevere · 20:00 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
   - v4: [D2 A] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 13:30 🍝 Borghiciana Pastificio Artigianale · 14:50 Borgo Pio y el Passetto · 15:20 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:50 Castillo de Sant'Angelo 🌅 · 17:55 Iglesia de Santa Maria in Trastevere · 19:50 🍷 Tonnarello · 21:20 Trastevere de noche 🌙 · 🍸 90 min
 
-## cierre 2: 3 días · completo · desde el 2027-01-15 — v4 igual (0 → 0)
+## cierre 2: 3 días · desde el 2027-01-15 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -365,7 +364,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Iglesia de San Pietro in Vincoli · 18:05 Basílica de Santa María la Mayor · 19:00 Roma iluminada desde los Foros · 19:30 Monti · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M A+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de Santa María la Mayor · 15:20 Iglesia de San Pietro in Vincoli · 15:45 Monti · 16:50 Via dei Fori Imperiali 🌅 · 17:30 Mercados de Trajano · 18:45 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 40 min
 
-## cierre 3: 4 días · completo · desde el 2027-02-04 — v4 igual (0 → 0)
+## cierre 3: 4 días · desde el 2027-02-04 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -380,7 +379,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 16:00 Basílica de Santa María la Mayor · 16:45 Iglesia de San Pietro in Vincoli · 17:15 Via dei Fori Imperiali 🌅 · 17:55 Mercados de Trajano · 19:05 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Iglesia de San Pietro in Vincoli · 16:10 Monti · 17:15 Via dei Fori Imperiali 🌅 · 17:55 Mercados de Trajano · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · 🍸 55 min
 
-## cierre 4: 3 días · completo · desde el 2027-02-19 — v4 igual (0 → 0)
+## cierre 4: 3 días · desde el 2027-02-19 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -392,7 +391,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Iglesia de San Pietro in Vincoli · 18:05 Basílica de Santa María la Mayor · 19:00 Roma iluminada desde los Foros · 19:30 Monti · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M B+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de Santa María la Mayor · 15:20 Iglesia de San Pietro in Vincoli · 15:50 Mercados de Trajano · 16:50 Monti · 17:40 Via dei Fori Imperiali 🌅 · 18:20 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 65 min
 
-## cierre 5: 2 días · completo · desde el 2027-03-02 — v4 igual (0 → 0)
+## cierre 5: 2 días · desde el 2027-03-02 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo (fuera) · 16:30 San Pietro in Montorio y Tempietto de Bramante · 16:55 Fontana dell'Acqua Paola · 17:40 Mirador del Janículo 🌅 · 18:45 Iglesia de Santa Maria in Trastevere · 19:10 Trastevere · 20:00 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -401,7 +400,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 B] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 14:50 Barrio Judío · 15:20 Fuente de las Tortugas · 15:35 Largo di Torre Argentina · 16:00 Iglesia del Gesù · 16:30 Iglesia de Santa Maria sopra Minerva · 16:45 Elefantino de Bernini · 16:55 Panteón · 17:35 Iglesia de San Luigi dei Francesi · 17:55 Piazza Navona · 18:35 Campo de' Fiori · 20:00 🍷 Armando al Pantheon · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙 · 🍸 45 min
 
-## cierre 6: 3 días · completo · Free Tour · desde el 2027-03-06 — v4 igual (0 → 0)
+## cierre 6: 3 días · Free Tour · desde el 2027-03-06 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -413,7 +412,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 16:00 Basílica de Santa María la Mayor · 16:45 Iglesia de San Pietro in Vincoli · 17:40 Via dei Fori Imperiali 🌅 · 18:35 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · libre 25
   - v4: [D5C B] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:00 Monti · 17:50 Via dei Fori Imperiali 🌅 · 18:40 Coliseo (noche) 🌙 · 20:00 🍷 Trattoria Valentino · 🍸 45 min
 
-## cierre 7: 4 días · completo · desde el 2027-03-12 — v4 mejor (1 → 0)
+## cierre 7: 4 días · desde el 2027-03-12 — v4 mejor (1 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -430,7 +429,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - Avisos v3: libre_largo (día 2 antes de Mirador del Janículo — 40 min)
 - Avisos v4: ninguno
 
-## cierre 8: 2 días · completo · Free Tour · desde el 2027-04-10 — v4 igual (0 → 0)
+## cierre 8: 2 días · Free Tour · desde el 2027-04-10 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -439,7 +438,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1-FT] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:10 Teatro de Marcelo · 16:30 Isla Tiberina · 16:55 Basílica de Santa Cecilia in Trastevere · 17:35 Trastevere · 18:25 Iglesia de Santa Maria in Trastevere · 18:55 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:30 Mirador del Janículo 🌅 · 20:30 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
   - v4: [D1-FT D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:15 🍝 Giggetto al Portico d'Ottavia · 14:50 Barrio Judío · 15:15 Fuente de las Tortugas · 15:35 Teatro de Marcelo · 15:55 Isla Tiberina · 16:30 Basílica de Santa Cecilia in Trastevere · 17:05 Iglesia de Santa Maria in Trastevere · 17:25 Trastevere · 18:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:35 Fontana dell'Acqua Paola · 19:10 Mirador del Janículo 🌅 · 20:30 🍷 Tonnarello · 22:00 Trastevere de noche 🌙
 
-## cierre 9: 3 días · tranquilo · desde el 2027-04-15 — v4 igual (0 → 0)
+## cierre 9: 3 días · desde el 2027-04-15 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -451,7 +450,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo · 12:10 Terraza del Pincio · 13:00 🍝 Edy · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:25 Monti · 19:25 Via dei Fori Imperiali 🌅 · 20:30 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · libre 25
   - v4: [D4M D] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Girarrosto Fiorentino · 14:55 Basílica de San Juan de Letrán · 15:50 Basílica de Santa María la Mayor · 16:30 Iglesia de San Pietro in Vincoli · 17:00 Mercados de Trajano · 18:00 Monti · 19:35 Via dei Fori Imperiali 🌅 · 20:30 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙
 
-## cierre 10: 5 días · completo · barrios_sabores · desde el 2027-04-19 — v4 igual (0 → 0)
+## cierre 10: 5 días · barrios_sabores · desde el 2027-04-19 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Nonna Betta · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -469,7 +468,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 17:55 Monti · 19:30 Via dei Fori Imperiali 🌅 · 20:30 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C D+barrios_sabores] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 19:50 Via dei Fori Imperiali 🌅 · 20:30 🍷 Trattoria Valentino · 22:00 Coliseo (noche) 🌙
 
-## cierre 11: 3 días · completo · desde el 2027-05-02 — v4 igual (0 → 0)
+## cierre 11: 3 días · desde el 2027-05-02 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -481,7 +480,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo · 12:10 Terraza del Pincio · 13:00 🍝 Edy · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:25 Monti · 19:45 Via dei Fori Imperiali 🌅 · 20:45 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙 · libre 25
   - v4: [D2 D] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 13:30 🍝 Borghiciana Pastificio Artigianale · 15:05 Via della Conciliazione · 15:25 Puente Sant'Angelo · 15:35 Castillo de Sant'Angelo · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Basílica de Santa Cecilia in Trastevere · 18:00 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:20 Fontana dell'Acqua Paola · 19:50 Mirador del Janículo 🌅 · 20:45 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
 
-## cierre 12: 3 días · completo · arte_museos · desde el 2027-05-06 — v4 igual (0 → 0)
+## cierre 12: 3 días · arte_museos · desde el 2027-05-06 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -493,7 +492,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:40 Ara Pacis · 12:40 Santa Maria del Popolo (fuera) · 13:00 🍝 Edy · 15:00 Galería Borghese · 17:15 Galería Nacional de Arte Moderno · 18:55 Parque de Villa Borghese · 19:55 Terraza del Pincio 🌅 · 20:45 🍷 Sgarro Bistrot · 22:00 Panteón (noche) 🌙 · 22:55 Piazza Navona (noche) 🌙 · libre 30
   - v4: [D4 D] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 11:00 Galería Borghese · 13:15 🍝 Girarrosto Fiorentino · 15:10 Ara Pacis · 16:00 Via Margutta y Via del Babuino · 16:35 Piazza del Popolo · 16:50 Santa Maria del Popolo · 17:35 El lago de Villa Borghese y el templo de Esculapio · 18:55 Aperitivo en los Jardines del Pincio · 19:55 Terraza del Pincio 🌅 · 20:45 🍷 Il Gabriello · 22:30 Plaza de España (noche) 🌙 · libre 20
 
-## cierre 13: 4 días · completo · Free Tour · desde el 2027-05-28 — v4 mejor (1 → 0)
+## cierre 13: 4 días · Free Tour · desde el 2027-05-28 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -507,10 +506,8 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - **Día 4**
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 12:30 🍝 Felice a Testaccio · 14:15 Basílica de San Clemente · 15:15 Basílica de San Juan de Letrán · 16:15 Basílica de Santa María la Mayor · 17:00 Iglesia de San Pietro in Vincoli · 17:25 Monti · 18:30 Mercados de Trajano · 20:10 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 30
   - v4: [D5C D] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 20:20 Via dei Fori Imperiali 🌅 · 21:15 🍷 Trattoria Valentino · 23:00 Coliseo (noche) 🌙
-- Avisos v3: paseo_largo (día 3, 18:15 Jardines del Pincio — 105 min (máximo 90))
-- Avisos v4: ninguno
 
-## cierre 14: 3 días · tranquilo · Free Tour · desde el 2027-06-04 — v4 igual (0 → 0)
+## cierre 14: 3 días · Free Tour · desde el 2027-06-04 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -522,7 +519,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Mercados de Trajano · 19:10 Monti · 20:15 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙
   - v4: [D5C D+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 20:25 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙
 
-## cierre 15: 2 días · tranquilo · desde el 2027-06-19 — v4 igual (0 → 0)
+## cierre 15: 2 días · desde el 2027-06-19 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:25 Mirador del Janículo 🌅 · 21:30 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
@@ -531,7 +528,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 15:30 Barrio Judío · 16:00 Fuente de las Tortugas · 16:15 Largo di Torre Argentina · 16:35 Iglesia del Gesù · 17:00 Iglesia de Santa Maria sopra Minerva · 17:15 Elefantino de Bernini · 17:30 Panteón · 18:05 Iglesia de San Luigi dei Francesi · 18:30 Piazza Navona · 19:05 Campo de' Fiori · 20:15 Ponte Sisto 🌅 · 21:15 🍷 Pizzeria Da Baffetto · 23:00 Fontana de Trevi (noche) 🌙 · libre 25
 
-## cierre 16: 3 días · completo · naturaleza_vistas · desde el 2027-06-23 — v4 igual (0 → 0)
+## cierre 16: 3 días · naturaleza_vistas · desde el 2027-06-23 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -543,7 +540,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo · 12:10 Terraza del Pincio · 13:00 🍝 Edy · 14:30 Parque de Villa Borghese · 16:30 Iglesia de Santa Maria della Vittoria · 17:15 Basílica de Santa María la Mayor · 18:00 Iglesia de San Pietro in Vincoli · 18:25 Monti · 20:20 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 25 · libre 20
   - v4: [D4M D+naturaleza_vistas] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Girarrosto Fiorentino · 15:35 Basílica de San Juan de Letrán · 16:30 Basílica de Santa María la Mayor · 17:10 Iglesia de San Pietro in Vincoli · 17:40 Mercados de Trajano · 18:40 Monti · 20:30 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙 · libre 40
 
-## cierre 17: 3 días · completo · Free Tour · desde el 2027-07-02 — v4 igual (0 → 0)
+## cierre 17: 3 días · Free Tour · desde el 2027-07-02 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -555,7 +552,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Mercados de Trajano · 19:10 Monti · 20:20 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 20
   - v4: [D5C D+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 20:30 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙
 
-## cierre 18: 4 días · tranquilo · desde el 2027-07-08 — v4 igual (0 → 0)
+## cierre 18: 4 días · desde el 2027-07-08 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -570,7 +567,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Mercados de Trajano · 19:10 Monti · 20:20 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 20
   - v4: [D5C D+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 20:30 Via dei Fori Imperiali 🌅 · 21:15 🍷 La Boccaccia · 23:00 Coliseo (noche) 🌙
 
-## cierre 19: 3 días · completo · desde el 2027-07-24 — v4 igual (0 → 0)
+## cierre 19: 3 días · desde el 2027-07-24 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1 sabado] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Enoteca Corsi · 15:15 Panteón · 15:50 Elefantino de Bernini · 16:05 Iglesia de Santa Maria sopra Minerva · 16:35 Iglesia de San Luigi dei Francesi · 17:00 Piazza Navona · 17:40 Largo di Torre Argentina · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -582,7 +579,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo (fuera) · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:20 Fontana dell'Acqua Paola · 20:10 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
   - v4: [D4M D+lunes] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo · 11:45 Terraza del Pincio · 12:20 Un paseo por Villa Borghese · 13:00 🍝 Edy · 15:20 Basílica de San Juan de Letrán · 16:15 Basílica de Santa María la Mayor · 16:55 Iglesia de San Pietro in Vincoli · 17:25 Mercados de Trajano · 18:25 Monti · 20:15 Via dei Fori Imperiali 🌅 · 21:00 🍷 La Boccaccia · 22:30 Coliseo (noche) 🌙 · libre 25
 
-## cierre 20: 2 días · completo · desde el 2027-08-07 — v4 igual (0 → 0)
+## cierre 20: 2 días · desde el 2027-08-07 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Borgo Pio · 15:30 Via della Conciliazione · 15:50 Puente Sant'Angelo · 16:10 Castillo de Sant'Angelo · 18:00 Iglesia de Santa Maria in Trastevere · 18:25 Trastevere · 19:20 San Pietro in Montorio y Tempietto de Bramante (fuera) · 19:35 Fontana dell'Acqua Paola · 20:15 Mirador del Janículo 🌅 · 21:15 🍷 Tonnarello · 22:30 Trastevere de noche 🌙
@@ -591,7 +588,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 D+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 15:05 Barrio Judío · 15:35 Fuente de las Tortugas · 15:50 Largo di Torre Argentina · 16:10 Iglesia del Gesù · 16:35 Iglesia de Santa Maria sopra Minerva · 16:50 Elefantino de Bernini · 17:05 Panteón · 17:40 Iglesia de San Luigi dei Francesi · 18:05 Piazza Navona · 18:40 Campo de' Fiori · 19:45 Ponte Sisto 🌅 · 20:45 🍷 Pizzeria Da Baffetto · 22:30 Fontana de Trevi (noche) 🌙
 
-## cierre 21: 5 días · completo · Free Tour · desde el 2027-08-23 — v4 igual (0 → 0)
+## cierre 21: 5 días · Free Tour · desde el 2027-08-23 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:15 🍷 Il Sorpasso · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -609,7 +606,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 17:55 Monti · 19:25 Via dei Fori Imperiali 🌅 · 20:30 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C D] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:30 Basílica de San Clemente · 15:30 Basílica de San Juan de Letrán · 16:25 Basílica de Santa María la Mayor · 17:05 Iglesia de San Pietro in Vincoli · 17:35 Mercados de Trajano · 19:00 Monti · 19:50 Via dei Fori Imperiali 🌅 · 20:30 🍷 Trattoria Valentino · 22:00 Coliseo (noche) 🌙
 
-## cierre 22: 3 días · completo · barrios_sabores · desde el 2027-09-03 — v4 igual (0 → 0)
+## cierre 22: 3 días · barrios_sabores · desde el 2027-09-03 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -621,7 +618,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Basílica de Santa María la Mayor · 18:15 Iglesia de San Pietro in Vincoli · 18:40 Monti · 19:30 Via dei Fori Imperiali 🌅 · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M D+domingo+luz:C→D] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de San Juan de Letrán · 15:35 Basílica de Santa María la Mayor · 16:15 Iglesia de San Pietro in Vincoli · 16:45 Mercados de Trajano · 17:45 Monti · 19:20 Via dei Fori Imperiali 🌅 · 20:30 🍷 La Boccaccia · 22:00 Coliseo (noche) 🌙 · 🍸 25 min
 
-## cierre 23: 3 días · completo · Free Tour · arte_museos · desde el 2027-09-10 — v4 igual (0 → 0)
+## cierre 23: 3 días · Free Tour · arte_museos · desde el 2027-09-10 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -633,7 +630,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4 con_free_tour+domingo] 09:00 Iglesia de Santa Maria della Vittoria · 09:30 Fuente del Tritón · 09:50 Via Veneto · 10:05 Porta Pinciana · 11:00 Galería Borghese · 13:00 🍝 Poldo e Gianna Osteria · 14:45 Via del Babuino · 15:00 Via Margutta · 15:25 Parque de Villa Borghese · 16:15 Piazza del Popolo · 16:35 Santa Maria del Popolo · 17:10 Los jardines del Pincio hasta el atardecer · 19:05 Terraza del Pincio 🌅 · 20:00 🍷 Sgarro Bistrot · 21:30 Plaza de España (noche) 🌙 · libre 20 · libre 20
   - v4: [D4 C+con_free_tour+domingo] 08:45 Puente Sant'Angelo · 09:00 Castillo de Sant'Angelo · 11:00 Galería Borghese · 13:15 🍝 Girarrosto Fiorentino · 15:10 Ara Pacis · 16:00 Via Margutta y Via del Babuino · 16:35 Piazza del Popolo · 16:50 Santa Maria del Popolo · 17:35 El lago de Villa Borghese · 18:35 Jardines del Pincio · 19:05 Terraza del Pincio 🌅 · 20:00 🍷 Sgarro Bistrot · 21:30 Plaza de España (noche) 🌙 · libre 20
 
-## cierre 24: 2 días · completo · desde el 2027-09-28 — v4 igual (0 → 0)
+## cierre 24: 2 días · desde el 2027-09-28 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -642,7 +639,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D2 invierno+miercoles] 08:00 Museos Vaticanos y Capilla Sixtina · 11:10 Borgo Pio · 11:30 Puente Sant'Angelo · 11:50 Castillo de Sant'Angelo · 13:15 🍝 Borghiciana Pastificio Artigianale · 14:45 Plaza de San Pedro · 15:20 Cúpula de San Pedro · 16:05 Basílica de San Pedro · 17:45 Iglesia de Santa Maria in Trastevere · 18:35 Mirador del Janículo 🌅 · 19:45 Fontana dell'Acqua Paola · 20:05 San Pietro in Montorio y Tempietto de Bramante (fuera) · 20:30 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
   - v4: [D2 C+miercoles] 08:00 Museos Vaticanos y Capilla Sixtina · 11:10 Borgo Pio · 11:30 Puente Sant'Angelo · 11:45 Castillo de Sant'Angelo · 13:15 🍝 Borghiciana Pastificio Artigianale · 14:40 Plaza de San Pedro · 15:05 Basílica de San Pedro · 16:35 Iglesia de Santa Maria in Trastevere · 17:00 Trastevere · 17:50 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:05 Fontana dell'Acqua Paola · 18:35 Mirador del Janículo 🌅 · 19:30 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
 
-## cierre 25: 4 días · completo · naturaleza_vistas · desde el 2027-10-01 — v4 igual (0 → 0)
+## cierre 25: 4 días · naturaleza_vistas · desde el 2027-10-01 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙
@@ -657,7 +654,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 16:00 Basílica de Santa María la Mayor · 16:45 Iglesia de San Pietro in Vincoli · 17:10 Monti · 18:20 Via dei Fori Imperiali 🌅 · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙 · 🍸 50 min · libre 20
   - v4: [D5C C] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:00 Basílica de San Juan de Letrán · 15:55 Basílica de Santa María la Mayor · 16:35 Iglesia de San Pietro in Vincoli · 17:05 Mercados de Trajano · 18:30 Via dei Fori Imperiali 🌅 · 19:30 🍷 Trattoria Valentino · 21:30 Coliseo (noche) 🌙
 
-## cierre 26: 3 días · completo · desde el 2027-10-29 — v4 igual (0 → 0)
+## cierre 26: 3 días · desde el 2027-10-29 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -669,7 +666,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Iglesia de San Pietro in Vincoli · 18:05 Basílica de Santa María la Mayor · 19:00 Roma iluminada desde los Foros · 19:30 Monti · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M A+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de Santa María la Mayor · 15:20 Iglesia de San Pietro in Vincoli · 15:45 Monti · 16:50 Via dei Fori Imperiali 🌅 · 17:30 Mercados de Trajano · 18:45 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 40 min
 
-## cierre 27: 3 días · completo · Free Tour · desde el 2027-11-12 — v4 igual (0 → 0)
+## cierre 27: 3 días · Free Tour · desde el 2027-11-12 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -681,7 +678,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Roma iluminada desde los Foros · 18:30 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Iglesia de San Pietro in Vincoli · 16:35 Via dei Fori Imperiali 🌅 · 17:15 Mercados de Trajano · 18:30 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 55 min
 
-## cierre 28: 2 días · completo · desde el 2027-11-27 — v4 igual (0 → 0)
+## cierre 28: 2 días · desde el 2027-11-27 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D2 invierno] 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:50 Cúpula de San Pedro · 12:35 Basílica de San Pedro · 14:00 🍝 Borghiciana Pastificio Artigianale · 15:15 Via della Conciliazione · 15:35 Puente Sant'Angelo · 15:55 Castillo de Sant'Angelo (fuera) · 16:30 Mirador del Janículo 🌅 · 17:30 Fontana dell'Acqua Paola · 17:50 San Pietro in Montorio y Tempietto de Bramante (fuera) · 18:10 Iglesia de Santa Maria in Trastevere · 18:35 Trastevere · 20:00 🍷 Tonnarello · 21:30 Trastevere de noche 🌙
@@ -690,7 +687,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
   - v4: [D1 A+domingo] 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 13:30 🍝 Nonna Betta · 14:50 Barrio Judío · 15:20 Fuente de las Tortugas · 15:35 Largo di Torre Argentina · 16:00 Iglesia del Gesù · 16:30 Iglesia de Santa Maria sopra Minerva · 16:45 Elefantino de Bernini · 16:55 Panteón · 17:35 Iglesia de San Luigi dei Francesi · 17:55 Piazza Navona · 18:35 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙 · 🍸 45 min
 
-## cierre 29: 3 días · completo · desde el 2027-12-10 — v4 igual (0 → 0)
+## cierre 29: 3 días · desde el 2027-12-10 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D1] 08:30 Coliseo · 10:05 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:15 Plaza del Campidoglio · 12:40 Plaza Venecia · 12:55 Altar de la Patria · 13:45 🍝 Giggetto al Portico d'Ottavia · 15:15 Barrio Judío · 15:50 Fuente de las Tortugas · 16:05 Largo di Torre Argentina · 16:30 Panteón · 17:05 Elefantino de Bernini · 17:20 Iglesia de Santa Maria sopra Minerva · 17:50 Iglesia de San Luigi dei Francesi · 18:15 Piazza Navona · 18:55 Campo de' Fiori · 20:00 🍷 Pizzeria Da Baffetto · 21:30 Fontana de Trevi (noche) 🌙 · 22:25 Plaza de España (noche) 🌙
@@ -702,7 +699,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Iglesia de San Pietro in Vincoli · 18:05 Basílica de Santa María la Mayor · 19:00 Roma iluminada desde los Foros · 19:30 Monti · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M A+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:40 Via del Babuino · 11:00 Piazza del Popolo · 11:15 Santa Maria del Popolo (fuera) · 11:30 Terraza del Pincio · 12:05 Un paseo por Villa Borghese · 12:45 🍝 Girarrosto Fiorentino · 14:40 Basílica de Santa María la Mayor · 15:20 Iglesia de San Pietro in Vincoli · 15:45 Monti · 16:20 Via dei Fori Imperiali 🌅 · 17:05 Mercados de Trajano · 18:15 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 70 min
 
-## cierre 30: 5 días · tranquilo · Free Tour · desde el 2027-12-13 — v4 igual (0 → 0)
+## cierre 30: 5 días · Free Tour · desde el 2027-12-13 — v4 igual (0 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:15 🍷 Il Sorpasso · 21:30 Puente Sant'Angelo (noche) 🌙
