@@ -960,7 +960,9 @@ export function DayDetailPanel({
         }
       }
       if (dinnerInsertionIndex === index && !freeDay) {
-        const hasFree = dinnerFreeMinutes(index) !== null
+        // (Con aperitivo del motor, su tarjeta sale siempre, aunque el rato sea corto: la cena dice «desde el aperitivo» y
+        // tiene que verse de dónde. PROMPT_UI_REPASO_4, 4.)
+        const hasFree = dinnerFreeMinutes(index) !== null || Boolean(day.aperitivo)
         // (Con aperitivo, su hueco va delante del aperitivo; la cena lleva el suyo, como una parada.)
         if (hasFree) timeline.push({ type: 'mealGap', index })
         if (hasFree) timeline.push({ type: 'dinnerFree', index })
@@ -1066,8 +1068,7 @@ export function DayDetailPanel({
     if (item.type === 'lunch') {
       const index = item.index
       return (
-        <SortableStop key={`lunch-${index}`} id={MEAL_DRAG_ID.lunch} label="Mover la comida">
-          {renderMealGap(index + 1)}
+        <SortableStop key={`lunch-${index}`} id={MEAL_DRAG_ID.lunch} label="Mover la comida" gap={renderMealGap(index + 1)}>
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -1132,8 +1133,7 @@ export function DayDetailPanel({
     if (item.type === 'dinner') {
       const index = item.index
       return (
-        <SortableStop key={`dinner-${index}`} id={MEAL_DRAG_ID.dinner} label="Mover la cena">
-          {renderMealGap(index + 1)}
+        <SortableStop key={`dinner-${index}`} id={MEAL_DRAG_ID.dinner} label="Mover la cena" gap={renderMealGap(index + 1)}>
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -1164,11 +1164,15 @@ export function DayDetailPanel({
     const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
-      <SortableStop key={stop.id} id={realStop?.id ?? stop.id} disabled={Boolean(realStop?.isZoneWalk)}>
+      <SortableStop
+        key={stop.id}
+        id={realStop?.id ?? stop.id}
+        disabled={Boolean(realStop?.isZoneWalk)}
+        // El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector` decide solo si además lleva
+        // el trayecto. Un paseo quitado no deja ni rastro. (Fuera de la tarjeta: el asa, centrada en ella.)
+        gap={walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
+      >
         <div data-stop-id={realStop?.id ?? stop.id}>
-          {/* El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector`
-              decide solo si además lleva el trayecto. Un paseo quitado no deja ni rastro. */}
-          {walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
           {realStop?.isZoneWalk ? (
             walkDismissed ? null : (
               <ZoneWalkCard stop={stop} startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)} onDismiss={() => setDismissedWalks((prev) => new Set(prev).add(stop.name))} />
@@ -1207,7 +1211,8 @@ export function DayDetailPanel({
         {/* Las cifras del día (PROMPT_UI_REPASO 5): tres en fila, separadas por una línea fina, el número en Instrument Serif y
             la palabra debajo en mono; sin iconos ni caja, centradas. */}
         {showsRoute && stops.length > 0 && (
-          <div className="flex items-stretch justify-center pt-2">
+          // (20 px hasta lo siguiente: PROMPT_UI_REPASO_4, 1.)
+          <div className="mb-5 flex items-stretch justify-center pt-2">
             {[
               { value: String(visitCount), label: visitCount === 1 ? 'parada' : 'paradas' },
               { value: formatWalkKm(totalWalkMeters).replace(' km', ''), label: 'km a pie' },

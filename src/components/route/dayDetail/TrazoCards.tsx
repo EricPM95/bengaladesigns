@@ -79,7 +79,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
   const body = (
     <>
       {/* Franja de color con el icono + la foto en paralelogramo (diseño "Trazo Itinerario"). */}
-      <div className="relative w-[104px] shrink-0 overflow-hidden rounded-l-[17px] max-[479px]:w-[84px]" style={{ marginRight: -14 }}>
+      {/* (La zona de la foto, el doble de ancha: 208 px, 168 en el móvil. PROMPT_UI_REPASO_4, 3.) */}
+      <div className="relative w-[208px] shrink-0 overflow-hidden rounded-l-[17px] max-[479px]:w-[168px]" style={{ marginRight: -14 }}>
         <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0, 58px 0, 32px 100%, 0 100%)', background: panel }} />
         <span className="absolute bottom-0 left-0 top-0 flex w-9 items-center justify-center text-white">
           <Icon d={iconPath ?? style.icon} size={20} />
@@ -90,12 +91,12 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
         {time && (
-          <span className="font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[11px]" style={{ color: timeColor }}>
+          <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
             {time}
           </span>
         )}
-        {/* El nombre en una línea si cabe; si no, la tarjeta crece (nunca se corta). */}
-        <span className="line-clamp-2 font-display text-[17px] leading-[1.12] [overflow-wrap:anywhere]">{name}</span>
+        {/* El nombre en una línea si cabe; si no, en las que haga falta: la tarjeta crece y nunca se corta. */}
+        <span className="font-display text-[17px] leading-[1.12] [overflow-wrap:anywhere]">{name}</span>
         {sub && (
           <span title={sub} className={`line-clamp-2 text-[11px] leading-[1.3] max-[479px]:text-[12px] ${night ? '' : 'text-text/60'}`} style={{ color: ink2 }}>
             {sub}
@@ -167,9 +168,9 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
 export function PeriodHeader({ period, range }: { period: DayPeriod; range?: string | null }) {
   const style = PERIOD_STYLE[period]
   return (
-    // (28 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
-    // franja: PROMPT_UI_REPASO_3, 2.)
-    <div className="mb-3 mt-[28px] flex items-center gap-2 pl-0.5">
+    // (40 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
+    // franja: PROMPT_UI_REPASO_4, 2.)
+    <div className="mb-3 mt-[40px] flex items-center gap-2 pl-0.5">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>

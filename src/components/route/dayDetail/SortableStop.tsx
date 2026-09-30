@@ -14,7 +14,11 @@ import { CSS } from '@dnd-kit/utilities'
  * que valga en un dedo). `touch-none` es obligatorio: sin él, el navegador se queda el gesto para
  * hacer scroll y el arrastre no llega a empezar.
  */
-export function SortableStop({ id, disabled, label = 'Mover esta parada', children }: { id: string; disabled?: boolean; label?: string; children: ReactNode }) {
+/**
+ * `gap`: el hueco de antes (el trayecto y «+ Añadir parada»), fuera de la tarjeta: el asa va centrada en la tarjeta, nunca
+ * al lado de un hueco vacío, donde se leía como unos puntitos sueltos (PROMPT_UI_REPASO_4, 4).
+ */
+export function SortableStop({ id, disabled, label = 'Mover esta parada', gap, children }: { id: string; disabled?: boolean; label?: string; gap?: ReactNode; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id, disabled })
 
   return (
@@ -23,6 +27,8 @@ export function SortableStop({ id, disabled, label = 'Mover esta parada', childr
       style={{ transform: CSS.Translate.toString(transform), transition }}
       className={`group relative ${isDragging ? 'z-10 opacity-60' : ''}`}
     >
+      {gap}
+      <div className="relative">
       {!disabled && (
         <button
           ref={setActivatorNodeRef}
@@ -31,12 +37,13 @@ export function SortableStop({ id, disabled, label = 'Mover esta parada', childr
           {...listeners}
           aria-label={label}
           title={label}
-          className="absolute -left-[27px] bottom-[44px] z-10 flex h-7 w-[22px] cursor-grab touch-none items-center justify-center rounded-md bg-bg-card text-text/40 opacity-0 transition-opacity hover:text-text-soft focus-visible:opacity-100 group-hover:opacity-100 active:cursor-grabbing max-[768px]:opacity-60"
+          className="absolute -left-[27px] top-1/2 z-10 -translate-y-1/2 flex h-7 w-[22px] cursor-grab touch-none items-center justify-center rounded-md bg-bg-card text-text/40 opacity-0 transition-opacity hover:text-text-soft focus-visible:opacity-100 group-hover:opacity-100 active:cursor-grabbing max-[768px]:opacity-60"
         >
           <GripIcon />
         </button>
       )}
       {children}
+      </div>
     </div>
   )
 }

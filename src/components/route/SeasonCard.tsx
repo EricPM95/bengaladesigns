@@ -247,7 +247,7 @@ export function SeasonCard({ route }: { route: Route }) {
               </div>
             </>
           )}
-          <p className="absolute inset-x-0 top-16 text-center font-mono text-[11px] font-medium uppercase tracking-[.2em]" style={{ color: scene.eyebrow }}>
+          <p className="absolute inset-x-0 top-16 whitespace-nowrap text-center font-mono text-[11px] font-medium uppercase tracking-[.2em] max-[420px]:text-[10px] max-[420px]:tracking-[.1em]" style={{ color: scene.eyebrow }}>
             Hemos preparado tu viaje para estas fechas
           </p>
           <h2
