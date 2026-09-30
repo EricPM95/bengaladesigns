@@ -7,7 +7,7 @@ interface ContextBannerProps {
 
 /**
  * Banner de contexto (decisión del 2026-09-26): uno solo, encima del Día 1, que explica por qué la ruta
- * es como es (invierno, pocos días, ritmo tranquilo). El texto lo elige y rellena el motor a partir de
+ * es como es (invierno, pocos días). El texto lo elige y rellena el motor a partir de
  * las plantillas del JSON del destino; aquí solo se pinta. Se cierra con la X y no vuelve a salir en ese
  * viaje: la marca va en la ruta (`contextBannerDismissed`), no en el estado del componente.
  */

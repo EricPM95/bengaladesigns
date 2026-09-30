@@ -226,7 +226,6 @@ export function DevQuickRouteScreen() {
           experiences: [],
           experiencesPositive: ['imprescindibles'],
           experiencesNegative: [],
-          pace: 'balanced',
           chronotype: 'normal',
           budgetLevel: 'comfortable',
         },

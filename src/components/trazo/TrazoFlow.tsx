@@ -7,7 +7,6 @@ import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
-import { SINGLE_PACE } from '../../lib/singleRoute'
 import { seasonOfMonth } from '../../lib/season'
 import { useRouteGeneration } from '../../lib/useRouteGeneration'
 import type { ConfirmedRoute } from '../destination/RouteSearch'
@@ -24,7 +23,6 @@ import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import './trazo.css'
 
-// (Sin «Ritmo»: hay una sola ruta, PROMPT_QUITAR_RITMOS. StepPace.tsx se queda sin usar.)
 const STEP_NAMES = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Experiencias', 'Lugares']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -110,7 +108,7 @@ export function TrazoFlow() {
       // Mismo destino, otro origen: el transporte hay que volver a decidirlo.
       state.setTransportOption(null)
     }
-    updateAnswers({ origin: origin.name, originPlace: origin, pace: SINGLE_PACE })
+    updateAnswers({ origin: origin.name, originPlace: origin })
     setProg(0)
     go(1)
   }
@@ -122,7 +120,7 @@ export function TrazoFlow() {
     state.setArchetype('roadtrip_exclusivo', true)
     state.setKnownCamperAccess(route.camperAccess)
     suggestExperiencesInBackground(route.name)
-    updateAnswers({ origin: origin.name, originPlace: origin, pace: SINGLE_PACE })
+    updateAnswers({ origin: origin.name, originPlace: origin })
     setDest(route.startPlace)
     setProg(0)
     go(1)

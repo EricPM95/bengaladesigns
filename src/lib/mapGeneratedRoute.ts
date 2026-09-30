@@ -182,8 +182,8 @@ export interface GeneratedDay {
   excursion_social_proof?: string | null
   beyond_auto_days?: boolean
   max_auto_days?: number | null
-  /** Motor v3: el día pasó al horario normal para no perder un imprescindible — ver DayPlan.paceNotice. */
-  pace_notice?: string | null
+  /** El día empieza antes de su hora para no perder un imprescindible — ver DayPlan.dayNotice. */
+  day_notice?: string | null
   /** Motor v3: traslados largos del día (más de 25 min andando), uno por línea — ver DayPlan.transferNotice. */
   transfer_notice?: string | null
   /** Motor v3, solo en el primer día de ciudad: el banner de contexto de toda la ruta. */
@@ -705,7 +705,7 @@ function mapDay(
           routeStartsAt: generated.half_day_excursion.route_starts_at,
         }
       : null,
-    paceNotice: generated.pace_notice ?? null,
+    dayNotice: generated.day_notice ?? null,
     transferNotice: generated.transfer_notice ?? null,
     dinnerWalkMinutes: generated.dinner_walk_minutes ?? null,
     excursionEssential: generated.excursion_essential,
@@ -831,7 +831,7 @@ export function mapGeneratedRouteToRoute(
     answers,
     transportContext,
     budget: mapBudget(generated.estimated_budget),
-    intensity: answers.pace === 'zen' ? 1 : answers.pace === 'nonstop' ? 5 : 3,
+    intensity: 5,
     createdAt: new Date().toISOString(),
     defaultTransport: generated.default_transport,
     anchorNames,

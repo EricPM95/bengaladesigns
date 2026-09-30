@@ -1,4 +1,4 @@
-import type { Coordinates, DidntMakeCutItem, Route, Stop, TripPace } from './types'
+import type { Coordinates, DidntMakeCutItem, Route, Stop } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 import { nextOpenSlotMinutes } from './stopHoursTag'
@@ -16,35 +16,14 @@ import { minutesToTime, roundToNearestQuarterHour, roundUpToQuarterHour } from '
  * por el ritmo elegido de antemano.
  */
 
-/**
- * Hora de inicio de la PRIMERA parada del día, según el RITMO elegido (ya no el cronotipo — decisión
- * explícita del usuario: el ritmo manda sobre la hora de inicio, el cronotipo deja de influir en
- * ella aunque la pregunta se siga usando para dar tono al contenido que sugiere Claude). Completo
- * siempre arranca a las 08:00 para aprovechar el día entero; Tranquilo arranca a las 10:00, sin prisa
- * (balanced comparte el mismo valor que zen — ambos son variantes de "Tranquilo" en el backend, ver
- * PACE_LABEL en server/index.js). Sin calcular ningún traslado desde el alojamiento: el viajero
- * decide cómo/cuándo llegar hasta ahí por su cuenta (Modo Hoy ya se encarga de readaptar todo en
- * tiempo real si va desajustado).
- */
-export const PACE_START_MINUTES: Record<TripPace, number> = {
-  zen: 10 * 60, // 10:00
-  balanced: 10 * 60, // 10:00
-  nonstop: 8 * 60, // 08:00
-}
+/** Hora de inicio de la primera parada del día: las 08:00. El viajero decide cómo y cuándo llegar hasta ahí (Modo Hoy readapta el día en tiempo real si va desajustado). */
+export const DAY_START_MINUTES = 8 * 60
 
-/** Colchón (minutos) entre el fin de una parada y el inicio de la siguiente, además del tiempo a pie real — más margen cuanto más "zen" el ritmo elegido. */
-export const PACE_BUFFER_MINUTES: Record<TripPace, number> = {
-  zen: 30,
-  balanced: 20,
-  nonstop: 10,
-}
+/** Colchón (minutos) entre el fin de una parada y el inicio de la siguiente, además del tiempo a pie real. */
+export const STOP_BUFFER_MINUTES = 10
 
-/** Fin de la ventana activa del día según el ritmo — a partir de aquí no se añaden más paradas (recorte, ver `overflow`), salvo la primera del día (esa nunca se descarta aunque el cronotipo ya la deje tarde). */
-export const PACE_DAY_END_MINUTES: Record<TripPace, number> = {
-  zen: 19 * 60, // 19:00
-  balanced: 20 * 60, // 20:00
-  nonstop: 21 * 60 + 30, // 21:30
-}
+/** Fin de la ventana activa del día: a partir de aquí no se añaden más paradas (recorte, ver `overflow`), salvo la primera del día. */
+export const DAY_END_MINUTES = 21 * 60 + 30
 
 /** Minutos a pie de reserva cuando falta alguna coordenada real (parada de plantilla) o Mapbox no responde — mismo valor que el resto del cálculo horario de la app (DayDetailPanel.tsx/useRouteStore.ts). */
 export const DEFAULT_WALK_MINUTES = 15
@@ -52,7 +31,7 @@ export const DEFAULT_WALK_MINUTES = 15
 /**
  * Colchón real de comida (BLOQUE A2 del feedback de calidad) — cuando el hueco entre el fin de una
  * parada y el inicio de la siguiente cruza la hora de comer/cenar, el colchón genérico de
- * PACE_BUFFER_MINUTES (10-30min) se queda corto: no hay tiempo real de sentarse a comer. Se reserva
+ * STOP_BUFFER_MINUTES se queda corto: no hay tiempo real de sentarse a comer. Se reserva
  * como mucho UNA vez por comida y por día (ver lunchReserved/dinnerReserved en
  * computeRealStopSchedule) — el resto de huecos del día siguen usando el colchón genérico.
  * 30min de traslado + 75min de comida real + 30min de traslado a la siguiente parada = 135min, que
@@ -93,18 +72,17 @@ export interface StopScheduleResult {
  * Recalcula el horario real de las paradas de UN día, en su orden actual (el orden/contenido ya
  * decidido por Claude o por el viajero no cambia, solo la HORA). `firstStopStartMinutes` fija la
  * hora de la primera parada (cronotipo, o transporte real para día 1/último día); `dayEndMinutes`
- * por defecto es el de `PACE_DAY_END_MINUTES` según el ritmo, pero `optimizeDayWithRealTransport` lo
+ * por defecto es `DAY_END_MINUTES`, pero `optimizeDayWithRealTransport` lo
  * sobrescribe con la hora real de salida para el último día.
  */
 export async function computeRealStopSchedule(
   stops: Stop[],
   firstStopStartMinutes: number,
-  pace: TripPace,
-  dayEndMinutes: number = PACE_DAY_END_MINUTES[pace],
+  dayEndMinutes: number = DAY_END_MINUTES,
 ): Promise<StopScheduleResult> {
   if (stops.length === 0) return { scheduled: [], overflow: [] }
 
-  const bufferMinutes = PACE_BUFFER_MINUTES[pace]
+  const bufferMinutes = STOP_BUFFER_MINUTES
   const scheduled: Stop[] = []
   let cursor = firstStopStartMinutes
   let previous: Stop | null = null
@@ -179,12 +157,12 @@ export function overflowToDidntMakeCut(overflow: Stop[]): DidntMakeCutItem[] {
  * RESERVAS); en cuanto lo hace, `optimizeDayWithRealTransport` vuelve a calcular solo ese día con la
  * hora real. Los días sin paradas (de plantilla, o el sintético de vuelta) se dejan tal cual.
  */
-export async function applyRealStopSchedule(route: Route, pace: TripPace): Promise<Route> {
-  const firstStopStartMinutes = PACE_START_MINUTES[pace] ?? PACE_START_MINUTES.balanced
+export async function applyRealStopSchedule(route: Route): Promise<Route> {
+  const firstStopStartMinutes = DAY_START_MINUTES
   const days = await Promise.all(
     route.days.map(async (day) => {
       if (day.stops.length === 0) return day
-      const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes, pace)
+      const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes)
       if (overflow.length === 0) return { ...day, stops: scheduled }
       return { ...day, stops: scheduled, didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
     }),
@@ -205,11 +183,10 @@ export async function optimizeDayWithRealTransport(
   day: { stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] },
   kind: 'arrival' | 'departure',
   flightTimeMinutes: number,
-  pace: TripPace,
 ): Promise<{ stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }> {
-  const firstStopStartMinutes = kind === 'arrival' ? flightTimeMinutes + REAL_TRANSPORT_TRANSFER_MINUTES : PACE_START_MINUTES[pace]
+  const firstStopStartMinutes = kind === 'arrival' ? flightTimeMinutes + REAL_TRANSPORT_TRANSFER_MINUTES : DAY_START_MINUTES
   const dayEndMinutes = kind === 'departure' ? flightTimeMinutes - REAL_TRANSPORT_TRANSFER_MINUTES : undefined
-  const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes, pace, dayEndMinutes)
+  const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes, dayEndMinutes)
   if (overflow.length === 0) return { ...day, stops: scheduled }
   return { ...day, stops: scheduled, didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
 }

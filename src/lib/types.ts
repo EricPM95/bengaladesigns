@@ -120,8 +120,6 @@ export interface PlaceCandidate {
   isMainAttraction: boolean
 }
 
-export type TripPace = 'zen' | 'balanced' | 'nonstop'
-
 export type Chronotype = 'sunrise' | 'normal' | 'nightowl'
 
 export type BudgetLevel = 'backpacker' | 'comfortable' | 'treatMyself'
@@ -161,7 +159,6 @@ export interface QuestionnaireAnswers {
   experiencesPositive: ExperienceCategoryId[]
   /** Categorías en "No me lo recomiendes" (máx. 2, nunca incluye 'imprescindibles'). */
   experiencesNegative: ExperienceCategoryId[]
-  pace: TripPace
   chronotype: Chronotype
   budgetLevel: BudgetLevel
 }
@@ -625,11 +622,10 @@ export interface DayPlan {
   /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
   excursionDeclined?: boolean
   /**
-   * Por qué este día empieza antes de lo que dice el ritmo ("Hoy empezamos a las 08:00 para que te
-   * dé tiempo a ver X"). Solo cuando un imprescindible no cabía con el horario del ritmo tranquilo y
-   * el motor pasó ese día al horario normal. Null en el resto.
+   * Por qué este día empieza antes de su hora ("Hoy empezamos a las 07:30 para que te dé tiempo a
+   * ver X"). Null en el resto.
    */
-  paceNotice?: string | null
+  dayNotice?: string | null
   /** Motor v3: traslado de más de 25 min andando entre la mañana y la tarde, con cómo moverse. */
   transferNotice?: string | null
   /** Minutos andando desde la última visita hasta el sitio de la cena (motor v3). Sirve para saber cuánto tiempo LIBRE queda antes de cenar, ver FreeTimeBlock. */

@@ -1,4 +1,4 @@
-import type { ExperienceId, Route, TripPace } from './types'
+import type { ExperienceId, Route } from './types'
 import { EXPERIENCE_BANK } from './experienceBank'
 import { buildDestinationSegments } from './destinationSegments'
 import type { MockStopDetail } from './mockDayDetail'
@@ -94,24 +94,18 @@ export interface PoolPlaceStatus extends PoolPlace {
   reason: string | null
 }
 
-const PACE_LABEL: Record<TripPace, string> = { zen: 'ritmo tranquilo', balanced: 'ritmo equilibrado', nonstop: 'ritmo sin parar' }
-
 /**
- * Motivo específico cuando se puede calcular a partir del contexto real de la ruta (ritmo elegido
- * + ciudad desde la que se llega a `city`, ej. "No entra con tu ritmo tranquilo desde Roma") — el
- * motivo genérico ya generado en `place.reason` sirve de respaldo cuando no hay ritmo conocido o
- * la ciudad no tiene una anterior (primer destino del viaje).
+ * Motivo específico cuando se puede calcular a partir del contexto real de la ruta (la ciudad desde
+ * la que se llega a `city`, ej. "No entra en el día viniendo desde Roma") — el motivo genérico ya
+ * generado en `place.reason` sirve de respaldo cuando la ciudad no tiene una anterior (primer
+ * destino del viaje).
  */
 function specificReason(route: Route, city: string): string | null {
-  const pace = route.answers.pace
-  if (!pace) return null
   const segments = buildDestinationSegments(route.days)
   const segmentIndex = segments.findIndex((segment) => segment.city === city)
   if (segmentIndex <= 0) return null
   const previousCity = segments[segmentIndex - 1].city
   if (previousCity === city) return null
-  // (Sin ritmos, PROMPT_QUITAR_RITMOS: ya no se nombra el ritmo.)
-  void PACE_LABEL
   return `No entra en el día viniendo desde ${previousCity}.`
 }
 

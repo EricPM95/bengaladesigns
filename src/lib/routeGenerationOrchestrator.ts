@@ -1,4 +1,3 @@
-import { SINGLE_PACE } from './singleRoute'
 import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTransport } from './types'
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
@@ -127,7 +126,6 @@ interface RouteCacheEntry {
   id: string
   days: number
   experiences: string[]
-  pace: string
   route_data: GeneratedRouteResponse
 }
 
@@ -137,9 +135,9 @@ interface RouteCacheLookupResponse {
   entry: RouteCacheEntry | null
 }
 
-async function lookupRouteCache(destination: string, days: number, experiences: string[], pace: string): Promise<RouteCacheLookupResponse> {
+async function lookupRouteCache(destination: string, days: number, experiences: string[]): Promise<RouteCacheLookupResponse> {
   try {
-    return await postJson<RouteCacheLookupResponse>('/api/route-cache/lookup', { destination, days, experiences, pace })
+    return await postJson<RouteCacheLookupResponse>('/api/route-cache/lookup', { destination, days, experiences })
   } catch {
     return { level: 'none', match_pct: 0, entry: null }
   }
@@ -150,8 +148,8 @@ function touchRouteCache(id: string): void {
   postJson('/api/route-cache/touch', { id }).catch(() => {})
 }
 
-function saveRouteCache(destination: string, days: number, experiences: string[], pace: string, routeData: GeneratedRouteResponse): void {
-  postJson('/api/route-cache/save', { destination, days, experiences, pace, route_data: routeData }).catch(() => {})
+function saveRouteCache(destination: string, days: number, experiences: string[], routeData: GeneratedRouteResponse): void {
+  postJson('/api/route-cache/save', { destination, days, experiences, route_data: routeData }).catch(() => {})
 }
 
 interface RegenerateExperiencesResponse {
@@ -271,7 +269,7 @@ async function applyMediumMatchRedistribute(
  */
 async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnCheckpoint): Promise<Route | null> {
   const { destination, answers, transportContext } = params
-  const lookup = await lookupRouteCache(destination, answers.days, routeCacheExperiences(answers), SINGLE_PACE)
+  const lookup = await lookupRouteCache(destination, answers.days, routeCacheExperiences(answers))
   if (lookup.level === 'none' || !lookup.entry) return null
   // El pipeline de redistribución cubre TODOS los días en una sola llamada (ver el límite en
   // regenerate-route-redistribute) — para un viaje más largo no compensa el riesgo, se cae al
@@ -311,7 +309,7 @@ async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnChec
   // recomendación seguía siendo válida tras el ajuste, así que se conserva tal cual (mismo criterio
   // que el resto de contenido reutilizado en un match alto/medio).
   const finalRoute = mapGeneratedRouteToRoute(generated, destination, answers, transportContext, [], generated.recommended_revisits ?? [])
-  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), SINGLE_PACE, generated)
+  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), generated)
   return finalRoute
 }
 
@@ -626,7 +624,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // comentario en GeneratedRouteResponse) — si no se guardara aquí, una ruta servida desde caché
   // perdería para siempre sus tarjetas de "segunda visita recomendada" (bug real encontrado en vivo:
   // tryRouteCacheReuse llamaba a mapGeneratedRouteToRoute sin ese argumento en absoluto).
-  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), SINGLE_PACE, { ...generated, recommended_revisits: recommendedRevisits })
+  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), { ...generated, recommended_revisits: recommendedRevisits })
 
   // anchorNames alimenta el caché de tips con búsqueda web (ver StopDetailSheet.tsx/anchor-tips) —
   // antes solo cubría 2-3 "anclas" sueltas por día, ahora cubre la lista completa de lugares elegida

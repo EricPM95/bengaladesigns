@@ -1,4 +1,3 @@
-import { SINGLE_PACE } from '../lib/singleRoute'
 import { create } from 'zustand'
 import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
@@ -1331,7 +1330,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     if (!day || day.stops.length === 0) return
     const flightTimeMinutes = parseTimeToMinutes(flightTime)
     if (Number.isNaN(flightTimeMinutes)) return
-    const optimized = await computeOptimizedDay(day, kind, flightTimeMinutes, SINGLE_PACE)
+    const optimized = await computeOptimizedDay(day, kind, flightTimeMinutes)
     set((current) => (current.route ? { route: updateDay(current.route, dayId, (d) => ({ ...d, ...optimized })) } : current))
   },
 
@@ -1351,7 +1350,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       optimized = { stops: day.stops.filter(fits), didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
     } else {
       // La llegada sí: el día empieza a la hora en el centro (optimizeDayWithRealTransport suma 60 min de traslado).
-      optimized = await computeOptimizedDay(day, 'arrival', keyMinutes - 60, SINGLE_PACE)
+      optimized = await computeOptimizedDay(day, 'arrival', keyMinutes - 60)
     }
     // Las comidas siguen a las paradas (la de las 13:30 no puede pisar el Coliseo que ahora empieza a las 12:30).
     const meals = fitMealsToStops(day.meals, optimized.stops, kind === 'arrival' ? { from: keyMinutes } : { until: keyMinutes })

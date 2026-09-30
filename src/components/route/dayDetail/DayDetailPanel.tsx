@@ -1151,7 +1151,7 @@ export function DayDetailPanel({
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
-        {showsRoute && day.paceNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.paceNotice}</p>}
+        {showsRoute && day.dayNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.dayNotice}</p>}
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
