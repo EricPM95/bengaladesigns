@@ -11,32 +11,30 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 | Nº | Días | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |
 |---|---|---|---|---|---|---|
-| [1](#ruta-1) | 3 | no |  | — | lunes 7 dic 2026 · 7-9 de diciembre, con mercadillos (el 8, la Inmaculada) | Martes 8 · Museos Vaticanos cerrados · Miércoles 9 · Audiencia papal · Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
-| [2](#ruta-2) | 5 | no |  | — | miércoles 23 dic 2026 · 23-27 de diciembre, con mercadillos (Nochebuena, Navidad y San Esteban) | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 · Coliseo y Panteón cerrados · Viernes 25 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · Navidad en Roma |
-| [3](#ruta-3) | 3 | no | sin experiencias | — | jueves 24 dic 2026 · 24-26 de diciembre, sin mercadillos | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 y sábado 26 · Museos Vaticanos cerrados · Viernes 25 · Coliseo y Panteón cerrados · Sábado 26 · Misa en el Panteón · Navidad en Roma · Mercadillo de Navidad en Piazza Navona |
-| [4](#ruta-4) | 4 | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
-| [5](#ruta-5) | 2 | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Viernes 1 · Horario especial · Viernes 1 · Horario especial · Viernes 1 · Horario especial · 1 de enero · Año Nuevo |
-| [6](#ruta-6) | 5 | no |  | — | lunes 4 ene 2027 · 4-8 de enero, con mercadillos (Reyes el 6; el 7 y el 8, ya fuera de fechas) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
-| [7](#ruta-7) | 4 | no | sin experiencias | — | martes 29 dic 2026 · 29 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
-| [8](#ruta-8) | 4 | sí | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-3 de enero, con Free Tour | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 y domingo 3 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
-| [9](#ruta-9) | 6 | no | sin experiencias | — | lunes 28 dic 2026 · 28 de diciembre-2 de enero | Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
-| [10](#ruta-10) | 3 | no | sin experiencias | — | viernes 1 ene 2027 · 1-3 de enero (sin la Nochevieja en el viaje) | Viernes 1 y domingo 3 · Museos Vaticanos cerrados · 1 de enero · Año Nuevo · Domingo 3 · El Coliseo y los museos del Estado, gratis |
-| [11](#ruta-11) | 3 | no |  | — | martes 5 ene 2027 · 5-7 de enero, con mercadillos (último día de Navona y la Befana) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
+| [1](#ruta-1) | 3 | no |  | — | lunes 7 dic 2026 · 7-9 de diciembre, con mercadillos (el 8, la Inmaculada) | Miércoles 9 · Audiencia papal · Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
+| [2](#ruta-2) | 5 | no |  | — | miércoles 23 dic 2026 · 23-27 de diciembre, con mercadillos (Nochebuena, Navidad y San Esteban) | Viernes 25 · Coliseo y Panteón cerrados · Mercadillo de Navidad en Piazza Navona · 24 de diciembre · Nochebuena · 25 de diciembre · Navidad |
+| [3](#ruta-3) | 3 | no | sin experiencias | — | jueves 24 dic 2026 · 24-26 de diciembre, sin mercadillos | Viernes 25 · Coliseo y Panteón cerrados · Sábado 26 · Misa en el Panteón · 24 de diciembre · Nochebuena · 25 de diciembre · Navidad · 26 de diciembre · San Esteban |
+| [4](#ruta-4) | 4 | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Mercadillo de Navidad en Piazza Navona · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [5](#ruta-5) | 2 | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [6](#ruta-6) | 5 | no |  | — | lunes 4 ene 2027 · 4-8 de enero, con mercadillos (Reyes el 6; el 7 y el 8, ya fuera de fechas) | Mercadillo de Navidad en Piazza Navona · 6 de enero · Epifanía (la Befana) |
+| [7](#ruta-7) | 4 | no | sin experiencias | — | martes 29 dic 2026 · 29 de diciembre-1 de enero | Mercadillo de Navidad en Piazza Navona · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [8](#ruta-8) | 4 | sí | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-3 de enero, con Free Tour | 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [9](#ruta-9) | 6 | no | sin experiencias | — | lunes 28 dic 2026 · 28 de diciembre-2 de enero | Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
+| [10](#ruta-10) | 3 | no | sin experiencias | — | viernes 1 ene 2027 · 1-3 de enero (sin la Nochevieja en el viaje) | 1 de enero · Año Nuevo · Domingo 3 · El Coliseo y los museos del Estado, gratis |
+| [11](#ruta-11) | 3 | no |  | — | martes 5 ene 2027 · 5-7 de enero, con mercadillos (último día de Navona y la Befana) | Mercadillo de Navidad en Piazza Navona · 6 de enero · Epifanía (la Befana) |
 
 <a id="ruta-1"></a>
 ## 1. 3 días · sin Free Tour ·  · desde el lunes 7 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Martes 8 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
-  - El 8 de diciembre los Museos Vaticanos cierran por la Inmaculada. Hemos puesto tu visita el miércoles 9 para que no los pierdas.
 - **Miércoles 9 · Audiencia papal** · etiqueta «Audiencia papal» en el día 3
-  - Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto.
+  - Los miércoles por la mañana el Papa recibe a los fieles en la plaza y la Basílica abre más tarde. Hemos puesto San Pedro por la tarde.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
 - **8 de diciembre · La Inmaculada** · etiqueta «La Inmaculada» en el día 2
-  - Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena.
+  - Por la tarde el Papa va a la Plaza de España y se llena; los Museos Vaticanos cierran. Hemos puesto la Plaza de España por la mañana. El Vaticano va otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -68,7 +66,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**martes 8 dic 2026** · 🎉 la Inmaculada · 🏷️ Museos Vaticanos cerrados · 🏷️ La Inmaculada · 🌅 atardecer 16:39 · día curado D4M (A)
+**martes 8 dic 2026** · 🎉 la Inmaculada · 🏷️ La Inmaculada · 🌅 atardecer 16:39 · día curado D4M (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -119,21 +117,20 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 <a id="ruta-2"></a>
 ## 2. 5 días · sin Free Tour ·  · desde el miércoles 23 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 24 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 24 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 24 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 24 de diciembre la Basílica de San Pedro abre con horario especial (07:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 25 · Coliseo y Panteón cerrados** · etiqueta «Coliseo y Panteón cerrados» en el día 2
+- **Viernes 25 · Coliseo y Panteón cerrados** · etiqueta «Coliseo y Panteón cerrados» en el día 3
   - El 25 de diciembre el Coliseo y el Panteón cierran por Navidad. Hemos puesto tu visita el miércoles 23 para que no los pierdas.
-- **Viernes 25 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
-  - El 25 de diciembre los Museos Vaticanos cierran por Navidad. Hemos puesto tu visita el jueves 24 para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
-- **Navidad en Roma** · etiqueta «Navidad en Roma» en el día 2
-  - Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa.
+- **24 de diciembre · Nochebuena** · etiqueta «Nochebuena» en el día 2
+  - Por la noche el Papa celebra la misa de Nochebuena en San Pedro: la Basílica y los Museos Vaticanos cierran antes. Hemos puesto tus visitas dentro de ese horario.
+  - El 24 de diciembre el bus, el tranvía y el metro paran a las 21:00.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+- **25 de diciembre · Navidad** · etiqueta «Navidad» en el día 3
+  - A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles; muchos monumentos cierran. Hemos puesto tu visita al Vaticano otro día, para que la veas con calma.
+  - El 25 de diciembre el transporte solo circula de 8:30 a 13:00 y de 16:30 a 21:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -165,7 +162,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Coliseo y Panteón cerrados · 🏷️ Museos Vaticanos cerrados · 🏷️ Navidad en Roma · 🌅 atardecer 16:43 · día curado D2 (A, capa:100 Presepi in Vaticano)
+**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A, capa:100 Presepi in Vaticano)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -185,7 +182,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
-**viernes 25 dic 2026** · 🎉 Navidad · 🌅 atardecer 16:44 · día curado D5C (A)
+**viernes 25 dic 2026** · 🎉 Navidad · 🏷️ Coliseo y Panteón cerrados · 🏷️ Navidad · 🌅 atardecer 16:44 · día curado D5C (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -242,28 +239,28 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-3"></a>
 ## 3. 3 días · sin Free Tour · sin experiencias · desde el jueves 24 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 24 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 24 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 24 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 24 de diciembre la Basílica de San Pedro abre con horario especial (07:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 25 y sábado 26 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 1
-  - Los Museos Vaticanos cierran el viernes 25, Navidad y el sábado 26, San Esteban. Hemos puesto tu visita el jueves 24 para que no los pierdas.
-- **Viernes 25 · Coliseo y Panteón cerrados** · etiqueta «Coliseo y Panteón cerrados» en el día 1
+- **Viernes 25 · Coliseo y Panteón cerrados** · etiqueta «Coliseo y Panteón cerrados» en el día 2
   - El 25 de diciembre el Coliseo y el Panteón cierran por Navidad. Hemos puesto tu visita el sábado 26 para que no los pierdas.
-- **Sábado 26 · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 1
+- **Sábado 26 · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 3
   - El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
-- **Navidad en Roma** · etiqueta «Navidad en Roma» en el día 1
-  - Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa.
+- **24 de diciembre · Nochebuena** · etiqueta «Nochebuena» en el día 1
+  - Por la noche el Papa celebra la misa de Nochebuena en San Pedro: la Basílica y los Museos Vaticanos cierran antes. Hemos puesto tus visitas dentro de ese horario.
+  - El 24 de diciembre el bus, el tranvía y el metro paran a las 21:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
-- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 3
-  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **25 de diciembre · Navidad** · etiqueta «Navidad» en el día 2
+  - A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles; muchos monumentos cierran. Hemos puesto tu visita al Vaticano otro día, para que la veas con calma.
+  - El 25 de diciembre el transporte solo circula de 8:30 a 13:00 y de 16:30 a 21:00.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+- **26 de diciembre · San Esteban** · etiqueta «San Esteban» en el día 3
+  - Es festivo y los Museos Vaticanos cierran. Hemos puesto el Vaticano otro día.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Museos Vaticanos cerrados · 🏷️ Coliseo y Panteón cerrados · 🏷️ Misa en el Panteón · 🏷️ Navidad en Roma · 🌅 atardecer 16:43 · día curado D2 (A)
+**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -283,7 +280,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**viernes 25 dic 2026** · 🎉 Navidad · 🌅 atardecer 16:44 · día curado D4M (A)
+**viernes 25 dic 2026** · 🎉 Navidad · 🏷️ Coliseo y Panteón cerrados · 🏷️ Navidad · 🌅 atardecer 16:44 · día curado D4M (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -310,7 +307,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Roma Antigua y el centro barroco
 
-**sábado 26 dic 2026** · 🎉 San Esteban · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:45 · día curado D1 (A, sabado)
+**sábado 26 dic 2026** · 🎉 San Esteban · 🏷️ Misa en el Panteón · 🏷️ San Esteban · 🌅 atardecer 16:45 · día curado D1 (A, sabado)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -341,20 +338,18 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-4"></a>
 ## 4. 4 días · sin Free Tour · sin experiencias · desde el miércoles 30 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
-  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 2
+  - Los Museos Vaticanos y San Pedro cierran antes de lo normal. Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús.
+  - El 31 de diciembre los buses paran a las 21:00; el metro sigue hasta las 2:30.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 3
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -386,7 +381,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -406,7 +401,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -455,29 +450,21 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-5"></a>
 ## 5. 2 días · sin Free Tour · sin experiencias · desde el jueves 31 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
-  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
-- **Viernes 1 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 1 de enero el Coliseo abre con horario especial (08:30-16:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 1 de enero el Foro Romano abre con horario especial (08:30-16:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 · Horario especial** · etiqueta «Horario especial» en el día 2
-  - El 1 de enero el Panteón abre con horario especial (09:00-17:00). Hemos puesto tu visita dentro de ese horario.
+- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 1
+  - Los Museos Vaticanos y San Pedro cierran antes de lo normal. Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús.
+  - El 31 de diciembre los buses paran a las 21:00; el metro sigue hasta las 2:30.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 2
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -497,46 +484,42 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01, empieza:no_cabe)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01, empieza_tarde, empieza:10:00, empieza_tarde)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
-| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
-| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
-| 12:05 | Plaza del Campidoglio | 15 min | Parada | 2 min andando | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
-| 12:25 | Plaza Venecia | 10 min | Por el camino | 3 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
-| 12:40 | Altar de la Patria | 35 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
-| 13:30 | Comida: Nonna Betta | 75 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 10:10 | Coliseo | 85 min | Parada · por dentro | — | Estás delante del edificio más famoso de Roma: aquí cabían unas 50.000 personas para ver luchar a los gladiadores. Guarda la entrada, porque con la misma ves después el Foro y el Palatino. |
+| 11:40 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 12:05 | Foro Romano y Palatino | 95 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 14:00 | Comida: Nonna Betta | 45 min | 🍝 Comida | 8 min andando | en Barrio Judío |
 | 14:55 | Panteón | 30 min | Parada · por dentro | 10 min andando | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
 | 15:30 | Elefantino de Bernini | 10 min | Por el camino | 3 min andando | Un elefante pequeño con un obelisco egipcio encima, diseñado por Bernini. Cuenta la leyenda que le puso la cola mirando al convento de enfrente, con cuyos frailes se llevaba fatal. Búscala. |
 | 15:40 | Iglesia de Santa Maria sopra Minerva | 15 min | Parada | 1 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
 | 16:05 | Iglesia de San Luigi dei Francesi | 15 min | Parada · por dentro | 8 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
-| 16:25 | Piazza Navona | 35 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
-| 17:05 | Largo di Torre Argentina | 15 min | Parada | 7 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
-| 17:25 | Iglesia del Gesù | 15 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
-| 17:50 | Barrio Judío | 30 min | Parada | 8 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
-| 18:25 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
-| 18:45 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
-| 19:15 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 35 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
-| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
-| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
-| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
+| 16:25 | Piazza Navona | 30 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
+| 17:10 | Plaza Venecia | 10 min | Por el camino | 14 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 17:25 | Altar de la Patria | 35 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 18:10 | Roma iluminada desde el Campidoglio | 10 min | 🌙 Noche | 8 min andando | Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor. |
+| 18:30 | Largo di Torre Argentina | 15 min | Parada | 8 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 18:50 | Iglesia del Gesù | 20 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
+| 19:20 | Barrio Judío | 30 min | Parada | 8 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 19:55 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 20:10 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 21:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
+| 22:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 **Lo que quedó fuera**: nada.
 
 <a id="ruta-6"></a>
 ## 6. 5 días · sin Free Tour ·  · desde el lunes 4 ene 2027
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Miércoles 6 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 3
-  - El 6 de enero los Museos Vaticanos cierran por Reyes. Hemos puesto tu visita el martes 5 para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
-- **6 de enero · Reyes (la Befana)** · etiqueta «Reyes (la Befana)» en el día 3
-  - Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana.
+- **6 de enero · Epifanía (la Befana)** · etiqueta «Epifanía (la Befana)» en el día 3
+  - Hay misa de la Epifanía en San Pedro y los Museos Vaticanos cierran; en Navona, la Befana y el último día del mercadillo. Hemos puesto el Vaticano otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -588,7 +571,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Trevi sin gente, la Borghese y el Popolo
 
-**miércoles 6 ene 2027** · 🎉 Epifanía · 🏷️ Museos Vaticanos cerrados · 🏷️ Reyes (la Befana) · 🌅 atardecer 16:54 · día curado D4 (A, mercadillos_navidenos)
+**miércoles 6 ene 2027** · 🎉 Epifanía · 🏷️ Epifanía (la Befana) · 🌅 atardecer 16:54 · día curado D4 (A, mercadillos_navidenos)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -646,20 +629,18 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-7"></a>
 ## 7. 4 días · sin Free Tour · sin experiencias · desde el martes 29 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 3
-  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 3
-  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 4
-  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 3
+  - Los Museos Vaticanos y San Pedro cierran antes de lo normal. Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús.
+  - El 31 de diciembre los buses paran a las 21:00; el metro sigue hasta las 2:30.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 4
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -716,7 +697,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -736,7 +717,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 4 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -760,25 +741,21 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-8"></a>
 ## 8. 4 días · Free Tour · sin experiencias · desde el jueves 31 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
-- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
-  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
-- **Viernes 1 y domingo 3 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
-  - Los Museos Vaticanos cierran el viernes 1, Año Nuevo y el domingo 3. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
-- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
-  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 1
+  - Los Museos Vaticanos y San Pedro cierran antes de lo normal. Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús.
+  - El 31 de diciembre los buses paran a las 21:00; el metro sigue hasta las 2:30.
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 2
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — El Vaticano por la mañana y Free Tour por la tarde
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:48 · día curado D3 (A, cerrado:Museos Vaticanos y Capilla Sixtina, fecha:12-31)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D3 (A, cerrado:Museos Vaticanos y Capilla Sixtina, fecha:12-31)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -796,7 +773,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -867,16 +844,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-9"></a>
 ## 9. 6 días · sin Free Tour · sin experiencias · desde el lunes 28 dic 2026
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 5
-  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el martes 29 de diciembre para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 5
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -958,22 +933,22 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 5 — El sur de Roma: el Aventino, Testaccio y la Via Appia
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5 (A, empieza:10:00, comida:sin Cementerio Protestante)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5 (A, empieza:09:30, comida:sin Cementerio Protestante)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 10:00 | Termas de Caracalla | 65 min | Parada · por dentro | — | Las termas más espectaculares de Roma, enormes y casi siempre tranquilas. Aquí se bañaban miles de romanos a la vez. En verano, entre sus muros se hace ópera al aire libre. |
-| 11:25 | Boca de la Verdad | 20 min | Parada | 21 min andando | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
-| 11:55 | Jardín de los Naranjos | 20 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
-| 12:20 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
-| 12:40 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
-| 12:55 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
-| 13:45 | Comida: Mordi e Vai | 45 min | 🍝 Comida | 6 min andando | en Testaccio |
-| 15:05 | Via Appia Antica | 45 min | Parada | 🚌 Un taxi, 31 min | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
-| 15:50 | Via Appia Antica | 40 min | Parada | 1 min andando | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
-| 17:00 | Roma iluminada desde el Campidoglio | 20 min | 🌙 Noche | 🚌 Bus 118, 30 min | Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor. |
-| 17:35 | Mercados de Trajano | 60 min | Parada · por dentro | 14 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
-| 18:35 | Paseo por Monti y los Foros iluminados y aperitivo | 75 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
+| 09:30 | Termas de Caracalla | 65 min | Parada · por dentro | — | Las termas más espectaculares de Roma, enormes y casi siempre tranquilas. Aquí se bañaban miles de romanos a la vez. En verano, entre sus muros se hace ópera al aire libre. |
+| 10:55 | Boca de la Verdad | 20 min | Parada | 21 min andando | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
+| 11:25 | Jardín de los Naranjos | 20 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
+| 11:50 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
+| 12:10 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
+| 12:25 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
+| 13:15 | Comida: Mordi e Vai | 45 min | 🍝 Comida | 6 min andando | en Testaccio |
+| 14:35 | Via Appia Antica | 45 min | Parada | 🚌 Un taxi, 31 min | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
+| 15:20 | Via Appia Antica | 40 min | Parada | 1 min andando | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
+| 16:30 | Plaza del Campidoglio | 35 min | 🌅 Atardecer | 🚌 Bus 118, 30 min | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
+| 17:20 | Mercados de Trajano | 60 min | Parada · por dentro | 14 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:20 | Paseo por Monti y los Foros iluminados y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
 | 20:00 | Cena: La Boccaccia |  | 🍷 Cena | 8 min andando | en Monti |
 
 ### Día 6 — Ostia Antica, las basílicas y el Coliseo de noche
@@ -996,21 +971,19 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-10"></a>
 ## 10. 3 días · sin Free Tour · sin experiencias · desde el viernes 1 ene 2027
 
-**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Viernes 1 y domingo 3 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 1
-  - Los Museos Vaticanos cierran el viernes 1, Año Nuevo y el domingo 3. Hemos puesto tu visita el sábado 2 para que no los pierdas.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 1
-  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
-  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos puesto el Vaticano otro día y tus visitas de hoy dentro de ese horario.
+  - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **Domingo 3 · El Coliseo y los museos del Estado, gratis** · etiqueta «El Coliseo y los museos del Estado, gratis» en el día 3
   - El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
 
 ### Día 1 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D4M (A)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D4M (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1088,15 +1061,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 <a id="ruta-11"></a>
 ## 11. 3 días · sin Free Tour ·  · desde el martes 5 ene 2027
 
-**Nota de temporada**: En tus fechas anochece sobre las 17:00 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+**Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 17:00, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Miércoles 6 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
-  - El 6 de enero los Museos Vaticanos cierran por Reyes. Hemos puesto tu visita el jueves 7 para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
-- **6 de enero · Reyes (la Befana)** · etiqueta «Reyes (la Befana)» en el día 2
-  - Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana.
+- **6 de enero · Epifanía (la Befana)** · etiqueta «Epifanía (la Befana)» en el día 2
+  - Hay misa de la Epifanía en San Pedro y los Museos Vaticanos cierran; en Navona, la Befana y el último día del mercadillo. Hemos puesto el Vaticano otro día.
 
 ### Día 1 — Roma Antigua y el centro barroco
 
@@ -1129,7 +1100,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
 
-**miércoles 6 ene 2027** · 🎉 Epifanía · 🏷️ Museos Vaticanos cerrados · 🏷️ Reyes (la Befana) · 🌅 atardecer 16:54 · día curado D4M (A)
+**miércoles 6 ene 2027** · 🎉 Epifanía · 🏷️ Epifanía (la Befana) · 🌅 atardecer 16:54 · día curado D4M (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1181,7 +1152,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ### 3 días en agosto, sin fechas
 
 **Avisos de fechas**: 
-- **Ferragosto** · sin etiqueta en ningún día: Si tu viaje coincide con los días del 14 al 15 de agosto: los romanos se van a la playa y la ciudad está más tranquila que nunca.
+- **Ferragosto** · sin etiqueta en ningún día: Si tu viaje coincide con los días del 14 al 15 de agosto: el 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios.
 
 - **Día 1 — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 15:05 Barrio Judío · 15:35 Fuente de las Tortugas · 15:50 Largo di Torre Argentina · 16:10 Iglesia del Gesù · 16:35 Iglesia de Santa Maria sopra Minerva · 16:50 Elefantino de Bernini · 17:05 Panteón · 17:40 Iglesia de San Luigi dei Francesi · 18:05 Piazza Navona · 18:40 Campo de' Fiori · 19:50 Ponte Sisto · 22:30 Fontana de Trevi (noche)
 - **Día 2 — Vaticano, Castillo y Trastevere al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:05 Via della Conciliazione · 15:25 Puente Sant'Angelo · 15:35 Castillo de Sant'Angelo · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Basílica de Santa Cecilia in Trastevere · 18:00 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (por fuera: A esta hora ya ha cerrado) · 19:20 Fontana dell'Acqua Paola · 19:50 Mirador del Janículo · 22:30 Trastevere de noche
@@ -1190,10 +1161,9 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 ### Los mismos 3 días, del 13 al 15 de agosto de 2027
 
 **Avisos de fechas**: 
-- **Sábado 14 y domingo 15 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2: Los Museos Vaticanos cierran el sábado 14, Ferragosto y el domingo 15, Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
 - **Sábado 14 · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 2: El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
 - **Domingo 15 · Panteón cerrado** · etiqueta «Panteón cerrado» en el día 2: El 15 de agosto el Panteón cierra por Ferragosto. Hemos puesto tu visita el sábado 14 para que no lo pierdas.
-- **Ferragosto** · etiqueta «Ferragosto» en el día 2: Los romanos se van a la playa y la ciudad está más tranquila que nunca. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+- **Ferragosto** · etiqueta «Ferragosto» en el día 2: El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios. Hemos puesto el Vaticano otro día y el resto de tu ruta, en lo que abre. Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 - **Día 1 (viernes 13 ago 2027) — Vaticano, Castillo y Trastevere al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:05 Via della Conciliazione · 15:25 Puente Sant'Angelo · 15:35 Castillo de Sant'Angelo · 17:00 Iglesia de Santa Maria in Trastevere · 17:25 Basílica de Santa Cecilia in Trastevere · 18:00 Trastevere · 19:05 San Pietro in Montorio y Tempietto de Bramante (por fuera: A esta hora ya ha cerrado) · 19:20 Fontana dell'Acqua Paola · 19:50 Mirador del Janículo · 22:30 Trastevere de noche
 - **Día 2 (sábado 14 ago 2027) — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 12:05 Plaza del Campidoglio · 12:25 Plaza Venecia · 12:40 Altar de la Patria · 15:10 Panteón · 15:45 Elefantino de Bernini · 15:55 Iglesia de Santa Maria sopra Minerva · 16:20 Iglesia de San Luigi dei Francesi · 16:40 Piazza Navona · 17:20 Largo di Torre Argentina · 17:40 Iglesia del Gesù · 18:05 Barrio Judío · 18:40 Fuente de las Tortugas · 19:00 Campo de' Fiori · 19:50 Ponte Sisto · 22:30 Fontana de Trevi (noche)
@@ -1206,7 +1176,7 @@ Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu
 Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.mjs). Tiene que salir todo a 0, o con la lista de lo que no se ha podido arreglar.
 
 - **Lugar repetido en el mismo día**: 1
-  - ruta 9, día 5, 15:50 Via Appia Antica — también a las 15:05
+  - ruta 9, día 5, 15:20 Via Appia Antica — también a las 14:35
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
@@ -1245,7 +1215,7 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 ## Recuento (Parte D)
 
 - **Lugares repetidos en el mismo día**: 1
-  - ruta 9, día 5: Via Appia Antica (15:05 y 15:50)
+  - ruta 9, día 5: Via Appia Antica (14:35 y 15:20)
 - **Monumentos (nivel 1-2) sin su propia línea**: 0 ✅
 - **Lugares de nivel 1 o 2 como "Por el camino"**: 0 ✅
 - **Plazas o puentes después de su monumento, fuera de las excepciones**: 0 ✅
@@ -1258,16 +1228,16 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
   - ruta 11, día 1, 12:20 Santo Bambino de Aracoeli: Pasas por aquí de camino: no hace falta pararse.
 - **Notas internas que se ven**: 0 ✅
 - **Cifras y precios fuera de Tickets**: 10
-  - línea 50: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 195: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 265: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 409: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 570: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 673: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 765: | 15:15 | Fontana de Trevi | 20 min | Parada | 8 min andando | La fuente más famosa del mundo, y desde la plaza se ve gr
-  - línea 909: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 992: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 1111: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 48: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 192: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 262: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 404: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 553: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 654: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 742: | 15:15 | Fontana de Trevi | 20 min | Parada | 8 min andando | La fuente más famosa del mundo, y desde la plaza se ve gr
+  - línea 884: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 965: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 1082: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅
 

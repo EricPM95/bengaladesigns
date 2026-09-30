@@ -2196,3 +2196,31 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Ningún texto promete fuegos artificiales sin fuente oficial de ese año.**
     - La prueba de Navidad cuenta, en el 31 y el 1: un bus después de las 21:00 del 31, un 1 de enero antes de las 10:00
       tras la Nochevieja, una visita por dentro que empieza después de la última entrada y un texto que promete fuegos.
+
+405. **Fechas especiales, sencillas** (PROMPT_FECHAS_SENCILLAS, 2026-10-01). En Navidad, en los festivos y en las fechas
+    especiales, la app hace solo dos cosas: **adapta la ruta a los horarios** (cierres, horarios cortos, transporte) y lo
+    cuenta en el aviso, y **cuenta en la ficha lo que ya está en la ruta** (un árbol, un belén, el mercadillo, las luces).
+    - **Lo que se repite, sí; lo que pasa una vez al año, no.** Se cuentan las misas y audiencias del Papa, el Ángelus de
+      los domingos y los mercadillos, que duran semanas. Fuegos artificiales, conciertos, desfiles y festivales no salen
+      en ningún sitio, salvo lo que cambien en los horarios (el Coliseo el 2 de junio, abierto solo por la tarde).
+    - **Los grandes días religiosos** (los que llenan la ciudad) se cuentan solo en el aviso de fechas del principio: qué
+      pasa y qué hemos cambiado en la ruta. **Nunca son una parada ni una sugerencia con hora.** Las fechas especiales no
+      llevan `sugerencia`.
+    - **Un aviso dice qué cambia ese día y qué hemos hecho**, en 35 palabras como mucho y de tú: `contexto` + `hecho`. De
+      cada grupo de `hecho` sale la primera opción que se cumple en ESE viaje (`hoy`, `antes_de`, `despues_de`, `otro_dia`,
+      `en_viaje`, `empieza_tarde`); si el día no pasa por el sitio, lo dice («tu ruta de hoy no pasa por San Pedro: no te
+      afecta»). Ningún aviso promete lo que la ruta no hace.
+    - **Un aviso, un tema:** el día movido o el horario especial que el aviso de esa fecha ya cuenta (`cubre`) no sale
+      aparte. El transporte recortado de ese festivo y el aviso de restaurantes van como frases aparte del mismo aviso.
+    - **Lo semanal** vive en `destination_config.papa` y `lineas_semana`: el aviso de la audiencia de los miércoles y la
+      línea de ficha del Ángelus (domingo, en la plaza, de 11:00 a 13:00) no salen en las fechas en que no los hay
+      (`sin_audiencia`, `angelus_fuera`: el verano). La ruta no cambia: sigue siendo la prudente.
+    - **Un horario especial que corta solo la tarde** (`horario_especial.sin_evitar`) no hace huir de ese día: el Viernes
+      Santo el Coliseo va por la mañana. Un día escrito puede pedir otro día con una fecha (`no_en: { fecha, evitar }`).
+    - **El día que empieza más tarde** (regla 404): a su hora (10:00); si no cabe, con la variante `empieza_tarde` del día
+      escrito (lo que pasa a la tarde, nada se quita); si tampoco, a la segunda hora (`si_no_cabe`, 9:30). Si a ninguna
+      hora se salva el atardecer, manda no madrugar. Sustituye a la parte de la 404 que quitaba opcionales.
+    - **La nota navideña** (`temporada_navidad` + `nota_temporada.navidad*`): si algún día del viaje cae en la época de
+      Navidad del destino, sale en lugar de la de invierno, con el icono de Navidad. Solo promete lo que hay en ese viaje:
+      el mercadillo si está abierto y en la ruta; árboles y belenes desde `arboles_desde`; antes, solo las luces;
+      «iluminado» si alguna noche sale a pasear. Un destino sin `temporada_navidad` lleva la nota de invierno de siempre.
