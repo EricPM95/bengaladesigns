@@ -103,3 +103,43 @@ Los avisos de verdad suben en 7, y todos salen de dos cosas pedidas: los cierres
 3. **El 16 de agosto de 2027 con Free Tour:** la tarde queda corta (81 min de espera antes de cenar). Habría que escribir algo para esa tarde.
 4. **El 31 de diciembre** lleva la misma vuelta que el 24. Si preferís que no, se quita.
 5. **El viaje del 24 al 25 de diciembre con Free Tour** ve los Museos, pero no el Coliseo por dentro. Antes era al revés. No caben los dos: el 25 cierran ambos.
+
+---
+
+# Añadido (30 de septiembre, noche): tres arreglos y fuera los ritmos
+
+## Tres arreglos
+
+1. **1 de mayo:** vuelve a llevar el Castillo por la tarde, con la mañana a las 10:00. El descanso largo de después de comer queda solo para junio, julio y agosto.
+2. **Día del Free Tour con los Museos cerrados, en verano** (14 y 16 de agosto): la tarde se llena con un paseo por Borgo Pio y el atardecer desde el Puente Sant'Angelo, y la cena al lado. Ya no hay esperas antes de cenar. La comida del 31 de octubre de 2027 ya dura una hora.
+   - **No la he llevado a Trastevere y el Janículo**, como pedíais: en todos los viajes con Free Tour, el otro día (Roma Antigua) ya acaba allí al atardecer, y se repetirían.
+3. **Free Tour en festivos:** hecho el mecanismo (un día sin tour: no se pone y sale un aviso, con fuente y fecha). **El dato no está:** la ficha de Civitatis no publica horarios ni días sin tour; solo se ven al elegir fecha en el calendario de reserva. Sin ese dato no se quita ningún tour.
+
+## Fuera los ritmos
+
+Hecho. El detalle está en `docs/INFORME_RITMOS.md`: textos con su antes y después, días que empiezan fuera de 8:00-9:30, pruebas y lista de lo que se podría borrar.
+
+## Pruebas finales
+
+| Prueba | Antes (solo completo) | Después |
+|---|---|---|
+| 365 fechas | 49 | **44** (0 nuevos, 5 arreglados) |
+| Navidad | 0 | **0** |
+| 56 viajes | 5 mejor, 51 igual, 0 peor | igual |
+
+## Commits sin subir
+
+- `fix(datos)`: el 1 de mayo con el Castillo por la tarde.
+- `fix(datos)`: la tarde de verano del día del Free Tour.
+- `feat(motor)`: Free Tour en festivos.
+- `feat(motor)`: una sola ruta.
+- `feat`: fuera los ritmos (formulario, textos, etiqueta «Opcional»).
+- `docs(invariantes)`: regla 403.
+- El de este informe.
+
+## Para decidir
+
+1. **`PROMPT_ROMA_FIN_DE_ANO.md` no está hecho.** No me había llegado; lo vi en el archivo al leer el de ritmos, que lo da por hecho («el 1 de enero no antes de las 10:00»). ¿Lo hago?
+2. **Trastevere y el Janículo** en la tarde del día del Free Tour: he puesto Borgo Pio y el Puente Sant'Angelo para no repetir. Si lo preferís igual, se cambia.
+3. **Free Tour en festivos:** hace falta que alguien mire el calendario de reserva de Civitatis para el 24, 25 y 31 de diciembre y el 1 y 6 de enero.
+4. **¿Se sube?**
