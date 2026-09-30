@@ -416,7 +416,11 @@ export function planWrittenTrip(args) {
     // viajes de tantos días o más).
     // (`sol_desde` / `sol_hasta`: la parada va solo si el sol se pone a partir de / antes de esa hora; una versión abarca una hora de sol.)
     const bySun = (stop) => hours.sunset == null || (!(stop.sol_desde && hours.sunset < toMin(stop.sol_desde)) && !(stop.sol_hasta && hours.sunset >= toMin(stop.sol_hasta)))
-    const keep = (stop) => bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    // (`meses` / `no_meses`: la parada va solo esos meses, o todos menos esos (1-12). El descanso largo de después de comer
+    // es cosa del verano: de junio a agosto. Sin fechas, el mes del viaje.)
+    const monthOfDay = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+    const byMonth = (stop) => !(stop.meses && !(monthOfDay != null && stop.meses.includes(monthOfDay))) && !(stop.no_meses && monthOfDay != null && stop.no_meses.includes(monthOfDay))
+    const keep = (stop) => byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
     // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
     // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)

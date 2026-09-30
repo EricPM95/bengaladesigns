@@ -568,7 +568,7 @@
       }
     },
     "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos): la Plaza, la Cúpula y la Basílica, y el Castillo por la mañana, empezando a las 8:30; la tarde de siempre sin el Castillo. En verano (tarde.D), descanso largo después de comer y las iglesias de Trastevere desde las 16:00, por dentro (decisión del usuario, 2026-09-30).",
+      "_nota": "Los Museos Vaticanos cierran (sus festivos). Tres casos, con la MISMA condición en la mañana y en la tarde para que el Castillo vaya una sola vez: (1) con el sol antes de las 19:45, la Plaza, la Cúpula, la Basílica y el Castillo por la mañana, desde las 8:30; (2) de junio a agosto con el sol tarde (14 de agosto), lo mismo por la mañana y por la tarde un descanso largo y las iglesias de Trastevere desde las 16:00; (3) con el sol tarde fuera del verano (1 de mayo), la mañana a las 10:00 sin el Castillo, que va por la tarde.",
       "manana": {
         "paradas": [
           {
@@ -578,7 +578,38 @@
               "completo": "08:30",
               "tranquilo": "09:30"
             },
-            "min": 25
+            "min": 25,
+            "sol_hasta": "19:45"
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "tipo": "fija",
+            "hora": {
+              "completo": "08:30",
+              "tranquilo": "09:30"
+            },
+            "min": 25,
+            "sol_desde": "19:45",
+            "meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "tipo": "fija",
+            "hora": {
+              "completo": "10:00",
+              "tranquilo": "10:00"
+            },
+            "min": 25,
+            "sol_desde": "19:45",
+            "no_meses": [
+              6,
+              7,
+              8
+            ]
           },
           {
             "lugar": "Cúpula de San Pedro",
@@ -595,18 +626,54 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "sol_hasta": "19:45"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "sol_hasta": "19:45"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "sol_hasta": "19:45"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino",
+            "sol_desde": "19:45",
+            "meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
+            "sol_desde": "19:45",
+            "meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "sol_desde": "19:45",
+            "meses": [
+              6,
+              7,
+              8
+            ]
           }
         ]
       },
@@ -630,8 +697,41 @@
         ]
       },
       "tarde.D": {
-        "_nota": "Con el sol desde las 19:45 (verano): después de comer, un descanso largo por el calor, y Santa Maria in Trastevere a las 16:00 (en agosto abre a esa hora) y Santa Cecilia a las 16:30, por dentro.",
+        "_nota": "Con el sol desde las 19:45. De junio a agosto: después de comer, un descanso largo por el calor, y Santa Maria in Trastevere a las 16:00 y Santa Cecilia a las 16:30, por dentro. El resto (1 de mayo): el Castillo por la tarde, que hace que las iglesias ya estén abiertas.",
         "paradas": [
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino",
+            "sol_desde": "19:45",
+            "no_meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
+            "sol_desde": "19:45",
+            "no_meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 60,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "sol_desde": "19:45",
+            "no_meses": [
+              6,
+              7,
+              8
+            ]
+          },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
             "min": 20,
@@ -640,7 +740,23 @@
             "tipo": "fija",
             "hora": "16:00",
             "sol_desde": "19:45",
-            "descanso_antes": true
+            "meses": [
+              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "sol_desde": "19:45",
+            "no_meses": [
+              6,
+              7,
+              8
+            ]
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
