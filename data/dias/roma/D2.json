@@ -568,7 +568,7 @@
       }
     },
     "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos): la Plaza, la Cúpula y la Basílica, y el Castillo por la mañana; la tarde de siempre sin el Castillo. Con el sol desde las 19:45 (sol_desde / sol_hasta, la misma hora en la mañana y en la tarde para que el Castillo vaya una sola vez; 30-sep): la mañana empieza a las 10:00 sin el Castillo, y la tarde es la de siempre, con el Castillo primero: así Santa Maria in Trastevere (abre a las 16:00) y Santa Cecilia (16:30) se ven por dentro y no quedan ratos libres largos.",
+      "_nota": "Los Museos Vaticanos cierran (sus festivos): la Plaza, la Cúpula y la Basílica, y el Castillo por la mañana, empezando a las 8:30; la tarde de siempre sin el Castillo. En verano (tarde.D), descanso largo después de comer y las iglesias de Trastevere desde las 16:00, por dentro (decisión del usuario, 2026-09-30).",
       "manana": {
         "paradas": [
           {
@@ -578,18 +578,7 @@
               "completo": "08:30",
               "tranquilo": "09:30"
             },
-            "min": 25,
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": {
-              "completo": "10:00",
-              "tranquilo": "10:00"
-            },
-            "min": 25,
-            "sol_desde": "19:45"
+            "min": 25
           },
           {
             "lugar": "Cúpula de San Pedro",
@@ -606,39 +595,28 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "sol_hasta": "19:45"
+            "modo": "camino"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_hasta": "19:45"
+            "min": 10
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera",
-            "sol_hasta": "19:45"
+            "si_cerrado": "fuera"
           }
         ]
       },
       "tarde.*": {
         "quitar": [
+          "Via della Conciliazione",
+          "Puente Sant'Angelo",
+          "Castillo de Sant'Angelo",
           "Borgo Pio"
         ],
-        "ajustar": {
-          "Via della Conciliazione": {
-            "sol_desde": "19:45"
-          },
-          "Puente Sant'Angelo": {
-            "sol_desde": "19:45"
-          },
-          "Castillo de Sant'Angelo": {
-            "sol_desde": "19:45"
-          }
-        },
         "insertar": [
           {
             "al_principio": true,
@@ -648,6 +626,51 @@
               "modo": "dentro",
               "si_cerrado": "fuera"
             }
+          }
+        ]
+      },
+      "tarde.D": {
+        "_nota": "Con el sol desde las 19:45 (verano): después de comer, un descanso largo por el calor, y Santa Maria in Trastevere a las 16:00 (en agosto abre a esa hora) y Santa Cecilia a las 16:30, por dentro.",
+        "paradas": [
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "tipo": "fija",
+            "hora": "16:00",
+            "sol_desde": "19:45",
+            "descanso_antes": true
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "sol_hasta": "19:45"
+          },
+          {
+            "lugar": "Basílica de Santa Cecilia in Trastevere",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 50,
+            "elastica": 30
+          },
+          {
+            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Fontana dell'Acqua Paola",
+            "min": 15
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer"
           }
         ]
       }

@@ -2185,3 +2185,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - `siguiente_si_ocupada`: si su parada ya lleva otra, va en la siguiente parada de esa lista. `no_si_mercadillo`: no
       se repite el día en que la ruta ya cuenta el mercadillo (la parada con su título o el texto del paseo de noche).
     - Solo con fechas reales, y las nocturnas no llevan (tienen su propio texto de fechas).
+
+399. **El 14 de agosto, y los festivos de verano con los Museos Vaticanos cerrados** (2026-09-30; cambia la regla 394): se
+    empieza temprano igual (San Pedro a las 8:30, con la Cúpula y la Basílica) y el Castillo va antes de comer. Después de
+    comer, un descanso largo por el calor, y las iglesias de Trastevere por dentro cuando abren: Santa Maria in Trastevere
+    a las 16:00 (hora fija en la variante de verano, `tarde.D`) y Santa Cecilia a las 16:30.
+    - **En verano, un descanso largo después de comer no es un aviso:** la prueba no lo cuenta de junio a agosto, entre las
+      14:00 y las 16:30.
