@@ -368,6 +368,10 @@ export function auditarViaje(D, days, options = {}) {
       })
       if (early.length <= cityDays.length / 2) add('nota_promete', '—', '', 'Nota de temporada', `promete visitas a primera hora y solo ${early.length} de ${cityDays.length} días empiezan así`)
     }
+    // (La tarjeta de temporada, PROMPT_TARJETA_TEMPORADA: los miradores con el atardecer, con un atardecer en la ruta; el
+    // descanso después de comer, con algún día de julio o agosto.)
+    if (/miradores con el atardecer/.test(note.text) && !cityDays.some((day) => day.stops.some((stop) => stop.sunset_minutes != null))) add('nota_promete', '—', '', 'Tarjeta de temporada', 'promete los miradores al atardecer y ninguna parada es un atardecer')
+    if (/después de comer, descanso/.test(note.text) && !(startIso && days.some((day, index) => day?.stops?.length && /^\d{4}-0[78]-/.test(addDays(startIso, index))))) add('nota_promete', '—', '', 'Tarjeta de temporada', 'promete el descanso de verano y ningún día es de julio o agosto')
   }
   // El mismo restaurante dos veces en el viaje (cierre de Roma, 2026-09-28).
   const byRestaurant = new Map()

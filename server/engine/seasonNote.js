@@ -17,12 +17,7 @@
 
 import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 
-const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-const EPOCA = { invierno: 'invierno', primavera: 'primavera', verano: 'verano', otono: 'otoño' }
-/** Con el sol antes de esto, la nota es la de invierno (de finales de octubre a febrero en Roma). */
-const WINTER_NOTE_SUNSET_BEFORE = 17 * 60 + 30
 const HHMM = (minutes) => `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`
-const lowerFirst = (text) => text.charAt(0).toLowerCase() + text.slice(1)
 
 /**
  * El texto navideño de ese viaje (null si ningún día cae en la temporada o el destino no la tiene).
@@ -56,22 +51,53 @@ export function earlyMornings(destData, trip) {
   return early.length > cityDays.length / 2
 }
 
+/** La estación de una fecha (PROMPT_TARJETA_TEMPORADA, 2): primavera del 20 de marzo al 20 de junio, verano del 21 de
+ * junio al 22 de septiembre, otoño del 23 de septiembre al 20 de diciembre e invierno del 21 de diciembre al 19 de marzo. */
+export function seasonOfDate(dateIso) {
+  const md = Number(String(dateIso).slice(5, 7)) * 100 + Number(String(dateIso).slice(8, 10))
+  if (md >= 320 && md <= 620) return 'primavera'
+  if (md >= 621 && md <= 922) return 'verano'
+  if (md >= 923 && md <= 1220) return 'otono'
+  return 'invierno'
+}
+
+const SEASON_NAME = { primavera: 'Primavera', verano: 'Verano', otono: 'Otoño', invierno: 'Invierno', navidad: 'Navidad' }
+/** Los textos de la tarjeta (PROMPT_TARJETA_TEMPORADA, 3), para cualquier destino: {destino}, {hora} (el atardecer real, al
+ * cuarto de hora) y el trozo entre llaves que sale solo si se cumple su condición. Un destino puede traer los suyos en
+ * `destination_config.nota_temporada` con las mismas claves. */
+export const SEASON_CARD_TEXTS = {
+  primavera: '¡Vas a vivir {destino} en primavera! Las terrazas vuelven a llenarse y los días se alargan. Como anochece sobre las {hora}, hemos preparado tu ruta para aprovechar la luz{atardecer}.',
+  primavera_atardecer: ' y llegar a los miradores con el atardecer',
+  verano: '¡Vas a vivir {destino} en verano! Días largos, noches templadas y la ciudad en la calle. Hemos preparado tu ruta para esquivar el calor{calor}. Y como anochece sobre las {hora}, las mejores vistas llegan al atardecer.',
+  verano_manana: 'lo más importante, a primera hora',
+  verano_siesta: 'después de comer, descanso o sitios a cubierto',
+  otono: '¡Vas a vivir {destino} en otoño! Luz dorada, menos calor y la ciudad a su ritmo. Como anochece sobre las {hora}, hemos colocado tu ruta para que veas lo mejor con luz{atardecer}.',
+  otono_atardecer: ' y llegues a los miradores con el atardecer',
+  invierno: '¡Vas a vivir {destino} en invierno! Mañanas frías y claras, y menos turistas que en verano. Como anochece pronto, sobre las {hora}, hemos adaptado tu ruta: lo que se ve al aire libre, con luz{noche}.',
+  invierno_noche: ', y por la noche, {destino} iluminada',
+}
+/** Los meses con la regla de verano del motor (de 14:00 a 16:30, descanso o a cubierto; shared/routeEngine/writtenTrip.js). */
+const SUMMER_SHADE_MONTHS = [7, 8]
+const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+
 /**
+ * La tarjeta de temporada de cada viaje (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415): todos los viajes la llevan y solo
+ * dice lo que la ruta hace de verdad.
+ *  - La estación: con fechas, la del primer día (`seasonOfDate`); si ese día cae en la `temporada_navidad` del destino,
+ *    la de Navidad. Sin fechas, la del formulario.
+ *  - El texto: el de la estación, con sus trozos solo si se cumplen (un atardecer en la ruta; lo importante a primera
+ *    hora; la regla de verano; un paseo nocturno). La Navidad, con sus textos de siempre.
  * @param {object} destData
  * @param {object} trip   la salida del planificador (días con `hours` y `schedule`, `calendar`)
- * @param {{ hasNight: boolean, dateNotices?: object[] }} facts
- * @returns {{ season: string, text: string, promises: string[] } | null}
+ * @param {{ hasNight: boolean }} facts
+ * @returns {{ season: string, title: string, text: string, promises: string[], icon?: string } | null}
  */
-export function seasonNoteFor(destData, trip, { hasNight, dateNotices = [] }) {
+export function seasonNoteFor(destData, trip, { hasNight }) {
   const calendar = trip.calendar ?? {}
-  // La época, la de los horarios (`by_period`): el horario de invierno empieza con el cambio de hora (el Coliseo, el 25
-  // de octubre), así que con el sol antes de las 17:30 es invierno aunque el mes diga otoño (noviembre).
-  const firstSunset = (trip.days ?? []).find((day) => day.schedule && day.hours?.sunset != null)?.hours?.sunset ?? null
-  const season = firstSunset != null && firstSunset < WINTER_NOTE_SUNSET_BEFORE ? 'invierno' : calendar.season ?? null
-  if (!season) return null
-  // Si otro aviso de fechas ya habla de la época (una fecha "temporada"), sale uno.
-  const seasonalIds = new Set((destData.fechas_especiales?.fechas ?? []).filter((entry) => entry.tipo === 'temporada').map((entry) => entry.id))
-  if (dateNotices.some((notice) => [...seasonalIds].some((id) => String(notice.id ?? '').endsWith(id)))) return null
+  const destino = String(destData.destination ?? 'tu destino').split(',')[0].trim()
+  const firstIso = (trip.days ?? []).find((day) => day.hours?.dateIso)?.hours?.dateIso ?? null
+  const baseSeason = calendar.hasDates && firstIso ? seasonOfDate(firstIso) : calendar.season ?? null
+  if (!baseSeason) return null
   const firstDay = (trip.days ?? []).find((day) => day.schedule && day.hours?.sunset != null)
   const sunset = firstDay?.hours?.sunset ?? null
   let hora = sunset != null ? HHMM(Math.round(sunset / 15) * 15) : null
@@ -82,38 +108,39 @@ export function seasonNoteFor(destData, trip, { hasNight, dateNotices = [] }) {
   if (hora && jump > 0) {
     const after = withSun[jump]
     const iso = String(after.hours.dateIso ?? '')
-    const when = iso ? `el ${['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][new Date(`${iso.slice(0, 10)}T12:00:00Z`).getUTCDay()]} ${Number(iso.slice(8, 10))}` : 'el día del cambio de hora'
+    const when = iso ? `el ${WEEKDAYS[new Date(`${iso.slice(0, 10)}T12:00:00Z`).getUTCDay()]} ${Number(iso.slice(8, 10))}` : 'el día del cambio de hora'
     hora = `${hora} (desde ${when}, con el cambio de hora, hasta las ${HHMM(Math.round(after.hours.sunset / 15) * 15)})`
   }
-  const texts = destData.destination_config?.nota_temporada ?? null
+  if (!hora) return null
+  const texts = { ...SEASON_CARD_TEXTS, ...(destData.destination_config?.nota_temporada ?? {}) }
+  const fill = (text) => text.replaceAll('{destino}', destino).replaceAll('{hora_atardecer}', hora).replaceAll('{hora}', hora)
   const promises = []
-  let text
-  const christmas = season === 'invierno' || calendar.season === 'otono' ? christmasNoteKey(destData, trip, hasNight) : null
+  // Navidad: el primer día dentro de la temporada del destino.
+  const christmasWindow = destData.destination_config?.temporada_navidad
+  const md = (iso) => Number(iso.slice(5, 7)) * 100 + Number(iso.slice(8, 10))
+  const firstInChristmas = Boolean(christmasWindow?.desde && firstIso && calendar.hasDates && withinMonthDays(md(firstIso), christmasWindow.desde, christmasWindow.hasta))
+  const christmas = firstInChristmas ? christmasNoteKey(destData, trip, hasNight) : null
   if (christmas) {
-    text = texts[christmas.key].replaceAll('{destino}', destData.destination ?? 'tu destino')
-    if (text.includes('{hora_atardecer}')) {
-      if (!hora) return null
-      text = text.replace('{hora_atardecer}', hora)
-    }
     if (hasNight) promises.push('noche')
-    return { season, icon: 'navidad', text, promises }
+    return { season: 'navidad', title: `Navidad en ${destino}`, icon: 'navidad', text: fill(texts[christmas.key]), promises }
   }
-  if (!texts) {
-    text = `Tu ruta está pensada para disfrutar ${destData.destination ?? 'tu destino'} en ${EPOCA[season] ?? season}.`
-  } else if (season === 'invierno') {
-    if (hasNight) promises.push('noche')
-    text = hasNight ? texts.invierno : texts.invierno_sin_noche ?? texts.invierno
+  const season = baseSeason
+  const hasSunset = (trip.days ?? []).some((day) => (day.schedule?.visits ?? []).some((visit) => visit.place?.sunset != null))
+  let text
+  if (season === 'primavera' || season === 'otono') {
+    if (hasSunset) promises.push('atardecer')
+    text = texts[season].replace('{atardecer}', hasSunset ? texts[`${season}_atardecer`] : '')
   } else if (season === 'verano') {
     const early = earlyMornings(destData, trip)
+    const months = (trip.days ?? []).filter((day) => day.schedule && day.hours?.dateIso).map((day) => Number(day.hours.dateIso.slice(5, 7)))
+    const siesta = calendar.hasDates ? months.some((month) => SUMMER_SHADE_MONTHS.includes(month)) : Number.isInteger(calendar.month) && SUMMER_SHADE_MONTHS.includes(calendar.month + 1)
     if (early) promises.push('primera_hora')
-    text = early ? texts.verano : texts.verano_sin_manana ?? texts.verano
-  } else text = texts.primavera_otono
-  if (!text) return null
-  if (text.includes('{hora_atardecer}')) {
-    if (!hora) return null
-    text = text.replace('{hora_atardecer}', hora)
+    if (siesta) promises.push('descanso')
+    const parts = [early ? texts.verano_manana : null, siesta ? texts.verano_siesta : null].filter(Boolean)
+    text = texts.verano.replace('{calor}', parts.length ? `: ${parts.join(', y ')}` : '')
+  } else {
+    if (hasNight) promises.push('noche')
+    text = texts.invierno.replace('{noche}', hasNight ? texts.invierno_noche : '')
   }
-  // Sin fechas, con el mes: "Si viajas en marzo, …".
-  if (!calendar.hasDates && Number.isInteger(calendar.month)) text = `Si viajas en ${MESES[calendar.month]}, ${lowerFirst(text)}`
-  return { season, text, promises }
+  return { season, title: `${SEASON_NAME[season]} en ${destino}`, text: fill(text), promises }
 }

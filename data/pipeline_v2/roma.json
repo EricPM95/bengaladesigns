@@ -8403,12 +8403,7 @@
       "Ponte Sisto": "el Ponte Sisto"
     },
     "nota_temporada": {
-      "_nota": "Nota de temporada (decisión del usuario, 2026-09-28): una vez, arriba de la ruta, con el efecto de temporada del formulario; se puede cerrar. Época = la de by_period (invierno: diciembre-febrero; primavera; verano: junio-agosto; otoño). {hora_atardecer}: la real, al cuarto de hora. Lo que promete tiene que ser verdad: iluminada solo si alguna noche lleva nocturna; a primera hora solo si la mayoría de los días empieza por un imprescindible antes de las 10:00.",
-      "invierno": "En tus fechas anochece sobre las {hora_atardecer} y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.",
-      "invierno_sin_noche": "En tus fechas anochece sobre las {hora_atardecer} y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo.",
-      "primavera_otono": "Buena época para Roma: se camina a gusto y hay luz hasta las {hora_atardecer}. Hemos pensado tu ruta para que aproveches cada hora.",
-      "verano": "En verano Roma aprieta: hemos intentado poner las visitas principales a primera hora de la mañana para que evites la multitud y el calor.",
-      "verano_sin_manana": "En verano Roma aprieta: hemos pensado tu ruta para que la disfrutes sin agobios.",
+      "_nota": "La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA, INVARIANTES 415): primavera, verano, otoño e invierno con los textos generales de server/engine/seasonNote.js (SEASON_CARD_TEXTS); aquí, los de Navidad de Roma.",
       "navidad_mercadillo": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las {hora_atardecer}, también iluminado.",
       "navidad_mercadillo_sin_noche": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo.",
       "navidad": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, y como anochece sobre las {hora_atardecer}, también los verás iluminados.",
