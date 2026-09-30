@@ -138,8 +138,10 @@ export function dateNoticesFor(destData, trip, options = {}) {
   const curatedText = (entry, dateIso) => {
     if (!entry.hecho) return entry.contexto ?? entry.texto
     const day = (trip.days ?? []).find((candidate) => candidate.hours?.dateIso === dateIso) ?? null
-    const done = entry.hecho.map((group) => group.find((option) => holds(option.si, day))?.texto).filter(Boolean)
-    return [entry.contexto, ...done].filter(Boolean).join(' ')
+    const chosen = entry.hecho.map((group) => group.find((option) => holds(option.si, day))).filter(Boolean)
+    // (`sin_aviso`: un festivo en el que la ruta no cambia nada no se cuenta; con aviso de restaurantes, solo el contexto.)
+    if (chosen.some((option) => option.sin_aviso) && !entry.aviso_restaurantes) return null
+    return [entry.contexto, ...chosen.map((option) => option.texto)].filter(Boolean).join(' ')
   }
   /** Las fechas en las que un texto semanal no vale (`excepto: "papa.sin_audiencia"`: el verano sin audiencias). */
   const inException = (key, dateIso) => {
@@ -332,7 +334,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
   const infoCards = []
   for (const [iso, { auto, curated }] of [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     // Un aviso, un tema: el día movido o el horario especial que el aviso curado de ese día ya cuenta no sale aparte.
-    const covered = (item) => Boolean(curated?.cubre) && (item.kind === 'movido' || item.kind === 'horario') && curated.cubre.includes(item.subject)
+    const covered = (item) => Boolean(curated?.cubre) && curatedText(curated, iso) != null && (item.kind === 'movido' || item.kind === 'horario') && curated.cubre.includes(item.subject)
     for (const item of auto) {
       if (covered(item)) continue
       routeCards.push({
@@ -346,7 +348,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
         kind: 'auto',
       })
     }
-    if (curated) {
+    if (curated && curatedText(curated, iso) != null) {
       infoCards.push({
         id: `${iso}:${curated.id}`,
         day_number: dayOfDate.get(iso) ?? null,

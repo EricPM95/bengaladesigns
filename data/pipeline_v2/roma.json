@@ -12077,7 +12077,7 @@
       "icono": "fiesta, religioso, luz, navidad, bandera, calma, entrada",
       "titulo": "Lo que sale en grande. Corto.",
       "contexto": "Qué cambia ese día: horarios, cierres, transporte, o el gran acto religioso que llena un sitio. Sin precios.",
-      "hecho": "Qué hemos hecho en la ruta. Lista de grupos; de cada grupo sale la primera opción cuya condición se cumple en ESE viaje (una opción sin `si` vale siempre). Condiciones: `hoy` (la ruta pasa ese día por alguno de esos lugares), `antes_de` / `despues_de` (con `hoy`: a qué hora), `otro_dia` (el viaje lleva alguno de esos lugares otro día y no ese), `en_viaje` (en cualquier día), `empieza_tarde` (el día empieza más tarde por `empieza_desde`). Así ningún aviso promete lo que la ruta no hace.",
+      "hecho": "Qué hemos hecho en la ruta. Lista de grupos; de cada grupo sale la primera opción cuya condición se cumple en ESE viaje (una opción sin `si` vale siempre). Condiciones: `hoy` (la ruta pasa ese día por alguno de esos lugares), `antes_de` / `despues_de` (con `hoy`: a qué hora), `otro_dia` (el viaje lleva alguno de esos lugares otro día y no ese), `en_viaje` (en cualquier día), `empieza_tarde` (el día empieza más tarde por `empieza_desde`). Así ningún aviso promete lo que la ruta no hace. Una opción con `sin_aviso: true` en vez de texto: en ese viaje el aviso no sale (un festivo en el que la ruta no cambia nada), salvo que lleve `aviso_restaurantes`.",
       "texto": "El aviso entero de ejemplo (contexto + la primera opción de `hecho`): 35 palabras como mucho.",
       "cubre": "Los temas de los avisos automáticos de ese día (día movido, horario especial) que este aviso ya cuenta: no salen aparte.",
       "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true, o 'probable' con 'aplicar'.",
@@ -12366,31 +12366,12 @@
               "texto": "Hemos puesto el Vaticano otro día."
             },
             {
-              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+              "sin_aviso": true
             }
           ]
         ],
         "cubre": [
           "Museos Vaticanos"
-        ]
-      },
-      {
-        "id": "liberacion",
-        "fecha": "04-25",
-        "tipo": "festivo",
-        "icono": "bandera",
-        "titulo": "25 de abril · Fiesta de la Liberación",
-        "texto": "Es festivo en toda Italia y algunos sitios cambian de horario. Hemos comprobado los de tu ruta de hoy.",
-        "verificar": true,
-        "fuente": "Festivo nacional; cierres de lugares a confirmar",
-        "comprobado": "2026-09-28",
-        "contexto": "Es festivo en toda Italia y algunos sitios cambian de horario.",
-        "hecho": [
-          [
-            {
-              "texto": "Hemos comprobado los de tu ruta de hoy."
-            }
-          ]
         ]
       },
       {
@@ -12415,7 +12396,7 @@
               "texto": "Hemos puesto el Vaticano otro día."
             },
             {
-              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+              "sin_aviso": true
             }
           ]
         ],
@@ -12500,7 +12481,7 @@
               "texto": "Hemos puesto el Vaticano otro día."
             },
             {
-              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+              "sin_aviso": true
             }
           ]
         ],
@@ -12536,25 +12517,6 @@
         ],
         "cubre": [
           "Museos Vaticanos"
-        ]
-      },
-      {
-        "id": "todos_los_santos",
-        "fecha": "11-01",
-        "tipo": "festivo",
-        "icono": "fiesta",
-        "titulo": "1 de noviembre · Todos los Santos",
-        "texto": "Es festivo en toda Italia y algunos sitios cambian de horario. Hemos comprobado los de tu ruta de hoy.",
-        "verificar": true,
-        "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)",
-        "comprobado": "2026-09-28",
-        "contexto": "Es festivo en toda Italia y algunos sitios cambian de horario.",
-        "hecho": [
-          [
-            {
-              "texto": "Hemos comprobado los de tu ruta de hoy."
-            }
-          ]
         ]
       },
       {
@@ -12698,7 +12660,8 @@
         "verificar": true,
         "comprobado": "2026-10-01",
         "cubre": [
-          "Museos Vaticanos"
+          "Museos Vaticanos",
+          "Basílica de San Pedro"
         ]
       },
       {
@@ -12719,7 +12682,7 @@
               "texto": "Hemos puesto el Vaticano otro día."
             },
             {
-              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+              "sin_aviso": true
             }
           ]
         ],
@@ -12953,6 +12916,18 @@
     "temporada_de_los_datos": "2025-26",
     "revisar": "noviembre de cada año: fechas de montaje y programa.",
     "lineas": [
+      {
+        "id": "san_pedro_bendicion_navidad",
+        "lugares": [
+          "Plaza de San Pedro"
+        ],
+        "desde": "12-25",
+        "hasta": "12-25",
+        "icono": "religioso",
+        "texto": "Hoy a las 12:00 el Papa da la bendición desde el balcón de la Basílica y la plaza se llena de fieles. Después se va vaciando, y la Basílica vuelve a abrir a las visitas a primera hora de la tarde.",
+        "fuente": "vatican.va, «Notificazione tempo di Natale» 2025-26: misa a las 10:00 y bendición Urbi et Orbi a las 12:00. La hora a la que la Basílica vuelve a abrir a las visitas no se publica (vatican.va y basilicasanpietro.va, comprobado el 2026-10-01: «gli orari possono variare»): la ruta entra desde las 13:30, el tramo prudente.",
+        "comprobado": "2026-10-01"
+      },
       {
         "id": "san_pedro_arbol",
         "lugares": [
