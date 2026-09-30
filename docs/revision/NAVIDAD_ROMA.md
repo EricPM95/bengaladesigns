@@ -1,4 +1,4 @@
-# Roma en Navidad: 6 viajes para revisar como un local
+# Roma en Navidad y Fin de Año: 11 viajes para revisar como un local
 
 Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revisionNavidad.mjs`. Sin arreglar nada: es para revisar que las rutas son bonitas.
 
@@ -14,9 +14,14 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 | [1](#ruta-1) | 3 | no |  | — | lunes 7 dic 2026 · 7-9 de diciembre, con mercadillos (el 8, la Inmaculada) | Martes 8 · Museos Vaticanos cerrados · Miércoles 9 · Audiencia papal · Mercadillo de Navidad en Piazza Navona · 8 de diciembre · La Inmaculada |
 | [2](#ruta-2) | 5 | no |  | — | miércoles 23 dic 2026 · 23-27 de diciembre, con mercadillos (Nochebuena, Navidad y San Esteban) | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 · Coliseo y Panteón cerrados · Viernes 25 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · Navidad en Roma |
 | [3](#ruta-3) | 3 | no | sin experiencias | — | jueves 24 dic 2026 · 24-26 de diciembre, sin mercadillos | Jueves 24 · Horario especial · Jueves 24 · Horario especial · Viernes 25 y sábado 26 · Museos Vaticanos cerrados · Viernes 25 · Coliseo y Panteón cerrados · Sábado 26 · Misa en el Panteón · Navidad en Roma · Mercadillo de Navidad en Piazza Navona |
-| [4](#ruta-4) | 4 | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
-| [5](#ruta-5) | 2 | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Viernes 1 · Horario especial · Viernes 1 · Horario especial · Viernes 1 · Horario especial · 31 de diciembre · Nochevieja · 1 de enero · Año Nuevo |
+| [4](#ruta-4) | 4 | no | sin experiencias | — | miércoles 30 dic 2026 · 30 de diciembre-2 de enero (Nochevieja y Año Nuevo) | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
+| [5](#ruta-5) | 2 | no | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Viernes 1 · Horario especial · Viernes 1 · Horario especial · Viernes 1 · Horario especial · 1 de enero · Año Nuevo |
 | [6](#ruta-6) | 5 | no |  | — | lunes 4 ene 2027 · 4-8 de enero, con mercadillos (Reyes el 6; el 7 y el 8, ya fuera de fechas) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
+| [7](#ruta-7) | 4 | no | sin experiencias | — | martes 29 dic 2026 · 29 de diciembre-1 de enero | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
+| [8](#ruta-8) | 4 | sí | sin experiencias | — | jueves 31 dic 2026 · 31 de diciembre-3 de enero, con Free Tour | Jueves 31 · Horario especial · Jueves 31 · Horario especial · Viernes 1 y domingo 3 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
+| [9](#ruta-9) | 6 | no | sin experiencias | — | lunes 28 dic 2026 · 28 de diciembre-2 de enero | Viernes 1 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 1 de enero · Año Nuevo |
+| [10](#ruta-10) | 3 | no | sin experiencias | — | viernes 1 ene 2027 · 1-3 de enero (sin la Nochevieja en el viaje) | Viernes 1 y domingo 3 · Museos Vaticanos cerrados · 1 de enero · Año Nuevo · Domingo 3 · El Coliseo y los museos del Estado, gratis |
+| [11](#ruta-11) | 3 | no |  | — | martes 5 ene 2027 · 5-7 de enero, con mercadillos (último día de Navona y la Befana) | Miércoles 6 · Museos Vaticanos cerrados · Mercadillo de Navidad en Piazza Navona · 6 de enero · Reyes (la Befana) |
 
 <a id="ruta-1"></a>
 ## 1. 3 días · sin Free Tour ·  · desde el lunes 7 dic 2026
@@ -347,11 +352,9 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
   - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
-- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 2
-  - Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.
-  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 3
   - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Roma Antigua y el centro barroco
@@ -383,7 +386,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -403,15 +406,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 09:30 | Boca de la Verdad | 25 min | Parada | — | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
-| 10:05 | Jardín de los Naranjos | 15 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
-| 10:25 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
-| 10:45 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
-| 11:00 | Cementerio Protestante | 30 min | Parada | 5 min andando | Un cementerio jardín, precioso y silencioso, donde descansan los poetas Keats y Shelley. Es uno de los rincones más tranquilos de Roma. |
+| 10:00 | Boca de la Verdad | 25 min | Parada | — | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
+| 10:35 | Jardín de los Naranjos | 15 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
+| 10:55 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
+| 11:15 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
 | 11:35 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
 | 12:30 | Comida: Felice a Testaccio | 70 min | 🍝 Comida | 1 min andando | en Testaccio |
 | 14:00 | Basílica de San Clemente | 50 min | Parada · por dentro | 🚇 Metro B, 20 min | Tres iglesias, una encima de otra. Arriba, una basílica del siglo XII; debajo, otra más antigua; y al fondo, un templo romano donde se oye correr agua subterránea. La basílica de arriba es gratis; para bajar hay que reservar online. |
@@ -468,16 +470,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
   - El 1 de enero el Foro Romano abre con horario especial (08:30-16:30). Hemos puesto tu visita dentro de ese horario.
 - **Viernes 1 · Horario especial** · etiqueta «Horario especial» en el día 2
   - El 1 de enero el Panteón abre con horario especial (09:00-17:00). Hemos puesto tu visita dentro de ese horario.
-- **31 de diciembre · Nochevieja** · etiqueta «Nochevieja» en el día 1
-  - Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.
-  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 2
   - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -497,7 +497,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01, empieza:no_cabe)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -643,6 +643,539 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 **Lo que quedó fuera**: nada.
 
+<a id="ruta-7"></a>
+## 7. 4 días · sin Free Tour · sin experiencias · desde el martes 29 dic 2026
+
+**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 3
+  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
+- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 3
+  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
+- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 4
+  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 4
+  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+
+### Día 1 — Roma Antigua y el centro barroco
+
+**martes 29 dic 2026** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:47 · día curado D1 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
+| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 12:05 | Plaza del Campidoglio | 15 min | Parada | 2 min andando | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
+| 12:25 | Plaza Venecia | 10 min | Por el camino | 3 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 12:40 | Altar de la Patria | 40 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 13:30 | Comida: Giggetto al Portico d'Ottavia | 75 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 14:50 | Barrio Judío | 25 min | Parada | 1 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 15:20 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 15:35 | Largo di Torre Argentina | 15 min | Parada | 3 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 16:00 | Iglesia del Gesù | 25 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
+| 16:30 | Iglesia de Santa Maria sopra Minerva | 15 min | Parada | 6 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
+| 16:45 | Elefantino de Bernini | 5 min | Por el camino | 1 min andando | Un elefante pequeño con un obelisco egipcio encima, diseñado por Bernini. Cuenta la leyenda que le puso la cola mirando al convento de enfrente, con cuyos frailes se llevaba fatal. Búscala. |
+| 16:55 | Panteón | 35 min | Parada · por dentro | 3 min andando | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
+| 17:35 | Iglesia de San Luigi dei Francesi | 15 min | Parada · por dentro | 6 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
+| 17:55 | Piazza Navona | 35 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
+| 18:35 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 19:05 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
+| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+
+### Día 2 — Trevi sin gente, la Borghese y el Popolo
+
+**miércoles 30 dic 2026** · 🎉 audiencia papal (miércoles por la mañana) · 🌅 atardecer 16:48 · día curado D4 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves. |
+| 09:00 | Desayuno romano | 20 min | ☕ Pausa | 3 min andando | Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más. |
+| 09:25 | Iglesia de San Ignacio de Loyola | 15 min | Parada | 3 min andando | La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro. |
+| 09:50 | Via Condotti | 10 min | Por el camino | 10 min andando | La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi. |
+| 10:05 | Plaza de España | 20 min | Parada | 7 min andando | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
+| 10:25 | Trinità dei Monti | 10 min | Por fuera (Todavía no ha abierto (abre a las 12:00)) | 1 min andando | La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies. |
+| 11:00 | Galería Borghese | 125 min | Parada · por dentro | 18 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 13:15 | Comida: Girarrosto Fiorentino | 70 min | 🍝 Comida | 10 min andando | en Via Veneto y Salario |
+| 14:30 | Tiempo libre antes de Ara Pacis | 20 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
+| 14:50 | Ara Pacis | 45 min | Parada · por dentro | 21 min andando | El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo. |
+| 15:40 | Via Margutta | 30 min | Parada | 7 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 16:15 | Piazza del Popolo | 10 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
+| 16:30 | Jardines del Pincio | 25 min | Parada | 5 min andando | Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines hasta que baje el sol. |
+| 16:55 | Roma iluminada desde el Pincio | 20 min | 🌙 Noche | 2 min andando | Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo. |
+| 17:20 | Santa Maria del Popolo | 25 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. |
+| 18:00 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
+| 18:25 | Luces de Navidad por Via del Corso y Via Condotti, y aperitivo | 55 min | 🕐 Tiempo libre |  | ideas: Via del Babuino, Luces de Navidad del Tridente, Via del Corso |
+| 19:30 | Cena: Il Gabriello |  | 🍷 Cena | 9 min andando | en Tridente y Spagna |
+
+### Día 3 — Vaticano, Castillo y Trastevere al atardecer
+
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🌅 atardecer 16:48 · día curado D2 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | — | Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos. |
+| 11:15 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. · 🎄 A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA. |
+| 11:35 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
+| 12:20 | Basílica de San Pedro | 60 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 13:30 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
+| 14:50 | Borgo Pio | 20 min | Parada | 3 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
+| 15:15 | Via della Conciliazione | 10 min | Por el camino | 3 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
+| 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
+| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+### Día 4 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
+
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 10:00 | Boca de la Verdad | 25 min | Parada | — | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
+| 10:35 | Jardín de los Naranjos | 15 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
+| 10:55 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
+| 11:15 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
+| 11:35 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
+| 12:30 | Comida: Felice a Testaccio | 70 min | 🍝 Comida | 1 min andando | en Testaccio |
+| 14:00 | Basílica de San Clemente | 50 min | Parada · por dentro | 🚇 Metro B, 20 min | Tres iglesias, una encima de otra. Arriba, una basílica del siglo XII; debajo, otra más antigua; y al fondo, un templo romano donde se oye correr agua subterránea. La basílica de arriba es gratis; para bajar hay que reservar online. |
+| 15:05 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 17 min andando | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
+| 15:45 | Iglesia de San Pietro in Vincoli | 20 min | Parada · por dentro | 12 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
+| 16:30 | Via dei Fori Imperiali | 40 min | 🌅 Atardecer | 8 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. |
+| 17:15 | Mercados de Trajano | 60 min | Parada · por dentro | 7 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:25 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
+| 18:50 | Paseo por Monti y los Foros iluminados y aperitivo | 60 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
+| 20:00 | Cena: Trattoria Valentino |  | 🍷 Cena | 7 min andando | en Monti |
+
+**Lo que quedó fuera**: nada.
+
+<a id="ruta-8"></a>
+## 8. 4 días · Free Tour · sin experiencias · desde el jueves 31 dic 2026
+
+**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
+  - El 31 de diciembre los Museos Vaticanos abren con horario especial (08:00-15:00). Hemos puesto tu visita dentro de ese horario.
+- **Jueves 31 · Horario especial** · etiqueta «Horario especial» en el día 1
+  - El 31 de diciembre la Basílica de San Pedro abre con horario especial (07:00-14:30). Hemos puesto tu visita dentro de ese horario.
+- **Viernes 1 y domingo 3 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - Los Museos Vaticanos cierran el viernes 1, Año Nuevo y el domingo 3. Hemos puesto tu visita el jueves 31 de diciembre para que no los pierdas.
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 2
+  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+
+### Día 1 — El Vaticano por la mañana y Free Tour por la tarde
+
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Horario especial · 🏷️ Horario especial · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:48 · día curado D3 (A, cerrado:Museos Vaticanos y Capilla Sixtina, fecha:12-31)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | — | Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos. |
+| 11:15 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. · 🎄 A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA. |
+| 11:35 | Basílica de San Pedro | 60 min | Parada · por dentro | 3 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 12:45 | Comida: Borghiciana Pastificio Artigianale | 90 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
+| 14:35 | Panteón | 30 min | Parada · por dentro | 🚌 Bus 40 o un taxi, 20 min | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
+| 15:15 | Fontana de Trevi | 20 min | Parada | 8 min andando | La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € de 9:00 a 22:00: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma. |
+| 16:00 | Free Tour Centro Histórico | 150 min | Parada (Free Tour) | 10 min andando | Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma el primer día. · El tour acaba en Piazza Navona. · recorre: Plaza de España, Via Condotti, Fontana de Trevi, Iglesia de San Ignacio de Loyola, Panteón, Piazza Navona |
+| 18:30 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 55 min | 🕐 Tiempo libre |  | ideas: Elefantino de Bernini, Iglesia de Santa Maria sopra Minerva, Plaza Farnese |
+| 19:30 | Cena: Pizzeria Da Baffetto |  | 🍷 Cena | 5 min andando | en Centro Histórico |
+| 21:30 | Piazza Navona (noche) | 30 min | 🌙 Noche |  | paseo nocturno «Navona y Puente Sant'Angelo de noche» · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos. |
+| 22:15 | Puente Sant'Angelo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Navona y Puente Sant'Angelo de noche» · Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio. |
+
+### Día 2 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
+
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5C (A, empieza:10:00, comida:sin Cementerio Protestante)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 10:00 | Boca de la Verdad | 25 min | Parada | — | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
+| 10:35 | Jardín de los Naranjos | 15 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
+| 10:55 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
+| 11:15 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
+| 11:35 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
+| 12:30 | Comida: Felice a Testaccio | 70 min | 🍝 Comida | 1 min andando | en Testaccio |
+| 14:00 | Basílica de San Clemente | 50 min | Parada · por dentro | 🚇 Metro B, 20 min | Tres iglesias, una encima de otra. Arriba, una basílica del siglo XII; debajo, otra más antigua; y al fondo, un templo romano donde se oye correr agua subterránea. La basílica de arriba es gratis; para bajar hay que reservar online. |
+| 15:05 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 17 min andando | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
+| 15:45 | Iglesia de San Pietro in Vincoli | 20 min | Parada · por dentro | 12 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
+| 16:30 | Via dei Fori Imperiali | 40 min | 🌅 Atardecer | 8 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 17:15 | Mercados de Trajano | 60 min | Parada · por dentro | 7 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:25 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
+| 18:50 | Paseo por Monti y los Foros iluminados y aperitivo | 60 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
+| 20:00 | Cena: Trattoria Valentino |  | 🍷 Cena | 7 min andando | en Monti |
+
+### Día 3 — Roma Antigua, el Ghetto y Trastevere al atardecer
+
+**sábado 2 ene 2027** · 🌅 atardecer 16:50 · día curado D1-FT (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
+| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. |
+| 12:05 | Plaza del Campidoglio | 15 min | Parada | 2 min andando | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
+| 12:25 | Plaza Venecia | 10 min | Por el camino | 3 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 12:40 | Altar de la Patria | 30 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 13:15 | Comida: Giggetto al Portico d'Ottavia | 55 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 14:15 | Barrio Judío | 15 min | Parada | 1 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 14:35 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 14:55 | Teatro de Marcelo | 10 min | Por el camino | 8 min andando | Parece un Coliseo pequeño, y es más antiguo que el Coliseo. Lo curioso es que encima de las gradas romanas hay casas en las que hoy vive gente. |
+| 15:15 | Isla Tiberina | 10 min | Parada | 9 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 15:35 | Trastevere | 35 min | Parada | 8 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos. |
+| 16:25 | Mirador del Janículo | 45 min | 🌅 Atardecer | 🚌 Bus 115, 15 min | El atardecer más bonito de Roma, con toda la ciudad a tus pies. Busca un hueco en la balaustrada y quédate hasta que se enciendan las luces. Después se baja a cenar a Trastevere, unos 20 min cuesta abajo. |
+| 17:25 | Fontana dell'Acqua Paola | 10 min | Parada | 16 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
+| 17:40 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (A esta hora ya ha cerrado) | 5 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
+| 17:55 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 7 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 18:15 | Trastevere al anochecer y aperitivo | 60 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto, Plaza Farnese |
+| 19:30 | Cena: Trattoria Da Enzo al 29 |  | 🍷 Cena | 11 min andando | en Trastevere |
+| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+### Día 4 — El Castillo, la Borghese y el Popolo
+
+**domingo 3 ene 2027** · 🌅 atardecer 16:51 · día curado D4 (A, con_free_tour, domingo)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:45 | Puente Sant'Angelo | 10 min | Parada | — | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 09:00 | Castillo de Sant'Angelo | 85 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
+| 11:00 | Galería Borghese | 125 min | Parada · por dentro | 🚌 Un taxi, 20 min | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 13:15 | Comida: Girarrosto Fiorentino | 60 min | 🍝 Comida | 10 min andando | en Via Veneto y Salario |
+| 14:20 | Tiempo libre antes de Ara Pacis | 20 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
+| 14:40 | Ara Pacis | 45 min | Parada · por dentro | 21 min andando | El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo. |
+| 15:30 | Via Margutta | 30 min | Parada | 7 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 16:05 | Piazza del Popolo | 10 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
+| 16:20 | Jardines del Pincio | 25 min | Parada | 5 min andando | Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines hasta que baje el sol. |
+| 16:45 | Terraza del Pincio | 25 min | 🌅 Atardecer | 2 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
+| 17:15 | Santa Maria del Popolo | 20 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. |
+| 17:45 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
+| 18:10 | Compras por Via del Corso y aperitivo | 65 min | 🕐 Tiempo libre |  | ideas: Via del Babuino, Luces de Navidad del Tridente, Via del Corso |
+| 19:30 | Cena: Sgarro Bistrot |  | 🍷 Cena | 11 min andando | en Tridente y Spagna |
+
+**Lo que quedó fuera**: nada.
+
+<a id="ruta-9"></a>
+## 9. 6 días · sin Free Tour · sin experiencias · desde el lunes 28 dic 2026
+
+**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Viernes 1 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 5
+  - El 1 de enero los Museos Vaticanos cierran por Año Nuevo. Hemos puesto tu visita el martes 29 de diciembre para que no los pierdas.
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 5
+  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+
+### Día 1 — Roma Antigua y el centro barroco
+
+**lunes 28 dic 2026** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:46 · día curado D1 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
+| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 12:10 | Plaza Venecia | 10 min | Por el camino | 5 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 12:25 | Altar de la Patria | 40 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 13:15 | Comida: Nonna Betta | 90 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 14:50 | Barrio Judío | 25 min | Parada | 1 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 15:20 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 15:35 | Largo di Torre Argentina | 15 min | Parada | 3 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 16:00 | Iglesia del Gesù | 25 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
+| 16:30 | Iglesia de Santa Maria sopra Minerva | 15 min | Parada | 6 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
+| 16:45 | Elefantino de Bernini | 5 min | Por el camino | 1 min andando | Un elefante pequeño con un obelisco egipcio encima, diseñado por Bernini. Cuenta la leyenda que le puso la cola mirando al convento de enfrente, con cuyos frailes se llevaba fatal. Búscala. |
+| 16:55 | Panteón | 35 min | Parada · por dentro | 3 min andando | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
+| 17:35 | Iglesia de San Luigi dei Francesi | 15 min | Parada · por dentro | 6 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
+| 17:55 | Piazza Navona | 35 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
+| 18:35 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 19:05 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
+| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+
+### Día 2 — Vaticano, Castillo y Trastevere al atardecer
+
+**martes 29 dic 2026** · 🌅 atardecer 16:47 · día curado D2 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | — | Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos. |
+| 11:15 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. · 🎄 A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA. |
+| 11:35 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
+| 12:20 | Basílica de San Pedro | 60 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 13:30 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
+| 14:50 | Borgo Pio | 20 min | Parada | 3 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
+| 15:15 | Via della Conciliazione | 10 min | Por el camino | 3 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
+| 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
+| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+### Día 3 — Trevi sin gente, la Borghese y el Popolo
+
+**miércoles 30 dic 2026** · 🎉 audiencia papal (miércoles por la mañana) · 🌅 atardecer 16:48 · día curado D4 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves. |
+| 09:00 | Desayuno romano | 20 min | ☕ Pausa | 3 min andando | Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más. |
+| 09:25 | Iglesia de San Ignacio de Loyola | 15 min | Parada | 3 min andando | La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro. |
+| 09:50 | Via Condotti | 10 min | Por el camino | 10 min andando | La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi. |
+| 10:05 | Plaza de España | 20 min | Parada | 7 min andando | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
+| 10:25 | Trinità dei Monti | 10 min | Por fuera (Todavía no ha abierto (abre a las 12:00)) | 1 min andando | La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies. |
+| 11:00 | Galería Borghese | 125 min | Parada · por dentro | 18 min andando | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
+| 13:15 | Comida: Girarrosto Fiorentino | 70 min | 🍝 Comida | 10 min andando | en Via Veneto y Salario |
+| 14:30 | Tiempo libre antes de Ara Pacis | 20 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
+| 14:50 | Ara Pacis | 45 min | Parada · por dentro | 21 min andando | El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo. |
+| 15:40 | Via Margutta | 30 min | Parada | 7 min andando | La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma. |
+| 16:15 | Piazza del Popolo | 10 min | Parada | 5 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
+| 16:30 | Jardines del Pincio | 25 min | Parada | 5 min andando | Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines hasta que baje el sol. |
+| 16:55 | Roma iluminada desde el Pincio | 20 min | 🌙 Noche | 2 min andando | Ya es de noche y la Piazza del Popolo brilla a tus pies, con las cúpulas del centro encendidas al fondo. |
+| 17:20 | Santa Maria del Popolo | 25 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. |
+| 18:00 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
+| 18:25 | Luces de Navidad por Via del Corso y Via Condotti, y aperitivo | 55 min | 🕐 Tiempo libre |  | ideas: Via del Babuino, Luces de Navidad del Tridente, Via del Corso |
+| 19:30 | Cena: Il Gabriello |  | 🍷 Cena | 9 min andando | en Tridente y Spagna |
+
+### Día 4 — Excursión
+
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🌅 atardecer 16:48
+
+Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento**. Opciones: Excursión a Pompeya y Sorrento, Excursión a Florencia y Pisa, Excursión a Nápoles y Pompeya en tren, Excursión a la Costa Amalfitana, Excursión a Florencia en tren de alta velocidad.
+
+### Día 5 — El sur de Roma: el Aventino, Testaccio y la Via Appia
+
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D5 (A, empieza:10:00, comida:sin Cementerio Protestante)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 10:00 | Termas de Caracalla | 65 min | Parada · por dentro | — | Las termas más espectaculares de Roma, enormes y casi siempre tranquilas. Aquí se bañaban miles de romanos a la vez. En verano, entre sus muros se hace ópera al aire libre. |
+| 11:25 | Boca de la Verdad | 20 min | Parada | 21 min andando | La máscara de «Vacaciones en Roma». Cuenta la leyenda que muerde la mano de quien miente: mete la mano, si te atreves. |
+| 11:55 | Jardín de los Naranjos | 20 min | Parada | 11 min andando | Un jardín de naranjos en lo alto del Aventino, con una de las vistas más bonitas de Roma y casi sin turistas. Es donde vienen los romanos a sentarse un rato. |
+| 12:20 | Ojo de la Cerradura del Aventino | 10 min | Parada | 4 min andando | Aquí suele haber una pequeña cola, y tiene su motivo. Mira por la cerradura de la puerta verde de los Caballeros de Malta: al fondo verás la cúpula de San Pedro, perfectamente enmarcada. |
+| 12:40 | Pirámide Cestia | 10 min | Por el camino | 10 min andando | Sí, una pirámide de verdad en Roma. Es la tumba de un magistrado romano al que le entusiasmaba Egipto, y quedó metida dentro de la muralla. |
+| 12:55 | Testaccio | 40 min | Parada | 7 min andando | El barrio más romano de Roma: aquí comen los de aquí. Detrás hay una colina hecha solo con trozos de ánforas antiguas. Baja callejeando hasta el mercado. |
+| 13:45 | Comida: Mordi e Vai | 45 min | 🍝 Comida | 6 min andando | en Testaccio |
+| 15:05 | Via Appia Antica | 45 min | Parada | 🚌 Un taxi, 31 min | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
+| 15:50 | Via Appia Antica | 40 min | Parada | 1 min andando | La calzada más famosa de la antigua Roma, con sus losas originales entre pinos y tumbas. Recórrela a pie o en bici hasta la tumba de Cecilia Metella: es como viajar 2.000 años atrás. |
+| 17:00 | Roma iluminada desde el Campidoglio | 20 min | 🌙 Noche | 🚌 Bus 118, 30 min | Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor. |
+| 17:35 | Mercados de Trajano | 60 min | Parada · por dentro | 14 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:35 | Paseo por Monti y los Foros iluminados y aperitivo | 75 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
+| 20:00 | Cena: La Boccaccia |  | 🍷 Cena | 8 min andando | en Monti |
+
+### Día 6 — Ostia Antica, las basílicas y el Coliseo de noche
+
+**sábado 2 ene 2027** · 🌅 atardecer 16:50 · día curado D6 (A)
+
+- 🚆 Excursión de medio día: ostia_antica (08:00-14:00)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 16:00 | Monti | 30 min | Parada | — | El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber. |
+| 16:40 | Via dei Fori Imperiali | 30 min | 🌅 Atardecer | 9 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. |
+| 17:30 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 21 min andando | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
+| 18:15 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
+| 18:40 | Paseo por Monti y los Foros iluminados y aperitivo | 45 min | 🕐 Tiempo libre |  |  |
+| 19:30 | Cena: Trattoria Monti |  | 🍷 Cena | 4 min andando | en Monti |
+
+**Lo que quedó fuera**: nada.
+
+<a id="ruta-10"></a>
+## 10. 3 días · sin Free Tour · sin experiencias · desde el viernes 1 ene 2027
+
+**Nota de temporada**: En tus fechas anochece sobre las 16:45 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Viernes 1 y domingo 3 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 1
+  - Los Museos Vaticanos cierran el viernes 1, Año Nuevo y el domingo 3. Hemos puesto tu visita el sábado 2 para que no los pierdas.
+- **1 de enero · Año Nuevo** · etiqueta «Año Nuevo» en el día 1
+  - Roma empieza el año con calma: muchos monumentos abren con horario corto.
+  - En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).
+  - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
+- **Domingo 3 · El Coliseo y los museos del Estado, gratis** · etiqueta «El Coliseo y los museos del Estado, gratis» en el día 3
+  - El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.
+
+### Día 1 — Trevi sin gente, el Pincio y la tarde en Monti
+
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Museos Vaticanos cerrados · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D4M (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 11:30. Tira la moneda de espaldas: dicen que así vuelves. |
+| 09:00 | Desayuno romano | 20 min | ☕ Pausa | 3 min andando | Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más. |
+| 09:25 | Iglesia de San Ignacio de Loyola | 15 min | Parada | 3 min andando | La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro. |
+| 09:50 | Via Condotti | 10 min | Por el camino | 10 min andando | La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi. |
+| 10:05 | Plaza de España | 20 min | Parada | 7 min andando | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
+| 10:25 | Trinità dei Monti | 10 min | Parada · por dentro | 1 min andando | La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies. |
+| 10:40 | Via del Babuino | 10 min | Por el camino | 6 min andando | La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España. |
+| 11:00 | Piazza del Popolo | 10 min | Parada | 6 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
+| 11:15 | Santa Maria del Popolo | 25 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
+| 11:45 | Terraza del Pincio | 25 min | Parada | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
+| 12:20 | Parque de Villa Borghese | 30 min | Parada | 12 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 13:00 | Comida: Girarrosto Fiorentino | 90 min | 🍝 Comida | 12 min andando | en Via Veneto y Salario |
+| 14:55 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 🚇 Metro A o un taxi, 25 min | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
+| 15:35 | Iglesia de San Pietro in Vincoli | 20 min | Parada · por dentro | 12 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
+| 16:00 | Monti | 25 min | Parada | 4 min andando | El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber. |
+| 16:35 | Via dei Fori Imperiali | 35 min | 🌅 Atardecer | 9 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 17:15 | Mercados de Trajano | 60 min | Parada · por dentro | 7 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:25 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
+| 18:50 | Paseo por Monti y los Foros iluminados y aperitivo | 60 min | 🕐 Tiempo libre |  | ideas: Santo Bambino de Aracoeli, Columna de Trajano |
+| 20:00 | Cena: La Boccaccia |  | 🍷 Cena | 8 min andando | en Monti |
+
+### Día 2 — Vaticano, Castillo y Trastevere al atardecer
+
+**sábado 2 ene 2027** · 🌅 atardecer 16:50 · día curado D2 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | — | Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos. |
+| 11:15 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. · 🎄 A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA. |
+| 11:35 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
+| 12:20 | Basílica de San Pedro | 60 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 13:30 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
+| 14:50 | Borgo Pio | 20 min | Parada | 3 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
+| 15:15 | Via della Conciliazione | 10 min | Por el camino | 3 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
+| 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
+| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+### Día 3 — Roma Antigua y el centro barroco
+
+**domingo 3 ene 2027** · 🏷️ El Coliseo y los museos del Estado, gratis · 🌅 atardecer 16:51 · día curado D1 (A, domingo, fecha:primer_domingo)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
+| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. |
+| 12:05 | Plaza del Campidoglio | 15 min | Parada | 2 min andando | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
+| 12:25 | Plaza Venecia | 10 min | Por el camino | 3 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 12:40 | Altar de la Patria | 40 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 13:30 | Comida: Nonna Betta | 75 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 14:50 | Barrio Judío | 25 min | Parada | 1 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 15:20 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 15:35 | Largo di Torre Argentina | 15 min | Parada | 3 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 16:00 | Iglesia del Gesù | 25 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
+| 16:30 | Iglesia de Santa Maria sopra Minerva | 15 min | Parada | 6 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
+| 16:45 | Elefantino de Bernini | 5 min | Por el camino | 1 min andando | Un elefante pequeño con un obelisco egipcio encima, diseñado por Bernini. Cuenta la leyenda que le puso la cola mirando al convento de enfrente, con cuyos frailes se llevaba fatal. Búscala. |
+| 16:55 | Panteón | 35 min | Parada · por dentro | 3 min andando | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
+| 17:35 | Iglesia de San Luigi dei Francesi | 15 min | Parada · por dentro | 6 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
+| 17:55 | Piazza Navona | 35 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
+| 18:35 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 19:05 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
+| 20:00 | Cena: Pizzeria Da Baffetto |  | 🍷 Cena | 6 min andando | en Centro Histórico |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
+
+**Lo que quedó fuera**: nada.
+
+<a id="ruta-11"></a>
+## 11. 3 días · sin Free Tour ·  · desde el martes 5 ene 2027
+
+**Nota de temporada**: En tus fechas anochece sobre las 17:00 y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo y veas Roma iluminada.
+
+**Avisos de fechas** (ventana al entrar en la ruta): 
+- **Miércoles 6 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2
+  - El 6 de enero los Museos Vaticanos cierran por Reyes. Hemos puesto tu visita el jueves 7 para que no los pierdas.
+- **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
+  - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
+- **6 de enero · Reyes (la Befana)** · etiqueta «Reyes (la Befana)» en el día 2
+  - Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana.
+
+### Día 1 — Roma Antigua y el centro barroco
+
+**martes 5 ene 2027** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:53 · día curado D1 (A, mercadillos_navidenos, capa:Mercadillo de Navidad de Piazza Navona)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Coliseo | 85 min | Parada · por dentro | — | Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino. |
+| 10:00 | Arco de Constantino | 20 min | Parada | 3 min andando | Pegado al Coliseo está el arco triunfal mejor conservado de Roma. Fíjate en los relieves: muchos son más antiguos que el propio arco, porque los romanos los reaprovecharon de otros monumentos. |
+| 10:25 | Foro Romano y Palatino | 100 min | Parada · por dentro | 4 min andando | Aquí latía la Roma antigua: templos, tribunales y mercados a lo largo de la Vía Sacra. Sube también al Palatino, donde vivían los emperadores; de ahí viene la palabra «palacio». Sales por el lado del Campidoglio, justo por donde sigue el día. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
+| 12:05 | Plaza del Campidoglio | 15 min | Parada | 2 min andando | Esta plaza la diseñó Miguel Ángel. Justo detrás, rodeando el edificio del Ayuntamiento, hay un mirador desde el que ves el Foro Romano entero a tus pies. Apúntatelo: poca gente sabe que está ahí. |
+| 12:20 | Santo Bambino de Aracoeli | 10 min | Por el camino | 1 min andando | Pasas por aquí de camino: no hace falta pararse. |
+| 12:35 | Plaza Venecia | 10 min | Por el camino | 3 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
+| 12:50 | Altar de la Patria | 40 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
+| 13:45 | Comida: Giggetto al Portico d'Ottavia | 60 min | 🍝 Comida | 7 min andando | en Barrio Judío |
+| 14:50 | Barrio Judío | 25 min | Parada | 1 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 15:20 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 15:35 | Largo di Torre Argentina | 15 min | Parada | 3 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 16:00 | Iglesia del Gesù | 25 min | Parada · por dentro | 5 min andando | La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli. |
+| 16:30 | Iglesia de Santa Maria sopra Minerva | 15 min | Parada | 6 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
+| 16:45 | Elefantino de Bernini | 5 min | Por el camino | 1 min andando | Un elefante pequeño con un obelisco egipcio encima, diseñado por Bernini. Cuenta la leyenda que le puso la cola mirando al convento de enfrente, con cuyos frailes se llevaba fatal. Búscala. |
+| 16:55 | Panteón | 35 min | Parada · por dentro | 3 min andando | Tiene casi 2.000 años y sigue en pie como el primer día. Ponte justo debajo del óculo, el agujero de la cúpula: cuando llueve, el agua cae dentro y se va por unos desagües del suelo que siguen funcionando. Aquí está enterrado Rafael. |
+| 17:35 | Iglesia de San Luigi dei Francesi | 15 min | Parada · por dentro | 6 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
+| 17:55 | Piazza Navona | 50 min | Parada | 3 min andando | En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa. |
+| 18:50 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 19:20 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 30 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
+| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
+
+### Día 2 — Trevi sin gente, el Pincio y la tarde en Monti
+
+**miércoles 6 ene 2027** · 🎉 Epifanía · 🏷️ Museos Vaticanos cerrados · 🏷️ Reyes (la Befana) · 🌅 atardecer 16:54 · día curado D4M (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves. |
+| 09:00 | Desayuno romano | 20 min | ☕ Pausa | 3 min andando | Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más. |
+| 09:25 | Iglesia de San Ignacio de Loyola | 15 min | Parada | 3 min andando | La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro. |
+| 09:50 | Via Condotti | 10 min | Por el camino | 10 min andando | La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi. |
+| 10:05 | Plaza de España | 20 min | Parada | 7 min andando | La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido. |
+| 10:25 | Trinità dei Monti | 10 min | Por fuera (Todavía no ha abierto (abre a las 12:00)) | 1 min andando | La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies. |
+| 10:40 | Via del Babuino | 10 min | Por el camino | 6 min andando | La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España. |
+| 11:00 | Piazza del Popolo | 10 min | Parada | 6 min andando | Durante siglos, esta era la puerta por la que entraban en Roma los viajeros que llegaban del norte. El obelisco egipcio del centro lo trajo Augusto hace más de 2.000 años, y las dos iglesias gemelas enmarcan la entrada a la ciudad. |
+| 11:15 | Santa Maria del Popolo | 25 min | Parada · por dentro | 3 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. Ojo: por la mañana cierra a las 12:00. |
+| 11:45 | Terraza del Pincio | 25 min | Parada | 6 min andando | El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos. |
+| 12:20 | Parque de Villa Borghese | 30 min | Parada | 12 min andando | Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque. |
+| 13:00 | Comida: Girarrosto Fiorentino | 90 min | 🍝 Comida | 12 min andando | en Via Veneto y Salario |
+| 14:55 | Basílica de Santa María la Mayor | 30 min | Parada · por dentro | 🚇 Metro A o un taxi, 25 min | Una de las cuatro basílicas mayores de Roma, con mosaicos del siglo V, y la entrada es gratis. Cuenta la leyenda que se construyó donde nevó un 5 de agosto. Aquí está enterrado el papa Francisco. |
+| 15:35 | Iglesia de San Pietro in Vincoli | 20 min | Parada · por dentro | 12 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
+| 16:00 | Monti | 25 min | Parada | 4 min andando | El barrio con más vida de Roma: tiendas pequeñas, vinotecas y gente joven. Al caer la tarde, los vecinos se sientan en la fuente de la Piazza della Madonna dei Monti con algo de beber. |
+| 16:35 | Via dei Fori Imperiali | 40 min | 🌅 Atardecer | 9 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. |
+| 17:20 | Mercados de Trajano | 60 min | Parada · por dentro | 7 min andando | El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies. |
+| 18:30 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El final natural del día: el Coliseo iluminado, a un paso de la cena. De noche impresiona todavía más que de día, con los arcos encendidos y mucha menos gente alrededor. |
+| 18:55 | Paseo por Monti y los Foros iluminados y aperitivo | 55 min | 🕐 Tiempo libre |  | ideas: Columna de Trajano |
+| 20:00 | Cena: La Boccaccia |  | 🍷 Cena | 8 min andando | en Monti |
+
+### Día 3 — Vaticano, Castillo y Trastevere al atardecer
+
+**jueves 7 ene 2027** · 🌅 atardecer 16:55 · día curado D2 (A)
+
+| Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
+|---|---|---|---|---|---|
+| 08:00 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | — | Entras con el primer turno, cuando todavía hay poca gente. Si vas directo a la Capilla Sixtina, la verás como casi nadie la ve: tranquila. Dentro no se pueden hacer fotos: disfrútala con los ojos. |
+| 11:15 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. |
+| 11:35 | Cúpula de San Pedro | 45 min | Parada · por dentro | 3 min andando | Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies. |
+| 12:20 | Basílica de San Pedro | 60 min | Parada · por dentro | 1 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 13:30 | Comida: Borghiciana Pastificio Artigianale | 75 min | 🍝 Comida | 9 min andando | en Vaticano y Borgo |
+| 14:50 | Borgo Pio | 20 min | Parada | 3 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
+| 15:15 | Via della Conciliazione | 10 min | Por el camino | 3 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere. |
+| 15:40 | Castillo de Sant'Angelo | 90 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
+| 17:35 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
+| 17:55 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
+| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+
+**Lo que quedó fuera**: nada.
+
 ## Caso de prueba: agosto sin fechas frente a 13-15 de agosto
 
 ### 3 días en agosto, sin fechas
@@ -672,7 +1205,8 @@ Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu
 
 Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.mjs). Tiene que salir todo a 0, o con la lista de lo que no se ha podido arreglar.
 
-- **Lugar repetido en el mismo día**: 0 ✅
+- **Lugar repetido en el mismo día**: 1
+  - ruta 9, día 5, 15:50 Via Appia Antica — también a las 15:05
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
@@ -710,23 +1244,30 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 
 ## Recuento (Parte D)
 
-- **Lugares repetidos en el mismo día**: 0 ✅
+- **Lugares repetidos en el mismo día**: 1
+  - ruta 9, día 5: Via Appia Antica (15:05 y 15:50)
 - **Monumentos (nivel 1-2) sin su propia línea**: 0 ✅
 - **Lugares de nivel 1 o 2 como "Por el camino"**: 0 ✅
 - **Plazas o puentes después de su monumento, fuera de las excepciones**: 0 ✅
 - **Avisos amarillos de textos con hora (sin "temprano" ni hora_ok)**: 0 ✅
 - **Títulos del día que prometen una hora que no se cumple**: 0 ✅
-- **Filas con "Por qué aquí" genérico**: 3
+- **Filas con "Por qué aquí" genérico**: 4
   - ruta 2, día 5, 17:45 Luces de Navidad del Tridente: Elegido según tus gustos: Mercadillos Navideños.
   - ruta 6, día 1, 12:20 Santo Bambino de Aracoeli: Pasas por aquí de camino: no hace falta pararse.
   - ruta 6, día 3, 18:00 Luces de Navidad del Tridente: Elegido según tus gustos: Mercadillos Navideños.
+  - ruta 11, día 1, 12:20 Santo Bambino de Aracoeli: Pasas por aquí de camino: no hace falta pararse.
 - **Notas internas que se ven**: 0 ✅
-- **Cifras y precios fuera de Tickets**: 5
+- **Cifras y precios fuera de Tickets**: 10
   - línea 50: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
   - línea 195: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
   - línea 265: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 412: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 575: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 409: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 570: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 673: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 765: | 15:15 | Fontana de Trevi | 20 min | Parada | 8 min andando | La fuente más famosa del mundo, y desde la plaza se ve gr
+  - línea 909: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 992: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 1111: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅
 

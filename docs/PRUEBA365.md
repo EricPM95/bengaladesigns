@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 465 s. **Total: 44**.
+6180 viajes (todas las fechas de 2027), en 517 s. **Total: 44**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -69,5 +69,5 @@
 
 - **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D2 A +lunes ×2 · D1 A +sabado+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×22
-- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +fecha:01-01+arte_museos ×1 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+fecha:01-01+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
+- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +fecha:01-01+arte_museos ×1 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+fecha:01-01+arte_museos+empieza:no_cabe ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: D5C A viernes ×1
