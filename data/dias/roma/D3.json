@@ -109,7 +109,7 @@
       "_nota": "El sábado el Panteón vende entradas hasta las 16:00: al acabar el tour (12:30) cabe de sobra."
     },
     "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos): la tarde en el Castillo, la Plaza y la Basílica.",
+      "_nota": "Los Museos Vaticanos cierran (sus festivos): la tarde en el Castillo, la Plaza y la Basílica. La tarde empieza a las 14:30 para que la comida quepa holgada también en domingo (Armando cierra y se come más lejos).",
       "tarde.*": {
         "paradas": [
           {
@@ -148,7 +148,63 @@
             "lugar": "Borgo Pio",
             "modo": "camino"
           }
-        ]
+        ],
+        "empieza": "14:30"
+      },
+      "tarde.D": {
+        "_nota": "Verano (el sol desde las 19:45): la tarde sin los Museos acaba pronto y la cena no es antes de las 20:30. Se llena con un paseo por Borgo Pio, que se estira, y el atardecer desde el Puente Sant'Angelo, con la cúpula de San Pedro al fondo; la cena, al lado. No va por Trastevere y el Janículo porque el otro día del viaje con Free Tour (D1-FT) ya acaba allí al atardecer.",
+        "empieza": "14:30",
+        "paradas": [
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "traslado": {
+              "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Cúpula de San Pedro",
+            "min": 45,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Borgo Pio",
+            "min": 40,
+            "elastica": 30,
+            "no_calle": true,
+            "texto": "La calle del barrio pegado al Vaticano, con sus fachadas bajas y sus terrazas. A esta hora se llena de romanos: es buen sitio para un aperitivo sin prisa."
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "modo": "atardecer",
+            "texto": "El puente de los ángeles de Bernini, al caer el sol: el Castillo se pone dorado y la cúpula de San Pedro se recorta al fondo sobre el Tíber."
+          }
+        ],
+        "cena": {
+          "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
+          "hora": "20:30"
+        }
       }
     },
     "fecha:12-24": {
