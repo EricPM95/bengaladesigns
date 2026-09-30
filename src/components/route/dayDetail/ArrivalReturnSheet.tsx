@@ -161,14 +161,23 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   if (!medio) return null
   const arrival = kind === 'llegada'
   const title = arrival ? medio.textos.llegada_titulo : medio.textos.vuelta_titulo.replace('{origen}', origin)
-  const why = arrival ? medio.textos.llegada_por_que : medio.textos.vuelta_por_que
-  const privatePoints = mode === 'coche' ? [] : shownPoints.filter((point) => point.privado)
-  const tips = arrival ? medio.tips_llegada : medio.tips_vuelta
+  // Con un solo punto a la vista, su propio texto (Tiburtina no es Termini); con varios, el del medio.
+  const onePoint = shownPoints.length === 1 ? shownPoints[0] : null
+  const why = (arrival ? onePoint?.por_que_llegada : onePoint?.por_que_vuelta) ?? (arrival ? medio.textos.llegada_por_que : medio.textos.vuelta_por_que)
+  // Sin enlace de afiliado, el traslado privado no sale a la venta (PARA_CODE_LLEGADAS, 5).
+  const privatePoints = mode === 'coche' ? [] : shownPoints.filter((point) => point.privado && point.privado.url_afiliado && point.privado.url_afiliado !== '#')
+  // Un tip de un punto (`solo_en`) sale solo si todo lo que se ve es ese punto; uno con fecha de fin (`hasta`), solo hasta
+  // esa fecha (la del viaje o, sin ella, la de hoy).
+  const tipDate = dateIso ?? new Date().toISOString().slice(0, 10)
+  const tips = (arrival ? medio.tips_llegada : medio.tips_vuelta).filter(
+    (tip) => (!tip.solo_en || (shownPoints.length > 0 && shownPoints.every((point) => tip.solo_en!.includes(point.id)))) && (!tip.hasta || tipDate <= tip.hasta),
+  )
   const tabs: Tab[] = ['resumen', ...(privatePoints.length > 0 ? (['traslados'] as const) : []), ...(tips.length > 0 ? (['tips'] as const) : [])]
   const activeTab = tabs.includes(tab) ? tab : 'resumen'
   const eyebrow = [arrival ? 'LLEGADA' : 'VUELTA', eyebrowDate(dateIso)].filter(Boolean).join(' · ')
   const bookingLine = time ? `${BOOKING_NAME[mode]} ${time}${shownPoints[0] ? ` · ${shownPoints[0].nombre}` : ''}` : null
-  const viaTermini = mode !== 'coche'
+  // La estación, la consigna, la maleta y «Tu última hora» hablan de Termini: solo si lo que se ve pasa por Termini.
+  const viaTermini = mode !== 'coche' && shownPoints.every((point) => point.termini !== false)
 
   // La última tarde: libre hasta 15 min antes de recoger la maleta, la maleta 30 min antes de salir, y salir.
   const lastAfternoon =

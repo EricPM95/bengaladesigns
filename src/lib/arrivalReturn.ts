@@ -39,12 +39,21 @@ export interface ArrivalPoint {
   al_centro: ArrivalOption[]
   a_la_salida?: ArrivalOption[]
   privado?: { proveedor: string; precio: number; moneda: string; url_afiliado: string }
+  /** El resumen de ese punto, si no vale el del medio (Tiburtina no es Termini). */
+  por_que_llegada?: string
+  por_que_vuelta?: string
+  /** false: no pasa por Termini (Tiburtina, el crucero): sin la consigna, la estación ni «Tu última hora» de Termini. */
+  termini?: boolean
 }
 
 export interface ArrivalTip {
   titulo: string
   texto: string
   fuente?: string | null
+  /** Solo en esos puntos («Mira el andén en la pantalla», en Termini). */
+  solo_en?: string[]
+  /** Hasta esa fecha (AAAA-MM-DD): los controles de frontera de unas semanas. */
+  hasta?: string
 }
 
 export interface ArrivalMedio {

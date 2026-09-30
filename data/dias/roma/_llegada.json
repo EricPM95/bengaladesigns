@@ -30,8 +30,8 @@
               "frecuencia": "cada 15 min (a algunas horas, cada 30)",
               "precio": "14 €",
               "nota": "Del aeropuerto, primer tren a las 5:38 y último a las 23:23. Niños de menos de 4 años gratis, y uno de 4 a 11 años gratis con cada adulto.",
-              "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/orario-digitale/collegamenti/orari-leonardo-express.pdf (horario de verano 14 jun-12 dic 2026: último tren diario desde el aeropuerto a las 23:23; los de las 23:53 y 0:23 no salen todos los días)",
+              "comprobado": "2026-09-30"
             },
             {
               "nombre": "Taxi oficial",
@@ -56,16 +56,16 @@
               "frecuencia": "cada 20 min",
               "precio": "desde 4 €",
               "nota": "Andén 18. El precio cambia según el día.",
-              "fuente": "https://www.terravision.eu/italiano/airport_transfer/bus-aeroporto-fiumicino-roma/",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.terravision.eu/airport_transfer/bus-fiumicino-airport-rome/ («Adult from 4,00€»)",
+              "comprobado": "2026-09-30"
             },
             {
               "nombre": "Autobús a Termini (Rome Airport Bus)",
               "tiempo": "unos 50 min",
               "precio": "8 €",
               "nota": "Andén 19. Menores de 6 años, gratis.",
-              "fuente": "https://romeairportbus.it/",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.romeairportbus.it/ (sola andata 8,00 €)",
+              "comprobado": "2026-09-30"
             }
           ],
           "a_la_salida": [
@@ -99,7 +99,8 @@
             "proveedor": "getyourguide",
             "precio": 45,
             "moneda": "EUR",
-            "url_afiliado": "#"
+            "url_afiliado": "#",
+            "_nota": "Sin enlace de afiliado todavía (url_afiliado «#»): la pantalla no lo enseña hasta que lo tenga (PARA_CODE_LLEGADAS, 5)."
           },
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg/960px-Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg",
           "foto_credito": "Wikimedia Commons"
@@ -135,22 +136,22 @@
               "nombre": "Autobús a Termini (Terravision)",
               "tiempo": "unos 40 min",
               "precio": "desde 6,50 €",
-              "fuente": "https://www.terravision.eu/italiano/ciampino_bus_info.html",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.terravision.eu/airport_transfer/bus-ciampino-airport-rome/ («Adult from 6,50€»)",
+              "comprobado": "2026-09-30"
             },
             {
               "nombre": "Autobús a Termini (Rome Airport Bus)",
               "tiempo": "unos 40 min",
               "precio": "8 €",
-              "fuente": "https://romeairportbus.it/",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.romeairportbus.it/ (sola andata 8,00 €)",
+              "comprobado": "2026-09-30"
             },
             {
               "nombre": "Autobús ATRAL al metro Anagnina (línea A)",
               "tiempo": "unos 20 min, y el metro al centro",
               "precio": "1,20 € + 1,50 € el metro",
-              "fuente": "https://www.atral-lazio.com/",
-              "comprobado": "2026-09-29"
+              "fuente": "https://www.atral-lazio.com/ («Euro 1,20 per passeggero per singola corsa»)",
+              "comprobado": "2026-09-30"
             }
           ],
           "a_la_salida": [
@@ -215,8 +216,16 @@
         },
         {
           "titulo": "Lleva el DNI o el pasaporte",
-          "texto": "Entre Italia y España no suele haber control, pero ahora mismo los dos países han vuelto a controlar sus fronteras aéreas por unas semanas, y la aerolínea también te lo pide.",
-          "fuente": "https://home-affairs.ec.europa.eu/policies/schengen/schengen-area/temporary-reintroduction-border-control_en"
+          "texto": "Lleva el DNI o el pasaporte: la aerolínea te lo pide para embarcar.",
+          "fuente": null
+        },
+        {
+          "titulo": "Controles en los vuelos con España",
+          "texto": "Italia controla sus fronteras aéreas y marítimas con España hasta el 1 de octubre de 2026: ten el DNI o el pasaporte a mano al pasar.",
+          "hasta": "2026-10-01",
+          "verificar": "Se ha prorrogado dos veces (15 días cada vez). Si se vuelve a prorrogar, cambiar `hasta` con la nueva fecha y su fuente.",
+          "fuente": "https://home-affairs.ec.europa.eu/policies/schengen/schengen-area/temporary-reintroduction-border-control_en («16/09/2026 – 01/10/2026 … all internal air and sea borders with Spain»); Ministerio del Interior, https://www.interno.gov.it/it/stampa-e-comunicazione/comunicati-stampa/proroga-dei-controlli-frontiere-aree-e-marittime-spagna",
+          "comprobado": "2026-09-30"
         },
         {
           "titulo": "La tarifa fija del taxi, solo desde dentro de las murallas",
@@ -229,10 +238,10 @@
       "textos": {
         "llegada_titulo": "Llegada a Roma",
         "llegada_sub": "De la estación a tu alojamiento",
-        "llegada_por_que": "Casi todos los trenes de larga distancia llegan a Roma Termini: desde ahí salen las dos líneas de metro y la mayoría de los autobuses.",
+        "llegada_por_que": "Los trenes de larga distancia llegan a Roma Termini o a Roma Tiburtina: de las dos sale el metro hacia el centro.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "De tu alojamiento a la estación, con margen",
-        "vuelta_por_que": "Llega a la estación con tiempo: los andenes de Termini se anuncian poco antes de salir y algunos quedan lejos de la entrada."
+        "vuelta_por_que": "Llega a la estación con tiempo: el andén sale en las pantallas poco antes de la salida."
       },
       "salir_antes_min": 45,
       "puntos": [
@@ -261,7 +270,9 @@
             }
           ],
           "foto_url": "https://images.unsplash.com/photo-1768213021718-9f738eabb363?fm=jpg&q=80&w=1080",
-          "foto_credito": "Nico Ruge, Unsplash"
+          "foto_credito": "Nico Ruge, Unsplash",
+          "por_que_llegada": "Llegas a Roma Termini: desde ahí salen las dos líneas de metro y la mayoría de los autobuses.",
+          "por_que_vuelta": "Llega a Termini con tiempo: los andenes se anuncian poco antes de salir y algunos quedan lejos de la entrada."
         },
         {
           "id": "tiburtina",
@@ -280,14 +291,31 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/2013-06-15_Roma_Stazione_FS_Tiburtina.jpg/960px-2013-06-15_Roma_Stazione_FS_Tiburtina.jpg",
-          "foto_credito": "Wikimedia Commons"
+          "foto_credito": "Wikimedia Commons",
+          "termini": false,
+          "por_que_llegada": "Llegas a Roma Tiburtina, al noreste del centro: dentro de la estación está el metro B (Tiburtina FS), que te deja en Termini en unos 10 min y de ahí en todo el centro.",
+          "por_que_vuelta": "Sal con tiempo hacia Tiburtina: el metro B te deja dentro de la estación (Tiburtina FS), y el andén sale en las pantallas poco antes de la salida.",
+          "a_la_salida": [
+            {
+              "nombre": "Metro B hasta Tiburtina FS",
+              "mas_comodo": true,
+              "tiempo": "unos 10 min desde Termini",
+              "precio": "1,50 €",
+              "nota": "La parada del metro está dentro de la propia estación de Tiburtina.",
+              "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+              "comprobado": "2026-09-30"
+            }
+          ]
         }
       ],
       "tips_llegada": [
         {
           "titulo": "Sigue la «M» roja",
           "texto": "En Termini, el metro está bajo la galería comercial: las dos líneas se cruzan ahí, sin salir a la calle.",
-          "fuente": null
+          "fuente": null,
+          "solo_en": [
+            "termini"
+          ]
         },
         {
           "titulo": "Pasa la tarjeta, no hace falta billete",
@@ -297,19 +325,28 @@
         {
           "titulo": "En Termini, la cartera delante",
           "texto": "El vestíbulo y la bajada al metro van llenos a todas horas: mochila por delante.",
-          "fuente": null
+          "fuente": null,
+          "solo_en": [
+            "termini"
+          ]
         }
       ],
       "tips_vuelta": [
         {
           "titulo": "Mira el andén en la pantalla",
           "texto": "En Termini el andén sale en los paneles unos 15-20 min antes: espera en el vestíbulo y no en un andén cualquiera.",
-          "fuente": null
+          "fuente": null,
+          "solo_en": [
+            "termini"
+          ]
         },
         {
           "titulo": "Deja la maleta en la estación",
           "texto": "La consigna está en la propia Termini: pasea la última mañana sin arrastrarla.",
-          "fuente": "https://www.romatermini.com/stores/kipoint"
+          "fuente": "https://www.romatermini.com/stores/kipoint",
+          "solo_en": [
+            "termini"
+          ]
         }
       ]
     },
@@ -341,7 +378,19 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/2013-06-15_Roma_Stazione_FS_Tiburtina.jpg/960px-2013-06-15_Roma_Stazione_FS_Tiburtina.jpg",
-          "foto_credito": "Wikimedia Commons"
+          "foto_credito": "Wikimedia Commons",
+          "termini": false,
+          "a_la_salida": [
+            {
+              "nombre": "Metro B hasta Tiburtina FS",
+              "mas_comodo": true,
+              "tiempo": "unos 10 min desde Termini",
+              "precio": "1,50 €",
+              "nota": "La parada del metro está junto a la estación de autobuses.",
+              "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+              "comprobado": "2026-09-30"
+            }
+          ]
         }
       ],
       "tips_llegada": [
@@ -404,9 +453,11 @@
               "nombre": "Tren regional a Roma (San Pietro, Ostiense, Termini)",
               "tiempo": "unos 60-80 min",
               "frecuencia": "cada 30 min",
-              "nota": "El precio va por distancia: compruébalo en trenitalia.com.",
-              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf",
-              "comprobado": "2026-09-29"
+              "nota": "Tarifa regional por distancia: lo mismo hasta San Pietro, Ostiense o Termini. Compra el billete antes de subir: en Civitavecchia no se vende a bordo.",
+              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €)",
+              "comprobado": "2026-09-30",
+              "precio": "4,60 €",
+              "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €."
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
@@ -464,13 +515,16 @@
               "nombre": "Tren regional a Roma (San Pietro, Ostiense, Termini)",
               "tiempo": "unos 60-80 min",
               "frecuencia": "cada 30 min",
-              "nota": "El precio va por distancia: compruébalo en trenitalia.com.",
-              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf",
-              "comprobado": "2026-09-29"
+              "nota": "Tarifa regional por distancia: lo mismo hasta San Pietro, Ostiense o Termini. Compra el billete antes de subir: en Civitavecchia no se vende a bordo.",
+              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €)",
+              "comprobado": "2026-09-30",
+              "precio": "4,60 €",
+              "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €."
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
-          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons"
+          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons",
+          "termini": false
         }
       ],
       "tips_llegada": [
@@ -517,8 +571,8 @@
               "nombre": "ZTL de Trastevere",
               "tiempo": "lunes a sábado 6:30-10:00",
               "nota": "De noche, viernes y sábado de 21:30 a 3:00 (de mayo a octubre, también miércoles y jueves). En agosto, sin ZTL de noche.",
-              "fuente": "https://romamobilita.it/infomobilita/ztl-tutti-gli-orari/",
-              "comprobado": "2026-09-29"
+              "fuente": "https://romamobilita.it/primo-piano/ad-agosto-pausa-estiva-per-le-ztl-notturne-regolarmente-attive-quelle-diurne/ (29-07-2026: en agosto no funcionan las ZTL nocturnas de Centro, Trastevere, Testaccio y San Lorenzo)",
+              "comprobado": "2026-09-30"
             },
             {
               "nombre": "Aparca fuera y sigue en metro",
@@ -561,8 +615,8 @@
   "consigna": {
     "titulo": "Si aún no puedes entrar al alojamiento",
     "texto": "La consigna de Termini (KiPoint) está a nivel de los andenes, en el lado de Via Giolitti, de 7:00 a 21:00, desde 6 € por maleta.",
-    "fuente": "https://www.romatermini.com/stores/kipoint",
-    "comprobado": "2026-09-29"
+    "fuente": "https://www.kibag.it/en/deposito-bagagli-roma/deposito-bagagli-roma-termini/ (KiPoint/KiBag Termini: todos los días de 7:00 a 21:00, «from € 6»)",
+    "comprobado": "2026-09-30"
   },
   "ultima_tarde": {
     "texto": "Aprovecha la mañana sin prisas: deja la maleta en la consigna o en el alojamiento, sal a la hora que te marcamos y llegarás con margen."
@@ -570,8 +624,8 @@
   "maleta": {
     "titulo": "La maleta, el último día",
     "texto": "Déjala en tu alojamiento (pregunta si te la guardan después de la salida) o en la consigna de Termini (KiPoint, andenes lado Via Giolitti, 7:00-21:00, desde 6 € por maleta) y recógela de camino.",
-    "fuente": "https://www.romatermini.com/stores/kipoint",
-    "comprobado": "2026-09-29"
+    "fuente": "https://www.kibag.it/en/deposito-bagagli-roma/deposito-bagagli-roma-termini/ (KiPoint/KiBag Termini: todos los días de 7:00 a 21:00, «from € 6»)",
+    "comprobado": "2026-09-30"
   },
   "ultima_hora": [
     {
