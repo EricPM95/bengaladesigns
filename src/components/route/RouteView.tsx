@@ -17,6 +17,7 @@ import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
+import { SeasonCard } from './SeasonCard'
 import { TripTipsSheet } from './TripTipsSheet'
 import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
@@ -289,7 +290,9 @@ export function RouteView() {
         </div>
       </div>
 
-      {/* Avisos de fechas especiales: la primera vez que se abre la ruta, y al tocar la etiqueta de un día. */}
+      {/* Primero la tarjeta de temporada; al tocar «Entendido», los avisos de fechas (la primera vez que se abre la ruta, y al
+          tocar la etiqueta de un día). */}
+      <SeasonCard route={route} />
       <DateNoticesModal route={route} />
       <TripTipsSheet open={tipsOpen} destination={route.destination} onClose={closeTips} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}

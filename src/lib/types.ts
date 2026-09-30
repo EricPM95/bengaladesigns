@@ -736,7 +736,8 @@ export interface Route {
   contextBannerDismissed?: boolean
   /** Nota de temporada (decisión del usuario, 2026-09-28): arriba de la ruta, con el efecto de temporada; se cierra. */
   /** (`icon: 'navidad'`: la nota navideña, en lugar de la de invierno.) */
-  seasonNote?: { season: string; text: string; icon?: string } | null
+  /** La tarjeta de temporada (PROMPT_TARJETA_TEMPORADA): `season` primavera, verano, otono, invierno o navidad; `title`, «Primavera en Roma». */
+  seasonNote?: { season: string; text: string; icon?: string; title?: string } | null
   seasonNoteDismissed?: boolean
   /** Motor v3: avisos de fechas especiales (festivos, cierres, eventos) — DateNoticesModal.tsx. */
   dateNotices?: DateNotice[]

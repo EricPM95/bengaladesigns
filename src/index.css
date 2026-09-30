@@ -187,6 +187,16 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   .trazo-notice-panel { animation: none; }
 }
 
+/* La tarjeta de temporada (SeasonCard.tsx): las ventanas y la guirnalda de Navidad laten; con «reducir movimiento», quietas. */
+@keyframes season-card-glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.season-card-glow { animation: season-card-glow 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .season-card-glow { animation: none; }
+}
+
 /* El efecto de temporada dentro de la ventana de los avisos (PROMPT_UI_REPASO_2, 2): la franja es baja, así que la
    caída es corta; el sol de verano se pone despacio. Con «reducir movimiento», quieto. */
 @keyframes trazo-fall-sm {
