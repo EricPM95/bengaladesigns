@@ -568,7 +568,7 @@
       }
     },
     "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos): la Plaza, la Cúpula y la Basílica, y el Castillo por la mañana; la tarde de siempre sin el Castillo.",
+      "_nota": "Los Museos Vaticanos cierran (sus festivos): la Plaza, la Cúpula y la Basílica, y el Castillo por la mañana; la tarde de siempre sin el Castillo. Con el sol desde las 19:45 (sol_desde / sol_hasta, la misma hora en la mañana y en la tarde para que el Castillo vaya una sola vez; 30-sep): la mañana empieza a las 10:00 sin el Castillo, y la tarde es la de siempre, con el Castillo primero: así Santa Maria in Trastevere (abre a las 16:00) y Santa Cecilia (16:30) se ven por dentro y no quedan ratos libres largos.",
       "manana": {
         "paradas": [
           {
@@ -578,7 +578,18 @@
               "completo": "08:30",
               "tranquilo": "09:30"
             },
-            "min": 25
+            "min": 25,
+            "sol_hasta": "19:45"
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "tipo": "fija",
+            "hora": {
+              "completo": "10:00",
+              "tranquilo": "10:00"
+            },
+            "min": 25,
+            "sol_desde": "19:45"
           },
           {
             "lugar": "Cúpula de San Pedro",
@@ -595,28 +606,39 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "sol_hasta": "19:45"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "sol_hasta": "19:45"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "sol_hasta": "19:45"
           }
         ]
       },
       "tarde.*": {
         "quitar": [
-          "Via della Conciliazione",
-          "Puente Sant'Angelo",
-          "Castillo de Sant'Angelo",
           "Borgo Pio"
         ],
+        "ajustar": {
+          "Via della Conciliazione": {
+            "sol_desde": "19:45"
+          },
+          "Puente Sant'Angelo": {
+            "sol_desde": "19:45"
+          },
+          "Castillo de Sant'Angelo": {
+            "sol_desde": "19:45"
+          }
+        },
         "insertar": [
           {
             "al_principio": true,

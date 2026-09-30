@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-10560 viajes (todas las fechas de 2027), en 804 s. **Total: 86** (completo 49, tranquilo 37).
+10560 viajes (todas las fechas de 2027), en 547 s. **Total: 83** (completo 47, tranquilo 36).
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -10,7 +10,7 @@
 - **Tramo de más de 25 min andando sin transporte**: 0 ✅
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 23
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 20
   - 2027-01-31 · 2 días · completo, día 2 antes de Mirador del Janículo — 35 min
   - 2027-01-31 · 2 días · tranquilo, día 2 antes de Mirador del Janículo — 35 min
   - 2027-02-07 · 2 días · completo, día 2 antes de Mirador del Janículo — 40 min
@@ -70,6 +70,6 @@
 ## Dónde caen (día escrito, versión y variantes; T = tranquilo)
 
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×52
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1 · D1 A +sabado+fecha:12-25 ×1 · D1-FT A ×1 · D1 A +sabado+fecha:12-25 T ×1 · D1-FT A T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D1 A +sabado+fecha:12-25 ×1 · D1-FT A ×1 · D1 A +sabado+fecha:12-25 T ×1 · D1-FT A T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1
 - **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1

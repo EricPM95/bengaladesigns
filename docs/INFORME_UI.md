@@ -295,3 +295,12 @@ móvil. Lo más importante:
   cena.
 
 **Los 56 viajes (v4 frente a v3):** 5 mejor, 51 igual y 0 peor. Avisos: 7 en v3 y 0 en v4.
+
+## 14 de agosto, Museos Vaticanos cerrados (regla 394)
+
+- **Antes:** la tarde empezaba a las 15:35 con Santa Maria in Trastevere y Santa Cecilia por fuera («todavía no ha abierto»), con 75 min
+  de descanso y 60 min libres antes del Janículo.
+- **Ahora** (sol desde las 19:45): mañana a las 10:00 con la Plaza, la Cúpula y la Basílica; comida; el Castillo a las 14:35; Santa
+  Maria in Trastevere por dentro a las 16:00 y Santa Cecilia a las 16:30; Trastevere 90 min y el Janículo al atardecer. Sin ratos libres.
+  Igual el 1 de mayo. Con el sol antes de las 19:45 (Lunes de Pascua, invierno), como estaba.
+- **Prueba de las 365 fechas:** 86 → **83** (completo 47, tranquilo 36); 3 arreglados, 0 nuevos. **56 viajes:** 5 mejor, 51 igual, 0 peor.

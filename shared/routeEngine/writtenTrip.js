@@ -716,6 +716,8 @@ export function planWrittenTrip(args) {
         // El nombre con el que sale (`titulo`: «Via Margutta y Via del Babuino»), siempre.
         ...(stop.titulo ? { stretchTitle: stop.titulo, stretchWhy: stop.texto_titulo ?? null, stretchBase: -100000 } : {}),
         ...(original.elastica != null ? { elastic: original.elastica } : {}),
+        // (Opcional en lo escrito: no cuenta como «plan» en las cifras de la pantalla de ritmo, paceStats.mjs.)
+        ...(original.tipo === 'opcional' ? { optional: true } : {}),
         // `revisita`: si el viaje ya pasó por aquí otro día, sale como revisita con su texto ({dia}: el día en que se vio).
         ...(stop.revisita && seenDay.has(source.name) && seenDay.get(source.name) !== ctx.day.dayNumber ? { isRevisit: true, revisitReason: String(stop.revisita).replace('{dia}', `el día ${seenDay.get(source.name)}`) } : {}),
       })

@@ -2127,3 +2127,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Un destino sin medición del motor no dice ninguna hora** (2026-09-30): con los valores de reserva (`medido` ausente),
       la pantalla de ritmo no pinta «El día empieza a las…» ni la marca de inicio del gráfico. «≈ N planes al día» se queda,
       como orientación.
+
+394. **Una variante por cierre no deja la tarde coja** (2026-09-30; el 14 de agosto, con los Museos Vaticanos cerrados). Si
+    al quitar lo cerrado la mañana se queda con lo que la tarde necesitaba para llegar a su hora (el Castillo, que hace
+    que las iglesias de Trastevere ya estén abiertas: 16:00 y 16:30), la variante lo reparte según la hora del sol, con la
+    MISMA condición en la mañana (`sol_hasta`) y en la tarde (`sol_desde`), para que ninguna parada salga dos veces ni
+    desaparezca cuando el día cambia de versión por la luz. Con el sol desde las 19:45: mañana a las 10:00 (Plaza, Cúpula
+    y Basílica) y la tarde de siempre con el Castillo primero.
