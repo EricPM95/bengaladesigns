@@ -1,6 +1,6 @@
 # Prueba de Navidad (del 1 de diciembre de 2026 al 8 de enero de 2027)
 
-2184 viajes (salida cada día, de 1 a 7 días, completo y tranquilo, con y sin Free Tour, con y sin mercadillos), en 59 s. **Total: 0**.
+2184 viajes (salida cada día, de 1 a 7 días, completo y tranquilo, con y sin Free Tour, con y sin mercadillos), en 58 s. **Total: 0**.
 
 - **Un lugar cerrado ese día, planificado por dentro**: 0 ✅
 - **Parada fuera de su horario real de ese día (con los horarios especiales de los festivos)**: 0 ✅
