@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Los originales de las fotos nuevas (4-6 MB cada una): en la app van las reducidas de public/fotos/.
+docs/archivo/fotos_roma_nuevas/

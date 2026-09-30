@@ -1,0 +1,106 @@
+{
+  "_que_es": "Fotos propias del destino (PARA_CODE_FOTOS, 2026-10-01): van antes que las de Unsplash y Wikipedia. Los ficheros están en public/fotos/<destino>/: <archivo> (1600 px de ancho como máximo, para la ficha) y <archivo sin .jpg>_p.jpg (640 px, para la tarjeta). `lugares`: el nombre con el que la app pide la foto; de noche lleva « (noche)». `fechas`: solo entre esas fechas (MM-DD) y solo con fechas reales de viaje. `verificar: true`: no sale hasta confirmar que ese año hay lo que se ve en la foto (una foto también es una promesa). `fuente`, `autor` y `enlace`: el crédito; mientras estén vacíos, la foto va sin línea de crédito, nunca con un autor o una web inventados.",
+  "carpeta": "/fotos/roma",
+  "fotos": [
+    {
+      "archivo": "noche_coliseo.jpg",
+      "lugares": ["Coliseo (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "noche_panteon.jpg",
+      "lugares": ["Panteón (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "noche_fontana_trevi.jpg",
+      "lugares": ["Fontana de Trevi (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "noche_castillo_desde_puente_sant_angelo.jpg",
+      "lugares": ["Castillo de Sant'Angelo (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "noche_castillo_y_puente_sant_angelo_rio.jpg",
+      "lugares": ["Puente Sant'Angelo (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "noche_foro_romano.jpg",
+      "lugares": ["Foro Romano desde el Campidoglio (noche)", "Foro Romano y Palatino (noche)", "Plaza del Campidoglio (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "navidad_basilica_san_pedro_arbol_dia.jpg",
+      "lugares": ["Basílica de San Pedro", "Plaza de San Pedro"],
+      "cuando": "dia",
+      "ancho": 850,
+      "fechas": { "desde": "12-16", "hasta": "01-06" },
+      "verificar_fechas": "El árbol de la plaza se pone todos los años; cambia el día en que se inaugura (2024: 7 de diciembre; 2025: 15 de diciembre). La foto sale desde el 16 de diciembre, la fecha segura de los dos últimos años; revisar cada diciembre en vaticannews.va.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "navidad_plaza_espana_arbol_noche.jpg",
+      "lugares": ["Plaza de España (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fechas": { "desde": "12-08", "hasta": "01-06" },
+      "verificar_fechas": "El árbol de la escalinata se pone todos los años; las fechas exactas cambian. La foto sale desde el 8 de diciembre, cuando se encienden los árboles de las plazas; revisar cada diciembre en turismoroma.it.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "navidad_plaza_venecia_altar_patria_arbol_noche.jpg",
+      "lugares": ["Altar de la Patria (noche)", "Plaza Venecia (noche)"],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fechas": { "desde": "12-08", "hasta": "01-06" },
+      "verificar": true,
+      "verificar_nota": "Solo si ese año hay árbol en Plaza Venecia. En la lista oficial de 2025-26 (turismoroma.it) no sale: la foto no se usa hasta confirmarlo.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "navidad_coliseo_arbol_noche.jpg",
+      "lugares": ["Coliseo (noche)"],
+      "cuando": "noche",
+      "ancho": 800,
+      "fechas": { "desde": "12-08", "hasta": "01-06" },
+      "verificar": true,
+      "verificar_nota": "Solo si ese año hay árbol junto al Coliseo: no se pone todos los años. Sin confirmar, sale noche_coliseo.jpg.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    }
+  ]
+}
