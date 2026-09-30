@@ -13419,11 +13419,10 @@
         ],
         "desde": "12-01",
         "hasta": "01-06",
-        "texto": "A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo.",
+        "texto": "A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA.",
         "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). Visita: amaroma.it (Via dei Cavalleggeri 5).",
         "comprobado": "2026-09-30",
-        "verificar": true,
-        "verificar_nota": "Según la web de AMA, solo se visita con reserva online (gratis); del 15 de diciembre al 31 de enero, todos los días de 8:00 a 20:00. El texto no dice que haga falta reservar: decidir si se añade."
+        "verificar_nota": "Resuelto el 2026-09-30 (decisión del usuario): la línea sale y dice que hace falta reserva. Horario según amaroma.it: del 15 de diciembre al 31 de enero, todos los días de 8:00 a 20:00; el resto del año, de lunes a sábado de 9:00 a 19:00 y domingos y festivos de 8:00 a 11:30."
       },
       {
         "id": "santa_maria_mayor_arnolfo",
