@@ -320,6 +320,51 @@
           }
         }
       }
+    },
+    "fecha:12-25": {
+      "_nota": "Navidad (como en D1): el Coliseo y el Foro cerrados, se ven por fuera; a las 12:00, la Bendición Urbi et Orbi en la Plaza de San Pedro. Sin ella, la mañana se quedaba con hora y media libre (viaje del 24 al 25 con Free Tour, 2026-09-30).",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "09:50",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 40,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Bendición Urbi et Orbi",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 45,
+            "traslado": {
+              "como": "un taxi",
+              "min": 20
+            }
+          }
+        ],
+        "comida": {
+          "restaurante": "Pizzarium (Bonci)",
+          "alternativa": "Ristorante Arlù"
+        }
+      }
     }
   },
   "experiencias": {

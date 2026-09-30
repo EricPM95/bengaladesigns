@@ -203,7 +203,7 @@ export function auditarViaje(D, days, options = {}) {
       const beforeStop = dayStops.find((stop) => nameOf(stop) === libre.before)
       const libreEnd = beforeStop ? t2m(beforeStop.suggested_time) - (beforeStop.transit?.minutes ?? 0) : null
       const month = iso ? Number(iso.slice(5, 7)) : null
-      const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 14 * 60 - 5 && libreEnd <= 16 * 60 + 30
+      const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && libreEnd <= 16 * 60 + 30
       if (!summerRest && libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
