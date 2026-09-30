@@ -30,7 +30,7 @@ D.destination_config.experience_availability = { naturaleza_vistas: { from: '06-
 const stopsOf = async (opts, pool = []) => {
   const names = []
   for (let n = 1; n <= 3; n++) {
-    const day = await buildDayBlockV3(D, 4, false, n, 'nonstop', null, opts.fecha ?? null, pool, ['imprescindibles', 'barrios_sabores'], { city: 'Roma', scheduler: 'v3', month: opts.month ?? null })
+    const day = await buildDayBlockV3(D, 4, false, n, null, opts.fecha ?? null, pool, ['imprescindibles', 'barrios_sabores'], { city: 'Roma', scheduler: 'v3', month: opts.month ?? null })
     names.push(...(day?.stops ?? []).map((s) => s.name), ...(day?.not_included ?? []).map((i) => `NO:${i.name}:${i.reason}`))
   }
   return names
@@ -59,7 +59,7 @@ const M = structuredClone(D)
 M.places.push({ ...navona, name: 'Mercadillo navideño de prueba', level: 3, type: 'exterior', group: undefined, group_order: undefined, tags: ['mercadillo_navideno'], available: MERCADILLO, pass_by: undefined, tier: undefined, coordinates: [navona.coordinates[0] - 0.0003, navona.coordinates[1]] })
 const conMercadillo = []
 for (let n = 1; n <= 3; n++) {
-  const day = await buildDayBlockV3(M, 4, false, n, 'nonstop', null, null, [], ['imprescindibles', 'mercadillos_navidenos'], { city: 'Roma', scheduler: 'v3', month: 10 })
+  const day = await buildDayBlockV3(M, 4, false, n, null, null, [], ['imprescindibles', 'mercadillos_navidenos'], { city: 'Roma', scheduler: 'v3', month: 10 })
   conMercadillo.push(...(day?.stops ?? []).filter((stop) => stop.name === 'Mercadillo navideño de prueba'))
 }
 check('noviembre: el mercadillo entra', conMercadillo.length, 1)

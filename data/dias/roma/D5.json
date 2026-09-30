@@ -16,10 +16,7 @@
       {
         "lugar": "Termas de Caracalla",
         "tipo": "fija",
-        "hora": {
-          "completo": "09:00",
-          "tranquilo": "09:30"
-        },
+        "hora": "09:00",
         "min": 60,
         "modo": "dentro",
         "entrada": true,
@@ -413,10 +410,7 @@
           "Termas de Caracalla": {
             "lugar": "Termas de Caracalla",
             "tipo": "fija",
-            "hora": {
-              "completo": "09:00",
-              "tranquilo": "10:00"
-            },
+            "hora": "09:00",
             "modo": "fuera"
           }
         }

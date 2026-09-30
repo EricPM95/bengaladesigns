@@ -263,12 +263,12 @@ async function buildTrip(motor, contentDays, pace, exps) {
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     const day =
       motor !== 'viejo'
-        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined, month: MES, season: TEMPORADA })
-        : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, pace, 'matriz', FECHA, [], experiencesPositive)
+        ? await buildDayBlockV3(D, totalDays, hasFreeTour, dayNumber, 'matriz', FECHA, [], experiencesPositive, { city: D.destination, scheduler: motor === 'v3' ? 'v3' : undefined, month: MES, season: TEMPORADA })
+        : await buildDayBlockV2(D, totalDays, hasFreeTour, dayNumber, 'matriz', FECHA, [], experiencesPositive)
     days.push(day)
   }
   // En v3 no hay un reparto aparte con el que comparar: el reparto ya le pregunta al programador.
-  const plan = motor === 'nuevo' ? preplanTrip({ destData: D, totalDays, pace, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
+  const plan = motor === 'nuevo' ? preplanTrip({ destData: D, totalDays, hasFreeTour, poolNames: [], experiencesPositive, dateRangeStartIso: FECHA }) : null
   return { days, plan, totalDays, hasFreeTour, experiencesPositive, motor }
 }
 

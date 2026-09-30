@@ -16,15 +16,15 @@ const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
 const r20 = readFileSync(new URL('./revision20.mjs', import.meta.url), 'utf8')
 const cierre = readFileSync(new URL('./revisionCierre.mjs', import.meta.url), 'utf8')
 const lista20 = new Function(`return ${/const VIAJES = globalThis.__REVISION_VIAJES \?\? (\[[\s\S]*?\n\])/.exec(r20)[1]}`)()
-const V = (dias, ritmo, ft, fecha, exps = []) => ({ dias, ritmo, ft, exps, fecha })
+const V = (dias, ft, fecha, exps = []) => ({ dias, ft, exps, fecha })
 const listaCierre = new Function('V', `return ${/globalThis.__REVISION_VIAJES = (\[[\s\S]*?\n\])/.exec(cierre)[1]}`)(V)
 const viajes = [...lista20.map((v, i) => ({ ...v, id: `ruta ${i + 1}` })), ...listaCierre.map((v, i) => ({ ...v, id: `cierre ${i + 1}` }))]
 
 async function build(viaje, engine) {
   const positive = [...(viaje.ft ? ['free_tour'] : []), ...(viaje.exps ?? [])]
   const days = []
-  for (let n = 1; n <= viaje.dias; n++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, n, viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, viaje.fecha, viaje.pool ?? [], positive.length ? ['imprescindibles', ...positive] : [], { city: 'Roma', scheduler: 'v3', month: null, engine }))
-  const casos = auditarViaje(D, days, { startIso: viaje.fecha, poolNames: viaje.pool ?? [], leg: legBetween, label: '', pace: viaje.ritmo })
+  for (let n = 1; n <= viaje.dias; n++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, n, null, viaje.fecha, viaje.pool ?? [], positive.length ? ['imprescindibles', ...positive] : [], { city: 'Roma', scheduler: 'v3', month: null, engine }))
+  const casos = auditarViaje(D, days, { startIso: viaje.fecha, poolNames: viaje.pool ?? [], leg: legBetween, label: '' })
   return { days, casos }
 }
 const dayLine = (day) => {
@@ -63,7 +63,7 @@ for (const tipo of Object.keys(TIPOS_AUDITORIA)) {
 }
 out.push('')
 for (const { viaje, v3, v4, verdict } of rows) {
-  out.push(`## ${viaje.id}: ${viaje.dias} días · ${viaje.ritmo}${viaje.ft ? ' · Free Tour' : ''}${viaje.exps?.length ? ` · ${viaje.exps.join('+')}` : ''}${viaje.pool?.length ? ` · pool ${viaje.pool.join('+')}` : ''} · desde el ${viaje.fecha}${viaje.nota ? ` (${viaje.nota})` : ''} — v4 ${verdict} (${v3.casos.length} → ${v4.casos.length})`, '')
+  out.push(`## ${viaje.id}: ${viaje.dias} días${viaje.ft ? ' · Free Tour' : ''}${viaje.exps?.length ? ` · ${viaje.exps.join('+')}` : ''}${viaje.pool?.length ? ` · pool ${viaje.pool.join('+')}` : ''} · desde el ${viaje.fecha}${viaje.nota ? ` (${viaje.nota})` : ''} — v4 ${verdict} (${v3.casos.length} → ${v4.casos.length})`, '')
   for (let n = 0; n < viaje.dias; n++) {
     out.push(`- **Día ${n + 1}**`)
     out.push(`  - v3: ${dayLine(v3.days[n])}`)

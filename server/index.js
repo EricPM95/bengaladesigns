@@ -31,7 +31,6 @@ import { halfDayExcursions } from './engine/excursions.js'
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
-import { SINGLE_PACE, SINGLE_ROUTE } from '../shared/routeEngine/modes.js'
 
 config({ path: '.env.local' })
 
@@ -100,26 +99,6 @@ for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
 const anthropic = new Anthropic()
 const app = express()
 app.use(express.json())
-// Una sola ruta (PROMPT_QUITAR_RITMOS): el motor recibe siempre el ritmo único, venga lo que venga del formulario o de un
-// viaje guardado con «tranquilo». Se regenera con la ruta única.
-app.use((req, _res, next) => {
-  if (SINGLE_ROUTE && req.body && typeof req.body === 'object') {
-    if (req.body.answers && typeof req.body.answers === 'object' && 'pace' in req.body.answers) req.body.answers.pace = SINGLE_PACE
-    if ('pace' in req.body) req.body.pace = SINGLE_PACE
-  }
-  next()
-})
-
-// ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
-//
-// Objetivo: poder responder "¿cuántas llamadas reales dispara generar una ruta de Roma (pipeline
-// v2) sin tocar ninguna parada individual, y desde qué endpoint Express exactamente?" sin tener que
-// instrumentar cada uno de los ~15 puntos de llamada a mano (y sin arriesgarse a que alguno futuro
-// se quede sin loguear). Envuelve el cliente UNA sola vez aquí — cualquier `anthropic.messages.*`
-// que se llame desde cualquier endpoint queda cubierto automáticamente, con el nombre del endpoint
-// Express (req.path) que lo disparó, gracias a AsyncLocalStorage (propaga correctamente a través de
-// awaits/promesas, a diferencia de una variable global compartida).
-const requestContext = new AsyncLocalStorage()
 app.use((req, _res, next) => requestContext.run(req.path, next))
 
 let apiCallCounter = 0
@@ -1736,11 +1715,10 @@ CRITICAL RULES:
 1. COMPLETENESS — nothing from the destination's real top 15-20 "must-see" list may be missing. If a traveler searched "what to see in {destination}" and the first 15-20 results are real, well-known sights, every single one of them MUST appear somewhere across this trip's days (spread across the days that fit its zone, not crammed into one day) — unless the trip is too short to physically fit all of them, in which case keep the most essential ones and it is fine to leave the most minor ones out. Before finalizing, double-check by name that the single most iconic, unmissable sight(s) of the destination are in your list somewhere (the one thing almost nobody skips — e.g. the Louvre in Paris, the Colosseum in Rome, the Sagrada Familia in Barcelona) — it is easy to lose one of these specifically because it doesn't fit neatly into any day's zone/theme; if that happens, adjust which day it lands on rather than dropping it.
 2. ORGANIC ROUTE — within each day, order the places as a natural walking route: one place should lead into the next by real geographic proximity, not by importance or category. If two places are genuinely a few minutes apart (a famous arch right next to a major monument, a square that is physically part of a landmark's setting), they belong consecutively in the list.
 3. GEOGRAPHIC GROUPING — you already received each day's zone/theme below (decided by an earlier step) — respect it: only place things that genuinely belong to that day's zone, never mix places from a far-away zone into a day whose zone doesn't include them.
-4. QUANTITY PER DAY, by pace — these numbers are a rough feel, NOT a hard cap to stop at or a quota to force:
-   - "zen"/"balanced" pace ("Tranquilo"): no rush, longer time at each place, roughly 4-5 full/visitable places as a typical feel. But if a cluster of quick exterior places sits within ~10 minutes' walk of each other in the same zone (e.g. Plaza de España → Fontana di Trevi → Panteón → Piazza Navona → Campo de' Fiori), include ALL of them — skipping an obvious nearby stop just to keep the count low makes no sense, the traveler is right there. What this pace does NOT do: stack two long visits (2h+) in the same day, one in the morning and another in the afternoon — pick one.
-   - "nonstop" pace ("Completo"): make the most of the whole day, chain stops with no dead gaps, can comfortably reach 7-8 places when the zone supports it. This pace CAN stack two long visits (2h+) in the same day — one in the morning, one in the afternoon — if the geography/logistics genuinely make it work.
-   Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) that sit on the natural path between two places you're including do NOT count toward the numbers above and are NEVER skipped for either pace — they cost little time/energy and leaving one out when it's literally on the route makes the trip look incomplete.
-   Hard ceiling regardless of pace: a later step must write full real content (description, tip, real hours, coordinates, connector) for every single place in your list in one pass, so a day's list should very rarely need more than about 10-11 places total (long visits + short visits + quick exteriors combined) to cover everything genuinely worth including — if a zone is so dense that it would take more than that to include every real must-see, prioritize the most iconic/essential ones over minor extras rather than padding the list further.
+4. QUANTITY PER DAY — these numbers are a rough feel, NOT a hard cap to stop at or a quota to force:
+   - Make the most of the whole day: chain stops with no dead gaps, comfortably 7-8 places when the zone supports it. If a cluster of quick exterior places sits within ~10 minutes' walk of each other in the same zone (e.g. Plaza de España → Fontana di Trevi → Panteón → Piazza Navona → Campo de' Fiori), include ALL of them — skipping an obvious nearby stop makes no sense, the traveler is right there. A day CAN stack two long visits (2h+) — one in the morning, one in the afternoon — if the geography/logistics genuinely make it work.
+   Quick free exterior places (arches, fountains, squares, viewpoints — 10-30min) that sit on the natural path between two places you're including do NOT count toward the numbers above and are NEVER skipped — they cost little time/energy and leaving one out when it's literally on the route makes the trip look incomplete.
+   Hard ceiling: a later step must write full real content (description, tip, real hours, coordinates, connector) for every single place in your list in one pass, so a day's list should very rarely need more than about 10-11 places total (long visits + short visits + quick exteriors combined) to cover everything genuinely worth including — if a zone is so dense that it would take more than that to include every real must-see, prioritize the most iconic/essential ones over minor extras rather than padding the list further.
 5. LONG vs SHORT VISITS — a visit that takes 2-3h (a large museum, an extensive archaeological site) can legitimately be the day's only "long" item for that half of the day — that's correct pacing, not a thin day. Short visits (10-45min: a square, a small church, a viewpoint, a façade) should chain together or sit alongside a long visit, never fill an entire half-day alone.
 6. THE TRAVELER'S CHOSEN EXPERIENCES ADD, THEY DON'T REPLACE — the traveler's chosen experience focus (given below) adds thematic places (markets, hidden gems, food spots, etc.) ON TOP OF the destination's essential must-sees from rule 1 — never use it as an excuse to swap out a classic imprescindible.
 7. FREE TOUR — if "Free Tour" is in the traveler's chosen experiences, day 1's morning (roughly 10:00-12:30) is reserved for it — do not assign a long interior visit to day 1's morning slot; afternoon/evening of day 1 works normally.
@@ -1945,14 +1923,11 @@ const ARCHETYPE_LABEL = {
   expedicion_o_crucero: 'expedition/cruise — logistics fully managed by an operator',
 }
 
-const PACE_LABEL = {
-  zen: 'zen/"Tranquilo" — starts around 10:00, no rush, slower mornings, longer time at each place, roughly 4-5 full visits as a typical feel — can stretch to 7-8 ONLY when the zone has many quick (<10min walk apart) exterior stops clustered together (never a hard cap in that case, see REQUIRED PLACES). NEVER stack two long (2h+) visits in the same day, morning and afternoon — pick one.',
-  balanced: 'balanced/"Tranquilo" — same spirit as zen (see above), slightly more flexible.',
-  nonstop: 'nonstop/"Completo" — ALWAYS starts at 08:00, make the most of the whole day, chain stops with no dead gaps, fit everything that reasonably fits once meals/travel time are respected. No rigid cap on the number of stops — real time and logistics decide, not a fixed count; comfortably 7-8 places is typical but more is fine when the day genuinely has room. CAN stack two long (2h+) visits in the same day, one morning and one afternoon, if the geography/logistics genuinely allow it.',
-}
+/** Cómo es un día de la ruta, para los prompts: hay una sola ruta (2026-09-30), sin ritmos. */
+const DAY_STYLE = 'Starts at 08:00, make the most of the whole day, chain stops with no dead gaps, fit everything that reasonably fits once meals/travel time are respected. No rigid cap on the number of stops — real time and logistics decide, not a fixed count; comfortably 7-8 places is typical but more is fine when the day genuinely has room. CAN stack two long (2h+) visits in the same day, one morning and one afternoon, if the geography/logistics genuinely allow it.'
 
-/** Mínimo de paradas visitables (sin contar comidas) para un día "city" normal, según ritmo — usado para validar y autocompletar la respuesta de generate-day-block, ver MIN_STOPS_BY_PACE más abajo. El propio prompt (PACE_LABEL/DAY_BLOCK_SYSTEM_PROMPT) ya pide este rango, esto es la red de seguridad server-side por si Claude no lo cumple. */
-const MIN_STOPS_BY_PACE = { zen: 4, balanced: 4, nonstop: 6 }
+/** Mínimo de paradas visitables (sin contar comidas) para un día "city" normal — la red de seguridad del servidor por si Claude no lo cumple. */
+const MIN_STOPS_PER_DAY = 6
 const MIN_AFTERNOON_STOPS = 2
 const AFTERNOON_WINDOW_MINUTES = [14 * 60, 20 * 60]
 
@@ -2236,7 +2211,7 @@ function buildDayPlacesUserPrompt(destination, answers, transportContext, skelet
 - Season/dates: ${formatSeasonOrDates(answers)}
 - Traveling with: ${formatCompanion(answers)}
 - Experience focus (adds to the essential must-sees, see rule 6): ${formatExperiences(answers.experiences)}
-- Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
+- Day style: ${DAY_STYLE}
 - Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}
 
 "City" days needing a place list (already shaped by an earlier step — respect each day's zone_focus/experience_focus):
@@ -2317,7 +2292,7 @@ Trip context:
 - Season/dates: ${formatSeasonOrDates(answers)}
 - Traveling with: ${formatCompanion(answers)}
 - Experience focus: ${formatExperiences(answers.experiences)}
-- Pace: ${PACE_LABEL[answers.pace] ?? answers.pace}
+- Day style: ${DAY_STYLE}
 - Schedule: ${CHRONOTYPE_LABEL[answers.chronotype] ?? answers.chronotype}
 - Budget: ${BUDGET_LABEL[answers.budgetLevel] ?? answers.budgetLevel}${buildArchetypeContext(transportContext)}${formatRequiredPlaces(placesForBlock)}${formatTripOverview(allDays, blockDays.map((day) => day.day_number))}`
 }
@@ -2423,7 +2398,7 @@ function readTransportContext(body) {
 
 function hasRequiredAnswers(answers) {
   return Boolean(
-    answers?.origin && answers?.days && answers?.companion && Array.isArray(answers?.experiences) && answers?.pace && answers?.chronotype && answers?.budgetLevel,
+    answers?.origin && answers?.days && answers?.companion && Array.isArray(answers?.experiences) && answers?.chronotype && answers?.budgetLevel,
   )
 }
 
@@ -2497,20 +2472,23 @@ function daysMatchScore(a, b) {
 /**
  * Porcentaje de coincidencia (0-100) de una fila de route_cache contra la petición actual — pesos
  * exactos dados por el usuario: destino obligatorio (si no coincide, 0), experiencias 50%
- * (positivas+negativas por categoría, ver experienceCategoryScore), ritmo 25%, días 25% (igual=100%,
- * ±1=75%, ±2=50%, más=0%). El ritmo debe ser EXACTO para poder llegar a "alta" coincidencia (≥75%,
- * ver routeCacheLevel) — si no coincide, el resultado se limita a "medium" como mucho, aunque
- * experiencias/días coincidan perfectamente (misma petición explícita del punto 4).
+ * (positivas+negativas por categoría, ver experienceCategoryScore), días 25% (igual=100%, ±1=75%,
+ * ±2=50%, más=0%) y un 25% fijo (era el del ritmo: hay una sola ruta, y las filas de la caché que no son
+ * de ella no se leen, ver ROUTE_CACHE_LEGACY_PACE).
  */
+/**
+ * La columna `pace` de route_cache es heredada: no se puede quitar sin una migración. Todas las rutas nuevas se guardan con
+ * este valor fijo, y solo se leen las filas que lo llevan (las de «tranquilo» de antes no se reutilizan).
+ */
+const ROUTE_CACHE_LEGACY_PACE = 'nonstop'
+
 function computeRouteCacheMatch(row, query) {
   if (normalizeDestinationForMatch(row.destination) !== normalizeDestinationForMatch(query.destination)) return 0
   const rowCategories = decodeExperienceCategories(row.experiences)
   const queryCategories = decodeExperienceCategories(query.experiences)
   const expScore = experienceCategoryScore(rowCategories.positive, rowCategories.negative, queryCategories.positive, queryCategories.negative)
-  const paceExact = row.pace === query.pace
   const daysScore = daysMatchScore(row.days, query.days)
-  const score = Math.round((expScore * 0.5 + (paceExact ? 1 : 0) * 0.25 + daysScore * 0.25) * 100)
-  return paceExact ? score : Math.min(score, 74)
+  return Math.round((expScore * 0.5 + 0.25 + daysScore * 0.25) * 100)
 }
 
 /** 'high' → reutilizar 80-90% (solo ajustar lo que cambia); 'medium' → reutilizar 60-70% (redistribuir); 'none' → generación nueva completa. */
@@ -2557,9 +2535,9 @@ function intocablesCoverageRatio(routeData, destData) {
 }
 
 app.post('/api/route-cache/lookup', async (req, res) => {
-  const { destination, days, experiences, pace } = req.body ?? {}
-  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !pace) {
-    res.status(400).json({ error: 'Se requiere destination, days, experiences y pace.' })
+  const { destination, days, experiences } = req.body ?? {}
+  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences)) {
+    res.status(400).json({ error: 'Se requiere destination, days y experiences.' })
     return
   }
   // Destino curado (motor v3, gratis e instantáneo): NUNCA caché, sea cual sea la duración. El
@@ -2577,8 +2555,9 @@ app.post('/api/route-cache/lookup', async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('route_cache')
-      .select('id, destination, days, experiences, pace, route_data, hit_count')
+      .select('id, destination, days, experiences, route_data, hit_count')
       .ilike('destination', destination)
+      .eq('pace', ROUTE_CACHE_LEGACY_PACE)
       // Solo rutas hechas con el motor de ahora (ver routeCacheVersion).
       .eq('engine_version', routeCacheVersion())
       .limit(50)
@@ -2588,7 +2567,7 @@ app.post('/api/route-cache/lookup', async (req, res) => {
     let best = null
     let bestScore = -1
     for (const row of data ?? []) {
-      const score = computeRouteCacheMatch(row, { destination, days, experiences, pace })
+      const score = computeRouteCacheMatch(row, { destination, days, experiences })
       if (score <= bestScore) continue
       // Fila descartada del todo si no cubre el mínimo de intocables — nunca gana el matching, sin
       // importar cuánto puntúe en el resto (ver MIN_INTOCABLES_COVERAGE más arriba).
@@ -2606,7 +2585,7 @@ app.post('/api/route-cache/lookup', async (req, res) => {
     res.json({
       level,
       match_pct: bestScore,
-      entry: { id: best.id, days: best.days, experiences: best.experiences, pace: best.pace, route_data: best.route_data },
+      entry: { id: best.id, days: best.days, experiences: best.experiences, route_data: best.route_data },
     })
   } catch (error) {
     logAnthropicError('route-cache/lookup', error)
@@ -2638,8 +2617,8 @@ app.post('/api/route-cache/touch', async (req, res) => {
 })
 
 app.post('/api/route-cache/save', async (req, res) => {
-  const { destination, days, experiences, pace, route_data: routeData } = req.body ?? {}
-  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !pace || !routeData || !supabaseAdmin) {
+  const { destination, days, experiences, route_data: routeData } = req.body ?? {}
+  if (!destination || !Number.isInteger(days) || !Array.isArray(experiences) || !routeData || !supabaseAdmin) {
     res.json({ ok: false })
     return
   }
@@ -2653,7 +2632,7 @@ app.post('/api/route-cache/save', async (req, res) => {
     // comentario grande al principio de esta sección. El cliente Supabase NO lanza en un error de
     // Postgrest (a diferencia de un fetch normal) — hay que comprobar `error` explícitamente, o un
     // insert fallido (ej. la tabla no existe todavía) se reporta como éxito por error.
-    const { error } = await supabaseAdmin.from('route_cache').insert({ destination, days, experiences, pace, route_data: routeData, engine_version: routeCacheVersion() })
+    const { error } = await supabaseAdmin.from('route_cache').insert({ destination, days, experiences, pace: ROUTE_CACHE_LEGACY_PACE, route_data: routeData, engine_version: routeCacheVersion() })
     if (error) throw error
     res.json({ ok: true })
   } catch (error) {
@@ -2852,7 +2831,7 @@ function buildRouteCacheRedistributePrompt(destination, answers, contentDays, po
 
   return `Destino: "${destination}"
 Días de contenido a generar: ${contentDays}
-Ritmo: ${PACE_LABEL[answers.pace] ?? answers.pace}
+Cómo es un día: ${DAY_STYLE}
 Experiencias elegidas: ${formatExperiences(answers.experiences)}
 Acompañantes: ${formatCompanion(answers)}
 
@@ -3555,21 +3534,15 @@ function distributeClustersToDays(clusters, dayNumbers) {
 }
 
 // Mismo tope que sanitizeDayPlaces aplica al camino Claude-driven (ver su comentario junto al
-// `if (places.length >= maxPlacesForPace(pace)) break`): más lugares/día = más tokens de salida en
+// `if (places.length >= MAX_PLACES_PER_CURATED_DAY) break`): más lugares/día = más tokens de salida en
 // Fase 2 = más riesgo real de stop_reason=max_tokens. distributeClustersToDays reparte por DURACIÓN
 // total, no por número de paradas, así que un día puede acabar con más lugares que otro con la misma
 // carga si son cortos (ej. varios miradores/plazas de 15-20min) — encontrado en vivo: un Roma 5 días
 // acabó con un día de 11 lugares (390min, dentro del 1.4x de la duración media) que sí disparó
 // max_tokens real. El camino curado necesita su propio tope de CANTIDAD además del de duración.
-// Ritmo "Completo" pide explícitamente "sin tope rígido de paradas" — no se puede tomar 100% literal
-// (Vercel sigue teniendo maxDuration real y Fase 2 sigue teniendo un max_tokens real, ver
-// applyCuratedTips/max_tokens=24000 más abajo), pero desde que ese ahorro de tokens se implementó el
-// margen real creció mucho (16000→6234 tokens en el mismo día de prueba) — así que Completo recibe un
-// tope bastante más alto que Tranquilo en vez de compartir el mismo número.
-const MAX_PLACES_PER_CURATED_DAY_BY_PACE = { zen: 9, balanced: 9, nonstop: 12 }
-function maxPlacesForPace(pace) {
-  return MAX_PLACES_PER_CURATED_DAY_BY_PACE[pace] ?? MAX_PLACES_PER_CURATED_DAY_BY_PACE.balanced
-}
+// El prompt pide "sin tope rígido de paradas", pero no se puede tomar 100% literal (Vercel tiene su maxDuration y la
+// Fase 2 su max_tokens: ver applyCuratedTips más abajo).
+const MAX_PLACES_PER_CURATED_DAY = 12
 
 /**
  * Red de seguridad de cantidad tras distributeClustersToDays: si un día quedó con más clusters/lugares
@@ -3703,7 +3676,7 @@ function isCentroHistoricoZone(zone) {
 }
 
 /**
- * Ritmo Completo + Free Tour (ver buildCuratedDayPlaces): cubre el hueco 08:00-10:00 con 1-2 lugares
+ * Free Tour (ver buildCuratedDayPlaces): cubre el hueco 08:00-10:00 con 1-2 lugares
  * realmente rápidos (≤30min), de acceso libre (sin taquilla que pueda abrir tarde) y del centro
  * histórico, sacados del propio pool ya filtrado del destino para este viaje (rawPlaces — respeta el
  * mismo recorte de Nivel/intocables que el resto del día). `usedNames` evita repetir un lugar que ya
@@ -3762,7 +3735,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
       : shortTripFiltered
   const clusters = buildDestinationClusters(rawPlaces)
   const dayClustersMap = distributeClustersToDays(clusters, listDayNumbers)
-  rebalanceClustersForPlaceCount(dayClustersMap, maxPlacesForPace(answers.pace))
+  rebalanceClustersForPlaceCount(dayClustersMap, MAX_PLACES_PER_CURATED_DAY)
 
   // Free Tour SIEMPRE la primera parada del día 1 — se evacúa lo que no quepa después (Nivel 2/3
   // primero, Nivel 1 si aun así no basta) para que nunca haya un motivo real para anteponer otra
@@ -3816,12 +3789,12 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
     })
   }
 
-  // Ritmo Completo + Free Tour: el día empieza a las 08:00 (ver PACE_START_MINUTES en
+  // Free Tour: el día empieza a las 08:00 (ver DAY_START_MINUTES en
   // stopScheduling.ts) pero un Free Tour real no suele arrancar hasta ~10:00 — quedarían 2h muertas
   // si no se rellenan. Solo para este caso concreto se permite contenido real ANTES del Free Tour
   // (ver buildFreeTourPrefillStops) — el resto del día sigue con el Free Tour como primera parada
   // "de verdad", sin excepciones.
-  if (wantsFreeTour && listDayNumbers.includes(1) && answers.pace === 'nonstop') {
+  if (wantsFreeTour && listDayNumbers.includes(1)) {
     const usedNames = new Set([...dayPlacesMap.values()].flat().map((place) => place.name.toLowerCase()))
     const prefillStops = buildFreeTourPrefillStops(rawPlaces, usedNames)
     if (prefillStops.length > 0) dayPlacesMap.get(1)?.push(...prefillStops)
@@ -3845,7 +3818,7 @@ function buildCuratedDayPlaces(destData, listDayNumbers, answers, mustIncludePla
  * lugares que el usuario marcó en "Elige lugares" (mustIncludePlaces) se fuerzan aquí si Claude se
  * dejó alguno fuera — mismo espíritu que el topUpUnassignedNames que existía antes para las anclas.
  */
-function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces, pace) {
+function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces) {
   const cityDayNumbers = new Set(
     (skeletonDays ?? []).filter((day) => day.type === 'city' || day.type === 'relax').map((day) => Number(day.day_number)),
   )
@@ -3867,9 +3840,9 @@ function sanitizeDayPlaces(raw, skeletonDays, mustIncludePlaces, pace) {
       // llamada, así que más lugares = más tokens de salida = más tiempo. 14+/día medidos en vivo
       // tardaban 130-150s; con 11 se vio un stop_reason=max_tokens real en un día de 10 tras crecer
       // el prompt de Fase 2 con más reglas a lo largo de la sesión (REQUIRED PLACES, Free Tour,
-      // nombres exactos...) — tope pace-aware (ver maxPlacesForPace) deja margen real sin recortar el
+      // nombres exactos...) — el tope (MAX_PLACES_PER_CURATED_DAY) deja margen real sin recortar el
       // "visita todo lo que esté en el camino" que pide DAY_PLACES_SYSTEM_PROMPT.
-      if (places.length >= maxPlacesForPace(pace)) break
+      if (places.length >= MAX_PLACES_PER_CURATED_DAY) break
     }
     byDayNumber.set(dayNumber, places)
   }
@@ -3975,19 +3948,6 @@ function nightExperienceOf(data, placeName) {
   const night = (data?.night_experiences ?? []).find((entry) => entry.name === `${placeName} (noche)`)
   return night ? { name: night.name, duration_min: night.duration ?? null, description: night.description ?? null } : null
 }
-
-/**
- * Textos del cuestionario que viven en el JSON del destino (la pantalla de ritmo). Sin JSON, found:false y
- * el cliente usa los suyos.
- */
-app.post('/api/destination-texts', (req, res) => {
-  const { destination } = req.body ?? {}
-  const data = destination ? findPipelineV2Data(destination) : null
-  const pace = data?.destination_config?.pace_texts ?? null
-  // Paradas reales por día de cada ritmo, medidas con el motor (scripts/destino/paceStats.mjs).
-  const paceStats = data?.destination_config?.pace_stats ?? null
-  res.json(pace ? { found: true, destination: data.destination ?? destination, pace, pace_stats: paceStats } : { found: false })
-})
 
 app.post('/api/destination-places', (req, res) => {
   const { destination } = req.body ?? {}
@@ -4316,7 +4276,7 @@ app.post('/api/generate-day-places', async (req, res) => {
     if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
 
     const parsed = JSON.parse(extractJsonText(textBlock.text))
-    const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places, answers.pace)
+    const days = sanitizeDayPlaces(parsed?.days, skeleton_days, must_include_places)
     enforceNeverMissLandmarks(days, destination, skeleton_days)
     // El camino con IA (destino no cubierto por el JSON curado) no tiene concepto estructurado de
     // double_visit — la "segunda visita" que decide Claude por su cuenta (ver regla 9 de
@@ -4365,21 +4325,21 @@ function countAfternoonStops(stops) {
 const LONG_VISIT_MINUTES = 150
 
 /** Cuántas paradas de más haría falta para cumplir el mínimo total (salvo que haya una visita larga, ver LONG_VISIT_MINUTES) y la cobertura de tarde. Solo aplica a días "city" (o sin type, por compatibilidad); road/excursion/relax quedan exentos, igual que en el prompt. Puramente informativo — ver logStopCountWarning. */
-function computeStopDeficit(stops, dayType, pace) {
+function computeStopDeficit(stops, dayType) {
   if (dayType && dayType !== 'city') return 0
   const afternoonDeficit = Math.max(MIN_AFTERNOON_STOPS - countAfternoonStops(stops), 0)
   const hasLongVisit = stops.some((stop) => typeof stop?.duration_minutes === 'number' && stop.duration_minutes >= LONG_VISIT_MINUTES)
   if (hasLongVisit) return afternoonDeficit
-  const minTotal = MIN_STOPS_BY_PACE[pace] ?? MIN_STOPS_BY_PACE.balanced
+  const minTotal = MIN_STOPS_PER_DAY
   const totalDeficit = Math.max(minTotal - stops.length, 0)
   return Math.max(totalDeficit, afternoonDeficit)
 }
 
 /** Si un día "city" se queda corto de paradas o de cobertura de tarde, es una señal de que la Fase 1 (generate-day-places) decidió muy pocos lugares para ese día — se registra para investigar, nunca se intenta arreglar aquí con una llamada extra (ver VALIDACIÓN POST-GENERACIÓN arriba). */
-function logStopCountWarning(day, dayType, pace) {
-  const deficit = computeStopDeficit(day.stops ?? [], dayType, pace)
+function logStopCountWarning(day, dayType) {
+  const deficit = computeStopDeficit(day.stops ?? [], dayType)
   if (deficit > 0) {
-    console.log(`[stop-count] day ${day.day_number} — se esperaban ${deficit} parada(s) más para el ritmo "${pace}" (revisar generate-day-places para este día)`)
+    console.log(`[stop-count] day ${day.day_number} — se esperaban ${deficit} parada(s) más (revisar generate-day-places para este día)`)
   }
 }
 
@@ -4691,8 +4651,8 @@ function logGeographicCoherence(day) {
  * integre la API de afiliados. Viaja el flag hasta el cliente para que, el día que se decida no
  * enseñar una nota inventada como si fuera real, no haya que volver a adivinar cuál lo es.
  */
-function excursionsAvailablePayload(destData, dayNumber, options, totalDays, pace) {
-  return (options ?? excursionOptionsFor(destData, totalDays, pace)).map((option) => ({
+function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
+  return (options ?? excursionOptionsFor(destData, totalDays)).map((option) => ({
     id: option.id,
     name: option.name,
     duration: option.half_day ? 'half_day' : 'full_day',
@@ -4948,7 +4908,7 @@ app.post('/api/curated-day-inside', async (req, res) => {
   try {
     const totalDays = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : Number(day_number) + 1
     const build = (insideNames) =>
-      buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), answers.pace, MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+      buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
         city: destination,
         scheduler: 'v3',
         month: Number.isInteger(answers.month) ? answers.month : null,
@@ -5022,7 +4982,7 @@ app.post('/api/generate-day-block', async (req, res) => {
     const dayConfig = getDayConfig(dayNumber, pipelineV2Data)
 
     if (dayConfig.type === 'excursion') {
-      const day = buildExcursionDayV2(pipelineV2Data, dayNumber, totalDaysForConfig, answers.pace)
+      const day = buildExcursionDayV2(pipelineV2Data, dayNumber, totalDaysForConfig)
       day.excursion_prominence = dayConfig.excursionProminence
       // Regla 3: la ruta curada NUNCA se pierde. Si este día tenía una escrita a mano, viaja como
       // alternativa ("tenemos una ruta preparada") con un adelanto de lo que contiene, para que
@@ -5031,7 +4991,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       console.log(
         `[pipeline-v2] "${destination}" día ${dayNumber} — día de EXCURSIÓN (${day.excursion_options.length} opciones${day.curated_alternative ? ', con ruta curada de alternativa' : ''}), sin llamada a Claude`,
       )
-      res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig, answers.pace) })
+      res.json({ days: [day], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig) })
       return
     }
 
@@ -5039,7 +4999,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       console.log(`[pipeline-v2] "${destination}" día ${dayNumber} — día LIBRE (lo monta el viajero), sin llamada a Claude`)
       // Las excursiones viajan igual: un día libre ofrece "buscar excursiones" como una de sus dos
       // salidas, y necesita el catálogo para enseñarlo sin pedir nada más.
-      res.json({ days: [buildManualDayV2(dayNumber)], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig, answers.pace) })
+      res.json({ days: [buildManualDayV2(dayNumber)], not_included: [], excursions_available: excursionsAvailablePayload(pipelineV2Data, dayNumber, undefined, totalDaysForConfig) })
       return
     }
   }
@@ -5062,7 +5022,6 @@ app.post('/api/generate-day-block', async (req, res) => {
             totalDaysV2,
             hasFreeTourFromAnswers(answers),
             blockDayNumbers[0],
-            answers.pace,
             MAPBOX_TOKEN,
             answers.dateRange?.start,
             must_include_places,
@@ -5074,7 +5033,6 @@ app.post('/api/generate-day-block', async (req, res) => {
         totalDaysV2,
         hasFreeTourFromAnswers(answers),
         blockDayNumbers[0],
-        answers.pace,
         MAPBOX_TOKEN,
         answers.dateRange?.start,
         must_include_places,
@@ -5100,7 +5058,7 @@ app.post('/api/generate-day-block', async (req, res) => {
         // Solo los días prominentes llevan las destacadas: en los sutiles el banner no existe y
         // mandarlas sería peso muerto en la respuesta.
         if (dayBlockV2.excursion_prominence === 'prominent') {
-          dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3, totalDaysV2, answers.pace))
+          dayBlockV2.excursion_highlights = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], topExcursions(pipelineV2Data, 3, totalDaysV2))
         }
         console.log(
           `[pipeline-v2] "${destination}" día ${blockDayNumbers[0]} — Fase 2 resuelta con el algoritmo JS + Mapbox (motor ${chosenEngine}), sin llamada a Claude`,
@@ -5113,7 +5071,7 @@ app.post('/api/generate-day-block', async (req, res) => {
         // Un día EN BLANCO (por encima de `max_auto_days`) se lleva TODAS las de medio día: ahí el
         // viajero elige él lo que hace con el día, y media jornada fuera con la tarde libre es
         // justo lo que mejor le encaja a un día que el destino ya no sabe llenar.
-        const excursionesDelDia = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2, answers.pace)
+        const excursionesDelDia = excursionsAvailablePayload(pipelineV2Data, blockDayNumbers[0], undefined, totalDaysV2)
         const mediasJornadas = dayBlockV2.beyond_auto_days
           ? halfDayExcursions(pipelineV2Data)
           : halfDayExcursions(pipelineV2Data).filter((option) => option.id === dayBlockV2.half_day_excursion?.id)
@@ -5136,7 +5094,7 @@ app.post('/api/generate-day-block', async (req, res) => {
   // ha dado el día (vacío o con error), sale como día LIBRE y queda registrado para revisarlo.
   if (pipelineV2Data) {
     console.error(
-      `[motor v3] día vacío — "${destination}" días ${blockDayNumbers.join(',')} (all_days=${Array.isArray(all_days) ? all_days.length : '—'}, ritmo ${answers?.pace ?? '—'}): se devuelve como día libre, sin Claude`,
+      `[motor v3] día vacío — "${destination}" días ${blockDayNumbers.join(',')} (all_days=${Array.isArray(all_days) ? all_days.length : '—'}): se devuelve como día libre, sin Claude`,
     )
     res.json({ days: blockDayNumbers.map((dayNumber) => ({ ...buildManualDayV2(dayNumber), engine_empty: true })), not_included: [], excursions_available: [] })
     return
@@ -5192,7 +5150,7 @@ app.post('/api/generate-day-block', async (req, res) => {
       validateStopHours(day)
       enforceFreeTourFirst(day, requiredPlaces)
       logMissingRequiredPlaces(day, requiredPlaces)
-      logStopCountWarning(day, typeByDayNumber.get(day.day_number), answers.pace)
+      logStopCountWarning(day, typeByDayNumber.get(day.day_number))
       logGeographicCoherence(day)
       // Encontrado en vivo: en un día denso (Free Tour + varios grupos + horarios reales que encajar),
       // Claude a veces omite un intocable pese a estar en REQUIRED PLACES — sin previo aviso de error,

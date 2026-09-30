@@ -40,7 +40,7 @@ const EARLY_WHY_BEFORE = 9 * 60 + 30
 
 /**
  * El `por_que` de la parada: un texto, o { texto, temprano } si depende de la hora. `temprano` solo si la parada empieza
- * antes de las 09:30; si no, `texto` (nunca "a primera hora" a las 10:00 en tranquilo o por la tarde con el pool).
+ * antes de las 09:30; si no, `texto` (nunca "a primera hora" a las 10:00 o por la tarde con el pool).
  */
 /** El texto general de un lugar (sin condiciones): el de `por_que_lugares`, o su `general`. */
 function generalWhyOf(destData, name) {
@@ -252,7 +252,7 @@ function whyFor(visit, unit, { destData, city, tripDay, lunchEnd, tour, tourToda
  * que cierra ese día (lo que antes cierra), si cierra antes de las 18:00.
  */
 function wakeNoticeFor(destData, tripDay, places, startedAt) {
-  const templates = destData.destination_config?.pace_notices ?? {}
+  const templates = destData.destination_config?.wake_notices ?? {}
   const levelOne = places.filter((place) => place.level === 1)
   const named = (levelOne.length > 0 ? levelOne : places).map((place) => placeWithArticle(destData.places?.find((other) => other.name === place.name) ?? place))
   const lugar = named.length > 0 ? joinSpanish([...new Set(named)]) : 'todo lo de hoy'
@@ -539,11 +539,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     .map((place) => placeWithArticle(place))
   const savedByLunch = namedByLunch.length > 0 ? namedByLunch : shortened.length > 0 ? ['todo lo de hoy'] : []
   // El madrugón se cuenta con cercanía (decisión del 2026-09-26), con las plantillas del JSON del destino
-  // (`destination_config.pace_notices`): la general, o la del cierre temprano en invierno. Si además se
+  // (`destination_config.wake_notices`): la general, o la del cierre temprano en invierno. Si además se
   // acorta la comida, se añade; ninguna de las dos cosas va en silencio.
   const wakeNotice = schedule.modeFallback?.startedAt != null ? wakeNoticeFor(destData, tripDay, recoveredPlaces, schedule.modeFallback.startedAt) : null
   const lunchNotice = savedByLunch.length > 0 ? `Hoy la comida es más corta para que te dé tiempo a ver ${joinSpanish(savedByLunch)}` : null
-  const paceNotice = wakeNotice && lunchNotice ? `${wakeNotice} ${lunchNotice}.` : wakeNotice ?? lunchNotice
+  const dayNotice = wakeNotice && lunchNotice ? `${wakeNotice} ${lunchNotice}.` : wakeNotice ?? lunchNotice
 
   // El ancla cerrada todo el viaje que no se ve por fuera (los Museos Vaticanos): el aviso va en la primera parada
   // de su bloque, con lo que sí se ve (la Plaza y la Basílica de San Pedro).
@@ -622,7 +622,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
           route_starts_at: toHHMM(HALF_DAY_ROUTE_START),
         }
       : null,
-    pace_notice: paceNotice,
+    day_notice: dayNotice,
     // Para el bloque de tiempo libre antes de cenar (la app lo recalcula si el viajero edita el día).
     dinner_walk_minutes: schedule.meals.find((meal) => meal.type === 'dinner')?.walkMinutes ?? null,
     engine_stats: { walk_minutes: schedule.walkMinutes, idle_minutes: schedule.idleMinutes, idle_before_dinner: schedule.idleBeforeDinner },

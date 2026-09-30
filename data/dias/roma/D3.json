@@ -1,8 +1,7 @@
 {
-  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. En tranquilo, Trevi de noche en lugar de al amanecer. (30-sep: el 24 y el 31 de diciembre, su variante: el Vaticano por la mañana y el Free Tour a las 16:00.)",
+  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. (30-sep: el 24 y el 31 de diciembre, su variante: el Vaticano por la mañana y el Free Tour a las 16:00.)",
   "id": "D3",
   "nombre": "Trevi sin gente, Free Tour y Vaticano por la tarde",
-  "nombre_tranquilo": "Free Tour por el centro y el Vaticano por la tarde",
   "joyas": [
     "Museos Vaticanos y Capilla Sixtina"
   ],
@@ -19,11 +18,7 @@
         "lugar": "Fontana de Trevi",
         "tipo": "opcional",
         "hora": "08:30",
-        "min": 25,
-        "tranquilo": {
-          "pasa_a": "Trevi de noche, después de cenar",
-          "sugerencia": "¿Te animas a madrugar un día? A las 8:30 la tienes casi para ti."
-        }
+        "min": 25
       },
       {
         "lugar": "Desayuno romano",
@@ -102,9 +97,6 @@
     "D": "igual que C"
   },
   "variantes": {
-    "tranquilo": {
-      "noche": "fuentes"
-    },
     "sabado": {
       "_nota": "El sábado el Panteón vende entradas hasta las 16:00: al acabar el tour (12:30) cabe de sobra."
     },
@@ -210,7 +202,6 @@
     "fecha:12-24": {
       "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (misa de la noche con el Papa a las 22:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
       "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
-      "nombre_tranquilo": "El Vaticano por la mañana y Free Tour por la tarde",
       "barrio_cena": "centro_historico",
       "noche": "fuentes",
       "manana": {
@@ -218,10 +209,7 @@
           {
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
-            "hora": {
-              "completo": "08:00",
-              "tranquilo": "08:30"
-            },
+            "hora": "08:00",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -280,7 +268,6 @@
     "fecha:12-31": {
       "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (Te Deum con el Papa a las 17:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
       "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
-      "nombre_tranquilo": "El Vaticano por la mañana y Free Tour por la tarde",
       "barrio_cena": "centro_historico",
       "noche": "fuentes",
       "manana": {
@@ -288,10 +275,7 @@
           {
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
-            "hora": {
-              "completo": "08:00",
-              "tranquilo": "08:30"
-            },
+            "hora": "08:00",
             "min": 180,
             "modo": "dentro",
             "entrada": true,

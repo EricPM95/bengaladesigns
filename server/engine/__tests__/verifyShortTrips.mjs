@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { planShortTrip, shortTripSlots } from '../../../shared/routeEngine/shortTrip.js'
 import { closesDuringVisit, effectiveSchedule, nextOpenMinutes } from '../../../shared/routeEngine/openingHours.js'
-import { MODES_V3, latestDinnerStart } from '../../../shared/routeEngine/modes.js'
+import { MODE_V3, latestDinnerStart } from '../../../shared/routeEngine/modes.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -36,12 +36,12 @@ const blockOrder = (id) => {
 let routes = 0
 for (const kind of ['1_dia', '1_5_dias_salida_mediodia', '1_5_dias_llegada_tarde']) {
   for (const pace of ['nonstop', 'tranquilo']) {
-    const mode = pace === 'tranquilo' ? MODES_V3.tranquilo : MODES_V3.completo
+    const mode = MODE_V3
     for (const exps of [[], ['arte_museos'], ['barrios_sabores'], ['naturaleza_vistas'], ['barrios_sabores', 'arte_museos']]) {
       for (const ft of [false, true]) {
         for (const pool of [[], ['Museos Vaticanos y Capilla Sixtina'], ['Galería Borghese']]) {
           const tag = `${kind} ${pace} ${exps.join('+') || '-'}${ft ? '+ft' : ''} pool[${pool.join(',')}]`
-          const trip = planShortTrip({ destData: D, slots: shortTripSlots(kind), pace, hasFreeTour: ft, poolNames: pool, experiencesPositive: ['imprescindibles', ...exps], travel })
+          const trip = planShortTrip({ destData: D, slots: shortTripSlots(kind), hasFreeTour: ft, poolNames: pool, experiencesPositive: ['imprescindibles', ...exps], travel })
           routes++
           const dropped = new Set(trip.notIncluded.map((n) => n.name))
 

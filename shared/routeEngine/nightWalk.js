@@ -369,7 +369,5 @@ export function nightWalkPlan(trip) {
     }),
     // Los imprescindibles que no han entrado de día: su nocturna va sí o sí.
     mustNight: (trip.unplacedEssentials ?? []).map((item) => item.name),
-    // Ritmo tranquilo: una nocturna por noche como mucho (decisión del 2026-09-26).
-    ...(trip.mode?.id === 'tranquilo' ? { maxPerNight: 1 } : {}),
   }
 }

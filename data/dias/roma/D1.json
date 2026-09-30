@@ -18,10 +18,7 @@
       {
         "lugar": "Coliseo",
         "tipo": "fija",
-        "hora": {
-          "completo": "08:30",
-          "tranquilo": "09:00"
-        },
+        "hora": "08:30",
         "min": 85,
         "modo": "dentro",
         "entrada": true,
@@ -415,10 +412,7 @@
       "manana": {
         "ajustar": {
           "Coliseo": {
-            "hora": {
-              "completo": "08:15",
-              "tranquilo": "08:30"
-            }
+            "hora": "08:15"
           }
         }
       }
@@ -550,7 +544,7 @@
       }
     },
     "mercadillos_navidenos": {
-      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: en tranquilo no va, para no quitarle tiempo a la comida.",
+      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: si la comida no cabe, es lo primero que se quita.",
       "manana": {
         "insertar": [
           {

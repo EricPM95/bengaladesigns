@@ -44,7 +44,7 @@ import { TAG_INTEREST_MAP, categoryCapFor, categoryOfTags, interestTagsFor } fro
 import { MAX_REVISITS_PER_DAY, RELAXED_DAY_TARGET_STOPS, canRevisit } from './revisits.js'
 import { placeWithArticle, whyTexts } from './whyTexts.js'
 import { tripDays } from './tripSkeleton.js'
-import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODES_V3, modeV3For } from './modes.js'
+import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODE_V3 } from './modes.js'
 import { PRIORITY, openDay } from './scheduleDay.js'
 import { NIGHT_REACH_METERS, nightWalkPlan, planNightWalks } from './nightWalk.js'
 import { dinnerZones } from './dinnerZones.js'
@@ -233,7 +233,6 @@ function zonesByPriority(destData) {
  * @param {object} args
  * @param {object} args.destData
  * @param {number} args.totalDays          días del viaje CONTANDO la vuelta (invariante 21)
- * @param {string} args.pace               'nonstop' | 'tranquilo'
  * @param {boolean} args.hasFreeTour
  * @param {string[]} [args.poolNames]      lo que eligió el viajero, en el orden en que lo eligió
  * @param {string[]} [args.experiencesPositive]
@@ -242,7 +241,7 @@ function zonesByPriority(destData) {
  * @param {string|null} [args.season]     solo viajes antiguos: pasa a su mes central (tripCalendar.js)
  * @param {{leg: Function}} args.travel    createTravelTimes(matriz)
  */
-export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }) {
+export function planTrip({ destData, totalDays, hasFreeTour, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }) {
   // El calendario del viaje (Estaciones, Parte 1): con fechas, la de cada día; con días + mes, el 15
   // de ese mes. La época se deduce del mes (reserva `by_season`). Día de la semana, solo con fechas.
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
@@ -261,10 +260,10 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
     (unit.availableWindows ?? []).some((window) => !availableForTrip(window, calendar, calendar.dateOfDay(day.dayNumber), unit.poolIndex != null))
   // Dónde se puede comer (restaurantes curados para comer): el programador elige en cada día.
   const lunchSpotList = lunchSpots(destData)
-  const mode = modeV3For(pace)
+  const mode = MODE_V3
   // Plan B de un imprescindible: el horario normal (el del completo, sin el extra de duración).
-  const normal = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
-  const fallbackMode = normal.dayStart !== mode.dayStart || normal.visitDurationBonus !== mode.visitDurationBonus ? normal : null
+  // (Una sola ruta: no hay otro modo al que pasar para empezar antes.)
+  const fallbackMode = null
   const freeTourTime = destData.default_free_tour?.default_time ?? null
 
   const selectedThemes = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
@@ -459,7 +458,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   const dayUnits = (day) => day.open.units()
   /**
    * Cuántas VISITAS tiene el día: lo encadenado (un grupo, o sitios a <= 3 min, como Plaza Venecia +
-   * Altar) cuenta como una. Es la medida del objetivo del ritmo (8-10 completo, 5-7 tranquilo); la
+   * Altar) cuenta como una. Es la medida del objetivo del día (8-10 paradas); la
    * app sigue enseñando lugares, igual que el mapa y la lista.
    */
   // El Free Tour cuenta como los lugares que recorre (decisión del 2026-09-23): son cuatro visitas
@@ -556,7 +555,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   function placeOnDay(day, unit, { allowFallback = true } = {}) {
     if (!eligible(day, unit)) return false
     const withIndex = forDay(day, unit)
-    // Antes de adelantar el día (plan B: el tranquilo a las 08:00), se prueba a quitar un relleno: el
+    // Antes de adelantar el día (plan B), se prueba a quitar un relleno: el
     // madrugón, solo si de verdad hace falta (revisión del 2026-09-25).
     const displaceFiller = () => {
       if (!allowFallback || unit.priority > PRIORITY.ESSENTIAL || !fallbackMode) return false
@@ -1103,7 +1102,7 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   // Cada parada nueva va al PRIMER día que todavía la necesita (decisión del 2026-09-24): si el
   // destino no da para llenar todas las tardes, el tiempo libre cae al final del viaje, nunca en el
   // día 2. Antes iba por turnos (una a cada día) y la tarde libre salía en cualquier día.
-  // El objetivo es el MÍNIMO del ritmo (8 completo, 5 tranquilo); hasta el máximo solo se sube con
+  // El objetivo es el MÍNIMO del día (8 paradas); hasta el máximo solo se sube con
   // paradas que caen de camino. Rellenar hasta 10 a cualquier precio es el "relleno obsesivo" que
   // se quería quitar.
   const minTargetOf = (day) => (day.allowsRepetition ? RELAXED_DAY_TARGET_STOPS : mode.targetStops[0])
@@ -1141,8 +1140,6 @@ export function planTrip({ destData, totalDays, pace, hasFreeTour, poolNames = [
   
         let best = null
         for (const unit of [...fresh, ...revisits]) {
-          // En tranquilo el nivel 3 no entra como relleno: 5-7 paradas gastadas en tercera fila es lo
-          // que hace que un día tranquilo se sienta vacío en vez de tranquilo.
           // Lo que el destino escribió para ESE día (el Borgo Pio del recorrido de tarde del Vaticano) no
           // es relleno: entra aunque sea de nivel 3.
           if (unit.priority > PRIORITY.ESSENTIAL && !mode.fillLevels.includes(unit.level) && curatedIndexIn(day, unit) === null) continue

@@ -2,7 +2,6 @@
   "_nota": "D4 escrito (2026-09-29, con las respuestas del usuario a la revisión). Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
   "id": "D4",
   "nombre": "Trevi sin gente, la Borghese y el Popolo",
-  "nombre_tranquilo": "Trevi, la Borghese y el Popolo",
   "joyas": [
     "Fontana de Trevi"
   ],
@@ -19,14 +18,8 @@
       {
         "lugar": "Fontana de Trevi",
         "tipo": "fija",
-        "hora": {
-          "completo": "08:30",
-          "tranquilo": "09:30"
-        },
-        "min": 25,
-        "tranquilo": {
-          "sugerencia": "¿Te animas a madrugar un día? A las 8:30 la tienes casi para ti."
-        }
+        "hora": "08:30",
+        "min": 25
       },
       {
         "lugar": "Desayuno romano",
@@ -384,7 +377,6 @@
     "con_free_tour": {
       "_nota": "Con Free Tour, Trevi y la Plaza de España las enseña el tour: cambia solo la mañana. El Castillo por dentro a la apertura (con Free Tour no hay D2 y, con 4 días o más, el Castillo va por dentro) y en taxi a la Galería de las 11:00.",
       "nombre": "El Castillo, la Borghese y el Popolo",
-      "nombre_tranquilo": "El Castillo, la Borghese y el Popolo",
       "manana": {
         "paradas": [
           {
@@ -436,10 +428,7 @@
           {
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
-            "hora": {
-              "completo": "09:30",
-              "tranquilo": "10:00"
-            },
+            "hora": "09:30",
             "min": 25,
             "no_si_dia": [
               "D3"
@@ -449,10 +438,7 @@
             "lugar": "Via Condotti",
             "modo": "camino",
             "tipo": "fija",
-            "hora": {
-              "completo": "10:05",
-              "tranquilo": "10:35"
-            }
+            "hora": "10:05"
           },
           {
             "lugar": "Plaza de España",
@@ -478,7 +464,6 @@
         ]
       },
       "nombre": "Año Nuevo: Trevi, el Pincio y el Popolo",
-      "nombre_tranquilo": "Año Nuevo: Trevi, el Pincio y el Popolo",
       "tarde.A": {
         "ajustar": {
           "Jardines del Pincio": {

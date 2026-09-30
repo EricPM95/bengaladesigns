@@ -28,7 +28,7 @@ import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones, restaurantZonesNamedIn } from './dinnerZones.js'
-import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODES_V3, modeV3For } from './modes.js'
+import { LATE_DINNER_START, LATE_SUNSET_MINUTES, MODE_V3 } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay, effectiveSchedule, parseHoursSessions } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
@@ -59,9 +59,8 @@ const WAKE_EARLY_STEP = 30
 const MIRADOR_LATE_MINUTES = 30
 const DROP_RANK = { ancla: 1, joya: 1, pool: 2, parada: 3, atardecer: 3, de_paso: 5, extra: 4 }
 /** Tranquilo: el nivel 3 antes que el nivel 2, y los dos antes que lo de paso (los rellenos, antes que todo). */
-const DROP_RANK_BY_LEVEL = { 3: 7, 2: 6, de_paso: 5.5, extra: 8 }
 /** Un medio día sin tipo: como mucho estas paradas improvisadas, a 15 min o menos una de otra. */
-const UNTYPED_MAX_STOPS = { completo: 4, tranquilo: 3 }
+const UNTYPED_MAX_STOPS = 4
 const UNTYPED_MAX_WALK = 15
 /** El primer salto del medio día sin tipo puede ser más largo: salir de un barrio apartado (Testaccio). */
 const UNTYPED_FIRST_HOP = 30
@@ -311,11 +310,11 @@ function wakeBans(trip) {
     .flatMap((day) => (day.schedule?.kept ?? []).filter((unit) => String(unit.id).startsWith('de paso:')).flatMap((unit) => unit.places.map((place) => place.name)))
     .filter((name) => (trip.rescueDetours?.[name] ?? Infinity) > OUTSIDE_ON_THE_WAY_MINUTES)
   const missing = [...new Set([...(trip.unplacedEssentials ?? []).map((item) => item.name), ...rescuedOutside])]
-  if (missing.length === 0 || trip.mode?.dayStart === MODES_V3.completo.dayStart) return []
+  if (missing.length === 0 || trip.mode?.dayStart === MODE_V3.dayStart) return []
   // Cualquier día de tranquilo que empiece después de las 08:00 (con madrugón "lo justo" incluido): la
   // prueba se queda solo si el viaje sale mejor (entra lo que faltaba).
   return trip.days
-    .filter((day) => day.schedule && !day.halfDayExcursion && (day.schedule.modeFallback?.dayStart ?? trip.mode.dayStart) > MODES_V3.completo.dayStart)
+    .filter((day) => day.schedule && !day.halfDayExcursion && (day.schedule.modeFallback?.dayStart ?? trip.mode.dayStart) > MODE_V3.dayStart)
     .map((day) => `madruga:${day.dayNumber}:${missing.join('|')}`)
 }
 
@@ -363,10 +362,10 @@ function tripCost(trip) {
   return Math.min(LATE_JOYA_CAP, LATE_JOYA_COST * lateJoyasOf(trip).length) + DEAD_DAY_COST * deadDays(trip).length + 60 * shortDays(trip).length + 400 * trip.unplacedEssentials.length + 80 * trip.unplacedPool.length + 60 * trip.untypedHalves + trip.days.reduce((sum, day) => sum + (day.schedule?.walkMinutes ?? 0), 0) / 2
 }
 
-function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }, bans) {
+function planBlockTripOnce({ destData, totalDays, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel }, bans) {
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
-  const mode = modeV3For(pace)
-  const normalMode = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
+  const mode = MODE_V3
+  const normalMode = mode
   const hasPlanB = normalMode.dayStart !== mode.dayStart
   const lunchSpotList = lunchSpots(destData)
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
@@ -631,14 +630,12 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
   }
 
   /**
-   * Qué se cae antes cuando el día no da (el más alto primero). Tranquilo (`dropByLevel`, decisión del
-   * 2026-09-26): los rellenos, el nivel 3, el nivel 2 y lo de paso, en ese orden; nunca un nivel 1 ni una joya.
+   * Qué se cae antes cuando el día no da (el más alto primero).
    */
   function dropRankOf(name, role, place, stops) {
-    if (joyaNames.has(name) || (mode.dropByLevel && place.level === 1)) return DROP_RANK.joya
+    if (joyaNames.has(name)) return DROP_RANK.joya
     if (role === 'pool') return DROP_RANK.pool
     if (role === 'de_paso' && place.group && stops.some((other) => other.name !== name && other.role !== 'de_paso' && other.place?.group === place.group)) return DROP_RANK.parada
-    if (mode.dropByLevel && role !== 'ancla') return role === 'de_paso' ? DROP_RANK_BY_LEVEL.de_paso : DROP_RANK_BY_LEVEL[place.level ?? 3] ?? DROP_RANK_BY_LEVEL[3]
     return DROP_RANK[role] ?? DROP_RANK.parada
   }
 
@@ -1154,7 +1151,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       for (const { place } of candidates.slice(0, 6)) {
         const [scheduled] = placesForScheduler({ id: place.name, places: [place] }, destData, freeTourTime)
         const kept = chosen.result.kept
-        const unit = { id: `espera:${place.name}`, group: null, places: [scheduled], slot: kept[unitIndex]?.slot ?? 'tarde', blockId: 'extra', role: 'extra', dropRank: mode.dropByLevel ? DROP_RANK_BY_LEVEL.extra : DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null }
+        const unit = { id: `espera:${place.name}`, group: null, places: [scheduled], slot: kept[unitIndex]?.slot ?? 'tarde', blockId: 'extra', role: 'extra', dropRank: DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null }
         if (unitIndex < 0 || splitsGroup(kept, unitIndex)) break
         const units = [...kept.slice(0, unitIndex), unit, ...kept.slice(unitIndex)]
         const result = schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
@@ -1246,7 +1243,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       let best = null
       for (const place of candidates) {
         const [scheduled] = placesForScheduler({ id: place.name, places: [place] }, destData, freeTourTime)
-        const unit = { id: `experiencia:${place.name}`, group: null, places: [scheduled], slot: 'tarde', blockId: 'extra', role: 'extra', dropRank: mode.dropByLevel ? DROP_RANK_BY_LEVEL.extra : DROP_RANK.extra, priority: PRIORITY.THEME, curatedIndex: null, poolIndex: null, experienceTheme: id }
+        const unit = { id: `experiencia:${place.name}`, group: null, places: [scheduled], slot: 'tarde', blockId: 'extra', role: 'extra', dropRank: DROP_RANK.extra, priority: PRIORITY.THEME, curatedIndex: null, poolIndex: null, experienceTheme: id }
         const kept = chosen.result.kept
         for (let at = 1; at <= kept.length; at++) {
           if (splitsGroup(kept, at)) continue
@@ -1300,7 +1297,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       let placed = false
       for (const { place } of candidates.slice(0, 6)) {
         const [scheduled] = placesForScheduler({ id: place.name, places: [place] }, destData, freeTourTime)
-        const unit = { id: `mañana:${place.name}`, group: null, places: [scheduled], slot: 'manana', blockId: 'extra', role: 'extra', dropRank: mode.dropByLevel ? DROP_RANK_BY_LEVEL.extra : DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null }
+        const unit = { id: `mañana:${place.name}`, group: null, places: [scheduled], slot: 'manana', blockId: 'extra', role: 'extra', dropRank: DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null }
         const units = [...kept.slice(0, at), unit, ...kept.slice(at)]
         const result = schedule(day, units, chosen.dinner, { morning: !day.halfDayExcursion })
         const after = gapOf(result)
@@ -1364,7 +1361,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       let placed = false
       for (const { place } of candidates.slice(0, 5)) {
         const [scheduled] = placesForScheduler({ id: place.name, places: [place] }, destData, freeTourTime)
-        const unit = { id: `extra:${place.name}`, group: null, places: [scheduled], slot: 'tarde', blockId: 'extra', role: 'extra', dropRank: mode.dropByLevel ? DROP_RANK_BY_LEVEL.extra : DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null, isTailExtra: true }
+        const unit = { id: `extra:${place.name}`, group: null, places: [scheduled], slot: 'tarde', blockId: 'extra', role: 'extra', dropRank: DROP_RANK.extra, priority: PRIORITY.FILLER, curatedIndex: null, poolIndex: null, isTailExtra: true }
         // Donde menos se ande: de camino, no necesariamente al final (sin tocar el orden del bloque,
         // que va entre sus paradas y no las cambia de sitio).
         const kept = chosen.result.kept
@@ -1623,7 +1620,7 @@ function planBlockTripOnce({ destData, totalDays, pace, hasFreeTour = false, poo
       // Medio día sin tipo: se improvisa con lo más cercano que falte (reserva) y el semáforo lo marca.
       untypedHalves++
       const from = morningPlaces.at(-1)?.coordinates ?? destData.zones?.centro_historico?.center ?? null
-      const maxStops = UNTYPED_MAX_STOPS[mode.id] ?? 3
+      const maxStops = UNTYPED_MAX_STOPS
       const anchorsLeft = new Set((destData.afternoon_flows ?? []).filter((block) => !usedAfternoons.has(block.id)).map(anchorOf).filter(Boolean))
       const pool = allUnits
         .flatMap((unit) => unit.places)

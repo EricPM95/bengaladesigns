@@ -4,7 +4,7 @@
  * El destino fija QUÉ se ve y EN QUÉ ORDEN, por bloques de media jornada (Roma: A Roma Antigua,
  * B Centro, C Vaticano). El motor solo:
  *   - elige los bloques (combinations) y los reparte en las franjas del viaje;
- *   - aplica el ritmo (completo = core + extras, tranquilo = solo core), los cambios por
+ *   - lleva el core y los extras de cada bloque, los cambios por
  *     experiencia (swaps) y el pool (sustituye a la parada de menor prioridad);
  *   - pone las horas con el programador en modo de orden fijo, comprobando horarios, últimas
  *     entradas y cierres. Lo que no cabe va a "No te dio tiempo" con su motivo.
@@ -20,7 +20,7 @@ import { buildUnits } from './units.js'
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY, scheduleFixedOrder } from './scheduleDay.js'
 import { dinnerZones } from './dinnerZones.js'
-import { MODES_V3, isTranquiloPace, modeV3For } from './modes.js'
+import { MODE_V3 } from './modes.js'
 import { toMinutes } from './time.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay } from './openingHours.js'
@@ -90,13 +90,13 @@ const LOSS_WEIGHT = { joya: 100, core: 10, pool: 5, extra: 1 }
  * cambios por experiencia aplicados. Si dos experiencias sustituyen lo mismo, gana la que el
  * viajero eligió primero; las que añaden se aplican todas.
  */
-function blockStops(block, pace, experiencesPositive, destData) {
+function blockStops(block, experiencesPositive, destData) {
   // Un extra de pago no es relleno (Paso 3): solo va si una experiencia elegida lo cubre, y entonces
   // entra por ella (el Castillo de Sant'Angelo del bloque del Vaticano, solo con Arte).
   const placeOf = (name) => destData.places?.find((place) => place.name === name)
   const paid = (place) => Boolean(place) && !(place.is_free_access ?? place.type === 'exterior')
   const themeOf = (place) => (experiencesPositive ?? []).find((theme) => theme in TAG_INTEREST_MAP && theme !== 'free_tour' && (place?.tags ?? []).some((tag) => TAG_INTEREST_MAP[theme].includes(tag))) ?? null
-  const extras = (isTranquiloPace(pace) ? [] : (block.extras_completo ?? []))
+  const extras = (block.extras_completo ?? [])
     .map((name) => ({ name, place: placeOf(name) }))
     .filter(({ place }) => !paid(place) || themeOf(place))
     .map(({ name, place }) => (paid(place) ? { name, role: 'extra', swappedBy: themeOf(place) } : { name, role: 'extra' }))
@@ -108,7 +108,7 @@ function blockStops(block, pace, experiencesPositive, destData) {
     // Un cambio que mete un museo de pago sin cupo (Parte A, regla 2) no se aplica: se queda lo que había.
     if (paidMuseumQuota(destData, 1) === 0 && [...(swap.with ?? []), ...(swap.add ?? []), ...(swap.add_at_end ?? [])].some((name) => isPaidMuseum(placeOf(name)))) continue
     if (swap.replace) {
-      // Solo si lo que sustituye está en la ruta (en tranquilo no hay extras que sustituir) y no lo
+      // Solo si lo que sustituye está en la ruta y no lo
       // ha sustituido ya una experiencia elegida antes.
       const targets = swap.replace.filter((name) => stops.some((stop) => stop.name === name) && !replaced.has(name))
       if (targets.length === 0) continue
@@ -135,7 +135,6 @@ function blockStops(block, pace, experiencesPositive, destData) {
  * @param {object} args
  * @param {object} args.destData
  * @param {{dayNumber: number, slot: 'manana'|'tarde'}[]} args.slots   ver shortTripSlots
- * @param {string} args.pace
  * @param {boolean} [args.hasFreeTour]
  * @param {string[]} [args.poolNames]           en el orden en que se eligió
  * @param {string[]} [args.experiencesPositive] en el orden en que se eligió
@@ -166,14 +165,15 @@ export function planShortTrip(args) {
   return lost(retry) < lost(trip) ? retry : trip
 }
 
-function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, month = null, season = null, dateRangeStartIso = null, unavailableBlocks = {} }) {
+function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [], experiencesPositive = [], travel, month = null, season = null, dateRangeStartIso = null, unavailableBlocks = {} }) {
   const config = destData.short_trips
   const { blocks } = config
-  const mode = modeV3For(pace)
+  const mode = MODE_V3
   // Plan B (decisión del 2026-09-24, también en viajes de un día): si un imprescindible no cabe con
-  // el ritmo, el día empieza a las 08:00 y sin el extra de duración, con aviso (pace_notice).
-  const normalMode = { ...mode, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
-  const hasPlanB = normalMode.dayStart !== mode.dayStart || normalMode.visitDurationBonus !== mode.visitDurationBonus
+  // el ritmo, el día empieza a las 08:00 y sin el extra de duración, con aviso (day_notice).
+  // (Una sola ruta: no hay plan B de empezar antes.)
+  const normalMode = mode
+  const hasPlanB = false
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const seasonOfTrip = calendar.season
   const lunchSpotList = lunchSpots(destData)
@@ -258,7 +258,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
 
   // ── Qué se ve en cada bloque.
   const stopsByBlock = new Map(
-    blockIds.map((id) => [id, id === freeTourBlock ? freeTourStops() : blockStops(blocks[id], pace, experiencesPositive, destData)]),
+    blockIds.map((id) => [id, id === freeTourBlock ? freeTourStops() : blockStops(blocks[id], experiencesPositive, destData)]),
   )
 
   // ── Pool: lo que pida y no esté sustituye a la parada de menor prioridad (primero extras, luego
@@ -532,7 +532,7 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
     }
     // Un imprescindible con `pass_by` que no llega a su cierre (el Foro, con Roma Antigua por la
     // tarde) se ve POR FUERA: paso gratis al final del día, con su mensaje (decisión del 2026-09-24).
-    // Si el grupo entero se cae (ritmo tranquilo con horario de invierno: el Coliseo no llega), se ven
+    // Si el grupo entero se cae (con horario de invierno: el Coliseo no llega), se ven
     // por fuera todos los suyos que tengan paso, antes que dejar la tarde vacía.
     const passByUnits = []
     for (const { unit } of schedule.dropped) {

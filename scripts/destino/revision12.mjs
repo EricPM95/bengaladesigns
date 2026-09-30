@@ -9,18 +9,18 @@
 import { generarRevision } from './revisionLib.mjs'
 
 const VIAJES = [
-  { dias: 2, fecha: '2027-05-14', ritmo: 'completo', exps: [] },
-  { dias: 2, fecha: '2026-11-13', ritmo: 'completo', exps: ['free_tour'] },
-  { dias: 3, fecha: '2027-04-22', ritmo: 'completo', exps: [] },
-  { dias: 3, fecha: '2027-06-10', ritmo: 'completo', exps: ['free_tour'] },
-  { dias: 4, fecha: '2027-09-16', ritmo: 'completo', exps: [] },
-  { dias: 4, fecha: '2027-05-06', ritmo: 'completo', exps: ['free_tour'] },
-  { dias: 5, fecha: '2027-07-12', ritmo: 'completo', exps: [] },
-  { dias: 5, fecha: '2027-10-18', ritmo: 'completo', exps: ['free_tour'] },
-  { dias: 6, fecha: '2027-04-05', ritmo: 'completo', exps: [] },
-  { dias: 6, fecha: '2027-08-02', ritmo: 'completo', exps: ['free_tour'] },
-  { dias: 7, fecha: '2027-06-21', ritmo: 'completo', exps: [] },
-  { dias: 7, fecha: '2026-12-07', ritmo: 'completo', exps: ['free_tour'] },
+  { dias: 2, fecha: '2027-05-14', exps: [] },
+  { dias: 2, fecha: '2026-11-13', exps: ['free_tour'] },
+  { dias: 3, fecha: '2027-04-22', exps: [] },
+  { dias: 3, fecha: '2027-06-10', exps: ['free_tour'] },
+  { dias: 4, fecha: '2027-09-16', exps: [] },
+  { dias: 4, fecha: '2027-05-06', exps: ['free_tour'] },
+  { dias: 5, fecha: '2027-07-12', exps: [] },
+  { dias: 5, fecha: '2027-10-18', exps: ['free_tour'] },
+  { dias: 6, fecha: '2027-04-05', exps: [] },
+  { dias: 6, fecha: '2027-08-02', exps: ['free_tour'] },
+  { dias: 7, fecha: '2027-06-21', exps: [] },
+  { dias: 7, fecha: '2026-12-07', exps: ['free_tour'] },
 ]
 
 await generarRevision({

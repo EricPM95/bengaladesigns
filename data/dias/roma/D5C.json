@@ -11,10 +11,7 @@
       {
         "lugar": "Boca de la Verdad",
         "tipo": "fija",
-        "hora": {
-          "completo": "09:30",
-          "tranquilo": "10:00"
-        },
+        "hora": "09:30",
         "min": 20
       },
       {

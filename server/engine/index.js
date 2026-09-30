@@ -36,7 +36,7 @@ import { applySeasonLines, seasonLinesOn } from '../../shared/routeEngine/season
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
-import { MODES_V3, isTranquiloPace } from '../../shared/routeEngine/modes.js'
+import { MODE_V3 } from '../../shared/routeEngine/modes.js'
 
 /**
  * Qué motor sirve esta petición. El cuerpo manda sobre la variable de entorno, y en ausencia de
@@ -81,11 +81,11 @@ function writtenPlanFor(written, destKey, args) {
   return plan
 }
 /** El pool de un viaje con días escritos: qué va ya incluido y cuántos extras caben (null sin días escritos). */
-export function writtenPoolStatus(destData, city, { days, hasFreeTour = false, dateRangeStartIso = null, pace = 'nonstop' }) {
+export function writtenPoolStatus(destData, city, { days, hasFreeTour = false, dateRangeStartIso = null }) {
   const destKey = findPipelineV2Key(destData.destination ?? city ?? '')
   const written = writtenDaysFor(destKey)
   if (!written) return null
-  return poolStatusFor({ destData, written, totalDays: days + 1, pace, hasFreeTour, experiencesPositive: hasFreeTour ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso, travel: travelTimesFor(destKey) })
+  return poolStatusFor({ destData, written, totalDays: days + 1, hasFreeTour, experiencesPositive: hasFreeTour ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso, travel: travelTimesFor(destKey) })
 }
 
 /** Para las pruebas, después de cambiar los días escritos. */
@@ -150,7 +150,6 @@ export async function buildDayBlockV3(
   totalDays,
   hasFreeTour,
   dayNumber,
-  pace,
   mapboxToken,
   dateRangeStartIso,
   mustIncludePlaces,
@@ -179,7 +178,6 @@ export async function buildDayBlockV3(
     const trip = planShortTrip({
       destData,
       slots: shortTripSlots('1_dia'),
-      pace,
       hasFreeTour,
       poolNames: mustIncludePlaces ?? [],
       experiencesPositive: experiencesPositive ?? [],
@@ -190,7 +188,7 @@ export async function buildDayBlockV3(
     })
     const tripDay = trip.days.find((day) => day.dayNumber === dayNumber)
     if (!tripDay) return null
-    const day = buildCityDayV3(destData, trip, tripDay, { ...options, pace })
+    const day = buildCityDayV3(destData, trip, tripDay, { ...options })
     day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
     day.night_hint = tripDay.nightHint ?? null
     applyExperienceLayers(destData, day, experiencesPositive ?? [], trip.calendar, tripDay.hours?.dateIso ?? null)
@@ -200,7 +198,6 @@ export async function buildDayBlockV3(
   const tripArgs = {
     destData,
     totalDays,
-    pace,
     hasFreeTour,
     poolNames: mustIncludePlaces ?? [],
     experiencesPositive: experiencesPositive ?? [],
@@ -239,7 +236,7 @@ export async function buildDayBlockV3(
   // más popular del destino. El viajero puede cambiarla, o rechazarla y recuperar un día de ruta.
   if (dayPlan.isExcursion) {
     const config = destData.destination_config ?? {}
-    const day = buildExcursionDayV2(destData, dayNumber, totalDays, pace)
+    const day = buildExcursionDayV2(destData, dayNumber, totalDays)
     // Fuera de temporada (`available` de la excursión, Estaciones Parte 4): no se ofrece. Con solo el
     // mes, el mes frontera tampoco (no la ha elegido el viajero).
     const calendar = tripCalendar({ dateRangeStartIso, month: options.month ?? null, season: options.season ?? null })
@@ -259,7 +256,7 @@ export async function buildDayBlockV3(
     return day
   }
 
-  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, pace, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
+  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()
@@ -486,7 +483,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       day.aperitivo = { ...day.aperitivo, title: `${barrioName} al anochecer y aperitivo`, minutes: merged }
     }
     // La «Tarde libre» de justo antes de cenar es el aperitivo, con su nombre (PROMPT_ROMA_V4_REPASO 8: 135 min de tarde
-    // libre en el D5C de invierno en tranquilo); así también se adelanta la cena si sobra.
+    // libre en el D5C de invierno); así también se adelanta la cena si sobra.
     if (!day.aperitivo && day.free_afternoon) {
       const named = aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, 0, Math.min(WINTER_FREE_MAX_MINUTES, day.free_afternoon.minutes))
       if (named) {
@@ -546,7 +543,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Un día sin Free Tour (festivo): el viajero ve el aviso, con el texto del destino.
   if (tripDay.noTour) {
     const text = destData.default_free_tour?.disponibilidad?.aviso ?? 'Hoy no hay Free Tour: hemos dejado el día sin él.'
-    day.pace_notice = [day.pace_notice, text].filter(Boolean).join(' ')
+    day.day_notice = [day.day_notice, text].filter(Boolean).join(' ')
     day.no_free_tour = true
   }
   // Las líneas de temporada de las fichas (Navidad): solo con fechas reales, y solo donde la ruta ya pasa.
@@ -605,7 +602,7 @@ const HHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:
 /**
  * Banner de contexto (decisión del 2026-09-26): uno solo al principio de la ruta, que explica por qué es
  * como es. Las plantillas viven en el JSON del destino (`destination_config.context_banners`); aquí solo
- * se elige el caso, del más al menos importante (invierno corto, invierno, corto, tranquilo), y se rellenan
+ * se elige el caso, del más al menos importante (invierno corto, invierno, corto), y se rellenan
  * los datos. Null si no toca ninguno.
  */
 export function contextBannerFor(destData, trip, options = {}) {
@@ -617,8 +614,7 @@ export function contextBannerFor(destData, trip, options = {}) {
   const month = firstIso ? Number(firstIso.slice(5, 7)) : Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : Number.isInteger(options.month) ? options.month + 1 : null
   const winter = month !== null && (templates.meses_invierno ?? []).includes(month)
   const short = days <= 2
-  const tranquilo = isTranquiloPace(options.pace)
-  const usualStart = tranquilo ? MODES_V3.tranquilo.dayStart : MODES_V3.completo.dayStart
+  const usualStart = MODE_V3.dayStart
   // Los días que empiezan antes de su hora (el «y algún día empieza un poco antes» del invierno).
   const early = cityDays.filter((day) => day.schedule.modeFallback && (day.schedule.modeFallback.startedAt ?? usualStart) < usualStart)
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
@@ -645,9 +641,6 @@ export function contextBannerFor(destData, trip, options = {}) {
       : fill(templates.invierno_sin_cierre ?? templates.invierno, { atardecer, madrugar })
   }
   if (short) return fill(days === 1 ? templates.corto_1 : templates.corto, { dias: days })
-  // Tranquilo, sin hora fija (PROMPT_TEXTOS_RITMO): cada día empieza a su hora escrita, y el texto ya dice que algún día
-  // empieza pronto. (Fuera «Solo N días empiezan antes…»: solo servía para los días antes de las 10:00.)
-  if (tranquilo) return templates.tranquilo
   return null
 }
 
@@ -840,7 +833,7 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // Antes del atardecer y viniendo de un barrio (Monti antes de los Foros en verano): el aperitivo en ese barrio, con su
         // nombre y 90 min como mucho, como haría un local (PROMPT_ROMA_V4_REPASO 8).
         ...(gap.aperitivoIn ? { title: `Aperitivo en ${gap.aperitivoIn}`, aperitivo: true } : {}),
-        // En tranquilo, la tarde larga empieza con un descanso después de comer (lo que no cabe en el barrio ni en el aperitivo).
+        // La tarde larga empieza con un descanso después de comer (lo que no cabe en el barrio ni en el aperitivo).
         ...(gap.rest ? { title: REST_TITLE, hint: REST_HINT, descanso: true } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
         ...(isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes) ? { title: SIESTA_TITLE, hint: SIESTA_HINT } : {}),

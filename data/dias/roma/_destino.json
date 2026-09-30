@@ -524,10 +524,7 @@
                   "parada": {
                     "lugar": "Termas de Caracalla",
                     "tipo": "fija",
-                    "hora": {
-                      "completo": "09:00",
-                      "tranquilo": "10:00"
-                    },
+                    "hora": "09:00",
                     "min": 60,
                     "modo": "dentro",
                     "entrada": true,
@@ -622,10 +619,7 @@
                   "parada": {
                     "lugar": "Basílica de San Juan de Letrán",
                     "tipo": "fija",
-                    "hora": {
-                      "completo": "08:00",
-                      "tranquilo": "08:30"
-                    },
+                    "hora": "08:00",
                     "min": 25,
                     "modo": "dentro",
                     "si_cerrado": "fuera"
@@ -634,10 +628,7 @@
               ],
               "ajustar": {
                 "Coliseo": {
-                  "hora": {
-                    "completo": "09:00",
-                    "tranquilo": "09:30"
-                  }
+                  "hora": "09:00"
                 }
               }
             }
@@ -685,7 +676,7 @@
       "sitios": []
     },
     "Cúpula de San Pedro": {
-      "_nota": "En D2 (en tranquilo deja de ser opcional). Con Free Tour no hay D2: sale como no incluido, con su motivo.",
+      "_nota": "En D2. Con Free Tour no hay D2: sale como no incluido, con su motivo.",
       "sitios": [
         {
           "dia": "D2",

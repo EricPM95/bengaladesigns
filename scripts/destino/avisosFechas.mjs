@@ -22,10 +22,10 @@ export const VIAJES_PARTE_D = [
 ]
 
 /** Los avisos de un viaje: los trae el primer día de ciudad (`date_notices`). */
-export async function avisosDe({ dias, fecha, mes = null, ritmo = 'completo', exps = [], pool = [] }) {
+export async function avisosDe({ dias, fecha, mes = null, exps = [], pool = [] }) {
   const positive = exps.length ? ['imprescindibles', ...exps] : []
   for (let n = 1; n <= dias; n++) {
-    const day = await buildDayBlockV3(D, dias + 1, exps.includes('free_tour'), n, ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, fecha, pool, positive, { city: 'Roma', scheduler: 'v3', month: mes })
+    const day = await buildDayBlockV3(D, dias + 1, exps.includes('free_tour'), n, null, fecha, pool, positive, { city: 'Roma', scheduler: 'v3', month: mes })
     if (day?.date_notices) return day.date_notices
   }
   return []

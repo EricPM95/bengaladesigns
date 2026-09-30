@@ -2,7 +2,6 @@
   "_nota": "D2 escrito (2026-09-29). El Castillo va siempre por dentro (con su entrada): así la tarde no cambia con los días del viaje y se cumple lo de 4 días o más. En invierno (A) el atardecer es desde la terraza del Castillo; desde B se sube al Janículo andando por el Tempietto si se llega antes de su última entrada (17:30); si no, por fuera.",
   "id": "D2",
   "nombre": "Vaticano, Castillo y Trastevere al atardecer",
-  "nombre_tranquilo": "Vaticano, Castillo y Trastevere al atardecer",
   "joyas": [
     "Museos Vaticanos y Capilla Sixtina"
   ],
@@ -24,10 +23,7 @@
       {
         "lugar": "Museos Vaticanos y Capilla Sixtina",
         "tipo": "fija",
-        "hora": {
-          "completo": "08:00",
-          "tranquilo": "08:30"
-        },
+        "hora": "08:00",
         "min": 180,
         "modo": "dentro",
         "entrada": true,
@@ -264,10 +260,7 @@
           {
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
-            "hora": {
-              "completo": "08:00",
-              "tranquilo": "08:30"
-            },
+            "hora": "08:00",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -574,20 +567,14 @@
           {
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
-            "hora": {
-              "completo": "08:30",
-              "tranquilo": "09:30"
-            },
+            "hora": "08:30",
             "min": 25,
             "sol_hasta": "19:45"
           },
           {
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
-            "hora": {
-              "completo": "08:30",
-              "tranquilo": "09:30"
-            },
+            "hora": "08:30",
             "min": 25,
             "sol_desde": "19:45",
             "meses": [
@@ -599,10 +586,7 @@
           {
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
-            "hora": {
-              "completo": "10:00",
-              "tranquilo": "10:00"
-            },
+            "hora": "10:00",
             "min": 25,
             "sol_desde": "19:45",
             "no_meses": [
@@ -826,21 +810,11 @@
           }
         ]
       }
-    },
-    "tranquilo": {
-      "_nota": "En tranquilo, los días que el Castillo va por la mañana (miércoles de audiencia, domingo), se recorre en 50 min: la mañana empieza media hora más tarde y la comida no se queda corta.",
-      "manana": {
-        "ajustar": {
-          "Castillo de Sant'Angelo": {
-            "min": 50
-          }
-        }
-      }
     }
   },
   "experiencias": {
     "naturaleza_vistas": {
-      "_nota": "Naturaleza y vistas: la Cúpula también en tranquilo.",
+      "_nota": "Naturaleza y vistas: la Cúpula no es opcional.",
       "manana": {
         "ajustar": {
           "Cúpula de San Pedro": {

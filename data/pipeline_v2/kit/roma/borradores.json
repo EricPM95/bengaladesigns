@@ -229,20 +229,13 @@
     },
     "reglas": {
       "ritmo": {
-        "completo": "core + extras_completo de cada bloque.",
-        "tranquilo": "solo core. Lo que no quepa va a 'No te dio tiempo'."
+        "completo": "core + extras_completo de cada bloque."
       },
       "experiencias": "Los swaps se aplican según las experiencias elegidas. Si hay varias que tocan el mismo bloque, se aplican todas las que no choquen; si dos sustituyen lo mismo, gana la que el viajero eligió primero.",
       "pool": "Si el pool pide algo que no está en los bloques elegidos, sustituye a la parada de menor prioridad (primero extras, luego core que no sea joya). Si no cabe, va a 'No te dio tiempo'. El orden de selección del pool decide.",
       "nocturnas": "En viajes de 1-2 días se puede repetir de noche un lugar visto de día (regla ya existente)."
     },
     "_pruebas": {
-      "tranquilo_no_cabe": [
-        "Vaticano",
-        "Plaza de España",
-        "Plaza de San Pedro",
-        "Basílica de San Pedro"
-      ],
       "completo_no_cabe": [
         "Vaticano"
       ]

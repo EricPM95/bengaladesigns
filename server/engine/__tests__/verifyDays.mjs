@@ -43,7 +43,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
   for (const totalDaysN of [2, 3, 4, 5, 6, 7]) {
     for (const ft of [false, true]) {
       const tag = `${pace} ${totalDaysN}d${ft ? '+ft' : ''}`
-      const plan = preplanTrip({ destData: D, totalDays: totalDaysN, pace, hasFreeTour: ft, dateRangeStartIso: '2026-05-04' })
+      const plan = preplanTrip({ destData: D, totalDays: totalDaysN, hasFreeTour: ft, dateRangeStartIso: '2026-05-04' })
       const nights = planNightWalks(D, plan)
       const visited = new Set()
       for (const d of plan.days) for (const s of ['morning', 'afternoon']) for (const u of d.slots[s].units) for (const p of u.places) visited.add(p.name)

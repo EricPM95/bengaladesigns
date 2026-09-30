@@ -1,22 +1,13 @@
 /**
- * Los dos ritmos del motor v3, como DATOS. Mismo código para los dos: nunca
- * `if (pace === 'tranquilo') { ... }` con lógica propia.
+ * El modo del motor v3, como DATOS. Hay una sola ruta (2026-09-30): la que era «completo». El motor no recibe ni mira
+ * ningún ritmo; el viajero aligera su ruta quitando paradas, y las opcionales se ven como tales.
  *
- * Decisiones del 2026-09-23 que fijan estos números:
- *   - Comida 13:00-14:00 y cena 20:00-21:00 en los DOS ritmos. La cena del tranquilo se había bajado
- *     a 19:30 para tapar una hora muerta antes de cenar; eso era síntoma de que faltaba planificar
- *     la tarde hacia la cena, y se arregla ahí, no moviendo la cena.
- *   - Comer: 60 min en completo, 90 en tranquilo (con sobremesa). Cenar: 60 min en los dos.
- *   - El día acaba CON la cena hacia las 21:30. De ahí sale la última hora a la que se puede
- *     empezar a cenar: 20:30 en los dos ritmos (decisión del 2026-09-26: la cena a la misma hora).
+ * Decisiones que fijan estos números:
+ *   - Comida 13:00-14:00 y cena 20:00-21:00. Comer, 60 min; cenar, 60 min.
+ *   - El día acaba CON la cena hacia las 21:30. De ahí sale la última hora a la que se puede empezar a cenar: 20:30.
  *     Las nocturnas van aparte, después.
- *
- * Decisión del 2026-09-26: "tranquilo" no es otra ruta, es la completa con menos cosas. Mismos bloques,
- * mismo orden y mismas duraciones de visita (sin `visitDurationBonus`); empieza a las 10:00 y come 90 min.
- * Para que quepa se quita, en este orden, el nivel 3, el nivel 2 y lo de paso (`dropByLevel`); nunca un
- * nivel 1 ni una joya.
- *   - "Visita larga" = 180 min o más (Vaticano, Coliseo+Foro). Las de 120 min comparten día con una
- *     larga si el programador confirma que cabe.
+ *   - "Visita larga" = 180 min o más (Vaticano, Coliseo+Foro). Las de 120 min comparten día con una larga si el
+ *     programador confirma que cabe.
  *   - Dentro de un grupo, o a menos de 3 min a pie, se encadena sin redondear.
  */
 
@@ -43,58 +34,16 @@ const SHARED = {
   halfDayRouteStart: HHMM('16:00'),
 }
 
-export const MODES_V3 = {
-  completo: {
-    ...SHARED,
-    id: 'completo',
-    dayStart: HHMM('08:00'),
-    mealMinutes: 60,
-    lunchBlockMinutes: 90,
-    visitDurationBonus: 0,
-    gapTolerance: 45,
-    targetStops: [8, 10],
-    fillLevels: [1, 2, 3],
-  },
-  tranquilo: {
-    ...SHARED,
-    id: 'tranquilo',
-    dayStart: HHMM('10:00'),
-    mealMinutes: 90,
-    lunchBlockMinutes: 120,
-    visitDurationBonus: 0,
-    dropByLevel: true,
-    gapTolerance: 60,
-    targetStops: [5, 7],
-    fillLevels: [1, 2],
-  },
-}
-
-/**
- * El ritmo del motor a partir de lo que manda el cuestionario: 'nonstop' es completo; 'tranquilo', 'zen' y
- * 'balanced' son tranquilo. Bug real (2026-09-26): la app manda 'zen' para "Tranquilo" y aquí solo se
- * miraba 'tranquilo', así que todas las rutas tranquilas de la app salían completas.
- */
-/**
- * Hay una sola ruta (PROMPT_QUITAR_RITMOS, 2026-09-30): la que era «completo». Medido con el motor, los dos ritmos daban
- * casi las mismas paradas (≈ 10 al día) y mantenerlos obligaba a duplicar textos, variantes y pruebas. El viajero la
- * aligera quitando paradas; las opcionales se ven como tales. Apagado, no borrado: con `SINGLE_ROUTE = false` vuelve
- * el ritmo tranquilo tal como estaba (`MODES_V3.tranquilo`, las variantes `tranquilo` de los días escritos…).
- */
-export const SINGLE_ROUTE = true
-/** El ritmo único que recibe el motor, venga lo que venga del formulario o de un viaje guardado. */
-export const SINGLE_PACE = 'nonstop'
-
-/** Lo que el cuestionario llamaba tranquilo ('tranquilo', 'zen', 'balanced'): solo para abrir viajes guardados. */
-export function wasTranquiloPace(pace) {
-  return pace === 'tranquilo' || pace === 'zen' || pace === 'balanced'
-}
-
-export function isTranquiloPace(pace) {
-  return !SINGLE_ROUTE && wasTranquiloPace(pace)
-}
-
-export function modeV3For(pace) {
-  return isTranquiloPace(pace) ? MODES_V3.tranquilo : MODES_V3.completo
+export const MODE_V3 = {
+  ...SHARED,
+  id: 'completo',
+  dayStart: HHMM('08:00'),
+  mealMinutes: 60,
+  lunchBlockMinutes: 90,
+  visitDurationBonus: 0,
+  gapTolerance: 45,
+  targetStops: [8, 10],
+  fillLevels: [1, 2, 3],
 }
 
 /**

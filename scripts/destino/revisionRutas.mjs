@@ -19,24 +19,24 @@ const EXP = { imprescindibles: 'Imprescindibles', free_tour: 'Free Tour', arte_m
 
 // mes: 1-12, como se dice. fecha: primer día (AAAA-MM-DD). ritmo: completo | tranquilo.
 const VIAJES = [
-  { dias: 1, mes: 12, ritmo: 'completo', exps: ['imprescindibles', 'free_tour'] },
-  { dias: 1, mes: 7, ritmo: 'completo', exps: ['arte_museos'] },
-  { dias: 1, mes: 5, ritmo: 'completo', exps: ['imprescindibles'], pool: ['Museos Vaticanos y Capilla Sixtina'] },
-  { dias: 2, mes: 9, ritmo: 'completo', exps: ['imprescindibles', 'free_tour'] },
-  { dias: 2, mes: 4, ritmo: 'tranquilo', exps: ['arte_museos'] },
-  { dias: 3, fecha: '2027-09-24', ritmo: 'completo', exps: ['arte_museos'], nota: 'de viernes a domingo' },
-  { dias: 3, mes: 10, ritmo: 'completo', exps: ['imprescindibles', 'free_tour', 'barrios_sabores'] },
-  { dias: 3, mes: 5, ritmo: 'tranquilo', exps: ['naturaleza_vistas'] },
-  { dias: 3, fecha: '2027-08-14', ritmo: 'completo', exps: ['imprescindibles', 'free_tour'] },
-  { dias: 4, fecha: '2027-03-25', ritmo: 'tranquilo', exps: ['arte_museos', 'barrios_sabores'], nota: 'Semana Santa' },
-  { dias: 4, mes: 6, ritmo: 'completo', exps: ['naturaleza_vistas'] },
-  { dias: 4, fecha: '2026-12-05', ritmo: 'completo', exps: ['imprescindibles', 'arte_museos', 'barrios_sabores'] },
-  { dias: 5, mes: 12, ritmo: 'tranquilo', exps: ['arte_museos', 'barrios_sabores'], pool: ['Galería Borghese', 'Trastevere'] },
-  { dias: 5, mes: 9, ritmo: 'completo', exps: ['imprescindibles', 'free_tour'] },
-  { dias: 6, mes: 5, ritmo: 'completo', exps: [], nota: 'sin experiencias' },
-  { dias: 7, fecha: '2027-09-13', ritmo: 'completo', exps: ['imprescindibles', 'arte_museos', 'naturaleza_vistas'], nota: 'empieza en lunes' },
+  { dias: 1, mes: 12, exps: ['imprescindibles', 'free_tour'] },
+  { dias: 1, mes: 7, exps: ['arte_museos'] },
+  { dias: 1, mes: 5, exps: ['imprescindibles'], pool: ['Museos Vaticanos y Capilla Sixtina'] },
+  { dias: 2, mes: 9, exps: ['imprescindibles', 'free_tour'] },
+  { dias: 2, mes: 4, exps: ['arte_museos'] },
+  { dias: 3, fecha: '2027-09-24', exps: ['arte_museos'], nota: 'de viernes a domingo' },
+  { dias: 3, mes: 10, exps: ['imprescindibles', 'free_tour', 'barrios_sabores'] },
+  { dias: 3, mes: 5, exps: ['naturaleza_vistas'] },
+  { dias: 3, fecha: '2027-08-14', exps: ['imprescindibles', 'free_tour'] },
+  { dias: 4, fecha: '2027-03-25', exps: ['arte_museos', 'barrios_sabores'], nota: 'Semana Santa' },
+  { dias: 4, mes: 6, exps: ['naturaleza_vistas'] },
+  { dias: 4, fecha: '2026-12-05', exps: ['imprescindibles', 'arte_museos', 'barrios_sabores'] },
+  { dias: 5, mes: 12, exps: ['arte_museos', 'barrios_sabores'], pool: ['Galería Borghese', 'Trastevere'] },
+  { dias: 5, mes: 9, exps: ['imprescindibles', 'free_tour'] },
+  { dias: 6, mes: 5, exps: [], nota: 'sin experiencias' },
+  { dias: 7, fecha: '2027-09-13', exps: ['imprescindibles', 'arte_museos', 'naturaleza_vistas'], nota: 'empieza en lunes' },
   // Caso añadido (decisiones del 2026-09-26): 2 días completos desde un sábado; la Plaza de España tiene que entrar.
-  { dias: 2, fecha: '2026-10-24', ritmo: 'completo', exps: [], nota: 'empieza en sábado; caso añadido' },
+  { dias: 2, fecha: '2026-10-24', exps: [], nota: 'empieza en sábado; caso añadido' },
 ]
 
 const D = findPipelineV2Data('Roma')
@@ -95,7 +95,7 @@ head.push('')
 for (const [index, viaje] of VIAJES.entries()) {
   const exps = viaje.exps.length ? viaje.exps.map((e) => EXP[e]).join(' + ') : 'sin experiencias'
   const cuando = viaje.fecha ? `del ${fechaLarga(viaje.fecha)} al ${fechaLarga(addDays(viaje.fecha, viaje.dias - 1))}` : MESES[viaje.mes - 1]
-  out.push(`## ${index + 1}. ${viaje.dias} ${viaje.dias === 1 ? 'día' : 'días'} · ${cuando} · ${viaje.ritmo} · ${exps}${viaje.pool ? ` · pool: ${viaje.pool.join(', ')}` : ''}${viaje.nota ? ` (${viaje.nota})` : ''}`)
+  out.push(`## ${index + 1}. ${viaje.dias} ${viaje.dias === 1 ? 'día' : 'días'} · ${cuando} · ${exps}${viaje.pool ? ` · pool: ${viaje.pool.join(', ')}` : ''}${viaje.nota ? ` (${viaje.nota})` : ''}`)
   out.push('')
   // El banner de contexto (va con el primer día de ciudad).
   const bannerAt = out.length
@@ -106,7 +106,7 @@ for (const [index, viaje] of VIAJES.entries()) {
   const primerDia = new Map()
   const huecos = []
   for (let n = 1; n <= viaje.dias; n++) {
-    const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha ?? null, viaje.pool ?? [], viaje.exps.length ? experiencesPositive : [], {
+    const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, null, viaje.fecha ?? null, viaje.pool ?? [], viaje.exps.length ? experiencesPositive : [], {
       city: 'Roma',
       scheduler: 'v3',
       month: viaje.fecha ? null : viaje.mes - 1,
@@ -157,7 +157,7 @@ for (const [index, viaje] of VIAJES.entries()) {
     }
     for (const id of day.reordered_blocks ?? []) reordenados.push(`viaje ${index + 1}, día ${n}: ${id}`)
     huecos.push({ n, minutos: maxHueco(day) })
-    if (day.pace_notice) out.push(`> ${day.pace_notice}`)
+    if (day.day_notice) out.push(`> ${day.day_notice}`)
     if (day.transfer_notice) out.push(`> 🚌 ${day.transfer_notice}`)
     if (day.half_day_excursion) out.push(`**Mañana: excursión de medio día** (${day.half_day_excursion.id}, ${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at}); la ciudad, desde las ${day.half_day_excursion.route_starts_at}.`)
     const lunch = day.meals?.find((m) => m.time === 'lunch')

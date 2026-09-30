@@ -1,5 +1,5 @@
 // La prueba de Navidad (PROMPT_ROMA_NAVIDAD, 4): todos los días de salida del 1 de diciembre al 8 de enero, de 1 a 7 días,
-// completo y tranquilo, con y sin Free Tour, con y sin la experiencia de mercadillos. Tiene que dar 0 en:
+// con y sin Free Tour, con y sin la experiencia de mercadillos. Tiene que dar 0 en:
 //   - un lugar cerrado planificado por dentro;
 //   - un tramo en bus o metro fuera del horario de ese festivo;
 //   - un texto que diga algo falso (cierres, horas, «mercadillo»);
@@ -15,8 +15,6 @@ import { closedOnDay, withinMonthDays } from '../../shared/routeEngine/openingHo
 import { anyTransitRuns, publicTransitKind, transitRuns } from '../../shared/routeEngine/holidayTransit.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
-// (Una sola ruta, PROMPT_QUITAR_RITMOS: la que era «completo». Con ritmos=los-dos, también «tranquilo», que ya da lo mismo.)
-const RITMOS = args.ritmos === 'los-dos' ? ['completo', 'tranquilo'] : ['completo']
 const YEAR = Number(args['año'] ?? args.ano ?? 2026)
 const D = findPipelineV2Data('Roma')
 const travel = travelTimesFor('roma')
@@ -58,20 +56,19 @@ const meters = (a, b) => Math.hypot((a[0] - b[0]) * 111000, (a[1] - b[1]) * 8300
 const CLOSABLE = [['Coliseo', 'Coliseo'], ['Foro', 'Foro Romano y Palatino'], ['Panteón', 'Panteón'], ['Museos Vaticanos', 'Museos Vaticanos y Capilla Sixtina'], ['Castillo', "Castillo de Sant'Angelo"], ['Galería Borghese', 'Galería Borghese'], ['Termas', 'Termas de Caracalla']]
 
 let trips = 0
-async function runTrip({ fecha, dias, ritmo, ft, mercadillos }) {
+async function runTrip({ fecha, dias, ft, mercadillos }) {
   const exps = [...(ft ? ['free_tour'] : []), ...(mercadillos ? ['mercadillos_navidenos'] : [])]
-  const label = `${fecha} · ${dias} ${dias === 1 ? 'día' : 'días'} · ${ritmo}${ft ? ' · FT' : ''}${mercadillos ? ' · mercadillos' : ''}`
-  const pace = ritmo === 'completo' ? 'nonstop' : 'tranquilo'
+  const label = `${fecha} · ${dias} ${dias === 1 ? 'día' : 'días'}${ft ? ' · FT' : ''}${mercadillos ? ' · mercadillos' : ''}`
   const days = []
   try {
-    for (let n = 1; n <= dias; n++) days.push(await buildDayBlockV3(D, dias + 1, ft, n, pace, null, fecha, [], exps.length ? ['imprescindibles', ...exps] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4' }))
+    for (let n = 1; n <= dias; n++) days.push(await buildDayBlockV3(D, dias + 1, ft, n, null, fecha, [], exps.length ? ['imprescindibles', ...exps] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4' }))
   } catch (error) {
     add('error', label, String(error?.message ?? error).slice(0, 160))
     return
   }
   trips++
   // Lo de la auditoría de siempre que toca aquí: horarios y avisos que prometen.
-  for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: [], leg: legBetween, label, pace: ritmo })) {
+  for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: [], leg: legBetween, label })) {
     if (caso.tipo === 'fuera_de_horario') add('fuera_de_horario', caso.donde, caso.detalle)
     if (['aviso_promete', 'aviso_lugar_ajeno', 'titulo_hora', 'nota_promete'].includes(caso.tipo)) add('texto_falso', caso.donde, `${caso.tipo}: ${caso.detalle ?? ''}`)
   }
@@ -156,11 +153,11 @@ const started = Date.now()
 const first = `${YEAR}-12-01`
 for (let offset = 0; offset < 39; offset++) {
   const fecha = addDays(first, offset)
-  for (let dias = 1; dias <= 7; dias++) for (const ritmo of RITMOS) for (const ft of [false, true]) for (const mercadillos of [false, true]) await runTrip({ fecha, dias, ritmo, ft, mercadillos })
+  for (let dias = 1; dias <= 7; dias++) for (const ft of [false, true]) for (const mercadillos of [false, true]) await runTrip({ fecha, dias, ft, mercadillos })
   if (offset % 5 === 0) process.stdout.write(`${fecha} (${Math.round((Date.now() - started) / 1000)} s)   `)
 }
 const total = Object.keys(TIPOS).reduce((sum, tipo) => sum + (counts.get(tipo) ?? 0), 0)
-const lines = [`# Prueba de Navidad (del 1 de diciembre de ${YEAR} al 8 de enero de ${YEAR + 1})`, '', `${trips} viajes (salida cada día, de 1 a 7 días, completo y tranquilo, con y sin Free Tour, con y sin mercadillos), en ${Math.round((Date.now() - started) / 1000)} s. **Total: ${total}**.`, '']
+const lines = [`# Prueba de Navidad (del 1 de diciembre de ${YEAR} al 8 de enero de ${YEAR + 1})`, '', `${trips} viajes (salida cada día, de 1 a 7 días, con y sin Free Tour, con y sin mercadillos), en ${Math.round((Date.now() - started) / 1000)} s. **Total: ${total}**.`, '']
 for (const [tipo, label] of Object.entries({ ...TIPOS, ...INFO })) {
   const count = counts.get(tipo) ?? 0
   lines.push(`- **${label}**: ${count}${count === 0 ? ' ✅' : ''}`)

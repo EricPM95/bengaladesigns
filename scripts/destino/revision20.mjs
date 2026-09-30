@@ -18,34 +18,34 @@ import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
 // (revisionCierre.mjs pasa su propia lista y su título: los 30 viajes del cierre de Roma.)
 const VIAJES = globalThis.__REVISION_VIAJES ?? [
   // COMPLETO
-  { dias: 2, ritmo: 'completo', ft: false, exps: [], fecha: '2027-04-24', nota: 'domingo Vaticano cerrado + 25 de abril' },
-  { dias: 2, ritmo: 'completo', ft: true, exps: [], fecha: '2027-06-26' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: ['arte_museos'], fecha: '2027-03-26', nota: 'Pascua el domingo 28' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-07-17', nota: 'verano' },
-  { dias: 3, ritmo: 'completo', ft: true, exps: ['barrios_sabores'], fecha: '2027-10-09' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: ['naturaleza_vistas'], pool: ["Castillo de Sant'Angelo"], fecha: '2027-06-28', nota: 'Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro' },
-  { dias: 4, ritmo: 'completo', ft: false, exps: [], fecha: '2027-04-30', nota: '1 de mayo' },
-  { dias: 4, ritmo: 'completo', ft: true, exps: ['arte_museos'], fecha: '2027-12-04', nota: 'invierno, domingo' },
-  { dias: 4, ritmo: 'completo', ft: false, exps: ['barrios_sabores'], fecha: '2027-11-01', nota: 'Todos los Santos, lunes' },
-  { dias: 4, ritmo: 'completo', ft: false, exps: [], fecha: '2027-12-24', nota: 'Navidad' },
-  { dias: 5, ritmo: 'completo', ft: false, exps: [], fecha: '2027-05-22' },
-  { dias: 5, ritmo: 'completo', ft: true, exps: ['naturaleza_vistas'], fecha: '2027-09-18' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-06-02', nota: 'Fiesta de la República + audiencia papal' },
-  { dias: 2, ritmo: 'completo', ft: false, exps: ['arte_museos'], pool: ['Galería Borghese'], fecha: '2027-09-26', nota: 'domingo + lunes con la Galería cerrada' },
-  { dias: 4, ritmo: 'completo', ft: true, exps: [], fecha: '2027-08-13', nota: 'Ferragosto' },
+  { dias: 2, ft: false, exps: [], fecha: '2027-04-24', nota: 'domingo Vaticano cerrado + 25 de abril' },
+  { dias: 2, ft: true, exps: [], fecha: '2027-06-26' },
+  { dias: 3, ft: false, exps: ['arte_museos'], fecha: '2027-03-26', nota: 'Pascua el domingo 28' },
+  { dias: 3, ft: false, exps: [], fecha: '2027-07-17', nota: 'verano' },
+  { dias: 3, ft: true, exps: ['barrios_sabores'], fecha: '2027-10-09' },
+  { dias: 3, ft: false, exps: ['naturaleza_vistas'], pool: ["Castillo de Sant'Angelo"], fecha: '2027-06-28', nota: 'Castillo cerrado el lunes, Vaticano cerrado el 29 por San Pedro' },
+  { dias: 4, ft: false, exps: [], fecha: '2027-04-30', nota: '1 de mayo' },
+  { dias: 4, ft: true, exps: ['arte_museos'], fecha: '2027-12-04', nota: 'invierno, domingo' },
+  { dias: 4, ft: false, exps: ['barrios_sabores'], fecha: '2027-11-01', nota: 'Todos los Santos, lunes' },
+  { dias: 4, ft: false, exps: [], fecha: '2027-12-24', nota: 'Navidad' },
+  { dias: 5, ft: false, exps: [], fecha: '2027-05-22' },
+  { dias: 5, ft: true, exps: ['naturaleza_vistas'], fecha: '2027-09-18' },
+  { dias: 3, ft: false, exps: [], fecha: '2027-06-02', nota: 'Fiesta de la República + audiencia papal' },
+  { dias: 2, ft: false, exps: ['arte_museos'], pool: ['Galería Borghese'], fecha: '2027-09-26', nota: 'domingo + lunes con la Galería cerrada' },
+  { dias: 4, ft: true, exps: [], fecha: '2027-08-13', nota: 'Ferragosto' },
   // TRANQUILO
-  { dias: 2, ritmo: 'tranquilo', ft: false, exps: [], fecha: '2027-01-16' },
-  { dias: 3, ritmo: 'tranquilo', ft: true, exps: [], fecha: '2027-02-13' },
-  { dias: 3, ritmo: 'tranquilo', ft: false, exps: ['barrios_sabores'], fecha: '2027-10-23' },
-  { dias: 4, ritmo: 'tranquilo', ft: false, exps: [], fecha: '2027-12-06', nota: '8 de diciembre, la Inmaculada' },
-  { dias: 2, ritmo: 'tranquilo', ft: false, exps: [], pool: ['Galería Borghese'], fecha: '2027-11-20' },
+  { dias: 2, ft: false, exps: [], fecha: '2027-01-16' },
+  { dias: 3, ft: true, exps: [], fecha: '2027-02-13' },
+  { dias: 3, ft: false, exps: ['barrios_sabores'], fecha: '2027-10-23' },
+  { dias: 4, ft: false, exps: [], fecha: '2027-12-06', nota: '8 de diciembre, la Inmaculada' },
+  { dias: 2, ft: false, exps: [], pool: ['Galería Borghese'], fecha: '2027-11-20' },
   // FINES DE SEMANA NORMALES (segundo repaso, 2026-09-28): la mayoría de los viajeros; sin experiencias ni pool.
-  { dias: 2, ritmo: 'completo', ft: false, exps: [], fecha: '2027-05-15', nota: 'fin de semana A' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-10-08', nota: 'fin de semana B' },
-  { dias: 3, ritmo: 'completo', ft: true, exps: [], fecha: '2027-05-21', nota: 'fin de semana C' },
-  { dias: 3, ritmo: 'completo', ft: false, exps: [], fecha: '2027-06-12', nota: 'fin de semana D' },
-  { dias: 4, ritmo: 'completo', ft: false, exps: [], fecha: '2027-09-17', nota: 'fin de semana E' },
-  { dias: 3, ritmo: 'completo', ft: true, exps: [], fecha: '2027-10-18', nota: 'tres días con Free Tour en octubre (huecos del día 2 y el día 3)' },
+  { dias: 2, ft: false, exps: [], fecha: '2027-05-15', nota: 'fin de semana A' },
+  { dias: 3, ft: false, exps: [], fecha: '2027-10-08', nota: 'fin de semana B' },
+  { dias: 3, ft: true, exps: [], fecha: '2027-05-21', nota: 'fin de semana C' },
+  { dias: 3, ft: false, exps: [], fecha: '2027-06-12', nota: 'fin de semana D' },
+  { dias: 4, ft: false, exps: [], fecha: '2027-09-17', nota: 'fin de semana E' },
+  { dias: 3, ft: true, exps: [], fecha: '2027-10-18', nota: 'tres días con Free Tour en octubre (huecos del día 2 y el día 3)' },
 ]
 
 const D = findPipelineV2Data('Roma')
@@ -140,20 +140,20 @@ for (const [index, viaje] of VIAJES.entries()) {
   const expTexto = viaje.exps.length ? viaje.exps.map((e) => EXP[e]).join(' + ') : 'sin experiencias'
   const festivosViaje = Array.from({ length: viaje.dias }, (_, i) => addDays(viaje.fecha, i)).map((iso) => [iso, festivo(iso)]).filter(([, f]) => f)
   const notaFecha = viaje.nota ?? festivosViaje.map(([iso, f]) => `${fechaDe(iso).getUTCDate()} ${MESES[fechaDe(iso).getUTCMonth()]}: ${f}`).join('; ')
-  const filaIndice = (avisos) => `| [${numero}](#ruta-${numero}) | ${viaje.dias} | ${viaje.ritmo} | ${viaje.ft ? 'sí' : 'no'} | ${expTexto} | ${pool.length ? pool.join(', ') : '—'} | ${fechaLarga(viaje.fecha)}${notaFecha ? ` · ${notaFecha}` : ''} | ${avisos} |`
+  const filaIndice = (avisos) => `| [${numero}](#ruta-${numero}) | ${viaje.dias} | ${viaje.ft ? 'sí' : 'no'} | ${expTexto} | ${pool.length ? pool.join(', ') : '—'} | ${fechaLarga(viaje.fecha)}${notaFecha ? ` · ${notaFecha}` : ''} | ${avisos} |`
   const indiceAt = indice.push(filaIndice('')) - 1
 
   out.push(`<a id="ruta-${numero}"></a>`)
-  out.push(`## ${numero}. ${viaje.dias} días · ${viaje.ritmo} · ${viaje.ft ? 'Free Tour' : 'sin Free Tour'} · ${expTexto}${pool.length ? ` · pool: ${pool.join(', ')}` : ''} · desde el ${fechaLarga(viaje.fecha)}`)
+  out.push(`## ${numero}. ${viaje.dias} días · ${viaje.ft ? 'Free Tour' : 'sin Free Tour'} · ${expTexto}${pool.length ? ` · pool: ${pool.join(', ')}` : ''} · desde el ${fechaLarga(viaje.fecha)}`)
   out.push('')
   const fuera = new Map()
   const days = []
   for (let n = 1; n <= viaje.dias; n++) {
-    const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, n, viaje.ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, viaje.fecha, pool, positive, { city: 'Roma', scheduler: 'v3', month: null })
+    const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, n, null, viaje.fecha, pool, positive, { city: 'Roma', scheduler: 'v3', month: null })
     days.push(day)
   }
   // Auditoría automática (punto 14): todo lo que antes se miraba a mano, con su lista de casos.
-  for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}`, pace: viaje.ritmo })) auditoria.push(caso)
+  for (const caso of auditarViaje(D, days, { startIso: viaje.fecha, poolNames: pool, leg: legBetween, label: `ruta ${numero}` })) auditoria.push(caso)
   // La nota de temporada que le sale a este viaje (o "sin nota").
   const seasonNote = days.find((day) => day?.season_note)?.season_note
   out.push(`**Nota de temporada**: ${seasonNote ? cell(seasonNote.text) : 'sin nota'}`, '')
@@ -203,7 +203,7 @@ for (const [index, viaje] of VIAJES.entries()) {
     for (const item of day.not_included ?? []) fuera.set(item.name, item)
     // Avisos del día tal como salen en la app: el del ritmo (madrugón, comida corta), el de traslado y los del pool.
     const avisos = []
-    if (day.pace_notice) avisos.push(`⚠️ ${day.pace_notice}`)
+    if (day.day_notice) avisos.push(`⚠️ ${day.day_notice}`)
     for (const line of String(day.transfer_notice ?? '').split('\n').filter(Boolean)) avisos.push(`🚌 ${line}`)
     for (const item of day.not_included ?? []) if (item.from_pool && (item.day_number ?? 1) === n) avisos.push(`ℹ️ No hemos podido incluir ${item.name} porque: ${item.reason}`)
     if (day.half_day_excursion) avisos.push(`🚆 Excursión de medio día: ${day.half_day_excursion.name ?? day.half_day_excursion.id} (${day.half_day_excursion.starts_at}-${day.half_day_excursion.ends_at})`)
@@ -322,7 +322,7 @@ for (const [index, line] of out.entries()) if (/€|\beuros?\b|\bEUR\b/i.test(li
 out.push('## Caso de prueba: agosto sin fechas frente a 13-15 de agosto', '')
 for (const [titulo, fecha] of [['3 días en agosto, sin fechas', null], ['Los mismos 3 días, del 13 al 15 de agosto de 2027', '2027-08-13']]) {
   const dias = []
-  for (let n = 1; n <= 3; n++) dias.push(await buildDayBlockV3(D, 4, false, n, 'nonstop', null, fecha, [], [], { city: 'Roma', scheduler: 'v3', month: 7 }))
+  for (let n = 1; n <= 3; n++) dias.push(await buildDayBlockV3(D, 4, false, n, null, fecha, [], [], { city: 'Roma', scheduler: 'v3', month: 7 }))
   out.push(`### ${titulo}`, '')
   const avisos = dias.find((day) => day?.date_notices)?.date_notices ?? []
   out.push(`**Avisos de fechas**: ${avisos.length ? '' : 'ninguno.'}`)
@@ -356,8 +356,8 @@ writeFileSync(path, [
   '',
   '## Índice',
   '',
-  '| Nº | Días | Ritmo | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |',
-  '|---|---|---|---|---|---|---|---|',
+  '| Nº | Días | Free Tour | Experiencias | Pool | Empieza | Avisos de fechas |',
+  '|---|---|---|---|---|---|---|',
   ...indice,
   '',
   ...out,

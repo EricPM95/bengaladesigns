@@ -1,5 +1,5 @@
 // Un día de un viaje, en texto (para diagnosticar a mano).
-//   node scripts/destino/dia.mjs dias=4 n=3 fecha=2026-11-10 ritmo=completo ft=no exp=ninguna pool="Galería Borghese"
+//   node scripts/destino/dia.mjs dias=4 n=3 fecha=2026-11-10 ft=no exp=ninguna pool="Galería Borghese"
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 const D = findPipelineV2Data('Roma')
@@ -11,7 +11,7 @@ const pos = exps.length ? ['imprescindibles', ...exps] : []
 const pool = a.pool ? a.pool.split('|') : []
 const which = a.n ? [Number(a.n)] : Array.from({ length: dias }, (_, i) => i + 1)
 for (const n of which) {
-  const day = await buildDayBlockV3(D, dias + 1, a.ft === 'si', n, (a.ritmo ?? 'completo') === 'completo' ? 'nonstop' : 'tranquilo', null, a.fecha, pool, pos, { city: 'Roma', scheduler: 'v3', month: null, engine: a.motor ?? undefined })
+  const day = await buildDayBlockV3(D, dias + 1, a.ft === 'si', n, null, a.fecha, pool, pos, { city: 'Roma', scheduler: 'v3', month: null, engine: a.motor ?? undefined })
   if (!day) continue
   console.log(`\n## Día ${n} · ${day.curated_day?.id} ${day.curated_day?.name ?? ''} · variantes ${JSON.stringify(day.curated_day?.variants ?? [])} · atardecer ${day.sunset_time ?? day.hours?.sunset ?? ''}`)
   for (const m of day.meals ?? []) console.log(`  [${m.type}] ${m.suggested_time ?? m.time ?? ''}-${m.end_time ?? ''} ${m.restaurant?.name ?? m.spot?.name ?? ''}`)

@@ -96,7 +96,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
 
     for (let n = 1; n <= viaje.dias; n++) {
       const fecha = addDays(viaje.fecha, n - 1)
-      const day = await buildDayBlockV3(D, viaje.dias + 1, conTour, n, pace, null, viaje.fecha, pool, experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
+      const day = await buildDayBlockV3(D, viaje.dias + 1, conTour, n, null, viaje.fecha, pool, experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
       if (day?.context_banner) out[bannerAt] = `> **Banner**: ${cell(day.context_banner)}\n`
       const sunset = sunsetFor(D, { dateIso: fecha })
       out.push(`### Día ${n} — ${fechaCorta(fecha)} · ${cell(day?.title ?? '')}`)
@@ -140,22 +140,22 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         cuenta.paradas.push('—')
         continue
       }
-      if (day.pace_notice) {
-        out.push(`- ⚠️ ${cell(day.pace_notice)}`)
-        const hora = /(?:empezar|empezamos) a las (\d\d:\d\d)/i.exec(day.pace_notice)
-        const madrugar = hora ? [hora[0], hora[1], day.pace_notice.replace(/ Hoy la comida es más corta.*$/, '')] : null
+      if (day.day_notice) {
+        out.push(`- ⚠️ ${cell(day.day_notice)}`)
+        const hora = /(?:empezar|empezamos) a las (\d\d:\d\d)/i.exec(day.day_notice)
+        const madrugar = hora ? [hora[0], hora[1], day.day_notice.replace(/ Hoy la comida es más corta.*$/, '')] : null
         if (madrugar) cuenta.madrugones++
-        if (/la comida es más corta/.test(day.pace_notice)) cuenta.comidasCortas++
+        if (/la comida es más corta/.test(day.day_notice)) cuenta.comidasCortas++
         if (madrugar) {
           const porQue = imprescindibles.filter((name) => madrugar[2].includes(name) || madrugar[2].includes(name.split(' y ')[0]))
-          if (porQue.length === 0) raro(n, `se madruga (${madrugar[1]}) por algo que no es nivel 1: "${cell(day.pace_notice)}".`)
+          if (porQue.length === 0) raro(n, `se madruga (${madrugar[1]}) por algo que no es nivel 1: "${cell(day.day_notice)}".`)
           else patron(`Se madruga con ritmo ${viaje.ritmo} por un imprescindible (permitido, con aviso): "${cell(madrugar[2])}"`, `viaje ${numero} día ${n}`)
-          if (/la comida es más corta/.test(day.pace_notice)) raro(n, `además la comida es más corta: "${cell(day.pace_notice)}".`)
-        } else raro(n, `aviso del día: "${cell(day.pace_notice)}".`)
+          if (/la comida es más corta/.test(day.day_notice)) raro(n, `además la comida es más corta: "${cell(day.day_notice)}".`)
+        } else raro(n, `aviso del día: "${cell(day.day_notice)}".`)
       }
       for (const line of String(day.transfer_notice ?? '').split('\n').filter(Boolean)) out.push(`- 🚌 ${cell(line)}`)
       const primera = day.stops.find((stop) => !stop.is_night_experience)
-      if (viaje.ritmo === 'tranquilo' && !day.half_day_excursion && primera && t2m(primera.suggested_time) < 10 * 60 && !day.pace_notice) raro(n, `ritmo tranquilo que empieza a las ${primera.suggested_time} sin aviso.`)
+      if (viaje.ritmo === 'tranquilo' && !day.half_day_excursion && primera && t2m(primera.suggested_time) < 10 * 60 && !day.day_notice) raro(n, `ritmo tranquilo que empieza a las ${primera.suggested_time} sin aviso.`)
       out.push('')
 
       const lunch = day.meals?.find((m) => m.time === 'lunch')
@@ -359,7 +359,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
         let dias = 0
         const porDia = []
         for (let n = 1; n <= viaje.dias; n++) {
-          const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, pace, null, viaje.fecha, viaje.pool ?? [], experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
+          const day = await buildDayBlockV3(D, viaje.dias + 1, viaje.exps.includes('free_tour'), n, null, viaje.fecha, viaje.pool ?? [], experiencesPositive, { city: 'Roma', scheduler: 'v3', month: null })
           const count = (day?.stops ?? []).filter((stop) => !stop.is_night_experience && !stop.pass_through && !stop.is_pass_by).length
           if (day?.stops?.length) {
             total += count

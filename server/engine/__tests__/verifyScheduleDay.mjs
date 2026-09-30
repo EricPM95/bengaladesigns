@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes } from '../../../shared/routeEngine/travelTimes.js'
 import { PRIORITY, scheduleDay } from '../../../shared/routeEngine/scheduleDay.js'
-import { MODES_V3, latestDinnerStart } from '../../../shared/routeEngine/modes.js'
+import { MODE_V3, latestDinnerStart } from '../../../shared/routeEngine/modes.js'
 import { closesDuringVisit, effectiveSchedule, nextOpenMinutes } from '../../../shared/routeEngine/openingHours.js'
 import { buildUnits } from '../units.js'
 import { preplanTrip } from '../preplan.js'
@@ -107,10 +107,10 @@ let visits = 0
 
 // 1. Todos los días reales que reparte el motor, en los dos ritmos y con/sin Free Tour.
 for (const pace of ['nonstop', 'tranquilo']) {
-  const mode = pace === 'tranquilo' ? MODES_V3.tranquilo : MODES_V3.completo
+  const mode = MODE_V3
   for (const totalDays of [2, 3, 4, 5, 6, 8]) {
     for (const ft of [false, true]) {
-      const plan = preplanTrip({ destData: D, totalDays, pace, hasFreeTour: ft, experiencesPositive: ['imprescindibles', 'arte_museos'] })
+      const plan = preplanTrip({ destData: D, totalDays, hasFreeTour: ft, experiencesPositive: ['imprescindibles', 'arte_museos'] })
       for (const day of plan.days) {
         if (day.isBlank || day.isExcursion) continue
         const units = toScheduleUnits(['morning', 'afternoon'].flatMap((s) => day.slots[s].units), D.default_free_tour.default_time)
@@ -133,7 +133,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
   const units = toScheduleUnits(['Plaza de España', 'Fontana de Trevi', 'Campo de\' Fiori', 'Largo di Torre Argentina'].map(pick).filter(Boolean), null)
   const input = {
     units,
-    mode: MODES_V3.completo,
+    mode: MODE_V3,
     travel,
     start: { minutes: 15 * 60 + 10, coordinates: [41.8986, 12.4772] }, // un GPS cualquiera junto al Panteón
     pendingMeals: { lunch: false, dinner: true },
@@ -148,7 +148,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
 // 3. last_entry (campo opcional): un sitio con última entrada a las 16:00 nunca empieza después.
 {
   const place = { name: 'Museo de prueba', coordinates: [41.9, 12.48], duration_minutes: 60, schedule: '09:00-19:00', last_entry: '16:00' }
-  const input = { units: [{ id: 'museo', places: [place], priority: PRIORITY.ESSENTIAL }], mode: MODES_V3.completo, travel, start: { minutes: 16 * 60 + 20, coordinates: null }, pendingMeals: { lunch: false, dinner: true } }
+  const input = { units: [{ id: 'museo', places: [place], priority: PRIORITY.ESSENTIAL }], mode: MODE_V3, travel, start: { minutes: 16 * 60 + 20, coordinates: null }, pendingMeals: { lunch: false, dinner: true } }
   const result = scheduleDay(input)
   if (result.visits.length) fail(`last_entry: programado a las ${hhmm(result.visits[0].start)} con última entrada 16:00`)
   if (result.unscheduled[0]?.reason !== 'after_last_entry') fail(`last_entry: motivo "${result.unscheduled[0]?.reason}", esperaba after_last_entry`)
@@ -157,7 +157,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
 // 4. Horario partido: una iglesia de 07:30-12:30 y 16:30-20:00 no admite una visita que cruce el cierre.
 {
   const place = { name: 'Iglesia de prueba', coordinates: [41.9, 12.48], duration_minutes: 45, schedule: '07:30-12:30, 16:30-20:00' }
-  const input = { units: [{ id: 'iglesia', places: [place], priority: PRIORITY.ESSENTIAL }], mode: MODES_V3.completo, travel, start: { minutes: 12 * 60, coordinates: null }, pendingMeals: { lunch: false, dinner: true } }
+  const input = { units: [{ id: 'iglesia', places: [place], priority: PRIORITY.ESSENTIAL }], mode: MODE_V3, travel, start: { minutes: 12 * 60, coordinates: null }, pendingMeals: { lunch: false, dinner: true } }
   const result = scheduleDay(input)
   const visit = result.visits[0]
   if (!visit) fail('horario partido: no la ha programado en el tramo de tarde')
@@ -175,8 +175,8 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
 //    cerrar. Un imprescindible no se cae por el ritmo: el plan B (horario normal, desde las 08:00)
 //    lo mete entero y en orden, y lo dice.
 {
-  const base = { units: [unitFor('roma_antigua_core')], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
-  const normal = { ...MODES_V3.tranquilo, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
+  const base = { units: [unitFor('roma_antigua_core')], mode: MODE_V3, travel, start: { minutes: MODE_V3.dayStart, coordinates: null } }
+  const normal = { ...MODE_V3, dayStart: MODE_V3.dayStart, visitDurationBonus: 0 }
   const input = { ...base, fallbackMode: normal }
   const result = scheduleDay(input)
   check('tranquilo coliseo', { ...input, mode: result.modeFallback ? normal : input.mode, start: { ...input.start, minutes: result.modeFallback?.startedAt ?? input.start.minutes } }, result)
@@ -188,7 +188,7 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
 // 6a. Tranquilo, día del Vaticano: cabe a las 10:00 con la comida DENTRO del grupo (entre los
 //     Museos y la Basílica), sin tocar el horario del ritmo. Basílica + Plaza nunca se separan.
 {
-  const input = { units: [unitFor('vaticano_core')], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
+  const input = { units: [unitFor('vaticano_core')], mode: MODE_V3, travel, start: { minutes: MODE_V3.dayStart, coordinates: null } }
   const result = scheduleDay(input)
   check('tranquilo vaticano', input, result)
   if (result.visits.length !== 3) fail(`tranquilo vaticano: ${result.visits.length}/3 lugares (${result.unscheduled.map((u) => u.reason).join(', ')})`)
@@ -200,9 +200,9 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
 //     plan B se pierde; con el horario normal entra, y el resultado lo dice.
 {
   const larga = { id: 'larga', priority: PRIORITY.ESSENTIAL, isLong: true, places: [{ name: 'Visita larga de prueba', coordinates: [41.9, 12.48], duration_minutes: 240, schedule: '09:00-19:00', type: 'interior' }] }
-  const base = { units: [larga], mode: MODES_V3.tranquilo, travel, start: { minutes: MODES_V3.tranquilo.dayStart, coordinates: null } }
+  const base = { units: [larga], mode: MODE_V3, travel, start: { minutes: MODE_V3.dayStart, coordinates: null } }
   if (scheduleDay(base).visits.length > 0) fail('plan B: sin horario normal no debería caber (si cabe, el caso ya no prueba nada)')
-  const normal = { ...MODES_V3.tranquilo, dayStart: MODES_V3.completo.dayStart, visitDurationBonus: 0 }
+  const normal = { ...MODE_V3, dayStart: MODE_V3.dayStart, visitDurationBonus: 0 }
   const input = { ...base, fallbackMode: normal }
   const result = scheduleDay(input)
   check('plan B', { ...input, mode: normal, start: { ...input.start, minutes: result.modeFallback?.startedAt ?? input.start.minutes } }, result)
@@ -212,7 +212,7 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
 
 // 7. Un interior sin horario (Domus Aurea) se supone abierto de 09:00 a 17:00, no a las 08:00.
 {
-  const input = { units: [unitFor('Domus Aurea', PRIORITY.FILLER)], mode: MODES_V3.completo, travel, start: { minutes: 8 * 60, coordinates: null } }
+  const input = { units: [unitFor('Domus Aurea', PRIORITY.FILLER)], mode: MODE_V3, travel, start: { minutes: 8 * 60, coordinates: null } }
   const result = scheduleDay(input)
   if (result.visits[0] && result.visits[0].start < 9 * 60) fail(`sin horario: Domus Aurea a las ${hhmm(result.visits[0].start)}`)
   if (result.visits[0] && result.visits[0].end > 17 * 60) fail('sin horario: Domus Aurea acaba después de las 17:00')
@@ -225,7 +225,7 @@ const unitFor = (id, priority = PRIORITY.ESSENTIAL) => {
   const vaticano = { ...unitFor('vaticano_core', PRIORITY.POOL), poolIndex: 1 }
   const coliseo = { ...unitFor('roma_antigua_core', PRIORITY.POOL), poolIndex: 0 }
   const borghese = { ...unitFor('Galería Borghese', PRIORITY.POOL), poolIndex: 2 }
-  const input = { units: [vaticano, borghese, coliseo], mode: MODES_V3.completo, travel, start: { minutes: MODES_V3.completo.dayStart, coordinates: null }, longVisitsAnytime: true }
+  const input = { units: [vaticano, borghese, coliseo], mode: MODE_V3, travel, start: { minutes: MODE_V3.dayStart, coordinates: null }, longVisitsAnytime: true }
   const result = scheduleDay(input)
   check('pool un día', input, result)
   const lost = result.unscheduled.map((u) => u.unitId)

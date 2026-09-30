@@ -26,7 +26,7 @@ import { createTravelTimes } from '../../shared/routeEngine/travelTimes.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { PRIORITY, scheduleFixedOrder } from '../../shared/routeEngine/scheduleDay.js'
 import { placesForScheduler } from '../../shared/routeEngine/planTrip.js'
-import { MODES_V3 } from '../../shared/routeEngine/modes.js'
+import { MODE_V3 } from '../../shared/routeEngine/modes.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
@@ -236,17 +236,17 @@ for (const unit of longUnits) {
     return new Set(result.dropped.flatMap((item) => item.unit.places.map((p) => p.name)))
   }
   for (const block of Object.values(blocks)) {
-    const out = fitsInSlot(block, block.core, MODES_V3.tranquilo)
+    const out = fitsInSlot(block, block.core, MODE_V3)
     // Por grupos enteros: un grupo no se parte entre núcleo y extras, y el que lleva una joya se queda.
     const unitNames = (name) => units.find((u) => u.places.some((p) => p.name === name))?.places.map((p) => p.name) ?? [name]
     const extras = block.core.filter((name) => unitNames(name).some((n) => out.has(n)) && !unitNames(name).some((n) => byName.get(n)?.tier === 'joya'))
     block.core = block.core.filter((name) => !extras.includes(name))
-    block.extras_completo = extras.filter((name) => !fitsInSlot(block, [...block.core, ...extras], MODES_V3.completo).has(name))
+    block.extras_completo = extras.filter((name) => !fitsInSlot(block, [...block.core, ...extras], MODE_V3).has(name))
     const flow = borradores.afternoon_flow[block.lunch_zone_if_morning]?.recorrido ?? []
     if (block.preferred_slot === 'manana') {
       for (const name of flow.slice(0, 2)) {
         const trial = [...block.core, ...block.extras_completo, name]
-        if (!fitsInSlot(block, trial, MODES_V3.completo).size) block.extras_completo.push(name)
+        if (!fitsInSlot(block, trial, MODE_V3).size) block.extras_completo.push(name)
       }
     }
   }
@@ -255,7 +255,7 @@ for (const unit of longUnits) {
     const dropped = new Set()
     for (const combo of [shortTrips.combinations['1_dia'].default, ...Object.values(ifPool).map((entry) => entry.blocks)]) {
       const pool = Object.keys(ifPool).filter((name) => combo.some((id) => blocks[id].core.includes(name)) && !bestPair.some((id) => blocks[id].core.includes(name)))
-      const trip = planShortTrip({ destData: trial, slots: shortTripSlots('1_dia'), pace, hasFreeTour: false, poolNames: pool, experiencesPositive: ['imprescindibles'], travel })
+      const trip = planShortTrip({ destData: trial, slots: shortTripSlots('1_dia'), hasFreeTour: false, poolNames: pool, experiencesPositive: ['imprescindibles'], travel })
       for (const item of trip.notIncluded) dropped.add(item.name)
     }
     return dropped

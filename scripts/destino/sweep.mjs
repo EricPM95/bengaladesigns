@@ -1,5 +1,5 @@
 // Barrido: todas las combinaciones habituales. Salida JSON con los problemas por viaje (out=ruta.json; por defecto, en la carpeta temporal).
-//   node scripts/destino/sweep.mjs dias=2,3 ritmo=completo ft=no exp=ninguna meses=0,6 pool="Galería Borghese|Trastevere"
+//   node scripts/destino/sweep.mjs dias=2,3 ft=no exp=ninguna meses=0,6 pool="Galería Borghese|Trastevere"
 import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -32,12 +32,12 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
   const fecha = `${y}-${String(mes + 1).padStart(2, '0')}-${String(8 + (k % 7)).padStart(2, '0')}`
   const exps = [...(ft === 'si' ? ['free_tour'] : []), ...EXPS[ex]]
   const pos = exps.length ? ['imprescindibles', ...exps] : []
-  const trip = { dias, ritmo, ft, ex, mes, fecha, pool: POOL, problemas: [], dias_out: [] }
+  const trip = { dias, ft, ex, mes, fecha, pool: POOL, problemas: [], dias_out: [] }
   const seenDay = new Set(), count = new Map(), fuera = new Map()
   const builtDays = []
   for (let n = 1; n <= dias; n++) {
     let day
-    try { day = await buildDayBlockV3(D, dias + 1, ft === 'si', n, ritmo === 'completo' ? 'nonstop' : 'tranquilo', null, fecha, POOL, pos, { city: 'Roma', scheduler: 'v3', month: null }) }
+    try { day = await buildDayBlockV3(D, dias + 1, ft === 'si', n, null, fecha, POOL, pos, { city: 'Roma', scheduler: 'v3', month: null }) }
     catch (e) { trip.problemas.push({ n, tipo: 'error', txt: String(e.message).slice(0, 120) }); continue }
     if (!day) continue
     builtDays.push(day)
@@ -71,7 +71,7 @@ for (const dias of DIAS) for (const ritmo of RITMOS) for (const ft of FTS) for (
     const u = stops.at(-1)
     for (const aviso of tituloQueNoSeCumple(day)) trip.problemas.push({ n, d: cd, tipo: 'titulo_hora', txt: aviso })
     if (!last && !day.half_day_excursion && u && t2m(u.suggested_time) + u.duration_minutes < 17 * 60) trip.problemas.push({ n, d: cd, tipo: 'acaba_pronto', txt: `${u.suggested_time}` })
-    if (day.pace_notice && /comida es más corta/.test(day.pace_notice)) trip.problemas.push({ n, d: cd, tipo: 'comida_corta', txt: day.pace_notice.slice(0, 90) })
+    if (day.day_notice && /comida es más corta/.test(day.day_notice)) trip.problemas.push({ n, d: cd, tipo: 'comida_corta', txt: day.day_notice.slice(0, 90) })
   }
   for (const [name, v] of fuera) {
     const pl = (D.places ?? []).find((p) => p.name === name)

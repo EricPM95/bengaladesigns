@@ -14,7 +14,7 @@
  */
 
 import { buildUnits, indexUnitsByPlaceName } from './units.js'
-import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, halfDaySlotBudgets, modeConfigFor, slotBudgets } from './modeConfig.js'
+import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, MODE_CONFIG, halfDaySlotBudgets, slotBudgets } from './modeConfig.js'
 import { categoryCapFor, categoryOfTags, interestTagsFor } from './experienceTags.js'
 import { tripDays } from '../../shared/routeEngine/tripSkeleton.js'
 import { planRevisits } from './revisits.js'
@@ -148,8 +148,8 @@ function defaultZonesFor(destData, totalDays, hasFreeTour, dayNumber, themeCount
   return { morning: pool[index]?.id ?? null, afternoon: pool[index]?.id ?? null, curated: null }
 }
 
-function buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCounts = new Map()) {
-  const mode = modeConfigFor(pace)
+function buildDaySkeleton(destData, totalDays, hasFreeTour, dateRangeStartIso, themeCounts = new Map()) {
+  const mode = MODE_CONFIG
   const budgets = slotBudgets(mode)
   const halfDayBudgets = halfDaySlotBudgets(mode)
   // Unidad -> franja en la que quedó. Lo necesitan las revisitas, que van a la OTRA franja.
@@ -291,7 +291,7 @@ function placeUnit(destData, unit, plan, tiers, mode, evicted, matchesInterest =
   const category = categoryOfTags(unit.tags)
   // TODOS los candidatos ordenados de mejor a peor, no solo el mejor. Quedarse con el primero y
   // rendirse si no cabe tenía una consecuencia concreta: el Vaticano (285 min) ganaba la mañana por
-  // puntuación y la mañana de ritmo tranquilo solo tiene 180 minutos, así que se caía del viaje en
+  // puntuación y una mañana corta solo tiene 180 minutos, así que se caía del viaje en
   // vez de irse a la tarde, donde cabía de sobra.
   const candidates = []
 
@@ -435,7 +435,6 @@ function rescueEssential(destData, unit, plan, tiers, mode, placed) {
 export function preplanTrip({
   destData,
   totalDays,
-  pace,
   hasFreeTour = false,
   poolNames = [],
   experiencesPositive = [],
@@ -447,7 +446,7 @@ export function preplanTrip({
   // elige entre iguales cuando compiten por el mismo hueco.
   const interestTags = interestTagsFor(experiencesPositive)
   const matchesInterest = (unit) => interestTags.size > 0 && unit.tags.some((tag) => interestTags.has(tag))
-  const plan = buildDaySkeleton(destData, totalDays, hasFreeTour, pace, dateRangeStartIso, themeCountByZone(destData, interestTags))
+  const plan = buildDaySkeleton(destData, totalDays, hasFreeTour, dateRangeStartIso, themeCountByZone(destData, interestTags))
 
   // Orden determinista: primero por prioridad, luego lo más imprescindible, luego lo más largo (lo
   // grande necesita el hueco grande y hay que colocarlo antes), y el nombre para desempatar.
@@ -473,8 +472,6 @@ export function preplanTrip({
   const unplaced = []
 
   for (const unit of queue) {
-    // En tranquilo el nivel 3 no entra: 5-7 paradas gastadas en relleno de tercer nivel es lo que
-    // hace que un día tranquilo se sienta vacío en vez de tranquilo.
     if (tiers.get(unit.id) === TIER.FILLER_3 && !plan.mode.fillLevels.includes(3)) continue
     const day = placeUnit(destData, unit, plan, tiers, plan.mode, evicted, matchesInterest(unit), experiencesPositive ?? [])
     if (day) placed.set(unit.id, day.dayNumber)

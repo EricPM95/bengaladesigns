@@ -11,7 +11,7 @@
  *   - determinismo: dos llamadas idénticas dan el mismo reparto (invariante 20)
  */
 import { preplanTrip } from '../preplan.js'
-import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, modeConfigFor } from '../modeConfig.js'
+import { AVG_ROUNDING_LOSS_MINUTES, AVG_TRAVEL_MINUTES, MODE_CONFIG } from '../modeConfig.js'
 import { findPipelineV2Data } from '../../routeAlgorithm.js'
 const D = findPipelineV2Data('Roma')
 const fails = []
@@ -24,7 +24,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
     for (const ft of [false, true]) {
       for (const pool of POOLS) {
         const tag = `${pace} ${totalDays_}d${ft ? '+ft' : ''} pool[${pool.length}]`
-        const p = preplanTrip({ destData: D, totalDays: totalDays_, pace, hasFreeTour: ft, poolNames: pool, dateRangeStartIso: '2026-05-04' })
+        const p = preplanTrip({ destData: D, totalDays: totalDays_, hasFreeTour: ft, poolNames: pool, dateRangeStartIso: '2026-05-04' })
 
         const seen = new Map()
         for (const day of p.days) {
@@ -93,7 +93,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
               // MISMO coste que usa el motor, o el verificador dice "cabía" por los 22 minutos de
               // trayecto y redondeo que no estaba contando, y acusa al motor de perder cosas que
               // de verdad no entraban.
-              const mode = modeConfigFor(pace)
+              const mode = MODE_CONFIG
               const bonus = u.isFreeTour ? 0 : mode.visitDurationBonus * u.places.length
               const overhead = slot.units.length > 0 ? AVG_TRAVEL_MINUTES + AVG_ROUNDING_LOSS_MINUTES : 0
               return u.minutes + bonus + overhead <= slot.budget - slot.used + liberable
@@ -118,7 +118,7 @@ for (const pace of ['nonstop', 'tranquilo']) {
         }
 
         // Determinismo: dos llamadas idénticas, mismo resultado
-        const p2 = preplanTrip({ destData: D, totalDays: totalDays_, pace, hasFreeTour: ft, poolNames: pool, dateRangeStartIso: '2026-05-04' })
+        const p2 = preplanTrip({ destData: D, totalDays: totalDays_, hasFreeTour: ft, poolNames: pool, dateRangeStartIso: '2026-05-04' })
         const key = (x) => x.days.map((d) => ['morning', 'afternoon'].map((s) => d.slots[s].units.map((u) => u.id).join(',')).join('|')).join('//')
         if (key(p) !== key(p2)) fail(`${tag}: NO DETERMINISTA`)
       }

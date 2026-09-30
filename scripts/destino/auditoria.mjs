@@ -58,15 +58,15 @@ export const TIPOS_AUDITORIA = {
   pago_sin_dentro: 'Imprescindible de pago que no sale nunca por dentro en el viaje',
 }
 
-/** Cierre de Roma (2026-09-28): el máximo de una parada de paseo, por ritmo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
+/** Cierre de Roma (2026-09-28): el máximo de una parada de paseo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
 const LIBRE_CON_NOMBRE_MAX = 60
 const HUECO_MARGEN_MAX = 30
-export const PASEO_MAX = { completo: 90, tranquilo: 120, calle: 45 }
-export function paseoMaxOf(place, pace) {
+export const PASEO_MAX = { paseo: 90, calle: 45 }
+export function paseoMaxOf(place) {
   const tags = new Set(place?.tags ?? [])
   if (place?.max_minutos_paseo != null) return place.max_minutos_paseo
   if (tags.has('calle')) return PASEO_MAX.calle
-  if (tags.has('parque') || tags.has('barrio') || tags.has('paseo')) return pace === 'tranquilo' ? PASEO_MAX.tranquilo : PASEO_MAX.completo
+  if (tags.has('parque') || tags.has('barrio') || tags.has('paseo')) return PASEO_MAX.paseo
   return null
 }
 
@@ -211,7 +211,7 @@ export function auditarViaje(D, days, options = {}) {
     // Paradas de paseo por encima de su máximo; "por fuera para llegar a todo" con tiempo de sobra; "por la mañana" por la tarde.
     const stretched = []
     for (const stop of dayStops) {
-      const max = paseoMaxOf(byName.get(nameOf(stop)), options.pace)
+      const max = paseoMaxOf(byName.get(nameOf(stop)))
       if (max != null && (stop.duration_minutes ?? 0) > max) {
         stretched.push(nameOf(stop))
         add('paseo_largo', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min (máximo ${max})`)

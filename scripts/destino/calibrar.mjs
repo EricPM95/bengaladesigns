@@ -11,7 +11,6 @@ const D = findPipelineV2Data('Roma')
 const written = writtenDaysFor('roma')
 const travel = travelTimesFor('roma')
 const ids = a.dias ? a.dias.split(',') : Object.keys(written.days)
-const pace = (a.ritmo ?? 'completo') === 'completo' ? 'nonstop' : 'tranquilo'
 const WEEK = { laborable: ['martes', 'jueves', 'viernes'], sabado: ['sábado'], domingo: ['domingo'], lunes: ['lunes'], miercoles: ['miércoles'], todos: null }
 const wanted = WEEK[a.semana ?? 'laborable']
 const hh = (m) => (m == null ? '--' : `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.round(m % 60)).padStart(2, '0')}`)
@@ -29,7 +28,7 @@ for (const id of ids) {
     let day = null
     for (let back = 0; back < dias && !day; back++) {
       const start = new Date(Date.parse(`${iso}T12:00:00Z`) - back * 86400000).toISOString().slice(0, 10)
-      const probe = planWrittenTrip({ destData: D, written, totalDays: dias + 1, pace, hasFreeTour: ft, poolNames: [], experiencesPositive: ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: start, travel })
+      const probe = planWrittenTrip({ destData: D, written, totalDays: dias + 1, hasFreeTour: ft, poolNames: [], experiencesPositive: ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: start, travel })
       if (!probe) continue
       const city = probe.days.filter((d) => d.curatedDay)
       const slot = city.findIndex((d) => d.hours?.dateIso === iso)
@@ -40,7 +39,7 @@ for (const id of ids) {
         if (other < 0) order[slot] = id
         else [order[slot], order[other]] = [order[other], order[slot]]
       }
-      plan = planWrittenTrip({ destData: D, written, totalDays: dias + 1, pace, hasFreeTour: ft, poolNames: [], experiencesPositive: ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: start, travel, forceOrder: order })
+      plan = planWrittenTrip({ destData: D, written, totalDays: dias + 1, hasFreeTour: ft, poolNames: [], experiencesPositive: ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: start, travel, forceOrder: order })
       day = plan?.days.find((d) => d.hours?.dateIso === iso && d.curatedDay?.id === id) ?? null
       if (day && HALF[id] && !day.halfDayExcursion) day = null
     }

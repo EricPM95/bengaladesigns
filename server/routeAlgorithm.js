@@ -518,7 +518,7 @@ export function buildSkeletonV2(destData, totalDays, hasFreeTour) {
 
 export function buildDayPlacesV2(destData, totalDays, hasFreeTour, dayNumber, mustIncludePlaces, experiencesPositive) {
   if (totalDays === 1) {
-    const key = /* pace no se conoce aquí, se listan ambos ritmos combinados */ null
+    const key = null
     void key
     const routes = destData.short_trips?.['1_day']
     const names = new Set()
@@ -1766,8 +1766,8 @@ async function fillStopsUntil(stops, candidates, cursor, previousCoords, mapboxT
 
 // ── Fase "contenido del día" — el núcleo: arma stops/meals con horario real ──────────────────
 
-function buildShortTripDay(destData, pace) {
-  const key = pace === 'nonstop' ? 'completo' : 'tranquilo'
+function buildShortTripDay(destData) {
+  const key = 'completo'
   const trip = destData.short_trips?.['1_day']?.[key]
   if (!trip) return null
 
@@ -1822,13 +1822,13 @@ function buildShortTripDay(destData, pace) {
  * (ver weekdayNameForDay). Devuelve `null` si el destino/día no está cubierto por pipeline v2 — el
  * llamador cae al camino que ya existía.
  */
-export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumber, pace, mapboxToken, dateRangeStartIso, mustIncludePlaces, experiencesPositive) {
+export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumber, mapboxToken, dateRangeStartIso, mustIncludePlaces, experiencesPositive) {
   // Ronda 10 (decisión explícita, no un descuido): en viajes de 1 día el pool NO se aplica. Esa ruta
   // sale entera de `short_trips`, un recorrido curado a mano con su propio orden y sus propias
   // paradas de comida — no tiene `zone_distribution` que repartir, así que planMustIncludePlacement
   // ni entra. La personalización de un viaje de 1 día vendrá por "Añadir parada", ya sobre la ruta
   // generada.
-  if (totalDays === 1) return buildShortTripDay(destData, pace)
+  if (totalDays === 1) return buildShortTripDay(destData)
   if (totalDays > 5) return null
 
   const variant = destData.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
@@ -1866,8 +1866,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   const morningPlaces = filterClosed(resolvePlaceList(destData, [...coreNamesForSlot(franja, 'morning', extrasForDay), ...extrasForDay.morning], usedNames))
   const eveningBlockData = franja.evening_block ? destData.evening_blocks?.find((b) => b.id === franja.evening_block) : null
 
-  const isCompleto = pace === 'nonstop'
-  const morningStart = isCompleto ? 8 * 60 : 10 * 60
+  const morningStart = 8 * 60
   const freeTourClampMinutes = hasFreeTour ? timeToMinutes(destData.default_free_tour?.default_time ?? '10:00') : null
 
   // Fix 12: ningún lugar de relleno "propiedad" de OTRO día (ver planFillerOwnership) puede aparecer
@@ -1884,7 +1883,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
   // Free Tour (que siempre arranca clavado a las 10:00, regla 4) con 1-2 lugares exteriores cercanos
   // al punto de encuentro — en vez de dejar 1-1.5h muertas. Fuera de ese caso, construcción normal.
   let stops
-  if (isCompleto && hasFreeTour && morningPlaces.some((p) => p.isFreeTour)) {
+  if (hasFreeTour && morningPlaces.some((p) => p.isFreeTour)) {
     const ftIndex = morningPlaces.findIndex((p) => p.isFreeTour)
     const beforeFT = morningPlaces.slice(0, ftIndex)
     const fromFT = morningPlaces.slice(ftIndex)
@@ -2189,7 +2188,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // ideal_start, con el mismo margen soft (issue M) por encima de eso.
     const transitionCutoff = timeToMinutes(eveningBlockData.ideal_start) + TRANSITION_MAX_DELAY_MINUTES
     let fillerCandidates = []
-    if (isCompleto && afternoonZone) {
+    if (afternoonZone) {
       let budgetMinutes = afternoonFillerBudget(transitionCutoff)
       for (const candidate of findLeftoverZonePlaces(destData, afternoonZone, usedNames, interestTags, AFTERNOON_START_MINUTES)) {
         if (fillerCandidates.length >= FILLER_SAFETY_MAX_STOPS) break
@@ -2211,7 +2210,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
     // ANTES de decidir ningún orden. Fix 12 (usedNames ya trae los lugares "propiedad" de otro día)
     // garantiza que ningún relleno elegido aquí pueda repetirse en otro día del viaje.
     let fillerCandidates = []
-    if (isCompleto && afternoonZone) {
+    if (afternoonZone) {
       let budgetMinutes = afternoonFillerBudget(DINNER_CUTOFF_MINUTES)
       const fillZones = [afternoonZone, ...findAdjacentZones(destData, afternoonZone, 30)]
       fillZoneLoop: for (const zone of fillZones) {
@@ -2475,8 +2474,8 @@ export function getDayConfig(dayNumber, destData) {
     las que más convenzan, no las primeras del JSON. Se eligen DENTRO de las que luego enseña "Ver
     todas" (excursionOptionsFor): anunciar en el banner una excursión que no aparece al abrir la
     lista es una promesa rota, aunque tenga mejor nota. */
-export function topExcursions(destData, count = 3, totalDays, pace) {
-  return [...excursionOptionsFor(destData, totalDays, pace)]
+export function topExcursions(destData, count = 3, totalDays) {
+  return [...excursionOptionsFor(destData, totalDays)]
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
     .slice(0, count)
 }
@@ -2510,11 +2509,10 @@ export function curatedRoutePreview(destData, totalDays, hasFreeTour, dayNumber,
  *  completo      3          5         7
  *  tranquilo     2          3         5
  */
-export function excursionPoolSize(totalDays, pace) {
-  const tranquilo = pace === 'tranquilo'
-  if (!Number.isFinite(totalDays) || totalDays <= 2) return tranquilo ? 2 : 3
-  if (totalDays <= 5) return tranquilo ? 3 : 5
-  return tranquilo ? 5 : 7
+export function excursionPoolSize(totalDays) {
+  if (!Number.isFinite(totalDays) || totalDays <= 2) return 3
+  if (totalDays <= 5) return 5
+  return 7
 }
 
 /**
@@ -2525,8 +2523,8 @@ export function excursionPoolSize(totalDays, pace) {
  * ocupan solo la mañana (ver halfDayExcursionsFor). Mezclarlas aquí pondría un Ostia Antica de tres
  * horas al lado de un Pompeya de trece como si fueran la misma decisión.
  */
-export function excursionOptionsFor(destData, totalDays, pace) {
-  return fullDayExcursions(destData).slice(0, excursionPoolSize(totalDays, pace))
+export function excursionOptionsFor(destData, totalDays) {
+  return fullDayExcursions(destData).slice(0, excursionPoolSize(totalDays))
 }
 
 /**
@@ -2535,7 +2533,7 @@ export function excursionOptionsFor(destData, totalDays, pace) {
  * pudiendo convertirlo en ruta o montarlo a mano. Devuelve además `excursion_options` para que el
  * servidor las publique en `excursions_available` (el canal que ya existe hacia el cliente).
  */
-export function buildExcursionDayV2(destData, dayNumber, totalDays, pace) {
+export function buildExcursionDayV2(destData, dayNumber, totalDays) {
   return {
     day_number: dayNumber,
     title: 'Excursión',
@@ -2545,7 +2543,7 @@ export function buildExcursionDayV2(destData, dayNumber, totalDays, pace) {
     not_included: [],
     times_are_final: true,
     excursion_essential: Boolean(destData?.excursions?.essential),
-    excursion_options: excursionOptionsFor(destData, totalDays, pace),
+    excursion_options: excursionOptionsFor(destData, totalDays),
   }
 }
 
