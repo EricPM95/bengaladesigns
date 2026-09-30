@@ -456,34 +456,21 @@
       }
     },
     "fecha:01-06": {
-      "_nota": "6 de enero (PROMPT_REPASO_LOCAL_ROMA, 5): es el último día del mercadillo de Navidad y ninguna ruta pasaba por Navona; va por la tarde. Después de los Foros al atardecer y el Moisés, en taxi, con el mercadillo ya iluminado; se cena al lado, en el centro.",
-      "barrio_cena": "centro_historico",
-      "noche": "centro_iluminado",
-      "tarde.*": {
-        "quitar": [
-          "Monti"
-        ],
+      "_nota": "6 de enero (PROMPT_REPASO_LOCAL_ROMA, 5; decisión del usuario, 2026-10-01): es el último día del mercadillo de Navidad y la fiesta acaba a las 14:00 con la llegada de la Befana, así que Navona va por la mañana, antes de las 13:30: de San Ignacio, por el Panteón, a diez minutos. De Navona a la Plaza de España, andando (15 min), y la mañana sigue igual.",
+      "manana": {
         "insertar": [
           {
-            "despues_de": "Iglesia de San Pietro in Vincoli",
+            "despues_de": "Iglesia de San Ignacio de Loyola",
             "parada": {
               "lugar": "Piazza Navona",
               "titulo": "Piazza Navona y su mercadillo navideño",
-              "min": 40,
-              "texto": "El 6 de enero es el último día del mercadillo de Navidad de Piazza Navona: puestos de dulces, belenes y el carbón de azúcar que se regala en Reyes, con la Fuente de los Cuatro Ríos en medio.",
-              "verificar": "El mercadillo acaba el 6 de enero (turismoroma.it, «Festa di Piazza Navona 2025»); confirmar cada año hasta qué hora hay puestos ese día.",
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              },
-              "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad."
+              "min": 35,
+              "texto": "El 6 de enero es el último día del mercadillo de Navidad de Piazza Navona: puestos de dulces, belenes y el carbón de azúcar que se regala en Reyes, con la Fuente de los Cuatro Ríos en medio. Ven por la mañana: la fiesta acaba a las 14:00.",
+              "verificar": "El mercadillo acaba el 6 de enero y la fiesta termina a las 14:00, con la llegada de la Befana (turismoroma.it, «Festa di Piazza Navona 2025»): confirmar cada año.",
+              "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad, y acaba a las 14:00."
             }
           }
-        ],
-        "cena": {
-          "restaurante": "Pizzeria Da Baffetto",
-          "alternativa": "Armando al Pantheon"
-        }
+        ]
       }
     }
   },
