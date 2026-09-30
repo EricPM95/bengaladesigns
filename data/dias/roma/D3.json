@@ -352,6 +352,154 @@
         "empieza": "15:45"
       },
       "nombre": "Trevi, Free Tour y San Pedro por la tarde"
+    },
+    "fecha:12-24&D1-FT@12-25": {
+      "_nota": "24 de diciembre en un viaje en el que el otro día del Free Tour cae el 25 (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
+      "nombre": "El Vaticano por la mañana y la Roma Antigua por la tarde",
+      "barrio_cena": "centro_historico",
+      "noche": "fuentes",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Museos Vaticanos y Capilla Sixtina",
+            "tipo": "fija",
+            "hora": "08:00",
+            "min": 165,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 20
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 50,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "comida": {
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Ristorante Arlù"
+        }
+      },
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Arco de Constantino",
+            "min": 15,
+            "traslado": {
+              "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
+              "min": 30
+            }
+          },
+          {
+            "lugar": "Coliseo",
+            "min": 70,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "min": 65,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15
+          },
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "empieza": "13:15"
+      }
+    },
+    "fecha:12-31&D1-FT@01-01": {
+      "_nota": "31 de diciembre en un viaje en el que el otro día del Free Tour cae el 1 de enero (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
+      "nombre": "El Vaticano por la mañana y la Roma Antigua por la tarde",
+      "barrio_cena": "centro_historico",
+      "noche": "fuentes",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Museos Vaticanos y Capilla Sixtina",
+            "tipo": "fija",
+            "hora": "08:00",
+            "min": 165,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 20
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 50,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "comida": {
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Ristorante Arlù"
+        }
+      },
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Arco de Constantino",
+            "min": 15,
+            "traslado": {
+              "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
+              "min": 30
+            }
+          },
+          {
+            "lugar": "Coliseo",
+            "min": 70,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "min": 65,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15
+          },
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "empieza": "13:15"
+      }
     }
   },
   "experiencias": {

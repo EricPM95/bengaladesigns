@@ -335,7 +335,7 @@ export function planWrittenTrip(args) {
       if (!match) continue
       if (match[1] && match[1] !== '*' && match[1] !== draft.version) continue
       // (Lo que la mañana ya lleva no se inserta otra vez por la tarde: los Museos Capitolinos de Arte, los sábados.)
-      const inMorning = (insert) => draft.manana.some((stop) => stop.lugar === insert.parada?.lugar && (!stop.si_experiencia || selected.includes(stop.si_experiencia)))
+      const inMorning = (insert) => draft.manana.some((stop) => stop.lugar === insert.parada?.lugar && (!stop.si_experiencia || selected.includes(stop.si_experiencia) || (stop.o_si_pool && inPool(stop.lugar))))
       draft.tarde = applyListOp(draft.tarde, op.insertar?.some(inMorning) ? { ...op, insertar: op.insertar.filter((insert) => !inMorning(insert)) } : op)
       if (op.empieza) draft.empieza = op.empieza
       if (op.cena) draft.cena = { ...draft.cena, ...op.cena }
@@ -420,7 +420,21 @@ export function planWrittenTrip(args) {
       if (name && (closedThatDay(name, day) || closedAtWrittenHour(name))) applyOps(draft, ops, key)
     }
     // (La fecha, después del cierre: es lo más concreto y manda; Navidad en D2 con los Museos cerrados.)
-    for (const [key, ops] of Object.entries(variants)) if (key.startsWith('fecha:') && calendar.hasDates && dateKeyMatches(key, hours.dateIso)) applyOps(draft, ops, key)
+    // (Y puede depender de dónde cae otro día del viaje, "fecha:12-24&D1-FT@12-25": el 24 de diciembre, si el día D1-FT cae
+    // el 25. Así dos días se reparten algo entre los dos, cada uno con su mitad escrita: el Free Tour que el 24 no cabe
+    // pasa al 25. Las que dependen de otro día van después de las de la fecha sola: son más concretas.)
+    const otherDayOn = (condition) => {
+      const [otherId, otherDate] = condition.split('@')
+      const at = order.indexOf(otherId)
+      return at >= 0 && dateKeyMatches(`fecha:${otherDate}`, hoursOf(cityDays[at]).dateIso)
+    }
+    const dateVariant = (key) => {
+      if (!key.startsWith('fecha:') || !calendar.hasDates) return null
+      const [own, ...others] = key.split('&')
+      if (!dateKeyMatches(own, hours.dateIso) || !others.every(otherDayOn)) return null
+      return others.length
+    }
+    for (const depth of [0, 1]) for (const [key, ops] of Object.entries(variants)) if (dateVariant(key) != null && Math.min(dateVariant(key), 1) === depth) applyOps(draft, ops, key)
     // (`si_disponible`: lo escrito para una experiencia solo vale los días en que ese lugar está en fechas, sin margen: la
     // cena junto a Piazza Navona solo si esa noche hay mercadillo.)
     const inDates = (name) => {
@@ -438,7 +452,8 @@ export function planWrittenTrip(args) {
     const byMonth = (stop) => !(stop.meses && !(monthOfDay != null && stop.meses.includes(monthOfDay))) && !(stop.no_meses && monthOfDay != null && stop.no_meses.includes(monthOfDay))
     // (`si_experiencia`: la parada va solo si el viajero eligió esa experiencia. Para lo que una experiencia añade en otro
     // sitio según la variante del día: los Museos Capitolinos por la mañana los sábados, junto al Campidoglio.)
-    const keep = (stop) => !(stop.si_experiencia && !selected.includes(stop.si_experiencia)) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    // (`o_si_pool`: o si el viajero marcó ese lugar en «Elige lugares».)
+    const keep = (stop) => !(stop.si_experiencia && !selected.includes(stop.si_experiencia) && !(stop.o_si_pool && inPool(stop.lugar))) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
     // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
     // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)

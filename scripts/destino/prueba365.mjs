@@ -30,6 +30,7 @@ const EXTRA_TIPOS = {
   v4_antes_de_cenar: '«Antes de cenar» en una parada que va después de cenar',
   v4_titulo: 'Título del día que no se cumple',
   v4_error: 'El motor falla',
+  comida_menos_45: 'Comida de menos de 45 min en la ruta (la regla: 45 como mínimo, siempre)',
   pago_cerrado_fecha: '(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)',
 }
 const TIPOS = { ...TIPOS_AUDITORIA, ...EXTRA_TIPOS }
@@ -80,6 +81,16 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [] }) {
     return
   }
   trips++
+  // La comida, 45 min como mínimo en la ruta que ve el viajero: de su hora a su fin, y hasta la parada siguiente.
+  for (const [i, day] of days.entries()) {
+    const lunch = day?.meals?.find((meal) => meal.time === 'lunch')
+    if (!lunch?.suggested_time) continue
+    const start = t2m(lunch.suggested_time)
+    const end = lunch.window_end ? t2m(lunch.window_end) : null
+    const next = (day.stops ?? []).map((stop) => t2m(stop.suggested_time)).filter((t) => t != null && t > start).sort((a, b) => a - b)[0]
+    const minutes = Math.min(end != null ? end - start : Infinity, next != null ? next - start : Infinity)
+    if (minutes < 45) add('comida_menos_45', `${label}, día ${i + 1}`, `${lunch.suggested_time}: ${minutes} min`)
+  }
   const keyOf = (n) => {
     const day = days[n - 1]
     return day?.curated_day ? `${day.curated_day.id} ${day.curated_day.variants?.[0] ?? ''}${(day.curated_day.variants ?? []).slice(1).length ? ` +${day.curated_day.variants.slice(1).join('+')}` : ''}` : 'otro'

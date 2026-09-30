@@ -305,7 +305,8 @@
               "si_experiencia": "arte_museos",
               "no_si_dia": [
                 "D5"
-              ]
+              ],
+              "o_si_pool": true
             }
           }
         ]
@@ -448,7 +449,8 @@
               "si_experiencia": "arte_museos",
               "no_si_dia": [
                 "D5"
-              ]
+              ],
+              "o_si_pool": true
             }
           }
         ]
@@ -500,7 +502,8 @@
               "si_experiencia": "arte_museos",
               "no_si_dia": [
                 "D5"
-              ]
+              ],
+              "o_si_pool": true
             }
           }
         ]

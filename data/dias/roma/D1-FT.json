@@ -399,6 +399,124 @@
           }
         ]
       }
+    },
+    "fecha:12-25&D3@12-24": {
+      "_nota": "25 de diciembre en un viaje en el que el día del Vaticano cae el 24 (los viajes de 2 días): el Free Tour va aquí, a las 12:00, que es la única hora a la que sale (calendario de reserva de Civitatis, 2026-09-30). La mañana empieza tarde, por Trevi; se come al acabar el tour, junto a Navona; y la tarde baja por el Ghetto y la Isla Tiberina hasta Trastevere. El Coliseo ya se vio el día anterior.",
+      "nombre": "Trevi, Free Tour y Trastevere",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "opcional",
+            "hora": "10:30",
+            "min": 25
+          },
+          {
+            "lugar": "Desayuno romano",
+            "tipo": "opcional",
+            "min": 30
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 150
+          }
+        ],
+        "comida": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
+        }
+      },
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "quitar"
+          },
+          {
+            "lugar": "Barrio Judío",
+            "min": 25
+          },
+          {
+            "lugar": "Isla Tiberina",
+            "min": 15
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 40
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "empieza": "15:45"
+      }
+    },
+    "fecha:01-01&D3@12-31": {
+      "_nota": "1 de enero en un viaje en el que el día del Vaticano cae el 31 (los viajes de 2 días): el Free Tour va aquí, a las 12:00, que es la única hora a la que sale (calendario de reserva de Civitatis, 2026-09-30). La mañana empieza tarde, por Trevi; se come al acabar el tour, junto a Navona; y la tarde baja por el Ghetto y la Isla Tiberina hasta Trastevere. El Coliseo ya se vio el día anterior.",
+      "nombre": "Trevi, Free Tour y Trastevere",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "opcional",
+            "hora": "10:30",
+            "min": 25
+          },
+          {
+            "lugar": "Desayuno romano",
+            "tipo": "opcional",
+            "min": 30
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 150
+          }
+        ],
+        "comida": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
+        }
+      },
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "quitar"
+          },
+          {
+            "lugar": "Barrio Judío",
+            "min": 25
+          },
+          {
+            "lugar": "Isla Tiberina",
+            "min": 15
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 40
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "empieza": "15:45"
+      }
     }
   },
   "experiencias": {
