@@ -313,6 +313,8 @@ export interface Stop {
   inFreeTour?: { name: string; durationMinutes: number | null; meetingPoint: string | null; url: string | null } | null
   /** La ficha lleva solo nuestro texto: no se pide el de la IA. */
   noAiText?: boolean
+  /** El texto del lugar para su ficha (el nuestro), cuando no tiene ficha ampliada: va debajo del «por qué» de la ruta. */
+  placeText?: string | null
   /** Imprescindible cerrado ese día que se enseña por fuera, o el grupo cuya ancla cierra todo el viaje: "El
       Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual." */
   closedNotice?: string | null

@@ -375,7 +375,12 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const tourCfg = destData.default_free_tour
       if ((tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
       // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)
-      if (source.sin_texto_ia) stop.no_ai_text = true
+      if (source.sin_texto_ia) {
+        stop.no_ai_text = true
+        // (Y el texto del lugar, el de su ficha: va debajo del «por qué» de la ruta si no son el mismo.)
+        const placeText = destData.por_que_lugares?.[source.name] ?? null
+        if (placeText) stop.place_text = placeText
+      }
     }
     if (source?.available) {
       const hours = tripDay.hours ?? {}

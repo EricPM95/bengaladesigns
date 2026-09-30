@@ -604,6 +604,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {(stop.isRevisit && stop.revisitReason) || stop.why ? (
                     <p className="text-body leading-relaxed text-text">{stop.isRevisit && stop.revisitReason ? stop.revisitReason : withoutLeadingEmoji(stop.why ?? '')}</p>
                   ) : null}
+                  {/* Sin ficha ampliada ni texto de la IA: el texto del lugar, el nuestro, si no es ya el «por qué». */}
+                  {stop.noAiText && stop.placeText && stop.placeText !== stop.why && !(stop.isRevisit && stop.revisitReason) && (
+                    <p className="text-small text-text-soft">{stop.placeText}</p>
+                  )}
                   {descLoading ? (
                     <p className="flex items-center gap-2 text-small italic text-text-soft">
                       <Spinner className="text-accent" />

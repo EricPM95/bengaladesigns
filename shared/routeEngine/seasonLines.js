@@ -83,11 +83,16 @@ export function applySeasonLines(destData, stops, dateIso, skipIds = new Set()) 
   const marketToday = stops.some((stop) => stop.date_text || /mercadillo/i.test(stop.display_title ?? ''))
   const taken = new Set(stops.filter((stop) => stop.season_line).map((stop) => stop.name))
   const put = (stop, line) => {
-    stop.season_line = { id: line.id, text: line.texto, icon: line.icono ?? 'navidad' }
+    // (`si_repite`: si la parada ya cuenta eso en su título o en su texto, la línea sale con su texto corto.)
+    const said = `${stop.display_title ?? ''} ${stop.why ?? ''}`
+    const repeats = (line.si_repite?.palabras ?? []).some((word) => said.includes(word))
+    stop.season_line = { id: line.id, text: repeats ? line.si_repite.texto : line.texto, icon: line.icono ?? 'navidad' }
     taken.add(stop.name)
   }
   for (const line of lines) {
     if (line.no_si_mercadillo && marketToday) continue
+    // (`no_si_parada`: ese día la ruta ya lleva la parada que lo cuenta.)
+    if ((line.no_si_parada ?? []).some((name) => stops.some((stop) => stop.name === name))) continue
     const own = dayStops.find((stop) => (line.lugares ?? []).includes(stop.name))
     if (!own) continue
     if (!taken.has(own.name)) put(own, line)

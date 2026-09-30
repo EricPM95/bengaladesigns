@@ -246,6 +246,7 @@ export interface MockStopDetail {
   freeAccess?: boolean
   inFreeTour?: { name: string; durationMinutes: number | null; meetingPoint: string | null; url: string | null } | null
   noAiText?: boolean
+  placeText?: string | null
   /** Ver Stop.closedNotice en types.ts. */
   closedNotice?: string | null
   /** Ver Stop.passThrough en types.ts. */
@@ -496,6 +497,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     freeAccess: stop.freeAccess,
     inFreeTour: stop.inFreeTour ?? null,
     noAiText: stop.noAiText,
+    placeText: stop.placeText ?? null,
     closedNotice: stop.closedNotice ?? null,
     passThrough: stop.passThrough ?? false,
     experience: stop.experience ?? null,
@@ -586,6 +588,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       freeAccess: detail.freeAccess,
       inFreeTour: detail.inFreeTour ?? null,
       noAiText: detail.noAiText,
+      placeText: detail.placeText ?? null,
       closedNotice: detail.closedNotice ?? null,
       passThrough: detail.passThrough ?? false,
       experience: detail.experience ?? null,

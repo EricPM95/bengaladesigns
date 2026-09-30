@@ -117,6 +117,8 @@ interface GeneratedStop {
   free_access?: boolean
   in_free_tour?: { name: string; duration_minutes?: number | null; meeting_point?: string | null; url?: string | null } | null
   no_ai_text?: boolean
+  /** El texto del lugar para su ficha — Stop.placeText. */
+  place_text?: string | null
   /** Cerrado ese día, enseñado por fuera: Stop.closedNotice. */
   closed_notice?: string | null
   /** Aviso del día curado en la parada ("a esta hora ya hay gente"): se pinta como closedNotice. */
@@ -437,6 +439,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.free_access ? { freeAccess: true } : {}),
     ...(generated.in_free_tour ? { inFreeTour: { name: generated.in_free_tour.name, durationMinutes: generated.in_free_tour.duration_minutes ?? null, meetingPoint: generated.in_free_tour.meeting_point ?? null, url: generated.in_free_tour.url ?? null } } : {}),
     ...(generated.no_ai_text ? { noAiText: true } : {}),
+    ...(generated.place_text ? { placeText: generated.place_text } : {}),
     ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.is_break

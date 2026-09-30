@@ -3845,7 +3845,7 @@
       ],
       "is_free_access": true,
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Plaza Trilussa",
@@ -4618,7 +4618,7 @@
       "comprobado": "2026-09-28",
       "fuente_horario": "trinitadeimonti.net/it/orari (2026-09-28)",
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Via Veneto",
@@ -4648,7 +4648,7 @@
         "Porta Pinciana"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Via del Babuino",
@@ -4679,7 +4679,7 @@
         "Piazza del Popolo"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Via Margutta",
@@ -4709,7 +4709,7 @@
         "Via del Babuino"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Porta Pinciana",
@@ -4736,7 +4736,7 @@
         "porta pinciana"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Jardines del Pincio",
@@ -4767,7 +4767,7 @@
         "Terraza del Pincio"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Mercadillo de Navidad de Piazza Navona",
@@ -4830,10 +4830,11 @@
       "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
       "capa_de": "Plaza de San Pedro",
       "titulo_parada": "Plaza de San Pedro y los 100 Presepi",
-      "texto_parada": "Bajo la columnata de Bernini están los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos y no hay que desviarse.",
+      "texto_parada": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano.",
       "_nota": "Una capa sobre la Plaza de San Pedro, no una parada más, y sin tiempo de más: los 100 Presepi se ven en la propia visita a la plaza, para que no se caiga nada del día del Vaticano. Fechas estrictas: antes del 8 de diciembre no sale.",
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda.",
+      "_texto_parada_antes": "Bajo la columnata de Bernini están los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos y no hay que desviarse."
     },
     {
       "name": "Santo Bambino de Aracoeli",
@@ -4864,7 +4865,7 @@
         "Museos Capitolinos"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
       "name": "Luces de Navidad del Tridente",
@@ -4896,7 +4897,7 @@
         "Via Condotti"
       ],
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
+      "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     }
   ],
   "groups": {
@@ -10089,7 +10090,7 @@
           "rol": "parada",
           "minutos": 15,
           "nota": "Justo encima del punto de encuentro del tour.",
-          "por_que": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
+          "por_que": "La iglesia de las dos torres que corona la escalinata la empezaron los reyes de Francia hace más de cinco siglos, y todavía hoy es francesa. El obelisco de delante tiene jeroglíficos… copiados por los romanos. Asómate a la balaustrada: tienes Via Condotti a tus pies y, al fondo, la cúpula de San Pedro.",
           "si_da_tiempo": true
         },
         {
@@ -10866,7 +10867,7 @@
               "lugar": "Via Veneto",
               "rol": "de_paso",
               "minutos": 10,
-              "por_que": "La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo."
+              "por_que": "Esta es la calle de «La dolce vita», de Fellini, y de aquí salió la palabra «paparazzi»: Paparazzo se llamaba el fotógrafo de la película. En los años 60 era el sitio donde había que dejarse ver, con estrellas de Hollywood en las terrazas. Hoy conserva sus cafés y sus hoteles de época."
             },
             {
               "lugar": "Parque de Villa Borghese",
@@ -10918,13 +10919,13 @@
               "lugar": "Via del Babuino",
               "rol": "de_paso",
               "minutos": 10,
-              "por_que": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España."
+              "por_que": "Busca, junto a la iglesia de San Atanasio, una estatua tumbada y bastante fea: es un sileno, pero a los romanos les pareció un mono y la llamaron «el babuino». La calle se quedó con el nombre. Es una de las «estatuas parlantes», donde se colgaban críticas anónimas contra el Papa. Hoy es calle de anticuarios y galerías."
             },
             {
               "lugar": "Via Margutta",
               "rol": "de_paso",
               "minutos": 10,
-              "por_que": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
+              "por_que": "La calle de los artistas: aquí vivieron Fellini y Giulietta Masina, y en el número 51 estaba la casa de Gregory Peck en «Vacaciones en Roma». Todavía quedan estudios y galerías en los patios. Busca la Fuente de los Artistas, con sus caballetes y pinceles de piedra."
             },
             {
               "lugar": "Parque de Villa Borghese",
@@ -13107,13 +13108,19 @@
     "Columna de Trajano": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro.",
     "Via della Conciliazione": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto.",
     "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",
-    "Trinità dei Monti": "La iglesia de las dos torres, en lo alto de la escalinata. Asómate a la balaustrada: la Plaza de España y Via Condotti a tus pies.",
-    "Via Veneto": "La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo.",
-    "Via del Babuino": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España.",
-    "Via Margutta": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
+    "Trinità dei Monti": "La iglesia de las dos torres que corona la escalinata la empezaron los reyes de Francia hace más de cinco siglos, y todavía hoy es francesa. El obelisco de delante tiene jeroglíficos… copiados por los romanos. Asómate a la balaustrada: tienes Via Condotti a tus pies y, al fondo, la cúpula de San Pedro.",
+    "Via Veneto": "Esta es la calle de «La dolce vita», de Fellini, y de aquí salió la palabra «paparazzi»: Paparazzo se llamaba el fotógrafo de la película. En los años 60 era el sitio donde había que dejarse ver, con estrellas de Hollywood en las terrazas. Hoy conserva sus cafés y sus hoteles de época.",
+    "Via del Babuino": "Busca, junto a la iglesia de San Atanasio, una estatua tumbada y bastante fea: es un sileno, pero a los romanos les pareció un mono y la llamaron «el babuino». La calle se quedó con el nombre. Es una de las «estatuas parlantes», donde se colgaban críticas anónimas contra el Papa. Hoy es calle de anticuarios y galerías.",
+    "Via Margutta": "La calle de los artistas: aquí vivieron Fellini y Giulietta Masina, y en el número 51 estaba la casa de Gregory Peck en «Vacaciones en Roma». Todavía quedan estudios y galerías en los patios. Busca la Fuente de los Artistas, con sus caballetes y pinceles de piedra.",
+    "Ponte Sisto": "Este puente lo mandó construir el papa Sixto IV hace más de 500 años, y de ahí su nombre. Fíjate en el agujero redondo del centro: los romanos lo llaman «el ojo» y, cuando el Tíber llegaba hasta él, sabían que venía una crecida. Al otro lado te espera Trastevere.",
+    "Porta Pinciana": "Estás cruzando la muralla que el emperador Aureliano levantó hace más de 1.700 años para proteger Roma. A un lado empieza Villa Borghese; al otro baja Via Veneto.",
+    "Jardines del Pincio": "Los diseñó Giuseppe Valadier, el mismo arquitecto de la Piazza del Popolo que tienes abajo. Pasea entre sus más de 200 bustos de italianos ilustres y busca el reloj de agua, en medio de un pequeño estanque: funciona con agua desde el siglo XIX. Deja para el final la terraza, con Roma a tus pies.",
+    "100 Presepi in Vaticano": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano.",
+    "Santo Bambino de Aracoeli": "En una capilla de Santa Maria in Aracoeli está el Santo Bambino, el Niño Jesús más querido de Roma. Según la tradición, lo tallaron con madera de olivo del huerto de Getsemaní. El original lo robaron en 1994 y nunca apareció; el de hoy es una copia, pero le siguen llegando cartas de todo el mundo. Para llegar, sube los 124 escalones de 1348.",
+    "Luces de Navidad del Tridente": "En Navidad, Via del Corso se ilumina de punta a punta, de Piazza del Popolo a Plaza Venecia. Su nombre viene de las carreras de caballos sin jinete que se corrían aquí en Carnaval. Hoy la carrera es de gente paseando bajo las luces, con Via Condotti y Via del Babuino iluminadas a un lado."
   },
   "navidad_lineas": {
-    "_que_es": "Líneas de Navidad de las fichas (PROMPT_ROMA_NAVIDAD 3): cuando la ruta ya pasa por el sitio en sus fechas, la ficha de esa parada lleva esta línea arriba, destacada y con el icono de Navidad. No se añaden paradas. Reglas en shared/routeEngine/seasonLines.js: una línea por parada; gana la fecha más concreta; con `verificar`, no sale hasta que el dato esté confirmado ese año. Los textos son del usuario y van tal cual.",
+    "_que_es": "Líneas de Navidad de las fichas (PROMPT_ROMA_NAVIDAD 3): cuando la ruta ya pasa por el sitio en sus fechas, la ficha de esa parada lleva esta línea arriba, destacada y con el icono de Navidad. No se añaden paradas. Reglas en shared/routeEngine/seasonLines.js: una línea por parada; gana la fecha más concreta; con `verificar`, no sale hasta que el dato esté confirmado ese año. Los textos son del usuario y van tal cual. `si_repite`: si el título o el texto de la parada ya cuenta eso (los 100 Presepi), la línea sale con su texto corto. `no_si_parada`: la línea no sale el día que la ruta lleva esa otra parada, que ya lo cuenta.",
     "temporada_de_los_datos": "2025-26",
     "revisar": "noviembre de cada año: fechas de montaje y programa.",
     "lineas": [
@@ -13140,7 +13147,13 @@
         "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). Inauguración del árbol y del belén: en 2025, el 15 de diciembre a las 17:00, y estuvieron hasta el 11 de enero de 2026 (vaticannews.va y osservatoreromano.va).",
         "comprobado": "2026-09-30",
         "verificar": true,
-        "verificar_nota": "El día en que se inauguran el árbol y el belén cambia cada año (2024: 7 de diciembre; 2025: 15 de diciembre)."
+        "verificar_nota": "El día en que se inauguran el árbol y el belén cambia cada año (2024: 7 de diciembre; 2025: 15 de diciembre).",
+        "si_repite": {
+          "palabras": [
+            "Presepi"
+          ],
+          "texto": "En Navidad, la plaza tiene su árbol gigante y un belén a tamaño real junto al obelisco."
+        }
       },
       {
         "id": "san_pedro_arbol_antes_presepi",
@@ -13195,7 +13208,10 @@
         "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). vaticannews.va, «Il Bambinello dell'Ara Coeli» (2023): sale la noche del 24 de diciembre y está hasta el 6 de enero; los niños recitan poesías ante el belén.",
         "comprobado": "2026-09-30",
         "verificar": true,
-        "verificar_nota": "La tradición está confirmada (Vatican News). Falta el programa de cada año y el horario de la basílica."
+        "verificar_nota": "La tradición está confirmada (Vatican News). Falta el programa de cada año y el horario de la basílica.",
+        "no_si_parada": [
+          "Santo Bambino de Aracoeli"
+        ]
       },
       {
         "id": "foros_cosme_damian",
@@ -13257,7 +13273,10 @@
         "hasta": "01-06",
         "texto": "De Piazza del Popolo a Plaza Venecia, Via del Corso se ilumina entera en Navidad: casi dos kilómetros de luces. Es el paseo que hacen los romanos antes de cenar.",
         "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). En 2025-26, del 26 de noviembre al 6 de enero.",
-        "comprobado": "2026-09-30"
+        "comprobado": "2026-09-30",
+        "no_si_parada": [
+          "Luces de Navidad del Tridente"
+        ]
       }
     ]
   },
