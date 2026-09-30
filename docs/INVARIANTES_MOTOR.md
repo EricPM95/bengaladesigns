@@ -2290,3 +2290,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       sale el día que la ruta lleva la parada que ya lo cuenta).
     - **Después de tocar el servidor, una petición real a la API** antes de darlo por bueno: las pruebas del motor no pasan
       por ella (el 30 de septiembre se subió un servidor que arrancaba y respondía 500 a todo).
+
+411. **Una parada lleva siempre su foto de día, aunque caiga después del atardecer** (PARA_CODE_FOTOS_2, 2026-10-01). La
+    foto de noche solo va en las experiencias y los paseos nocturnos. Las fotos del usuario llevan `fuente: "propia"` y van
+    sin línea de crédito; las de Unsplash y Pexels, de momento, también. Comprobación con peticiones reales:
+    `scripts/destino/comprobarFotos.mjs`.

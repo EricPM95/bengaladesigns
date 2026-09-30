@@ -97,3 +97,11 @@ Puestos tal cual en `por_que_lugares`, sin texto de la IA.
 1. Las fechas de las fotos de San Pedro (desde el 16 de diciembre) y de la Plaza de España (desde el 8).
 2. Si busco la foto de Navona en otra fuente, o me la pasas tú.
 3. Autor y enlace de las 10 fotos, para el crédito.
+
+## 8. Segunda tanda (PARA_CODE_FOTOS_2)
+
+- Regla 411: una parada lleva siempre su foto de día; la de noche, solo las experiencias y los paseos nocturnos. Con eso, la del Castillo desde el puente se queda sin uso (el Castillo es una parada normal y el paseo «El Castillo y el Tíber» usa la del río), y la del Foro de noche solo va en «el Foro a tus pies».
+- Las 10 fotos, reducidas igual (las WebP se guardan como JPEG). Ninguna se amplía: la de la Trinità se queda en sus 664 px.
+- `fuente: "propia"` en las del usuario y sin crédito en todas.
+- **La foto de la Trinità dei Monti sale con las azaleas de la escalinata**, que solo están en primavera (de mediados de abril a mayo). Fuera de esas semanas, la foto enseña algo que no hay. ¿La limito a esas fechas o la dejo?
+- Comprobación con peticiones reales (`scripts/destino/comprobarFotos.mjs`): las 33 comprobaciones, bien. Cada parada recibe su foto; las de Navidad, solo en sus fechas; las de `verificar`, nunca.

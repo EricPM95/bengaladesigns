@@ -133,12 +133,14 @@ export async function fetchPlacePhoto(
 }
 
 /**
- * El nombre con el que se pide la foto de una parada: el suyo y, si es de noche (una nocturna o un mirador ya de noche),
+ * El nombre con el que se pide la foto de una parada: el suyo y, si es una experiencia o un paseo nocturno,
  * "… (noche)", para que el servidor busque ese lugar de noche (y, si no hay, ese mismo lugar de día; nunca otro).
  */
 export function photoNameOf(stop: { name: string; photoName?: string | null; isNightExperience?: boolean; isNightView?: boolean }): string {
   const name = stop.photoName ?? stop.name
-  const night = Boolean(stop.isNightExperience || stop.isNightView)
+  // (Regla 411: una parada lleva siempre su foto de día, aunque caiga después del atardecer —un mirador que llega ya de
+  // noche—; la de noche, solo las experiencias y los paseos nocturnos.)
+  const night = Boolean(stop.isNightExperience)
   return night && !/\(noche\)$|\sde noche$/i.test(name) ? `${name} (noche)` : name
 }
 
