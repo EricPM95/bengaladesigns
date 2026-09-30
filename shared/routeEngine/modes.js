@@ -74,8 +74,23 @@ export const MODES_V3 = {
  * 'balanced' son tranquilo. Bug real (2026-09-26): la app manda 'zen' para "Tranquilo" y aquí solo se
  * miraba 'tranquilo', así que todas las rutas tranquilas de la app salían completas.
  */
-export function isTranquiloPace(pace) {
+/**
+ * Hay una sola ruta (PROMPT_QUITAR_RITMOS, 2026-09-30): la que era «completo». Medido con el motor, los dos ritmos daban
+ * casi las mismas paradas (≈ 10 al día) y mantenerlos obligaba a duplicar textos, variantes y pruebas. El viajero la
+ * aligera quitando paradas; las opcionales se ven como tales. Apagado, no borrado: con `SINGLE_ROUTE = false` vuelve
+ * el ritmo tranquilo tal como estaba (`MODES_V3.tranquilo`, las variantes `tranquilo` de los días escritos…).
+ */
+export const SINGLE_ROUTE = true
+/** El ritmo único que recibe el motor, venga lo que venga del formulario o de un viaje guardado. */
+export const SINGLE_PACE = 'nonstop'
+
+/** Lo que el cuestionario llamaba tranquilo ('tranquilo', 'zen', 'balanced'): solo para abrir viajes guardados. */
+export function wasTranquiloPace(pace) {
   return pace === 'tranquilo' || pace === 'zen' || pace === 'balanced'
+}
+
+export function isTranquiloPace(pace) {
+  return !SINGLE_ROUTE && wasTranquiloPace(pace)
 }
 
 export function modeV3For(pace) {

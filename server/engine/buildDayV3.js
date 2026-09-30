@@ -337,6 +337,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // El tramo en bus o metro hasta aquí (`traslado_min`): "🚌 Bus 118, unos 25 min".
     if (visit.place.transit) stop.transit = transitFields(visit.place.transit)
+    // (Opcional en lo escrito: el viajero ve qué puede saltarse. PROMPT_QUITAR_RITMOS 2.)
+    if (unitById.get(visit.unitId)?.optional) stop.is_optional = true
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // La foto del Free Tour: la propia del destino (`photo_url`) cuando la haya; mientras, la de un lugar que ya

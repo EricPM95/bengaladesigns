@@ -31,6 +31,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
+import { SINGLE_PACE, SINGLE_ROUTE } from '../shared/routeEngine/modes.js'
 
 config({ path: '.env.local' })
 
@@ -99,6 +100,15 @@ for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
 const anthropic = new Anthropic()
 const app = express()
 app.use(express.json())
+// Una sola ruta (PROMPT_QUITAR_RITMOS): el motor recibe siempre el ritmo único, venga lo que venga del formulario o de un
+// viaje guardado con «tranquilo». Se regenera con la ruta única.
+app.use((req, _res, next) => {
+  if (SINGLE_ROUTE && req.body && typeof req.body === 'object') {
+    if (req.body.answers && typeof req.body.answers === 'object' && 'pace' in req.body.answers) req.body.answers.pace = SINGLE_PACE
+    if ('pace' in req.body) req.body.pace = SINGLE_PACE
+  }
+  next()
+})
 
 // ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
 //

@@ -15,6 +15,7 @@
  * presupuesto. Si al medir con rutas reales el número no sale, se ajusta el objetivo — nunca el
  * redondeo, que es lo que hace que el día se lea como un plan y no como un horario de tren.
  */
+import { isTranquiloPace } from '../../shared/routeEngine/modes.js'
 
 const HHMM = (hhmm) => {
   const [h, m] = String(hhmm).split(':').map(Number)
@@ -67,7 +68,8 @@ export const MODE_CONFIG = {
 
 /** El cuestionario manda 'nonstop' o 'zen'/'balanced'/'tranquilo'; el motor piensa en completo/tranquilo. */
 export function modeConfigFor(pace) {
-  return pace === 'tranquilo' || pace === 'zen' || pace === 'balanced' ? MODE_CONFIG.tranquilo : MODE_CONFIG.completo
+  // (Una sola ruta, PROMPT_QUITAR_RITMOS: isTranquiloPace es siempre falso mientras SINGLE_ROUTE.)
+  return isTranquiloPace(pace) ? MODE_CONFIG.tranquilo : MODE_CONFIG.completo
 }
 
 /**
