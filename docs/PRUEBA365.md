@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 419 s. **Total: 21**.
+6180 viajes (todas las fechas de 2027), en 422 s. **Total: 34**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -35,7 +35,15 @@
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
-- **Un sitio de noche que vuelve a salir a la mañana siguiente**: 0 ✅
+- **El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)**: 0 ✅
+- **El día del Vaticano sin el Puente Sant'Angelo de día**: 0 ✅
+- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 13
+  - 2027-03-30 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
+  - 2027-03-31 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
+  - 2027-04-01 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
+  - 2027-04-03 · 2 días · FT, día 2, 19:00 Ponte Sisto — 69 min hasta la cena y Campo de' Fiori a un paseo
+  - 2027-04-09 · 2 días · FT, día 2, 19:05 Ponte Sisto — 65 min hasta la cena y Campo de' Fiori a un paseo
+  - 2027-09-04 · 2 días · FT, día 2, 19:00 Ponte Sisto — 69 min hasta la cena y Campo de' Fiori a un paseo
 - **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 0 ✅
 - **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
@@ -59,14 +67,15 @@
 ## Dónde caen (día escrito, versión y variantes)
 
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×21
+- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: D1-FT D +luz:C→D ×5 · D1-FT D +domingo+fecha:primer_domingo+luz:C→D ×2 · D1-FT D +sabado ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D1 A +sabado+fecha:01-01+empieza:10:00+comida:sin Plaza del Campidoglio+relleno_cena:Campo de' Fiori ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1 · D1 A +fecha:01-01+arte_museos+relleno_cena:Campo de' Fiori ×1 · D1 A +sabado+fecha:01-01+arte_museos+empieza_tarde+empieza:10:00+empieza_tarde+relleno_cena:Campo de' Fiori ×1
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1133 viajes pisan alguna fecha clave. **Avisos de verdad: 0** · informativos (algo cierra ese día y el aviso lo explica): 21.
+1133 viajes pisan alguna fecha clave. **Avisos de verdad: 5** · informativos (algo cierra ese día y el aviso lo explica): 21.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
-| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 0 | 0 |
+| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 1 | 0 |
 | Semana Santa | 03-24 – 03-29 | 155 | 0 | 2 |
 | Puente de mayo | 04-30 – 05-02 | 93 | 0 | 2 |
 | Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 0 | 0 |
@@ -74,5 +83,10 @@
 | Puente del Pilar | 10-09 – 10-12 | 112 | 0 | 0 |
 | Todos los Santos | 10-30 – 11-01 | 112 | 0 | 2 |
 | Puente de diciembre | 12-04 – 12-08 | 136 | 0 | 0 |
-| Navidad y Reyes | 12-24 – 12-31 | 184 | 0 | 7 |
+| Navidad y Reyes | 12-24 – 12-31 | 184 | 4 | 7 |
 
+- Navidad y Reyes (final): hueco_cena | 2027-01-01 · 3 días · arte_museos, día 1, 17:30 Campo de' Fiori — 73 min hasta la cena y Barrio Judío a un paseo
+- Navidad y Reyes: hueco_cena | 2027-12-24 · 2 días · FT, día 1, 17:00 Altar de la Patria — 93 min hasta la cena y Monti a un paseo
+- Navidad y Reyes: hueco_cena | 2027-12-31 · 2 días, día 2, 18:05 Campo de' Fiori — 83 min hasta la cena y Barrio Judío a un paseo
+- Navidad y Reyes: hueco_cena | 2027-12-31 · 2 días · FT, día 1, 17:00 Altar de la Patria — 93 min hasta la cena y Monti a un paseo
+- Navidad y Reyes: hueco_cena | 2027-12-31 · 3 días · arte_museos, día 2, 18:25 Campo de' Fiori — 63 min hasta la cena y Barrio Judío a un paseo

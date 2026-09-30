@@ -29,7 +29,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 **Nota de temporada**: ¡Vas a vivir Roma en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las 16:45, también iluminado.
 
 **Avisos de fechas** (ventana al entrar en la ruta): 
-- **Miércoles 9 · Audiencia papal** · etiqueta «Audiencia papal» en el día 1
+- **Miércoles 9 · Audiencia papal** · etiqueta «Audiencia papal» en el día 3
   - Los miércoles por la mañana el Papa recibe a los fieles en la plaza y la Basílica abre más tarde. Hemos puesto San Pedro por la tarde.
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 1
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
@@ -38,7 +38,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 1 — Roma Antigua y el centro barroco
 
-**lunes 7 dic 2026** · 🏷️ Audiencia papal · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:39 · día curado D1 (A, mercadillos_navidenos, capa:Mercadillo de Navidad de Piazza Navona)
+**lunes 7 dic 2026** · 🏷️ Mercadillo de Navidad en Piazza Navona · 🌅 atardecer 16:39 · día curado D1 (A, mercadillos_navidenos, capa:Mercadillo de Navidad de Piazza Navona)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -61,8 +61,8 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 | 18:50 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
 | 19:20 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 30 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
 | 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
-| 21:30 | Foro Romano desde el Campidoglio (noche) | 30 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Desde la terraza de detrás del Campidoglio, el Foro entero iluminado a tus pies: columnas, arcos y templos en silencio, con el Coliseo al fondo. |
-| 22:20 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
 
 ### Día 2 — Trevi a primera hora, el Pincio y la tarde en Monti
 
@@ -92,7 +92,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 3 — Vaticano, Castillo y Trastevere al atardecer
 
-**miércoles 9 dic 2026** · 🎉 audiencia papal (miércoles por la mañana) · 🌅 atardecer 16:39 · día curado D2 (A, miercoles, capa:100 Presepi in Vaticano)
+**miércoles 9 dic 2026** · 🎉 audiencia papal (miércoles por la mañana) · 🏷️ Audiencia papal · 🌅 atardecer 16:39 · día curado D2 (A, miercoles, capa:100 Presepi in Vaticano, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -108,9 +108,11 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 | 17:10 | Fontana dell'Acqua Paola | 15 min | Parada | 16 min andando | Los romanos la llaman «el Fontanone». Esta gran fuente de mármol es la primera imagen de la película «La gran belleza», y desde su balaustrada tienes Roma entera delante. |
 | 17:30 | San Pietro in Montorio y Tempietto de Bramante | 10 min | Por fuera (Hoy lo ves por fuera para llegar a todo lo del día) | 5 min andando | A través de la verja se ve el pequeño templo de Bramante, construido donde se creía que crucificaron a san Pedro. Y desde la puerta de la iglesia tienes Roma entera delante. |
 | 17:50 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 7 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 18:10 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:45 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:15 | Piazza Navona (noche) | 30 min | 🌙 Noche |  | paseo nocturno «El centro iluminado» · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos. |
+| 18:10 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 19:05 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:25 | Paseo por Trastevere iluminado y aperitivo | 20 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
+| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 **Lo que quedó fuera**: nada.
 
@@ -162,7 +164,7 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A, capa:100 Presepi in Vaticano)
+**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A, capa:100 Presepi in Vaticano, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -176,9 +178,10 @@ Motor v4 (días escritos), generado el 2026-09-30 con `node scripts/destino/revi
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 80 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:25 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:45 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Las calles de Trastevere, iluminadas y tranquilas. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante. |
+| 17:45 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:40 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:10 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Las calles de Trastevere, iluminadas y tranquilas. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 3 — Trevi a primera hora, la Borghese y el Popolo
 
@@ -259,7 +262,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A)
+**jueves 24 dic 2026** · 🎉 Nochebuena · 🏷️ Nochebuena · 🌅 atardecer 16:43 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -273,9 +276,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 80 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:25 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:45 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Las calles de Trastevere, iluminadas y tranquilas. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante. |
+| 17:45 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:40 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:10 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Las calles de Trastevere, iluminadas y tranquilas. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 2 — Trevi a primera hora, el Pincio y la tarde en Monti
 
@@ -299,8 +303,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:00 | Mercados de Trajano | 10 min | Por fuera (Hoy cierra) | 17 min andando | El centro comercial de la Roma imperial. Desde Via dei Fori Imperiali lo ves entero, con sus tiendas en semicírculo, tal y como lo veían los romanos. |
 | 16:25 | Via dei Fori Imperiali | 35 min | 🌅 Atardecer | 7 min andando | Pasea por la avenida de los Foros con la última luz, con las ruinas a los dos lados y el Coliseo al fondo. Es uno de los paseos más bonitos de Roma al atardecer. · 🎄 Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce. |
 | 17:10 | Iglesia de San Pietro in Vincoli | 20 min | Parada · por dentro | 10 min andando | Aquí está el Moisés de Miguel Ángel, y se entra gratis. Fíjate en los cuernos: vienen de un error de traducción de la Biblia. También se guardan las cadenas que, dicen, llevó san Pedro. |
-| 18:25 | Panteón (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El centro iluminado», antes de cenar · El pórtico del Panteón iluminado, en una plaza tranquila. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi. |
-| 18:50 | Monti al anochecer y aperitivo | 60 min | 🕐 Tiempo libre |  |  |
+| 18:15 | Coliseo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «El Coliseo iluminado», antes de cenar · El Coliseo iluminado, por fuera. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi. |
+| 18:40 | Monti al anochecer y aperitivo | 70 min | 🕐 Tiempo libre |  |  |
 | 20:00 | Cena: Trattoria Monti |  | 🍷 Cena | 10 min andando | en Monti |
 
 ### Día 3 — Roma Antigua y el centro barroco
@@ -377,7 +381,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -391,9 +395,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
+| 17:50 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:45 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:15 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 3 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
@@ -460,7 +465,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 1 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -474,13 +479,14 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
+| 17:50 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:45 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:15 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 2 — Roma Antigua y el centro barroco
 
-**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01, empieza:10:00, comida:sin Plaza del Campidoglio)
+**viernes 1 ene 2027** · 🎉 Año Nuevo · 🏷️ Año Nuevo · 🌅 atardecer 16:49 · día curado D1 (A, fecha:01-01, empieza:10:00, comida:sin Plaza del Campidoglio, relleno_cena:Campo de' Fiori)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -495,10 +501,11 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:40 | Iglesia de Santa Maria sopra Minerva | 10 min | Parada | 1 min andando | Detrás del Panteón está la única iglesia gótica de Roma, y la entrada es gratis. Mira hacia arriba: el techo es azul y lleno de estrellas. Junto al altar tienes un Cristo de Miguel Ángel. |
 | 17:00 | Iglesia de San Luigi dei Francesi | 20 min | Parada · por dentro | 8 min andando | A dos pasos de Navona, y entrar es gratis. En la última capilla de la izquierda hay tres cuadros de Caravaggio sobre san Mateo. Lleva una moneda: la luz que los ilumina funciona así, y verlos encendidos cambia todo. |
 | 17:25 | Piazza Navona | 30 min | Parada | 3 min andando | Tiene esta forma alargada porque aquí había un estadio romano, y las casas se construyeron encima de sus gradas. En el centro está la Fuente de los Cuatro Ríos de Bernini. Cuenta la leyenda que una de sus estatuas se tapa los ojos para no ver la iglesia de su rival, Borromini. · 🎄 En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado "mal". |
-| 18:10 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes», antes de cenar · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
-| 19:05 | Fontana de Trevi (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes», antes de cenar · La fuente iluminada sin multitudes — el momento más mágico de Roma |
-| 19:30 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 25 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Iglesia de San Ignacio de Loyola, Plaza Colonna |
-| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 4 min andando | en Centro Histórico |
+| 18:00 | Campo de' Fiori | 25 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 18:25 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 85 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Fuente de las Tortugas, Ponte Sisto |
+| 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
 
 **Lo que quedó fuera**: nada.
 
@@ -543,7 +550,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**martes 5 ene 2027** · 🌅 atardecer 16:53 · día curado D2 (A, capa:100 Presepi in Vaticano)
+**martes 5 ene 2027** · 🌅 atardecer 16:53 · día curado D2 (A, capa:100 Presepi in Vaticano, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -557,9 +564,11 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 90 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:35 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:55 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 17:55 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:50 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:10 | Paseo por Trastevere iluminado y aperitivo | 35 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Teatro de Marcelo, Ponte Sisto |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
+| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 ### Día 3 — Trevi a primera hora, la Borghese y el Popolo
 
@@ -660,8 +669,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:35 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
 | 19:05 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 45 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
 | 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
-| 21:30 | Foro Romano desde el Campidoglio (noche) | 30 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Desde la terraza de detrás del Campidoglio, el Foro entero iluminado a tus pies: columnas, arcos y templos en silencio, con el Coliseo al fondo. |
-| 22:20 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
 
 ### Día 2 — Trevi a primera hora, la Borghese y el Popolo
 
@@ -690,7 +698,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A)
+**jueves 31 dic 2026** · 🎉 Nochevieja · 🏷️ Nochevieja · 🌅 atardecer 16:48 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -704,9 +712,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 18:50 | Mirador del Janículo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Roma desde arriba», antes de cenar · Roma iluminada desde el Janículo. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
-| 19:15 | Trastevere al anochecer y aperitivo | 40 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 17:50 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:45 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:15 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 4 — El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
@@ -807,11 +816,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 13:15 | Comida: Armando al Pantheon | 55 min | 🍝 Comida | 1 min andando | en Centro Histórico |
 | 14:45 | Museos Vaticanos y Capilla Sixtina | 185 min | Parada · por dentro | 🚌 Bus 40 o un taxi, 25 min | Siete kilómetros de arte que acaban en la Capilla Sixtina de Miguel Ángel. Tómatelo con calma, es la visita del día. Dentro de la Capilla no se pueden hacer fotos: disfrútala con los ojos. |
 | 18:00 | Plaza de San Pedro | 20 min | Parada | 11 min andando | Sales de los Museos y llegas a la plaza de Bernini. Busca uno de los dos discos del suelo junto al obelisco: desde ahí, las cuatro filas de columnas parecen una sola. · 🎄 A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo. Se visita con reserva en la web de AMA. |
-| 18:20 | Basílica de San Pedro | 65 min | Parada · por dentro | 3 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
-| 19:30 | Borgo Pio | 10 min | Por el camino | 7 min andando | Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos. |
-| 19:40 | Paseo por Via della Conciliazione y el Castillo iluminados y aperitivo | 50 min | 🕐 Tiempo libre |  | ideas: Via della Conciliazione |
-| 20:45 | Cena: L'Arcangelo |  | 🍷 Cena | 12 min andando | en Vaticano |
-| 22:30 | Piazza Navona (noche) | 30 min | 🌙 Noche |  | paseo nocturno «Navona y Terraza del Pincio de noche» · En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos. |
+| 18:20 | Basílica de San Pedro | 60 min | Parada · por dentro | 3 min andando | La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. |
+| 19:25 | Via della Conciliazione | 10 min | Por el camino | 5 min andando | Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto. |
+| 19:45 | Castillo de Sant'Angelo | 15 min | Por fuera (A esta hora ya ha cerrado) | 9 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
+| 20:00 | Roma iluminada desde el Puente Sant'Angelo | 15 min | 🌙 Noche | 2 min andando | Ya es de noche: los ángeles de Bernini iluminados, el Castillo encendido y el Tíber reflejándolo todo. |
+| 20:15 | Paseo por Via della Conciliazione y el Castillo iluminados y aperitivo | 20 min | 🕐 Tiempo libre |  |  |
+| 20:45 | Cena: L'Arcangelo |  | 🍷 Cena | 7 min andando | en Vaticano |
+| 22:30 | Panteón (noche) | 45 min | 🌙 Noche |  | paseo nocturno «El centro iluminado» · Tu noche en el centro, iluminado y con menos gente. El Panteón, con su pórtico iluminado, la Piazza Navona con sus fuentes, la Fontana de Trevi y la escalinata de la Plaza de España están a pocos minutos a pie unos de otros: un paseo precioso para cerrar el día. |
 
 ### Día 4 — El Castillo, la Borghese y el Popolo
 
@@ -819,8 +830,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
-| 08:45 | Puente Sant'Angelo | 10 min | Parada | — | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
-| 09:00 | Castillo de Sant'Angelo | 85 min | Parada · por dentro | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
+| 09:00 | Castillo de Sant'Angelo | 85 min | Parada · por dentro | — | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad. |
 | 11:00 | Galería Borghese | 125 min | Parada · por dentro | 🚌 Un taxi, 20 min | La mejor colección de Bernini y Caravaggio del mundo, en la villa de un cardenal. Busca «Apolo y Dafne»: el mármol parece convertirse en hojas delante de ti. Se entra por turnos y con reserva, así que llega con margen. |
 | 13:15 | Comida: Girarrosto Fiorentino | 60 min | 🍝 Comida | 10 min andando | en Via Veneto y Salario |
 | 14:20 | Tiempo libre antes de Ara Pacis | 20 min | 🕐 Tiempo libre |  | Pasear por el Centro Histórico: el corazón de Roma a paso lento. |
@@ -830,8 +840,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 16:20 | Jardines del Pincio | 25 min | Parada | 5 min andando | Vuelve a subir al Pincio, 7 min de escaleras desde la plaza, y pasea por sus jardines hasta que baje el sol. |
 | 16:45 | Terraza del Pincio | 25 min | 🌅 Atardecer | 2 min andando | La terraza sobre la Piazza del Popolo, con las cúpulas del centro y San Pedro al fondo. Es el mirador de los romanos al atardecer. |
 | 17:15 | Santa Maria del Popolo | 20 min | Parada · por dentro | 5 min andando | Una joya que mucha gente se salta, y la entrada es gratis. Dentro hay dos Caravaggio en la capilla de la izquierda del altar y una capilla diseñada por Rafael. |
-| 17:45 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La escalinata iluminada», antes de cenar · La Plaza de España iluminada: la escalinata con Trinità dei Monti encendida arriba, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores. |
-| 18:10 | Compras por Via del Corso y aperitivo | 65 min | 🕐 Tiempo libre |  | ideas: Via del Babuino, Luces de Navidad del Tridente, Via del Corso |
+| 17:55 | Puente Sant'Angelo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Terraza del Pincio y Puente Sant'Angelo de noche», antes de cenar · Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio. |
+| 18:45 | Terraza del Pincio (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Terraza del Pincio y Puente Sant'Angelo de noche», antes de cenar · La misma terraza, otra ciudad: las cúpulas y los tejados encendidos sobre la Piazza del Popolo. |
 | 19:30 | Cena: Sgarro Bistrot |  | 🍷 Cena | 11 min andando | en Tridente y Spagna |
 
 **Lo que quedó fuera**: nada.
@@ -881,7 +891,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**martes 29 dic 2026** · 🌅 atardecer 16:47 · día curado D2 (A)
+**martes 29 dic 2026** · 🌅 atardecer 16:47 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -895,9 +905,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 17:50 | Trastevere | 40 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:40 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:15 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 3 — Excursión
 
@@ -1005,7 +1016,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 2 — Vaticano, Castillo y Trastevere al atardecer
 
-**sábado 2 ene 2027** · 🌅 atardecer 16:50 · día curado D2 (A)
+**sábado 2 ene 2027** · 🌅 atardecer 16:50 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1019,9 +1030,10 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 85 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:30 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 17:50 | Trastevere al anochecer y aperitivo | 90 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 19:30 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
-| 21:00 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 17:50 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:45 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:15 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche», antes de cenar · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
 
 ### Día 3 — Roma Antigua y el centro barroco
 
@@ -1090,8 +1102,8 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 18:50 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
 | 19:20 | Aperitivo en Campo de' Fiori y la Plaza Farnese | 30 min | 🕐 Tiempo libre |  | ideas: Plaza Farnese, Ponte Sisto, Plaza Trilussa |
 | 20:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
-| 21:30 | Foro Romano desde el Campidoglio (noche) | 30 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Desde la terraza de detrás del Campidoglio, el Foro entero iluminado a tus pies: columnas, arcos y templos en silencio, con el Coliseo al fondo. |
-| 22:20 | Trastevere de noche | 25 min | 🌙 Noche |  | paseo nocturno «Foro Romano desde el Campidoglio y Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
+| 21:30 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 22:25 | Plaza de España (noche) | 25 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer. |
 
 ### Día 2 — Trevi a primera hora, el Pincio y la tarde en Monti
 
@@ -1122,7 +1134,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 ### Día 3 — Vaticano, Castillo y Trastevere al atardecer
 
-**jueves 7 ene 2027** · 🌅 atardecer 16:55 · día curado D2 (A)
+**jueves 7 ene 2027** · 🌅 atardecer 16:55 · día curado D2 (A, relleno_cena:Isla Tiberina)
 
 | Hora | Qué | Tiempo | Cómo sale en la app | Cómo llegas | Por qué aquí |
 |---|---|---|---|---|---|
@@ -1136,9 +1148,11 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 15:30 | Puente Sant'Angelo | 10 min | Parada | 7 min andando | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
 | 15:40 | Castillo de Sant'Angelo | 90 min | 🌅 Atardecer | 2 min andando | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies. |
 | 17:35 | Iglesia de Santa Maria in Trastevere | 20 min | Parada · por dentro | 24 min andando | Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes. |
-| 18:55 | Mirador del Janículo (noche) | 25 min | 🌙 Noche |  | paseo nocturno «Roma desde arriba», antes de cenar · En invierno el atardecer llega pronto, y a cambio el Janículo te regala Roma entera iluminada: cúpulas, campanarios y tejados hasta el horizonte. Sube con calma o en el bus 115, y baja luego a Trastevere, que queda al lado. |
-| 19:20 | Trastevere al anochecer y aperitivo | 35 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Ponte Sisto |
-| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 1 min andando | en Trastevere |
+| 17:55 | Trastevere | 45 min | Parada | 1 min andando | Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de cenar, que es lo que hacen los romanos. |
+| 18:50 | Isla Tiberina | 20 min | Parada | 8 min andando | La única isla del Tíber, con forma de barco. Para llegar cruzas el Puente Fabricio, el puente romano más antiguo que sigue en pie: lo construyeron hace más de 2.000 años. |
+| 19:10 | Paseo por Trastevere iluminado y aperitivo | 35 min | 🕐 Tiempo libre |  | ideas: Plaza Trilussa, Teatro de Marcelo, Ponte Sisto |
+| 20:00 | Cena: Tonnarello |  | 🍷 Cena | 11 min andando | en Trastevere |
+| 21:30 | Trastevere de noche | 40 min | 🌙 Noche |  | paseo nocturno «Trastevere de noche» · Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado. |
 
 **Lo que quedó fuera**: nada.
 
@@ -1165,7 +1179,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 - **Día 1 (viernes 13 ago 2027) — Vaticano, el Janículo y el Castillo al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:20 San Pietro in Montorio y Tempietto de Bramante · 16:30 Fontana dell'Acqua Paola · 17:05 Mirador del Janículo · 17:40 Castillo de Sant'Angelo · 19:20 Puente Sant'Angelo · 22:30 Panteón (noche)
 - **Día 2 (sábado 14 ago 2027) — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 11:55 Plaza del Campidoglio · 12:20 Largo di Torre Argentina · 12:40 Barrio Judío · 14:55 Panteón · 15:30 Elefantino de Bernini · 15:40 Iglesia de Santa Maria sopra Minerva · 16:00 Iglesia del Gesù · 16:25 Plaza Venecia · 16:40 Altar de la Patria · 17:25 Iglesia de San Luigi dei Francesi · 17:50 Piazza Navona · 18:25 Campo de' Fiori · 19:40 Ponte Sisto · 22:30 Foro Romano desde el Campidoglio (noche)
-- **Día 3 (domingo 15 ago 2027) — Trevi a primera hora, Monti y el Pincio al atardecer**: 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:55 Basílica de Santa María la Mayor · 11:40 Iglesia de San Pietro in Vincoli · 12:05 Mercados de Trajano · 13:00 Monti · 15:20 Ara Pacis · 16:30 Via Margutta · 17:05 Piazza del Popolo · 17:25 Santa Maria del Popolo · 18:05 Parque de Villa Borghese · 19:00 Jardines del Pincio · 19:50 Terraza del Pincio · 22:30 Puente Sant'Angelo (noche)
+- **Día 3 (domingo 15 ago 2027) — Trevi a primera hora, Monti y el Pincio al atardecer**: 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:55 Basílica de Santa María la Mayor · 11:40 Iglesia de San Pietro in Vincoli · 12:05 Mercados de Trajano · 13:00 Monti · 15:20 Ara Pacis · 16:30 Via Margutta · 17:05 Piazza del Popolo · 17:25 Santa Maria del Popolo · 18:05 Parque de Villa Borghese · 19:00 Jardines del Pincio · 19:50 Terraza del Pincio · 22:30 Terraza del Pincio (noche)
 
 Sin fechas el viaje es el de siempre (D1, D2, D4M) y la ventana solo dice "Si tu viaje coincide…", sin etiqueta. Con el 13-15, el Vaticano pasa al viernes 13 y la ventana cuenta el Ferragosto en su día.
 
@@ -1206,7 +1220,10 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
-- **Un sitio de noche que vuelve a salir a la mañana siguiente**: 0 ✅
+- **El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)**: 0 ✅
+- **El día del Vaticano sin el Puente Sant'Angelo de día**: 0 ✅
+- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 1
+  - ruta 5, día 2, 18:00 Campo de' Fiori — 88 min hasta la cena y Barrio Judío a un paseo
 - **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 0 ✅
 - **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
 
@@ -1222,14 +1239,14 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 - **Notas internas que se ven**: 0 ✅
 - **Cifras y precios fuera de Tickets**: 9
   - línea 48: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 164: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 261: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 400: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 545: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 647: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 910: | 10:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 961: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
-  - línea 1077: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 167: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 265: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 405: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 554: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 655: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 921: | 10:00 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 972: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
+  - línea 1089: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, con menos gente, la fuente es otra: oyes el agua y ha
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅
 
@@ -1237,9 +1254,9 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
 
 Cada texto distinto una sola vez: lo que se queda con cifra a propósito.
 
+- (en la ruta) A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.
 - (en la ruta) La entrada es gratis y guarda uno de los trucos más bonitos de Roma: la cúpula que ves no existe, está pintada sobre un techo plano. Ponte en el disco del suelo y mira hacia arriba. Busca también el gran espejo de la nave, muy viral en redes: con una moneda de 1 € se enciende la luz y ves el techo pintado reflejado, como si flotaras dentro.
 - (en la ruta) A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves, y sube hasta la Plaza de España: la escalinata iluminada y casi vacía es de las mejores postales de Roma. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.
-- (en la ruta) A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día.
 - (ficha de Fontana de Trevi) La fuente más famosa del mundo. 26 metros de altura, 50 de ancho — un escenario barroco tallado en la fachada de un palacio donde Neptuno domina las aguas desde su carro tirado por tritones y caballos marinos. Cada día se recogen unos 3.000€ en monedas del fondo, que se donan a Cáritas para proyectos sociales en Roma. La tradición: tira una moneda con la mano derecha por encima del hombro izquierdo y volverás a Roma.
 - (ficha de Fontana de Trevi) No es una entrada: la fuente se ve gratis desde la plaza a cualquier hora. Para bajar a la zona junto al agua hay una tasa de 2 € de 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, libre. Los residentes en Roma y los niños pequeños no pagan. Compruébalo en la web del Ayuntamiento.
 - (ficha de Fontana de Trevi) La tradición original no era una moneda, sino beber agua de la fuente. La costumbre de la moneda viene de la película 'Tres monedas en la fuente' (1954) — y ahora genera más de 1 millón de euros al año para Cáritas.

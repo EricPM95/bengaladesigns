@@ -2300,7 +2300,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Todas las tarjetas del día van alineadas entre sí, dentro de la línea del día, y con el mismo hueco entre ellas:
       paradas, comidas, cenas, aperitivos, desayuno y «De camino». La comida y la cena llevan su hueco encima, como una
       parada.
-    - Cada cabecera de franja lleva 28 px de margen arriba (también la primera, debajo de la llegada) y 12 abajo.
+    - Cada cabecera de franja lleva 40 px de margen arriba (también la primera, debajo de la llegada) y 12 abajo (antes
+      28; PROMPT_UI_REPASO_4).
     - Un tipo de transporte, un icono lineal, sin emojis: bus, metro, tranvía y taxi.
     - La comida y la cena se arrastran con la misma asa que las paradas. La comida no acaba en la noche ni la cena en la
       mañana: fuera de su parte, vuelven a su sitio. Las horas se recolocan por posición, como al mover una parada; un
@@ -2312,8 +2313,8 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Un paseo nocturno todas las noches** mientras queden sitios que valgan la pena, aunque haya que cruzar la ciudad
       (un día sin paseo escrito toma el mejor que quede). Si el viajero no quiere, no va. Es por destino: uno con pocas
       nocturnas tendrá menos.
-    - **Nada de noche y otra vez a la mañana siguiente**: se elige la nocturna que no repite lo de la mañana siguiente;
-      solo si no queda otra, se repite. El día del Free Tour, nada suelto de lo que el tour recorre (Trevi a las 8:30).
+    - ~~Nada de noche y otra vez a la mañana siguiente~~: **quitada** (regla 416). El día del Free Tour, nada suelto de lo
+      que el tour recorre (Trevi a las 8:30).
     - **Un barrio, una vez al día**: se sube al Janículo por el Tempietto (por dentro mientras está abierto, cierra a las
       18:00), la Acqua Paola y el mirador, y se baja a Trastevere una sola vez para el barrio, el aperitivo y la cena.
       Con el sol después de las 19:45 (de mayo a agosto), el Janículo va con la luz de la tarde y el atardecer, en un
@@ -2329,7 +2330,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Semana Santa: la Basílica de San Pedro cierra a las visitas el Jueves Santo por la mañana y el Viernes Santo por la
       tarde (horario especial prudente, `verificar`), con 45-60 min de cola en el control. El cambio de hora dentro del
       viaje se dice con sus dos horas de atardecer.
-    - Prueba: `auditoria.mjs` lleva `noche_y_manana`, `tour_repite` y `barrio_dos_veces`.
+    - Prueba: `auditoria.mjs` lleva `tour_repite` y `barrio_dos_veces` (de día).
 
 414. **La llegada y la vuelta, verdad en cada punto** (PARA_CODE_LLEGADAS, 2026-10-01).
     - **Ningún tip dice «ahora mismo» sin fecha de fin**: lo que dura unas semanas (los controles de frontera) lleva
@@ -2354,3 +2355,21 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       mayoría de los días así; el descanso después de comer, con días de julio o agosto; la ciudad iluminada, con paseo
       nocturno.
     - Con «reducir movimiento», no cae nada.
+
+416. **Ver de noche lo que viste de día no es repetir; el día del Vaticano, con su Castillo y su Puente**
+    (PARA_CODE_TARDE_VATICANO, 2026-10-01).
+    - Fuera la regla de «no repetir de noche»: una nocturna puede volver a un sitio visto esa tarde o a la mañana
+      siguiente (el Puente Sant'Angelo al atardecer y otra vez de noche). Solo no se repite la misma nocturna en el viaje.
+      Las nocturnas nunca llevan «Revisita». Un atardecer escrito nunca lo sustituye la nocturna.
+    - El día del Vaticano lleva siempre el Castillo de Sant'Angelo (por dentro o por fuera) y el Puente Sant'Angelo de día:
+      al salir de la Basílica, Via della Conciliazione, el Castillo por fuera y el Puente al atardecer, y la cena cerca.
+      Si el Castillo cierra, por fuera. Excepción: el 24 y el 31 en los viajes de 2 días con Free Tour (se perdía el Foro
+      por dentro). La prueba lo comprueba (`vaticano_sin_castillo`, `vaticano_sin_puente`).
+    - Sin huecos antes de cenar: con más de 45 min libres después de lo último y un sitio del destino a un paseo (nivel 1
+      o 2, que el viaje no ve, abierto a esa hora, de la misma zona, sin volver junto a lo ya visto y ningún museo de
+      noche), va ese sitio (`relleno_cena`). La prueba: `hueco_cena`.
+    - Si la cena dice «desde el aperitivo», la tarjeta del aperitivo sale siempre.
+
+417. **Días, repaso 4** (PROMPT_UI_REPASO_4, 2026-10-01): las cifras del día con 20 px debajo; la zona de la foto de las
+    tarjetas, el doble de ancha (208 px; 168 en el móvil), con el nombre en las líneas que haga falta y la hora sin
+    partir; el asa de arrastrar, centrada en la tarjeta y nunca al lado de un hueco vacío.
