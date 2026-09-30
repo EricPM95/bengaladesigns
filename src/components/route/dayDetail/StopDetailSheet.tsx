@@ -20,6 +20,7 @@ import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
+import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -553,6 +554,15 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
+                  {/* La línea de Navidad (PROMPT_ROMA_NAVIDAD 3): arriba, destacada y con su icono. */}
+                  {stop.seasonLine && (
+                    <p className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-text">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-card text-accent">
+                        <DateNoticeSmallIcon icon="navidad" />
+                      </span>
+                      <span>{stop.seasonLine}</span>
+                    </p>
+                  )}
                   {/* El paseo nocturno al que pertenece (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
                   {stop.isNightExperience && (
                     <p className="flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-text">

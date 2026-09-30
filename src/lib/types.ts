@@ -304,6 +304,8 @@ export interface Stop {
   /** De temporada con fechas aproximadas, en el margen de 15 días: "Es probable que algunos mercadillos
       aún no hayan abierto." (Estaciones, Parte 4). */
   seasonNotice?: string | null
+  /** La línea de temporada de la ficha (PROMPT_ROMA_NAVIDAD 3): «En Navidad, la escalinata tiene su árbol…». Arriba del Resumen, destacada. */
+  seasonLine?: string | null
   /** Imprescindible cerrado ese día que se enseña por fuera, o el grupo cuya ancla cierra todo el viaje: "El
       Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual." */
   closedNotice?: string | null

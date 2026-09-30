@@ -2174,3 +2174,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       quepa sin quitar nada: el mercadillo al anochecer, al salir del Vaticano, y la cena al lado (`noche: "sin_paseo"`).
     - Roma: el mercadillo de Piazza Navona (capa), los 100 Presepi (capa de la Plaza de San Pedro, desde el 8 de
       diciembre), el Santo Bambino de Aracoeli (de camino, desde el 24) y el paseo de las luces del Tridente (D4).
+
+398. **Las líneas de temporada de las fichas** (PROMPT_ROMA_NAVIDAD 3): cuando la ruta ya pasa por un sitio en sus fechas, la
+    ficha de esa parada lleva una línea arriba del Resumen, destacada y con el icono de Navidad. No se añaden paradas.
+    - Viven en el JSON del destino (`navidad_lineas.lineas`), cada una con sus `lugares`, `desde`, `hasta`, `fuente`,
+      `comprobado` y, si hace falta, `verificar` con su nota. Los textos son del usuario y van tal cual.
+    - Una línea por parada como mucho; si hay dos, gana la de la fecha más concreta. Una línea sale una vez por viaje: el
+      primer día que pasa por su sitio.
+    - Con `verificar`, la línea no sale hasta que el dato esté confirmado ese año.
+    - `siguiente_si_ocupada`: si su parada ya lleva otra, va en la siguiente parada de esa lista. `no_si_mercadillo`: no
+      se repite el día en que la ruta ya cuenta el mercadillo (la parada con su título o el texto del paseo de noche).
+    - Solo con fechas reales, y las nocturnas no llevan (tienen su propio texto de fechas).

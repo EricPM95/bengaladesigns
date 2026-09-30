@@ -32,6 +32,7 @@ import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
+import { applySeasonLines, seasonLinesOn } from '../../shared/routeEngine/seasonLines.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
@@ -508,6 +509,17 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       const month = Number.isInteger(trip.calendar?.month) ? trip.calendar.month + 1 : null
       if (month !== null && (destData.destination_config?.context_banners?.meses_invierno ?? []).includes(month)) day.context_banner = null
     }
+  }
+  // Las líneas de temporada de las fichas (Navidad): solo con fechas reales, y solo donde la ruta ya pasa.
+  // (Una vez por viaje: las que ya lleva un día anterior, por donde pasa de día, no se repiten.)
+  if (tripDay.hours?.weekday && tripDay.hours?.dateIso) {
+    const earlier = new Set()
+    for (const other of trip.days ?? []) {
+      if (other.dayNumber >= tripDay.dayNumber || !other.hours?.dateIso) continue
+      const names = new Set((other.schedule?.visits ?? []).map((visit) => visit.place.name))
+      for (const line of seasonLinesOn(destData, other.hours.dateIso)) if ((line.lugares ?? []).some((name) => names.has(name))) earlier.add(line.id)
+    }
+    applySeasonLines(destData, day.stops ?? [], tripDay.hours.dateIso, earlier)
   }
   return day
 }

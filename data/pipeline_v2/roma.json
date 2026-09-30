@@ -4576,7 +4576,7 @@
       "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
       "capa_de": "Plaza de San Pedro",
       "titulo_parada": "Plaza de San Pedro y los 100 Presepi",
-      "texto_parada": "En Navidad, la plaza tiene su árbol gigante y un belén a tamaño real junto al obelisco. Y bajo la columnata de Bernini, los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos.",
+      "texto_parada": "Bajo la columnata de Bernini están los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos y no hay que desviarse.",
       "_nota": "Una capa sobre la Plaza de San Pedro, no una parada más, y sin tiempo de más: los 100 Presepi se ven en la propia visita a la plaza, para que no se caiga nada del día del Vaticano. Fechas estrictas: antes del 8 de diciembre no sale."
     },
     {
@@ -13329,5 +13329,143 @@
     "Via Veneto": "La calle de la Dolce Vita, con sus hoteles de época y sus cafés con toldo.",
     "Via del Babuino": "La calle de los anticuarios, entre la Piazza del Popolo y la Plaza de España.",
     "Via Margutta": "La calle escondida de los pintores, donde vivió Fellini y donde estaba la casa de Gregory Peck en Vacaciones en Roma."
+  },
+  "navidad_lineas": {
+    "_que_es": "Líneas de Navidad de las fichas (PROMPT_ROMA_NAVIDAD 3): cuando la ruta ya pasa por el sitio en sus fechas, la ficha de esa parada lleva esta línea arriba, destacada y con el icono de Navidad. No se añaden paradas. Reglas en shared/routeEngine/seasonLines.js: una línea por parada; gana la fecha más concreta; con `verificar`, no sale hasta que el dato esté confirmado ese año. Los textos son del usuario y van tal cual.",
+    "temporada_de_los_datos": "2025-26",
+    "revisar": "noviembre de cada año: fechas de montaje y programa.",
+    "lineas": [
+      {
+        "id": "san_pedro_arbol",
+        "lugares": [
+          "Plaza de San Pedro"
+        ],
+        "desde": "12-15",
+        "hasta": "01-06",
+        "texto": "En Navidad, la plaza tiene su árbol gigante y un belén a tamaño real junto al obelisco. Y bajo la columnata, los 100 Presepi: belenes llegados de todo el mundo.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). Inauguración del árbol y del belén: en 2025, el 15 de diciembre a las 17:00, y estuvieron hasta el 11 de enero de 2026 (vaticannews.va y osservatoreromano.va).",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "El día en que se inauguran el árbol y el belén cambia cada año (2024: 7 de diciembre; 2025: 15 de diciembre)."
+      },
+      {
+        "id": "san_pedro_arbol_antes_presepi",
+        "lugares": [
+          "Plaza de San Pedro"
+        ],
+        "desde": "12-01",
+        "hasta": "12-07",
+        "texto": "En Navidad, la plaza tiene su árbol gigante y un belén a tamaño real junto al obelisco.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario).",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "Solo vale si el árbol se inaugura antes del 8 de diciembre. En 2025 no: fue el 15."
+      },
+      {
+        "id": "belen_barrenderos",
+        "lugares": [
+          "Plaza de San Pedro"
+        ],
+        "siguiente_si_ocupada": [
+          "Cúpula de San Pedro",
+          "Basílica de San Pedro"
+        ],
+        "desde": "12-01",
+        "hasta": "01-06",
+        "texto": "A un paseo corto, en Via di Porta Cavalleggeri, está el belén de los barrenderos: lo empezó uno de ellos en 1972, con piedras de todo el mundo. Juan Pablo II venía a verlo.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). Visita: amaroma.it (Via dei Cavalleggeri 5).",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "Según la web de AMA, solo se visita con reserva online (gratis); del 15 de diciembre al 31 de enero, todos los días de 8:00 a 20:00. El texto no dice que haga falta reservar: decidir si se añade."
+      },
+      {
+        "id": "santa_maria_mayor_arnolfo",
+        "lugares": [
+          "Basílica de Santa María la Mayor"
+        ],
+        "desde": "12-01",
+        "hasta": "01-06",
+        "texto": "Aquí está el belén más antiguo que se conserva: lo talló Arnolfo di Cambio en 1291. Y bajo el altar mayor se guarda lo que la tradición dice que es un trozo de la cuna del Niño Jesús.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). basilicasantamariamaggiore.va, «Presepe di Arnolfo di Cambio».",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "Sin confirmar en la web oficial dónde se ve hoy el belén de Arnolfo ni si entra con la visita normal: unas fuentes lo ponen en la nave izquierda desde diciembre de 2022 (nuevo montaje) y otras en el museo de la basílica, que es de pago. Lo mismo la reliquia de la cuna (bajo el altar mayor o en el museo)."
+      },
+      {
+        "id": "campidoglio_bambino",
+        "lugares": [
+          "Plaza del Campidoglio"
+        ],
+        "desde": "12-24",
+        "hasta": "01-06",
+        "texto": "Sube a Santa Maria in Aracoeli, a un paso: en Navidad sacan al Santo Bambino, el Niño Jesús más querido de Roma. Le llegan cartas de todo el mundo, y los niños le recitan poesías delante.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). vaticannews.va, «Il Bambinello dell'Ara Coeli» (2023): sale la noche del 24 de diciembre y está hasta el 6 de enero; los niños recitan poesías ante el belén.",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "La tradición está confirmada (Vatican News). Falta el programa de cada año y el horario de la basílica."
+      },
+      {
+        "id": "foros_cosme_damian",
+        "lugares": [
+          "Foro Romano y Palatino",
+          "Via dei Fori Imperiali"
+        ],
+        "desde": "12-01",
+        "hasta": "01-06",
+        "texto": "Casi escondido junto a los Foros, en la basílica de los Santos Cosme y Damián, hay un gran belén napolitano del siglo XVIII, lleno de figuras. Poca gente lo conoce.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario).",
+        "comprobado": "2026-09-30"
+      },
+      {
+        "id": "espana_inmaculada",
+        "lugares": [
+          "Plaza de España"
+        ],
+        "desde": "12-08",
+        "hasta": "12-08",
+        "texto": "Hoy, los bomberos de Roma suben con su escalera a poner una corona de flores a la Virgen de la columna, junto a la escalinata. Por la tarde viene el Papa: la plaza se llena.",
+        "fuente": "vatican.va: acto de veneración a la Inmaculada en la Plaza de España, cada 8 de diciembre.",
+        "comprobado": "2026-09-30"
+      },
+      {
+        "id": "espana_arbol",
+        "lugares": [
+          "Plaza de España"
+        ],
+        "desde": "12-01",
+        "hasta": "01-06",
+        "excepto": [
+          "12-08"
+        ],
+        "texto": "En Navidad, la escalinata tiene su árbol y su belén, y las calles de alrededor, Condotti, Babuino y Margutta, se llenan de luces.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario).",
+        "comprobado": "2026-09-30",
+        "verificar": true,
+        "verificar_nota": "El belén de la escalinata: comprobarlo cada año."
+      },
+      {
+        "id": "navona_befana",
+        "lugares": [
+          "Piazza Navona"
+        ],
+        "desde": "12-01",
+        "hasta": "01-06",
+        "no_si_mercadillo": true,
+        "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar para los niños que se han portado \"mal\".",
+        "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026 (dato del usuario).",
+        "comprobado": "2026-09-30"
+      },
+      {
+        "id": "corso_luces",
+        "lugares": [
+          "Via del Corso"
+        ],
+        "desde": "11-26",
+        "hasta": "01-06",
+        "texto": "De Piazza del Popolo a Plaza Venecia, Via del Corso se ilumina entera en Navidad: casi dos kilómetros de luces. Es el paseo que hacen los romanos antes de cenar.",
+        "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). En 2025-26, del 26 de noviembre al 6 de enero.",
+        "comprobado": "2026-09-30"
+      }
+    ]
   }
 }
