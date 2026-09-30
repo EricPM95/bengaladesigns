@@ -77,7 +77,8 @@
           "modo": "atardecer",
           "lead": 85,
           "entrada": true,
-          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies."
+          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies.",
+          "si_cerrado": "fuera"
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -882,7 +883,7 @@
       "nombre": "Vaticano, Castillo y Trastevere al atardecer"
     },
     "fecha:12-25": {
-      "_nota": "Navidad: los Museos y el Castillo cierran, y a mediodía la plaza es de la bendición del Papa. El día empieza tarde, por Borgo Pio; la Plaza y la Basílica, después de comer, cuando la plaza se ha vaciado y la Basílica vuelve a abrir.",
+      "_nota": "Navidad: los Museos y el Castillo cierran, y a mediodía la plaza es de la bendición del Papa. El día empieza tarde, por Borgo Pio; la Plaza y la Basílica, después de comer, cuando la plaza se ha vaciado y la Basílica vuelve a abrir. El Castillo cierra el 25: por fuera, desde el Puente, al salir de San Pedro (PARA_CODE_TARDE_VATICANO, 6).",
       "manana": {
         "paradas": [
           {
@@ -917,9 +918,47 @@
               "lugar": "Plaza de San Pedro",
               "min": 20
             }
+          },
+          {
+            "despues_de": "Basílica de San Pedro",
+            "parada": {
+              "lugar": "Via della Conciliazione",
+              "modo": "camino"
+            }
+          },
+          {
+            "despues_de": "Via della Conciliazione",
+            "parada": {
+              "lugar": "Puente Sant'Angelo",
+              "min": 10
+            }
+          },
+          {
+            "despues_de": "Puente Sant'Angelo",
+            "parada": {
+              "lugar": "Castillo de Sant'Angelo",
+              "min": 10,
+              "modo": "fuera"
+            }
+          },
+          {
+            "antes_de": "Basílica de Santa Cecilia in Trastevere",
+            "parada": {
+              "lugar": "Isla Tiberina",
+              "min": 20,
+              "traslado": {
+                "como": "un taxi",
+                "min": 15
+              }
+            }
           }
         ],
-        "empieza": "13:45"
+        "empieza": "13:45",
+        "ajustar": {
+          "Iglesia de Santa Maria in Trastevere": {
+            "min": 30
+          }
+        }
       }
     },
     "fecha:easter-3": {

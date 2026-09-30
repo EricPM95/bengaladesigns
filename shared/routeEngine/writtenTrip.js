@@ -64,6 +64,13 @@ const LUNCH_MAX_COMPLETO = 90 // en completo, 90
 /** Verano (julio y agosto): de 14:00 a 16:30, nada al sol (INVARIANTES 413). */
 const SUMMER_MONTHS = [7, 8]
 const SUMMER_SHADE_UNTIL = 16 * 60 + 30
+/** Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): desde cuántos minutos libres se busca un sitio, a cuánto
+ * andando como mucho, cuánto dura (entre 20 y 45) y el paseo que se cuenta hasta la cena. */
+const FILLER_IDLE_MIN = 45
+const FILLER_WALK_MAX = 12
+const FILLER_MINUTES_MIN = 20
+const FILLER_MINUTES_MAX = 45
+const FILLER_DINNER_WALK = 10
 const REST_AFTER_LUNCH_MAX = 60 // en completo, el descanso después de comer, como mucho
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
@@ -1173,7 +1180,39 @@ export function planWrittenTrip(args) {
     // (Solo en un mirador: una avenida al atardecer, los Foros, tiene su máximo.)
     const sunsetIsMirador = sunsetStop && (placeByName.get(sunsetStop.lugar)?.tags ?? []).includes('mirador')
     ctx.earlyBy = early >= 5 && sunsetIsMirador ? Math.min(LEAD_FLEX, early) : 0
-    const afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+    let afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+    // Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): si después de lo último quedan más de 45 min hasta la cena
+    // y hay a un paseo un sitio del destino que el viaje no ve (nivel 1 o 2, abierto a esa hora), va ese sitio.
+    if (!half) {
+      const floorOfDinner = Math.max(DINNER_EARLIEST, draft.version === 'D' ? DINNER_EARLIEST_SUMMER : 0, draft.cena?.hora ? toMin(draft.cena.hora) : 0)
+      const idleOf = (run) => Math.max(roundUp15(run.cursor.t + FILLER_DINNER_WALK), floorOfDinner) - run.cursor.t - FILLER_DINNER_WALK
+      const idle = idleOf(afternoon)
+      if (idle > FILLER_IDLE_MIN && afternoon.cursor.coords) {
+        // (Lo que el viaje ya ha visto y lo escrito en los otros días; lo que hoy se ha caído, no.)
+        const tripNames = new Set([...seen, ...drafts.flatMap((other) => [...other.manana, ...other.tarde].map((stop) => stop.lugar))])
+        // (Ni un museo ya de noche, ni volver junto a lo que el día ya vio antes de lo último: sería un zigzag.)
+        const earlierCoords = afternoon.visits.slice(0, -1).concat(morning.visits).map((visit) => visit.place.coordinates).filter(Array.isArray)
+        const fits = (place) => !(place.type === 'interior' && hours.sunset != null && afternoon.cursor.t + 10 >= hours.sunset) && !earlierCoords.some((coords) => metersBetween(coords, place.coordinates) < 400)
+        const candidates = (destData.places ?? [])
+          // (En la misma zona que lo último: irse a otra y volver para el aperitivo sería un barrio dos veces.)
+          .filter((place) => place.coordinates && (place.level ?? 3) <= 2 && !tripNames.has(place.name) && !place.isFreeTour && !closedThatDay(place.name, ctx.day) && fits(place) && place.zone && place.zone === placeByName.get(afternoon.visits.at(-1)?.place?.name)?.zone)
+          .map((place) => ({ place, walk: walkLeg(afternoon.cursor.coords, place.coordinates) }))
+          .filter(({ walk }) => walk > 0 && walk <= FILLER_WALK_MAX)
+          .sort((a, b) => a.walk - b.walk)
+        for (const { place, walk } of candidates) {
+          const minutes = Math.min(place.duration_minutes ?? 30, FILLER_MINUTES_MAX, Math.floor((idle - walk - 10) / 5) * 5)
+          if (minutes < FILLER_MINUTES_MIN) continue
+          const ready = placeByName.get(place.name)
+          if (!ready || !openCheck(ready, afternoon.cursor.t + walk, minutes, hours).ok) continue
+          const probe = runList([...draft.tarde, { lugar: place.name, min: minutes }], 'tarde', afterLunch, { ...ctx, problems: [], sunsetArrival: null, probe: true }, elasticUsed)
+          if (idleOf(probe) < 0 || probe.visits.at(-1)?.place?.name !== place.name || probe.visits.at(-1)?.place?.visitOutside) continue
+          draft.tarde = [...draft.tarde, { lugar: place.name, min: minutes }]
+          draft.applied.push(`relleno_cena:${place.name}`)
+          afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+          break
+        }
+      }
+    }
     const visits = [...morning.visits, ...afternoon.visits]
     const units = [...morning.units, ...afternoon.units]
     // La cena: su restaurante y su hora escritas (la hora es la de antes; si se llega más tarde, cuando se llega).
@@ -1272,33 +1311,20 @@ export function planWrittenTrip(args) {
   // Paseo nocturno todas las noches mientras queden sitios que valgan la pena, aunque haya que cruzar la ciudad (decisión
   // del usuario, 2026-10-01; INVARIANTES 413). Un día sin paseo escrito toma el mejor que quede.
   const NO_WALK = { nombre: null, recorrido: [], alternativas: [] }
-  /** Lo que el día siguiente enseña por la mañana (antes de comer): de noche no se repite. */
-  const nextMorningOf = (day) => {
-    const next = cityPlanned.find((other) => other.dayNumber === day.dayNumber + 1)
-    if (!next) return new Set()
-    const lunch = (next.schedule.meals ?? []).find((meal) => meal.type === 'lunch')
-    const until = lunch?.start ?? 14 * 60
-    return new Set(next.schedule.visits.filter((visit) => visit.start < until && !visit.place.passThrough && !visit.place.isBreak).flatMap((visit) => [visit.place.name, ...(visit.place.outsideOf ?? [])]))
-  }
   for (const day of cityPlanned) {
     const walk = walks[day.curatedDay.noche] ?? NO_WALK
-    const tomorrow = nextMorningOf(day)
-    const repeatsTomorrow = (entry) => (entry?.conflicts_with ?? []).some((name) => tomorrow.has(name))
     const removedByDay = Object.entries(walk.quitar_si_va ?? {}).filter(([id]) => order.includes(id)).flatMap(([, names]) => names)
-    const startOf = (name) => day.schedule.visits.find((visit) => visit.place.name === name)?.start ?? null
+    // (Un atardecer escrito no lo sustituye la nocturna: el Puente Sant'Angelo al atardecer se queda y de noche se puede volver.)
+    const startOf = (name) => day.schedule.visits.find((visit) => visit.place.name === name && visit.place.sunset == null && !visit.place.nightView)?.start ?? null
     const lateVisit = (entry) => (entry.conflicts_with ?? []).some((name) => {
       const start = startOf(name)
       return start != null && (start >= LATE_VISIT_MINUTES || (day.hours?.sunset != null && start >= day.hours.sunset))
     })
-    const allowed = (entry, { strictReach = false, allowRepeat = false } = {}) => {
+    // Ver de noche lo que se ha visto de día (esa misma tarde o a la mañana siguiente) no es repetir: es otra experiencia
+    // (decisión del usuario, PARA_CODE_TARDE_VATICANO, 2026-10-01; fuera la regla de «no repetir de noche»). Solo no se
+    // repite la misma nocturna en el viaje.
+    const allowed = (entry, { strictReach = false } = {}) => {
       if (!entry || usedNights.has(entry.name)) return false
-      // (Lo de la mañana siguiente, no: Trevi de noche y otra vez a las 8:30. Solo si no queda otra.)
-      if (!allowRepeat && repeatsTomorrow(entry)) return false
-      const conflicts = entry.conflicts_with ?? []
-      if (conflicts.some((name) => (timesSeen.get(name) ?? 0) >= 2 && !(walk.excepcion_mismo_dia && daysOfPlace.get(name)?.has(day.dayNumber) && timesSeen.get(name) === 2))) return false
-      const sameDay = !entry.same_day_as_visit && conflicts.some((name) => daysOfPlace.get(name)?.has(day.dayNumber))
-      if (sameDay && !shortTrip && !walk.excepcion_mismo_dia) return false
-      if (sameDay && shortTrip && !walk.excepcion_mismo_dia && !lateVisit(entry)) return false
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
       return true
     }
@@ -1311,15 +1337,9 @@ export function planWrittenTrip(args) {
     if (chain.length === 0 && !walk.sin_relevo) {
       chain = (walk.alternativas ?? []).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
       const byDistance = (a, b) => metersBetween(day.dinnerCoords, a.coordinates) - metersBetween(day.dinnerCoords, b.coordinates)
-      // (Ni el barrio que ya se ha visto esa tarde: Trastevere de noche después de pasar la tarde en Trastevere.)
-      const dayBarrios = day.schedule.visits.filter((visit) => (placeByName.get(visit.place.name)?.tags ?? []).includes('barrio')).map((visit) => visit.place.name)
-      const freshBarrio = (entry) => !dayBarrios.some((name) => entry.name.includes(name))
-      chain = chain.filter(freshBarrio)
-      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true }) && freshBarrio(entry)).sort(byDistance)
+      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true })).sort(byDistance)
       // (Si cerca no queda nada, el que quede, aunque haya que cruzar la ciudad: uno solo.)
-      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry) && freshBarrio(entry)).sort(byDistance).slice(0, 1)
-      // (Y si solo queda repetir lo de mañana, lo escrito.)
-      if (chain.length === 0) chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry, { allowRepeat: true }))
+      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry)).sort(byDistance).slice(0, 1)
       fromAlternative = walk.recorrido.length > 0 || walk === NO_WALK
     }
     chain = chain.slice(0, max).map((entry) => (entry.si_no && catalogue.get(entry.si_no) ? { ...entry, fallback: catalogue.get(entry.si_no) } : entry))

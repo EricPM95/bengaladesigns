@@ -56,7 +56,9 @@ export const TIPOS_AUDITORIA = {
   fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas',
   manana_tarde: '"Por la mañana" en el texto de una parada que va por la tarde',
   pago_sin_dentro: 'Imprescindible de pago que no sale nunca por dentro en el viaje',
-  noche_y_manana: 'Un sitio de noche que vuelve a salir a la mañana siguiente',
+  vaticano_sin_castillo: "El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)",
+  vaticano_sin_puente: "El día del Vaticano sin el Puente Sant'Angelo de día",
+  hueco_cena: 'Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo',
   tour_repite: 'Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)',
   barrio_dos_veces: 'El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)',
 }
@@ -118,16 +120,51 @@ export function auditarViaje(D, days, options = {}) {
       }
     }
 
-    // Sin repeticiones (PROMPT_REPASO_LOCAL_ROMA, 8).
-    // 1. Lo que sale de noche no vuelve a salir a la mañana siguiente (antes de comer).
-    const nextDay = days[index + 1]
-    if (nextDay?.stops?.length) {
-      const nextLunch = t2m(nextDay.meals?.find((meal) => meal.time === 'lunch')?.suggested_time) ?? 14 * 60
-      const nextMorning = nextDay.stops.filter((stop) => !stop.is_night_experience && !stop.pass_through && (t2m(stop.suggested_time) ?? 0) < nextLunch).map(nameOf)
-      for (const night of day.stops.filter((stop) => stop.is_night_experience)) {
-        const entry = (D.night_experiences ?? []).find((candidate) => candidate.name === nameOf(night))
-        const places = entry?.conflicts_with?.length ? entry.conflicts_with : [nameOf(night).replace(/\s*\(noche\)$/, '')]
-        for (const place of places) if (nextMorning.includes(place)) add('noche_y_manana', n, night.suggested_time, nameOf(night), `y el día ${n + 1} por la mañana ${place}`)
+    const metersApart = (a, b) => {
+      const rad = Math.PI / 180
+      const x = Math.sin(((b[0] - a[0]) * rad) / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(((b[1] - a[1]) * rad) / 2) ** 2
+      return 2 * 6371000 * Math.asin(Math.sqrt(x))
+    }
+    // Sin repeticiones de día (PROMPT_REPASO_LOCAL_ROMA, 8). Ver de noche lo que se vio de día ya no cuenta como repetir
+    // (PARA_CODE_TARDE_VATICANO, 1).
+    // 1. El día del Vaticano lleva siempre el Castillo (por dentro o por fuera) y el Puente Sant'Angelo de día, como está
+    // escrito (PARA_CODE_TARDE_VATICANO, 6).
+    // (Salvo el 24 y el 31 en los viajes de 2 días con Free Tour: el Vaticano por la mañana y la Roma Antigua, que cierra
+    // pronto, por la tarde; pasar por el Castillo hacía perder el Foro por dentro.)
+    const compressedVatican = (day.curated_day?.variants ?? []).some((variant) => /^fecha:12-(24|31)&/.test(variant))
+    if (['D2', 'D3'].includes(day.curated_day?.id) && !compressedVatican) {
+      const names = dayStops.map(nameOf)
+      if (!names.some((name) => name.includes("Castillo de Sant'Angelo"))) add('vaticano_sin_castillo', n, '', day.curated_day.id, 'el día del Vaticano sin el Castillo de Sant\'Angelo')
+      if (!names.some((name) => name.includes("Puente Sant'Angelo")) && !dayStops.some((stop) => (stop.display_title ?? stop.night_view_title ?? '').includes("Puente Sant'Angelo"))) add('vaticano_sin_puente', n, '', day.curated_day.id, 'el día del Vaticano sin el Puente Sant\'Angelo')
+    }
+    // 1b. Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo (menos de 800 m) y abierto.
+    if (dinnerStart != null && dayStops.length > 0) {
+      const beforeDinner = dayStops.filter((stop) => (t2m(stop.suggested_time) ?? 0) < dinnerStart)
+      const last = beforeDinner[beforeDinner.length - 1]
+      if (last) {
+        // (Con la nocturna de antes de cenar: ese rato ya tiene su paseo.)
+        const lastEndAt = Math.max(...day.stops.filter((stop) => (t2m(stop.suggested_time) ?? 0) < dinnerStart).map((stop) => (t2m(stop.suggested_time) ?? 0) + (stop.duration_minutes ?? 0)))
+        // (El aperitivo en un barrio es la visita de ese barrio, que el servidor junta con él: «Trastevere al anochecer y aperitivo».)
+        const barrioAperitivo = day.aperitivo?.title && (D.places ?? []).some((place) => (place.tags ?? []).includes('barrio') && day.aperitivo.title.includes(place.name)) ? day.aperitivo.minutes ?? 0 : 0
+        const idle = dinnerStart - lastEndAt - (day.dinner_walk_minutes ?? 0) - barrioAperitivo
+        // (Lo que el viaje ve, también lo que recorre el Free Tour; y solo si está abierto a esa hora: lo mismo que mira el motor.)
+        const tourInTrip = D.default_free_tour && days.some((other) => (other?.stops ?? []).some((stop) => nameOf(stop) === D.default_free_tour.name))
+        // (El barrio del aperitivo también se ve: «Monti al anochecer y aperitivo».)
+        const aperitivoTitles = days.map((other) => other?.aperitivo?.title ?? '').join(' ')
+        const seenTrip = new Set([...days.flatMap((other) => (other?.stops ?? []).map(nameOf)), ...(tourInTrip ? D.default_free_tour.covers ?? [] : []), ...(D.places ?? []).filter((place) => aperitivoTitles.includes(place.name)).map((place) => place.name)])
+        const lastPlace = byName.get(nameOf(last))
+        const openAt = (place, from, to) => {
+          if (iso && closedOnDay(place, hours.weekday, iso)) return false
+          const sessions = parseHoursSessions(effectiveSchedule(place, hours) ?? place.schedule ?? '')
+          const lastIn = lastEntryMinutes(place, from)
+          return sessions.length === 0 ? place.type !== 'interior' || !place.schedule : sessions.some((session) => from >= session.open && to <= session.close) && (lastIn == null || from <= lastIn)
+        }
+        // (En la misma zona que lo último, como el motor: irse a otra y volver para el aperitivo sería un barrio dos veces.)
+        // (Ni un museo ya de noche, ni volver junto a lo que el día ya vio antes de lo último: sería un zigzag.)
+        const earlier = beforeDinner.slice(0, -1).map((stop) => byName.get(nameOf(stop))).filter((place) => place?.coordinates)
+        const fits = (place) => !(place.type === 'interior' && sunset != null && lastEndAt + 10 >= sunset) && !earlier.some((other) => metersApart(other.coordinates, place.coordinates) < 400)
+        const near = lastPlace?.coordinates ? (D.places ?? []).find((place) => place.coordinates && fits(place) && place.zone === lastPlace.zone && !seenTrip.has(place.name) && (place.level ?? 3) <= 2 && metersApart(place.coordinates, lastPlace.coordinates) < 800 && openAt(place, lastEndAt + 10, lastEndAt + 30)) : null
+        if (idle > 45 && near) add('hueco_cena', n, last.suggested_time, nameOf(last), `${idle} min hasta la cena y ${near.name} a un paseo`)
       }
     }
     // 2. El día del Free Tour, nada suelto de lo que el tour ya recorre (salvo entrar en lo que el tour enseña por fuera).
@@ -154,7 +191,8 @@ export function auditarViaje(D, days, options = {}) {
       })
       if (awayAt < 0) continue
       const back = new RegExp(`(^|[^\p{L}])${barrio.name}([^\p{L}]|$)`, 'u')
-      const titles = [day.aperitivo?.title ?? '', ...day.stops.filter((stop) => stop.is_night_experience).map((stop) => `${nameOf(stop)} ${stop.night_walk_name ?? ''}`), ...later.slice(awayAt + 1).map(nameOf)]
+      // (De día: el paseo de noche por el barrio ya no cuenta como repetir. PARA_CODE_TARDE_VATICANO, 1.)
+      const titles = [day.aperitivo?.title ?? '', ...later.slice(awayAt + 1).map(nameOf)]
       const other = (D.places ?? []).filter((place) => place.name !== barrio.name && place.name.includes(barrio.name)).map((place) => place.name)
       if (titles.some((text) => back.test(other.reduce((rest, name) => rest.split(name).join(''), text)))) add('barrio_dos_veces', n, dayStops[firstAt].suggested_time, barrio.name, `y otra vez después de ${nameOf(later[awayAt])}`)
     }

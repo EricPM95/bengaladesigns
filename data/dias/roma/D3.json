@@ -80,15 +80,28 @@
           "si_cerrado": "fuera"
         },
         {
-          "lugar": "Borgo Pio",
+          "lugar": "Via della Conciliazione",
           "modo": "camino"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 10,
+          "modo": "fuera",
+          "revisita": "Lo viste por dentro {dia}; hoy, por fuera, con el Puente al atardecer."
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo. Cena cerca, en el Borgo o en Prati."
         }
       ],
       "cena": {
         "restaurante": "L'Arcangelo",
         "alternativa": "Osteria dell'Angelo",
         "hora": "20:45"
-      }
+      },
+      "_vaticano": "El día del Vaticano lleva siempre el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 2 y 6): al salir de la Basílica, Via della Conciliazione, el Castillo por fuera y el Puente Sant'Angelo al atardecer (en invierno, ya iluminado), y la cena cerca.",
+      "noche": "centro_iluminado"
     },
     "B": "igual que A",
     "C": {
@@ -110,30 +123,20 @@
       "tarde.*": {
         "paradas": [
           {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
+            "lugar": "Plaza de San Pedro",
+            "min": 25,
             "traslado": {
               "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
               "min": 20
             }
           },
           {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
             "lugar": "Cúpula de San Pedro",
             "min": 45,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "sol_desde": "17:40"
           },
           {
             "lugar": "Basílica de San Pedro",
@@ -143,7 +146,32 @@
           },
           {
             "lugar": "Borgo Pio",
+            "titulo": "Borgo Pio y el Passetto",
+            "min": 20,
+            "elastica": 30
+          },
+          {
+            "lugar": "Via della Conciliazione",
             "modo": "camino"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "sol_desde": "17:40"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 10,
+            "modo": "fuera",
+            "sol_hasta": "17:40"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "modo": "atardecer",
+            "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo. Cena cerca, en el Borgo o en Prati."
           }
         ],
         "empieza": "14:30"
@@ -202,7 +230,8 @@
           "alternativa": "Osteria dell'Angelo",
           "hora": "20:30"
         }
-      }
+      },
+      "_vaticano": "Con los Museos cerrados: la Plaza, la Cúpula y la Basílica primero; bajando por Via della Conciliazione, el Castillo y el Puente Sant'Angelo al atardecer (PARA_CODE_TARDE_VATICANO, 6)."
     },
     "fecha:12-24": {
       "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
@@ -215,7 +244,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
-            "min": 145,
+            "min": 130,
             "modo": "dentro",
             "entrada": true,
             "turno": true
@@ -229,13 +258,25 @@
             "modo": "fuera"
           },
           {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 5
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "modo": "camino"
+          },
+          {
             "lugar": "Free Tour Centro Histórico",
             "tipo": "fija",
             "hora": "12:00",
             "min": 150,
             "traslado": {
-              "como": "el metro A (de Ottaviano a Spagna)",
-              "min": 25
+              "como": "un taxi",
+              "min": 10
             }
           }
         ],
@@ -265,7 +306,8 @@
           }
         ],
         "empieza": "15:45"
-      }
+      },
+      "_vaticano": "El día del Vaticano lleva el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 6): al salir de San Pedro, por Via della Conciliazione, el Castillo por fuera y el Puente, y en taxi al tour."
     },
     "fecha:12-31": {
       "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
@@ -278,7 +320,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
-            "min": 145,
+            "min": 130,
             "modo": "dentro",
             "entrada": true,
             "turno": true
@@ -292,13 +334,25 @@
             "modo": "fuera"
           },
           {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 5
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "modo": "camino"
+          },
+          {
             "lugar": "Free Tour Centro Histórico",
             "tipo": "fija",
             "hora": "12:00",
             "min": 150,
             "traslado": {
-              "como": "el metro A (de Ottaviano a Spagna)",
-              "min": 25
+              "como": "un taxi",
+              "min": 10
             }
           }
         ],
@@ -328,7 +382,8 @@
           }
         ],
         "empieza": "15:45"
-      }
+      },
+      "_vaticano": "El día del Vaticano lleva el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 6): al salir de San Pedro, por Via della Conciliazione, el Castillo por fuera y el Puente, y en taxi al tour."
     },
     "fecha:12-25|01-01|01-06": {
       "_nota": "Navidad, Año Nuevo y Reyes: el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30) y los Museos Vaticanos cierran (la tarde es la de «cerrado»: el Castillo, la Plaza y la Basílica). La mañana empieza tarde (el desayuno y el tour, que ya pasa por Trevi); se come al acabar el tour y la tarde empieza a las 15:45.",
@@ -341,7 +396,10 @@
         "empieza": "11:00"
       },
       "tarde.*": {
-        "empieza": "15:45"
+        "empieza": "15:45",
+        "quitar": [
+          "Borgo Pio"
+        ]
       },
       "nombre": "Free Tour y San Pedro por la tarde"
     },
@@ -417,7 +475,8 @@
           }
         ],
         "empieza": "13:15"
-      }
+      },
+      "_vaticano": "Excepción a «el día del Vaticano lleva el Castillo y el Puente» (PARA_CODE_TARDE_VATICANO, 6): el 24 y el 31, en un viaje de 2 días con Free Tour, los Museos cierran pronto y por la tarde va la Roma Antigua, que también cierra antes; pasar por el Castillo y el Puente hacía perder el Foro por dentro."
     },
     "fecha:12-31&D1-FT@01-01": {
       "_nota": "31 de diciembre en un viaje en el que el otro día del Free Tour cae el 1 de enero (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
@@ -491,7 +550,8 @@
           }
         ],
         "empieza": "13:15"
-      }
+      },
+      "_vaticano": "Excepción a «el día del Vaticano lleva el Castillo y el Puente» (PARA_CODE_TARDE_VATICANO, 6): el 24 y el 31, en un viaje de 2 días con Free Tour, los Museos cierran pronto y por la tarde va la Roma Antigua, que también cierra antes; pasar por el Castillo y el Puente hacía perder el Foro por dentro."
     },
     "fecha:easter-2": {
       "_nota": "Viernes Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Basílica cierra a las visitas a las 13:00 por la Pasión del Papa (lo prudente, 2024; verificar esa semana). Va a primera hora, antes del Free Tour, con 45-60 min más por la cola del control; por la tarde, los Museos y la Plaza.",

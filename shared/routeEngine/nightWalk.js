@@ -307,7 +307,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   for (const { entry, start, duration } of timeChain(entries, plan.start)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
-    const isRevisit = (entry.conflicts_with ?? []).some((name) => dayVisitedNames.has(name))
+    void dayVisitedNames
     const dateEntry = (entry.texto_fechas ?? []).find((item) => matchesDateRange(item.desde, item.hasta, timing.dateIso ?? null))
     // (Después de cenar, su `texto_despues_cenar` si lo trae: sin "antes de cenar".)
     const dateText = dateEntry ? (!plan.beforeDinner && dateEntry.texto_despues_cenar) || dateEntry.texto : null
@@ -336,7 +336,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       // propio, su descripción; el genérico solo si no hay nada (segundo repaso, 2026-09-28).
       why: dateText ?? entry.texto ?? entry.description ?? (plan.beforeDinner ? whyTexts.nightBeforeDinner() : whyTexts.night()),
       ...(dateText ? { date_text: true } : {}),
-      ...(isRevisit ? { is_revisit: true } : {}),
+      // (Sin «Revisita»: ver de noche lo que viste de día es la gracia de la nocturna, no una repetición. PARA_CODE_TARDE_VATICANO, 4.)
       category: 'landmark',
       category_label: 'De noche',
     })

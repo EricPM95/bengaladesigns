@@ -110,7 +110,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // experiencia» ya no sale en ninguna parada (PARA_CODE_NAVONA 2).
   // «Opcional» (PROMPT_QUITAR_RITMOS): hay una sola ruta y el viajero la aligera quitando paradas; estas son las primeras.
   if (stop.optional) tags.push({ label: 'Opcional', kind })
-  if (stop.isRevisit) tags.push({ label: 'Revisita', kind })
+  // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
+  if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 
   return (
     <TrazoCard

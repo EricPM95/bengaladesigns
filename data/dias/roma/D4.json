@@ -376,16 +376,10 @@
       }
     },
     "con_free_tour": {
-      "_nota": "Con Free Tour, Trevi y la Plaza de España las enseña el tour: cambia solo la mañana. El Castillo por dentro a la apertura (con Free Tour no hay D2 y, con 4 días o más, el Castillo va por dentro) y en taxi a la Galería de las 11:00.",
+      "_nota": "Con Free Tour, Trevi y la Plaza de España las enseña el tour: cambia solo la mañana. El Castillo por dentro a la apertura (con Free Tour no hay D2 y, con 4 días o más, el Castillo va por dentro) y en taxi a la Galería de las 11:00. El Puente Sant'Angelo ya va el día del Vaticano, al atardecer (PARA_CODE_TARDE_VATICANO, 6): aquí, directo al Castillo.",
       "nombre": "El Castillo, la Borghese y el Popolo",
       "manana": {
         "paradas": [
-          {
-            "lugar": "Puente Sant'Angelo",
-            "tipo": "fija",
-            "hora": "08:45",
-            "min": 10
-          },
           {
             "lugar": "Castillo de Sant'Angelo",
             "tipo": "fija",
@@ -393,7 +387,8 @@
             "min": 85,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "revisita": "Lo viste por fuera {dia}, con el atardecer desde el Puente; hoy entras: la tumba de Adriano, las salas de los papas y la terraza del ángel."
           },
           {
             "lugar": "Galería Borghese",
