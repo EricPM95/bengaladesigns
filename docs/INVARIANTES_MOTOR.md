@@ -2341,3 +2341,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       camino de ida (`a_la_salida`), nunca el de llegada al revés. Sin dato propio, no sale.
     - Un precio sin comprobar en la web oficial no sale; con su fuente y su fecha, sí. Un traslado sin enlace de afiliado
       no sale a la venta.
+
+415. **Cada viaje empieza con su tarjeta de temporada. Solo dice lo que la ruta hace de verdad** (PROMPT_TARJETA_TEMPORADA,
+    2026-10-01).
+    - Al abrir la ruta por primera vez: la tarjeta (`SeasonCard.tsx`); con su «Entendido», los avisos de fechas, uno por
+      tema; después, la ruta. Lo que ya se vio no vuelve a salir. Sustituye a la nota de temporada de arriba de la ruta.
+    - La estación: con fechas, la del primer día (primavera 20-3 a 20-6, verano 21-6 a 22-9, otoño 23-9 a 20-12,
+      invierno 21-12 a 19-3); si ese día cae en la `temporada_navidad` del destino, Navidad. Sin fechas, la del
+      formulario. Los cortes de `by_period` son de horarios, no de la tarjeta.
+    - Los textos valen para cualquier destino (`{destino}`, `{hora}`: el atardecer real) y cada trozo condicionado sale
+      solo si se cumple: los miradores al atardecer, con un atardecer en la ruta; lo importante a primera hora, con la
+      mayoría de los días así; el descanso después de comer, con días de julio o agosto; la ciudad iluminada, con paseo
+      nocturno.
+    - Con «reducir movimiento», no cae nada.

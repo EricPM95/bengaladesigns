@@ -747,7 +747,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 - **Mercadillo de Navidad en Piazza Navona** · etiqueta «Mercadillo de Navidad en Piazza Navona» en el día 3
   - Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.
 - **Domingo 3 · La Galería Borghese, gratis con reserva** · etiqueta «La Galería Borghese, gratis con reserva» en el día 4
-  - El primer domingo de mes la Galería Borghese es gratis, pero la reserva sigue siendo obligatoria: las entradas salen 10 días antes, vuelan, y ese día no hay entradas de última hora.
+  - El primer domingo de mes la Galería Borghese es gratis, pero hay que reservar: las entradas salen 10 días antes y es posible que se agoten enseguida.
 
 ### Día 1 — Roma Antigua, el Ghetto y Trastevere al atardecer
 
@@ -974,7 +974,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
   - El 1 de enero el transporte empieza a las 8:00.
   - Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena.
 - **Domingo 3 · El Coliseo y los museos del Estado, gratis** · etiqueta «El Coliseo y los museos del Estado, gratis» en el día 3
-  - El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis y es el día de más cola. No se reserva: las entradas se recogen en la taquilla por orden de llegada y solo valen para ese día, así que ve antes de que abra. Ese día el Coliseo no abre los niveles de arriba, la arena ni los subterráneos.
+  - El primer domingo de mes el Coliseo y los museos del Estado son gratis, sin reserva: entradas en taquilla, por orden de llegada. Es el día de más cola: ve antes de que abra.
 
 ### Día 1 — Trevi a primera hora, el Pincio y la tarde en Monti
 
@@ -1147,7 +1147,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 
 **Avisos de fechas**: 
 - **Ferragosto** · sin etiqueta en ningún día: Si tu viaje coincide con el 15 de agosto: el 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios.
-- **La semana de Ferragosto** · sin etiqueta en ningún día: Del 13 al 16 de agosto muchas trattorias y tiendas cierran por vacaciones. Antes de ir a comer o a cenar, llama o reserva.
+- **La semana de Ferragosto** · sin etiqueta en ningún día: Del 13 al 16 de agosto es posible que muchas trattorias y tiendas cierren por vacaciones: llama o reserva antes de ir a comer o a cenar.
 
 - **Día 1 — Roma Antigua y el centro barroco**: 08:30 Coliseo · 10:00 Arco de Constantino · 10:25 Foro Romano y Palatino · 11:55 Plaza del Campidoglio · 14:10 Panteón · 14:45 Elefantino de Bernini · 14:55 Iglesia de Santa Maria sopra Minerva · 15:20 Iglesia de San Luigi dei Francesi · 16:30 Largo di Torre Argentina · 16:50 Iglesia del Gesù · 17:15 Plaza Venecia · 17:30 Altar de la Patria · 18:15 Piazza Navona · 18:50 Campo de' Fiori · 19:50 Ponte Sisto · 22:30 Fontana de Trevi (noche)
 - **Día 2 — Vaticano, el Janículo y el Castillo al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:20 San Pietro in Montorio y Tempietto de Bramante · 16:30 Fontana dell'Acqua Paola · 17:05 Mirador del Janículo · 17:40 Castillo de Sant'Angelo · 19:20 Puente Sant'Angelo · 22:30 Panteón (noche)
@@ -1159,7 +1159,7 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 - **Sábado 14 y domingo 15 · Museos Vaticanos cerrados** · etiqueta «Museos Vaticanos cerrados» en el día 2: Los Museos Vaticanos cierran el sábado 14 y el domingo 15, por Ferragosto. Hemos puesto tu visita el viernes 13 para que no los pierdas.
 - **Sábado 14 · Misa en el Panteón** · etiqueta «Misa en el Panteón» en el día 2: El sábado el Panteón deja de vender entradas a las 16:00 por la misa. Hemos puesto tu visita nada más comer.
 - **Domingo 15 · Panteón cerrado** · etiqueta «Panteón cerrado» en el día 3: El 15 de agosto el Panteón cierra por Ferragosto. Hemos puesto tu visita el sábado 14 para que no lo pierdas.
-- **La semana de Ferragosto** · etiqueta «La semana de Ferragosto» en el día 1: Del 13 al 16 de agosto muchas trattorias y tiendas cierran por vacaciones. Antes de ir a comer o a cenar, llama o reserva.
+- **La semana de Ferragosto** · etiqueta «La semana de Ferragosto» en el día 1: Del 13 al 16 de agosto es posible que muchas trattorias y tiendas cierren por vacaciones: llama o reserva antes de ir a comer o a cenar.
 - **Ferragosto** · etiqueta «Ferragosto» en el día 3: El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios. Hemos puesto el Vaticano otro día y el resto de tu ruta, en lo que abre.
 
 - **Día 1 (viernes 13 ago 2027) — Vaticano, el Janículo y el Castillo al atardecer**: 08:00 Museos Vaticanos y Capilla Sixtina · 11:15 Plaza de San Pedro · 11:35 Cúpula de San Pedro · 12:20 Basílica de San Pedro · 15:20 San Pietro in Montorio y Tempietto de Bramante · 16:30 Fontana dell'Acqua Paola · 17:05 Mirador del Janículo · 17:40 Castillo de Sant'Angelo · 19:20 Puente Sant'Angelo · 22:30 Panteón (noche)

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes glowL{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<section style="padding:56px 48px 0;display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start;justify-content:center;font-family:'Geist',sans-serif;color:#1C2230">
+
+  <div id="2a" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">2a · Primavera</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <div style="position:relative;height:300px;background:linear-gradient(180deg,#F3C9D2 0%,#F8DCD8 50%,#FBE9DE 80%,#FFFDF8 100%)">
+        <div style="position:absolute;left:50%;top:70px;width:280px;height:280px;margin-left:-140px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.7),transparent 65%)"></div>
+        <svg viewBox="0 0 390 120" preserveAspectRatio="none" style="position:absolute;left:-2px;right:-2px;bottom:34px;width:calc(100% + 4px);height:120px"><path d="M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z" fill="#C99AA8"></path></svg>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(180deg,#C99AA8 0%,#FFFDF8 100%)"></div>
+        <div style="position:absolute;left:0;right:0;top:64px;text-align:center;font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#8E3F5A">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:absolute;left:0;right:0;top:88px;text-align:center;font:italic 400 48px/1 'Instrument Serif',serif;white-space:nowrap;color:#4A2233">Primavera en Roma</div>
+      </div>
+      <div style="padding:6px 28px 26px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:2">
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en primavera! Las terrazas vuelven a llenarse y las glicinias cubren muros y escalinatas. Hemos preparado tu ruta con más paseos al aire libre, y como anochece sobre las 19:45, tendrás tardes largas para disfrutarlas.</p>
+        <button style="height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+      <canvas ref="{{ cP }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
+    </div>
+  </div>
+
+  <div id="2b" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">2b · Verano</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <div style="position:relative;height:300px;background:linear-gradient(180deg,#F7B267 0%,#FAC98A 45%,#FDE3BD 80%,#FFFDF8 100%)">
+        <div style="position:absolute;left:50%;top:70px;width:280px;height:280px;margin-left:-140px;border-radius:50%;background:radial-gradient(circle,oklch(0.97 0.08 90) 0 22%,oklch(0.92 0.12 80 / .55) 30%,transparent 66%)"></div>
+        <svg viewBox="0 0 390 120" preserveAspectRatio="none" style="position:absolute;left:-2px;right:-2px;bottom:34px;width:calc(100% + 4px);height:120px"><path d="M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z" fill="#C46A3E"></path></svg>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(180deg,#C46A3E 0%,#FFFDF8 100%)"></div>
+        <div style="position:absolute;left:0;right:0;top:64px;text-align:center;font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#7A3514">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:absolute;left:0;right:0;top:88px;text-align:center;font:italic 400 56px/1 'Instrument Serif',serif;color:#3E1C0C">Verano en Roma</div>
+      </div>
+      <div style="padding:6px 28px 26px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:2">
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en verano! Días largos, noches templadas y la ciudad llena de vida al aire libre. Hemos preparado tu ruta para evitar las horas de más calor, y como anochece sobre las 20:50, las mejores vistas llegan con el atardecer.</p>
+        <button style="height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+      <canvas ref="{{ cV }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
+    </div>
+  </div>
+
+  <div id="2c" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">2c · Otoño</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <div style="position:relative;height:300px;background:linear-gradient(180deg,#4A2C24 0%,#8E4A2C 42%,#D08A4E 72%,#FFFDF8 100%)">
+        <div style="position:absolute;left:50%;top:70px;width:280px;height:280px;margin-left:-140px;border-radius:50%;background:radial-gradient(circle,oklch(0.85 0.13 65 / .45),transparent 65%)"></div>
+        <svg viewBox="0 0 390 120" preserveAspectRatio="none" style="position:absolute;left:-2px;right:-2px;bottom:34px;width:calc(100% + 4px);height:120px"><path d="M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z" fill="#3A2018"></path></svg>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(180deg,#3A2018 0%,#FFFDF8 100%)"></div>
+        <div style="position:absolute;left:0;right:0;top:64px;text-align:center;font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,228,196,.85)">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:absolute;left:0;right:0;top:88px;text-align:center;font:italic 400 56px/1 'Instrument Serif',serif;color:#FFF1DE">Otoño en Roma</div>
+      </div>
+      <div style="padding:6px 28px 26px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:2">
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en otoño! Menos gente, luz dorada y la cocina de temporada en cada mesa. Hemos preparado tu ruta para aprovechar la luz, y como anochece sobre las 18:00, reservamos los miradores para la última hora.</p>
+        <button style="height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+      <canvas ref="{{ cO }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
+    </div>
+  </div>
+
+<div id="2d" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">2d · Invierno</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <div style="position:relative;height:300px;background:linear-gradient(180deg,#A9BCCF 0%,#C9D6E2 45%,#E6ECF1 78%,#FFFDF8 100%)">
+        <div style="position:absolute;left:50%;top:70px;width:280px;height:280px;margin-left:-140px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75),transparent 62%)"></div>
+        <svg viewBox="0 0 390 120" preserveAspectRatio="none" style="position:absolute;left:-2px;right:-2px;bottom:34px;width:calc(100% + 4px);height:120px"><path d="M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z" fill="#7F93A8"></path></svg>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(180deg,#7F93A8 0%,#FFFDF8 100%)"></div>
+        <div style="position:absolute;left:0;right:0;top:64px;text-align:center;font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#3E5670">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:absolute;left:0;right:0;top:88px;text-align:center;font:italic 400 56px/1 'Instrument Serif',serif;color:#1F2E42">Invierno en Roma</div>
+      </div>
+      <div style="padding:6px 28px 26px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:2">
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en invierno! Mañanas frías y claras, museos sin colas y cafés donde entrar en calor. Hemos preparado tu ruta con más visitas a cubierto, y como anochece sobre las 17:00, dejamos los paseos para las horas de sol.</p>
+        <button style="height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+      <canvas ref="{{ cI }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
+    </div>
+  </div>
+</section>
+<section style="min-height:100vh;padding:56px 48px;display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start;justify-content:center;font-family:'Geist',sans-serif;color:#1C2230">
+
+  <div id="1a" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">1a · Noche en Roma</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:#FFFDF8;box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <div style="position:relative;height:300px;background:linear-gradient(180deg,#0E1A33 0%,#1D3050 55%,#3C4F6E 82%,#FFFDF8 100%)">
+        <div style="position:absolute;left:50%;top:84px;width:260px;height:260px;margin-left:-130px;border-radius:50%;background:radial-gradient(circle,oklch(0.85 0.12 75 / .38),transparent 65%)"></div>
+        <svg viewBox="0 0 390 120" preserveAspectRatio="none" style="position:absolute;left:-2px;right:-2px;bottom:34px;width:calc(100% + 4px);height:120px">
+          <path d="M0 120V92h26v-8h14v8h20V70h8v-6h6v6h8v22h30V78h40V60l6-4v-8h4v8l6 4v18h24c0-34 16-52 34-58v-8h3v-6h2v6h3v8c18 6 34 24 34 58h30V84h16v-6h10v6h18V96H400V120z" fill="#101B30"></path>
+        </svg>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(180deg,#101B30 0%,#FFFDF8 100%)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:36px;height:70px;display:flex;justify-content:space-around;align-items:flex-end;padding:0 18px 12px">
+          <sc-for list="{{ windows }}" as="w" hint-placeholder-count="14">
+            <span style="width:3px;height:4px;border-radius:1px;background:oklch(0.86 0.13 80);box-shadow:0 0 6px oklch(0.86 0.13 80);margin-bottom:{{ w.mb }};animation:glowL {{ w.d }}s ease-in-out infinite"></span>
+          </sc-for>
+        </div>
+        <svg viewBox="0 0 390 40" preserveAspectRatio="none" style="position:absolute;left:0;right:0;top:18px;width:100%;height:40px;overflow:visible">
+          <path d="M-10 4 Q 100 36 195 14 T 400 6" fill="none" stroke="rgba(255,240,210,.35)" stroke-width="1"></path>
+        </svg>
+        <div style="position:absolute;left:0;right:0;top:12px;height:40px">
+          <sc-for list="{{ bulbs }}" as="b" hint-placeholder-count="12">
+            <span style="position:absolute;left:{{ b.x }};top:{{ b.y }};width:5px;height:5px;border-radius:50%;background:oklch(0.88 0.12 80);box-shadow:0 0 10px 2px oklch(0.85 0.14 75 / .8);animation:glowL {{ b.d }}s ease-in-out infinite"></span>
+          </sc-for>
+        </div>
+        <div style="position:absolute;left:0;right:0;top:64px;text-align:center;font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,240,215,.85)">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:absolute;left:0;right:0;top:88px;text-align:center;font:italic 400 56px/1 'Instrument Serif',serif;color:#FFF6E6;text-shadow:0 2px 20px rgba(255,200,120,.35)">Navidad en Roma</div>
+      </div>
+      <div style="padding:6px 28px 26px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:2">
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, y como anochece sobre las 16:45, también los verás iluminados.</p>
+        <button style="height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+      <canvas ref="{{ cA }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
+    </div>
+  </div>
+
+  <div id="1b" style="display:flex;flex-direction:column;gap:14px">
+    <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">1b · Nevando sobre la tarjeta</span>
+    <div style="position:relative;width:390px;border-radius:30px;overflow:hidden;background:linear-gradient(180deg,#EEF3F7 0%,#FFFDF8 46%);box-shadow:0 30px 70px -30px rgba(40,25,5,.45)">
+      <canvas ref="{{ cB }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <div style="position:relative;padding:34px 28px 26px;display:flex;flex-direction:column;align-items:center;gap:18px">
+        <div style="font:500 10.5px 'Geist Mono',monospace;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;color:oklch(0.55 0.15 45);text-align:center">Hemos preparado tu viaje para estas fechas</div>
+        <div style="position:relative;width:128px;height:128px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff,#E3EBF2 70%);box-shadow:inset 0 0 0 1px rgba(28,34,48,.06),0 18px 40px -20px rgba(40,60,90,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.16em;color:oklch(0.55 0.15 45)">DIC</span>
+          <span style="font:400 54px/.9 'Instrument Serif',serif;color:#1C2230">24</span>
+          <span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">anochece 16:45</span>
+          <span style="position:absolute;right:-4px;top:6px;width:30px;height:30px;border-radius:50%;background:oklch(0.86 0.13 80);box-shadow:0 0 18px 4px oklch(0.86 0.13 80 / .55);display:flex;align-items:center;justify-content:center;color:#1C2230">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M4 7l16 10M20 7L4 17"></path></svg>
+          </span>
+        </div>
+        <div style="font:400 44px/1 'Instrument Serif',serif;text-align:center">Navidad en <em style="color:oklch(0.55 0.15 45)">Roma</em></div>
+        <p style="margin:0;text-align:center;font:400 15px/1.6 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">¡Vas a vivir Roma en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, y como anochece sobre las 16:45, también los verás iluminados.</p>
+        <button style="align-self:stretch;height:56px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 16px 'Geist';cursor:pointer">Entendido</button>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  cA=React.createRef();cB=React.createRef();cP=React.createRef();cV=React.createRef();cO=React.createRef();cI=React.createRef();
+  componentDidMount(){
+    const mk=(cv,opt)=>{if(!cv)return null;const r={width:1,height:1};const c=cv.getContext('2d');
+      const fit=()=>{const b=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;r.width=b.width;r.height=b.height;cv.width=b.width*dpr;cv.height=b.height*dpr;c.setTransform(dpr,0,0,dpr,0,0);};fit();
+      if(window.ResizeObserver){const ro=new ResizeObserver(fit);ro.observe(cv.parentElement);(this.ros=this.ros||[]).push(ro);}
+      document.fonts&&document.fonts.ready.then(fit);
+      const P=Array.from({length:opt.n},(_,i)=>({x:Math.random()*390,y:Math.random()*560,s:.6+Math.random()*2.4,v:.25+Math.random()*.7,p:Math.random()*6.28,r:Math.random()*6.28,vr:(Math.random()-.5)*.04,c:opt.cols?opt.cols[i%opt.cols.length]:opt.col}));
+      const up=opt.type==='mote';
+      return t=>{c.clearRect(0,0,r.width,r.height);P.forEach(q=>{if(up){q.y-=q.v*.5;q.x+=Math.sin(t/1800+q.p)*.25;if(q.y<-6){q.y=r.height+6;q.x=Math.random()*r.width;}}else{q.y+=q.v*(q.s/2+.4)*(opt.speed||1);q.x+=Math.sin(t/1400+q.p)*(opt.drift||.3);if(q.y>r.height+10){q.y=-10;q.x=Math.random()*r.width;}}q.r+=q.vr;
+        const fade=opt.fadeY?Math.max(0,Math.min(1,(opt.fadeY-q.y)/60+.15)):opt.textY?(q.y<opt.textY?1:.18):1;c.globalAlpha=(opt.type?.55+q.s/6:.35+q.s/4)*fade;c.fillStyle=q.c;c.save();c.translate(q.x,q.y);c.rotate(q.r);c.beginPath();
+        if(opt.type==='petal'){c.ellipse(0,0,q.s*2.2,q.s*1.3,0,0,6.28);}
+        else if(opt.type==='leaf'){const L=q.s*3.4;c.moveTo(-L,0);c.quadraticCurveTo(0,-L*.7,L,0);c.quadraticCurveTo(0,L*.7,-L,0);}
+        else if(opt.type==='mote'){c.shadowColor=q.c;c.shadowBlur=8;c.arc(0,0,q.s*.9,0,6.28);}
+        else c.arc(0,0,q.s,0,6.28);
+        c.fill();c.restore();});};};
+    const a=mk(this.cA.current,{n:90,col:'#ffffff',fadeY:330});
+    const b=mk(this.cB.current,{n:70,col:'rgb(150,172,196)',textY:250});
+    const pp=mk(this.cP.current,{n:34,type:'petal',cols:['#F6B8C8','#FAD3DC','#FFFFFF','#EFA3B7'],fadeY:330,speed:.7,drift:.7});
+    const vv=mk(this.cV.current,{n:40,type:'mote',cols:['#FFF4C8','#FFE08A','#FFFFFF'],fadeY:330});
+    const oo=mk(this.cO.current,{n:26,type:'leaf',cols:['#D9772F','#B8451F','#E6A93A','#8E3A1C'],fadeY:330,speed:.8,drift:.9});
+    const ii=mk(this.cI.current,{n:110,col:'#ffffff',fadeY:330,speed:.8});
+    const loop=t=>{a&&a(t);b&&b(t);pp&&pp(t);vv&&vv(t);oo&&oo(t);ii&&ii(t);this.raf=requestAnimationFrame(loop);};this.raf=requestAnimationFrame(loop);}
+  componentWillUnmount(){cancelAnimationFrame(this.raf);(this.ros||[]).forEach(r=>r.disconnect());}
+  renderVals(){
+    const windows=Array.from({length:14},(_,i)=>({mb:`${[4,18,8,28,12,2,34,22,6,16,26,10,3,14][i]}px`,d:2+(i*7%5)*.6}));
+    const bulbs=Array.from({length:12},(_,i)=>{const x=i/11;const y=4+Math.sin(x*Math.PI*1.9+.3)*10+10*(1-Math.abs(x-.5)*2)*.6;return{x:`${x*96+2}%`,y:`${y}px`,d:1.4+(i*5%4)*.5};});
+    return{cA:this.cA,cB:this.cB,cP:this.cP,cV:this.cV,cO:this.cO,cI:this.cI,windows,bulbs};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 419 s. **Total: 21**.
+6180 viajes (todas las fechas de 2027), en 427 s. **Total: 21**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
