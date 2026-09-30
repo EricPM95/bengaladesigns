@@ -36,6 +36,7 @@ const TIPOS = {
   bus_nochevieja: 'Fin de Año: un bus después de las 21:00 del 31 de diciembre',
   ano_nuevo_temprano: 'Fin de Año: un 1 de enero que empieza antes de las 9:30 tras la Nochevieja',
   tras_ultima_entrada: 'Fin de Año: una visita por dentro que empieza después de la última entrada (31 de diciembre y 1 de enero)',
+  tour_hora: 'Free Tour a una hora a la que ese día no sale (el 24, 25 y 31 de diciembre y el 1 y 6 de enero, solo a las 12:00)',
   promete_fuegos: 'Fin de Año: un texto que habla de fuegos, conciertos o desfiles (lo que pasa una vez al año no sale)',
   error: 'El motor falla',
 }
@@ -89,6 +90,11 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
     const iso = addDays(fecha, index)
     const where = `${label}, día ${n} (${iso.slice(5)})`
     const dayStops = day.stops.filter((stop) => !stop.is_night_experience)
+    // El Free Tour, a una de las horas a las que sale ese día.
+    for (const rule of D.default_free_tour?.disponibilidad?.horas_especiales ?? []) {
+      if (!rule.fechas.includes(iso.slice(5))) continue
+      for (const stop of day.stops) if (stop.is_free_tour && !rule.horas.includes(stop.suggested_time)) add('tour_hora', where, `${stop.suggested_time} (sale a las ${rule.horas.join(', ')})`)
+    }
     // Fin de Año: el 31 y el 1.
     const mmdd = iso.slice(5)
     if (mmdd === '12-31' || mmdd === '01-01') {

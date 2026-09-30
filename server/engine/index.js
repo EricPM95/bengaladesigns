@@ -175,10 +175,13 @@ export async function buildDayBlockV3(
   // horas). 1,5 días llegará con los vuelos, que son los que dicen cuántas franjas quedan.
   if (isV3 && destData.short_trips?.blocks && Math.max(1, totalDays - 1) === 1) {
     const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
+    // En las fechas en que el tour solo sale a una hora que parte el día (`disponibilidad.horas_especiales`: a las 12:00
+    // el 24, 25 y 31 de diciembre y el 1 y 6 de enero), un viaje de un día no lo lleva: el día va sin tour y lo dice.
+    const tourOnlyAt = hasFreeTour && dateRangeStartIso ? (destData.default_free_tour?.disponibilidad?.horas_especiales ?? []).find((rule) => rule.fechas.includes(String(dateRangeStartIso).slice(5))) ?? null : null
     const trip = planShortTrip({
       destData,
       slots: shortTripSlots('1_dia'),
-      hasFreeTour,
+      hasFreeTour: hasFreeTour && !tourOnlyAt,
       poolNames: mustIncludePlaces ?? [],
       experiencesPositive: experiencesPositive ?? [],
       travel,
@@ -188,6 +191,10 @@ export async function buildDayBlockV3(
     })
     const tripDay = trip.days.find((day) => day.dayNumber === dayNumber)
     if (!tripDay) return null
+    if (tourOnlyAt) {
+      tripDay.noTour = true
+      tripDay.noTourText = tourOnlyAt.aviso_un_dia ?? null
+    }
     const day = buildCityDayV3(destData, trip, tripDay, { ...options })
     day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
     day.night_hint = tripDay.nightHint ?? null
@@ -542,7 +549,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   }
   // Un día sin Free Tour (festivo): el viajero ve el aviso, con el texto del destino.
   if (tripDay.noTour) {
-    const text = destData.default_free_tour?.disponibilidad?.aviso ?? 'Hoy no hay Free Tour: hemos dejado el día sin él.'
+    const text = tripDay.noTourText ?? destData.default_free_tour?.disponibilidad?.aviso ?? 'Hoy no hay Free Tour: hemos dejado el día sin él.'
     day.day_notice = [day.day_notice, text].filter(Boolean).join(' ')
     day.no_free_tour = true
   }

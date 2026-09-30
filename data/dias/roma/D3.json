@@ -9,6 +9,16 @@
   "no_en": [
     {
       "dia_semana": "domingo"
+    },
+    {
+      "fecha": "12-24",
+      "evitar": true,
+      "nota": "El tour solo sale a las 12:00 y los Museos cierran pronto: mejor otro día."
+    },
+    {
+      "fecha": "12-31",
+      "evitar": true,
+      "nota": "El tour solo sale a las 12:00 y los Museos cierran pronto: mejor otro día."
     }
   ],
   "barrio_cena": "vaticano",
@@ -201,8 +211,8 @@
       }
     },
     "fecha:12-24": {
-      "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (misa de la noche con el Papa a las 22:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
-      "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
+      "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
+      "nombre": "Los Museos Vaticanos, Free Tour y el centro",
       "barrio_cena": "centro_historico",
       "noche": "fuentes",
       "manana": {
@@ -211,7 +221,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
-            "min": 180,
+            "min": 145,
             "modo": "dentro",
             "entrada": true,
             "turno": true
@@ -222,53 +232,50 @@
           },
           {
             "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 150,
+            "traslado": {
+              "como": "el metro A (de Ottaviano a Spagna)",
+              "min": 25
+            }
           }
         ],
         "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "Ristorante Arlù"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
         }
       },
       "tarde.*": {
-        "empieza": "14:30",
         "paradas": [
           {
             "lugar": "Panteón",
             "min": 30,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera",
-            "traslado": {
-              "como": "el bus 40 (desde el Borgo hasta Largo di Torre Argentina) o un taxi",
-              "min": 20
-            }
+            "si_cerrado": "fuera"
           },
           {
-            "lugar": "Fontana de Trevi",
+            "lugar": "Iglesia de San Luigi dei Francesi",
             "min": 20,
-            "tipo": "opcional"
+            "modo": "dentro",
+            "si_cerrado": "fuera"
           },
           {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "16:00",
-            "min": 150,
-            "entrada": true
+            "lugar": "Campo de' Fiori",
+            "min": 30
           }
         ],
-        "cena": {
-          "restaurante": "Pizzeria Da Baffetto",
-          "alternativa": "Dar Filettaro a Santa Barbara",
-          "hora": "19:30"
-        }
+        "empieza": "15:45"
       }
     },
     "fecha:12-31": {
-      "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (Te Deum con el Papa a las 17:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
-      "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
+      "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
+      "nombre": "Los Museos Vaticanos, Free Tour y el centro",
       "barrio_cena": "centro_historico",
       "noche": "fuentes",
       "manana": {
@@ -277,7 +284,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
-            "min": 180,
+            "min": 145,
             "modo": "dentro",
             "entrada": true,
             "turno": true
@@ -288,49 +295,63 @@
           },
           {
             "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "12:00",
+            "min": 150,
+            "traslado": {
+              "como": "el metro A (de Ottaviano a Spagna)",
+              "min": 25
+            }
           }
         ],
         "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "Ristorante Arlù"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
         }
       },
       "tarde.*": {
-        "empieza": "14:30",
         "paradas": [
           {
             "lugar": "Panteón",
             "min": 30,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera",
-            "traslado": {
-              "como": "el bus 40 (desde el Borgo hasta Largo di Torre Argentina) o un taxi",
-              "min": 20
-            }
+            "si_cerrado": "fuera"
           },
           {
-            "lugar": "Fontana de Trevi",
+            "lugar": "Iglesia de San Luigi dei Francesi",
             "min": 20,
-            "tipo": "opcional"
+            "modo": "dentro",
+            "si_cerrado": "fuera"
           },
           {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "16:00",
-            "min": 150,
-            "entrada": true
+            "lugar": "Campo de' Fiori",
+            "min": 30
           }
         ],
-        "cena": {
-          "restaurante": "Pizzeria Da Baffetto",
-          "alternativa": "Dar Filettaro a Santa Barbara",
-          "hora": "19:30"
-        }
+        "empieza": "15:45"
       }
+    },
+    "fecha:12-25|01-01|01-06": {
+      "_nota": "Navidad, Año Nuevo y Reyes: el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30) y los Museos Vaticanos cierran (la tarde es la de «cerrado»: el Castillo, la Plaza y la Basílica). La mañana empieza tarde, por Trevi; se come al acabar el tour y la tarde empieza a las 15:45.",
+      "manana": {
+        "ajustar": {
+          "Fontana de Trevi": {
+            "hora": "10:30"
+          },
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
+      },
+      "tarde.*": {
+        "empieza": "15:45"
+      },
+      "nombre": "Trevi, Free Tour y San Pedro por la tarde"
     }
   },
   "experiencias": {
