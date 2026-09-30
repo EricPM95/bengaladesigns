@@ -242,8 +242,7 @@ export interface MockStopDetail {
   /** Ver Stop.seasonLine en types.ts. */
   seasonLine?: string | null
   seasonLineIcon?: string | null
-  /** Ver Stop.seasonKind, Stop.freeAccess, Stop.inFreeTour y Stop.noAiText en types.ts. */
-  seasonKind?: string | null
+  /** Ver Stop.freeAccess, Stop.inFreeTour y Stop.noAiText en types.ts. */
   freeAccess?: boolean
   inFreeTour?: { name: string; durationMinutes: number | null; meetingPoint: string | null; url: string | null } | null
   noAiText?: boolean
@@ -494,7 +493,6 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     seasonNotice: stop.seasonNotice ?? null,
     seasonLine: stop.seasonLine ?? null,
     seasonLineIcon: stop.seasonLineIcon ?? null,
-    seasonKind: stop.seasonKind ?? null,
     freeAccess: stop.freeAccess,
     inFreeTour: stop.inFreeTour ?? null,
     noAiText: stop.noAiText,
@@ -585,7 +583,6 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       seasonNotice: detail.seasonNotice ?? null,
       seasonLine: detail.seasonLine ?? null,
       seasonLineIcon: detail.seasonLineIcon ?? null,
-      seasonKind: detail.seasonKind ?? null,
       freeAccess: detail.freeAccess,
       inFreeTour: detail.inFreeTour ?? null,
       noAiText: detail.noAiText,

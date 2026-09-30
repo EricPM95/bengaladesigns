@@ -70,7 +70,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     )
   }
 
-  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView, seasonKind: stop.seasonKind })
+  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
 

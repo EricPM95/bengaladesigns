@@ -482,7 +482,7 @@ export function planWrittenTrip(args) {
         ? stop
         : layer.notice
         ? { ...stop, aviso: layer.notice }
-        : { ...stop, titulo: layer.place.titulo_parada ?? layer.place.name, texto_titulo: layer.place.texto_parada ?? null, ...(layer.place.aspecto ? { aspecto: layer.place.aspecto } : {}), min: Math.max(stop.min ?? 0, layer.place.duration_minutes ?? 0) || stop.min, capa: layer.place.name, tipo: stop.tipo === 'opcional' ? 'normal' : stop.tipo }))
+        : { ...stop, titulo: layer.place.titulo_parada ?? layer.place.name, texto_titulo: layer.place.texto_parada ?? null, min: Math.max(stop.min ?? 0, layer.place.duration_minutes ?? 0) || stop.min, capa: layer.place.name, tipo: stop.tipo === 'opcional' ? 'normal' : stop.tipo }))
       draft.manana = apply(draft.manana)
       draft.tarde = apply(draft.tarde)
       if (!draft.applied.includes(`capa:${layer.place.name}`)) draft.applied.push(`capa:${layer.place.name}`)
@@ -814,8 +814,6 @@ export function planWrittenTrip(args) {
         // El nombre con el que sale (`titulo`: «Via Margutta y Via del Babuino»), siempre.
         ...(stop.titulo ? { stretchTitle: stop.titulo, stretchWhy: stop.texto_titulo ?? null, stretchBase: -100000 } : {}),
         ...(original.elastica != null ? { elastic: original.elastica } : {}),
-        // (El aspecto de la tarjeta, el de Navidad: el de la capa que lleva la parada o el de su propio lugar.)
-        ...(stop.aspecto ?? source.aspecto ? { aspect: stop.aspecto ?? source.aspecto } : {}),
         // (Opcional en lo escrito: no cuenta como «plan» en las cifras de la pantalla de ritmo, paceStats.mjs.)
         ...(original.tipo === 'opcional' ? { optional: true } : {}),
         // `revisita`: si el viaje ya pasó por aquí otro día, sale como revisita con su texto ({dia}: el día en que se vio).

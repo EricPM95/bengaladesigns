@@ -113,8 +113,7 @@ interface GeneratedStop {
   season_notice?: string | null
   /** La línea de temporada de la ficha (Navidad): { text, icon } — Stop.seasonLine. */
   season_line?: { id?: string; text: string; icon?: string } | null
-  /** Stop.seasonKind, Stop.freeAccess, Stop.inFreeTour y Stop.noAiText. */
-  season_kind?: string | null
+  /** Stop.freeAccess, Stop.inFreeTour y Stop.noAiText. */
   free_access?: boolean
   in_free_tour?: { name: string; duration_minutes?: number | null; meeting_point?: string | null; url?: string | null } | null
   no_ai_text?: boolean
@@ -435,7 +434,6 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
     ...(generated.season_line?.text ? { seasonLine: generated.season_line.text, ...(generated.season_line.icon ? { seasonLineIcon: generated.season_line.icon } : {}) } : {}),
-    ...(generated.season_kind ? { seasonKind: generated.season_kind } : {}),
     ...(generated.free_access ? { freeAccess: true } : {}),
     ...(generated.in_free_tour ? { inFreeTour: { name: generated.in_free_tour.name, durationMinutes: generated.in_free_tour.duration_minutes ?? null, meetingPoint: generated.in_free_tour.meeting_point ?? null, url: generated.in_free_tour.url ?? null } } : {}),
     ...(generated.no_ai_text ? { noAiText: true } : {}),

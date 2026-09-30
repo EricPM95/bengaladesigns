@@ -377,9 +377,6 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)
       if (source.sin_texto_ia) stop.no_ai_text = true
     }
-    // El aspecto de la tarjeta (el de Navidad): el de la capa que lleva la parada o el de su lugar.
-    const aspect = unitById.get(visit.unitId)?.aspect ?? source?.aspecto ?? null
-    if (aspect) stop.season_kind = aspect
     if (source?.available) {
       const hours = tripDay.hours ?? {}
       const fit = seasonFit(source.available, { hasDates: Boolean(hours.weekday), month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) - 1 : null }, hours.dateIso ?? null, true)

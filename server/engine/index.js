@@ -140,7 +140,6 @@ function applyExperienceLayers(destData, day, experiences, calendar, dateIso) {
     if (fit.notice) stop.notice = fit.notice
     else {
       stop.display_title = layer.titulo_parada ?? layer.name
-      if (layer.aspecto) stop.season_kind = layer.aspecto
       if (layer.texto_parada) stop.why = layer.texto_parada
     }
   }

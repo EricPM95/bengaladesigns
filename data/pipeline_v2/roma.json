@@ -1470,8 +1470,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones.",
       "ticket_info": [
-        "Gratis.",
-        "La subida a la cúpula se paga aparte."
+        "La entrada a la Basílica es libre.",
+        "Solo se paga la subida a la cúpula."
       ],
       "by_period": [
         {
@@ -1569,6 +1569,10 @@
           "comprobado": "2026-09-30",
           "revisar": "noviembre de 2026, cuando se publique el calendario 2026-27"
         }
+      ],
+      "_ticket_info_antes": [
+        "Gratis.",
+        "La subida a la cúpula se paga aparte."
       ]
     },
     {
@@ -2087,12 +2091,16 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00.",
       "ticket_info": [
-        "Gratis.",
-        "La terraza panorámica con ascensor es de pago, de 09:30 a 19:30 (última subida 19:00)."
+        "La entrada al monumento es libre.",
+        "Solo es de pago la terraza panorámica con ascensor, de 09:30 a 19:30 (última subida 19:00)."
       ],
       "minutos_fuera": 15,
       "por_fuera": "La gran mole de mármol blanco que preside Plaza Venecia. Al pie está la tumba del Soldado Desconocido, con su guardia de honor siempre de pie.",
-      "lo_mejor_dentro": "subir sus escaleras y asomarte a Roma desde arriba"
+      "lo_mejor_dentro": "subir sus escaleras y asomarte a Roma desde arriba",
+      "_ticket_info_antes": [
+        "Gratis.",
+        "La terraza panorámica con ascensor es de pago, de 09:30 a 19:30 (última subida 19:00)."
+      ]
     },
     {
       "name": "Puente Sant'Angelo",
@@ -3079,10 +3087,14 @@
       "reservation": "obligatoria",
       "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde.",
       "ticket_info": [
+        "La entrada a la basílica es libre.",
+        "Solo son de pago las excavaciones, con reserva online (plazas limitadas)."
+      ],
+      "comprobado": "2026-09-28",
+      "_ticket_info_antes": [
         "La basílica es gratis.",
         "Las excavaciones son de pago y con reserva online (plazas limitadas)."
-      ],
-      "comprobado": "2026-09-28"
+      ]
     },
     {
       "name": "Iglesia de San Pietro in Vincoli",
@@ -3503,12 +3515,16 @@
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 19:00 (última entrada 18:30). Se puede visitar durante las misas, con respeto. El museo tiene horario aparte. Puede haber cola para visitar la tumba del papa Francisco.",
       "ticket_info": [
-        "Gratis.",
-        "El museo y la loggia de los mosaicos se pagan aparte."
+        "La entrada a la basílica es libre.",
+        "Solo se pagan el museo y la loggia de los mosaicos."
       ],
       "minutos_fuera": 10,
       "por_fuera": "Fíjate en la fachada, con su logia de mosaicos, y en el campanario: es el más alto de Roma. Si otro día pasas cerca, entra: es gratis y sus mosaicos merecen la pena.",
-      "lo_mejor_dentro": "ver sus mosaicos del siglo V"
+      "lo_mejor_dentro": "ver sus mosaicos del siglo V",
+      "_ticket_info_antes": [
+        "Gratis.",
+        "El museo y la loggia de los mosaicos se pagan aparte."
+      ]
     },
     {
       "name": "Columna de Trajano",
@@ -3827,7 +3843,9 @@
         "bridge",
         "sisto"
       ],
-      "is_free_access": true
+      "is_free_access": true,
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Plaza Trilussa",
@@ -4379,6 +4397,10 @@
         "Trastevere"
       ],
       "ticket_info": [
+        "La entrada a la iglesia es libre.",
+        "Solo se pagan la cripta y el fresco de Cavallini (el fresco, solo por la mañana)."
+      ],
+      "_ticket_info_antes": [
         "La iglesia es gratis.",
         "La cripta y el fresco de Cavallini se pagan aparte (el fresco, solo por la mañana)."
       ]
@@ -4594,7 +4616,9 @@
         "Plaza de España"
       ],
       "comprobado": "2026-09-28",
-      "fuente_horario": "trinitadeimonti.net/it/orari (2026-09-28)"
+      "fuente_horario": "trinitadeimonti.net/it/orari (2026-09-28)",
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Via Veneto",
@@ -4622,7 +4646,9 @@
       ],
       "neighbor_of": [
         "Porta Pinciana"
-      ]
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Via del Babuino",
@@ -4651,7 +4677,9 @@
       "neighbor_of": [
         "Plaza de España",
         "Piazza del Popolo"
-      ]
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Via Margutta",
@@ -4679,7 +4707,9 @@
       ],
       "neighbor_of": [
         "Via del Babuino"
-      ]
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Porta Pinciana",
@@ -4704,7 +4734,9 @@
       "search_en": "Porta Pinciana Rome",
       "search_en_keywords": [
         "porta pinciana"
-      ]
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Jardines del Pincio",
@@ -4733,7 +4765,9 @@
       ],
       "neighbor_of": [
         "Terraza del Pincio"
-      ]
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Mercadillo de Navidad de Piazza Navona",
@@ -4769,8 +4803,7 @@
       "verificar": "Fechas y horas de la temporada 2025-26: revisar en noviembre.",
       "texto_free_tour": "Estás en pleno mercadillo de Navidad: date una vuelta entre los puestos antes de seguir.",
       "sin_texto_ia": true,
-      "_nota_ficha": "sin_texto_ia: la ficha de esta parada lleva solo nuestro texto, sin el que escribe la IA bajo demanda (traía datos sin verificar). aspecto: la tarjeta sale con el icono y el color de Navidad.",
-      "aspecto": "navidad"
+      "_nota_ficha": "sin_texto_ia: la ficha de esta parada lleva solo nuestro texto, sin el que escribe la IA bajo demanda (traía datos sin verificar)."
     },
     {
       "name": "100 Presepi in Vaticano",
@@ -4799,7 +4832,8 @@
       "titulo_parada": "Plaza de San Pedro y los 100 Presepi",
       "texto_parada": "Bajo la columnata de Bernini están los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos y no hay que desviarse.",
       "_nota": "Una capa sobre la Plaza de San Pedro, no una parada más, y sin tiempo de más: los 100 Presepi se ven en la propia visita a la plaza, para que no se caiga nada del día del Vaticano. Fechas estrictas: antes del 8 de diciembre no sale.",
-      "aspecto": "navidad"
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Santo Bambino de Aracoeli",
@@ -4829,7 +4863,8 @@
         "Plaza del Campidoglio",
         "Museos Capitolinos"
       ],
-      "aspecto": "navidad"
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     },
     {
       "name": "Luces de Navidad del Tridente",
@@ -4860,7 +4895,8 @@
       "neighbor_of": [
         "Via Condotti"
       ],
-      "aspecto": "navidad"
+      "sin_texto_ia": true,
+      "_nota_ficha": "sin_texto_ia (decisión del usuario, 2026-10-01): sin ficha escrita a mano, la ficha sale solo con nuestro texto de la ruta hasta que el usuario pase el suyo."
     }
   ],
   "groups": {

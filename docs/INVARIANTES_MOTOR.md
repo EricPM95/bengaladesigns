@@ -2271,6 +2271,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Un texto que dice «antes de cenar» va en una parada que acaba antes de la cena**, en todos los viajes.
     - **La pestaña «Entradas» nunca sale en un sitio de acceso libre**, salvo que esté incluido en un Free Tour, una visita
       guiada o una actividad: entonces sí, y en ella va ese tour o esa visita. Un sitio libre con una parte de pago (la
-      cúpula, la cripta, las excavaciones) la mantiene para contarlo. Las nocturnas no la llevan.
-    - **`aspecto: "navidad"`** en un lugar de temporada (o en la capa que cambia una parada): en sus fechas, la tarjeta
-      lleva el icono de árbol de línea fina y el color navideño en la banda. De noche manda el aspecto de noche.
+      cúpula, la cripta, las excavaciones) la mantiene, y en ella dice claro que la entrada al sitio es libre y que solo
+      se paga esa parte. Las nocturnas no la llevan.
+    - Las paradas de Navidad llevan el aspecto normal (el aspecto propio se diseñará más adelante; decisión del usuario,
+      2026-10-01). Un lugar sin ficha escrita a mano lleva `sin_texto_ia` hasta que tenga su texto.

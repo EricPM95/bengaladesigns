@@ -307,8 +307,6 @@ export interface Stop {
   seasonLine?: string | null
   /** El icono de esa línea: «navidad» (por defecto) o «religioso» (el Ángelus de los domingos). */
   seasonLineIcon?: string | null
-  /** El aspecto de la tarjeta en sus fechas: «navidad» (icono de árbol y color navideño). */
-  seasonKind?: string | null
   /** Sitio de acceso libre: sin pestaña «Entradas», salvo que vaya en un Free Tour (`inFreeTour`). */
   freeAccess?: boolean
   /** El Free Tour que recorre este sitio: va en su pestaña «Entradas». */
