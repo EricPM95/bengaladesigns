@@ -2259,3 +2259,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - **Un festivo que cae en el día de cierre semanal se queda cerrado hasta que el sitio publique su apertura de ese
       año**, con `verificar` y fecha de revisión, aunque otros años abriera (el Castillo y la Galería Borghese el Lunes de
       Pascua). Lo mismo si dos fuentes oficiales no coinciden (el Panteón el 15 de agosto).
+
+409. **Lo que se ve de una parada** (PARA_CODE_NAVONA, 2026-10-01).
+    - **Un nombre interno nunca se ve en pantalla**: ninguna etiqueta ni título con guion bajo («mercadillo_navideno» es
+      «Mercadillo de Navidad»). La prueba de Navidad lo cuenta.
+    - **Las etiquetas solo dicen qué es el sitio** (Plaza, Iglesia, Mercadillo de Navidad…). «Revisita» y «Opcional» se
+      quedan; «Por tu experiencia» no sale en ninguna parada.
+    - **El nombre de una parada es el mismo en la tarjeta y en la ficha.** Y va **primero el lugar y luego lo que tiene
+      que ver con la fecha**: «Piazza Navona y su mercadillo navideño», «Plaza de San Pedro y los 100 Presepi».
+    - **`sin_texto_ia`** en un lugar: su ficha lleva solo nuestro texto, sin el que escribe la IA bajo demanda.
+    - **Un texto que dice «antes de cenar» va en una parada que acaba antes de la cena**, en todos los viajes.
+    - **La pestaña «Entradas» nunca sale en un sitio de acceso libre**, salvo que esté incluido en un Free Tour, una visita
+      guiada o una actividad: entonces sí, y en ella va ese tour o esa visita. Un sitio libre con una parte de pago (la
+      cúpula, la cripta, las excavaciones) la mantiene para contarlo. Las nocturnas no la llevan.
+    - **`aspecto: "navidad"`** en un lugar de temporada (o en la capa que cambia una parada): en sus fechas, la tarjeta
+      lleva el icono de árbol de línea fina y el color navideño en la banda. De noche manda el aspecto de noche.
