@@ -99,6 +99,16 @@ for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
 const anthropic = new Anthropic()
 const app = express()
 app.use(express.json())
+// ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
+//
+// Objetivo: poder responder "¿cuántas llamadas reales dispara generar una ruta de Roma (pipeline
+// v2) sin tocar ninguna parada individual, y desde qué endpoint Express exactamente?" sin tener que
+// instrumentar cada uno de los ~15 puntos de llamada a mano (y sin arriesgarse a que alguno futuro
+// se quede sin loguear). Envuelve el cliente UNA sola vez aquí — cualquier `anthropic.messages.*`
+// que se llame desde cualquier endpoint queda cubierto automáticamente, con el nombre del endpoint
+// Express (req.path) que lo disparó, gracias a AsyncLocalStorage (propaga correctamente a través de
+// awaits/promesas, a diferencia de una variable global compartida).
+const requestContext = new AsyncLocalStorage()
 app.use((req, _res, next) => requestContext.run(req.path, next))
 
 let apiCallCounter = 0
