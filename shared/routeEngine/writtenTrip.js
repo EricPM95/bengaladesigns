@@ -198,12 +198,23 @@ export function planWrittenTrip(args) {
   // ── 2. En qué orden (los mismos costes que el motor de días curados) ─────────────────────────
   const stopsOf = (w) => [...(w.manana?.paradas ?? []), ...VERSIONS.flatMap((v) => (Array.isArray(w.tarde?.[v]?.paradas) ? w.tarde[v].paradas : []))]
   const carries = (w, name) => stopsOf(w).some((stop) => stop.lugar === name && stop.modo !== 'camino')
-  const violates = (w, day) => (w.no_en ?? []).some((rule) => {
+  /**
+   * ¿Hay Free Tour ese día? Las fechas sin tour viven en `default_free_tour.disponibilidad.sin_tour` (MM-DD, "easter" o
+   * fecha completa), cada una con su fuente y su fecha de comprobación. Sin dato, hay tour.
+   */
+  const noTourOn = (day) => {
+    const iso = realDateIso(day)
+    if (!hasFreeTour || !iso) return false
+    return (tour?.disponibilidad?.sin_tour ?? []).some((entry) => matchesDateToken(typeof entry === 'string' ? entry : entry.fecha, iso))
+  }
+  const carriesTour = (w) => Boolean(tour) && JSON.stringify([w.manana, w.tarde]).includes(`"${tour.name}"`)
+  const violatesRules = (w, day) => (w.no_en ?? []).some((rule) => {
     if (rule.evitar) return false
     if (rule.fecha) return Boolean(realDateIso(day)) && realDateIso(day).slice(5) === rule.fecha
     if (rule.dia_semana) return Boolean(hoursOf(day).weekday) && norm(hoursOf(day).weekday) === norm(rule.dia_semana) && (!rule.si_lleva || carries(w, rule.si_lleva))
     return false
   })
+  const violates = (w, day) => violatesRules(w, day) || (carriesTour(w) && noTourOn(day))
   const avoids = (w, day) => (w.no_en ?? []).some((rule) => rule.evitar && rule.dia_semana && Boolean(hoursOf(day).weekday) && norm(hoursOf(day).weekday) === norm(rule.dia_semana) && (!rule.invierno || isWinter(day)))
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
@@ -432,6 +443,13 @@ export function planWrittenTrip(args) {
     })
     draft.manana = inSeason(draft.manana.filter(keep))
     draft.tarde = inSeason(draft.tarde.filter(keep))
+    // Un día sin Free Tour (festivo): el tour no se pone, y el viajero ve el aviso.
+    if (tour && noTourOn(day) && [...draft.manana, ...draft.tarde].some((stop) => stop.lugar === tour.name)) {
+      draft.manana = draft.manana.filter((stop) => stop.lugar !== tour.name)
+      draft.tarde = draft.tarde.filter((stop) => stop.lugar !== tour.name)
+      draft.noTour = true
+      draft.applied.push('sin_free_tour')
+    }
     // Las capas de una experiencia elegida (PROMPT_ROMA_NAVIDAD 2): un lugar con `capa_de` no es una parada más, cambia la
     // parada que ya existe en ese sitio (el mercadillo de Navidad → «Piazza Navona y su mercadillo de Navidad», con más
     // tiempo y su texto). Solo en sus fechas, y una vez por viaje: en el primer día que lleva esa parada.
@@ -1101,6 +1119,7 @@ export function planWrittenTrip(args) {
       nightNames: [],
       blocks: null,
       curatedDay: { id: draft.id, nombre: draft.nombre, variantes: draft.applied, noche: draft.noche, version: draft.version },
+      ...(draft.noTour ? { noTour: true } : {}),
       untypedAfternoon: false,
       reorderedBlocks: [],
       closedAnchors: [],

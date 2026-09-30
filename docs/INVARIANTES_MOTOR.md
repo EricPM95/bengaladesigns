@@ -2205,3 +2205,10 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     (los tours tienen salida de tarde). Con mercadillos, el tour acaba en Piazza Navona y allí va el mercadillo.
     - General: cuando un imprescindible solo se puede ver una mañana del viaje, esa mañana es suya y lo que tenía hora
       fija se mueve a otra hora u otro día.
+
+402. **Free Tour en festivos** (2026-09-30): los días sin tour viven en `default_free_tour.disponibilidad.sin_tour` (fecha,
+    fuente y fecha de comprobación). El día que lleva el tour no cae en una fecha sin tour si el viaje lo permite; si no
+    hay más remedio, el tour no se pone y el viajero ve el aviso del destino. Sin dato comprobado en la web de la empresa,
+    no se quita ningún tour (regla 395: nada se da por cerrado sin fuente).
+    - **Una parada escrita puede depender del mes** (`meses` / `no_meses`, 1-12), además de la hora del sol: el descanso
+      largo de después de comer es cosa de junio a agosto.

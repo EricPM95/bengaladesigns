@@ -543,6 +543,12 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       if (month !== null && (destData.destination_config?.context_banners?.meses_invierno ?? []).includes(month)) day.context_banner = null
     }
   }
+  // Un día sin Free Tour (festivo): el viajero ve el aviso, con el texto del destino.
+  if (tripDay.noTour) {
+    const text = destData.default_free_tour?.disponibilidad?.aviso ?? 'Hoy no hay Free Tour: hemos dejado el día sin él.'
+    day.pace_notice = [day.pace_notice, text].filter(Boolean).join(' ')
+    day.no_free_tour = true
+  }
   // Las líneas de temporada de las fichas (Navidad): solo con fechas reales, y solo donde la ruta ya pasa.
   // (Una vez por viaje: las que ya lleva un día anterior, por donde pasa de día, no se repiten.)
   if (tripDay.hours?.weekday && tripDay.hours?.dateIso) {
