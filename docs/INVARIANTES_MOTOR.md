@@ -2247,3 +2247,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       de esa fecha, con la ruta recolocada alrededor, y la prueba cuenta cualquier tour a otra hora.
     - El día del tour evita esas fechas si el viaje tiene otro día para él (`no_en` con `fecha` y `evitar`).
     - **En un viaje de un día**, un tour que solo sale a mediodía parte la ruta en dos: el día va sin tour y lo dice.
+
+408. **Dos días se reparten algo entre los dos** (2026-10-01). Una variante de fecha puede depender de dónde cae otro día
+    del viaje: `fecha:12-24&D1-FT@12-25` vale el 24 de diciembre solo si el día D1-FT cae el 25. Cada día lleva su mitad
+    escrita. Las que dependen de otro día se aplican después de las de la fecha sola: son más concretas.
+    - En los viajes de 2 días 24-25 y 31-1 con Free Tour, el Vaticano entero va el 24 o el 31 (con la Roma Antigua por la
+      tarde) y el tour pasa al 25 o al 1, a las 12:00: así se ven por dentro la Basílica, el Coliseo y el Foro.
+    - **La comida dura 45 min como mínimo en la ruta que ve el viajero, siempre.** La prueba de las 365 fechas lo cuenta
+      (`comida_menos_45`): 0.
+    - `si_experiencia` admite `o_si_pool`: la parada va también si el viajero marcó ese lugar en «Elige lugares».
+    - **Un festivo que cae en el día de cierre semanal se queda cerrado hasta que el sitio publique su apertura de ese
+      año**, con `verificar` y fecha de revisión, aunque otros años abriera (el Castillo y la Galería Borghese el Lunes de
+      Pascua). Lo mismo si dos fuentes oficiales no coinciden (el Panteón el 15 de agosto).

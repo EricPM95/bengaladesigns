@@ -500,14 +500,13 @@ Excursión de día completo. Preseleccionada: **Excursión a Pompeya y Sorrento*
 | 17:25 | Plaza Venecia | 10 min | Por el camino | 14 min andando | Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini. |
 | 17:40 | Altar de la Patria | 35 min | Parada · por dentro | 5 min andando | Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies. |
 | 18:25 | Roma iluminada desde el Campidoglio | 15 min | 🌙 Noche | 8 min andando | Rodea el Ayuntamiento hasta el mirador de detrás: el Foro iluminado a tus pies y casi nadie alrededor. |
-| 18:40 | Museos Capitolinos | 15 min | Por fuera (A esta hora ya ha cerrado) | 1 min andando | Los museos públicos más antiguos del mundo, en la plaza de Miguel Ángel. Dentro está la loba que amamanta a Rómulo y Remo, el símbolo de Roma, y la estatua original de Marco Aurelio a caballo. |
-| 19:00 | Largo di Torre Argentina | 15 min | Parada | 8 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
-| 19:20 | Iglesia del Gesù | 10 min | Por fuera (A esta hora ya ha cerrado) | 5 min andando | La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco. |
-| 19:40 | Barrio Judío | 30 min | Parada | 8 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
-| 20:15 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
-| 20:30 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
-| 21:15 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
-| 23:00 | Fontana de Trevi (noche) | 45 min | 🌙 Noche |  | paseo nocturno «La Roma de las fuentes» · A esta hora la Fontana de Trevi es otra: menos gente, el agua iluminada y un rumor que tapa la ciudad. Tira la moneda de espaldas, que dicen que así vuelves. Y después de las 22:00 puedes bajar junto al agua sin pagar la tasa de 2 € que se cobra de día. |
+| 18:40 | Museos Capitolinos | 55 min | Parada · por dentro | 1 min andando | Los museos públicos más antiguos del mundo, en la plaza de Miguel Ángel. Dentro está la loba que amamanta a Rómulo y Remo, el símbolo de Roma, y la estatua original de Marco Aurelio a caballo. |
+| 19:45 | Largo di Torre Argentina | 15 min | Parada | 8 min andando | En mitad del tráfico, estos cuatro templos esconden algo que pocos saben: aquí mataron a Julio César. Asómate a la barandilla: hoy los cuida una colonia de gatos que vive entre las ruinas. |
+| 20:05 | Iglesia del Gesù | 10 min | Por fuera (A esta hora ya ha cerrado) | 5 min andando | La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco. |
+| 20:25 | Barrio Judío | 30 min | Parada | 8 min andando | Es uno de los barrios judíos más antiguos de Europa, y se nota en sus calles y en su cocina. Si es hora de comer, pide alcachofas a la judía: fritas enteras y crujientes, como aquí no las hacen en ningún otro sitio. |
+| 21:00 | Fuente de las Tortugas | 10 min | Por el camino | 4 min andando | Escondida en una placita del Ghetto está una de las fuentes más bonitas de Roma. Busca las tortugas en lo alto: dicen que las añadió Bernini muchos años después. |
+| 21:15 | Campo de' Fiori | 30 min | Parada | 7 min andando | Es el sitio donde Roma se queda a tomar algo antes de cenar. La estatua oscura del centro es Giordano Bruno, al que quemaron justo aquí. |
+| 22:00 | Cena: Armando al Pantheon |  | 🍷 Cena | 7 min andando | en Centro Histórico |
 
 **Lo que quedó fuera**: nada.
 
@@ -1234,12 +1233,12 @@ Todas las comprobaciones de siempre, para cada ruta (scripts/destino/auditoria.m
   - línea 192: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
   - línea 262: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
   - línea 404: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 554: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 655: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 785: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 886: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 967: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
-  - línea 1084: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 553: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 654: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 784: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 885: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 966: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
+  - línea 1083: | 08:30 | Fontana de Trevi | 25 min | Parada | — | A primera hora, sin nadie delante, la fuente es otra: oyes el agua y 
 - **"Por el camino" de más de 10 min**: 0 ✅
 - **Tramos de más de 25 min andando sin transporte**: 0 ✅
 

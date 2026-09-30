@@ -107,3 +107,64 @@ La prueba de Navidad cuenta ahora cualquier tour a una hora a la que ese día no
 1. **El lunes 29 de marzo y el lunes 16 de agosto de 2027, el Castillo** sale cerrado (lunes). En 2026 abrió esos festivos. ¿Lo dejo cerrado hasta que se publique, o lo pongo «probable abierto»?
 2. **El 24 y el 31 con Free Tour en viajes de 2 días:** la Basílica se queda por fuera. La alternativa es quitar el tour ese día y ver la Basílica por dentro.
 3. **El zigzag del 1 de enero** con los Capitolinos marcados a mano: ¿lo arreglo (mismo criterio que con Arte)?
+
+## 9. Segunda tanda (1 de octubre, tarde)
+
+### Números
+
+| Prueba | Antes | Ahora |
+|---|---|---|
+| 365 fechas, todo el año | 26 | **23** (4 arreglados, 1 nuevo informativo) |
+| 365 fechas, solo fechas clave | 2 de verdad | **0 de verdad** · 21 informativos |
+| Navidad y Fin de Año | 0 | **0** |
+| 56 viajes | 0 peor | **0 peor** |
+
+### Viajes de 2 días 24-25 y 31-1 con Free Tour
+
+He probado las dos formas y me quedo con la que pedías probar: **el Vaticano entero el 24 o el 31 y el Free Tour el 25 o el 1 a las 12:00.** Pierde menos.
+
+| | Tour el 24/31 (antes) | Tour el 25/1 (ahora) |
+|---|---|---|
+| Museos Vaticanos | por dentro | por dentro |
+| Basílica de San Pedro | por fuera | **por dentro** |
+| Coliseo | 24-25: por fuera · 31-1: por dentro | **por dentro** |
+| Foro | 24-25: por fuera · 31-1: por dentro | **por dentro** |
+| Panteón | por dentro | 24-25: por fuera (el 25 cierra) · 31-1: por dentro |
+| Atardecer en el Janículo | sí | no (el tour acaba a las 14:30) |
+| 1 de enero | empezaba a las 9:30 | **empieza a las 10:30** |
+
+Cómo queda:
+- **24 o 31:** Museos a las 8:00, Plaza, Basílica (antes de que cierre), comida en el Borgo, metro al Coliseo, Arco, Coliseo y Foro por dentro, el Campidoglio con la última luz y el Altar de la Patria.
+- **25 o 1:** Trevi a las 10:30, tour a las 12:00, comida junto a Navona, y la tarde por el Ghetto y la Isla Tiberina hasta Trastevere.
+- **El día 24/31 va apretado a propósito:** los Museos en 2 h 45 y la comida en sus 45 min justos, para llegar a la última entrada del Foro (15:30).
+- Lo único que se pierde en el 24-25 es el Panteón por dentro (el 25 cierra; el tour lo enseña por fuera).
+
+Motor: una variante de fecha puede depender de dónde cae otro día del viaje (`fecha:12-24&D1-FT@12-25`). Solo se aplica en esos viajes; en los demás, el día del tour sigue yéndose a un día normal.
+
+### Capitolinos marcados a mano
+
+Arreglado con el mismo criterio que con Arte: los sábados y el 1 de enero van por la mañana, junto al Campidoglio.
+
+### Comidas de 45 min
+
+La prueba de las 365 fechas cuenta ahora cualquier comida de menos de 45 min **en la ruta que ve el viajero** (de su hora a su fin, y hasta la parada siguiente): **0 en 6.180 viajes**. Lo que dejó de contar es otra cosa: la comida que, por durar sus 45 min, hace empezar la tarde un rato después de lo escrito.
+
+### Castillo
+
+Cerrado el 29 de marzo y el 16 de agosto de 2027 hasta que se publique, con `verificar` y fecha de revisión.
+
+### Cierres comprobados en sus webs (1 de octubre de 2026)
+
+| Sitio | Fuente | Qué dice | En las fechas clave |
+|---|---|---|---|
+| Museos Capitolinos | museicapitolini.org, «Orari e indirizzi» | Todos los días 9:30-19:30. 24 y 31 dic, 9:30-14:00. 1 ene 2026, 11:00-20:00. Cierra el 1 de mayo y el 25 de diciembre. | Coincide. **Faltaban en los datos los horarios del 24, el 31 y el 1 de enero: añadidos.** |
+| Ara Pacis | arapacis.it, «Orari e indirizzi» | Lo mismo que los Capitolinos. | Coincide. Añadidos los mismos horarios. |
+| Galería Borghese | galleriaborghese.cultura.gov.it y cultura.gov.it | Cierra los lunes, el 25 de diciembre y el 1 de enero. Abrió el Lunes de Pascua de 2022, 2024, 2025 y 2026. | Coincide. El lunes 29 de marzo de 2027 sigue cerrado hasta que se publique (mismo criterio que el Castillo). |
+| Panteón | cultura.gov.it (Ministerio) y pantheonroma.com (Capítulo) | **No coinciden.** El Capítulo dice que cierra el 15 de agosto; el Ministerio lo abrió el 15 de agosto de 2022, 2023 y 2026. Cierra el 25 de diciembre. | El 15 de agosto sigue cerrado en los datos hasta que se publique 2027. El resto, abierto. |
+| Termas de Caracalla | cultura.gov.it | De martes a domingo. **Abrieron el 1 de mayo de 2023 y 2024**, y el aviso general de 2025 y 2026 dice que los sitios del Estado abren. Los datos las dan por cerradas el 1 de mayo. | Siguen cerradas el 1 de mayo hasta que se publique 2027. Cierran los lunes 12 de octubre, 29 de marzo y 16 de agosto. |
+
+No he podido abrir la web propia de la Galería Borghese (no responde): lo suyo sale del Ministerio.
+
+### Para decidir
+
+1. **Panteón el 15 de agosto y Termas de Caracalla el 1 de mayo:** los datos los dan por cerrados, pero el Ministerio los abrió esos días en años anteriores. Los he dejado cerrados con `verificar`, como el Castillo. Si prefieres «probable abierto», se cambia.
