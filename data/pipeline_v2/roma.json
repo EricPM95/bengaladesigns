@@ -85,7 +85,30 @@
       "conflicts_with": [
         "Coliseo"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "El Coliseo iluminado, por fuera. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "El Coliseo iluminado, por fuera. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "El Coliseo iluminado, por fuera. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Fontana de Trevi (noche)",
@@ -99,7 +122,30 @@
       "conflicts_with": [
         "Fontana de Trevi"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "La Fontana de Trevi iluminada, con menos gente que de día. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "La Fontana de Trevi iluminada, con menos gente que de día. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "La Fontana de Trevi iluminada, con menos gente que de día. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Plaza de España (noche)",
@@ -114,7 +160,30 @@
         "Plaza de España"
       ],
       "allow_same_day": true,
-      "texto": "Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer."
+      "texto": "Sube por la escalinata casi vacía hasta Trinità dei Monti y date la vuelta: Via Condotti iluminada hasta el fondo. Es la foto que de día no se puede hacer.",
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "La escalinata de la Plaza de España, iluminada. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "La escalinata de la Plaza de España, iluminada. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "La escalinata de la Plaza de España, iluminada. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Panteón (noche)",
@@ -129,7 +198,30 @@
         "Panteón"
       ],
       "allow_same_day": true,
-      "texto": "El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona."
+      "texto": "El Panteón de noche, con el pórtico iluminado y la plaza casi vacía. Siéntate un momento en la fuente: es cuando más impresiona.",
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "El pórtico del Panteón iluminado, en una plaza tranquila. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "El pórtico del Panteón iluminado, en una plaza tranquila. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "El pórtico del Panteón iluminado, en una plaza tranquila. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Mirador del Janículo (noche)",
@@ -146,7 +238,30 @@
       "allow_same_day": true,
       "solo_antes_de_cenar": true,
       "si_no": "Trastevere de noche",
-      "nota_bus": "ATAC 115: última salida de Via Paola a las 22:00 (romaatac, 2026-09-28)."
+      "nota_bus": "ATAC 115: última salida de Via Paola a las 22:00 (romaatac, 2026-09-28).",
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "Roma iluminada desde el Janículo. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "Roma iluminada desde el Janículo. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "Roma iluminada desde el Janículo. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Terraza del Pincio (noche)",
@@ -160,7 +275,30 @@
       "conflicts_with": [
         "Terraza del Pincio"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "La Piazza del Popolo iluminada, desde la terraza del Pincio. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "La Piazza del Popolo iluminada, desde la terraza del Pincio. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "La Piazza del Popolo iluminada, desde la terraza del Pincio. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Puente Sant'Angelo (noche)",
@@ -174,7 +312,30 @@
       "conflicts_with": [
         "Puente Sant'Angelo"
       ],
-      "allow_same_day": true
+      "allow_same_day": true,
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "El puente de los ángeles, con el Castillo iluminado detrás. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "El puente de los ángeles, con el Castillo iluminado detrás. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "El puente de los ángeles, con el Castillo iluminado detrás. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Foro Romano desde el Campidoglio (noche)",
@@ -190,7 +351,30 @@
       ],
       "allow_same_day": true,
       "tip": "Rodea el Palazzo Senatorio por la derecha, por Via del Campidoglio, hasta la barandilla: la vista se abre de golpe.",
-      "same_day_as_visit": true
+      "same_day_as_visit": true,
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "El Foro iluminado, desde la terraza de detrás del Campidoglio. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "El Foro iluminado, desde la terraza de detrás del Campidoglio. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "El Foro iluminado, desde la terraza de detrás del Campidoglio. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     },
     {
       "name": "Piazza Navona (noche)",
@@ -209,8 +393,29 @@
       "texto": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte.",
       "texto_fechas": [
         {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "Piazza Navona iluminada, con los puestos del mercadillo de Navidad. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "Piazza Navona iluminada, con los puestos del mercadillo de Navidad. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "Piazza Navona iluminada, con los puestos del mercadillo de Navidad. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
           "desde": "12-01",
-          "hasta": "01-05",
+          "hasta": "01-06",
           "texto": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar.",
           "texto_despues_cenar": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos.",
           "verificar": "Fechas de la temporada 2025-26 (turismoroma.it, «Festa di Piazza Navona 2025»): revisar en noviembre.",
@@ -231,7 +436,30 @@
         "Plaza Trilussa"
       ],
       "allow_same_day": true,
-      "texto": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado."
+      "texto": "Después de cenar, Trastevere se enciende: guitarras en la Plaza Trilussa, gente sentada en la fuente y terrazas hasta tarde. Cruza el Ponte Sisto y mira atrás: la cúpula de San Pedro asoma sobre el río iluminado.",
+      "texto_fechas": [
+        {
+          "desde": "12-24",
+          "hasta": "12-24",
+          "texto": "Las calles de Trastevere, iluminadas y tranquilas. En Nochebuena Roma se queda en silencio: los romanos cenan en casa y casi todo cierra pronto. Un paseo corto, cerca de donde has cenado. Para volver: el bus, el tranvía y el metro paran a las 21:00 y hay muy pocos taxis, así que vuelve andando o pide el taxi en el restaurante.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-31",
+          "hasta": "12-31",
+          "texto": "Las calles de Trastevere, iluminadas y tranquilas. En Nochevieja se cena con reserva y Roma sale a la calle a medianoche. Un paseo corto, cerca de donde has cenado. Para volver: los buses paran a las 21:00, el metro sigue hasta las 2:30 y a medianoche casi no hay taxis: mejor en metro o andando.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        },
+        {
+          "desde": "12-25",
+          "hasta": "12-25",
+          "texto": "Las calles de Trastevere, iluminadas y tranquilas. El día de Navidad el transporte para a las 21:00: después de cenar, se vuelve andando o en taxi.",
+          "fuente": "Transporte: destination_config.transporte_festivos (plan de ATAC para las fiestas 2025-26, verificar cada diciembre). Nochebuena y Nochevieja: decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 4).",
+          "verificar": true
+        }
+      ]
     }
   ],
   "closed_on": {
@@ -1465,7 +1693,7 @@
       "windows": [
         "07:00-20:00"
       ],
-      "last_entry": "19:15",
+      "last_entry": "19:00",
       "closed_on": [],
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones.",
@@ -1480,14 +1708,14 @@
           "windows": [
             "07:00-20:00"
           ],
-          "last_entry": "19:15"
+          "last_entry": "19:00"
         }
       ],
       "hours_audit": {
-        "confianza": "media",
-        "fuente": "https://stpetersbasilica-guide.com/plan-your-visit/st-peters-basilica-opening-hours/ + https://voxcity.com/en/post/314-st-peters-basilicas-opening-closing-hours-detailed-guide",
-        "nota": "Los miércoles con audiencia general del Papa, la Basílica cierra a los turistas por la mañana y abre hacia las 12:30. La audiencia se suspende algunas semanas (en julio suele no haberla): se deja el cierre todo el año, que es lo prudente.",
-        "fecha": "2026-09-25"
+        "confianza": "alta",
+        "fuente": "https://www.basilicasanpietro.va/en/news/new-opening-hours-for-st-peters-basilica («From 1 June 2026 … open from 7:00 a.m. to 8:00 p.m. Last entry will be permitted by 7:15 p.m., subject to visitor flow and waiting times for security checks») y https://www.basilicasanpietro.va/it/orari",
+        "nota": "Los miércoles con audiencia general del Papa, la Basílica cierra a los turistas por la mañana y abre hacia las 12:30. La audiencia se suspende algunas semanas (en julio suele no haberla): se deja el cierre todo el año, que es lo prudente. Desde junio de 2026 el horario es el mismo todo el año (antes: 7:00-19:10). Última entrada que usa el motor: 19:00, una hora antes del cierre contando el control (decisión del usuario, PROMPT_REPASO_LOCAL_ROMA, 7).",
+        "fecha": "2026-09-30"
       },
       "by_day": {
         "lun,mar,jue-dom": [
@@ -1743,6 +1971,11 @@
       "uphill": {
         "transit": "el bus 115",
         "note": "Se llega subiendo: el aviso de traslado largo lo dice (con cuesta) y da la alternativa; sin transit, \"bus o taxi\"."
+      },
+      "paseo_antes": {
+        "titulo": "La Passeggiata del Gianicolo",
+        "texto": "Antes del atardecer, sigue el paseo arbolado del Janículo entre los bustos de los garibaldinos, hasta el Faro y la vista sobre San Pedro, y vuelve a la balaustrada del Piazzale Garibaldi para ver ponerse el sol.",
+        "_nota": "El rato libre que queda antes del atardecer en el Janículo (el Tempietto cierra a las 18:00 y el sol se pone más tarde): la Passeggiata, con su nombre (PROMPT_REPASO_LOCAL_ROMA, 3)."
       }
     },
     {
@@ -3094,7 +3327,29 @@
       "_ticket_info_antes": [
         "La basílica es gratis.",
         "Las excavaciones son de pago y con reserva online (plazas limitadas)."
-      ]
+      ],
+      "closed_dates": [
+        "12-25"
+      ],
+      "special_hours": [
+        {
+          "id": "ano_nuevo",
+          "fecha": "01-01",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "12:00-18:00"
+          ],
+          "last_entry": "17:30",
+          "confirmado": true,
+          "verificar": true,
+          "fuente": "basilicasanclemente.com, calendario oficial (1 de enero de 2026: «Apertura Scavi», de 12:00 a 18:00; 2027, sin publicar)"
+        }
+      ],
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://www.basilicasanclemente.com/orari-e-info/ («Dal lunedì al sabato: dalle 9.00 alle 12.30 … dalle 14.00 alle 18.00 (ultimo ingresso alle 17.30). Domenica e festivi: dalle 12.00 alle 18.00») y su calendario (25 de diciembre de 2025 y 2026: «CHIUSI»)",
+        "fecha": "2026-09-30"
+      }
     },
     {
       "name": "Iglesia de San Pietro in Vincoli",
@@ -3376,7 +3631,21 @@
           "verificar": true,
           "comprobado": "2026-10-01"
         }
-      }
+      },
+      "special_hours": [
+        {
+          "id": "ano_nuevo",
+          "fecha": "01-01",
+          "motivo": "Apertura extraordinaria de Año Nuevo.",
+          "windows": [
+            "09:30-16:30"
+          ],
+          "last_entry": "15:30",
+          "confirmado": true,
+          "verificar": true,
+          "fuente": "cultura.gov.it, «1 gennaio 2026 alle Terme di Caracalla» (26-12-2025): de 9:30 a 16:30, última entrada a las 15:30. 2027, sin publicar."
+        }
+      ]
     },
     {
       "name": "Jardín de los Naranjos",
@@ -4256,7 +4525,89 @@
       "last_entry": "16:30",
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Lunes a sábado 09:00-17:00 (última entrada 16:30); domingos y festivos 09:00-13:00 (última entrada 12:30). Cerrado 1 y 6 ene, 8, 24, 25, 26 y 31 dic, y dos semanas a mediados de agosto."
+      "card_text": "Lunes a sábado 09:00-17:00 (última entrada 16:30); domingos y festivos 09:00-13:00 (última entrada 12:30). Cerrado 1 y 6 ene, 8, 24, 25, 26 y 31 dic, y dos semanas a mediados de agosto.",
+      "closed_dates": [
+        "01-01",
+        "01-06",
+        "12-08",
+        "12-24",
+        "12-25",
+        "12-26",
+        "12-31"
+      ],
+      "special_hours": [
+        {
+          "id": "pascua",
+          "fecha": "easter",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        },
+        {
+          "id": "lunes_pascua",
+          "fecha": "easter+1",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        },
+        {
+          "id": "liberacion",
+          "fecha": "04-25",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        },
+        {
+          "id": "trabajo",
+          "fecha": "05-01",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        },
+        {
+          "id": "republica",
+          "fecha": "06-02",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        },
+        {
+          "id": "san_pedro",
+          "fecha": "06-29",
+          "motivo": "Horario de festivo.",
+          "windows": [
+            "09:00-13:00"
+          ],
+          "last_entry": "12:30",
+          "confirmado": true,
+          "fuente": "cemeteryrome.it, «Pianifica la tua visita»"
+        }
+      ],
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://www.cemeteryrome.it/ («Dal Lunedi al Sabato dalle 9 alle 17 (Ultimo ingresso 16:30) | Domenica e giorni festivi dalle 9 alle 13») y https://cemeteryrome.it/informazioni/pianifica-la-tua-visita/ (cierra «1 gennaio, 6 gennaio», «8, 24, 25, 26 e 31 dicembre» y quince días a mediados de agosto, sin fechas: verificar cada año)",
+        "fecha": "2026-09-30"
+      }
     },
     {
       "name": "San Pietro in Montorio y Tempietto de Bramante",
@@ -4528,7 +4879,8 @@
       "group": "popolo",
       "group_order": 2,
       "comprobado": "2026-09-28",
-      "fuente_horario": "santamariadelpopoloroma.it (2026-09-28): laborables 8:30-9:45, 10:30-12:00 y 16:00-18:00; domingo 16:30-18:00"
+      "fuente_horario": "santamariadelpopoloroma.it (2026-09-28): laborables 8:30-9:45, 10:30-12:00 y 16:00-18:00; domingo 16:30-18:00",
+      "by_day_verificar": "La web oficial de la parroquia no carga (30-09-2026); el horario del domingo sale de su propia web el 28-09-2026 y de terceros: verificar."
     },
     {
       "name": "Testaccio",
@@ -4791,11 +5143,11 @@
       "contained_in": "Piazza Navona",
       "available": {
         "from": "12-01",
-        "to": "01-05",
+        "to": "01-06",
         "aprox": true,
         "notice_before": "Es probable que el mercadillo aún no haya abierto.",
         "notice_after": "Es probable que el mercadillo ya haya cerrado.",
-        "_nota": "Hasta el 5 de enero y no el 6: el 6 la fiesta acaba a las 14:00 con la llegada de la Befana, y la parada suele ir por la tarde o al anochecer."
+        "_nota": "Hasta el 6 de enero, el último día (decisión del usuario, PROMPT_REPASO_LOCAL_ROMA, 5): ese día acaba la fiesta; la parada va por la tarde. Verificar cada año hasta qué hora hay puestos."
       },
       "schedule_nota": "Todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas).",
       "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026, todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas); el 6 de enero a las 14:00 llega la Befana y se cierra la fiesta (dato comprobado por el usuario).",
@@ -7907,6 +8259,13 @@
   "destination_config": {
     "core_days": 4,
     "excursion_desde_dias": 5,
+    "excursion_fechas_no": [
+      "12-24",
+      "12-25",
+      "12-31",
+      "01-01"
+    ],
+    "_excursion_fechas_no": "Ninguna excursión de día completo en Nochebuena, Navidad, Nochevieja ni Año Nuevo (PROMPT_REPASO_LOCAL_ROMA, 3): el transporte va recortado y se cena en la ciudad. La excursión pasa al día siguiente que valga o, si no, al anterior.",
     "excursion_oferta": {
       "_nota": "Viajes sin excursión (4 días): en el día de D5C se ofrece cambiarlo por una excursión (decisión del usuario, 2026-09-29). Sin precios.",
       "dia": "D5C",
@@ -9233,7 +9592,7 @@
               "rol": "parada",
               "por_que": {
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "{umbral}",
                 "cifra_ok": true,
                 "comprobado": "2026-09-29",
@@ -9242,39 +9601,22 @@
                     "siempre": "de 9:00 a 22:00",
                     "lunes": "de 11:30 a 22:00",
                     "viernes": "de 11:30 a 22:00",
-                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-                    "2026-10-12": "de 14:00 a 22:00",
-                    "2026-10-26": "de 14:00 a 22:00",
-                    "2026-11-09": "de 14:00 a 22:00",
-                    "2026-11-23": "de 14:00 a 22:00",
-                    "2026-12-07": "de 14:00 a 22:00",
-                    "2026-12-21": "de 14:00 a 22:00"
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
                   },
                   "desde": {
                     "siempre": "9:00",
                     "lunes": "11:30",
                     "viernes": "11:30",
-                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-                    "2026-10-12": "14:00",
-                    "2026-10-26": "14:00",
-                    "2026-11-09": "14:00",
-                    "2026-11-23": "14:00",
-                    "2026-12-07": "14:00",
-                    "2026-12-21": "14:00"
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
                   },
                   "umbral": {
                     "siempre": "09:00",
                     "lunes": "11:30",
-                    "viernes": "11:30",
-                    "2026-10-12": "14:00",
-                    "2026-10-26": "14:00",
-                    "2026-11-09": "14:00",
-                    "2026-11-23": "14:00",
-                    "2026-12-07": "14:00",
-                    "2026-12-21": "14:00"
+                    "viernes": "11:30"
                   }
                 },
-                "fuente_tasa": "https://fontanaditrevi.roma.it"
+                "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+                "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
               }
             },
             {
@@ -9294,7 +9636,7 @@
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
-              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+              "por_que": "La terraza sobre la Piazza del Popolo, con las cúpulas del centro y San Pedro al fondo. Es el mirador de los romanos al atardecer."
             }
           ],
           "cena": {
@@ -9623,7 +9965,7 @@
           "lugar": "Puente Sant'Angelo",
           "rol": "parada",
           "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+          "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo.",
           "max_minutos": 15
         },
         {
@@ -9702,7 +10044,7 @@
             {
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo.",
               "max_minutos": 15
             },
             {
@@ -9780,7 +10122,7 @@
                 "lugar": "Puente Sant'Angelo",
                 "rol": "parada",
                 "nota": "Y por el Lungotevere, junto al río, hasta Trastevere.",
-                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+                "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo.",
                 "max_minutos": 15
               },
               {
@@ -9944,7 +10286,7 @@
               "lugar": "Puente Sant'Angelo",
               "rol": "parada",
               "nota": "Y por el río hasta Trastevere.",
-              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+              "por_que": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo.",
               "max_minutos": 15
             },
             {
@@ -10022,7 +10364,7 @@
     },
     {
       "id": "D3",
-      "nombre": "Trevi sin gente, Free Tour y Vaticano por la tarde",
+      "nombre": "Trevi a primera hora, Free Tour y Vaticano por la tarde",
       "joyas": [
         "Museos Vaticanos y Capilla Sixtina"
       ],
@@ -10043,39 +10385,22 @@
                 "siempre": "de 9:00 a 22:00",
                 "lunes": "de 11:30 a 22:00",
                 "viernes": "de 11:30 a 22:00",
-                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-                "2026-10-12": "de 14:00 a 22:00",
-                "2026-10-26": "de 14:00 a 22:00",
-                "2026-11-09": "de 14:00 a 22:00",
-                "2026-11-23": "de 14:00 a 22:00",
-                "2026-12-07": "de 14:00 a 22:00",
-                "2026-12-21": "de 14:00 a 22:00"
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
               },
               "desde": {
                 "siempre": "9:00",
                 "lunes": "11:30",
                 "viernes": "11:30",
-                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
               },
               "umbral": {
                 "siempre": "09:00",
                 "lunes": "11:30",
-                "viernes": "11:30",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "viernes": "11:30"
               }
             },
-            "fuente_tasa": "https://fontanaditrevi.roma.it"
+            "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+            "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
           }
         },
         {
@@ -10097,7 +10422,7 @@
           "lugar": "Free Tour Centro Histórico",
           "rol": "parada",
           "nota": "De 10:00 a 12:30. Sale de la Plaza de España.",
-          "por_que": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma el primer día."
+          "por_que": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma."
         }
       ],
       "comida": {
@@ -10517,7 +10842,7 @@
     },
     {
       "id": "D4",
-      "nombre": "Trevi sin gente, el Popolo y la Borghese",
+      "nombre": "Trevi a primera hora, el Popolo y la Borghese",
       "joyas": [
         "Fontana de Trevi"
       ],
@@ -10529,7 +10854,7 @@
           "nota": "A las 08:00, sin gente.",
           "por_que": {
             "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano": "A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
             "temprano_antes": "{umbral}",
             "cifra_ok": true,
             "comprobado": "2026-09-29",
@@ -10538,39 +10863,22 @@
                 "siempre": "de 9:00 a 22:00",
                 "lunes": "de 11:30 a 22:00",
                 "viernes": "de 11:30 a 22:00",
-                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-                "2026-10-12": "de 14:00 a 22:00",
-                "2026-10-26": "de 14:00 a 22:00",
-                "2026-11-09": "de 14:00 a 22:00",
-                "2026-11-23": "de 14:00 a 22:00",
-                "2026-12-07": "de 14:00 a 22:00",
-                "2026-12-21": "de 14:00 a 22:00"
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
               },
               "desde": {
                 "siempre": "9:00",
                 "lunes": "11:30",
                 "viernes": "11:30",
-                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
               },
               "umbral": {
                 "siempre": "09:00",
                 "lunes": "11:30",
-                "viernes": "11:30",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "viernes": "11:30"
               }
             },
-            "fuente_tasa": "https://fontanaditrevi.roma.it"
+            "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+            "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
           }
         },
         {
@@ -10668,17 +10976,17 @@
         {
           "lugar": "Parque de Villa Borghese",
           "rol": "parada",
-          "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
+          "nota": "Un paseo por el parque, junto al Pincio: el lago y el templete. Sin Galería, barca o bici.",
           "minutos": 30,
           "estirar": true,
-          "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+          "por_que": "Un paseo por el gran parque de Roma, pegado al Pincio. Busca el lago y su templete: es uno de los rincones más bonitos del parque.",
           "estirar_titulo": "Tiempo libre en Villa Borghese",
           "estirar_texto": "Barca en el lago, bici o un rato a la sombra antes de subir al Pincio para el atardecer."
         },
         {
           "lugar": "Terraza del Pincio",
           "rol": "atardecer",
-          "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+          "por_que": "La terraza sobre la Piazza del Popolo, con las cúpulas del centro y San Pedro al fondo. Es el mirador de los romanos al atardecer."
         }
       ],
       "cena": {
@@ -10696,7 +11004,7 @@
               "nota": "A las 08:00, sin gente.",
               "por_que": {
                 "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-                "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+                "temprano": "A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
                 "temprano_antes": "{umbral}",
                 "cifra_ok": true,
                 "comprobado": "2026-09-29",
@@ -10705,39 +11013,22 @@
                     "siempre": "de 9:00 a 22:00",
                     "lunes": "de 11:30 a 22:00",
                     "viernes": "de 11:30 a 22:00",
-                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-                    "2026-10-12": "de 14:00 a 22:00",
-                    "2026-10-26": "de 14:00 a 22:00",
-                    "2026-11-09": "de 14:00 a 22:00",
-                    "2026-11-23": "de 14:00 a 22:00",
-                    "2026-12-07": "de 14:00 a 22:00",
-                    "2026-12-21": "de 14:00 a 22:00"
+                    "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
                   },
                   "desde": {
                     "siempre": "9:00",
                     "lunes": "11:30",
                     "viernes": "11:30",
-                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-                    "2026-10-12": "14:00",
-                    "2026-10-26": "14:00",
-                    "2026-11-09": "14:00",
-                    "2026-11-23": "14:00",
-                    "2026-12-07": "14:00",
-                    "2026-12-21": "14:00"
+                    "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
                   },
                   "umbral": {
                     "siempre": "09:00",
                     "lunes": "11:30",
-                    "viernes": "11:30",
-                    "2026-10-12": "14:00",
-                    "2026-10-26": "14:00",
-                    "2026-11-09": "14:00",
-                    "2026-11-23": "14:00",
-                    "2026-12-07": "14:00",
-                    "2026-12-21": "14:00"
+                    "viernes": "11:30"
                   }
                 },
-                "fuente_tasa": "https://fontanaditrevi.roma.it"
+                "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+                "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
               }
             },
             {
@@ -10813,8 +11104,8 @@
             {
               "lugar": "Parque de Villa Borghese",
               "rol": "parada",
-              "nota": "Cruzas el parque hasta el Pincio: el lago y el templete. Sin Galería, barca o bici.",
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "nota": "Un paseo por el parque, junto al Pincio: el lago y el templete. Sin Galería, barca o bici.",
+              "por_que": "Un paseo por el gran parque de Roma, pegado al Pincio. Busca el lago y su templete: es uno de los rincones más bonitos del parque.",
               "estirar": true,
               "minutos": 30,
               "estirar_titulo": "Tiempo libre en Villa Borghese",
@@ -10844,7 +11135,7 @@
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
-              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+              "por_que": "La terraza sobre la Piazza del Popolo, con las cúpulas del centro y San Pedro al fondo. Es el mirador de los romanos al atardecer."
             }
           ],
           "_nota": "Invierno (segundo repaso, 2026-09-28): la mañana hasta la Plaza de España, Trinità dei Monti y el paseo por el Pincio hasta la Galería de las 11:00; comida normal; por la tarde el Parque, la Piazza del Popolo, Santa Maria del Popolo cuando abre (16:00) y el Pincio al atardecer."
@@ -10875,7 +11166,7 @@
               "nota": "En invierno, el lago camino de la Galería (la tarde es corta).",
               "minutos": 45,
               "estirar": true,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "por_que": "Un paseo por el gran parque de Roma, pegado al Pincio. Busca el lago y su templete: es uno de los rincones más bonitos del parque.",
               "solo": [
                 {
                   "estacion": "invierno"
@@ -10933,7 +11224,7 @@
               "nota": "En verano, después de Santa Maria del Popolo: se sube al parque y aquí va lo que sobre hasta el atardecer en el Pincio.",
               "minutos": 30,
               "estirar": true,
-              "por_que": "Cruzas el gran parque de Roma hasta el Pincio. Por el camino pasas junto al lago y su templete, uno de los rincones más bonitos del parque.",
+              "por_que": "Un paseo por el gran parque de Roma, pegado al Pincio. Busca el lago y su templete: es uno de los rincones más bonitos del parque.",
               "solo": [
                 {
                   "estacion": "no_invierno"
@@ -10979,7 +11270,7 @@
             {
               "lugar": "Terraza del Pincio",
               "rol": "atardecer",
-              "por_que": "El atardecer más clásico de Roma: las cúpulas, con San Pedro al fondo, sobre la Piazza del Popolo. Los romanos vienen aquí a ver ponerse el sol; haz como ellos."
+              "por_que": "La terraza sobre la Piazza del Popolo, con las cúpulas del centro y San Pedro al fondo. Es el mirador de los romanos al atardecer."
             },
             {
               "lugar": "Santa Maria del Popolo",
@@ -11126,7 +11417,7 @@
     },
     {
       "id": "D4M",
-      "nombre": "Trevi sin gente, el Pincio y la tarde en Monti",
+      "nombre": "Trevi a primera hora, el Pincio y la tarde en Monti",
       "joyas": [
         "Fontana de Trevi"
       ],
@@ -11138,7 +11429,7 @@
           "nota": "A las 08:00, sin gente.",
           "por_que": {
             "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-            "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+            "temprano": "A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
             "temprano_antes": "{umbral}",
             "cifra_ok": true,
             "comprobado": "2026-09-29",
@@ -11147,39 +11438,22 @@
                 "siempre": "de 9:00 a 22:00",
                 "lunes": "de 11:30 a 22:00",
                 "viernes": "de 11:30 a 22:00",
-                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-                "2026-10-12": "de 14:00 a 22:00",
-                "2026-10-26": "de 14:00 a 22:00",
-                "2026-11-09": "de 14:00 a 22:00",
-                "2026-11-23": "de 14:00 a 22:00",
-                "2026-12-07": "de 14:00 a 22:00",
-                "2026-12-21": "de 14:00 a 22:00"
+                "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
               },
               "desde": {
                 "siempre": "9:00",
                 "lunes": "11:30",
                 "viernes": "11:30",
-                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
               },
               "umbral": {
                 "siempre": "09:00",
                 "lunes": "11:30",
-                "viernes": "11:30",
-                "2026-10-12": "14:00",
-                "2026-10-26": "14:00",
-                "2026-11-09": "14:00",
-                "2026-11-23": "14:00",
-                "2026-12-07": "14:00",
-                "2026-12-21": "14:00"
+                "viernes": "11:30"
               }
             },
-            "fuente_tasa": "https://fontanaditrevi.roma.it"
+            "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+            "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
           }
         },
         {
@@ -11936,7 +12210,7 @@
       "recorrido": [
         "Plaza de España (noche)"
       ],
-      "texto": "Del Pincio se baja sin cortes por Trinità dei Monti hasta la Plaza de España: la escalinata iluminada, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores.",
+      "texto": "La Plaza de España iluminada: la escalinata con Trinità dei Monti encendida arriba, la Barcaccia sonando y la Via Condotti con los escaparates encendidos. El final perfecto para un día de miradores.",
       "alternativas": [
         "Panteón (noche)",
         "Piazza Navona (noche)"
@@ -12435,11 +12709,11 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Viernes Santo",
-        "texto": "Por la noche hay Via Crucis en el Coliseo y la zona se corta por la tarde. Hemos puesto el Coliseo por la mañana.",
+        "texto": "Es posible que San Pedro cierre por la tarde, y de noche hay Via Crucis en el Coliseo. Hemos puesto el Coliseo por la mañana.",
         "verificar": true,
-        "fuente": "colosseo.it, «Chiusure Via Crucis» (2024 y 2025: cierre a las 14:00, última entrada a las 13:00); turismoroma.it, «Via Crucis al Colosseo 2026» (3 de abril de 2026). Revisar cada año en colosseo.it.",
+        "fuente": "colosseo.it, «Chiusure Via Crucis» (2024 y 2025: cierre a las 14:00, última entrada a las 13:00); turismoroma.it, «Via Crucis al Colosseo 2026» (3 de abril de 2026). Revisar cada año en colosseo.it. vatican.va, «Notificazione Settimana Santa 2026» (Jueves Santo: Misa Crismal a las 9:30 en San Pedro; Viernes Santo: la Pasión del Señor a las 17:00). Cierres a las visitas: basilicasanpietro.va, «Orari della Settimana Santa» 2024 (jueves: cerrada por la mañana, abre a las 12:00; viernes: cierra a las 13:00). Los de cada año se publican esa semana: verificar.",
         "comprobado": "2026-10-01",
-        "contexto": "Por la noche hay Via Crucis en el Coliseo y la zona se corta por la tarde.",
+        "contexto": "Es posible que San Pedro cierre por la tarde, y de noche hay Via Crucis en el Coliseo.",
         "hecho": [
           [
             {
@@ -12472,11 +12746,31 @@
             {
               "texto": "Tu ruta de hoy no pasa por el Coliseo: no te afecta."
             }
+          ],
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Basílica de San Pedro"
+                ],
+                "antes_de": "13:00"
+              },
+              "texto": "La Basílica, también por la mañana; cuenta 45-60 min de cola."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Basílica de San Pedro"
+                ]
+              },
+              "texto": "La Basílica, otro día."
+            }
           ]
         ],
         "cubre": [
           "Coliseo",
-          "Foro Romano"
+          "Foro Romano",
+          "Basílica de San Pedro"
         ],
         "horario_especial": {
           "confirmado": "probable",
@@ -12495,6 +12789,17 @@
                 "08:30-14:00"
               ],
               "last_entry": "13:00"
+            },
+            "Basílica de San Pedro": {
+              "windows": [
+                "07:00-13:00"
+              ],
+              "last_entry": "12:00"
+            },
+            "Cúpula de San Pedro": {
+              "windows": [
+                "07:00-12:30"
+              ]
             }
           }
         }
@@ -12693,14 +12998,12 @@
       },
       {
         "id": "ferragosto",
-        "fecha": "08-14",
-        "hasta": "08-15",
+        "fecha": "08-15",
         "tipo": "festivo",
         "icono": "calma",
         "titulo": "Ferragosto",
         "texto": "El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios. Hemos puesto el Vaticano otro día y el resto de tu ruta, en lo que abre.",
         "fuente": "closed_dates de roma.json",
-        "aviso_restaurantes": true,
         "contexto": "El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios.",
         "hecho": [
           [
@@ -12719,7 +13022,21 @@
         ],
         "cubre": [
           "Museos Vaticanos"
-        ]
+        ],
+        "_fecha": "Solo el 15 (PROMPT_REPASO_LOCAL_ROMA, 5): con el 14 dentro, la etiqueta «Ferragosto» y la del Panteón cerrado salían en el día 14."
+      },
+      {
+        "id": "semana_ferragosto",
+        "fecha": "08-13",
+        "hasta": "08-16",
+        "sin_juntar": true,
+        "tipo": "temporada",
+        "icono": "calma",
+        "titulo": "La semana de Ferragosto",
+        "texto": "Del 13 al 16 de agosto es posible que muchas trattorias y tiendas cierren por vacaciones: llama o reserva antes de ir a comer o a cenar.",
+        "verificar": true,
+        "fuente": "Decisión del usuario (PROMPT_REPASO_LOCAL_ROMA, 5): en la semana de Ferragosto muchos restaurantes cierran; los restaurantes de la ruta son recomendaciones.",
+        "comprobado": "2026-09-30"
       },
       {
         "id": "inmaculada",
@@ -12935,15 +13252,30 @@
         "tipo": "evento",
         "icono": "entrada",
         "titulo": "Primer domingo de mes · El Coliseo y los museos del Estado, gratis",
-        "texto": "El primer domingo de mes la entrada al Coliseo y a los museos del Estado es gratis: habrá muchísima gente. Ese día no se reserva: las entradas se recogen en la taquilla por orden de llegada, así que ve temprano.",
+        "texto": "El primer domingo de mes el Coliseo y los museos del Estado son gratis, sin reserva: entradas en taquilla, por orden de llegada. Es el día de más cola: ve antes de que abra.",
         "requiere_lugares": [
           "Coliseo",
           "Foro Romano y Palatino"
         ],
         "verificar": true,
-        "fuente": "colosseo.it/2025/03/domenicalmuseo-colosseo (\"I biglietti potranno essere ritirati, in ordine di arrivo, presso la biglietteria in piazza del Colosseo\"); iniciativa #domenicalmuseo del MiC",
-        "comprobado": "2026-09-28",
+        "fuente": "colosseo.it, FAQ de #domenicalmuseo («I biglietti per la domenicalmuseo non si prenotano ma possono essere ritirati in presenza direttamente presso le biglietterie e sono validi unicamente per il giorno di ritiro») y colosseo.it/2025/01/ingresso-gratuito-parco-archeologico-colosseo (taquillas, orden de llegada, zonas cerradas)",
+        "comprobado": "2026-09-30",
         "titulo_con_fecha": "El Coliseo y los museos del Estado, gratis"
+      },
+      {
+        "id": "domenica_borghese",
+        "fecha": "primer_domingo",
+        "tipo": "evento",
+        "icono": "entrada",
+        "titulo": "Primer domingo de mes · La Galería Borghese, gratis con reserva",
+        "titulo_con_fecha": "La Galería Borghese, gratis con reserva",
+        "texto": "El primer domingo de mes la Galería Borghese es gratis, pero hay que reservar: las entradas salen 10 días antes y es posible que se agoten enseguida.",
+        "requiere_lugares": [
+          "Galería Borghese"
+        ],
+        "verificar": true,
+        "fuente": "galleriaborghese.cultura.gov.it/visita/info-biglietti («disponibili 10 giorni prima della data», «prenotazione, che è obbligatoria», «i biglietti last minute non sono disponibili»)",
+        "comprobado": "2026-09-30"
       },
       {
         "id": "mercadillo_navona",
@@ -12961,6 +13293,62 @@
           "Piazza Navona (noche)"
         ],
         "comprobado": "2026-09-30"
+      },
+      {
+        "id": "jueves_santo",
+        "fecha": "easter-3",
+        "tipo": "religioso",
+        "icono": "religioso",
+        "titulo": "Jueves Santo",
+        "contexto": "Es posible que la Basílica de San Pedro cierre por la mañana por la Misa Crismal del Papa.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Basílica de San Pedro"
+                ]
+              },
+              "texto": "Hemos puesto la Basílica desde las 12:00; cuenta 45-60 min de cola en el control."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Basílica de San Pedro"
+                ]
+              },
+              "texto": "Hemos puesto la Basílica otro día."
+            },
+            {
+              "texto": "Tu ruta de hoy no entra en San Pedro: no te afecta."
+            }
+          ]
+        ],
+        "cubre": [
+          "Basílica de San Pedro"
+        ],
+        "verificar": true,
+        "fuente": "vatican.va, «Notificazione Settimana Santa 2026» (Jueves Santo: Misa Crismal a las 9:30 en San Pedro; Viernes Santo: la Pasión del Señor a las 17:00). Cierres a las visitas: basilicasanpietro.va, «Orari della Settimana Santa» 2024 (jueves: cerrada por la mañana, abre a las 12:00; viernes: cierra a las 13:00). Los de cada año se publican esa semana: verificar.",
+        "comprobado": "2026-09-30",
+        "texto": "Es posible que la Basílica de San Pedro cierre por la mañana por la Misa Crismal del Papa. Hemos puesto la Basílica desde las 12:00; cuenta 45-60 min de cola en el control.",
+        "horario_especial": {
+          "confirmado": "probable",
+          "aplicar": true,
+          "_nota": "Lo prudente mientras no se publique el de ese año (2024).",
+          "lugares": {
+            "Basílica de San Pedro": {
+              "windows": [
+                "12:00-20:00"
+              ],
+              "last_entry": "19:00"
+            },
+            "Cúpula de San Pedro": {
+              "windows": [
+                "12:00-18:00"
+              ]
+            }
+          }
+        }
       }
     ],
     "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
@@ -12990,7 +13378,7 @@
     "Plaza Farnese": "Una plaza tranquila a un minuto de Campo de' Fiori. Fíjate en las dos fuentes: están hechas con bañeras de granito de las Termas de Caracalla. El palacio, en el que trabajó Miguel Ángel, hoy es la embajada de Francia.",
     "Fontana de Trevi": {
       "texto": "La fuente más famosa del mundo, y desde la plaza se ve gratis. Para bajar junto al agua a tirar la moneda hay una tasa de 2 € {tasa}: no es una entrada. Tírala de espaldas, con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.",
-      "temprano": "A primera hora, sin nadie delante, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
+      "temprano": "A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las {desde}. Tira la moneda de espaldas: dicen que así vuelves.",
       "temprano_antes": "{umbral}",
       "cifra_ok": true,
       "comprobado": "2026-09-29",
@@ -12999,39 +13387,22 @@
           "siempre": "de 9:00 a 22:00",
           "lunes": "de 11:30 a 22:00",
           "viernes": "de 11:30 a 22:00",
-          "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)",
-          "2026-10-12": "de 14:00 a 22:00",
-          "2026-10-26": "de 14:00 a 22:00",
-          "2026-11-09": "de 14:00 a 22:00",
-          "2026-11-23": "de 14:00 a 22:00",
-          "2026-12-07": "de 14:00 a 22:00",
-          "2026-12-21": "de 14:00 a 22:00"
+          "sin_fecha": "de 9:00 a 22:00 (lunes y viernes, desde las 11:30)"
         },
         "desde": {
           "siempre": "9:00",
           "lunes": "11:30",
           "viernes": "11:30",
-          "sin_fecha": "9:00 (lunes y viernes, a las 11:30)",
-          "2026-10-12": "14:00",
-          "2026-10-26": "14:00",
-          "2026-11-09": "14:00",
-          "2026-11-23": "14:00",
-          "2026-12-07": "14:00",
-          "2026-12-21": "14:00"
+          "sin_fecha": "9:00 (lunes y viernes, a las 11:30)"
         },
         "umbral": {
           "siempre": "09:00",
           "lunes": "11:30",
-          "viernes": "11:30",
-          "2026-10-12": "14:00",
-          "2026-10-26": "14:00",
-          "2026-11-09": "14:00",
-          "2026-11-23": "14:00",
-          "2026-12-07": "14:00",
-          "2026-12-21": "14:00"
+          "viernes": "11:30"
         }
       },
-      "fuente_tasa": "https://fontanaditrevi.roma.it"
+      "fuente_tasa": "https://www.comune.roma.it/web/it/notizia/biglietto-dingresso-fontana-di-trevi.page",
+      "nota_tasa": "Lunes y viernes desde las 11:30; el resto de días desde las 9:00; entrada hasta las 21:00 (Comune di Roma, 28-01-2026, y Sovrintendenza Capitolina; comprobado el 30-09-2026). Fuera los lunes sueltos «desde las 14:00»: la web oficial solo dice que algún día puede variar por mantenimiento (PROMPT_REPASO_LOCAL_ROMA, 6)."
     },
     "Desayuno romano": "Desayuna como un romano: cappuccino y cornetto de pie en la barra, en dos minutos y charlando con el camarero. Sentarse en la mesa es de turista, y suele costar más.",
     "Iglesia de San Ignacio de Loyola": {
@@ -13060,7 +13431,7 @@
     "Cúpula de San Pedro": "Sube a la cúpula de Miguel Ángel. Los últimos tramos de escalera se inclinan siguiendo la curva de la cúpula, y arriba tienes toda Roma y la plaza de San Pedro a tus pies.",
     "Borgo Pio": "Una calle peatonal junto al Vaticano, con cafés y trattorias de toda la vida. Es de los pocos rincones de la zona donde todavía comen los vecinos.",
     "Castillo de Sant'Angelo": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad.",
-    "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. Desde aquí sigues por la orilla del río hasta Trastevere.",
+    "Puente Sant'Angelo": "El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo.",
     "Iglesia de Santa Maria in Trastevere": "Una de las iglesias más antiguas de Roma, en la plaza que es el corazón de Trastevere. La entrada es gratis y dentro brillan unos mosaicos dorados que no esperas: no te la saltes.",
     "Trastevere": {
       "texto": "Aquí toca perderse: calles de piedra, ropa tendida, hiedra en las fachadas y trattorias en cada esquina. Busca un sitio para el aperitivo antes de subir al mirador, que es lo que hacen los romanos.",
@@ -13104,7 +13475,7 @@
     "Ara Pacis": "El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo.",
     "Mercados de Trajano": "El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies.",
     "Museos Capitolinos": "Los museos públicos más antiguos del mundo, en la plaza de Miguel Ángel. Dentro está la loba que amamanta a Rómulo y Remo, el símbolo de Roma, y la estatua original de Marco Aurelio a caballo.",
-    "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma el primer día.",
+    "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma.",
     "Columna de Trajano": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro.",
     "Via della Conciliazione": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto.",
     "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",

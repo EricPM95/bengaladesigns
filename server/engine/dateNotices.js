@@ -217,10 +217,11 @@ export function dateNoticesFor(destData, trip, options = {}) {
     let text
     if (closed.length === 1) text = `${closureSentence(destData, places, closed[0])} ${done}`
     else if (closed.length > 1) {
-      const fechas = joinSpanish(closed.map((iso) => {
-        const name = holidayName(destData, places[0], iso)
-        return `el ${shortDate(iso)}${name ? `, ${name}` : ''}`
-      }))
+      // (Si todos los días son la misma fiesta, una vez al final: «el sábado 14, el domingo 15 y el lunes 16, por
+      // Ferragosto», no «Ferragosto» detrás de cada día.)
+      const names = closed.map((iso) => holidayName(destData, places[0], iso))
+      const oneHoliday = names[0] && names.every((name) => name === names[0])
+      const fechas = joinSpanish(closed.map((iso, at) => `el ${shortDate(iso)}${!oneHoliday && names[at] ? `, ${names[at]}` : ''}`)) + (oneHoliday ? `, por ${names[0]}` : '')
       text = `${capital(g.named)} ${g.cierra} ${fechas}. ${done}`
     } else {
       // No cierra, pero el día no debe ir (`no_en`): el último domingo de mes los Museos Vaticanos abren solo por la
@@ -312,7 +313,9 @@ export function dateNoticesFor(destData, trip, options = {}) {
     const target = slot(inRange[0])
     if (target.curated) continue
     target.curated = entry
-    for (const iso of inRange.slice(1)) {
+    // (`sin_juntar`: un aviso de varios días que no se lleva lo de los otros días: la semana de Ferragosto, del 13 al 16,
+    // no se queda con el «Panteón cerrado» del 15.)
+    for (const iso of entry.sin_juntar ? [] : inRange.slice(1)) {
       const other = byDate.get(iso)
       if (!other || other.curated) continue
       for (const item of other.auto) if (!target.auto.some((known) => known.text === item.text)) target.auto.push(item)

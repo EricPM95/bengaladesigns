@@ -125,7 +125,7 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
       if (/mercadillo/i.test(`${stop.display_title ?? ''} ${stop.why ?? ''}`) && /Navona/i.test(`${stop.display_title ?? ''} ${stop.name}`)) market = true
       // (O el Free Tour que acaba en Navona y lo dice: «…en pleno mercadillo de Navidad».)
       if (stop.is_free_tour && /Navona/.test(stop.free_tour_end ?? '') && /mercadillo/i.test(stop.free_tour_end ?? '')) market = true
-      if (/mercadillo/i.test(stop.free_tour_end ?? '') && !inWindow(iso, '12-01', '01-05')) add('texto_falso', where, '«mercadillo» en el final del Free Tour, fuera de fechas')
+      if (/mercadillo/i.test(stop.free_tour_end ?? '') && !inWindow(iso, '12-01', '01-06')) add('texto_falso', where, '«mercadillo» en el final del Free Tour, fuera de fechas')
       if (/mercadillo|Presepi|Bambino|Luces de Navidad/i.test(`${stop.display_title ?? ''} ${stop.name}`)) added = true
       // 1. Cerrado ese día y por dentro.
       const place = placeByName.get(stop.name)
@@ -135,12 +135,13 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
         const kind = publicTransitKind(stop.transit.label)
         if (kind && !transitRuns(D, iso, kind, at - (stop.transit.minutes ?? 0), at)) add('bus_festivo', where, `${stop.suggested_time} ${stop.name}: ${stop.transit.label}`)
       }
-      if (at != null && !anyTransitRuns(D, iso, at, at) && /\b(bus|autobús|metro|tranvía)\b/i.test([stop.why, stop.note].filter(Boolean).join(' '))) add('bus_festivo', where, `${stop.suggested_time} ${stop.name}: el texto manda al bus o al metro`)
+      // (Salvo el texto que avisa de que paran: «el bus, el tranvía y el metro paran a las 21:00».)
+      if (at != null && !anyTransitRuns(D, iso, at, at) && /\b(bus|autobús|metro|tranvía)\b/i.test([stop.why, stop.note].filter(Boolean).join(' ')) && !/\bparan? a las\b/i.test([stop.why, stop.note].filter(Boolean).join(' '))) add('bus_festivo', where, `${stop.suggested_time} ${stop.name}: el texto manda al bus o al metro`)
       // 3. Textos falsos: lo de temporada fuera de sus fechas.
       // (El mercadillo de Navona, hasta el 5 de enero: el 6 la fiesta cierra a las 14:00. «Mercadillos Navideños», el nombre
       // de la experiencia en el «por qué», no cuenta.)
       const saysMarket = /mercadillo de Navidad|su mercadillo|el mercadillo/i.test(all) && /Navona/i.test(`${stop.display_title ?? ''} ${stop.name}`)
-      if (saysMarket && !inWindow(iso, '12-01', '01-05') && !/probable/i.test(all) && !stop.season_line) add('texto_falso', where, `«mercadillo» fuera de fechas: ${stop.display_title ?? stop.name}`)
+      if (saysMarket && !inWindow(iso, '12-01', '01-06') && !/probable/i.test(all) && !stop.season_line) add('texto_falso', where, `«mercadillo» fuera de fechas: ${stop.display_title ?? stop.name}`)
       if (/Luces de Navidad/i.test(all) && !inWindow(iso, '11-26', '01-06')) add('texto_falso', where, `luces fuera de fechas: ${stop.display_title ?? stop.name}`)
       if (/100 Presepi/i.test(all) && !inWindow(iso, '12-08', '01-06')) add('texto_falso', where, `100 Presepi fuera de fechas: ${stop.display_title ?? stop.name}`)
       if (/Santo Bambino/i.test(all) && !inWindow(iso, '12-24', '01-06')) add('texto_falso', where, `Santo Bambino fuera de fechas: ${stop.display_title ?? stop.name}`)
@@ -180,7 +181,7 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
   // 4. Con la experiencia elegida.
   if (mercadillos) {
     const isos = days.map((_, index) => addDays(fecha, index))
-    const inside = isos.filter((iso) => inWindow(iso, '12-01', '01-05')).length
+    const inside = isos.filter((iso) => inWindow(iso, '12-01', '01-06')).length
     if (!market && inside === isos.length) add('sin_mercadillo', label)
     else if (!market && inside > 0) add('mercadillo_parcial', label, `${inside} de ${isos.length} días en fechas`)
     if (!added && !market) add('experiencia_sin_nada', label)

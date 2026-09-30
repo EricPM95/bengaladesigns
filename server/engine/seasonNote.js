@@ -74,7 +74,17 @@ export function seasonNoteFor(destData, trip, { hasNight, dateNotices = [] }) {
   if (dateNotices.some((notice) => [...seasonalIds].some((id) => String(notice.id ?? '').endsWith(id)))) return null
   const firstDay = (trip.days ?? []).find((day) => day.schedule && day.hours?.sunset != null)
   const sunset = firstDay?.hours?.sunset ?? null
-  const hora = sunset != null ? HHMM(Math.round(sunset / 15) * 15) : null
+  let hora = sunset != null ? HHMM(Math.round(sunset / 15) * 15) : null
+  // Con el cambio de hora dentro del viaje (Semana Santa), una sola hora sería falsa la mitad del viaje: las dos, con el
+  // día del cambio (PROMPT_REPASO_LOCAL_ROMA, 5).
+  const withSun = (trip.days ?? []).filter((day) => day.schedule && day.hours?.sunset != null)
+  const jump = withSun.findIndex((day, at) => at > 0 && Math.abs(day.hours.sunset - withSun[at - 1].hours.sunset) >= 45)
+  if (hora && jump > 0) {
+    const after = withSun[jump]
+    const iso = String(after.hours.dateIso ?? '')
+    const when = iso ? `el ${['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][new Date(`${iso.slice(0, 10)}T12:00:00Z`).getUTCDay()]} ${Number(iso.slice(8, 10))}` : 'el día del cambio de hora'
+    hora = `${hora} (desde ${when}, con el cambio de hora, hasta las ${HHMM(Math.round(after.hours.sunset / 15) * 15)})`
+  }
   const texts = destData.destination_config?.nota_temporada ?? null
   const promises = []
   let text
