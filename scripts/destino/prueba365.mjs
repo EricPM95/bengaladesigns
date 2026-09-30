@@ -2,6 +2,7 @@
 // con y sin Free Tour; cada experiencia; cada extra del pool solo y en parejas. Todo lo de auditoria.mjs y lo
 // propio de los días escritos. No arregla nada: cuenta y enseña ejemplos, y lo que salga se arregla en los datos.
 //   node scripts/destino/prueba365.mjs [año=2027] [rapida] [out=docs/PRUEBA365.md] [volcar=<tipo>]
+// Da también sus números solo en las fechas clave de los viajeros españoles (fechasClave.mjs, INVARIANTES 406).
 // (volcar: todos los casos de ese tipo en el scratch que se diga con volcado=<fichero>, no solo 6 ejemplos.)
 import { writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
@@ -10,6 +11,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+import { enFechaClave, fechasClaveDe } from './fechasClave.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
 const year = Number(args['año'] ?? args.ano ?? 2027)
@@ -42,7 +44,18 @@ const tally = (tipo, key) => {
 const examples = new Map()
 const dumped = []
 let trips = 0
+// Las fechas clave de ese año: el viaje que pisa alguna cuenta aparte.
+const CLAVES = fechasClaveDe(year)
+const INFORMATIVOS = new Set(['pago_cerrado_fecha'])
+let currentKey = null
+const keyTrips = new Map()
+const keyCases = new Map()
 const add = (tipo, where, detail) => {
+  if (currentKey) {
+    const list = keyCases.get(currentKey.id) ?? []
+    list.push({ tipo, text: `${where}${detail ? ` — ${detail}` : ''}` })
+    keyCases.set(currentKey.id, list)
+  }
   counts.set(tipo, (counts.get(tipo) ?? 0) + 1)
   const list = examples.get(tipo) ?? []
   if (list.length < 6) list.push(`${where}${detail ? ` — ${detail}` : ''}`)
@@ -142,6 +155,8 @@ for (const [w, fecha] of weekly.entries()) {
 }
 
 for (const [index, trip] of grid.entries()) {
+  currentKey = enFechaClave(CLAVES, trip.fecha, trip.dias)
+  if (currentKey) keyTrips.set(currentKey.id, (keyTrips.get(currentKey.id) ?? 0) + 1)
   planChecks(trip)
   await runTrip(trip)
   if (index % 500 === 0) process.stderr.write(`\r${index}/${grid.length} viajes (${Math.round((Date.now() - started) / 1000)} s)   `)
@@ -164,6 +179,24 @@ const lines = [
   ...[...byDay.entries()].map(([tipo, map]) => `- **${TIPOS[tipo] ?? tipo}**: ${[...map.entries()].sort((x, y) => y[1] - x[1]).slice(0, 14).map(([k, v]) => `${k.trim()} ×${v}`).join(' · ')}`),
   ...[...counts.keys()].filter((tipo) => !(tipo in TIPOS)).map((tipo) => `- **${tipo}**: ${counts.get(tipo)}\n${(examples.get(tipo) ?? []).map((example) => `  - ${example}`).join('\n')}`),
 ]
+const keyAll = [...keyCases.values()].flat()
+const keyReal = keyAll.filter((item) => !INFORMATIVOS.has(item.tipo))
+lines.push(
+  '',
+  '## Solo en las fechas clave de los viajeros españoles',
+  '',
+  `${[...keyTrips.values()].reduce((a, b) => a + b, 0)} viajes pisan alguna fecha clave. **Avisos de verdad: ${keyReal.length}** · informativos (algo cierra ese día y el aviso lo explica): ${keyAll.length - keyReal.length}.`,
+  '',
+  '| Fecha clave | Fechas | Viajes | De verdad | Informativos |',
+  '|---|---|---|---|---|',
+  ...CLAVES.map((item) => {
+    const cases = keyCases.get(item.id) ?? []
+    const real = cases.filter((c) => !INFORMATIVOS.has(c.tipo)).length
+    return `| ${item.nombre} | ${item.desde.slice(5)} – ${item.hasta.slice(5)} | ${keyTrips.get(item.id) ?? 0} | ${real} | ${cases.length - real} |`
+  }),
+  '',
+  ...CLAVES.flatMap((item) => (keyCases.get(item.id) ?? []).filter((c) => !INFORMATIVOS.has(c.tipo)).map((c) => `- ${item.nombre}: ${c.tipo} | ${c.text}`)),
+)
 writeFileSync(out, lines.join('\n') + '\n')
 if (args.volcar) writeFileSync(args.volcado ?? `volcado_${args.volcar}.txt`, dumped.join('\n') + '\n')
-console.log(JSON.stringify({ viajes: trips, total, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))
+console.log(JSON.stringify({ viajes: trips, total, clave: { reales: keyReal.length, informativos: keyAll.length - keyReal.length }, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))

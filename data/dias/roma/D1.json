@@ -205,7 +205,7 @@
   },
   "variantes": {
     "sabado": {
-      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer. En C y D, el atardecer en el Ponte Sisto al final; en D la tarde empieza a las 15:00 para llegar al Panteón antes de las 16:00.",
+      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer. En C y D, el atardecer en el Ponte Sisto al final; en D la tarde empieza a las 15:00 para llegar al Panteón antes de las 16:00. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio: por la tarde el Panteón va primero y habría que volver atrás.",
       "tarde.*": {
         "paradas": [
           {
@@ -291,6 +291,24 @@
           }
         ],
         "empieza": "15:00"
+      },
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Plaza del Campidoglio",
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 60,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera",
+              "si_experiencia": "arte_museos",
+              "no_si_dia": [
+                "D5"
+              ]
+            }
+          }
+        ]
       }
     },
     "domingo": {
@@ -362,7 +380,7 @@
       }
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como los sábados: primero el Panteón, nada más comer.",
+      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como los sábados: primero el Panteón, nada más comer. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio: por la tarde el Panteón va primero y habría que volver atrás.",
       "tarde.*": {
         "paradas": [
           {
@@ -414,6 +432,25 @@
             "lugar": "Campo de' Fiori",
             "min": 30
           }
+        ],
+        "empieza": "15:00"
+      },
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Plaza del Campidoglio",
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 60,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera",
+              "si_experiencia": "arte_museos",
+              "no_si_dia": [
+                "D5"
+              ]
+            }
+          }
         ]
       }
     },
@@ -423,7 +460,8 @@
         "quitar": [
           "Plaza del Campidoglio",
           "Plaza Venecia",
-          "Altar de la Patria"
+          "Altar de la Patria",
+          "Museos Capitolinos"
         ]
       },
       "tarde.*": {
@@ -449,6 +487,20 @@
             "parada": {
               "lugar": "Plaza del Campidoglio",
               "min": 15
+            }
+          },
+          {
+            "despues_de": "Plaza del Campidoglio",
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 60,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera",
+              "si_experiencia": "arte_museos",
+              "no_si_dia": [
+                "D5"
+              ]
             }
           }
         ]

@@ -77,6 +77,8 @@ const toMin = (hhmm) => {
   const [h, m] = String(hhmm).split(':').map(Number)
   return h * 60 + (m || 0)
 }
+/** Margen de una hora escrita que no es un turno ni una entrada con hora. */
+const FIXED_HOUR_SLACK = 10
 /** Con un día que empieza más tarde por una fecha especial, la comida como muy tarde (si el destino no dice otra hora). */
 const LATE_START_LUNCH_BY = 14 * 60 + 30
 const toHHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
@@ -332,7 +334,9 @@ export function planWrittenTrip(args) {
       const match = /^tarde(?:\.(\*|[A-D]))?$/.exec(target)
       if (!match) continue
       if (match[1] && match[1] !== '*' && match[1] !== draft.version) continue
-      draft.tarde = applyListOp(draft.tarde, op)
+      // (Lo que la mañana ya lleva no se inserta otra vez por la tarde: los Museos Capitolinos de Arte, los sábados.)
+      const inMorning = (insert) => draft.manana.some((stop) => stop.lugar === insert.parada?.lugar && (!stop.si_experiencia || selected.includes(stop.si_experiencia)))
+      draft.tarde = applyListOp(draft.tarde, op.insertar?.some(inMorning) ? { ...op, insertar: op.insertar.filter((insert) => !inMorning(insert)) } : op)
       if (op.empieza) draft.empieza = op.empieza
       if (op.cena) draft.cena = { ...draft.cena, ...op.cena }
       if (op.restaurante?.cena) draft.cena = { ...draft.cena, restaurante: op.restaurante.cena, alternativa: op.restaurante.alternativa ?? draft.cena?.alternativa }
@@ -432,7 +436,9 @@ export function planWrittenTrip(args) {
     // es cosa del verano: de junio a agosto. Sin fechas, el mes del viaje.)
     const monthOfDay = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
     const byMonth = (stop) => !(stop.meses && !(monthOfDay != null && stop.meses.includes(monthOfDay))) && !(stop.no_meses && monthOfDay != null && stop.no_meses.includes(monthOfDay))
-    const keep = (stop) => byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    // (`si_experiencia`: la parada va solo si el viajero eligió esa experiencia. Para lo que una experiencia añade en otro
+    // sitio según la variante del día: los Museos Capitolinos por la mañana los sábados, junto al Campidoglio.)
+    const keep = (stop) => !(stop.si_experiencia && !selected.includes(stop.si_experiencia)) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
     // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
     // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)
@@ -723,8 +729,10 @@ export function planWrittenTrip(args) {
       const fixed = hourOf(stop)
       if (fixed != null) {
         // (A la entrada con turno se llega 10 min antes: `turno` en lo escrito, los turnos de la ficha o el Free Tour.)
-        const needed = fixed - (stop.turno || source.turnos || source.isFreeTour ? TICKET_MARGIN : 0)
-        if (at > needed + 2) ctx.problems.push({ tipo: 'llega_tarde', lugar: stop.lugar, llega: toHHMM(at), hora: toHHMM(fixed) })
+        const slotted = Boolean(stop.turno || source.turnos || source.isFreeTour)
+        const needed = fixed - (slotted ? TICKET_MARGIN : 0)
+        // (Una hora escrita sin turno es orientativa: llegar hasta 10 min después no es llegar tarde.)
+        if (at > needed + (slotted ? 2 : FIXED_HOUR_SLACK)) ctx.problems.push({ tipo: 'llega_tarde', lugar: stop.lugar, llega: toHHMM(at), hora: toHHMM(fixed) })
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
@@ -1000,7 +1008,8 @@ export function planWrittenTrip(args) {
       const { spot, start, end, short } = lunchOf(draft, morning.cursor, skeletonDay, hours)
       // (La comida ya dura LUNCH_MIN; la tarde empieza más tarde y lo absorbe la elástica. Solo es un problema si no hay
       // elástica que lo absorba: entonces la tarde va con retraso.)
-      if (short != null && !draft.tarde.some((stop) => stop.elastica != null)) ctx.problems.push({ tipo: 'comida_corta', minutos: short })
+      // (Ni si la tarde no lleva ninguna hora fija a la que llegar tarde: empieza un rato después y ya está.)
+      if (short != null && !draft.tarde.some((stop) => stop.elastica != null) && draft.tarde.some((stop) => stop.hora != null)) ctx.problems.push({ tipo: 'comida_corta', minutos: short })
       // (Si a la primera parada de la tarde se va en bus o taxi, ese rato no es tiempo libre: `transitAfter`.)
       const firstAfternoon = draft.tarde[0]
       meals.push({ type: 'lunch', start, end, eatMinutes: end - start, coordinates: spot?.coordinates ?? morning.cursor.coords, ...(spot ? { spot: { name: spot.name, zone: spot.zone } } : {}), eatStart: start, ...(firstAfternoon?.traslado?.min ? { transitAfter: firstAfternoon.traslado.min } : {}) })
@@ -1076,6 +1085,13 @@ export function planWrittenTrip(args) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
       if (spare > 20) {
         restAfterLunch = Math.floor(Math.min(spare, REST_AFTER_LUNCH_MAX) / 5) * 5
+        // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
+        // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
+        const outsideWith = (from) => {
+          const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+          return runList(draft.tarde, 'tarde', from, probe, elasticUsed).visits.filter((visit) => visit.place.visitOutside).length
+        }
+        if (outsideWith({ ...afterLunch, t: afterLunch.t + restAfterLunch }) > outsideWith(afterLunch)) restAfterLunch = 0
         afterLunch = { ...afterLunch, t: afterLunch.t + restAfterLunch }
         elasticWanted -= restAfterLunch
       }
