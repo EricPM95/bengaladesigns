@@ -1,5 +1,5 @@
 {
-  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; en verano empieza más tarde).",
+  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; en verano empieza más tarde). (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
   "id": "D1",
   "nombre": "Roma Antigua y el centro barroco",
   "joyas": [
@@ -9,9 +9,6 @@
   "no_en": [
     {
       "fecha": "12-25"
-    },
-    {
-      "fecha": "01-01"
     }
   ],
   "barrio_cena": "centro_historico",
@@ -427,48 +424,11 @@
       }
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Coliseo y el Foro cierran (se ven por fuera); los Museos Capitolinos abren.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": {
-              "completo": "09:30",
-              "tranquilo": "10:00"
-            },
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 20
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Museos Capitolinos",
-            "min": 90,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 40,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
+      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Sin las opcionales de la tarde, para entrar a tiempo.",
+      "tarde.*": {
+        "quitar": [
+          "Iglesia del Gesù",
+          "Fuente de las Tortugas"
         ]
       }
     }

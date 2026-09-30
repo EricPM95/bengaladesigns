@@ -1,5 +1,5 @@
 {
-  "_nota": "D1-FT escrito (2026-09-29): Roma antigua por la mañana; por la tarde el Ghetto, la Isla Tiberina y Trastevere hasta el Janículo. Se sube andando por el Tempietto si se llega antes de su última entrada (17:30); si no, se ve por fuera.",
+  "_nota": "D1-FT escrito (2026-09-29): Roma antigua por la mañana; por la tarde el Ghetto, la Isla Tiberina y Trastevere hasta el Janículo. Se sube andando por el Tempietto si se llega antes de su última entrada (17:30); si no, se ve por fuera. (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
   "id": "D1-FT",
   "nombre": "Roma Antigua, el Ghetto y Trastevere al atardecer",
   "nombre_tranquilo": "Roma Antigua, el Ghetto y Trastevere al atardecer",
@@ -9,9 +9,6 @@
   "no_en": [
     {
       "fecha": "12-25"
-    },
-    {
-      "fecha": "01-01"
     }
   ],
   "barrio_cena": "trastevere",
@@ -322,52 +319,6 @@
             }
           }
         }
-      }
-    },
-    "fecha:01-01": {
-      "_nota": "1 de enero: el Coliseo y el Foro cierran (se ven por fuera); los Museos Capitolinos abren. En tranquilo, el Coliseo por fuera a las 09:45: sin opcionales que quitar, así la comida cabe y el Janículo llega al sol (PROMPT_TEXTOS_RITMO 6).",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": {
-              "completo": "09:30",
-              "tranquilo": "09:45"
-            },
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 20
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Museos Capitolinos",
-            "min": 90,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 40,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ]
       }
     }
   },

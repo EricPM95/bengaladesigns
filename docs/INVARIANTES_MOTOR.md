@@ -2134,3 +2134,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     MISMA condición en la mañana (`sol_hasta`) y en la tarde (`sol_desde`), para que ninguna parada salga dos veces ni
     desaparezca cuando el día cambia de versión por la luz. Con el sol desde las 19:45: mañana a las 10:00 (Plaza, Cúpula
     y Basílica) y la tarde de siempre con el Castillo primero.
+
+395. **Un horario de festivo no se da por abierto ni por cerrado sin la fuente oficial de ese año** (PROMPT_ROMA_NAVIDAD 1).
+    - Cada cierre por fecha lleva su fuente y su fecha de comprobación (`closed_dates_audit`). Lo que no tenga fuente, fuera.
+    - Si no hay fuente del año en curso, el dato va como `probable` y el texto es prudente («suele abrir con horario corto…
+      compruébalo en su web»).
+    - `horario_especial` con `confirmado: "probable"` + `aplicar: true`: el reparto evita ese día si puede; si no puede, la
+      visita va dentro de ese horario (el prudente). Sin `aplicar`, como el 2 de junio: solo se evita el día.
+    - Un lugar puede llevar sus tramos especiales en su ficha (`special_hours`, con `motivo`, `fuente` y `verificar`): la
+      Basílica de San Pedro no cierra el día entero por una misa del Papa, solo el tramo de alrededor.
+    - Ejemplo: el 1 de enero el Coliseo, el Foro (08:30-16:30), el Panteón (09:00-17:00) y las Termas de Caracalla
+      (09:30-16:30) abren (colosseo.it y cultura.gov.it, 1 de enero de 2026); el Castillo, la Galería Borghese, el Doria
+      Pamphilj y las catacumbas cierran (sus webs oficiales).

@@ -66,7 +66,9 @@ export function attachSpecialHours(destData) {
   for (const entry of destData?.fechas_especiales?.fechas ?? []) {
     const rule = entry.horario_especial
     // Solo `confirmado: true`: con "probable" el horario no se aplica (el reparto solo evita ese día, specialHoursToAvoid).
-    if (rule?.confirmado !== true) continue
+    // Salvo con `aplicar: true` (el 1 de enero: el Coliseo abre con horario corto): el reparto evita ese día y, si no puede,
+    // la visita va dentro de ese horario, que es el prudente.
+    if (rule?.confirmado !== true && !(rule?.confirmado === 'probable' && rule.aplicar === true)) continue
     for (const [name, hours] of Object.entries(rule.lugares ?? {})) {
       const place = byName.get(name)
       if (!place || !Array.isArray(hours.windows)) continue
