@@ -303,13 +303,13 @@
       }
     },
     "fecha:12-25": {
-      "_nota": "Navidad: Coliseo, Foro y Panteón cerrados (se ven por fuera); a las 12:00, la Bendición Urbi et Orbi en la Plaza de San Pedro.",
+      "_nota": "Navidad: el Coliseo, el Foro y el Panteón cierran y se ven por fuera. El día empieza más tarde (el transporte arranca a las 8:30) y el Barrio Judío pasa a la mañana.",
       "manana": {
         "paradas": [
           {
             "lugar": "Coliseo",
             "tipo": "fija",
-            "hora": "09:30",
+            "hora": "10:00",
             "modo": "fuera"
           },
           {
@@ -325,86 +325,30 @@
             "min": 15
           },
           {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
             "lugar": "Altar de la Patria",
             "min": 40,
             "modo": "dentro",
             "si_cerrado": "fuera"
           },
           {
-            "lugar": "Bendición Urbi et Orbi",
-            "tipo": "fija",
-            "hora": "12:00",
-            "min": 45,
-            "traslado": {
-              "como": "un taxi",
-              "min": 20
-            }
+            "lugar": "Barrio Judío",
+            "min": 30
+          },
+          {
+            "lugar": "Fuente de las Tortugas",
+            "modo": "camino"
           }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Ristorante Arlù"
-        }
-      }
-    },
-    "fecha:easter": {
-      "_nota": "Domingo de Pascua: la Bendición Urbi et Orbi a las 12:00 en la Plaza de San Pedro. El Coliseo y el Foro a primera hora; el Altar de la Patria, a la vuelta y más corto, para que el Panteón llegue abierto (el domingo cierra a las 19:00).",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "08:30",
-            "min": 80,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 20
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Bendición Urbi et Orbi",
-            "tipo": "fija",
-            "hora": "12:00",
-            "min": 45,
-            "traslado": {
-              "como": "un taxi",
-              "min": 20
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Ristorante Arlù"
-        }
+        ]
       },
       "tarde.*": {
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Altar de la Patria",
-              "min": 40,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "traslado": {
-                "como": "un taxi",
-                "min": 20
-              }
-            }
-          }
-        ],
-        "empieza": "14:30"
+        "quitar": [
+          "Barrio Judío",
+          "Fuente de las Tortugas"
+        ]
       }
     },
     "fecha:primer_domingo": {
@@ -469,6 +413,43 @@
           {
             "lugar": "Campo de' Fiori",
             "min": 30
+          }
+        ]
+      }
+    },
+    "empieza_tarde": {
+      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan. Detrás de Piazza Navona y antes del Largo Argentina: el Altar, antes de que cierre; con Arte, los Museos Capitolinos quedan en la misma plaza.",
+      "manana": {
+        "quitar": [
+          "Plaza del Campidoglio",
+          "Plaza Venecia",
+          "Altar de la Patria"
+        ]
+      },
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Piazza Navona",
+            "parada": {
+              "lugar": "Plaza Venecia",
+              "modo": "camino"
+            }
+          },
+          {
+            "despues_de": "Plaza Venecia",
+            "parada": {
+              "lugar": "Altar de la Patria",
+              "min": 35,
+              "modo": "dentro",
+              "si_cerrado": "fuera"
+            }
+          },
+          {
+            "despues_de": "Altar de la Patria",
+            "parada": {
+              "lugar": "Plaza del Campidoglio",
+              "min": 15
+            }
           }
         ]
       }

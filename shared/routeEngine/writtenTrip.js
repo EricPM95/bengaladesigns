@@ -172,18 +172,6 @@ export function planWrittenTrip(args) {
     const sunset = hoursOf(day).sunset
     return sunset != null && sunset < WINTER_SUNSET_BEFORE
   }
-  const dateSuggestionOf = (day) => {
-    const iso = realDateIso(day)
-    if (!iso) return null
-    for (const entry of destData.fechas_especiales?.fechas ?? []) {
-      const sug = entry.sugerencia
-      if (!sug?.lugar || !sug.hora) continue
-      if (sug.dia ? iso.slice(5) !== sug.dia : !matchesDateRange(entry.fecha, entry.hasta, iso)) continue
-      return { entry, sug, night: sug.lugar.endsWith('(noche)') }
-    }
-    return null
-  }
-
   /**
    * Un día que no empieza antes de cierta hora por una fecha especial (`empieza_desde: { hora, si_viaje_incluye }`): el 1
    * de enero, si el viajero pasó la Nochevieja en el destino (el 31 está en su viaje), desde las 10:00.
@@ -195,7 +183,7 @@ export function planWrittenTrip(args) {
       const rule = entry.empieza_desde
       if (!rule?.hora || !matchesDateRange(entry.fecha, entry.hasta, iso)) continue
       if (rule.si_viaje_incluye && !skeleton.some((other) => other !== day && realDateIso(other) && matchesDateToken(rule.si_viaje_incluye, realDateIso(other)))) continue
-      return { at: toMin(rule.hora), lunchBy: rule.comida_como_tarde ? toMin(rule.comida_como_tarde) : LATE_START_LUNCH_BY, id: entry.id }
+      return { at: toMin(rule.hora), fallback: rule.si_no_cabe ? toMin(rule.si_no_cabe) : null, lunchBy: rule.comida_como_tarde ? toMin(rule.comida_como_tarde) : LATE_START_LUNCH_BY, id: entry.id }
     }
     return null
   }
@@ -225,12 +213,13 @@ export function planWrittenTrip(args) {
   const carriesTour = (w) => Boolean(tour) && JSON.stringify([w.manana, w.tarde]).includes(`"${tour.name}"`)
   const violatesRules = (w, day) => (w.no_en ?? []).some((rule) => {
     if (rule.evitar) return false
-    if (rule.fecha) return Boolean(realDateIso(day)) && realDateIso(day).slice(5) === rule.fecha
+    if (rule.fecha) return Boolean(realDateIso(day)) && matchesDateToken(rule.fecha, realDateIso(day))
     if (rule.dia_semana) return Boolean(hoursOf(day).weekday) && norm(hoursOf(day).weekday) === norm(rule.dia_semana) && (!rule.si_lleva || carries(w, rule.si_lleva))
     return false
   })
   const violates = (w, day) => violatesRules(w, day) || (carriesTour(w) && noTourOn(day))
-  const avoids = (w, day) => (w.no_en ?? []).some((rule) => rule.evitar && rule.dia_semana && Boolean(hoursOf(day).weekday) && norm(hoursOf(day).weekday) === norm(rule.dia_semana) && (!rule.invierno || isWinter(day)))
+  // (`evitar` con `fecha`: mejor otro día si el viaje lo permite, el Viernes Santo junto al Coliseo por la tarde.)
+  const avoids = (w, day) => (w.no_en ?? []).some((rule) => rule.evitar && (rule.fecha ? Boolean(realDateIso(day)) && matchesDateToken(rule.fecha, realDateIso(day)) : rule.dia_semana && Boolean(hoursOf(day).weekday) && norm(hoursOf(day).weekday) === norm(rule.dia_semana) && (!rule.invierno || isWinter(day))))
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
   // (Solo para las pruebas: un orden dado, para ver un día escrito en una fecha concreta.)
@@ -901,33 +890,55 @@ export function planWrittenTrip(args) {
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
     // El día que no empieza antes de una hora (el 1 de enero tras la Nochevieja, a las 10:00): toda la mañana se corre lo
     // mismo que la primera hora, menos lo que tiene turno. Si así se llega tarde a una hora fija o la comida se va
-    // demasiado tarde, se quitan las opcionales de la mañana (de la última hacia atrás); si ni así, el día se queda a su
-    // hora escrita (no se fuerza) y queda apuntado en sus variantes («empieza:no_cabe»).
+    // demasiado tarde, se prueba con la variante `empieza_tarde` del día escrito (lo que pasa a la tarde: no se quita
+    // nada); y si tampoco, a la segunda hora (`si_no_cabe`, las 9:30), primero sin la variante y luego con ella. Si nada
+    // cabe sin perder el atardecer del día, se prueba otra vez sin esa condición; y si ni así, el día se queda a su hora
+    // escrita y queda apuntado en sus variantes («empieza:no_cabe»).
     const notBefore = half ? null : notBeforeOf(skeletonDay)
     if (notBefore && morningStartOf(draft) < notBefore.at) {
-      const delta = notBefore.at - morningStartOf(draft)
-      const movable = (stop) => stop.hora != null && !stop.turno && stop.lugar !== tour?.name && !placeByName.get(stop.lugar)?.turnos
-      const shift = (list) => list.map((stop) => (movable(stop) ? { ...stop, hora: toHHMM(Math.min(toMin(stop.hora) + delta, 23 * 60)) } : stop))
-      const fits = (list) => {
+      // (Se corre también la entrada con hora que elige el viajero, el Coliseo; no lo que tiene turnos fijos: el Free Tour, la Galería.)
+      const movable = (stop) => stop.hora != null && stop.lugar !== tour?.name && !placeByName.get(stop.lugar)?.turnos
+      const lateOps = written.days[draft.id]?.variantes?.empieza_tarde ?? null
+      const attempt = (at, withOps, keepSunset = true) => {
+        const trial = { ...draft, applied: [...draft.applied] }
+        if (withOps) applyOps(trial, lateOps, 'empieza_tarde')
+        const delta = at - morningStartOf(trial)
+        if (delta <= 0) return null
+        trial.manana = trial.manana.map((stop) => (movable(stop) ? { ...stop, hora: toHHMM(toMin(stop.hora) + delta) } : stop))
         const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
-        const run = runList(list, 'manana', { t: notBefore.at, coords: null }, probe)
-        if (probe.problems.some((problem) => problem.tipo === 'llega_tarde')) return false
-        return !draft.comida || lunchOf({ ...draft, manana: list }, run.cursor, skeletonDay, hours).start <= notBefore.lunchBy
+        const run = runList(trial.manana, 'manana', { t: at, coords: null }, probe)
+        if (probe.problems.some((problem) => problem.tipo === 'llega_tarde')) return null
+        const lunch = trial.comida ? lunchOf(trial, run.cursor, skeletonDay, hours) : null
+        if (lunch && lunch.start > notBefore.lunchBy) return null
+        // (Y el atardecer del día no se pierde por empezar tarde: ni con la elástica al mínimo se llegaría con sol.)
+        if (keepSunset && hours.sunset != null && trial.tarde.some((stop) => stop.modo === 'atardecer')) {
+          const afternoonProbe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+          runList(trial.tarde, 'tarde', lunch ? { t: lunch.end, coords: lunch.spot?.coordinates ?? run.cursor.coords } : run.cursor, afternoonProbe)
+          const slack = trial.tarde.find((stop) => stop.elastica != null)?.elastica ?? 0
+          if (afternoonProbe.sunsetArrival != null && afternoonProbe.sunsetArrival - slack > hours.sunset) return null
+        }
+        trial.manana_empieza = toHHMM(at)
+        trial.applied.push(`empieza:${toHHMM(at)}`, ...(withOps ? ['empieza_tarde'] : []))
+        return trial
       }
-      let late = shift(draft.manana)
-      const dropped = []
-      while (!fits(late)) {
-        const at = late.findLastIndex((stop) => stop.tipo === 'opcional')
-        if (at < 0) break
-        dropped.push(late[at].lugar)
-        late = late.filter((_, i) => i !== at)
+      const hoursToTry = [notBefore.at, ...(notBefore.fallback != null && notBefore.fallback > morningStartOf(draft) ? [notBefore.fallback] : [])]
+      let late = null
+      for (const at of hoursToTry) {
+        late = attempt(at, false) ?? (lateOps ? attempt(at, true) : null)
+        if (late) break
       }
-      if (fits(late)) {
-        draft.manana = late
-        draft.manana_empieza = toHHMM(notBefore.at)
+      // (Si el atardecer no se salva a ninguna de las dos horas, manda no madrugar: a la hora más temprana de las dos, y el
+      // mirador se ve ya de noche.)
+      for (const at of [...hoursToTry].reverse()) {
+        if (late) break
+        late = attempt(at, false, false) ?? (lateOps ? attempt(at, true, false) : null)
+        if (late) late.applied.push('empieza:sin_atardecer')
+      }
+      if (late) {
         // (El nombre del día no promete la primera hora si ya no es la primera hora: «Trevi sin gente» a las 10:00.)
-        if (written.days[draft.id]?.nombre_empieza_tarde && draft.nombre === written.days[draft.id].nombre) draft.nombre = written.days[draft.id].nombre_empieza_tarde
-        draft.applied.push(`empieza:${toHHMM(notBefore.at)}`, ...dropped.map((name) => `empieza:sin ${name}`))
+        if (written.days[draft.id]?.nombre_empieza_tarde && late.nombre === written.days[draft.id].nombre) late.nombre = written.days[draft.id].nombre_empieza_tarde
+        Object.assign(draft, late)
+        drafts[index] = draft
       } else draft.applied.push('empieza:no_cabe')
     }
     const startMorning = morningStartOf(draft)
@@ -1207,13 +1218,6 @@ export function planWrittenTrip(args) {
     const text = fromAlternative ? (sameAs ? walkText(sameAs, chain) : null) : walkText(walk, chain)
     nightsByDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(fromAlternative && walk.alternativas_despues_de_cenar ? { afterDinnerOnly: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) ? { replacesDayVisit: true } : {}) })))
     day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? nightNameOf(chain) : walk.nombre, texto: text, textoAntesCenar: fromAlternative ? (sameAs ? walkText(sameAs, chain, true) : null) : walkText(walk, chain, true), recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
-  }
-  for (const day of cityPlanned) {
-    const suggestion = dateSuggestionOf(day)
-    const entry = suggestion?.night ? catalogue.get(suggestion.sug.lugar) : null
-    if (!entry) continue
-    nightsByDay.set(day.dayNumber, [{ ...entry, wholeWalk: true, fixedStart: toMin(suggestion.sug.hora), dateNight: suggestion.entry.id }])
-    day.nightWalk = { nombre: suggestion.sug.nombre ?? suggestion.entry.titulo ?? 'Paseo nocturno', texto: suggestion.sug.texto ?? null, recorrido: (nightsByDay.get(day.dayNumber) ?? []).map((item) => item.name) }
   }
   const centro = Object.values(walks).find((walk) => Array.isArray(walk.centro_dos_dias))
   if (shortTrip && centro) {

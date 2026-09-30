@@ -776,20 +776,14 @@
       }
     },
     "fecha:12-25": {
-      "_nota": "Navidad: los Museos y el Castillo cierran; la Bendición Urbi et Orbi a las 12:00 en la Plaza de San Pedro y la Basílica por la tarde.",
+      "_nota": "Navidad: los Museos y el Castillo cierran, y a mediodía la plaza es de la bendición del Papa. El día empieza tarde, por Borgo Pio; la Plaza y la Basílica, después de comer, cuando la plaza se ha vaciado y la Basílica vuelve a abrir.",
       "manana": {
         "paradas": [
           {
-            "lugar": "Via della Conciliazione",
-            "tipo": "fija",
-            "hora": "11:00",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Bendición Urbi et Orbi",
+            "lugar": "Borgo Pio",
             "tipo": "fija",
             "hora": "11:30",
-            "min": 60
+            "min": 45
           }
         ],
         "comida": {
@@ -798,6 +792,9 @@
         }
       },
       "tarde.*": {
+        "quitar": [
+          "Borgo Pio"
+        ],
         "insertar": [
           {
             "al_principio": true,
@@ -807,8 +804,16 @@
               "modo": "dentro",
               "si_cerrado": "fuera"
             }
+          },
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Plaza de San Pedro",
+              "min": 20
+            }
           }
-        ]
+        ],
+        "empieza": "13:45"
       }
     }
   },

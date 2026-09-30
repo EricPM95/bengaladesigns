@@ -53,7 +53,8 @@ export function specialDatesOfMonth(entries, month) {
  */
 export function specialHoursToAvoid(destData) {
   return (destData?.fechas_especiales?.fechas ?? [])
-    .filter((entry) => entry.horario_especial && (entry.horario_especial.confirmado === true || entry.horario_especial.confirmado === 'probable'))
+    // (`sin_evitar`: el horario corta solo la tarde y los días escritos ya llevan esa visita por la mañana: el Viernes Santo.)
+    .filter((entry) => entry.horario_especial && !entry.horario_especial.sin_evitar && (entry.horario_especial.confirmado === true || entry.horario_especial.confirmado === 'probable'))
     .map((entry) => ({ fecha: entry.fecha, hasta: entry.hasta ?? null, lugares: Object.keys(entry.horario_especial.lugares ?? {}), confirmado: entry.horario_especial.confirmado }))
 }
 

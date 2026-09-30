@@ -148,22 +148,8 @@ export function planCuratedTrip({ destData, totalDays, hasFreeTour = false, pool
   // Sin fechas no hay días concretos (PROMPT_PENDIENTE G): el 15 del mes solo vale para el atardecer y el horario de
   // temporada; nada de festivos, fechas del día curado ni horarios especiales.
   const realDateIso = (day) => (calendar.hasDates ? hoursOf(day).dateIso : null)
-  /**
-   * La sugerencia de una fecha especial para ese día (decisión del usuario, 2026-09-28): la Bendición Urbi et Orbi el
-   * 25 de diciembre y el Domingo de Pascua, el sol del Panteón el 21 de abril, la Girandola el 29 de junio. Solo con
-   * fechas reales y con hora; `dia` la limita a un día del rango (Navidad: el 25).
-   */
-  const dateSuggestionOf = (day) => {
-    const iso = realDateIso(day)
-    if (!iso) return null
-    for (const entry of destData.fechas_especiales?.fechas ?? []) {
-      const sug = entry.sugerencia
-      if (!sug?.lugar || !sug.hora) continue
-      if (sug.dia ? iso.slice(5) !== sug.dia : !matchesDateRange(entry.fecha, entry.hasta, iso)) continue
-      return { entry, sug, night: sug.lugar.endsWith('(noche)') }
-    }
-    return null
-  }
+  /** Las fechas especiales ya no llevan sugerencias con hora (INVARIANTES 405): ningún día trae una. */
+  const dateSuggestionOf = () => null
   const closedThatDay = (name, day) => {
     const place = placeByName.get(name)
     if (!place) return false

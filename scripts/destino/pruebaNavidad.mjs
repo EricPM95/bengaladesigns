@@ -7,7 +7,7 @@
 //   - dos paradas en el mismo sitio.
 // Y en los viajes que cruzan el 31 de diciembre y el 1 de enero (PROMPT_ROMA_FIN_DE_ANO, 4):
 //   - un bus después de las 21:00 del 31;
-//   - un 1 de enero que empieza antes de las 10:00 tras la Nochevieja;
+//   - un 1 de enero que empieza antes de las 9:30 tras la Nochevieja (a las 10:00, o a las 9:30 si no cabe);
 //   - una visita por dentro que empieza después de la última entrada de ese día;
 //   - un texto que prometa fuegos artificiales.
 //   node scripts/destino/pruebaNavidad.mjs [año=2026] [out=docs/PRUEBA_NAVIDAD.md]
@@ -34,9 +34,9 @@ const TIPOS = {
   sin_mercadillo: 'Viaje dentro de la ventana, con la experiencia elegida, sin el mercadillo de Navona',
   mismo_sitio: 'Dos paradas en el mismo sitio',
   bus_nochevieja: 'Fin de Año: un bus después de las 21:00 del 31 de diciembre',
-  ano_nuevo_temprano: 'Fin de Año: un 1 de enero que empieza antes de las 10:00 tras la Nochevieja',
+  ano_nuevo_temprano: 'Fin de Año: un 1 de enero que empieza antes de las 9:30 tras la Nochevieja',
   tras_ultima_entrada: 'Fin de Año: una visita por dentro que empieza después de la última entrada (31 de diciembre y 1 de enero)',
-  promete_fuegos: 'Fin de Año: un texto que promete fuegos artificiales',
+  promete_fuegos: 'Fin de Año: un texto que habla de fuegos, conciertos o desfiles (lo que pasa una vez al año no sale)',
   error: 'El motor falla',
 }
 const INFO = {
@@ -93,12 +93,12 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
     const mmdd = iso.slice(5)
     if (mmdd === '12-31' || mmdd === '01-01') {
       const timed = day.stops.filter((stop) => t2m(stop.suggested_time) != null)
-      if (mmdd === '01-01' && index > 0 && timed.length && t2m(timed[0].suggested_time) < 10 * 60) add('ano_nuevo_temprano', where, `${timed[0].suggested_time} ${timed[0].name} · ${day.curated_day?.id ?? ''}`)
+      if (mmdd === '01-01' && index > 0 && timed.length && t2m(timed[0].suggested_time) < 9 * 60 + 30) add('ano_nuevo_temprano', where, `${timed[0].suggested_time} ${timed[0].name} · ${day.curated_day?.id ?? ''}`)
       for (const stop of day.stops) {
         const at = t2m(stop.suggested_time)
         const stopTexts = [stop.display_title, stop.why, stop.note, stop.notice, stop.transit?.label].filter(Boolean).join(' · ')
         if (mmdd === '12-31' && at != null && at >= 21 * 60 && /\bbus\b|autob[uú]s|tranv/i.test(stopTexts)) add('bus_nochevieja', where, `${stop.suggested_time} ${stop.name}`)
-        if (/fuegos/i.test(stopTexts)) add('promete_fuegos', where, stop.name)
+        if (/fuegos|concierto|desfile|Girandola|Te Deum/i.test(stopTexts)) add('promete_fuegos', where, stop.name)
         const place = placeByName.get(stop.name)
         if (place && at != null && !stop.is_night_experience && !stop.pass_through && !stop.is_pass_by && stop.visit_mode !== 'fuera') {
           const last = lastEntryMinutes(place, at, { dateIso: iso, weekday: weekdayOf(iso) })
@@ -106,7 +106,7 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
         }
       }
     }
-    for (const notice of day.date_notices ?? []) if (/12-31|01-01/.test(notice.dateIso ?? notice.date_iso ?? '') && (notice.texts ?? []).some((text) => /fuegos/i.test(text))) add('promete_fuegos', `${label}, aviso ${notice.id}`)
+    for (const notice of day.date_notices ?? []) if (/12-31|01-01/.test(notice.dateIso ?? notice.date_iso ?? '') && (notice.texts ?? []).some((text) => /fuegos|concierto|desfile|Girandola|Te Deum/i.test(text))) add('promete_fuegos', `${label}, aviso ${notice.id}`)
     for (const stop of day.stops) {
       const at = t2m(stop.suggested_time)
       const texts = [stop.display_title, stop.name, stop.why, stop.note, stop.notice, stop.season_line?.text].filter(Boolean)

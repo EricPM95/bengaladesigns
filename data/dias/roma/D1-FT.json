@@ -315,13 +315,13 @@
       }
     },
     "fecha:12-25": {
-      "_nota": "Navidad (como en D1): el Coliseo y el Foro cerrados, se ven por fuera; a las 12:00, la Bendición Urbi et Orbi en la Plaza de San Pedro. Sin ella, la mañana se quedaba con hora y media libre (viaje del 24 al 25 con Free Tour, 2026-09-30).",
+      "_nota": "Navidad (como en D1): el Coliseo y el Foro cierran y se ven por fuera. El día empieza más tarde y el Barrio Judío pasa a la mañana.",
       "manana": {
         "paradas": [
           {
             "lugar": "Coliseo",
             "tipo": "fija",
-            "hora": "09:50",
+            "hora": "10:15",
             "modo": "fuera"
           },
           {
@@ -337,26 +337,67 @@
             "min": 15
           },
           {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
             "lugar": "Altar de la Patria",
-            "min": 40,
+            "min": 30,
             "modo": "dentro",
             "si_cerrado": "fuera"
           },
           {
-            "lugar": "Bendición Urbi et Orbi",
-            "tipo": "fija",
-            "hora": "12:00",
-            "min": 45,
-            "traslado": {
-              "como": "un taxi",
-              "min": 20
+            "lugar": "Teatro de Marcelo",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Barrio Judío",
+            "min": 25
+          }
+        ]
+      },
+      "tarde.*": {
+        "quitar": [
+          "Barrio Judío",
+          "Teatro de Marcelo"
+        ]
+      }
+    },
+    "empieza_tarde": {
+      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan.",
+      "manana": {
+        "quitar": [
+          "Plaza del Campidoglio",
+          "Plaza Venecia",
+          "Altar de la Patria"
+        ]
+      },
+      "tarde.*": {
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Altar de la Patria",
+              "min": 30,
+              "modo": "dentro",
+              "si_cerrado": "fuera"
+            }
+          },
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Plaza Venecia",
+              "modo": "camino"
+            }
+          },
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Plaza del Campidoglio",
+              "min": 15
             }
           }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Ristorante Arlù"
-        }
+        ]
       }
     }
   },

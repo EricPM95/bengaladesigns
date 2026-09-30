@@ -6,7 +6,13 @@
   "joyas": [
     "Fontana de Trevi"
   ],
-  "no_en": [],
+  "no_en": [
+    {
+      "fecha": "easter-2",
+      "evitar": true,
+      "nota": "Viernes Santo: la zona del Coliseo se corta por la tarde por el Via Crucis. Si el viaje tiene otro día para este, ese."
+    }
+  ],
   "barrio_cena": "monti",
   "noche": "coliseo",
   "manana": {

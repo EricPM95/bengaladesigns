@@ -8,8 +8,14 @@
  *  - invierno, "y veas Roma iluminada": alguna noche lleva paseo o experiencia nocturna; si no, "para que llegues a todo";
  *  - verano, "a primera hora de la mañana": en la mayoría de los días la primera visita es un imprescindible antes de
  *    las 10:00; si no, la versión sin esa promesa.
+ *
+ * La nota navideña (PROMPT_FECHAS_SENCILLAS, 6): si algún día del viaje cae en la `temporada_navidad` del destino, sale en
+ * lugar de la de invierno, y solo promete lo que hay en ese viaje: el mercadillo si está abierto y en la ruta; árboles y
+ * belenes desde que se montan; antes, solo las luces; «iluminado» si alguna noche sale a pasear. {destino}: el del viaje.
  * {hora_atardecer}: la real de las fechas del viaje (sin fechas, la típica del mes), redondeada al cuarto de hora.
  */
+
+import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const EPOCA = { invierno: 'invierno', primavera: 'primavera', verano: 'verano', otono: 'otoño' }
@@ -17,6 +23,26 @@ const EPOCA = { invierno: 'invierno', primavera: 'primavera', verano: 'verano', 
 const WINTER_NOTE_SUNSET_BEFORE = 17 * 60 + 30
 const HHMM = (minutes) => `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`
 const lowerFirst = (text) => text.charAt(0).toLowerCase() + text.slice(1)
+
+/**
+ * El texto navideño de ese viaje (null si ningún día cae en la temporada o el destino no la tiene).
+ * @returns {{ key: string } | null}
+ */
+export function christmasNoteKey(destData, trip, hasNight) {
+  const season = destData.destination_config?.temporada_navidad
+  const texts = destData.destination_config?.nota_temporada ?? {}
+  if (!season?.desde || !season.hasta || !trip.calendar?.hasDates) return null
+  const days = (trip.days ?? []).filter((day) => day.hours?.dateIso)
+  const md = (iso) => Number(iso.slice(5, 7)) * 100 + Number(iso.slice(8, 10))
+  const inside = days.filter((day) => withinMonthDays(md(day.hours.dateIso), season.desde, season.hasta))
+  if (inside.length === 0) return null
+  const market = season.mercadillo
+  const marketInRoute = Boolean(market) && inside.some((day) => withinMonthDays(md(day.hours.dateIso), market.desde, market.hasta) && ((day.schedule?.visits ?? []).some((visit) => market.lugares.includes(visit.place.name)) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => market.lugares.includes(night.name))))
+  const trees = !season.arboles_desde || inside.some((day) => withinMonthDays(md(day.hours.dateIso), season.arboles_desde, season.hasta))
+  const base = !trees ? 'navidad_luces' : marketInRoute ? 'navidad_mercadillo' : 'navidad'
+  const key = !hasNight && texts[`${base}_sin_noche`] ? `${base}_sin_noche` : base
+  return texts[key] ? { key } : null
+}
 
 /** ¿La mayoría de los días empieza por un imprescindible antes de las 10:00? */
 export function earlyMornings(destData, trip) {
@@ -52,6 +78,16 @@ export function seasonNoteFor(destData, trip, { hasNight, dateNotices = [] }) {
   const texts = destData.destination_config?.nota_temporada ?? null
   const promises = []
   let text
+  const christmas = season === 'invierno' || calendar.season === 'otono' ? christmasNoteKey(destData, trip, hasNight) : null
+  if (christmas) {
+    text = texts[christmas.key].replaceAll('{destino}', destData.destination ?? 'tu destino')
+    if (text.includes('{hora_atardecer}')) {
+      if (!hora) return null
+      text = text.replace('{hora_atardecer}', hora)
+    }
+    if (hasNight) promises.push('noche')
+    return { season, icon: 'navidad', text, promises }
+  }
   if (!texts) {
     text = `Tu ruta está pensada para disfrutar ${destData.destination ?? 'tu destino'} en ${EPOCA[season] ?? season}.`
   } else if (season === 'invierno') {

@@ -1497,12 +1497,12 @@
           "revisar": "noviembre de 2026, cuando se publique el calendario 2026-27"
         },
         {
-          "id": "te_deum",
+          "id": "nochevieja_basilica",
           "fecha": "12-31",
           "windows": [
             "07:00-14:30"
           ],
-          "motivo": "Te Deum con el Papa a las 17:00.",
+          "motivo": "Celebración de la tarde con el Papa: la Basílica cierra antes a las visitas.",
           "last_entry": null,
           "confirmado": "probable",
           "verificar": true,
@@ -7847,7 +7847,13 @@
       "invierno_sin_noche": "En tus fechas anochece sobre las {hora_atardecer} y muchos monumentos cierran antes. Hemos adaptado tu ruta para que llegues a todo.",
       "primavera_otono": "Buena época para Roma: se camina a gusto y hay luz hasta las {hora_atardecer}. Hemos pensado tu ruta para que aproveches cada hora.",
       "verano": "En verano Roma aprieta: hemos intentado poner las visitas principales a primera hora de la mañana para que evites la multitud y el calor.",
-      "verano_sin_manana": "En verano Roma aprieta: hemos pensado tu ruta para que la disfrutes sin agobios."
+      "verano_sin_manana": "En verano Roma aprieta: hemos pensado tu ruta para que la disfrutes sin agobios.",
+      "navidad_mercadillo": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo, y como anochece sobre las {hora_atardecer}, también iluminado.",
+      "navidad_mercadillo_sin_noche": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces, las plazas estrenan árbol y Piazza Navona tiene su mercadillo. Hemos preparado tu ruta para que lo veas todo.",
+      "navidad": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos, y como anochece sobre las {hora_atardecer}, también los verás iluminados.",
+      "navidad_sin_noche": "¡Vas a vivir {destino} en Navidad! Las calles se llenan de luces y las plazas estrenan árbol y belén. Hemos preparado tu ruta para que pases por los sitios más bonitos.",
+      "navidad_luces": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas, y como anochece sobre las {hora_atardecer}, las disfrutarás de sobra.",
+      "navidad_luces_sin_noche": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas."
     },
     "aperitivo_invierno": {
       "_nota": "Invierno (decisión del usuario, 2026-09-28): el rato libre antes de cenar lleva nombre y contenido, por barrio de cena. \"12-25\": ese día (las tiendas cierran); \"diciembre\"; \"invierno\": el resto. si_visto / si_visto_titulo: si ese día ya se vio lo que nombra, el otro título.",
@@ -7932,6 +7938,47 @@
       "general": "Hoy toca madrugar un poco: merece la pena empezar a las {hora}, así te da tiempo a ver {lugar} sin prisas.",
       "cierre": "Hoy toca madrugar un poco. En invierno {lugar} cierra a las {cierre}, así que hoy empezamos a las {hora} para que lo veas con tranquilidad.",
       "cierre_varios": "Hoy toca madrugar un poco. En invierno {lugar} cierran a las {cierre}, así que hoy empezamos a las {hora} para que los veas con tranquilidad."
+    },
+    "papa": {
+      "_que_es": "Lo del Papa que se repite cada semana: la audiencia de los miércoles por la mañana y el Ángelus de los domingos a las 12:00 en la Plaza de San Pedro. En verano hay semanas sin audiencia y con el Ángelus fuera de Roma: en esas fechas los textos no salen (la ruta no cambia: sigue siendo la prudente).",
+      "sin_audiencia": [
+        {
+          "desde": "07-05",
+          "hasta": "08-04"
+        }
+      ],
+      "angelus_fuera": [
+        {
+          "desde": "07-05",
+          "hasta": "07-27"
+        },
+        {
+          "desde": "08-15",
+          "hasta": "08-17"
+        }
+      ],
+      "fuente": "Verano de 2026: el Papa en Castel Gandolfo del 5 al 27 de julio, audiencias suspendidas hasta el 5 de agosto, y otra vez allí del 15 al 17 de agosto (Prefectura de la Casa Pontificia, vía avvenire.it e infovaticana.com). Calendario de audiencias: vatican.va.",
+      "comprobado": "2026-10-01",
+      "verificar": true,
+      "revisar": "junio de cada año, cuando la Prefectura publica el verano"
+    },
+    "temporada_navidad": {
+      "_que_es": "Época de Navidad del destino: si algún día del viaje cae dentro, arriba de la ruta sale la nota navideña en lugar de la de invierno.",
+      "desde": "11-26",
+      "hasta": "01-06",
+      "arboles_desde": "12-08",
+      "mercadillo": {
+        "desde": "12-01",
+        "hasta": "01-05",
+        "lugares": [
+          "Piazza Navona",
+          "Piazza Navona (noche)"
+        ]
+      },
+      "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26»: luces desde el 26 de noviembre de 2025 hasta el 6 de enero de 2026; los árboles de las plazas se encienden el 8 de diciembre. Mercadillo: «Festa di Piazza Navona 2025».",
+      "comprobado": "2026-10-01",
+      "verificar": true,
+      "revisar": "noviembre de cada año"
     }
   },
   "museos_de_pago": {
@@ -9227,15 +9274,6 @@
               "lugar": "Altar de la Patria",
               "rol": "de_paso",
               "por_que": "Los romanos lo llaman «la máquina de escribir» por su mármol blanco y su forma. Por dentro se entra gratis y merece la pena subir sus escaleras sin prisa. Si te animas, la terraza panorámica (va aparte) tiene Roma entera a tus pies."
-            },
-            {
-              "lugar": "Bendición Urbi et Orbi",
-              "rol": "parada",
-              "hora": "12:00",
-              "fija": true,
-              "nota": "Opcional.",
-              "por_que": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
-              "hora_ok": true
             }
           ],
           "comida": {
@@ -9663,7 +9701,9 @@
           "aviso_fecha": {
             "icono": "religioso",
             "etiqueta": "Audiencia papal",
-            "texto": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto."
+            "texto": "Los miércoles por la mañana el Papa recibe a los fieles en la plaza y la Basílica abre más tarde. Hemos puesto San Pedro por la tarde.",
+            "_antes": "Los miércoles por la mañana el Papa da audiencia en la Plaza de San Pedro. Mientras tanto, el Castillo; la plaza y la Basílica, después de comer, cuando ya han abierto.",
+            "excepto": "papa.sin_audiencia"
           }
         },
         "museos_cerrados": {
@@ -11938,17 +11978,6 @@
       },
       "description": "Cappuccino y cornetto de pie en la barra, como un romano, entre Trevi y San Ignacio.",
       "why": "Cappuccino y cornetto de pie en la barra, como un local: el desayuno romano de verdad, sin prisa y sin sentarse."
-    },
-    {
-      "name": "Bendición Urbi et Orbi",
-      "duration_minutes": 60,
-      "coordinates": [
-        41.9022,
-        12.4568
-      ],
-      "zone": "vaticano",
-      "description": "El 25 de diciembre y el Domingo de Pascua a las 12:00, el Papa da la bendición Urbi et Orbi desde el balcón de la Basílica de San Pedro.",
-      "why": "El 25 de diciembre a las 12:00, la bendición Urbi et Orbi del Papa en la Plaza de San Pedro. Opcional: llega con margen por los controles."
     }
   ],
   "curated_routes": {
@@ -12041,21 +12070,23 @@
     }
   },
   "fechas_especiales": {
-    "_que_es": "Fechas especiales de Roma para el aviso de bienvenida de la ruta (ventana emergente). Curadas a mano. 'verificar': true = hay que confirmar cada año antes de enseñarlo; mientras tanto el aviso NO sale (el motor sí puede usar el horario especial si está marcado como confirmado).",
+    "_que_es": "Fechas especiales del destino para los avisos del principio de la ruta. Regla (2026-10-01, INVARIANTES 405): un aviso dice solo qué cambia ese día (horarios, cierres, transporte) y qué hemos hecho en la ruta. Lo que se repite (misas y audiencias del Papa, el Ángelus, los mercadillos) sí se cuenta; lo que pasa una vez al año (fuegos, conciertos, desfiles, festivales) no sale en ningún sitio, salvo lo que cambie en los horarios. Nunca una parada ni una sugerencia con hora.",
     "_formato": {
       "fecha": "MM-DD, o 'easter' / 'easter+1' / 'easter-2' (Pascua cambia cada año). 'hasta' para rangos (MM-DD).",
-      "tipo": "festivo (cierra cosas) · evento (algo que ver ese día) · religioso · temporada",
-      "icono": "nombre del icono del diseño: fiesta, religioso, fuegos, luz, navidad, bandera, musica, calma",
+      "tipo": "festivo (cierra cosas) · religioso (un gran día que llena la ciudad) · evento (algo que se repite: el primer domingo de mes) · fiesta / temporada (dura semanas)",
+      "icono": "fiesta, religioso, luz, navidad, bandera, calma, entrada",
       "titulo": "Lo que sale en grande. Corto.",
-      "texto": "2-3 líneas de tú a tú. Sin precios (ni 'gratis'). Dice qué pasa y qué hemos hecho o qué te recomendamos.",
-      "sugerencia": "opcional: una parada o nocturna con hora que el motor puede ofrecer ese día (no la mete sola: sale como botón 'Añadir a mi ruta').",
-      "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true.",
+      "contexto": "Qué cambia ese día: horarios, cierres, transporte, o el gran acto religioso que llena un sitio. Sin precios.",
+      "hecho": "Qué hemos hecho en la ruta. Lista de grupos; de cada grupo sale la primera opción cuya condición se cumple en ESE viaje (una opción sin `si` vale siempre). Condiciones: `hoy` (la ruta pasa ese día por alguno de esos lugares), `antes_de` / `despues_de` (con `hoy`: a qué hora), `otro_dia` (el viaje lleva alguno de esos lugares otro día y no ese), `en_viaje` (en cualquier día), `empieza_tarde` (el día empieza más tarde por `empieza_desde`). Así ningún aviso promete lo que la ruta no hace.",
+      "texto": "El aviso entero de ejemplo (contexto + la primera opción de `hecho`): 35 palabras como mucho.",
+      "cubre": "Los temas de los avisos automáticos de ese día (día movido, horario especial) que este aviso ya cuenta: no salen aparte.",
+      "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true, o 'probable' con 'aplicar'.",
+      "empieza_desde": "opcional: { hora, si_no_cabe, si_viaje_incluye: \"MM-DD\", comida_como_tarde }. Ese día no empieza antes de esa hora si el viaje incluye la otra fecha (el 1 de enero tras la Nochevieja); si no cabe, a la hora de `si_no_cabe`.",
+      "aviso_restaurantes": "true = ese día cierran muchos restaurantes: una frase aparte.",
       "fuente": "de dónde sale el dato",
-      "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app.",
-      "sugerencia_texto": "opcional: una frase aparte con algo que el viajero puede hacer ese día por su cuenta. No entra en la ruta ni quita nada; con prudencia («suele…», «compruébalo en…»).",
-      "empieza_desde": "opcional: { hora, si_viaje_incluye: \"MM-DD\" }. Ese día no empieza antes de esa hora si el viaje incluye la otra fecha (el 1 de enero tras la Nochevieja)."
+      "verificar": "true = el dato exacto (hora, programa) cambia cada año: se comprueba en la web oficial y el texto lo cuenta con prudencia."
     },
-    "_regla": "Todo texto acaba con lo que hemos hecho (\"Hemos puesto…\", \"Hemos movido…\"), 35 palabras como mucho y sin precios.",
+    "_regla": "Cada aviso dice solo qué cambia ese día y qué hemos hecho: 35 palabras como mucho, de tú y sin precios.",
     "fechas": [
       {
         "id": "ano_nuevo",
@@ -12063,9 +12094,8 @@
         "tipo": "festivo",
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
-        "texto": "Hoy cierran los Museos Vaticanos, y el Coliseo y el Foro suelen abrir con horario corto (compruébalo en su web). Hemos puesto los Museos otro día y tus visitas dentro de ese horario.",
+        "texto": "El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.",
         "fuente": "colosseo.it («Special opening on January 1, 2026») y cultura.gov.it («1 gennaio 2026 al Pantheon»); Museos Vaticanos: museivaticani.va. Horarios de la temporada 2025-26: revisar cada diciembre. Misa de las 10:00 y Ángelus de las 12:00: press.vatican.va, boletines del 1 de enero de 2026.",
-        "contexto": "Roma empieza el año con calma: muchos monumentos abren con horario corto.",
         "verificar": true,
         "comprobado": "2026-09-30",
         "horario_especial": {
@@ -12102,38 +12132,170 @@
         "aviso_restaurantes": true,
         "empieza_desde": {
           "hora": "10:00",
+          "si_no_cabe": "09:30",
           "si_viaje_incluye": "12-31",
           "comida_como_tarde": "14:30",
-          "_nota": "Si el viajero pasó la Nochevieja en el destino (el 31 está en su viaje), el 1 de enero no empieza antes de las 10:00. Si con eso la mañana no cabe (se llega tarde a una hora fija o la comida pasa de `comida_como_tarde`), el día se queda a su hora escrita y la prueba lo cuenta."
+          "_nota": "Si el 31 está en el viaje, el 1 de enero empieza a las 10:00; si así no cabe, con la variante `empieza_tarde` del día escrito (el Campidoglio y el Altar de la Patria pasan a la tarde); y si tampoco, a las 9:30."
         },
-        "sugerencia_texto": "En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va)."
+        "contexto": "El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "empieza_tarde": true,
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día."
+            },
+            {
+              "si": {
+                "empieza_tarde": true
+              },
+              "texto": "Hemos empezado tu día más tarde y tus visitas van dentro de ese horario."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día y tus visitas de hoy dentro de ese horario."
+            },
+            {
+              "texto": "Hemos puesto tus visitas de hoy dentro de ese horario."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos",
+          "Coliseo",
+          "Foro Romano",
+          "Panteón",
+          "Termas de Caracalla"
+        ]
       },
       {
         "id": "reyes",
         "fecha": "01-06",
         "tipo": "religioso",
         "icono": "navidad",
-        "titulo": "6 de enero · Reyes (la Befana)",
-        "texto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana. Los Museos Vaticanos cierran: hemos puesto tu visita otro día.",
+        "titulo": "6 de enero · Epifanía (la Befana)",
+        "texto": "Hay misa de la Epifanía en San Pedro y los Museos Vaticanos cierran; en Navona, la Befana y el último día del mercadillo. Hemos puesto el Vaticano otro día.",
         "verificar": true,
-        "fuente": "closed_dates de roma.json (Vaticanos); mercadillo: dato de temporada pendiente",
-        "comprobado": "2026-09-28",
-        "contexto": "Suele ser el último día del mercadillo navideño de Piazza Navona, con la fiesta de la Befana."
+        "fuente": "Museos: calendario oficial (closed_dates). Misa de la Epifanía a las 9:30 en la Basílica: vatican.va, «Notificazione tempo di Natale» 2025-26. Mercadillo: turismoroma.it, «Festa di Piazza Navona 2025».",
+        "comprobado": "2026-10-01",
+        "contexto": "Hay misa de la Epifanía en San Pedro y los Museos Vaticanos cierran; en Navona, la Befana y el último día del mercadillo.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro"
+                ],
+                "despues_de": "12:30"
+              },
+              "texto": "Hemos puesto San Pedro por la tarde."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro"
+                ]
+              },
+              "texto": "Tu ruta pasa hoy por San Pedro: ve con tiempo."
+            },
+            {
+              "texto": "Tu ruta de hoy no pasa por San Pedro: no te afecta."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ]
       },
       {
         "id": "viernes_santo",
         "fecha": "easter-2",
         "tipo": "religioso",
         "icono": "religioso",
-        "titulo": "Viernes Santo · Via Crucis en el Coliseo",
-        "texto": "Por la noche el Papa suele presidir el Via Crucis junto al Coliseo y la zona se corta por la tarde (compruébalo en vatican.va). Hemos puesto el Coliseo por la mañana.",
-        "sugerencia": {
-          "lugar": "Coliseo (noche)",
-          "nota": "Via Crucis con el Papa (hacia las 21:15)"
-        },
+        "titulo": "Viernes Santo",
+        "texto": "Por la noche hay Via Crucis en el Coliseo y la zona se corta por la tarde. Hemos puesto el Coliseo por la mañana.",
         "verificar": true,
-        "fuente": "Tradición anual; hora y cortes a confirmar cada año en vatican.va",
-        "comprobado": "2026-09-28"
+        "fuente": "colosseo.it, «Chiusure Via Crucis» (2024 y 2025: cierre a las 14:00, última entrada a las 13:00); turismoroma.it, «Via Crucis al Colosseo 2026» (3 de abril de 2026). Revisar cada año en colosseo.it.",
+        "comprobado": "2026-10-01",
+        "contexto": "Por la noche hay Via Crucis en el Coliseo y la zona se corta por la tarde.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Coliseo",
+                  "Foro Romano y Palatino"
+                ],
+                "antes_de": "13:00"
+              },
+              "texto": "Hemos puesto el Coliseo por la mañana."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Coliseo"
+                ]
+              },
+              "texto": "Hemos puesto el Coliseo otro día."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Coliseo (noche)",
+                  "Via dei Fori Imperiali"
+                ]
+              },
+              "texto": "Tu ruta pasa cerca por la tarde: ve con tiempo, habrá cortes."
+            },
+            {
+              "texto": "Tu ruta de hoy no pasa por el Coliseo: no te afecta."
+            }
+          ]
+        ],
+        "cubre": [
+          "Coliseo",
+          "Foro Romano"
+        ],
+        "horario_especial": {
+          "confirmado": "probable",
+          "aplicar": true,
+          "sin_evitar": true,
+          "_nota": "La Questura cierra el parque arqueológico por el Via Crucis. 2025: abierto de 8:30 a 14:00, última entrada a las 13:00 (colosseo.it). 2024: igual. `sin_evitar`: el reparto no huye de ese día; el Coliseo ya va por la mañana.",
+          "lugares": {
+            "Coliseo": {
+              "windows": [
+                "08:30-14:00"
+              ],
+              "last_entry": "13:00"
+            },
+            "Foro Romano y Palatino": {
+              "windows": [
+                "08:30-14:00"
+              ],
+              "last_entry": "13:00"
+            }
+          }
+        }
       },
       {
         "id": "pascua",
@@ -12141,20 +12303,48 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "Domingo de Pascua",
-        "texto": "A las 12:00 el Papa suele dar la bendición Urbi et Orbi en la Plaza de San Pedro, con muchísima gente. Hemos dejado tu día preparado para que puedas ir si quieres.",
-        "sugerencia": {
-          "lugar": "Bendición Urbi et Orbi",
-          "hora": "11:30",
-          "nota": "Bendición Urbi et Orbi a las 12:00",
-          "por_que": "El Domingo de Pascua a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
-          "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-          "traslado_min": 25,
-          "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
-          "traslado_despues_min": 25
-        },
+        "texto": "A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles. Hemos puesto tu visita al Vaticano otro día, para que la veas con calma.",
         "verificar": true,
-        "fuente": "vatican.va (confirmar cada año)",
-        "comprobado": "2026-09-28"
+        "fuente": "vatican.va (misa de Pascua y bendición Urbi et Orbi a las 12:00; confirmar cada año)",
+        "comprobado": "2026-10-01",
+        "contexto": "A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro",
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto tu visita al Vaticano otro día, para que la veas con calma."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro"
+                ],
+                "despues_de": "13:30"
+              },
+              "texto": "Hemos puesto San Pedro por la tarde, cuando la plaza ya se ha vaciado."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro"
+                ]
+              },
+              "texto": "Tu ruta pasa hoy por San Pedro: ve con tiempo."
+            },
+            {
+              "texto": "Tu ruta de hoy no pasa por San Pedro: no te afecta."
+            }
+          ]
+        ]
       },
       {
         "id": "pasquetta",
@@ -12162,23 +12352,27 @@
         "tipo": "festivo",
         "icono": "fiesta",
         "titulo": "Lunes de Pascua (Pasquetta)",
-        "texto": "Los Museos Vaticanos cierran y los romanos se van de pícnic a los parques. Hemos movido el Vaticano a otro día de tu viaje.",
+        "texto": "Es festivo y los Museos Vaticanos cierran. Hemos puesto el Vaticano otro día.",
         "fuente": "closed_dates de roma.json",
-        "contexto": "Los romanos se van de pícnic a los parques."
-      },
-      {
-        "id": "natale_di_roma",
-        "fecha": "04-21",
-        "tipo": "evento",
-        "icono": "luz",
-        "titulo": "21 de abril · Roma cumple años",
-        "texto": "Roma cumple años: desfile de legionarios en el Circo Máximo y, a mediodía, el sol del óculo del Panteón cae sobre la puerta. Hemos dejado tu día listo para verlo hacia las 12:00.",
-        "sugerencia": {
-          "lugar": "Panteón",
-          "hora": "11:45",
-          "nota": "El rayo de sol sobre la puerta, hacia las 12:00"
-        },
-        "fuente": "cultura.gov.it ('Magia di luce: il Pantheon e la fondazione di Roma'); ilmessaggero.it"
+        "contexto": "Es festivo y los Museos Vaticanos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ]
       },
       {
         "id": "liberacion",
@@ -12186,30 +12380,57 @@
         "tipo": "festivo",
         "icono": "bandera",
         "titulo": "25 de abril · Fiesta de la Liberación",
-        "texto": "Fiesta de la Liberación: festivo nacional, con actos oficiales y mucha gente en el centro. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
+        "texto": "Es festivo en toda Italia y algunos sitios cambian de horario. Hemos comprobado los de tu ruta de hoy.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Es festivo en toda Italia y algunos sitios cambian de horario.",
+        "hecho": [
+          [
+            {
+              "texto": "Hemos comprobado los de tu ruta de hoy."
+            }
+          ]
+        ]
       },
       {
         "id": "primero_mayo",
         "fecha": "05-01",
         "tipo": "festivo",
-        "icono": "musica",
+        "icono": "fiesta",
         "titulo": "1 de mayo · Día del Trabajo",
-        "texto": "Los Museos Vaticanos y las Termas de Caracalla cierran, y por la tarde suele haber un gran concierto en San Juan de Letrán. Hemos puesto sus visitas otro día.",
+        "texto": "Es festivo y cierran los Museos Vaticanos y algunos monumentos. Hemos puesto el Vaticano otro día.",
         "verificar": true,
-        "fuente": "closed_dates de roma.json; concierto a confirmar cada año",
+        "fuente": "closed_dates de roma.json (webs oficiales)",
         "comprobado": "2026-09-28",
-        "contexto": "Por la tarde suele haber un gran concierto en San Juan de Letrán."
+        "contexto": "Es festivo y cierran los Museos Vaticanos y algunos monumentos.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos",
+          "Termas de Caracalla"
+        ]
       },
       {
         "id": "fiesta_republica",
         "fecha": "06-02",
-        "tipo": "evento",
+        "tipo": "festivo",
         "icono": "bandera",
         "titulo": "2 de junio · Fiesta de la República",
-        "texto": "Hay desfile en Via dei Fori Imperiali y es posible que el Coliseo y el Foro no abran hasta la tarde (compruébalo en su web). Hemos puesto su visita otro día.",
+        "texto": "Es festivo y el Coliseo y el Foro no abren hasta la tarde. Hemos puesto su visita otro día.",
         "horario_especial": {
           "confirmado": "probable",
           "lugares": {
@@ -12227,26 +12448,65 @@
           "_nota": "Probable, no confirmado: en 2026 abrieron a las 14:15 y en 2016 hacia las 11:00. El motor evita la mañana si puede y el aviso lo dice con prudencia."
         },
         "fuente": "cultura.gov.it: 'Ingresso gratuito domenica 2 giugno 2026 | Festa della Repubblica – apertura alle ore 14.15' y comunicado de 2016",
-        "contexto": "Hay desfile en Via dei Fori Imperiali."
+        "contexto": "Es festivo y el Coliseo y el Foro no abren hasta la tarde.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Coliseo"
+                ]
+              },
+              "texto": "Hemos puesto su visita otro día."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Coliseo",
+                  "Foro Romano y Palatino"
+                ]
+              },
+              "texto": "Hemos puesto su visita dentro de ese horario."
+            },
+            {
+              "texto": "Tu ruta de hoy no pasa por ellos: no te afecta."
+            }
+          ]
+        ],
+        "cubre": [
+          "Coliseo",
+          "Foro Romano"
+        ]
       },
       {
         "id": "san_pedro_pablo",
         "fecha": "06-29",
-        "tipo": "evento",
-        "icono": "fuegos",
+        "tipo": "festivo",
+        "icono": "fiesta",
         "titulo": "29 de junio · San Pedro y San Pablo",
-        "texto": "Fiesta de los patronos de Roma: el Vaticano cierra y por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos.",
-        "sugerencia": {
-          "lugar": "Puente Sant'Angelo (noche)",
-          "hora": "21:30",
-          "nota": "La Girandola sobre el Castillo (hora a confirmar cada año; interna, no se enseña)",
-          "nombre": "La Girandola",
-          "texto": "Los fuegos de la Girandola sobre el Castillo, una tradición que viene del siglo XV por los patronos de Roma. Busca sitio en el puente o en la orilla con tiempo: se llena."
-        },
+        "texto": "Es la fiesta de los patronos de Roma y los Museos Vaticanos cierran. Hemos puesto el Vaticano otro día.",
         "verificar": true,
-        "fuente": "comune.roma.it ('Il 29 giugno la Girandola di Castel Sant'Angelo'); romatoday.it",
+        "fuente": "closed_dates de roma.json (calendario oficial de los Museos Vaticanos)",
         "comprobado": "2026-09-28",
-        "contexto": "Fiesta de los patronos de Roma: por la noche suele haber fuegos sobre el Castillo de Sant'Angelo, la Girandola. Hemos puesto tu noche en el Puente Sant'Angelo para verlos."
+        "contexto": "Es la fiesta de los patronos de Roma y los Museos Vaticanos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ]
       },
       {
         "id": "ferragosto",
@@ -12255,21 +12515,47 @@
         "tipo": "festivo",
         "icono": "calma",
         "titulo": "Ferragosto",
-        "texto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca; el Vaticano y algunos restaurantes cierran. Hemos ajustado tu ruta a lo que sí abre.",
+        "texto": "El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios. Hemos puesto el Vaticano otro día y el resto de tu ruta, en lo que abre.",
         "fuente": "closed_dates de roma.json",
-        "contexto": "Los romanos se van a la playa y la ciudad está más tranquila que nunca.",
-        "aviso_restaurantes": true
+        "aviso_restaurantes": true,
+        "contexto": "El 15 de agosto es festivo: cierran los Museos Vaticanos y muchos comercios.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día y el resto de tu ruta, en lo que abre."
+            },
+            {
+              "texto": "Hemos ajustado tu ruta a lo que abre."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ]
       },
       {
         "id": "todos_los_santos",
         "fecha": "11-01",
         "tipo": "festivo",
-        "icono": "religioso",
+        "icono": "fiesta",
         "titulo": "1 de noviembre · Todos los Santos",
-        "texto": "Todos los Santos es festivo en toda Italia, con misas especiales y el centro animado. Hemos revisado los horarios de hoy para que no choques con ningún cierre.",
+        "texto": "Es festivo en toda Italia y algunos sitios cambian de horario. Hemos comprobado los de tu ruta de hoy.",
         "verificar": true,
         "fuente": "Festivo nacional; cierres de lugares a confirmar cada año (el JSON de Roma no marca ningún cierre el 1 de noviembre)",
-        "comprobado": "2026-09-28"
+        "comprobado": "2026-09-28",
+        "contexto": "Es festivo en toda Italia y algunos sitios cambian de horario.",
+        "hecho": [
+          [
+            {
+              "texto": "Hemos comprobado los de tu ruta de hoy."
+            }
+          ]
+        ]
       },
       {
         "id": "inmaculada",
@@ -12277,49 +12563,206 @@
         "tipo": "religioso",
         "icono": "religioso",
         "titulo": "8 de diciembre · La Inmaculada",
-        "texto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena. Los Museos Vaticanos cierran: hemos movido tu visita.",
+        "texto": "Por la tarde el Papa va a la Plaza de España y se llena; los Museos Vaticanos cierran. Hemos puesto la Plaza de España por la mañana.",
         "verificar": true,
-        "fuente": "Tradición anual; hora a confirmar en vatican.va",
-        "comprobado": "2026-09-28",
-        "contexto": "Por la tarde el Papa suele ir a la Plaza de España a honrar a la Virgen y la plaza se llena."
+        "fuente": "vatican.va (acto de veneración a la Inmaculada en la Plaza de España, hacia las 16:00; confirmar cada año); Museos: calendario oficial",
+        "comprobado": "2026-10-01",
+        "contexto": "Por la tarde el Papa va a la Plaza de España y se llena; los Museos Vaticanos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de España"
+                ],
+                "antes_de": "14:00"
+              },
+              "texto": "Hemos puesto la Plaza de España por la mañana."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Plaza de España"
+                ]
+              },
+              "texto": "Hemos puesto la Plaza de España otro día."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de España"
+                ]
+              },
+              "texto": "Tu ruta pasa por allí por la tarde: la verás llena."
+            }
+          ],
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "El Vaticano va otro día."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ]
+      },
+      {
+        "id": "nochebuena",
+        "fecha": "12-24",
+        "tipo": "religioso",
+        "icono": "navidad",
+        "titulo": "24 de diciembre · Nochebuena",
+        "contexto": "Por la noche el Papa celebra la misa de Nochebuena en San Pedro: la Basílica y los Museos Vaticanos cierran antes.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro",
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto tus visitas dentro de ese horario."
+            },
+            {
+              "si": {
+                "otro_dia": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro",
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "texto": "Tu ruta de hoy no pasa por San Pedro: no te afecta."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos",
+          "Basílica de San Pedro"
+        ],
+        "aviso_restaurantes": true,
+        "verificar": true,
+        "fuente": "vatican.va, «Notificazione tempo di Natale» 2025-26 (misa de la noche a las 22:00); Museos: calendario oficial 2026 y 2027.",
+        "comprobado": "2026-10-01",
+        "texto": "Por la noche el Papa celebra la misa de Nochebuena en San Pedro: la Basílica y los Museos Vaticanos cierran antes. Hemos puesto tus visitas dentro de ese horario."
       },
       {
         "id": "navidad",
-        "fecha": "12-24",
-        "hasta": "12-26",
+        "fecha": "12-25",
         "tipo": "religioso",
         "icono": "navidad",
-        "titulo": "Navidad en Roma",
-        "texto": "Belenes en las iglesias, el árbol de San Pedro y el mercadillo de Navona; el 25 a las 12:00, bendición del Papa. Hemos colocado tu ruta para que no te pierdas nada.",
-        "fuente": "closed_dates de roma.json; curated_breaks 'Bendición Urbi et Orbi'",
-        "sugerencia": {
-          "lugar": "Bendición Urbi et Orbi",
-          "hora": "11:30",
-          "dia": "12-25",
-          "nota": "Bendición Urbi et Orbi a las 12:00",
-          "traslado": "el metro A (hasta Ottaviano) o el bus 64",
-          "traslado_min": 25,
-          "traslado_despues": "andando o en taxi (el 25, el metro y el bus paran a las 13:00)",
-          "traslado_despues_min": 25
-        },
-        "aviso_restaurantes": true
+        "titulo": "25 de diciembre · Navidad",
+        "texto": "A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles; muchos monumentos cierran. Hemos puesto tu visita al Vaticano otro día, para que la veas con calma.",
+        "fuente": "vatican.va, «Notificazione tempo di Natale» 2025-26 (misa a las 10:00 y bendición Urbi et Orbi a las 12:00); cierres: closed_dates de roma.json",
+        "aviso_restaurantes": true,
+        "contexto": "A mediodía el Papa da la bendición en San Pedro y la plaza se llena de fieles; muchos monumentos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro",
+                  "Cúpula de San Pedro",
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto tu visita al Vaticano otro día, para que la veas con calma."
+            },
+            {
+              "si": {
+                "hoy": [
+                  "Plaza de San Pedro",
+                  "Basílica de San Pedro"
+                ],
+                "despues_de": "13:30"
+              },
+              "texto": "Hemos puesto San Pedro por la tarde, cuando la plaza ya se ha vaciado."
+            },
+            {
+              "texto": "Hemos ajustado tu ruta a lo que abre."
+            }
+          ]
+        ],
+        "verificar": true,
+        "comprobado": "2026-10-01",
+        "cubre": [
+          "Museos Vaticanos"
+        ]
+      },
+      {
+        "id": "san_esteban",
+        "fecha": "12-26",
+        "tipo": "festivo",
+        "icono": "navidad",
+        "titulo": "26 de diciembre · San Esteban",
+        "contexto": "Es festivo y los Museos Vaticanos cierran.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "otro_dia": [
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto el Vaticano otro día."
+            },
+            {
+              "texto": "Hemos comprobado los horarios de tu ruta de hoy."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos"
+        ],
+        "aviso_restaurantes": true,
+        "fuente": "closed_dates de roma.json (calendario oficial de los Museos Vaticanos)",
+        "comprobado": "2026-10-01",
+        "texto": "Es festivo y los Museos Vaticanos cierran. Hemos puesto el Vaticano otro día."
       },
       {
         "id": "nochevieja",
         "fecha": "12-31",
-        "tipo": "evento",
-        "icono": "musica",
+        "tipo": "festivo",
+        "icono": "fiesta",
         "titulo": "31 de diciembre · Nochevieja",
-        "texto": "Roma despide el año en la calle, con un gran concierto en el Circo Máximo, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
+        "texto": "Los Museos Vaticanos y San Pedro cierran antes de lo normal. Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús.",
         "verificar": true,
-        "fuente": "turismoroma.it, «Concerto di Capodanno 2026 Roma al Circo Massimo» (31 de diciembre de 2025, desde las 21:00-21:30 y después de la medianoche; cuarto año seguido; la página no habla de fuegos artificiales, por eso no se prometen). Transporte: destination_config.transporte_festivos. Te Deum: vatican.va, «Notificazione tempo di Natale» 2025-26. Revisar cada diciembre.",
-        "comprobado": "2026-09-30",
+        "fuente": "Museos: calendario oficial 2026 y 2027 (cierre a las 15:00). Basílica: vatican.va, «Notificazione tempo di Natale» 2025-26. Transporte: destination_config.transporte_festivos.",
+        "comprobado": "2026-10-01",
         "aviso_restaurantes": true,
-        "_antes": {
-          "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
-          "icono": "fuegos"
-        },
-        "sugerencia_texto": "Después de cenar, si te apetece: el Concierto de Fin de Año del Circo Máximo suele empezar hacia las 21:00 y sigue hasta pasada la medianoche (compruébalo en turismoroma.it). Ve andando o en metro y vuelve en metro (línea B, Circo Massimo): esa noche los buses paran a las 21:00 y el metro sigue hasta las 2:30."
+        "contexto": "Los Museos Vaticanos y San Pedro cierran antes de lo normal.",
+        "hecho": [
+          [
+            {
+              "si": {
+                "hoy": [
+                  "Basílica de San Pedro",
+                  "Museos Vaticanos y Capilla Sixtina"
+                ]
+              },
+              "texto": "Hemos puesto tus visitas dentro de ese horario y tu noche, sin autobús."
+            },
+            {
+              "texto": "Hemos dejado tu noche sin autobús: a pie o en metro."
+            }
+          ]
+        ],
+        "cubre": [
+          "Museos Vaticanos",
+          "Basílica de San Pedro"
+        ]
       },
       {
         "id": "domenica_al_museo",
@@ -12497,7 +12940,6 @@
     "Mercados de Trajano": "El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies.",
     "Museos Capitolinos": "Los museos públicos más antiguos del mundo, en la plaza de Miguel Ángel. Dentro está la loba que amamanta a Rómulo y Remo, el símbolo de Roma, y la estatua original de Marco Aurelio a caballo.",
     "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma el primer día.",
-    "Bendición Urbi et Orbi": "El 25 de diciembre a las 12:00, el Papa da la bendición desde el balcón de San Pedro a una plaza llena. Llega con margen: hay controles de seguridad y mucha gente.",
     "Columna de Trajano": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro.",
     "Via della Conciliazione": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto.",
     "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",
@@ -12640,6 +13082,29 @@
         "texto": "De Piazza del Popolo a Plaza Venecia, Via del Corso se ilumina entera en Navidad: casi dos kilómetros de luces. Es el paseo que hacen los romanos antes de cenar.",
         "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato del usuario). En 2025-26, del 26 de noviembre al 6 de enero.",
         "comprobado": "2026-09-30"
+      }
+    ]
+  },
+  "lineas_semana": {
+    "_que_es": "Líneas de ficha que se repiten cada semana: si la ruta está en ese sitio ese día de la semana y a esas horas, la ficha lo cuenta. No mueve nada. `excepto`: clave de destination_config.papa con las fechas en que no vale.",
+    "lineas": [
+      {
+        "id": "angelus",
+        "lugares": [
+          "Plaza de San Pedro"
+        ],
+        "dias_semana": [
+          "domingo"
+        ],
+        "entre": [
+          "11:00",
+          "13:00"
+        ],
+        "icono": "religioso",
+        "texto": "Los domingos a las 12:00 el Papa se asoma a la ventana a rezar el Ángelus: la plaza se llena.",
+        "excepto": "papa.angelus_fuera",
+        "fuente": "vatican.va (Ángelus dominical)",
+        "comprobado": "2026-10-01"
       }
     ]
   }

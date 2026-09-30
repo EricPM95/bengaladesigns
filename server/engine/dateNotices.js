@@ -15,6 +15,8 @@
 import { closedReason, dayOfMonth } from '../../shared/routeEngine/closedNotices.js'
 import { closedOnDay, specialHoursOn } from '../../shared/routeEngine/openingHours.js'
 import { specialDateMatches, specialDatesOfMonth } from '../../shared/routeEngine/specialDates.js'
+import { holidayTransitRule } from '../../shared/routeEngine/holidayTransit.js'
+import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -101,18 +103,50 @@ const tagOf = (entry) => String(entry.titulo ?? '').split(' · ').at(-1)
  * @returns {object[]} tarjetas { id, day_number, date_iso, icon, title, tag, texts, kind }
  */
 export function dateNoticesFor(destData, trip, options = {}) {
+  const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
+  /** Lo que el viaje lleva un día: sus paradas (con lo que recorre el Free Tour) y sus nocturnas, con su hora. */
+  const carriedOn = (day) => {
+    const tourCfg = destData.default_free_tour ?? null
+    const list = []
+    for (const visit of day?.schedule?.visits ?? []) {
+      list.push({ name: visit.place.name, start: visit.start })
+      if (tourCfg && visit.place.name === tourCfg.name) for (const name of tourCfg.covers ?? []) list.push({ name, start: visit.start })
+    }
+    for (const night of trip.nightsByDay?.get(day?.dayNumber) ?? []) list.push({ name: night.name, start: 21 * 60 })
+    return list
+  }
+  /** ¿Se cumple en ESTE viaje la condición de una opción de `hecho`? (ver `_formato.hecho` en el JSON del destino) */
+  const holds = (cond, day) => {
+    if (!cond) return true
+    const today = carriedOn(day)
+    const others = (trip.days ?? []).filter((other) => other !== day).flatMap(carriedOn)
+    if (cond.hoy) {
+      const hits = today.filter((item) => cond.hoy.includes(item.name))
+      if (hits.length === 0) return false
+      if (cond.antes_de && !hits.every((item) => item.start < toMin(cond.antes_de))) return false
+      if (cond.despues_de && !hits.every((item) => item.start >= toMin(cond.despues_de))) return false
+    }
+    if (cond.otro_dia && (today.some((item) => cond.otro_dia.includes(item.name)) || !others.some((item) => cond.otro_dia.includes(item.name)))) return false
+    if (cond.en_viaje && ![...today, ...others].some((item) => cond.en_viaje.includes(item.name))) return false
+    if (cond.empieza_tarde && !(day?.curatedDay?.variantes ?? []).some((label) => /^empieza:\d/.test(label))) return false
+    return true
+  }
   /**
-   * El texto curado de una fecha (decisión del usuario, 2026-09-28): su `contexto` si lo tiene (los cierres y lo que
-   * hemos movido ya lo cuenta el aviso automático, solo de lugares del viaje: así no se repite ni nombra lo que no va);
-   * y la promesa final ("Hemos puesto…") solo si su sugerencia está de verdad en la ruta de ese día.
+   * El texto curado de una fecha: qué cambia ese día (`contexto`) y qué hemos hecho (`hecho`: de cada grupo, la primera
+   * opción que se cumple en este viaje). Así ningún aviso promete lo que la ruta no hace. Sin `hecho`, su texto tal cual.
    */
-  const curatedText = (entry) => {
-    const text = entry.contexto ?? entry.texto
-    const sug = entry.sugerencia
-    if (!sug?.hora || !sug.lugar) return text
-    const day = (trip.days ?? []).find((candidate) => candidate.hours?.dateIso && (sug.dia ? candidate.hours.dateIso.slice(5) === sug.dia : specialDateMatches(entry, candidate.hours.dateIso)))
-    const placed = Boolean(day) && ((day.schedule?.visits ?? []).some((visit) => visit.place.name === sug.lugar) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => night.name === sug.lugar))
-    return placed ? text : withoutPromise(text)
+  const curatedText = (entry, dateIso) => {
+    if (!entry.hecho) return entry.contexto ?? entry.texto
+    const day = (trip.days ?? []).find((candidate) => candidate.hours?.dateIso === dateIso) ?? null
+    const done = entry.hecho.map((group) => group.find((option) => holds(option.si, day))?.texto).filter(Boolean)
+    return [entry.contexto, ...done].filter(Boolean).join(' ')
+  }
+  /** Las fechas en las que un texto semanal no vale (`excepto: "papa.sin_audiencia"`: el verano sin audiencias). */
+  const inException = (key, dateIso) => {
+    if (!key || !dateIso) return false
+    const ranges = String(key).split('.').reduce((node, part) => node?.[part], destData.destination_config) ?? []
+    const md = Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10))
+    return ranges.some((range) => withinMonthDays(md, range.desde, range.hasta))
   }
   const calendar = { hasDates: trip.calendar?.hasDates ?? (trip.days ?? []).some((day) => day.hours?.weekday), month: trip.calendar?.month ?? options.month ?? null }
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
@@ -151,9 +185,9 @@ export function dateNoticesFor(destData, trip, options = {}) {
   }
   /** `tag`: la etiqueta del día; `subject`: de qué va, para el título ("Domingo 26 de septiembre · Museos Vaticanos"). */
   // (`dates`: los días de los que habla, para el título: «Domingo 6 y martes 8 · Museos Vaticanos cerrados».)
-  const addAuto = (dateIso, text, tag, subject, icon = 'cierre', dates = [dateIso]) => {
+  const addAuto = (dateIso, text, tag, subject, icon = 'cierre', dates = [dateIso], kind = 'otro') => {
     const entry = slot(dateIso)
-    if (!entry.auto.some((item) => item.text === text)) entry.auto.push({ text, tag, subject, icon, dates })
+    if (!entry.auto.some((item) => item.text === text)) entry.auto.push({ text, tag, subject, icon, dates, kind })
   }
 
   // 1. Día movido: lo que otro día del viaje cierra (o no debe ir) está en este. Un aviso por lugar, en el primer
@@ -191,7 +225,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       // mañana y con muchísima gente.
       text = `El último ${weekdayOf(blocked[0])} de mes ${g.named} ${g.abre} solo por la mañana y hay muchísima gente. Hemos puesto tu visita otro día, el ${shortDate(placedIso)}.`
     }
-    addAuto(closed[0] ?? blocked[0], text, closed.length ? `${capital(g.bare)} ${g.cerrado}` : 'Último domingo de mes', g.bare, 'cierre', closed.length ? closed : blocked.slice(0, 1))
+    addAuto(closed[0] ?? blocked[0], text, closed.length ? `${capital(g.bare)} ${g.cerrado}` : 'Último domingo de mes', g.bare, 'cierre', closed.length ? closed : blocked.slice(0, 1), 'movido')
   }
 
   // 2. Por fuera: un imprescindible cerrado ese día que se enseña desde fuera.
@@ -233,7 +267,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const special = place ? specialHoursOn(place, iso) : null
       if (!special || !matters(place.name)) continue
       const g = grammar(place)
-      addAuto(iso, `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}). Hemos puesto tu visita dentro de ese horario.`, 'Horario especial', g.bare, 'luz')
+      addAuto(iso, `El ${dayOfMonth(iso)} ${g.named} ${g.abre} con horario especial (${special.windows.join(', ')}). Hemos puesto tu visita dentro de ese horario.`, 'Horario especial', g.bare, 'luz', [iso], 'horario')
     }
   }
 
@@ -243,7 +277,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
     const cfg = day.curatedDay ? (destData.curated_days ?? []).find((candidate) => candidate.id === day.curatedDay.id) : null
     for (const name of day.curatedDay?.variantes ?? []) {
       const notice = cfg?.variantes?.[name]?.aviso_fecha
-      if (notice?.texto) addAuto(day.hours.dateIso, notice.texto, notice.etiqueta ?? 'Aviso', notice.etiqueta ?? 'Aviso', notice.icono ?? 'cierre')
+      if (notice?.texto && !inException(notice.excepto, day.hours.dateIso)) addAuto(day.hours.dateIso, notice.texto, notice.etiqueta ?? 'Aviso', notice.etiqueta ?? 'Aviso', notice.icono ?? 'cierre')
     }
   }
 
@@ -266,7 +300,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
     return namedPlaces.some((place) => (text.includes(place.name) || (place.short_name && text.includes(place.short_name))) && !tripNames.has(place.name))
   }
   for (const entry of specials) {
-    if (namesAbsent(entry)) continue
+    // (Con `hecho`, el aviso ya dice si el día no pasa por ese sitio: «tu ruta de hoy no pasa por San Pedro».)
+    if (!entry.hecho && namesAbsent(entry)) continue
     // `requiere_lugares`: solo si ese día el viaje lleva alguno de esos lugares (el Coliseo el primer domingo de mes).
     // (De día o de noche: el mercadillo de Navona va en el día que pasa por la plaza, también en su nocturna.)
     const carriesPlaces = (day) => !entry.requiere_lugares || (day.schedule?.visits ?? []).some((visit) => entry.requiere_lugares.includes(visit.place.name) && !visit.place.visitOutside) || (trip.nightsByDay?.get(day.dayNumber) ?? []).some((night) => entry.requiere_lugares.includes(night.name))
@@ -296,7 +331,10 @@ export function dateNoticesFor(destData, trip, options = {}) {
   const routeCards = []
   const infoCards = []
   for (const [iso, { auto, curated }] of [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    // Un aviso, un tema: el día movido o el horario especial que el aviso curado de ese día ya cuenta no sale aparte.
+    const covered = (item) => Boolean(curated?.cubre) && (item.kind === 'movido' || item.kind === 'horario') && curated.cubre.includes(item.subject)
     for (const item of auto) {
+      if (covered(item)) continue
       routeCards.push({
         id: `${iso}:${item.tag}`,
         day_number: dayOfDate.get(iso) ?? null,
@@ -318,7 +356,8 @@ export function dateNoticesFor(destData, trip, options = {}) {
         title: curated.titulo_con_fecha ? `${datesTitle([iso])} · ${curated.titulo_con_fecha}` : curated.titulo,
         tag: tagOf(curated),
         // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; una frase aparte, fuera de las 35 palabras.)
-        texts: [curatedText(curated), ...(curated.sugerencia_texto ? [curated.sugerencia_texto] : []), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
+        // (Y el transporte recortado de ese festivo, otra frase aparte: «El 24 de diciembre el bus, el tranvía y el metro paran a las 21:00».)
+        texts: [curatedText(curated, iso), ...(holidayTransitRule(destData, iso)?.texto ? [holidayTransitRule(destData, iso).texto] : []), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
         kind: 'curado',
       })
     }

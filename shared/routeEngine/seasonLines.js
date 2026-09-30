@@ -15,6 +15,10 @@
  *   - una línea sale una vez por viaje: en el primer día que pasa por su sitio en sus fechas (`skipIds`: las que ya
  *     salieron en un día anterior);
  *   - solo con fechas reales: sin fechas no hay «24 de diciembre».
+ *
+ * Y las líneas que se repiten cada semana (`lineas_semana.lineas`): { id, lugares, dias_semana: ["domingo"], entre:
+ * ["11:00", "13:00"], icono, texto, excepto?: "papa.angelus_fuera" }. Salen si la parada cae ese día de la semana y a esas
+ * horas (el Ángelus de los domingos a las 12:00 en la Plaza de San Pedro), todas las veces; no mueven nada.
  */
 
 import { withinMonthDays } from './openingHours.js'
@@ -37,6 +41,23 @@ export function seasonLinesOn(destData, dateIso) {
     .sort((a, b) => spanOf(a) - spanOf(b))
 }
 
+const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+const minutesOf = (hhmm) => {
+  const match = /^(\d{1,2}):(\d{2})/.exec(String(hhmm ?? ''))
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null
+}
+/** Las líneas semanales que valen ese día (su día de la semana, fuera de sus excepciones). */
+export function weeklyLinesOn(destData, dateIso) {
+  if (!dateIso) return []
+  const weekday = WEEKDAYS[new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`).getUTCDay()]
+  const md = monthDay(dateIso)
+  return (destData?.lineas_semana?.lineas ?? []).filter((line) => {
+    if (!line.texto || !(line.dias_semana ?? []).includes(weekday)) return false
+    const ranges = line.excepto ? String(line.excepto).split('.').reduce((node, part) => node?.[part], destData.destination_config) ?? [] : []
+    return !ranges.some((range) => withinMonthDays(md, range.desde, range.hasta))
+  })
+}
+
 /**
  * Pone su línea a las paradas del día (`stop.season_line = { text, icon }`). Las nocturnas no llevan: tienen su texto.
  * @param {object} destData
@@ -45,12 +66,22 @@ export function seasonLinesOn(destData, dateIso) {
  * @param {Set<string>} [skipIds]  las líneas que ya lleva un día anterior del viaje
  */
 export function applySeasonLines(destData, stops, dateIso, skipIds = new Set()) {
+  // Las semanales primero: la parada que está allí ese día y a esas horas (su hora de llegada o mientras dura la visita).
+  for (const line of weeklyLinesOn(destData, dateIso)) {
+    const [from, to] = (line.entre ?? ['00:00', '24:00']).map(minutesOf)
+    const stop = stops.find((candidate) => {
+      if (candidate.is_night_experience || candidate.season_line || !(line.lugares ?? []).includes(candidate.name)) return false
+      const start = minutesOf(candidate.suggested_time)
+      return start != null && start < to && start + (candidate.duration_minutes ?? 0) >= from
+    })
+    if (stop) stop.season_line = { id: line.id, text: line.texto, icon: line.icono ?? 'religioso' }
+  }
   const lines = seasonLinesOn(destData, dateIso).filter((line) => !skipIds.has(line.id))
   if (lines.length === 0) return stops
   const dayStops = stops.filter((stop) => !stop.is_night_experience)
   // El día ya cuenta el mercadillo: la parada con su título propio, o el texto de fechas de la nocturna.
   const marketToday = stops.some((stop) => stop.date_text || /mercadillo/i.test(stop.display_title ?? ''))
-  const taken = new Set()
+  const taken = new Set(stops.filter((stop) => stop.season_line).map((stop) => stop.name))
   const put = (stop, line) => {
     stop.season_line = { id: line.id, text: line.texto, icon: line.icono ?? 'navidad' }
     taken.add(stop.name)
