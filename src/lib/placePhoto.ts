@@ -1,4 +1,5 @@
 import type { Route } from './types'
+import { addDaysToIso } from './dateRange'
 
 /**
  * Foto real de un lugar. Desde el Prompt 5 la resuelve el SERVIDOR (`/api/place-photo`), no el
@@ -18,7 +19,8 @@ import type { Route } from './types'
 const TIMEOUT_MS = 6000
 
 export interface PlacePhoto {
-  source: 'unsplash' | 'wikipedia'
+  /** `propia`: una foto nuestra del destino (public/fotos/, ver data/dias/<destino>/_fotos.json). */
+  source: 'unsplash' | 'wikipedia' | 'propia'
   /** Para listas y miniaturas (Unsplash w=200; en Wikipedia es la misma URL en todos los tamaños). */
   thumb: string
   /** Para tarjetas y fichas (Unsplash w=400). */
@@ -28,14 +30,16 @@ export interface PlacePhoto {
   /** Placeholder mientras carga — solo lo traen las de Unsplash. */
   blurHash: string | null
   /** Unsplash exige atribución visible allí donde la foto se ve a tamaño real; las de Wikipedia no. */
-  attribution: { photographer: string; photographerUrl: string; unsplashUrl: string } | null
+  /** (`site`: «Unsplash» o «Pexels» en las fotos propias; sin él, Unsplash.) */
+  attribution: { photographer: string; photographerUrl: string; unsplashUrl: string; site?: string } | null
 }
 
 const cache = new Map<string, PlacePhoto | null>()
 const inFlight = new Map<string, Promise<PlacePhoto | null>>()
 
-function cacheKey(name: string, city: string): string {
-  return `${name.toLowerCase()}|${city.toLowerCase()}`
+/** (Con la fecha del día: las fotos de unas fechas, las de Navidad, dependen de ella.) */
+function cacheKey(name: string, city: string, dateIso?: string | null): string {
+  return `${name.toLowerCase()}|${city.toLowerCase()}|${dateIso ?? ''}`
 }
 
 /**
@@ -43,8 +47,8 @@ function cacheKey(name: string, city: string): string {
  * lanza: sin foto (o con el backend caído) devuelve null y el componente enseña su icono de
  * categoría, que es el comportamiento de siempre.
  */
-export async function fetchPlacePhotoDetail(name: string, city: string, wikipediaTitle?: string | null): Promise<PlacePhoto | null> {
-  const key = cacheKey(name, city)
+export async function fetchPlacePhotoDetail(name: string, city: string, wikipediaTitle?: string | null, dateIso?: string | null): Promise<PlacePhoto | null> {
+  const key = cacheKey(name, city, dateIso)
   if (cache.has(key)) return cache.get(key) ?? null
   // Varias tarjetas del mismo lugar en pantalla no deben disparar varias peticiones idénticas.
   const pending = inFlight.get(key)
@@ -57,7 +61,7 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
       const response = await fetch('/api/place-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, city, wikipedia_title: wikipediaTitle ?? null }),
+        body: JSON.stringify({ name, city, wikipedia_title: wikipediaTitle ?? null, ...(dateIso ? { date: dateIso } : {}) }),
         signal: controller.signal,
       })
       if (!response.ok) return null
@@ -78,6 +82,19 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
             : null,
         }
         return photo.thumb ? photo : null
+      }
+      if (data?.photo_source === 'propia' && data.photo_url) {
+        // Foto nuestra: la grande para la ficha y la pequeña para tarjetas y miniaturas. El crédito, solo si lo trae.
+        const credit = data.photo_credit
+        const photo: PlacePhoto = {
+          source: 'propia',
+          thumb: data.photo_small ?? data.photo_url,
+          small: data.photo_small ?? data.photo_url,
+          regular: data.photo_url,
+          blurHash: null,
+          attribution: credit?.autor && credit.enlace ? { photographer: credit.autor, photographerUrl: credit.enlace, unsplashUrl: credit.enlace, site: credit.fuente } : null,
+        }
+        return photo
       }
       if (data?.photo_source === 'wikipedia' && data.photo_url) {
         // Wikipedia devuelve una sola imagen: la misma sirve para los tres tamaños.
@@ -109,8 +126,9 @@ export async function fetchPlacePhoto(
   city: string,
   wikipediaTitle?: string | null,
   size: 'thumb' | 'small' | 'regular' = 'small',
+  dateIso?: string | null,
 ): Promise<string | null> {
-  const photo = await fetchPlacePhotoDetail(name, city, wikipediaTitle)
+  const photo = await fetchPlacePhotoDetail(name, city, wikipediaTitle, dateIso)
   return photo ? photo[size] : null
 }
 
@@ -133,12 +151,14 @@ export function photoNameOf(stop: { name: string; photoName?: string | null; isN
  * más todavía, así que mutarlos aquí es seguro.
  */
 export async function enrichRoutePhotos(route: Route): Promise<Route> {
+  // (La fecha real de cada día, si el viaje la tiene: las fotos de Navidad solo salen en sus fechas.)
+  const startIso = route.answers.dateRange?.start ?? null
   const jobs = route.days.flatMap((day) =>
     day.stops.map((stop) =>
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
       stop.isBreak || stop.fixedPhotoUrl
         ? Promise.resolve()
-        : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular').then((photo) => {
+        : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular', startIso ? addDaysToIso(startIso, day.dayNumber - 1) : null).then((photo) => {
             if (photo) stop.photoUrl = photo
           }),
     ),

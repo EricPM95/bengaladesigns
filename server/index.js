@@ -4,7 +4,8 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
-import { arrivalInfoFor, tipsFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, photosFor, tipsFor } from './engine/writtenDays.js'
+import { withinMonthDays } from '../shared/routeEngine/openingHours.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -4881,13 +4882,35 @@ app.post('/api/destination-tips', (req, res) => {
   res.json({ tips: key ? tipsFor(key) : null })
 })
 
+/**
+ * La foto propia de un lugar (data/dias/<destino>/_fotos.json), si la hay: va antes que Unsplash y Wikipedia. Las de
+ * unas fechas (Navidad) solo salen con la fecha real de ese día dentro de su ventana, y nunca con `verificar` pendiente:
+ * una foto también es una promesa. El crédito, solo si están el autor, el enlace y la fuente: nunca inventado.
+ */
+function ownPhotoFor(name, city, dateIso) {
+  const table = photosFor(findPipelineV2Key(city) ?? '')
+  if (!table) return null
+  const md = /^\d{4}-\d{2}-\d{2}$/.test(String(dateIso ?? '')) ? Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10)) : null
+  const valid = table.fotos.filter((foto) => (foto.lugares ?? []).includes(name) && !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta))))
+  const foto = valid.find((candidate) => candidate.fechas) ?? valid[0]
+  if (!foto) return null
+  const base = `${table.carpeta}/${foto.archivo}`
+  const credit = foto.autor && foto.enlace && foto.fuente ? { autor: foto.autor, enlace: foto.enlace, fuente: foto.fuente } : null
+  return { photo_source: 'propia', photo_url: base, photo_small: base.replace(/\.jpg$/, '_p.jpg'), photo_credit: credit, photo_night: foto.cuando === 'noche' }
+}
+
 app.post('/api/place-photo', async (req, res) => {
-  const { name, city, force, wikipedia_title: wikipediaTitleOverride } = req.body ?? {}
+  const { name, city, force, wikipedia_title: wikipediaTitleOverride, date } = req.body ?? {}
   if (!name || !city) {
     res.status(400).json({ error: 'Se requiere name y city.' })
     return
   }
   try {
+    const own = ownPhotoFor(name, city, date)
+    if (own) {
+      res.json(own)
+      return
+    }
     const nightBase = nightBaseOf(name, city)
     if (nightBase) {
       res.json(await resolveNightPhoto(name, city, nightBase, { force: Boolean(force) }))

@@ -29,9 +29,10 @@ for (const place of D.places ?? []) if ((place.tags ?? []).includes('mirador') &
 
 const esc = (text) => String(text ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const cell = (result, fallbackNote) => {
-  const url = result?.unsplash_small ?? result?.photo_url
+  // (Las fotos propias viven en public/fotos/: desde docs/, con la ruta relativa.)
+  const url = result?.photo_source === 'propia' ? `../public${result.photo_small ?? result.photo_url}` : result?.unsplash_small ?? result?.photo_url
   if (!url) return '<div class="none">Sin foto</div>'
-  const source = result.photo_source === 'unsplash' ? 'Unsplash' : result.photo_source === 'wikipedia' ? 'Wikipedia' : result.photo_source
+  const source = result.photo_source === 'unsplash' ? 'Unsplash' : result.photo_source === 'wikipedia' ? 'Wikipedia' : result.photo_source === 'propia' ? 'Foto propia' : result.photo_source
   const note = result.photo_night === false ? fallbackNote : ''
   return `<img src="${esc(url)}" loading="lazy" alt=""><div class="src">${esc(source)}${note ? ` · <b>${esc(note)}</b>` : ''}</div>`
 }

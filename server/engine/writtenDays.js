@@ -58,6 +58,22 @@ export function tipsFor(destinationKey) {
 const tipsCache = new Map()
 
 /**
+ * Las fotos propias de un destino (PARA_CODE_FOTOS): `data/dias/<destino>/_fotos.json`. Null si no las tiene.
+ */
+export function photosFor(destinationKey) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key) return null
+  if (photosCache.has(key)) return photosCache.get(key)
+  const file = join(DIAS_DIR, key, '_fotos.json')
+  const raw = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  const value = raw?.fotos?.length ? raw : null
+  photosCache.set(key, value)
+  return value
+}
+
+const photosCache = new Map()
+
+/**
  * La llegada y la vuelta de un destino (PROMPT_UI, Parte 3): `data/dias/<destino>/_llegada.json`, una sección por medio
  * y por punto de llegada, con sus precios, fuentes y fechas. Null si el destino no lo tiene.
  */
