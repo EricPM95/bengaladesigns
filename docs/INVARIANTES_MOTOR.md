@@ -2146,3 +2146,14 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Ejemplo: el 1 de enero el Coliseo, el Foro (08:30-16:30), el Panteón (09:00-17:00) y las Termas de Caracalla
       (09:30-16:30) abren (colosseo.it y cultura.gov.it, 1 de enero de 2026); el Castillo, la Galería Borghese, el Doria
       Pamphilj y las catacumbas cierran (sus webs oficiales).
+
+396. **En los festivos con el transporte recortado, fuera de sus horas solo andando o en taxi** (PROMPT_ROMA_NAVIDAD 1).
+    - Los horarios viven en `destination_config.transporte_festivos` (por fecha: `servicio`, o `bus` y `metro` por separado),
+      con su fuente, su fecha y `verificar` (cambian cada año). Roma 2025-26: el 24 de diciembre todo para a las 21:00; el
+      25, solo de 8:30 a 13:00 y de 16:30 a 21:00; el 31, el bus hasta las 21:00 y el metro hasta las 2:30; el 1 de enero,
+      desde las 8:00.
+    - Un tramo escrito en bus o metro que cae fuera de esas horas pasa a taxi (o a pie si son 25 min o menos): nunca en bus
+      ni metro (`shared/routeEngine/holidayTransit.js`).
+    - El aviso de traslado largo dice «o en taxi», no «o en bus o taxi», y ningún texto de una parada manda al bus o al metro
+      a esa hora («Sube con calma o en el bus 115» → «…o en taxi»).
+    - Los paseos nocturnos van a pie desde la cena: ninguno depende del metro para volver.

@@ -127,6 +127,19 @@ import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
 import { closedAnchorNotice, closedOutsideNotice } from '../../shared/routeEngine/closedNotices.js'
+import { anyTransitRuns } from '../../shared/routeEngine/holidayTransit.js'
+
+/**
+ * Un texto que manda al bus o al metro, en un festivo y a una hora en que no circulan (PROMPT_ROMA_NAVIDAD 1): el taxi en su
+ * lugar. «Sube con calma o en el bus 115» → «…o en taxi»; «Bajas del bus aquí» → «Bajas del taxi aquí».
+ */
+export function withoutPublicTransit(text) {
+  if (typeof text !== 'string') return text
+  return text
+    .replace(/\ben (el|la|los) (bus|autobús|metro|tranvía)( [A-Z]\b| \d+)?( o el \d+)?/gi, 'en taxi')
+    .replace(/\bdel (bus|autobús|metro|tranvía)( [A-Z]\b| \d+)?/gi, 'del taxi')
+    .replace(/\b(el|la) (bus|autobús|metro|tranvía)( [A-Z]\b| \d+)?( o el \d+)?/gi, 'un taxi')
+}
 
 export { dinnerZoneOf, nightWalkPlan } from '../../shared/routeEngine/nightWalk.js'
 
@@ -466,6 +479,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const lunch = schedule.meals.find((meal) => meal.type === 'lunch')
       const lunchNext = lunch && lunch.start >= visit.end && !schedule.visits.some((other) => other.start >= visit.end && other.start < lunch.start)
       stop.free_tour_end = lunchNext ? `El tour acaba en ${tour.ends_at.name}: te hemos buscado la comida por esa zona para que aproveches el día.` : `El tour acaba en ${tour.ends_at.name}.`
+    }
+    // Festivo con el transporte recortado a esa hora: ningún texto de la parada manda al bus ni al metro.
+    if (tripDay.hours?.weekday && tripDay.hours?.dateIso && !anyTransitRuns(destData, tripDay.hours.dateIso, visit.start, visit.start)) {
+      for (const field of ['why', 'note', 'description']) if (/\b(bus|autobús|metro|tranvía)\b/i.test(stop[field] ?? '')) stop[field] = withoutPublicTransit(stop[field])
     }
     return stop
   })

@@ -7780,6 +7780,43 @@
       "Puente Sant'Angelo": "Ya es de noche: los ángeles de Bernini iluminados, el Castillo encendido y el Tíber reflejándolo todo.",
       "Via dei Fori Imperiali": "La avenida de los Foros de noche: las ruinas iluminadas a los dos lados y el Coliseo encendido al fondo.",
       "Ponte Sisto": "Ya ha anochecido: el Tíber refleja las luces del puente y, al fondo, la cúpula de San Pedro iluminada."
+    },
+    "transporte_festivos": {
+      "_que_es": "Festivos con el transporte público recortado. Fuera de estas horas, el tramo va andando o en taxi, nunca en bus ni metro (shared/routeEngine/holidayTransit.js). `servicio`: bus, tranvía y metro; `bus` / `metro`: cada uno. \"26:30\" = las 2:30 de la madrugada siguiente.",
+      "fuente": "Plan de Roma Capitale y ATAC para las fiestas 2025-26 (fanpage.it y funweek.it). Cambia cada año.",
+      "comprobado": "2026-09-30",
+      "verificar": true,
+      "revisar": "diciembre de 2026, cuando ATAC publique el plan 2026-27",
+      "fechas": {
+        "12-24": {
+          "servicio": [
+            "05:30-21:00"
+          ],
+          "texto": "El 24 de diciembre el bus, el tranvía y el metro paran a las 21:00."
+        },
+        "12-25": {
+          "servicio": [
+            "08:30-13:00",
+            "16:30-21:00"
+          ],
+          "texto": "El 25 de diciembre el transporte solo circula de 8:30 a 13:00 y de 16:30 a 21:00."
+        },
+        "12-31": {
+          "bus": [
+            "05:30-21:00"
+          ],
+          "metro": [
+            "05:30-26:30"
+          ],
+          "texto": "El 31 de diciembre los buses paran a las 21:00; el metro sigue hasta las 2:30."
+        },
+        "01-01": {
+          "servicio": [
+            "08:00-24:00"
+          ],
+          "texto": "El 1 de enero el transporte empieza a las 8:00."
+        }
+      }
     }
   },
   "museos_de_pago": {
@@ -12948,7 +12985,7 @@
           "nota": "Bendición Urbi et Orbi a las 12:00",
           "traslado": "el metro A (hasta Ottaviano) o el bus 64",
           "traslado_min": 25,
-          "traslado_despues": "el metro A (de Ottaviano a Spagna o Flaminio)",
+          "traslado_despues": "andando o en taxi (el 25, el metro y el bus paran a las 13:00)",
           "traslado_despues_min": 25
         },
         "aviso_restaurantes": true

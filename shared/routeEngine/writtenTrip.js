@@ -21,6 +21,7 @@ import { modeV3For } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, matchesDateRange, matchesDateToken, parseHoursSessions } from './openingHours.js'
 import { specialHoursToAvoid } from './specialDates.js'
+import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { availableForTrip } from './availability.js'
@@ -641,6 +642,17 @@ export function planWrittenTrip(args) {
       }
       // (Un tramo de más de LONG_WALK min andando nunca va a pie: si no trae su bus o taxi escrito, en taxi.)
       if (!place.transitMinutes && legRaw > LONG_WALK && t != null && coords) place = { ...place, transitMinutes: Math.max(10, Math.round(legRaw / 2.5) + 5), transitHow: 'un taxi' }
+      // Festivos con el transporte recortado (Navidad en Roma): fuera de sus horas, el bus o el metro escritos pasan a taxi
+      // (o a pie si el tramo es corto), nunca en bus ni metro.
+      const transitKind = place.transitMinutes ? publicTransitKind(place.transitHow) : null
+      if (transitKind && calendar.hasDates && t != null && !transitRuns(destData, ctx.hours?.dateIso, transitKind, t, t + place.transitMinutes)) {
+        if (legRaw > LONG_WALK) place = { ...place, transitHow: 'un taxi', transitMinutes: Math.min(place.transitMinutes, Math.max(10, Math.round(legRaw / 2.5) + 5)), transitHoliday: true }
+        else {
+          place = { ...place, transitHoliday: true }
+          delete place.transitMinutes
+          delete place.transitHow
+        }
+      }
       const leg = place.transitMinutes ? Math.min(legRaw, place.transitMinutes) : legRaw
       // (Con sus minutos exactos: una rejilla de 5 min aquí sumaba redondeos y se llegaba tarde a los turnos; la pantalla
       // redondea y la hora de una parada sigue siendo la anterior + su duración + el paseo, con 4 min de margen.)
@@ -1133,7 +1145,9 @@ export function planWrittenTrip(args) {
       const minutes = travel.leg(from, visit.place.coordinates)?.minutes ?? 0
       if (minutes <= TRANSFER_NOTICE_MINUTES) continue
       const place = placeByName.get(visit.place.name)
-      day.longWalks.push({ minutes, from: fromLunch ? 'la comida' : previous.place.name, to: visit.place.name, uphill: Boolean(place?.uphill), how: visit.place.transitHow ?? place?.uphill?.transit ?? null })
+      // (Con el transporte recortado a esa hora, la alternativa es el taxi, no el bus.)
+      const runs = !calendar.hasDates || anyTransitRuns(destData, day.hours?.dateIso, previous.end, visit.start)
+      day.longWalks.push({ minutes, from: fromLunch ? 'la comida' : previous.place.name, to: visit.place.name, uphill: Boolean(place?.uphill), how: runs ? (visit.place.transitHow ?? place?.uphill?.transit ?? null) : 'taxi', taxiOnly: !runs })
     }
   }
 

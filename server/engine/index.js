@@ -371,8 +371,10 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Traslados largos (más de 25 min andando), cada uno en su línea, andando primero y luego la alternativa
   // (decisión del 2026-09-26): "Puente Sant'Angelo → Mirador del Janículo: ~30 min andando (con cuesta) ·
   // o el bus 115 si prefieres no subirla". Sin dato de transporte, "bus o taxi".
-  const notices = (tripDay.longWalks ?? []).map(({ minutes, from, to, uphill, how }) => {
+  const notices = (tripDay.longWalks ?? []).map(({ minutes, from, to, uphill, how, taxiOnly }) => {
     const walk = `${from === 'la comida' ? 'Desde la comida' : from} → ${to}: ~${Math.round(minutes / 5) * 5} min andando`
+    // (Festivo con el transporte recortado a esa hora: solo andando o en taxi.)
+    if (taxiOnly) return uphill ? `${walk} (con cuesta) · o en taxi si prefieres no subirla` : `${walk} · o en taxi`
     return uphill ? `${walk} (con cuesta) · o ${how ?? 'en bus o taxi'} si prefieres no subirla` : `${walk} · o en ${how ?? 'bus o taxi'}`
   })
   if (notices.length > 0) day.transfer_notice = notices.join('\n')
