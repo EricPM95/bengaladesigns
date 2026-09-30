@@ -2124,3 +2124,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     trayecto. Esto vale también cuando, al llegar, la parada está cerrada y pasa a «por fuera» o se cambia por otra: el
     transporte del tramo no se pierde. Antes la hora contaba el taxi, pero la pantalla pintaba «33 min andando» de San
     Pedro a Santa Cecilia en Navidad, y 27 a Santa Maria in Trastevere el 14 de agosto.
+    - **Un destino sin medición del motor no dice ninguna hora** (2026-09-30): con los valores de reserva (`medido` ausente),
+      la pantalla de ritmo no pinta «El día empieza a las…» ni la marca de inicio del gráfico. «≈ N planes al día» se queda,
+      como orientación.

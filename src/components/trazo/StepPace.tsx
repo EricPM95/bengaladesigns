@@ -64,6 +64,7 @@ export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
           const stops = Math.round(card.stat.media)
           const start = hourOf(card.stat.inicio)
           const blocks = dayBlocks(stops, start)
+          const measured = Boolean((card.stat as { medido?: boolean }).medido)
           return (
             <button
               key={card.value}
@@ -126,17 +127,20 @@ export function StepPace({ pace, texts, onPick, onNext }: StepPaceProps) {
               </div>
               <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 14, display: active ? 'flex' : 'none', flexDirection: 'column', gap: 8, animation: 'trazo-chipIn .5s ease both' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', justifyContent: 'space-between', font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.75 }}>
-                  <span>
-                    {card.stat.inicio_desde && card.stat.inicio_hasta
-                      ? `El día empieza entre las ${card.stat.inicio_desde} y las ${card.stat.inicio_hasta}`
-                      : `El día empieza a las ${card.stat.inicio}`}
-                  </span>
+                  {/* Sin medición del motor para ese destino, ninguna hora (regla 391): ni el texto ni la marca de inicio. */}
+                  {measured && (
+                    <span>
+                      {card.stat.inicio_desde && card.stat.inicio_hasta
+                        ? `El día empieza entre las ${card.stat.inicio_desde} y las ${card.stat.inicio_hasta}`
+                        : `El día empieza a las ${card.stat.inicio}`}
+                    </span>
+                  )}
                   <span>Comida y cena incluidas</span>
                 </div>
                 <div style={{ position: 'relative', height: active ? 46 : 26, transition: 'height .7s cubic-bezier(.2,.8,.2,1)' }}>
                   <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1px dashed currentColor', opacity: 0.35 }} />
-                  <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: pc(start), borderRadius: 8, background: 'repeating-linear-gradient(135deg,currentColor 0 1px,transparent 1px 6px)', opacity: 0.18 }} />
-                  <span style={{ position: 'absolute', top: -6, bottom: -6, left: pc(start), borderLeft: '1.5px solid currentColor', opacity: 0.8 }} />
+                  {measured && <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: pc(start), borderRadius: 8, background: 'repeating-linear-gradient(135deg,currentColor 0 1px,transparent 1px 6px)', opacity: 0.18 }} />}
+                  {measured && <span style={{ position: 'absolute', top: -6, bottom: -6, left: pc(start), borderLeft: '1.5px solid currentColor', opacity: 0.8 }} />}
                   {blocks.map(([h, d], i) => (
                     <span
                       key={i}

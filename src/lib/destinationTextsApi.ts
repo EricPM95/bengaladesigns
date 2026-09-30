@@ -11,6 +11,8 @@ export interface PaceStat {
   /** Si no todos los días empiezan igual, el rango (cuartiles 25-75 %): «El día empieza entre las 08:45 y las 10:00». */
   inicio_desde?: string
   inicio_hasta?: string
+  /** Medido con el motor para ESE destino. Sin medición (los valores de reserva), el formulario no dice ninguna hora. */
+  medido?: boolean
 }
 
 export interface PaceTexts {
@@ -53,8 +55,8 @@ export async function fetchPaceTexts(destination: string): Promise<PaceTexts> {
       tranquilo: fill(String(data.pace.tranquilo ?? FALLBACK.tranquilo), destination),
       recomendado: String(data.pace.recomendado ?? FALLBACK.recomendado),
       stats: {
-        completo: data.pace_stats?.completo ?? FALLBACK_STATS.completo,
-        tranquilo: data.pace_stats?.tranquilo ?? FALLBACK_STATS.tranquilo,
+        completo: data.pace_stats?.completo ? { ...data.pace_stats.completo, medido: true } : FALLBACK_STATS.completo,
+        tranquilo: data.pace_stats?.tranquilo ? { ...data.pace_stats.tranquilo, medido: true } : FALLBACK_STATS.tranquilo,
       },
     }
   } catch {
