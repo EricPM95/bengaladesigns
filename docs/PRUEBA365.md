@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-10560 viajes (todas las fechas de 2027), en 547 s. **Total: 83** (completo 47, tranquilo 36).
+10560 viajes (todas las fechas de 2027), en 604 s. **Total: 70** (completo 42, tranquilo 28).
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -10,7 +10,7 @@
 - **Tramo de más de 25 min andando sin transporte**: 0 ✅
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 20
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 18
   - 2027-01-31 · 2 días · completo, día 2 antes de Mirador del Janículo — 35 min
   - 2027-01-31 · 2 días · tranquilo, día 2 antes de Mirador del Janículo — 35 min
   - 2027-02-07 · 2 días · completo, día 2 antes de Mirador del Janículo — 40 min
@@ -21,13 +21,13 @@
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 2
   - 2027-08-14 · 2 días · completo · FT, día 1, 20:30 cena — 21 min de espera
   - 2027-08-14 · 2 días · tranquilo · FT, día 1, 20:30 cena — 21 min de espera
-- **Zigzag: volver a una zona que ya se dejó ese día**: 9
+- **Zigzag: volver a una zona que ya se dejó ese día**: 11
+  - 2027-01-01 · 3 días · completo · arte_museos, día 1, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
   - 2027-01-01 · 5 días · completo · arte_museos, día 2, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
   - 2027-04-27 · 5 días · completo · arte_museos, día 5, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
   - 2027-04-29 · 3 días · completo · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
   - 2027-04-29 · 5 días · completo · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
   - 2027-05-01 · 3 días · completo · arte_museos, día 1, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-05-01 · 5 días · completo · arte_museos, día 1, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
 - **Nivel 1-2 como "Por el camino"**: 0 ✅
 - **Nivel 1-2 como "idea" de tiempo libre**: 0 ✅
 - **Imprescindible de menos de 20 min**: 0 ✅
@@ -49,7 +49,8 @@
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
-- **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: 1
+  - 2027-01-01 · 4 días · completo · pool Termas de Caracalla, día 1 (D5C A, viernes) — Basílica de San Clemente · llega 14:05 para las 14:00
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
 - **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
@@ -59,17 +60,18 @@
 - **«Antes de cenar» en una parada que va después de cenar**: 0 ✅
 - **Título del día que no se cumple**: 0 ✅
 - **El motor falla**: 0 ✅
-- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: 52
-  - 2027-01-01 · 2 días · completo, todo el viaje Coliseo — ningún día por dentro
-  - 2027-01-01 · 2 días · completo, todo el viaje Foro Romano y Palatino — ningún día por dentro
-  - 2027-01-01 · 2 días · completo, todo el viaje Panteón — ningún día por dentro
-  - 2027-01-01 · 2 días · completo · FT, todo el viaje Coliseo — ningún día por dentro
-  - 2027-01-01 · 2 días · completo · FT, todo el viaje Foro Romano y Palatino — ningún día por dentro
-  - 2027-01-01 · 2 días · tranquilo, todo el viaje Coliseo — ningún día por dentro
+- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: 38
+  - 2027-03-28 · 2 días · completo, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
+  - 2027-03-28 · 2 días · completo · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
+  - 2027-03-28 · 2 días · tranquilo, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
+  - 2027-03-28 · 2 días · tranquilo · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
+  - 2027-05-01 · 2 días · completo, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
+  - 2027-05-01 · 2 días · completo · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
 
 ## Dónde caen (día escrito, versión y variantes; T = tranquilo)
 
-- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×52
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D1 A +sabado+fecha:12-25 ×1 · D1-FT A ×1 · D1 A +sabado+fecha:12-25 T ×1 · D1-FT A T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D1 C +domingo+fecha:easter ×5 · D1 C +domingo+fecha:easter T ×4 · D2 A +lunes ×2 · D2 A +lunes+tranquilo T ×2 · D1 A +sabado+fecha:12-25 ×1 · D1 A +sabado+fecha:12-25 T ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25 ×1 · D2 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-25+tranquilo T ×1 · D1 C +domingo+fecha:easter+barrios_sabores ×1
+- **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×38
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+tranquilo T ×1
-- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
+- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +fecha:01-01+arte_museos ×1 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+fecha:01-01+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: D5C A viernes ×1

@@ -113,6 +113,38 @@ export function engineFor(requestEngine, destData = null) {
  * Un día completo con el motor nuevo. Misma firma que buildDayBlockV2 (invariante: el contrato de
  * entrada/salida no cambia), devuelve `null` si este destino no tiene datos curados.
  */
+/**
+ * Las capas de una experiencia elegida en un viaje de un día (la ruta de short_trips, que no pasa por los días escritos):
+ * la parada que ya existe en ese sitio toma el título y el texto de la capa («Piazza Navona y su mercadillo de Navidad»),
+ * solo en sus fechas; en el margen de una ventana aproximada, se queda como es, con el aviso. Misma regla que en
+ * writtenTrip.js (regla 397); aquí sin cambiar las horas del día.
+ */
+function applyExperienceLayers(destData, day, experiences, calendar, dateIso) {
+  const tags = new Set(experiences.flatMap((id) => (id in TAG_INTEREST_MAP && id !== 'free_tour' ? TAG_INTEREST_MAP[id] : [])))
+  if (tags.size === 0) return
+  for (const layer of destData.places ?? []) {
+    if (!layer.capa_de || !(layer.tags ?? []).some((tag) => tags.has(tag))) continue
+    const fit = seasonFit(layer.available, calendar ?? { hasDates: Boolean(dateIso), month: null }, dateIso)
+    if (!fit.enters) continue
+    const stop = (day.stops ?? []).find((candidate) => candidate.name === layer.capa_de && !candidate.is_night_experience && !candidate.is_pass_by && !candidate.pass_through)
+    if (!stop) {
+      // Sin esa parada: si el Free Tour acaba allí (y el día no lo lleva de noche con su texto de fechas), lo dice el
+      // propio tour, que te deja en pleno mercadillo. Solo en fechas.
+      const tourStop = (day.stops ?? []).find((candidate) => candidate.is_free_tour)
+      const atNight = (day.stops ?? []).some((candidate) => candidate.is_night_experience && candidate.date_text && candidate.name.startsWith(layer.capa_de))
+      if (tourStop && !atNight && !fit.notice && layer.texto_free_tour && destData.default_free_tour?.ends_at?.name === layer.capa_de) {
+        tourStop.free_tour_end = [tourStop.free_tour_end ?? `El tour acaba en ${layer.capa_de}.`, layer.texto_free_tour].join(' ')
+      }
+      continue
+    }
+    if (fit.notice) stop.notice = fit.notice
+    else {
+      stop.display_title = layer.titulo_parada ?? layer.name
+      if (layer.texto_parada) stop.why = layer.texto_parada
+    }
+  }
+}
+
 export async function buildDayBlockV3(
   destData,
   totalDays,
@@ -161,6 +193,7 @@ export async function buildDayBlockV3(
     const day = buildCityDayV3(destData, trip, tripDay, { ...options, pace })
     day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
     day.night_hint = tripDay.nightHint ?? null
+    applyExperienceLayers(destData, day, experiencesPositive ?? [], trip.calendar, tripDay.hours?.dateIso ?? null)
     return day
   }
 

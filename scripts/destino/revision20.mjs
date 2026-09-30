@@ -123,7 +123,9 @@ function porQue(stop) {
   if (stop.free_tour_end) partes.push(stop.free_tour_end)
   if (stop.free_tour_covers?.length) partes.push(`recorre: ${stop.free_tour_covers.join(', ')}`)
   if (stop.outside_of?.length) partes.push(`se ve por fuera: ${stop.outside_of.join(', ')}`)
-  for (const aviso of [stop.closed_notice, stop.hours_warning, stop.season_notice]) if (aviso) partes.push(`⚠️ ${aviso}`)
+  for (const aviso of [stop.closed_notice, stop.hours_warning, stop.season_notice, stop.notice]) if (aviso) partes.push(`⚠️ ${aviso}`)
+  // (La línea de Navidad de la ficha, PROMPT_ROMA_NAVIDAD 3.)
+  if (stop.season_line?.text) partes.push(`🎄 ${stop.season_line.text}`)
   if (stop.experience) partes.push(`experiencia: ${EXP[stop.experience] ?? stop.experience}`)
   return cell(partes.join(' · '))
 }

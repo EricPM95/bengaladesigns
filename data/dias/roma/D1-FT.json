@@ -355,14 +355,15 @@
       }
     },
     "mercadillos_navidenos": {
-      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas.",
+      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: en tranquilo no va, para no quitarle tiempo a la comida.",
       "manana": {
         "insertar": [
           {
             "antes_de": "Plaza Venecia",
             "parada": {
               "lugar": "Santo Bambino de Aracoeli",
-              "modo": "camino"
+              "modo": "camino",
+              "tipo": "opcional"
             }
           }
         ]

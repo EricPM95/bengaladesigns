@@ -209,7 +209,10 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
       const place = placeByName.get(name)
       return place?.level === 1 && tripDates.every((date) => closedOnDay(place, date.weekday, date.dateIso))
     })
-  const unusable = (id) => closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id])
+  // (El bloque que el Free Tour sustituye no se cae porque cierre su imprescindible: el tour recorre el centro igual, con
+  // el Panteón cerrado el 25 de diciembre; ese día el Panteón se ve por fuera. PROMPT_ROMA_NAVIDAD 4.)
+  const tourReplaces = (id) => hasFreeTour && Boolean(blocks[id]?.free_tour?.replaces_block)
+  const unusable = (id) => !tourReplaces(id) && (closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id]))
   const closedBlocks = blockIds.filter(unusable)
   // Un bloque con cierre y sin otra combinación NO desaparece: se hace por fuera, con lo gratis y lo
   // que se ve desde la calle (decisión del 2026-09-25; el 25 de diciembre, Roma Antigua: Arco, Coliseo
@@ -246,7 +249,9 @@ function planShortTripOnce({ destData, slots, pace, hasFreeTour = false, poolNam
     const tour = destData.default_free_tour
     const paidInteriors = (tour.covers ?? []).filter((name) => {
       const place = placeByName.get(name)
-      return place && place.level === 1 && !(place.is_free_access ?? place.type === 'exterior')
+      // (Si ese día cierra, no va detrás del tour por dentro: el tour ya lo enseña por fuera.)
+      const closed = place && tripDates.every((date) => closedOnDay(place, date.weekday, date.dateIso))
+      return place && !closed && place.level === 1 && !(place.is_free_access ?? place.type === 'exterior')
     })
     return [{ name: tour.name, role: 'core', freeTour: true }, ...paidInteriors.map((name) => ({ name, role: 'core' }))]
   }

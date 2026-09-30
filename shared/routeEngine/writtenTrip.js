@@ -49,6 +49,7 @@ const SUNSET_STAY_EXTRA = 30 // si la cena espera, el mirador se alarga hasta 30
 const TICKET_MARGIN = 10
 /** Si una parada abre dentro de estos minutos, se espera; si no, cuenta como cerrada a esa hora. */
 const OPEN_WAIT_MAX = 20
+const OPEN_WAIT_MAX_POOL = 45 // lo que el viajero ha elegido se espera más antes que verlo por fuera (las Termas de Caracalla el 1 de enero, que abren a las 9:30)
 const PASS_THROUGH_MINUTES = 10
 const OUTSIDE_MINUTES = 15
 const LUNCH_EARLIEST = 12 * 60 + 30
@@ -387,7 +388,20 @@ export function planWrittenTrip(args) {
     const weekdayKey = hours.weekday && calendar.hasDates ? norm(hours.weekday) : null
     if (weekdayKey && variants[weekdayKey]) applyOps(draft, variants[weekdayKey], weekdayKey)
     // `cerrado:<lugar>`: el día cambia si ese lugar cierra ese día (los Museos Vaticanos en sus festivos).
-    for (const [key, ops] of Object.entries(variants)) if (key.startsWith('cerrado:') && closedThatDay(key.slice('cerrado:'.length), day)) applyOps(draft, ops, key)
+    // (También si abre ese día pero no a su hora escrita: los Museos Vaticanos el último domingo de mes, de 9:00 a 14:00,
+    // con la visita escrita a las 14:45.)
+    const closedAtWrittenHour = (name) => {
+      if (!calendar.hasDates) return false
+      const stop = [...draft.manana, ...draft.tarde].find((candidate) => candidate.lugar === name && candidate.hora != null)
+      const place = placeByName.get(name)
+      if (!stop || !place) return false
+      const hora = typeof stop.hora === 'string' ? stop.hora : stop.hora[tranquilo ? 'tranquilo' : 'completo'] ?? stop.hora.completo
+      return Boolean(openCheck(place, toMin(hora), stop.min ?? place.duration_minutes ?? 60, hours).closed)
+    }
+    for (const [key, ops] of Object.entries(variants)) {
+      const name = key.startsWith('cerrado:') ? key.slice('cerrado:'.length) : null
+      if (name && (closedThatDay(name, day) || closedAtWrittenHour(name))) applyOps(draft, ops, key)
+    }
     // (La fecha, después del cierre: es lo más concreto y manda; Navidad en D2 con los Museos cerrados.)
     for (const [key, ops] of Object.entries(variants)) if (key.startsWith('fecha:') && calendar.hasDates && dateKeyMatches(key, hours.dateIso)) applyOps(draft, ops, key)
     // (`si_disponible`: lo escrito para una experiencia solo vale los días en que ese lugar está en fechas, sin margen: la
@@ -609,7 +623,7 @@ export function planWrittenTrip(args) {
     const inside = sessions.find((session) => start >= session.open && start + duration <= session.close)
     if (inside && (last == null || start <= last)) return { ok: true }
     const next = sessions.find((session) => session.open > start)
-    if (next && next.open - start <= OPEN_WAIT_MAX && next.open + duration <= next.close) return { wait: next.open - start }
+    if (next && next.open - start <= (inPool(place.name) ? OPEN_WAIT_MAX_POOL : OPEN_WAIT_MAX) && next.open + duration <= next.close) return { wait: next.open - start }
     return { closed: true, opensAt: next?.open ?? null }
   }
 
@@ -900,15 +914,27 @@ export function planWrittenTrip(args) {
         return rest
       }
       const lastOptional = (list) => list.findLastIndex((stop) => stop.tipo === 'opcional')
+      const afternoonFixed = draft.tarde.some((stop) => stop.hora != null)
       let short = shortNow()
+      // (Solo si quitarla ayuda: una opcional de antes de una hora fija, Trevi antes del Free Tour de las 10:00, no le da
+      // ni un minuto a la comida y se queda.)
       while (short != null) {
-        const at = lastOptional(draft.manana)
-        if (at < 0) break
-        draft.applied.push(`comida:sin ${draft.manana[at].lugar}`)
-        draft.manana = withoutAt(draft.manana, at)
-        short = shortNow()
+        let helped = false
+        for (let at = draft.manana.length - 1; at >= 0 && !helped; at--) {
+          if (draft.manana[at].tipo !== 'opcional') continue
+          const before = draft.manana
+          draft.manana = withoutAt(before, at)
+          const after = shortNow()
+          if (after == null || after > short) {
+            draft.applied.push(`comida:sin ${before[at].lugar}`)
+            short = after
+            helped = true
+          } else draft.manana = before
+        }
+        if (!helped) break
       }
-      let missing = short != null ? LUNCH_MIN - short : 0
+      // (Si la tarde empieza con una hora fija, los Museos a las 14:45, quitar una opcional de después no arregla la comida.)
+      let missing = short != null && !afternoonFixed ? LUNCH_MIN - short : 0
       while (missing > 0) {
         const at = lastOptional(draft.tarde)
         if (at < 0) break

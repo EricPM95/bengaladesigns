@@ -424,11 +424,58 @@
       }
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Sin las opcionales de la tarde, para entrar a tiempo.",
+      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como los sábados: primero el Panteón, nada más comer.",
       "tarde.*": {
-        "quitar": [
-          "Iglesia del Gesù",
-          "Fuente de las Tortugas"
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Iglesia de San Luigi dei Francesi",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          },
+          {
+            "lugar": "Largo di Torre Argentina",
+            "min": 15
+          },
+          {
+            "lugar": "Iglesia del Gesù",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Barrio Judío",
+            "min": 30
+          },
+          {
+            "lugar": "Fuente de las Tortugas",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Campo de' Fiori",
+            "min": 30
+          }
         ]
       }
     }
@@ -503,14 +550,15 @@
       }
     },
     "mercadillos_navidenos": {
-      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas.",
+      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: en tranquilo no va, para no quitarle tiempo a la comida.",
       "manana": {
         "insertar": [
           {
             "antes_de": "Plaza Venecia",
             "parada": {
               "lugar": "Santo Bambino de Aracoeli",
-              "modo": "camino"
+              "modo": "camino",
+              "tipo": "opcional"
             }
           }
         ]
