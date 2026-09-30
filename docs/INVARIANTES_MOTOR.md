@@ -2224,3 +2224,26 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       Navidad del destino, sale en lugar de la de invierno, con el icono de Navidad. Solo promete lo que hay en ese viaje:
       el mercadillo si está abierto y en la ruta; árboles y belenes desde `arboles_desde`; antes, solo las luces;
       «iluminado» si alguna noche sale a pasear. Un destino sin `temporada_navidad` lleva la nota de invierno de siempre.
+
+406. **Un destino no se da por cerrado hasta que sus fechas clave de viajeros españoles están curadas y probadas**
+    (PROMPT_FECHAS_CLAVE, 2026-10-01; el método, en docs/METODO_DESTINOS.md).
+    - Las fechas clave son los festivos y puentes de España: Semana Santa, el puente de mayo, el verano (el 15 de agosto y
+      un fin de semana de julio), el Pilar, Todos los Santos, el puente de diciembre y Navidad y Reyes.
+    - **Se calculan con el calendario real de cada año**, nunca a mano (`scripts/destino/fechasClave.mjs`).
+    - Cada una lleva su viaje típico revisado a mano, con y sin Free Tour (`revisionFechasClave.mjs`), y la prueba de las
+      365 fechas da sus números **solo en las fechas clave**: el objetivo es 0 avisos de verdad en ellas. Los
+      informativos (algo cierra ese día y el aviso lo explica) se aceptan.
+    - **Una parada puede ir solo con una experiencia** (`si_experiencia`), para lo que una experiencia añade en otro sitio
+      según la variante del día: con Arte, los Museos Capitolinos van por la mañana los sábados y el 1 de enero, junto al
+      Campidoglio (por la tarde el Panteón va primero y habría que volver atrás). Lo que la mañana ya lleva no se inserta
+      otra vez por la tarde.
+    - **El descanso de después de comer no cierra ninguna puerta**: si por empezar la tarde más tarde algo pasa a verse por
+      fuera, no hay descanso.
+    - **Una hora escrita sin turno es orientativa**: llegar hasta 10 min después no es llegar tarde.
+
+407. **El Free Tour, a las horas a las que sale ese día** (2026-10-01; dato del calendario de reserva, con `verificar`).
+    - `default_free_tour.disponibilidad.horas_especiales`: fechas en las que el tour solo sale a ciertas horas (en Roma, el
+      24, 25 y 31 de diciembre y el 1 y 6 de enero, solo a las 12:00). El día escrito que lleva el tour trae su variante
+      de esa fecha, con la ruta recolocada alrededor, y la prueba cuenta cualquier tour a otra hora.
+    - El día del tour evita esas fechas si el viaje tiene otro día para él (`no_en` con `fecha` y `evitar`).
+    - **En un viaje de un día**, un tour que solo sale a mediodía parte la ruta en dos: el día va sin tour y lo dice.

@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 380 s. **Total: 36**.
+6180 viajes (todas las fechas de 2027), en 397 s. **Total: 26**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -15,13 +15,8 @@
   - 2027-02-07 · 2 días, día 2 antes de Mirador del Janículo — 40 min
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
-- **Zigzag: volver a una zona que ya se dejó ese día**: 10
-  - 2027-01-01 · 3 días · arte_museos, día 1, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-01-01 · 5 días · arte_museos, día 2, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-04-27 · 5 días · arte_museos, día 5, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-04-29 · 3 días · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-04-29 · 5 días · arte_museos, día 3, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
-  - 2027-05-01 · 3 días · arte_museos, día 1, 17:10 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+- **Zigzag: volver a una zona que ya se dejó ese día**: 1
+  - 2027-01-01 · 5 días · pool Ojo de la Cerradura del Aventino+Museos Capitolinos, día 2, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
 - **Nivel 1-2 como "Por el camino"**: 0 ✅
 - **Nivel 1-2 como "idea" de tiempo libre**: 0 ✅
 - **Imprescindible de menos de 20 min**: 0 ✅
@@ -43,8 +38,7 @@
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
-- **Se llega tarde a una hora fija (o a recoger la entrada)**: 1
-  - 2027-01-01 · 4 días · pool Termas de Caracalla, día 1 (D5C A, viernes) — Basílica de San Clemente · llega 14:05 para las 14:00
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
 - **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
@@ -67,5 +61,23 @@
 - **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D2 A +lunes ×2
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×22
 - **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D1-FT A +empieza:09:30+empieza:sin_atardecer+comida:sin Plaza del Campidoglio ×1
-- **Zigzag: volver a una zona que ya se dejó ese día**: D1 D +sabado+arte_museos ×7 · D1 A +fecha:01-01+arte_museos ×1 · D1 A +sabado+arte_museos ×1 · D1 A +sabado+pool:Museos Capitolinos ×1
-- **Se llega tarde a una hora fija (o a recoger la entrada)**: D5C A viernes ×1
+- **Zigzag: volver a una zona que ya se dejó ese día**: D1 A +sabado+pool:Museos Capitolinos ×1
+
+## Solo en las fechas clave de los viajeros españoles
+
+1133 viajes pisan alguna fecha clave. **Avisos de verdad: 2** · informativos (algo cierra ese día y el aviso lo explica): 22.
+
+| Fecha clave | Fechas | Viajes | De verdad | Informativos |
+|---|---|---|---|---|
+| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 1 | 0 |
+| Semana Santa | 03-24 – 03-29 | 155 | 0 | 2 |
+| Puente de mayo | 04-30 – 05-02 | 93 | 0 | 2 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 0 | 0 |
+| Verano: el 15 de agosto | 08-13 – 08-16 | 112 | 0 | 8 |
+| Puente del Pilar | 10-09 – 10-12 | 112 | 0 | 0 |
+| Todos los Santos | 10-30 – 11-01 | 112 | 0 | 2 |
+| Puente de diciembre | 12-04 – 12-08 | 136 | 0 | 0 |
+| Navidad y Reyes | 12-24 – 12-31 | 184 | 1 | 8 |
+
+- Navidad y Reyes (final): zigzag | 2027-01-01 · 5 días · pool Ojo de la Cerradura del Aventino+Museos Capitolinos, día 2, 17:15 Museos Capitolinos — vuelve junto a Foro Romano y Palatino
+- Navidad y Reyes: v4_elastica | 2027-12-31 · 2 días · FT, día 2 (D1-FT A, sábado) — Trastevere: quería -61 (margen ±30); sol 16:49
