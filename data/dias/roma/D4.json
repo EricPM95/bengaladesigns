@@ -513,5 +513,23 @@
         }
       }
     }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "_nota": "Navidad: el paseo de las luces al final de la tarde, antes de cenar en el Tridente. Solo en sus fechas.",
+      "tarde.*": {
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Luces de Navidad del Tridente",
+              "titulo": "Luces de Navidad: Via del Corso, Condotti, Babuino y Margutta",
+              "min": 40,
+              "no_calle": true,
+              "si_cerrado": "quitar"
+            }
+          }
+        ]
+      }
+    }
   }
 }

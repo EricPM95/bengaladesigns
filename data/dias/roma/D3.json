@@ -151,5 +151,36 @@
         ]
       }
     }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "_nota": "Navidad con Free Tour: el tour ya pasa por Piazza Navona de día y en la mañana no cabe nada más. Al salir de la Basílica se cruza el Puente Sant'Angelo hasta Navona (20 min), con el mercadillo iluminado antes de cenar, y se cena al lado. Solo los días en que hay mercadillo (`si_disponible`).",
+      "si_disponible": "Mercadillo de Navidad de Piazza Navona",
+      "barrio_cena": "centro_historico",
+      "tarde.*": {
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Puente Sant'Angelo",
+              "modo": "camino"
+            }
+          },
+          {
+            "parada": {
+              "lugar": "Mercadillo de Navidad de Piazza Navona",
+              "titulo": "Piazza Navona y su mercadillo de Navidad",
+              "texto_titulo": "Cruzas el Puente Sant'Angelo y en diez minutos estás en Navona, con el mercadillo de la Befana encendido: puestos de dulces, figuritas para el belén y carbón de azúcar. Date una vuelta entre los puestos antes de cenar.",
+              "min": 40,
+              "si_cerrado": "quitar"
+            }
+          }
+        ],
+        "cena": {
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Dar Filettaro a Santa Barbara"
+        }
+      },
+      "noche": "sin_paseo"
+    }
   }
 }

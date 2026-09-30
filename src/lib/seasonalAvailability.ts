@@ -16,6 +16,8 @@ export interface SeasonalWindow {
   notice_after?: string
   /** "del 1 de diciembre al 6 de enero" */
   label: string
+  /** Lo que es esa experiencia en ESE destino, para la tarjeta del formulario (Roma: «El mercadillo de Piazza Navona, los belenes y las luces de Navidad»). */
+  descripcion?: string
 }
 
 /** in = entra normal; notice = entra con aviso (margen de una ventana aproximada); out = no se ofrece. */

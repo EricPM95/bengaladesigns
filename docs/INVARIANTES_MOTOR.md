@@ -2157,3 +2157,20 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - El aviso de traslado largo dice «o en taxi», no «o en bus o taxi», y ningún texto de una parada manda al bus o al metro
       a esa hora («Sube con calma o en el bus 115» → «…o en taxi»).
     - Los paseos nocturnos van a pie desde la cena: ninguno depende del metro para volver.
+
+397. **Una experiencia elegida siempre añade algo a la ruta, o no se ofrece** (PROMPT_ROMA_NAVIDAD 2).
+    - La ventana de una experiencia de temporada vive en `destination_config.experience_availability` (con `aprox`, sus
+      avisos de margen y `descripcion`: lo que esa experiencia es en ESE destino, para la tarjeta del formulario). Con
+      ventana, manda ella; la regla de «solo en invierno» queda para los destinos sin ventana.
+    - **Capas** (`capa_de`): un lugar de la experiencia que está en el mismo sitio que una parada no es otra parada. Cambia
+      la que ya existe: su título, su tiempo y su texto («Piazza Navona y su mercadillo de Navidad», 45 min). Una vez por
+      viaje, en el primer día que lleva esa parada, y solo en sus fechas. En el margen de una ventana aproximada la parada
+      se queda como es, con el aviso («Es probable que el mercadillo ya haya cerrado»). Nunca dos paradas en el mismo sitio,
+      y una capa no sale como «idea» de tiempo libre.
+    - Lo que cada día escrito añade con la experiencia va en sus `experiencias.<id>`; con `si_disponible: <lugar>`, solo los
+      días en que ese lugar está en fechas. Lo insertado de temporada (un «de camino», o una parada con
+      `si_cerrado: "quitar"`) no va fuera de sus fechas, sin margen.
+    - Si la parada de debajo no sale ese viaje (el Free Tour ya pasa por Piazza Navona), lo de la experiencia va donde
+      quepa sin quitar nada: el mercadillo al anochecer, al salir del Vaticano, y la cena al lado (`noche: "sin_paseo"`).
+    - Roma: el mercadillo de Piazza Navona (capa), los 100 Presepi (capa de la Plaza de San Pedro, desde el 8 de
+      diciembre), el Santo Bambino de Aracoeli (de camino, desde el 24) y el paseo de las luces del Tridente (D4).

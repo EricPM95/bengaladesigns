@@ -169,7 +169,8 @@
       ],
       "zone": "centro_historico",
       "conflicts_with": [
-        "Piazza Navona"
+        "Piazza Navona",
+        "Mercadillo de Navidad de Piazza Navona"
       ],
       "allow_same_day": true,
       "texto": "Sin los puestos ni los pintores, la plaza es otra: la Fuente de los Cuatro Ríos iluminada y el rumor del agua. Dale la vuelta despacio antes de irte.",
@@ -179,7 +180,7 @@
           "hasta": "01-06",
           "texto": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos antes de cenar.",
           "texto_despues_cenar": "En Navidad la plaza se llena con el mercadillo: puestos de dulces, belenes y la Befana, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos.",
-          "verificar": "Mercadillo del 1 de diciembre al 6 de enero, también el 25: visto solo en fuentes secundarias (romatoday, virgilio). Verificar el 1 de diciembre."
+          "verificar": "Fechas de la temporada 2025-26 (turismoroma.it, «Festa di Piazza Navona 2025»): revisar en noviembre."
         }
       ]
     },
@@ -4517,6 +4518,125 @@
       "neighbor_of": [
         "Terraza del Pincio"
       ]
+    },
+    {
+      "name": "Mercadillo de Navidad de Piazza Navona",
+      "capa_de": "Piazza Navona",
+      "_nota": "Una capa, no una parada más (PROMPT_ROMA_NAVIDAD 2): con la experiencia de mercadillos elegida y en sus fechas, la parada de Piazza Navona pasa a llevar este título, este tiempo y este texto. Nunca salen dos paradas en el mismo sitio.",
+      "titulo_parada": "Piazza Navona y su mercadillo de Navidad",
+      "texto_parada": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa.",
+      "duration_minutes": 45,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8992,
+        12.473
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "mercadillo_navideno"
+      ],
+      "filter_category": "monumentos",
+      "description": "El mercadillo de Navidad de Roma, en Piazza Navona: la fiesta de la Befana",
+      "contained_in": "Piazza Navona",
+      "available": {
+        "from": "12-01",
+        "to": "01-06",
+        "aprox": true,
+        "notice_before": "Es probable que el mercadillo aún no haya abierto.",
+        "notice_after": "Es probable que el mercadillo ya haya cerrado."
+      },
+      "schedule_nota": "Todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas).",
+      "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026, todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas); el 6 de enero a las 14:00 llega la Befana y se cierra la fiesta (dato comprobado por el usuario).",
+      "comprobado": "2026-09-30",
+      "verificar": "Fechas y horas de la temporada 2025-26: revisar en noviembre."
+    },
+    {
+      "name": "100 Presepi in Vaticano",
+      "duration_minutes": 20,
+      "zone": "vaticano",
+      "coordinates": [
+        41.9022,
+        12.4573
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "mercadillo_navideno"
+      ],
+      "filter_category": "monumentos",
+      "description": "Cien belenes llegados de todo el mundo, bajo la columnata de la Plaza de San Pedro",
+      "contained_in": "Plaza de San Pedro",
+      "available": {
+        "from": "12-08",
+        "to": "01-06"
+      },
+      "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato comprobado por el usuario). Las fechas cambian cada año. En 2025-26, del 8 de diciembre al 6 de enero.",
+      "comprobado": "2026-09-30",
+      "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
+      "capa_de": "Plaza de San Pedro",
+      "titulo_parada": "Plaza de San Pedro y los 100 Presepi",
+      "texto_parada": "En Navidad, la plaza tiene su árbol gigante y un belén a tamaño real junto al obelisco. Y bajo la columnata de Bernini, los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos.",
+      "_nota": "Una capa sobre la Plaza de San Pedro, no una parada más, y sin tiempo de más: los 100 Presepi se ven en la propia visita a la plaza, para que no se caiga nada del día del Vaticano. Fechas estrictas: antes del 8 de diciembre no sale."
+    },
+    {
+      "name": "Santo Bambino de Aracoeli",
+      "duration_minutes": 10,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8939,
+        12.4833
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "mercadillo_navideno"
+      ],
+      "filter_category": "monumentos",
+      "description": "La basílica de Santa Maria in Aracoeli, junto al Campidoglio, con el Niño Jesús más querido de Roma",
+      "por_que": "Desde el Campidoglio se entra por un lateral a Santa Maria in Aracoeli. En Navidad suelen sacar al Santo Bambino, el Niño Jesús más querido de Roma: si está abierta, asómate.",
+      "available": {
+        "from": "12-24",
+        "to": "01-06"
+      },
+      "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato comprobado por el usuario). Las fechas cambian cada año. Fechas en que se expone sin comprobar: el texto dice «suelen».",
+      "comprobado": "2026-09-30",
+      "verificar": "Fechas en que se expone el Santo Bambino y horario de la basílica.",
+      "neighbor_of": [
+        "Altar de la Patria",
+        "Plaza del Campidoglio",
+        "Museos Capitolinos"
+      ]
+    },
+    {
+      "name": "Luces de Navidad del Tridente",
+      "titulo_parada": "Luces de Navidad: Via del Corso, Condotti, Babuino y Margutta",
+      "duration_minutes": 40,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9043,
+        12.4793
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "calle",
+        "paseo",
+        "mercadillo_navideno"
+      ],
+      "filter_category": "monumentos",
+      "description": "El paseo de las luces de Navidad: Via del Corso, Via Condotti, Via del Babuino y Via Margutta",
+      "por_que": "Es el paseo que hacen los romanos antes de cenar en Navidad: Via del Corso iluminada entera, Via Condotti hasta la escalinata, y la vuelta por Via del Babuino y Via Margutta.",
+      "available": {
+        "from": "11-26",
+        "to": "01-06"
+      },
+      "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato comprobado por el usuario). Las fechas cambian cada año. En 2025-26, del 26 de noviembre al 6 de enero.",
+      "comprobado": "2026-09-30",
+      "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
+      "neighbor_of": [
+        "Via Condotti"
+      ]
     }
   ],
   "groups": {
@@ -7762,7 +7882,11 @@
       "tridente": {
         "12-25": "Paseo con las luces de Navidad y aperitivo",
         "diciembre": "Luces de Navidad por Via del Corso y Via Condotti, y aperitivo",
-        "invierno": "Compras por Via del Corso y aperitivo"
+        "invierno": "Compras por Via del Corso y aperitivo",
+        "si_visto": [
+          "Luces de Navidad del Tridente"
+        ],
+        "si_visto_titulo": "Aperitivo por el Tridente"
       },
       "centro_historico": {
         "si_visto": [
@@ -7816,6 +7940,19 @@
           ],
           "texto": "El 1 de enero el transporte empieza a las 8:00."
         }
+      }
+    },
+    "experience_availability": {
+      "mercadillos_navidenos": {
+        "from": "12-01",
+        "to": "01-06",
+        "aprox": true,
+        "notice_before": "Es probable que algunos mercadillos aún no hayan abierto.",
+        "notice_after": "Es probable que algunos mercadillos ya hayan cerrado.",
+        "descripcion": "El mercadillo de Piazza Navona, los belenes y las luces de Navidad",
+        "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026, todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas); el 6 de enero a las 14:00 llega la Befana y se cierra la fiesta (dato comprobado por el usuario).",
+        "comprobado": "2026-09-30",
+        "verificar": true
       }
     }
   },
@@ -12473,6 +12610,12 @@
         "Panteón (noche)"
       ],
       "texto": "Después de cenar, a cinco minutos: el pórtico del Panteón iluminado y la plaza casi vacía. Siéntate en la fuente y míralo sin prisa: así lo veían los romanos hace dos mil años."
+    },
+    "sin_paseo": {
+      "nombre": "Sin paseo de noche",
+      "recorrido": [],
+      "sin_relevo": true,
+      "_nota": "La tarde ya acaba de noche con su plan (el mercadillo de Navona antes de cenar): no se añade otro paseo después."
     }
   },
   "curated_selection": {
@@ -13025,14 +13168,15 @@
         "tipo": "fiesta",
         "icono": "navidad",
         "titulo": "Mercadillo de Navidad en Piazza Navona",
-        "texto": "Del 1 de diciembre al 6 de enero suele haber mercadillo de Navidad en Piazza Navona, también el 25; compruébalo en la web oficial. Hemos dejado la plaza en tus paseos de noche.",
+        "texto": "Del 1 de diciembre al 6 de enero suele haber mercadillo de Navidad en Piazza Navona, también el 25, hasta bien entrada la noche. Hemos puesto la plaza en tu ruta.",
         "verificar": true,
-        "fuente": "romatoday.it y virgilio.it (fuentes secundarias, 2026-09-28): verificar el 1 de diciembre en una fuente oficial (Roma Capitale).",
+        "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026, todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas); el 6 de enero a las 14:00 llega la Befana y se cierra la fiesta (dato comprobado por el usuario).",
         "contexto": "Del 1 de diciembre al 6 de enero, Piazza Navona se llena con el mercadillo de Navidad.",
         "requiere_lugares": [
           "Piazza Navona",
           "Piazza Navona (noche)"
-        ]
+        ],
+        "comprobado": "2026-09-30"
       }
     ],
     "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."

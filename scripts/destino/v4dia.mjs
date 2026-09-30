@@ -8,7 +8,7 @@ import { planWrittenTrip } from '../../shared/routeEngine/writtenTrip.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 
 const D = findPipelineV2Data('Roma')
-const EXPS = { ninguna: [], arte: ['arte_museos'], naturaleza: ['naturaleza_vistas'], barrios: ['barrios_sabores'] }
+const EXPS = { ninguna: [], arte: ['arte_museos'], naturaleza: ['naturaleza_vistas'], barrios: ['barrios_sabores'], mercadillos: ['mercadillos_navidenos'] }
 const a = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const dias = Number(a.dias ?? 3)
 const exps = [...(a.ft === 'si' ? ['free_tour'] : []), ...EXPS[a.exp ?? 'ninguna']]

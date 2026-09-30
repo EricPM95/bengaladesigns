@@ -848,6 +848,13 @@ function nearbySuggestions(destData, trip, options, dayVisitedNames, from, { sta
   const suggestions = (destData.places ?? [])
     // Un lugar de nivel 1 o 2 no es una "idea" de tiempo libre: si va, es parada (decisión del usuario, 2026-09-28).
     .filter((place) => !seen.has(place.name) && Array.isArray(place.coordinates) && (place.level ?? 3) > 2)
+    // Una capa (el mercadillo de Navona) no es un sitio aparte, y lo de temporada solo en sus fechas, sin margen.
+    .filter((place) => {
+      if (place.capa_de) return false
+      if (!place.available) return true
+      const fit = seasonFit(place.available, trip.calendar ?? { hasDates: Boolean(hours.weekday), month: null }, hours.dateIso ?? null)
+      return fit.enters && !fit.notice
+    })
     .map((place) => ({ place, walk: travel.leg(from, place.coordinates)?.minutes ?? Infinity, ofExperience: (place.tags ?? []).some((tag) => chosenTags.has(tag)) }))
     .filter((item) => item.walk <= FREE_AFTERNOON_MAX_WALK_MINUTES)
     // De camino: el rodeo para pasar por allí hacia lo siguiente, 15 min como mucho.

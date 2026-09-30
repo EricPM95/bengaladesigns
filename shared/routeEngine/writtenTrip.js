@@ -24,7 +24,7 @@ import { specialHoursToAvoid } from './specialDates.js'
 import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
-import { availableForTrip } from './availability.js'
+import { availableForTrip, seasonFit } from './availability.js' // eslint-disable-line no-unused-vars
 import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
@@ -334,6 +334,30 @@ export function planWrittenTrip(args) {
     return value ?? null
   }
 
+  /**
+   * Las capas que lleva este viaje y en qué día va cada una: los lugares con `capa_de` de las experiencias elegidas, en
+   * el primer día (por orden) cuyo día escrito lleva la parada de debajo y en el que la capa está en fechas.
+   */
+  let tripLayers = null
+  const layersOfTrip = () => {
+    if (tripLayers) return tripLayers
+    tripLayers = []
+    const tags = new Set(selected.flatMap((exp) => TAG_INTEREST_MAP[exp] ?? []))
+    for (const place of destData.places ?? []) {
+      if (!place.capa_de || !(place.tags ?? []).some((tag) => tags.has(tag))) continue
+      for (let i = 0; i < order.length; i++) {
+        const fit = seasonFit(place.available, calendar, hoursOf(cityDays[i]).dateIso)
+        if (!fit.enters) continue
+        const w = written.days[order[i]]
+        // (Si el Free Tour ya pasa por ahí, su parada suelta no sale ese viaje: la capa va en otro día o en la nocturna.)
+        if (!JSON.stringify([w.manana, w.tarde]).includes(`"lugar":"${place.capa_de}"`) && !JSON.stringify([w.manana, w.tarde]).includes(`"lugar": "${place.capa_de}"`)) continue
+        tripLayers.push({ place, dayIndex: i, notice: fit.notice })
+        break
+      }
+    }
+    return tripLayers
+  }
+
   const makeDraft = (id, index, version) => {
     const w = written.days[id]
     const day = cityDays[index]
@@ -366,15 +390,45 @@ export function planWrittenTrip(args) {
     for (const [key, ops] of Object.entries(variants)) if (key.startsWith('cerrado:') && closedThatDay(key.slice('cerrado:'.length), day)) applyOps(draft, ops, key)
     // (La fecha, después del cierre: es lo más concreto y manda; Navidad en D2 con los Museos cerrados.)
     for (const [key, ops] of Object.entries(variants)) if (key.startsWith('fecha:') && calendar.hasDates && dateKeyMatches(key, hours.dateIso)) applyOps(draft, ops, key)
-    for (const exp of selected) if (w.experiencias?.[exp]) applyOps(draft, w.experiencias[exp], exp)
+    // (`si_disponible`: lo escrito para una experiencia solo vale los días en que ese lugar está en fechas, sin margen: la
+    // cena junto a Piazza Navona solo si esa noche hay mercadillo.)
+    const inDates = (name) => {
+      const fit = seasonFit(placeByName.get(name)?.available, calendar, hours.dateIso)
+      return fit.enters && !fit.notice
+    }
+    for (const exp of selected) if (w.experiencias?.[exp] && (!w.experiencias[exp].si_disponible || inDates(w.experiencias[exp].si_disponible))) applyOps(draft, w.experiencias[exp], exp)
     if (tranquilo && variants.tranquilo) applyOps(draft, variants.tranquilo, 'tranquilo')
     // Lo que depende del viaje: `no_si_dia` (la Isla Tiberina en D5 si el viaje ya lleva D1-FT) y `desde_dias` (solo en
     // viajes de tantos días o más).
     // (`sol_desde` / `sol_hasta`: la parada va solo si el sol se pone a partir de / antes de esa hora; una versión abarca una hora de sol.)
     const bySun = (stop) => hours.sunset == null || (!(stop.sol_desde && hours.sunset < toMin(stop.sol_desde)) && !(stop.sol_hasta && hours.sunset >= toMin(stop.sol_hasta)))
     const keep = (stop) => bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
-    draft.manana = draft.manana.filter(keep)
-    draft.tarde = draft.tarde.filter(keep)
+    // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
+    // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
+    // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)
+    const inSeason = (list) => list.flatMap((stop) => {
+      const available = placeByName.get(stop.lugar)?.available
+      if (!available || !(stop.modo === 'camino' || stop.si_cerrado === 'quitar')) return [stop]
+      const fit = seasonFit(available, calendar, hours.dateIso)
+      return fit.enters && !fit.notice ? [stop] : []
+    })
+    draft.manana = inSeason(draft.manana.filter(keep))
+    draft.tarde = inSeason(draft.tarde.filter(keep))
+    // Las capas de una experiencia elegida (PROMPT_ROMA_NAVIDAD 2): un lugar con `capa_de` no es una parada más, cambia la
+    // parada que ya existe en ese sitio (el mercadillo de Navidad → «Piazza Navona y su mercadillo de Navidad», con más
+    // tiempo y su texto). Solo en sus fechas, y una vez por viaje: en el primer día que lleva esa parada.
+    for (const layer of layersOfTrip()) {
+      if (layer.dayIndex !== index) continue
+      // (En el margen de sus fechas, «es probable que el mercadillo ya haya cerrado»: la parada se queda como es, con el aviso.)
+      const apply = (list) => list.map((stop) => (stop.lugar !== layer.place.capa_de || stop.modo === 'camino' || stop.modo === 'fuera'
+        ? stop
+        : layer.notice
+        ? { ...stop, aviso: layer.notice }
+        : { ...stop, titulo: layer.place.titulo_parada ?? layer.place.name, texto_titulo: layer.place.texto_parada ?? null, min: Math.max(stop.min ?? 0, layer.place.duration_minutes ?? 0) || stop.min, capa: layer.place.name, tipo: stop.tipo === 'opcional' ? 'normal' : stop.tipo }))
+      draft.manana = apply(draft.manana)
+      draft.tarde = apply(draft.tarde)
+      if (!draft.applied.includes(`capa:${layer.place.name}`)) draft.applied.push(`capa:${layer.place.name}`)
+    }
     return draft
   }
   const drafts = order.map((id, index) => makeDraft(id, index, lightVersionOf(hoursOf(cityDays[index]).sunset, cuts)))
@@ -1077,7 +1131,8 @@ export function planWrittenTrip(args) {
     const max = tranquilo ? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
     let fromAlternative = false
-    if (chain.length === 0) {
+    // (`sin_relevo`: esa noche no lleva paseo; el plan de la tarde ya es de noche, el mercadillo de Navona antes de cenar.)
+    if (chain.length === 0 && !walk.sin_relevo) {
       chain = (walk.alternativas ?? []).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
       if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true })).sort((a, b) => metersBetween(day.dinnerCoords, a.coordinates) - metersBetween(day.dinnerCoords, b.coordinates))
       fromAlternative = walk.recorrido.length > 0

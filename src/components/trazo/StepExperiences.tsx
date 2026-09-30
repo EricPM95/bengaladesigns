@@ -16,7 +16,8 @@ interface StepExperiencesProps {
   onNext: () => void
 }
 
-/** Mercadillos solo en invierno: con fechas manda el mes real (nov-dic); sin fechas, la estación. */
+/** Mercadillos solo en invierno: con fechas manda el mes real (nov-dic); sin fechas, la estación. Solo para los destinos sin
+ * ventana propia: con ventana (`experience_availability`), manda ella (Roma: del 16 de noviembre al 21 de enero, con aviso en los márgenes). */
 function isWinterTrip(season: Season | undefined, dateRange: DateRange | undefined): boolean {
   if (dateRange?.start) {
     const month = Number(dateRange.start.slice(5, 7))
@@ -66,7 +67,8 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
   const descriptionOf = (id: ExperienceCategoryId, fallback: string) => {
     if (id === 'imprescindibles') return `Lo que no te puedes perder en ${destinationName}`
     if (id === 'free_tour') return `Ideal si es tu primera vez en ${destinationName}: un guía local te descubre la ciudad a pie.`
-    return fallback
+    // Lo que esa experiencia es en este destino, si el destino lo dice (los mercadillos de Roma: Navona, los belenes y las luces).
+    return windows[id]?.descripcion ?? fallback
   }
 
   return (
