@@ -2,12 +2,13 @@
 
 Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditoría (`auditoria.mjs`) y las paradas de cada día. **v4 igual o mejor** = no tiene más avisos que v3.
 
-**Resumen:** v4 mejor en 39, igual en 17, peor en 0. Avisos de la auditoría: v3 67, v4 0.
+**Resumen:** v4 mejor en 39, igual en 17, peor en 0. Avisos de la auditoría: v3 68, v4 0.
 
 | Tipo | v3 | v4 |
 |---|---|---|
 | Tramo de más de 25 min andando sin transporte | 1 | 0 |
 | Tiempo libre de más de 30 min (60 si sale con nombre de paseo) | 2 | 0 |
+| Nota de temporada que promete algo que la ruta no hace | 1 | 0 |
 | Imprescindible de pago que no sale nunca por dentro en el viaje | 2 | 0 |
 | Un sitio de noche que vuelve a salir a la mañana siguiente | 13 | 0 |
 | Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00) | 17 | 0 |
@@ -735,7 +736,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
   - v3: [D4M domingo] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 09:35 Iglesia de San Ignacio de Loyola · 10:00 Plaza Colonna · 10:20 Via Condotti · 10:40 Plaza de España · 11:15 Piazza del Popolo · 11:35 Santa Maria del Popolo (fuera) · 11:55 Terraza del Pincio · 12:30 Ara Pacis · 13:15 🍝 Sgarro Bistrot · 14:45 Parque de Villa Borghese · 16:45 Iglesia de Santa Maria della Vittoria · 17:30 Iglesia de San Pietro in Vincoli · 18:05 Basílica de Santa María la Mayor · 19:00 Roma iluminada desde los Foros · 19:30 Monti · 20:15 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D4M A+domingo] 08:30 Fontana de Trevi · 09:00 Desayuno romano · 09:25 Iglesia de San Ignacio de Loyola · 09:50 Via Condotti · 10:05 Plaza de España · 10:25 Trinità dei Monti · 10:55 Basílica de Santa María la Mayor · 11:40 Iglesia de San Pietro in Vincoli · 12:05 Mercados de Trajano · 13:00 Monti · 13:30 🍝 La Boccaccia · 15:05 Via Margutta y Via del Babuino · 15:40 Piazza del Popolo · 16:15 Un paseo por Villa Borghese · 16:50 Terraza del Pincio 🌅 · 17:30 Santa Maria del Popolo · 19:30 🍷 Sgarro Bistrot · 21:30 Panteón (noche) 🌙 · 22:25 Piazza Navona (noche) 🌙 · 🍸 80 min
 
-## cierre 27: 3 días · Free Tour · desde el 2027-11-12 — v4 mejor (1 → 0)
+## cierre 27: 3 días · Free Tour · desde el 2027-11-12 — v4 mejor (2 → 0)
 
 - **Día 1**
   - v3: [D3] 08:30 Fontana de Trevi · 09:05 Desayuno romano · 10:00 Free Tour Centro Histórico · 12:40 Panteón · 13:15 🍝 Armando al Pantheon · 14:45 Museos Vaticanos y Capilla Sixtina · 18:00 Plaza de San Pedro · 18:35 Basílica de San Pedro · 20:00 Borgo Pio · 20:30 🍷 Dal Toscano · 21:30 Puente Sant'Angelo (noche) 🌙
@@ -746,7 +747,7 @@ Cada viaje con el motor v3 (días curados) y el v4 (días escritos): la auditor�
 - **Día 3**
   - v3: [D5C domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:30 Ojo de la Cerradura del Aventino · 10:50 Pirámide Cestia · 11:05 Cementerio Protestante · 11:40 Testaccio · 13:00 🍝 Felice a Testaccio · 14:45 Basílica de San Clemente · 15:45 Basílica de San Juan de Letrán · 16:45 Basílica de Santa María la Mayor · 17:30 Iglesia de San Pietro in Vincoli · 18:00 Roma iluminada desde los Foros · 18:30 Monti · 20:00 🍷 La Boccaccia · 21:30 Coliseo (noche) 🌙
   - v4: [D5C A+domingo] 09:30 Boca de la Verdad · 10:05 Jardín de los Naranjos · 10:25 Ojo de la Cerradura del Aventino · 10:45 Pirámide Cestia · 11:00 Cementerio Protestante · 11:35 Testaccio y su mercado · 12:30 🍝 Felice a Testaccio · 14:00 Basílica de San Clemente · 15:05 Basílica de Santa María la Mayor · 15:45 Mercados de Trajano · 16:35 Via dei Fori Imperiali 🌅 · 17:20 Iglesia de San Pietro in Vincoli · 18:20 Coliseo (noche) 🌙 · 20:00 🍷 La Boccaccia · 🍸 70 min
-- Avisos v3: tour_repite (día 1, 08:30 Fontana de Trevi — y el Free Tour pasa por ahí)
+- Avisos v3: tour_repite (día 1, 08:30 Fontana de Trevi — y el Free Tour pasa por ahí); nota_promete (día — Tarjeta de temporada — promete los miradores al atardecer y ninguna parada es un atardecer)
 - Avisos v4: ninguno
 
 ## cierre 28: 2 días · desde el 2027-11-27 — v4 igual (0 → 0)
