@@ -1,8 +1,7 @@
 {
   "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. (30-sep: el 24 y el 31 de diciembre, su variante: el Vaticano por la mañana y el Free Tour a las 16:00.)",
   "id": "D3",
-  "nombre": "Trevi sin gente, Free Tour y Vaticano por la tarde",
-  "nombre_empieza_tarde": "Free Tour y Vaticano por la tarde",
+  "nombre": "Free Tour y el Vaticano por la tarde",
   "joyas": [
     "Museos Vaticanos y Capilla Sixtina"
   ],
@@ -24,13 +23,8 @@
   "barrio_cena": "vaticano",
   "noche": "castillo_tiber",
   "manana": {
+    "empieza": "09:00",
     "paradas": [
-      {
-        "lugar": "Fontana de Trevi",
-        "tipo": "opcional",
-        "hora": "08:30",
-        "min": 25
-      },
       {
         "lugar": "Desayuno romano",
         "tipo": "opcional",
@@ -48,7 +42,7 @@
         "min": 30,
         "modo": "dentro",
         "entrada": true,
-        "si_cerrado": "fuera",
+        "si_cerrado": "quitar",
         "texto": "El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Levanta la vista: la cúpula tiene un agujero de nueve metros abierto al cielo desde hace casi dos mil años."
       }
     ],
@@ -337,21 +331,19 @@
       }
     },
     "fecha:12-25|01-01|01-06": {
-      "_nota": "Navidad, Año Nuevo y Reyes: el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30) y los Museos Vaticanos cierran (la tarde es la de «cerrado»: el Castillo, la Plaza y la Basílica). La mañana empieza tarde, por Trevi; se come al acabar el tour y la tarde empieza a las 15:45.",
+      "_nota": "Navidad, Año Nuevo y Reyes: el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30) y los Museos Vaticanos cierran (la tarde es la de «cerrado»: el Castillo, la Plaza y la Basílica). La mañana empieza tarde (el desayuno y el tour, que ya pasa por Trevi); se come al acabar el tour y la tarde empieza a las 15:45.",
       "manana": {
         "ajustar": {
-          "Fontana de Trevi": {
-            "hora": "10:30"
-          },
           "Free Tour Centro Histórico": {
             "hora": "12:00"
           }
-        }
+        },
+        "empieza": "11:00"
       },
       "tarde.*": {
         "empieza": "15:45"
       },
-      "nombre": "Trevi, Free Tour y San Pedro por la tarde"
+      "nombre": "Free Tour y San Pedro por la tarde"
     },
     "fecha:12-24&D1-FT@12-25": {
       "_nota": "24 de diciembre en un viaje en el que el otro día del Free Tour cae el 25 (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
@@ -500,6 +492,52 @@
         ],
         "empieza": "13:15"
       }
+    },
+    "fecha:easter-2": {
+      "_nota": "Viernes Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Basílica cierra a las visitas a las 13:00 por la Pasión del Papa (lo prudente, 2024; verificar esa semana). Va a primera hora, antes del Free Tour, con 45-60 min más por la cola del control; por la tarde, los Museos y la Plaza.",
+      "manana": {
+        "empieza": "07:15",
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "tipo": "fija",
+            "hora": "07:15",
+            "min": 15
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 95,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "10:00",
+            "min": 150,
+            "entrada": true,
+            "traslado": {
+              "como": "el metro A (de Ottaviano a Spagna)",
+              "min": 25
+            }
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "texto": "El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Levanta la vista: la cúpula tiene un agujero de nueve metros abierto al cielo desde hace casi dos mil años."
+          }
+        ]
+      },
+      "tarde.*": {
+        "quitar": [
+          "Basílica de San Pedro",
+          "Plaza de San Pedro"
+        ]
+      }
     }
   },
   "experiencias": {
@@ -526,5 +564,6 @@
       },
       "noche": "sin_paseo"
     }
-  }
+  },
+  "_nota_trevi": "Sin Trevi a primera hora (PROMPT_REPASO_LOCAL_ROMA, 1): el Free Tour ya pasa por Trevi a las 10:00."
 }

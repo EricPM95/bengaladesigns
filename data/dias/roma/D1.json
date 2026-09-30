@@ -34,7 +34,22 @@
         "min": 100,
         "modo": "dentro",
         "entrada": true,
-        "si_cerrado": "fuera"
+        "si_cerrado": "fuera",
+        "no_meses": [
+          7,
+          8
+        ]
+      },
+      {
+        "lugar": "Foro Romano y Palatino",
+        "min": 90,
+        "modo": "dentro",
+        "entrada": true,
+        "si_cerrado": "fuera",
+        "meses": [
+          7,
+          8
+        ]
       },
       {
         "lugar": "Plaza del Campidoglio",
@@ -46,13 +61,21 @@
       },
       {
         "lugar": "Plaza Venecia",
-        "modo": "camino"
+        "modo": "camino",
+        "no_meses": [
+          7,
+          8
+        ]
       },
       {
         "lugar": "Altar de la Patria",
         "min": 40,
         "modo": "dentro",
-        "si_cerrado": "fuera"
+        "si_cerrado": "fuera",
+        "no_meses": [
+          7,
+          8
+        ]
       }
     ],
     "comida": {
@@ -66,13 +89,60 @@
       "_sol": "sin mirador: el centro barroco; la noche de las fuentes va antes de cenar",
       "paradas": [
         {
+          "lugar": "Panteón",
+          "min": 30,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
           "lugar": "Barrio Judío",
-          "min": 30
+          "min": 30,
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Fuente de las Tortugas",
           "modo": "camino",
-          "tipo": "opcional"
+          "tipo": "opcional",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Largo di Torre Argentina",
@@ -86,27 +156,61 @@
           "tipo": "opcional"
         },
         {
+          "lugar": "Plaza Venecia",
+          "modo": "camino",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
           "lugar": "Iglesia de Santa Maria sopra Minerva",
           "min": 15,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Elefantino de Bernini",
-          "modo": "camino"
+          "modo": "camino",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Panteón",
           "min": 30,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Iglesia de San Luigi dei Francesi",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Piazza Navona",
@@ -128,13 +232,60 @@
       "empieza": "14:30",
       "paradas": [
         {
+          "lugar": "Panteón",
+          "min": 30,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "min": 15,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "min": 20,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
           "lugar": "Barrio Judío",
-          "min": 30
+          "min": 30,
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Fuente de las Tortugas",
           "modo": "camino",
-          "tipo": "opcional"
+          "tipo": "opcional",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Largo di Torre Argentina",
@@ -148,27 +299,61 @@
           "tipo": "opcional"
         },
         {
+          "lugar": "Plaza Venecia",
+          "modo": "camino",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Altar de la Patria",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
           "lugar": "Iglesia de Santa Maria sopra Minerva",
           "min": 15,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Elefantino de Bernini",
-          "modo": "camino"
+          "modo": "camino",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Panteón",
           "min": 30,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Iglesia de San Luigi dei Francesi",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "no_meses": [
+            7,
+            8
+          ]
         },
         {
           "lugar": "Piazza Navona",
@@ -205,7 +390,7 @@
   },
   "variantes": {
     "sabado": {
-      "_nota": "El sábado el Panteón deja de vender entradas a las 16:00 (misa de las 17:00): primero el Panteón, nada más comer. En C y D, el atardecer en el Ponte Sisto al final; en D la tarde empieza a las 15:00 para llegar al Panteón antes de las 16:00. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio: por la tarde el Panteón va primero y habría que volver atrás.",
+      "_nota": "Sábado (PROMPT_REPASO_LOCAL_ROMA, 3): el Panteón deja de vender entradas a las 16:00 (misa de las 17:00), así que va nada más comer; el Largo Argentina y el Ghetto pasan a la mañana, después del Altar, y la comida es fuera del Ghetto (el sábado es su día de descanso y muchos negocios judíos cierran). Por la tarde, sin volver atrás: el Panteón, la Minerva (el sábado abre a las 15:30) y el Gesù (reabre a las 16:00, cerca), San Luigi, Navona, Campo de' Fiori y, en C y D, el Ponte Sisto al atardecer. En julio y agosto, el Altar de la Patria va después del Gesù, con el sol ya bajo. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio.",
       "tarde.*": {
         "paradas": [
           {
@@ -226,6 +411,30 @@
             "si_cerrado": "fuera"
           },
           {
+            "lugar": "Iglesia del Gesù",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino",
+            "meses": [
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "meses": [
+              7,
+              8
+            ]
+          },
+          {
             "lugar": "Iglesia de San Luigi dei Francesi",
             "min": 20,
             "modo": "dentro",
@@ -234,24 +443,6 @@
           {
             "lugar": "Piazza Navona",
             "min": 30
-          },
-          {
-            "lugar": "Largo di Torre Argentina",
-            "min": 15
-          },
-          {
-            "lugar": "Iglesia del Gesù",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 30
-          },
-          {
-            "lugar": "Fuente de las Tortugas",
-            "modo": "camino"
           },
           {
             "lugar": "Campo de' Fiori",
@@ -308,8 +499,31 @@
               ],
               "o_si_pool": true
             }
+          },
+          {
+            "despues_de": "Altar de la Patria",
+            "parada": {
+              "lugar": "Largo di Torre Argentina",
+              "min": 15,
+              "no_si_experiencia": "arte_museos",
+              "no_si_pool": "Museos Capitolinos"
+            }
+          },
+          {
+            "despues_de": "Largo di Torre Argentina",
+            "parada": {
+              "lugar": "Barrio Judío",
+              "min": 20,
+              "texto": "Es uno de los barrios judíos más antiguos de Europa. El sábado es su día de descanso: muchos comercios y restaurantes cierran y las calles se quedan tranquilas. Busca el Pórtico de Octavia, unas ruinas romanas en mitad de la calle, y la Gran Sinagoga, junto al río.",
+              "no_si_experiencia": "arte_museos",
+              "no_si_pool": "Museos Capitolinos"
+            }
           }
-        ]
+        ],
+        "comida": {
+          "restaurante": "Trattoria Dal Cavalier Gino",
+          "alternativa": "Antico Forno Roscioli"
+        }
       }
     },
     "domingo": {
@@ -375,15 +589,27 @@
       "manana": {
         "ajustar": {
           "Coliseo": {
-            "hora": "08:15"
+            "hora": "08:15",
+            "texto": "El primer domingo de mes el Coliseo es gratis y es el día de más cola del mes: llega antes de que abra. No se reserva: las entradas se recogen en la taquilla (en la plaza del Coliseo, junto al Templo de Venus y Roma, o en Largo della Salara Vecchia), por orden de llegada, y solo valen para ese día. Ese día no se sube a los niveles de arriba ni se baja a la arena ni a los subterráneos."
           }
         }
-      }
+      },
+      "_fuente": "colosseo.it (#domenicalmuseo: «non si prenotano», «in ordine di arrivo», taquillas de la plaza del Coliseo y Largo della Salara Vecchia; sin nivel superior, arena ni subterráneos), consultado el 30-09-2026. Fuera «poca cola, casi vacío» ese día (PROMPT_REPASO_LOCAL_ROMA, 5)."
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como los sábados: primero el Panteón, nada más comer. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio: por la tarde el Panteón va primero y habría que volver atrás.",
+      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como haría un romano (PROMPT_REPASO_LOCAL_ROMA, 3): el Coliseo, el Foro y el Campidoglio (con Arte, los Museos Capitolinos, que abren a las 11:00 ese día) por la mañana; después de comer, siempre hacia delante: el Altar de la Patria, el Panteón (antes de su última entrada), la Minerva, San Luigi y Navona, y a cenar. Sin el Largo Argentina, el Gesù ni el Ghetto por la tarde (salían dos veces y el Gesù, ya de noche, por fuera). Si el día empieza tarde (tras la Nochevieja), el Campidoglio va detrás del Altar y los Capitolinos no caben sin perder el Panteón.",
       "tarde.*": {
         "paradas": [
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
           {
             "lugar": "Panteón",
             "min": 30,
@@ -410,33 +636,17 @@
           {
             "lugar": "Piazza Navona",
             "min": 30
-          },
-          {
-            "lugar": "Largo di Torre Argentina",
-            "min": 15
-          },
-          {
-            "lugar": "Iglesia del Gesù",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 30
-          },
-          {
-            "lugar": "Fuente de las Tortugas",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Campo de' Fiori",
-            "min": 30
           }
         ],
-        "empieza": "15:00"
+        "empieza": "14:15"
       },
       "manana": {
+        "quitar": [
+          "Plaza Venecia",
+          "Altar de la Patria",
+          "Largo di Torre Argentina",
+          "Barrio Judío"
+        ],
         "insertar": [
           {
             "despues_de": "Plaza del Campidoglio",
@@ -457,7 +667,7 @@
       }
     },
     "empieza_tarde": {
-      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan. Detrás de Piazza Navona y antes del Largo Argentina: el Altar, antes de que cierre; con Arte, los Museos Capitolinos quedan en la misma plaza.",
+      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan. Detrás de Piazza Navona y antes del Largo Argentina: el Altar, antes de que cierre; con Arte, los Museos Capitolinos quedan en la misma plaza. (Sin los Museos Capitolinos: detrás de Navona, a última hora, eran volver atrás; PROMPT_REPASO_LOCAL_ROMA, 3.)",
       "manana": {
         "quitar": [
           "Plaza del Campidoglio",
@@ -489,21 +699,6 @@
             "parada": {
               "lugar": "Plaza del Campidoglio",
               "min": 15
-            }
-          },
-          {
-            "despues_de": "Plaza del Campidoglio",
-            "parada": {
-              "lugar": "Museos Capitolinos",
-              "min": 60,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "fuera",
-              "si_experiencia": "arte_museos",
-              "no_si_dia": [
-                "D5"
-              ],
-              "o_si_pool": true
             }
           }
         ]
@@ -594,5 +789,6 @@
         ]
       }
     }
-  }
+  },
+  "_nota_verano": "Julio y agosto (PROMPT_REPASO_LOCAL_ROMA, 2): el Foro y el Palatino, más cortos (90 min en vez de 100; el Altar de la Patria sale de la mañana). Después de comer, lo que está a cubierto (el Panteón, Santa Maria sopra Minerva, San Luigi dei Francesi); el descanso hasta las 16:30, y desde ahí Largo Argentina, el Gesù y el Altar de la Patria (hacia las 17:30, con el sol ya bajo y antes de que cierre), Navona, Campo de' Fiori y el Ponte Sisto. El Ghetto ya se ve con la comida (sin volver a pleno sol)."
 }

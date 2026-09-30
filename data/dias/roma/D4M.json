@@ -1,7 +1,7 @@
 {
   "_nota": "D4M escrito (2026-09-29): el tercer día de 3 sin Galería. Mañana de Trevi al Pincio; tarde de basílicas (el Moisés y Santa María la Mayor), Monti y los Foros al atardecer. San Pietro in Vincoli antes que Santa María la Mayor (cierra a las 18:00). Repaso 2026-09-29: en C y D, metro A de Spagna a San Giovanni y Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados → Monti (sin San Clemente, que va en D5C); los Mercados, opcionales (en tranquilo, la tarde es Monti).",
   "id": "D4M",
-  "nombre": "Trevi sin gente, el Pincio y la tarde en Monti",
+  "nombre": "Trevi a primera hora, el Pincio y la tarde en Monti",
   "nombre_empieza_tarde": "Trevi, el Pincio y la tarde en Monti",
   "joyas": [
     "Fontana de Trevi"
@@ -83,7 +83,7 @@
   "tarde": {
     "empieza": "14:30",
     "A": {
-      "_sol": "antes de las 17:40: Santa Maria della Vittoria no ha abierto aún (16:00): el Moisés, Santa María la Mayor, Monti y los Foros al atardecer",
+      "_sol": "antes de las 17:40 (de octubre a febrero): los Mercados de Trajano a media tarde, con luz, y no ya de noche (PROMPT_REPASO_LOCAL_ROMA, 3: prometían «los Foros a tus pies» a oscuras); los Foros al atardecer; el Moisés (abre hasta las 18:00) y Monti después, para el aperitivo y la cena.",
       "paradas": [
         {
           "lugar": "Basílica de Santa María la Mayor",
@@ -93,7 +93,21 @@
           "traslado": {
             "como": "el metro A (Spagna → Termini) o un taxi",
             "min": 25
-          }
+          },
+          "elastica": 20
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -103,22 +117,7 @@
         },
         {
           "lugar": "Monti",
-          "min": 37,
-          "elastica": 30
-        },
-        {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true
-        },
-        {
-          "lugar": "Mercados de Trajano",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "min": 30
         }
       ],
       "cena": {
@@ -281,7 +280,171 @@
   },
   "variantes": {
     "domingo": {
-      "_nota": "Santa Maria del Popolo no abre el domingo por la mañana: por fuera (lo dice su ficha)."
+      "_nota": "Domingo (PROMPT_REPASO_LOCAL_ROMA, 6): Santa Maria del Popolo solo abre por la tarde (16:30-18:00), así que el Popolo y el Pincio pasan a la tarde, con el atardecer en la terraza; Santa María la Mayor, el Moisés, los Mercados de Trajano y Monti, por la mañana, después de la Plaza de España (metro A de Spagna a Termini). Se come en Monti y se cena en el Tridente.",
+      "nombre": "Trevi a primera hora, Monti y el Pincio al atardecer",
+      "barrio_cena": "tridente",
+      "noche": "centro_iluminado",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "fija",
+            "hora": "08:30",
+            "min": 25
+          },
+          {
+            "lugar": "Desayuno romano",
+            "tipo": "opcional",
+            "min": 20
+          },
+          {
+            "lugar": "Iglesia de San Ignacio de Loyola",
+            "tipo": "opcional",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via Condotti",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "tipo": "opcional",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Basílica de Santa María la Mayor",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "traslado": {
+              "como": "el metro A (Spagna → Termini) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Iglesia de San Pietro in Vincoli",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Mercados de Trajano",
+            "tipo": "opcional",
+            "min": 45,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Monti",
+            "min": 20
+          }
+        ],
+        "comida": {
+          "restaurante": "La Boccaccia",
+          "alternativa": "La Prezzemolina"
+        }
+      },
+      "tarde.*": {
+        "paradas": [
+          {
+            "lugar": "Ara Pacis",
+            "min": 45,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "sol_desde": "19:45",
+            "traslado": {
+              "como": "el metro A (Termini → Spagna) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Via Margutta",
+            "titulo": "Via Margutta y Via del Babuino",
+            "min": 30,
+            "traslado": {
+              "como": "el metro A (Termini → Spagna) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 15
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "titulo": "Un paseo por Villa Borghese",
+            "min": 40,
+            "elastica": 30
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "titulo": "Aperitivo en los Jardines del Pincio",
+            "min": 45,
+            "sol_desde": "19:45"
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Sgarro Bistrot",
+          "alternativa": "Buccone Vini e Olii",
+          "hora": "19:30"
+        },
+        "empieza": "15:30"
+      },
+      "tarde.A": {
+        "_nota": "Domingo de invierno: el sol se pone antes de que abra Santa Maria del Popolo (16:30): el Pincio al atardecer primero y la iglesia al bajar.",
+        "empieza": "14:45",
+        "paradas": [
+          {
+            "lugar": "Via Margutta",
+            "titulo": "Via Margutta y Via del Babuino",
+            "min": 30,
+            "traslado": {
+              "como": "el metro A (Termini → Spagna) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 15
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "titulo": "Un paseo por Villa Borghese",
+            "min": 30,
+            "elastica": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ]
+      }
     },
     "lunes": {
       "_nota": "Trattoria Monti cierra el lunes.",
@@ -289,6 +452,37 @@
         "restaurante": {
           "cena": "La Boccaccia",
           "alternativa": "Trattoria Valentino"
+        }
+      }
+    },
+    "fecha:01-06": {
+      "_nota": "6 de enero (PROMPT_REPASO_LOCAL_ROMA, 5): es el último día del mercadillo de Navidad y ninguna ruta pasaba por Navona; va por la tarde. Después de los Foros al atardecer y el Moisés, en taxi, con el mercadillo ya iluminado; se cena al lado, en el centro.",
+      "barrio_cena": "centro_historico",
+      "noche": "centro_iluminado",
+      "tarde.*": {
+        "quitar": [
+          "Monti"
+        ],
+        "insertar": [
+          {
+            "despues_de": "Iglesia de San Pietro in Vincoli",
+            "parada": {
+              "lugar": "Piazza Navona",
+              "titulo": "Piazza Navona y su mercadillo navideño",
+              "min": 40,
+              "texto": "El 6 de enero es el último día del mercadillo de Navidad de Piazza Navona: puestos de dulces, belenes y el carbón de azúcar que se regala en Reyes, con la Fuente de los Cuatro Ríos en medio.",
+              "verificar": "El mercadillo acaba el 6 de enero (turismoroma.it, «Festa di Piazza Navona 2025»); confirmar cada año hasta qué hora hay puestos ese día.",
+              "traslado": {
+                "como": "un taxi",
+                "min": 15
+              },
+              "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad."
+            }
+          }
+        ],
+        "cena": {
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Armando al Pantheon"
         }
       }
     }

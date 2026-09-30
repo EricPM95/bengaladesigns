@@ -61,10 +61,15 @@ const DINNER_EARLIEST_SUMMER = 20 * 60 + 30
 const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una visita con hora hasta esta hora (Trevi a las 8:30)
 
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
+/** Verano (julio y agosto): de 14:00 a 16:30, nada al sol (INVARIANTES 413). */
+const SUMMER_MONTHS = [7, 8]
+const SUMMER_SHADE_UNTIL = 16 * 60 + 30
 const REST_AFTER_LUNCH_MAX = 60 // en completo, el descanso después de comer, como mucho
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
+/** A qué hora se está de vuelta de la excursión de medio día (de 8:00 a 14:00), para comer. */
+const HALF_DAY_BACK = 14 * 60 + 15
 const TRANSFER_NOTICE_MINUTES = 25
 const NIGHT_FALLBACK_METERS = 1200
 const LATE_VISIT_MINUTES = 17 * 60
@@ -328,6 +333,8 @@ export function planWrittenTrip(args) {
         draft.manana = applyListOp(draft.manana, op)
         if (op.comida) draft.comida = { ...draft.comida, ...op.comida }
         if (op.restaurante?.comida) draft.comida = { ...draft.comida, restaurante: op.restaurante.comida, alternativa: op.restaurante.alternativa ?? draft.comida?.alternativa }
+        // (Si la variante reescribe las paradas de la mañana, la hora de empezar escrita del día no vale: los Museos a las 8:00.)
+        if (op.paradas) delete draft.manana_empieza
         if (op.empieza) draft.manana_empieza = op.empieza
         continue
       }
@@ -387,14 +394,18 @@ export function planWrittenTrip(args) {
       id,
       day,
       version,
-      nombre: w.nombre,
-      noche: w.noche ?? null,
-      barrio_cena: w.barrio_cena ?? null,
+      // (Una versión de la tarde puede traer su nombre y su paseo de noche: la D de D2, con el atardecer en el Puente
+      // Sant'Angelo; la D de D1-FT, que ya pasa la tarde en Trastevere y de noche va al centro.)
+      nombre: tardeVersion.nombre ?? w.nombre,
+      noche: tardeVersion.noche ?? w.noche ?? null,
+      barrio_cena: tardeVersion.barrio_cena ?? w.barrio_cena ?? null,
       manana: clone(w.manana?.paradas ?? []),
       comida: clone(w.manana?.comida ?? null),
       tarde: clone(tardeVersion.paradas ?? []),
       empieza: tardeVersion.empieza ?? w.tarde?.empieza ?? null,
       cena: clone(tardeVersion.cena ?? w.tarde?.cena ?? null),
+      // (`manana.empieza`: la hora a la que empieza la mañana, sin nada fijo delante: el desayuno antes del Free Tour.)
+      ...(w.manana?.empieza ? { manana_empieza: w.manana.empieza } : {}),
       applied: [version],
       suggestions: [],
       index,
@@ -453,7 +464,9 @@ export function planWrittenTrip(args) {
     // (`si_experiencia`: la parada va solo si el viajero eligió esa experiencia. Para lo que una experiencia añade en otro
     // sitio según la variante del día: los Museos Capitolinos por la mañana los sábados, junto al Campidoglio.)
     // (`o_si_pool`: o si el viajero marcó ese lugar en «Elige lugares».)
-    const keep = (stop) => !(stop.si_experiencia && !selected.includes(stop.si_experiencia) && !(stop.o_si_pool && inPool(stop.lugar))) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    // (`no_si_experiencia` / `no_si_pool`: al revés, la parada no va si el viajero eligió esa experiencia o marcó ese lugar: el
+    // sábado, con los Museos Capitolinos por la mañana, el Largo Argentina y el Ghetto no caben antes del Panteón.)
+    const keep = (stop) => !(stop.no_si_experiencia && selected.includes(stop.no_si_experiencia)) && !(stop.no_si_pool && inPool(stop.no_si_pool)) && !(stop.si_experiencia && !selected.includes(stop.si_experiencia) && !(stop.o_si_pool && inPool(stop.lugar))) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
     // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
     // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)
@@ -665,6 +678,7 @@ export function planWrittenTrip(args) {
     const units = []
     let { t, coords } = cursor
     let carry = null
+    let mergedMinutes = 0
     list.forEach((original, index) => {
       // (La elástica que se quedaría por debajo de ELASTIC_DROP min se quita: su rato va al bloque siguiente.)
       if (original.elastica != null && ctx.dropElastic) return
@@ -694,6 +708,12 @@ export function planWrittenTrip(args) {
         const rule = stop.si_cerrado
         if (rule === 'quitar') return
         if (rule?.cambiar_por) {
+          // (Si el cambio es lo mismo que viene justo después, no sale dos veces seguidas: su rato se suma al siguiente. Las
+          // Catacumbas cerradas el 1 de enero y la Via Appia, dos veces. PROMPT_REPASO_LOCAL_ROMA, 3.)
+          if (list[index + 1]?.lugar === rule.cambiar_por.lugar) {
+            mergedMinutes += rule.cambiar_por.min ?? 30
+            return
+          }
           stop = { ...clone(rule.cambiar_por) }
           source = sourceOf(stop)
           if (!source) return
@@ -741,6 +761,9 @@ export function planWrittenTrip(args) {
       // (Con sus minutos exactos: una rejilla de 5 min aquí sumaba redondeos y se llegaba tarde a los turnos; la pantalla
       // redondea y la hora de una parada sigue siendo la anterior + su duración + el paseo, con 4 min de margen.)
       let at = t + leg
+      // Verano (julio y agosto, INVARIANTES 413): por la tarde, nada al sol antes de las 16:30. Lo que va al aire libre espera
+      // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
+      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior') at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       if (fixed != null) {
         // (A la entrada con turno se llega 10 min antes: `turno` en lo escrito, los turnos de la ficha o el Free Tour.)
@@ -751,6 +774,11 @@ export function planWrittenTrip(args) {
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
+      if (mergedMinutes) {
+        const cap = paseoMaxOf(source)
+        duration = cap != null ? Math.max(duration, Math.min(cap, duration + mergedMinutes)) : duration + mergedMinutes
+        mergedMinutes = 0
+      }
       if (original.elastica != null && elasticDelta) duration = Math.max(shrinkFloor(stop, duration), duration + elasticDelta)
       // (Un barrio escrito por debajo de su mínimo, o una elástica que no llega: la prueba lo marca.)
       if (!ctx.probe && !place.visitOutside && !place.passThrough && place.sunset == null && duration < shrinkFloor(stop, stop.min ?? source.duration_minutes ?? duration, true)) ctx.problems.push({ tipo: 'parada_corta', lugar: stop.lugar, minutos: duration })
@@ -766,6 +794,10 @@ export function planWrittenTrip(args) {
       // contaba el taxi y la pantalla pintaba 33 min andando, de San Pedro a Santa Cecilia en Navidad. PROMPT_TEXTOS_RITMO 7.)
       const arrivalTransit = place.transitMinutes ? { transitMinutes: place.transitMinutes, transitHow: place.transitHow } : null
       if (!place.visitOutside && !place.passThrough) {
+        // (Lo que la elástica estira nunca pasa de la hora de cierre: se queda hasta que cierra, no se pierde por dentro.
+        // El Castillo a las 17:50 con 110 min salía «ya ha cerrado». PROMPT_REPASO_LOCAL_ROMA, 3.)
+        const writtenMin = stop.min ?? source.duration_minutes ?? 30
+        while (original.elastica != null && duration - 5 >= writtenMin && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, writtenMin, ctx.hours).closed) duration -= 5
         const check = openCheck(place, at, duration, ctx.hours)
         if (check.wait) at += check.wait
         else if (check.closed) {
@@ -911,6 +943,9 @@ export function planWrittenTrip(args) {
     // Tranquilo: las opcionales no vuelven nunca (PROMPT_ROMA_V4_REPASO 6); el rato que sobra va al barrio elástico (hasta
     // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
+    // (Verano: la tarde no pone nada al sol antes de las 16:30; ver runList.)
+    const dayMonth = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+    if (SUMMER_MONTHS.includes(dayMonth)) ctx.summerShade = true
     // El día que no empieza antes de una hora (el 1 de enero tras la Nochevieja, a las 10:00): toda la mañana se corre lo
     // mismo que la primera hora, menos lo que tiene turno. Si así se llega tarde a una hora fija o la comida se va
     // demasiado tarde, se prueba con la variante `empieza_tarde` del día escrito (lo que pasa a la tarde: no se quita
@@ -1017,6 +1052,7 @@ export function planWrittenTrip(args) {
     const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
     // La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje).
     const meals = []
+    let summerRest = 0
     let afterLunch = morning.cursor
     let lunchName = null
     if (!half && draft.comida) {
@@ -1033,8 +1069,29 @@ export function planWrittenTrip(args) {
         lunchName = spot.name
       }
       afterLunch = { t: end, coords: spot?.coordinates ?? morning.cursor.coords }
+      // Verano (julio y agosto): de 14:00 a 16:30, solo descanso o sitios a cubierto (INVARIANTES 413). Si lo primero de la
+      // tarde es al sol, la tarde empieza a las 16:30 y antes va el descanso.
+      const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+      const first = draft.tarde.find((stop) => stop.modo !== 'camino')
+      const covered = first && placeByName.get(first.lugar)?.type === 'interior' && first.modo !== 'fuera' && first.modo !== 'atardecer'
+      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered) {
+        summerRest = SUMMER_SHADE_UNTIL - afterLunch.t
+        afterLunch = { ...afterLunch, t: SUMMER_SHADE_UNTIL }
+      }
     } else if (half) {
       afterLunch = { t: draft.empieza ? toMin(draft.empieza) : HALF_DAY_AFTERNOON, coords: null }
+      // Al volver de la excursión de medio día (Ostia, hasta las 14:00), la comida: junto a donde se llega (`junto_a`, la
+      // Pirámide, con el tren de Ostia), antes de la tarde (PROMPT_REPASO_LOCAL_ROMA, 3: se volvía de Ostia sin comer).
+      if (draft.comida) {
+        const back = placeByName.get(draft.comida.junto_a ?? '')?.coordinates ?? null
+        const { spot, start, end } = lunchOf(draft, { t: HALF_DAY_BACK, coords: back }, skeletonDay, hours)
+        meals.push({ type: 'lunch', start, end, eatMinutes: end - start, coordinates: spot?.coordinates ?? back, ...(spot ? { spot: { name: spot.name, zone: spot.zone } } : {}), eatStart: start })
+        if (spot) {
+          usedRestaurants.add(spot.name)
+          lunchName = spot.name
+        }
+        afterLunch = { t: Math.max(afterLunch.t, end), coords: spot?.coordinates ?? back }
+      }
     }
     // La tarde, con la elástica ajustada para que el mirador llegue a su hora.
     const elasticStop = draft.tarde.find((stop) => stop.elastica != null)
@@ -1073,7 +1130,8 @@ export function planWrittenTrip(args) {
     // (Por menos de 5 min no se adelanta: esa espera en el mirador no se nota.)
     // Si la tarde no llega al sol ni con la elástica, la comida se acorta (hasta 45 min)
     // antes de perder el atardecer: comer junto a la Galería Borghese deja luego 25 min hasta el Ara Pacis.
-    if (elasticStop && elasticWanted < -(elasticStop.elastica + LEAD_FLEX)) {
+    // (En verano no: la tarde empieza a las 16:30 igual, acortar la comida no adelanta nada.)
+    if (elasticStop && !summerRest && elasticWanted < -(elasticStop.elastica + LEAD_FLEX)) {
       const lunchMeal = meals.find((meal) => meal.type === 'lunch')
       const room = lunchMeal ? lunchMeal.end - lunchMeal.start - LUNCH_MIN : 0
       const cut = Math.floor(Math.min(room, -elasticWanted - elasticStop.elastica) / 5) * 5
@@ -1093,12 +1151,12 @@ export function planWrittenTrip(args) {
     }
     // Tranquilo (PROMPT_ROMA_V4_REPASO 6): lo que sobra después del barrio (hasta su máximo) y del aperitivo (hasta 90) no
     // se queda suelto antes del atardecer: es un descanso después de comer, con su nombre, y la tarde empieza después.
-    let restAfterLunch = 0
+    let restAfterLunch = summerRest
     // (En completo, igual, hasta 60 min: la comida escrita de 140 min en verano pasa a 90 y la tarde empezaba antes de que
     // abriese Santa Cecilia; el descanso va antes que el aperitivo.)
     if (elasticStop && lunchName) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
-      if (spare > 20) {
+      if (spare > 20 && !summerRest) {
         restAfterLunch = Math.floor(Math.min(spare, REST_AFTER_LUNCH_MAX) / 5) * 5
         // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
         // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
@@ -1211,17 +1269,31 @@ export function planWrittenTrip(args) {
     const ending = pieces.length === 1 ? (beforeDinner ? parts.uno_antes_de_cenar : null) ?? parts.uno : (beforeDinner ? parts.varios_antes_de_cenar : null) ?? parts.varios
     return `${parts.inicio} ${joined} ${ending}`
   }
+  // Paseo nocturno todas las noches mientras queden sitios que valgan la pena, aunque haya que cruzar la ciudad (decisión
+  // del usuario, 2026-10-01; INVARIANTES 413). Un día sin paseo escrito toma el mejor que quede.
+  const NO_WALK = { nombre: null, recorrido: [], alternativas: [] }
+  /** Lo que el día siguiente enseña por la mañana (antes de comer): de noche no se repite. */
+  const nextMorningOf = (day) => {
+    const next = cityPlanned.find((other) => other.dayNumber === day.dayNumber + 1)
+    if (!next) return new Set()
+    const lunch = (next.schedule.meals ?? []).find((meal) => meal.type === 'lunch')
+    const until = lunch?.start ?? 14 * 60
+    return new Set(next.schedule.visits.filter((visit) => visit.start < until && !visit.place.passThrough && !visit.place.isBreak).flatMap((visit) => [visit.place.name, ...(visit.place.outsideOf ?? [])]))
+  }
   for (const day of cityPlanned) {
-    const walk = walks[day.curatedDay.noche]
-    if (!walk) continue
+    const walk = walks[day.curatedDay.noche] ?? NO_WALK
+    const tomorrow = nextMorningOf(day)
+    const repeatsTomorrow = (entry) => (entry?.conflicts_with ?? []).some((name) => tomorrow.has(name))
     const removedByDay = Object.entries(walk.quitar_si_va ?? {}).filter(([id]) => order.includes(id)).flatMap(([, names]) => names)
     const startOf = (name) => day.schedule.visits.find((visit) => visit.place.name === name)?.start ?? null
     const lateVisit = (entry) => (entry.conflicts_with ?? []).some((name) => {
       const start = startOf(name)
       return start != null && (start >= LATE_VISIT_MINUTES || (day.hours?.sunset != null && start >= day.hours.sunset))
     })
-    const allowed = (entry, { strictReach = false } = {}) => {
+    const allowed = (entry, { strictReach = false, allowRepeat = false } = {}) => {
       if (!entry || usedNights.has(entry.name)) return false
+      // (Lo de la mañana siguiente, no: Trevi de noche y otra vez a las 8:30. Solo si no queda otra.)
+      if (!allowRepeat && repeatsTomorrow(entry)) return false
       const conflicts = entry.conflicts_with ?? []
       if (conflicts.some((name) => (timesSeen.get(name) ?? 0) >= 2 && !(walk.excepcion_mismo_dia && daysOfPlace.get(name)?.has(day.dayNumber) && timesSeen.get(name) === 2))) return false
       const sameDay = !entry.same_day_as_visit && conflicts.some((name) => daysOfPlace.get(name)?.has(day.dayNumber))
@@ -1230,14 +1302,25 @@ export function planWrittenTrip(args) {
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
       return true
     }
-    const max = walk.maximo ?? 2
+    // (Nochebuena y Nochevieja: un paseo corto, una sola parada cerca de la cena. PROMPT_REPASO_LOCAL_ROMA, 4.)
+    const shortNight = ['12-24', '12-31'].includes(String(day.hours?.dateIso ?? '').slice(5))
+    const max = shortNight ? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
     let fromAlternative = false
     // (`sin_relevo`: esa noche no lleva paseo; el plan de la tarde ya es de noche, el mercadillo de Navona antes de cenar.)
     if (chain.length === 0 && !walk.sin_relevo) {
       chain = (walk.alternativas ?? []).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
-      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true })).sort((a, b) => metersBetween(day.dinnerCoords, a.coordinates) - metersBetween(day.dinnerCoords, b.coordinates))
-      fromAlternative = walk.recorrido.length > 0
+      const byDistance = (a, b) => metersBetween(day.dinnerCoords, a.coordinates) - metersBetween(day.dinnerCoords, b.coordinates)
+      // (Ni el barrio que ya se ha visto esa tarde: Trastevere de noche después de pasar la tarde en Trastevere.)
+      const dayBarrios = day.schedule.visits.filter((visit) => (placeByName.get(visit.place.name)?.tags ?? []).includes('barrio')).map((visit) => visit.place.name)
+      const freshBarrio = (entry) => !dayBarrios.some((name) => entry.name.includes(name))
+      chain = chain.filter(freshBarrio)
+      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true }) && freshBarrio(entry)).sort(byDistance)
+      // (Si cerca no queda nada, el que quede, aunque haya que cruzar la ciudad: uno solo.)
+      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry) && freshBarrio(entry)).sort(byDistance).slice(0, 1)
+      // (Y si solo queda repetir lo de mañana, lo escrito.)
+      if (chain.length === 0) chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry, { allowRepeat: true }))
+      fromAlternative = walk.recorrido.length > 0 || walk === NO_WALK
     }
     chain = chain.slice(0, max).map((entry) => (entry.si_no && catalogue.get(entry.si_no) ? { ...entry, fallback: catalogue.get(entry.si_no) } : entry))
     if (chain.length === 0) continue

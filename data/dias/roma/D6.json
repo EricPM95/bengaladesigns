@@ -1,7 +1,7 @@
 {
   "_nota": "D6 escrito (2026-09-29): la mañana es la media jornada a Ostia Antica (08:00-14:00); la tarde, desde las 16:00, las basílicas, Monti y los Foros al atardecer.",
   "id": "D6",
-  "nombre": "Ostia Antica, las basílicas y el Coliseo de noche",
+  "nombre": "Ostia Antica, las basílicas y Monti",
   "joyas": [],
   "no_en": [
     {
@@ -14,18 +14,18 @@
   "noche": "coliseo",
   "manana": {
     "paradas": [],
-    "comida": null
+    "comida": {
+      "restaurante": "Felice a Testaccio",
+      "alternativa": "Mordi e Vai",
+      "junto_a": "Pirámide Cestia",
+      "_nota": "Al volver de Ostia (el tren llega a Porta San Paolo, junto a la Pirámide), se come en Testaccio, a cinco minutos."
+    }
   },
   "tarde": {
     "empieza": "16:00",
     "A": {
-      "_sol": "antes de las 17:40: Monti y los Foros al atardecer nada más volver; luego Santa María la Mayor",
+      "_sol": "antes de las 17:40: los Foros al atardecer nada más volver; luego Santa María la Mayor y Monti, para el aperitivo y la cena (Monti una sola vez, PROMPT_REPASO_LOCAL_ROMA, 3)",
       "paradas": [
-        {
-          "lugar": "Monti",
-          "min": 38,
-          "elastica": 30
-        },
         {
           "lugar": "Via dei Fori Imperiali",
           "modo": "atardecer",
@@ -37,16 +37,21 @@
           "min": 30,
           "modo": "dentro",
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Monti",
+          "min": 38
         }
       ],
       "cena": {
         "restaurante": "Trattoria Monti",
         "alternativa": "Trattoria Valentino",
         "hora": "19:30"
-      }
+      },
+      "nombre": "Ostia Antica, los Foros al atardecer y Monti"
     },
     "B": {
-      "_sol": "de 17:40 a 18:44: San Clemente y el Moisés antes de los Foros; Santa María la Mayor después",
+      "_sol": "de 17:40 a 18:44: San Clemente y el Moisés antes de los Foros; Santa María la Mayor (si aún está abierta: cierra a las 19:00) y Monti después, para el aperitivo y la cena (Monti una sola vez, PROMPT_REPASO_LOCAL_ROMA, 3)",
       "paradas": [
         {
           "lugar": "Basílica de San Clemente",
@@ -62,9 +67,16 @@
           "si_cerrado": "fuera"
         },
         {
-          "lugar": "Monti",
-          "min": 25,
-          "elastica": 30
+          "lugar": "Basílica de Santa María la Mayor",
+          "min": 30,
+          "modo": "dentro",
+          "si_cerrado": "fuera",
+          "sol_desde": "18:30"
+        },
+        {
+          "lugar": "Columna de Trajano",
+          "min": 10,
+          "sol_hasta": "18:30"
         },
         {
           "lugar": "Via dei Fori Imperiali",
@@ -74,16 +86,22 @@
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
+          "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar",
+          "sol_hasta": "18:30"
+        },
+        {
+          "lugar": "Monti",
+          "min": 25
         }
       ],
       "cena": {
         "restaurante": "Trattoria Monti",
         "alternativa": "Trattoria Valentino",
         "hora": "20:15"
-      }
+      },
+      "nombre": "Ostia Antica, San Clemente, los Foros y Monti"
     },
     "C": {
       "_sol": "de 18:45 a 19:44: San Clemente, Letrán y Santa María la Mayor antes de los Foros",
@@ -189,5 +207,6 @@
     "domingo": {
       "_nota": "Trattoria Valentino cierra el domingo."
     }
-  }
+  },
+  "_nombre": "Sin «el Coliseo de noche» en el nombre: el paseo de noche lo elige el motor y no siempre es el Coliseo; en A y B solo hay una basílica (PROMPT_REPASO_LOCAL_ROMA, 3)."
 }

@@ -227,7 +227,10 @@
               "min": 25,
               "no_calle": true,
               "si_visto": "Castillo de Sant'Angelo",
-              "titulo": "Via del Corso, la calle de las tiendas"
+              "titulo": "Via del Corso, la calle de las tiendas",
+              "no_meses": [
+                8
+              ]
             }
           },
           {
@@ -235,7 +238,10 @@
             "parada": {
               "lugar": "Plaza Colonna",
               "min": 15,
-              "si_visto": "Castillo de Sant'Angelo"
+              "si_visto": "Castillo de Sant'Angelo",
+              "no_meses": [
+                8
+              ]
             }
           }
         ]
@@ -246,7 +252,8 @@
             "min": 65
           }
         }
-      }
+      },
+      "_verano": "En agosto, con el descanso hasta las 16:30, Via del Corso y la Plaza Colonna no caben antes del atardecer (INVARIANTES 413)."
     }
   }
 }

@@ -97,7 +97,7 @@
       }
     },
     "B": {
-      "_sol": "de 17:40 a 18:44: se sube andando al Janículo por el Tempietto (última entrada 17:30)",
+      "_sol": "de 17:40 a 18:44: se sube por el Tempietto (última entrada 17:30). Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
       "paradas": [
         {
           "lugar": "Via della Conciliazione",
@@ -112,11 +112,7 @@
           "min": 55,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 30,
+          "si_cerrado": "fuera",
           "elastica": 30
         },
         {
@@ -138,6 +134,10 @@
           "min": 20,
           "modo": "dentro",
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Trastevere",
+          "min": 30
         }
       ],
       "cena": {
@@ -148,7 +148,7 @@
       "empieza": "14:30"
     },
     "C": {
-      "_sol": "de 18:45 a 19:44: el Tempietto ya ha cerrado cuando se sube (se ve por fuera)",
+      "_sol": "de 18:45 a 19:44: el Tempietto por dentro si aún está abierto (cierra a las 18:00). Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
       "paradas": [
         {
           "lugar": "Via della Conciliazione",
@@ -163,7 +163,23 @@
           "min": 60,
           "modo": "dentro",
           "entrada": true,
+          "si_cerrado": "fuera",
+          "elastica": 45
+        },
+        {
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "dentro",
+          "min": 15,
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Fontana dell'Acqua Paola",
+          "min": 15
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer",
+          "lead": 45
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -173,20 +189,7 @@
         },
         {
           "lugar": "Trastevere",
-          "min": 55,
-          "elastica": 30
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "fuera"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "min": 30
         }
       ],
       "cena": {
@@ -197,44 +200,15 @@
       "empieza": "14:45"
     },
     "D": {
-      "_sol": "desde las 19:45: con Santa Cecilia; la comida sin prisa",
+      "_sol": "desde las 19:45 (de mayo a agosto): el Tempietto cierra a las 18:00 y el sol se pone después de las 20:00, así que no se puede entrar y ver el atardecer en el Janículo a la vez sin dos horas de espera. Se sube primero (el Tempietto por dentro, la Fontana dell'Acqua Paola y el mirador con la luz de la tarde), se baja andando hasta el Castillo, que abre hasta las 19:30, y el atardecer es desde el Puente Sant'Angelo, con los ángeles de Bernini y la cúpula de San Pedro al fondo. Trastevere, una sola vez: la cena y el paseo de noche (PROMPT_REPASO_LOCAL_ROMA, 3). La cena, cerca (en el Borgo o en Prati), y de noche el centro iluminado, al otro lado del puente.",
+      "nombre": "Vaticano, el Janículo y el Castillo al atardecer",
       "empieza": "15:10",
       "paradas": [
         {
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 20,
           "modo": "dentro",
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Basílica de Santa Cecilia in Trastevere",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 50,
-          "elastica": 30
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "fuera"
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -242,14 +216,49 @@
         },
         {
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "min": 20,
+          "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 65,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "elastica": 30,
+          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel con la luz de última hora: el Tíber, San Pedro y toda Roma a tus pies.",
+          "no_meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 80,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "elastica": 30,
+          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel con la luz de última hora: el Tíber, San Pedro y toda Roma a tus pies.",
+          "meses": [
+            7,
+            8
+          ]
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "lead": 55,
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo."
         }
       ],
       "cena": {
-        "restaurante": "Tonnarello",
-        "alternativa": "Trattoria Da Enzo al 29",
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Tonnarello",
         "hora": "20:30"
-      }
+      },
+      "noche": "centro_iluminado",
+      "barrio_cena": "vaticano"
     }
   },
   "variantes": {
@@ -299,7 +308,8 @@
             "parada": {
               "lugar": "Basílica de San Pedro",
               "min": 75,
-              "modo": "dentro"
+              "modo": "dentro",
+              "elastica": 30
             }
           },
           {
@@ -381,23 +391,55 @@
         }
       },
       "tarde.D": {
-        "ajustar": {
-          "Iglesia de Santa Maria in Trastevere": {
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
+        "_nota": "Miércoles con el sol tarde: la Plaza y la Basílica por la tarde (la audiencia ocupa la mañana). Se sube por el Tempietto mientras está abierto, el Janículo con la luz de la tarde, y se baja a Santa Maria in Trastevere y al barrio, con el aperitivo al atardecer y la cena allí: Trastevere una sola vez.",
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 75,
+            "modo": "dentro"
+          },
+          {
+            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Fontana dell'Acqua Paola",
+            "min": 15
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "min": 20,
+            "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 60
           }
-        }
-      }
+        ],
+        "noche": "centro_iluminado"
+      },
+      "nombre": "Vaticano, Castillo y Trastevere al atardecer"
     },
     "lunes": {
-      "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, Santa Cecilia y más Trastevere. En D, con más luz, la tarde empieza por Borgo Pio.",
+      "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, la Isla Tiberina y Santa Cecilia antes de subir y Santa Maria in Trastevere al bajar (Trastevere una sola vez). En D, con más luz, la tarde empieza por Borgo Pio.",
       "tarde.A": {
         "paradas": [
           {
             "lugar": "Borgo Pio",
-            "min": 30
+            "min": 30,
+            "elastica": 30
           },
           {
             "lugar": "Via della Conciliazione",
@@ -445,10 +487,70 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "modo": "fuera"
           }
-        },
+        }
+      },
+      "tarde.D": {
+        "paradas": [
+          {
+            "lugar": "Borgo Pio",
+            "min": 30
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Isla Tiberina",
+            "min": 20,
+            "traslado": {
+              "como": "un taxi",
+              "min": 15
+            },
+            "no_si_dia": [
+              "D5"
+            ]
+          },
+          {
+            "lugar": "Basílica de Santa Cecilia in Trastevere",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "elastica": 30
+          },
+          {
+            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Fontana dell'Acqua Paola",
+            "min": 15
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer",
+            "lead": 45
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ]
+      },
+      "nombre": "Vaticano, Castillo y Trastevere al atardecer",
+      "tarde.B": {
         "insertar": [
           {
-            "antes_de": "Trastevere",
+            "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
             "parada": {
               "lugar": "Basílica de Santa Cecilia in Trastevere",
               "min": 25,
@@ -457,7 +559,8 @@
               "traslado": {
                 "como": "un taxi",
                 "min": 15
-              }
+              },
+              "elastica": 30
             }
           },
           {
@@ -476,35 +579,37 @@
           }
         ]
       },
-      "tarde.D": {
+      "tarde.C": {
         "insertar": [
           {
-            "al_principio": true,
+            "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
             "parada": {
-              "lugar": "Borgo Pio",
-              "min": 30
+              "lugar": "Basílica de Santa Cecilia in Trastevere",
+              "min": 25,
+              "modo": "dentro",
+              "si_cerrado": "fuera",
+              "traslado": {
+                "como": "un taxi",
+                "min": 15
+              },
+              "elastica": 30
             }
-          }
-        ],
-        "ajustar": {
-          "Trastevere": {
-            "min": 55
           },
-          "Basílica de Santa Cecilia in Trastevere": {
-            "traslado": {
-              "como": "un taxi",
-              "min": 15
+          {
+            "antes_de": "Basílica de Santa Cecilia in Trastevere",
+            "parada": {
+              "lugar": "Isla Tiberina",
+              "min": 20,
+              "traslado": {
+                "como": "un taxi",
+                "min": 15
+              },
+              "no_si_dia": [
+                "D5"
+              ]
             }
           }
-        },
-        "mover": {
-          "Iglesia de Santa Maria in Trastevere": "despues_de:Basílica de Santa Cecilia in Trastevere"
-        }
-      },
-      "tarde.C": {
-        "mover": {
-          "Iglesia de Santa Maria in Trastevere": "despues_de:Basílica de Santa Cecilia in Trastevere"
-        }
+        ]
       }
     },
     "domingo": {
@@ -773,7 +878,8 @@
             "modo": "atardecer"
           }
         ]
-      }
+      },
+      "nombre": "Vaticano, Castillo y Trastevere al atardecer"
     },
     "fecha:12-25": {
       "_nota": "Navidad: los Museos y el Castillo cierran, y a mediodía la plaza es de la bendición del Papa. El día empieza tarde, por Borgo Pio; la Plaza y la Basílica, después de comer, cuando la plaza se ha vaciado y la Basílica vuelve a abrir.",
@@ -814,6 +920,53 @@
           }
         ],
         "empieza": "13:45"
+      }
+    },
+    "fecha:easter-3": {
+      "_nota": "Jueves Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Misa Crismal del Papa por la mañana; la Basílica cierra a las visitas hasta las 12:00 (lo prudente, 2024; verificar en basilicasanpietro.va esa semana). La Cúpula, que se sube por dentro, tampoco; la Basílica, a partir de las 12:00, con 45-60 min más por la cola del control.",
+      "manana": {
+        "quitar": [
+          "Cúpula de San Pedro"
+        ],
+        "ajustar": {
+          "Basílica de San Pedro": {
+            "min": 100,
+            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar.",
+            "hora": "12:00"
+          },
+          "Plaza de San Pedro": {
+            "min": 35
+          }
+        }
+      }
+    },
+    "fecha:easter-2": {
+      "_nota": "Viernes Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Pasión del Papa por la tarde; la Basílica cierra a las visitas a las 13:00 (lo prudente, 2024; verificar en basilicasanpietro.va esa semana). La Plaza y la Basílica, a primera hora (abre a las 7:00), con 45-60 min más por la cola del control; los Museos, después; la Cúpula, ese día no.",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "tipo": "fija",
+            "hora": "07:30",
+            "min": 15
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 100,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."
+          },
+          {
+            "lugar": "Museos Vaticanos y Capilla Sixtina",
+            "tipo": "fija",
+            "hora": "10:00",
+            "min": 180,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          }
+        ]
       }
     }
   },

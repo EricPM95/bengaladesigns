@@ -135,7 +135,7 @@
             "tarde.*": {
               "insertar": [
                 {
-                  "antes_de": "Trastevere",
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
                   "parada": {
                     "lugar": "Boca de la Verdad",
                     "min": 15,
@@ -216,7 +216,7 @@
             "tarde.*": {
               "insertar": [
                 {
-                  "antes_de": "Trastevere",
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
                   "parada": {
                     "lugar": "Boca de la Verdad",
                     "min": 15,
@@ -227,7 +227,7 @@
                   }
                 },
                 {
-                  "antes_de": "Trastevere",
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
                   "parada": {
                     "lugar": "Ojo de la Cerradura del Aventino",
                     "min": 10
@@ -388,10 +388,33 @@
               ],
               "quitar": [
                 "Barrio Judío",
-                "Fuente de las Tortugas"
+                "Fuente de las Tortugas",
+                "Plaza Venecia",
+                "Altar de la Patria"
+              ]
+            },
+            "manana": {
+              "insertar": [
+                {
+                  "despues_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Plaza Venecia",
+                    "modo": "camino"
+                  }
+                },
+                {
+                  "despues_de": "Plaza Venecia",
+                  "parada": {
+                    "lugar": "Altar de la Patria",
+                    "min": 40,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
               ]
             }
-          }
+          },
+          "_verano": "En julio y agosto el Altar de la Patria va por la tarde (INVARIANTES 413); con este extra la tarde empieza en otra zona y volver al Altar sería un zigzag: el Altar vuelve a la mañana, junto al Campidoglio."
         },
         {
           "dia": "D1-FT",
@@ -484,7 +507,9 @@
                 "Barrio Judío",
                 "Fuente de las Tortugas",
                 "Largo di Torre Argentina",
-                "Iglesia del Gesù"
+                "Iglesia del Gesù",
+                "Plaza Venecia",
+                "Altar de la Patria"
               ],
               "insertar": [
                 {
@@ -510,8 +535,29 @@
                   }
                 }
               }
+            },
+            "manana": {
+              "insertar": [
+                {
+                  "despues_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Plaza Venecia",
+                    "modo": "camino"
+                  }
+                },
+                {
+                  "despues_de": "Plaza Venecia",
+                  "parada": {
+                    "lugar": "Altar de la Patria",
+                    "min": 40,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
             }
-          }
+          },
+          "_verano": "En julio y agosto el Altar de la Patria va por la tarde (INVARIANTES 413); con este extra la tarde empieza en otra zona y volver al Altar sería un zigzag: el Altar vuelve a la mañana, junto al Campidoglio."
         },
         {
           "dia": "D5C",
@@ -685,6 +731,24 @@
               "ajustar": {
                 "Cúpula de San Pedro": {
                   "tipo": "normal"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Trastevere": {
+      "_nota": "Trastevere ya va en la ruta casi siempre (se baja del Janículo para la cena). Solo falta en la D de D2 (el sol desde las 19:45: el atardecer en el Puente Sant'Angelo y la cena en Prati): ahí, de la Acqua Paola (que ya tiene la vista de Roma) se baja a Trastevere en lugar de subir al mirador.",
+      "sitios": [
+        {
+          "dia": "D2",
+          "cambios": {
+            "tarde.D": {
+              "cambiar": {
+                "Mirador del Janículo": {
+                  "lugar": "Trastevere",
+                  "min": 30
                 }
               }
             }

@@ -52,7 +52,7 @@
   "tarde": {
     "empieza": "13:40",
     "A": {
-      "_sol": "antes de las 17:40",
+      "_sol": "antes de las 17:40 Los Mercados de Trajano, a media tarde y con luz (no ya de noche), y Monti al final, para el aperitivo y la cena: una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3).",
       "paradas": [
         {
           "lugar": "Basílica de San Clemente",
@@ -71,7 +71,23 @@
           "lugar": "Basílica de Santa María la Mayor",
           "min": 30,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "elastica": 30
+        },
+        {
+          "lugar": "Mercados de Trajano",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "tipo": "opcional",
+          "no_si_pool": "Basílica de San Juan de Letrán"
+        },
+        {
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "atardecer",
+          "lead": 20,
+          "no_calle": true
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -81,22 +97,7 @@
         },
         {
           "lugar": "Monti",
-          "min": 30,
-          "elastica": 30
-        },
-        {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true
-        },
-        {
-          "lugar": "Mercados de Trajano",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "tipo": "opcional"
+          "min": 30
         }
       ],
       "cena": {

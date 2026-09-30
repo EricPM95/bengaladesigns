@@ -56,6 +56,9 @@ export const TIPOS_AUDITORIA = {
   fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas',
   manana_tarde: '"Por la mañana" en el texto de una parada que va por la tarde',
   pago_sin_dentro: 'Imprescindible de pago que no sale nunca por dentro en el viaje',
+  noche_y_manana: 'Un sitio de noche que vuelve a salir a la mañana siguiente',
+  tour_repite: 'Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)',
+  barrio_dos_veces: 'El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)',
 }
 
 /** Cierre de Roma (2026-09-28): el máximo de una parada de paseo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
@@ -113,6 +116,47 @@ export function auditarViaje(D, days, options = {}) {
         if (seenOnDay.has(name) && seenOnDay.get(name) !== n) add('repetido_viaje', n, stop.suggested_time, name, `ya en el día ${seenOnDay.get(name)}`)
         else seenOnDay.set(name, n)
       }
+    }
+
+    // Sin repeticiones (PROMPT_REPASO_LOCAL_ROMA, 8).
+    // 1. Lo que sale de noche no vuelve a salir a la mañana siguiente (antes de comer).
+    const nextDay = days[index + 1]
+    if (nextDay?.stops?.length) {
+      const nextLunch = t2m(nextDay.meals?.find((meal) => meal.time === 'lunch')?.suggested_time) ?? 14 * 60
+      const nextMorning = nextDay.stops.filter((stop) => !stop.is_night_experience && !stop.pass_through && (t2m(stop.suggested_time) ?? 0) < nextLunch).map(nameOf)
+      for (const night of day.stops.filter((stop) => stop.is_night_experience)) {
+        const entry = (D.night_experiences ?? []).find((candidate) => candidate.name === nameOf(night))
+        const places = entry?.conflicts_with?.length ? entry.conflicts_with : [nameOf(night).replace(/\s*\(noche\)$/, '')]
+        for (const place of places) if (nextMorning.includes(place)) add('noche_y_manana', n, night.suggested_time, nameOf(night), `y el día ${n + 1} por la mañana ${place}`)
+      }
+    }
+    // 2. El día del Free Tour, nada suelto de lo que el tour ya recorre (salvo entrar en lo que el tour enseña por fuera).
+    const tourCfg = D.default_free_tour
+    if (tourCfg && day.stops.some((stop) => nameOf(stop) === tourCfg.name)) {
+      for (const stop of dayStops) {
+        const name = nameOf(stop)
+        if (!(tourCfg.covers ?? []).includes(name) || stop.pass_through) continue
+        const place = byName.get(name)
+        const inside = place?.type === 'interior' && stop.visit_mode !== 'fuera' && (place.ticket_info ?? []).some((line) => /de pago/i.test(line))
+        if (!inside) add('tour_repite', n, stop.suggested_time, name, 'y el Free Tour pasa por ahí')
+      }
+    }
+    // 3. El mismo barrio dos veces el mismo día: la parada del barrio y, después de subir a un mirador o de irse a otra zona,
+    // otra vez al barrio (su aperitivo o su paseo de noche). Trastevere a las 16:15, el Janículo y «Trastevere al anochecer».
+    const barrios = (D.places ?? []).filter((place) => (place.tags ?? []).includes('barrio'))
+    for (const barrio of barrios) {
+      const firstAt = dayStops.findIndex((stop) => nameOf(stop) === barrio.name && !stop.pass_through)
+      if (firstAt < 0) continue
+      const later = dayStops.slice(firstAt + 1)
+      const awayAt = later.findIndex((stop) => {
+        const place = byName.get(nameOf(stop))
+        return place && ((place.tags ?? []).includes('mirador') || (place.zone && place.zone !== barrio.zone))
+      })
+      if (awayAt < 0) continue
+      const back = new RegExp(`(^|[^\p{L}])${barrio.name}([^\p{L}]|$)`, 'u')
+      const titles = [day.aperitivo?.title ?? '', ...day.stops.filter((stop) => stop.is_night_experience).map((stop) => `${nameOf(stop)} ${stop.night_walk_name ?? ''}`), ...later.slice(awayAt + 1).map(nameOf)]
+      const other = (D.places ?? []).filter((place) => place.name !== barrio.name && place.name.includes(barrio.name)).map((place) => place.name)
+      if (titles.some((text) => back.test(other.reduce((rest, name) => rest.split(name).join(''), text)))) add('barrio_dos_veces', n, dayStops[firstAt].suggested_time, barrio.name, `y otra vez después de ${nameOf(later[awayAt])}`)
     }
 
     let previous = null
@@ -203,7 +247,7 @@ export function auditarViaje(D, days, options = {}) {
       const beforeStop = dayStops.find((stop) => nameOf(stop) === libre.before)
       const libreEnd = beforeStop ? t2m(beforeStop.suggested_time) - (beforeStop.transit?.minutes ?? 0) : null
       const month = iso ? Number(iso.slice(5, 7)) : null
-      const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && libreEnd <= 16 * 60 + 30
+      const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && (libreEnd <= 16 * 60 + 45 || libre.descanso)
       if (!summerRest && libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)

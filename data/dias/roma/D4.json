@@ -1,7 +1,7 @@
 {
   "_nota": "D4 escrito (2026-09-29, con las respuestas del usuario a la revisión). Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
   "id": "D4",
-  "nombre": "Trevi sin gente, la Borghese y el Popolo",
+  "nombre": "Trevi a primera hora, la Borghese y el Popolo",
   "nombre_empieza_tarde": "Trevi, la Borghese y el Popolo",
   "joyas": [
     "Fontana de Trevi"
@@ -498,6 +498,30 @@
           }
         }
       }
+    },
+    "fecha:01-06": {
+      "_nota": "6 de enero (PROMPT_REPASO_LOCAL_ROMA, 5): es el último día del mercadillo de Navidad y ninguna ruta pasaba por Navona; va por la tarde. Al final de la tarde, bajando andando desde el Popolo (20 min), con el mercadillo ya iluminado; se cena al lado, en el centro.",
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Santa Maria del Popolo",
+            "parada": {
+              "lugar": "Piazza Navona",
+              "titulo": "Piazza Navona y su mercadillo navideño",
+              "min": 40,
+              "texto": "El 6 de enero es el último día del mercadillo de Navidad de Piazza Navona: puestos de dulces, belenes y el carbón de azúcar que se regala en Reyes, con la Fuente de los Cuatro Ríos en medio.",
+              "verificar": "El mercadillo acaba el 6 de enero (turismoroma.it, «Festa di Piazza Navona 2025»); confirmar cada año hasta qué hora hay puestos ese día.",
+              "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad."
+            }
+          }
+        ],
+        "cena": {
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Armando al Pantheon"
+        }
+      },
+      "barrio_cena": "centro_historico",
+      "noche": "centro_iluminado"
     }
   },
   "experiencias": {

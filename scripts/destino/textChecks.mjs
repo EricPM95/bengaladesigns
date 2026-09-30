@@ -107,6 +107,9 @@ export function grupoFueraDeOrdenEnDia(D, day) {
   const conHora = new Set(cfg ? [cfg, ...Object.values(cfg.variantes ?? {})].flatMap((section) => [...(section.manana ?? []), ...(section.tarde_antes ?? []), ...(section.tarde ?? [])]).filter((stop) => stop.hora).map((stop) => stop.lugar) : [])
   const paradas = (day?.stops ?? []).filter((stop) => orden.has(stop.place_name ?? stop.name))
   const avisos = []
+  // (El Viernes Santo la Basílica cierra a las 13:00: la Plaza y la Basílica van a primera hora, antes que los Museos,
+  // a propósito. PROMPT_REPASO_LOCAL_ROMA, 5.)
+  if ((day?.curated_day?.variants ?? []).includes('fecha:easter-2')) return avisos
   paradas.forEach((primero, i) => {
     for (const despues of paradas.slice(i + 1)) {
       const a = orden.get(primero.place_name ?? primero.name)

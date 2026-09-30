@@ -21,6 +21,15 @@ export function weekdayForDay(dateRangeStartIso, dayNumber) {
   return WEEKDAYS[start.getDay()]
 }
 
+/** El mes y el día (MM-DD) del día N del viaje. Null si el viajero no fijó fechas. */
+function monthDayForDay(dateRangeStartIso, dayNumber) {
+  if (!dateRangeStartIso) return null
+  const start = new Date(`${dateRangeStartIso}T12:00:00`)
+  if (Number.isNaN(start.getTime())) return null
+  start.setDate(start.getDate() + (dayNumber - 1))
+  return `${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`
+}
+
 /** La franja curada a mano de ese día, si el destino tiene reparto para esa duración. */
 export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
   const variant = destData?.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
@@ -54,7 +63,22 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   // 2026-09-29): con 4 días todo es ciudad y la excursión se ofrece, no se pone.
   const excursionFrom = Math.max(coreDays, config.excursion_desde_dias ?? coreDays)
   const excursionAtCore = contentDays >= excursionFrom ? coreDays : null
-  const excursionDay = excursionAtCore !== null && excursionAtCore === contentDays && contentDays > 2 ? excursionAtCore - 1 : excursionAtCore
+  const plannedExcursion = excursionAtCore !== null && excursionAtCore === contentDays && contentDays > 2 ? excursionAtCore - 1 : excursionAtCore
+  // Ni en una fecha en que nadie se va de excursión (Roma: el 24, el 25 y el 31 de diciembre y el 1 de enero,
+  // `excursion_fechas_no`; PROMPT_REPASO_LOCAL_ROMA, 3): pasa al día siguiente que no sea el último de contenido y, si
+  // no hay, al anterior (desde el día 2). Si ninguno vale, el viaje va sin excursión.
+  const bannedExcursion = (dayNumber) => {
+    const mmdd = monthDayForDay(dateRangeStartIso, dayNumber)
+    return mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
+  }
+  let excursionDay = plannedExcursion
+  if (excursionDay !== null && bannedExcursion(excursionDay)) {
+    const later = []
+    for (let day = excursionDay + 1; day < contentDays; day++) later.push(day)
+    const earlier = []
+    for (let day = excursionDay - 1; day >= 2; day--) earlier.push(day)
+    excursionDay = [...earlier, ...later].find((day) => !bannedExcursion(day)) ?? null
+  }
   const excursionMoved = excursionDay !== excursionAtCore
 
   // Las de MEDIO DÍA van en los días de revisitas y en ningún otro: son la mañana de un día en el
@@ -69,7 +93,7 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   for (let dayNumber = 1; dayNumber <= contentDays; dayNumber++) {
     // El día siguiente a la excursión es el core day desplazado: ruta nueva, no revisitas. La
     // repetición empieza un día después.
-    const esRepeticion = dayNumber > coreDays + (excursionDay ? 1 : 0)
+    const esRepeticion = dayNumber > Math.max(coreDays, excursionDay ?? 0) + (excursionDay ? 1 : 0) - (excursionDay && excursionDay > coreDays ? 1 : 0)
     const esExcursion = dayNumber === excursionDay
     const esBlanco = dayNumber > maxAutoDays
     // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero,
