@@ -77,6 +77,8 @@ const toMin = (hhmm) => {
   const [h, m] = String(hhmm).split(':').map(Number)
   return h * 60 + (m || 0)
 }
+/** Con un día que empieza más tarde por una fecha especial, la comida como muy tarde (si el destino no dice otra hora). */
+const LATE_START_LUNCH_BY = 14 * 60 + 30
 const toHHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
 const roundUp15 = (minutes) => Math.ceil(minutes / 15) * 15
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
@@ -178,6 +180,22 @@ export function planWrittenTrip(args) {
       if (!sug?.lugar || !sug.hora) continue
       if (sug.dia ? iso.slice(5) !== sug.dia : !matchesDateRange(entry.fecha, entry.hasta, iso)) continue
       return { entry, sug, night: sug.lugar.endsWith('(noche)') }
+    }
+    return null
+  }
+
+  /**
+   * Un día que no empieza antes de cierta hora por una fecha especial (`empieza_desde: { hora, si_viaje_incluye }`): el 1
+   * de enero, si el viajero pasó la Nochevieja en el destino (el 31 está en su viaje), desde las 10:00.
+   */
+  const notBeforeOf = (day) => {
+    const iso = realDateIso(day)
+    if (!iso) return null
+    for (const entry of destData.fechas_especiales?.fechas ?? []) {
+      const rule = entry.empieza_desde
+      if (!rule?.hora || !matchesDateRange(entry.fecha, entry.hasta, iso)) continue
+      if (rule.si_viaje_incluye && !skeleton.some((other) => other !== day && realDateIso(other) && matchesDateToken(rule.si_viaje_incluye, realDateIso(other)))) continue
+      return { at: toMin(rule.hora), lunchBy: rule.comida_como_tarde ? toMin(rule.comida_como_tarde) : LATE_START_LUNCH_BY, id: entry.id }
     }
     return null
   }
@@ -881,6 +899,37 @@ export function planWrittenTrip(args) {
     // Tranquilo: las opcionales no vuelven nunca (PROMPT_ROMA_V4_REPASO 6); el rato que sobra va al barrio elástico (hasta
     // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
     const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
+    // El día que no empieza antes de una hora (el 1 de enero tras la Nochevieja, a las 10:00): toda la mañana se corre lo
+    // mismo que la primera hora, menos lo que tiene turno. Si así se llega tarde a una hora fija o la comida se va
+    // demasiado tarde, se quitan las opcionales de la mañana (de la última hacia atrás); si ni así, el día se queda a su
+    // hora escrita (no se fuerza) y queda apuntado en sus variantes («empieza:no_cabe»).
+    const notBefore = half ? null : notBeforeOf(skeletonDay)
+    if (notBefore && morningStartOf(draft) < notBefore.at) {
+      const delta = notBefore.at - morningStartOf(draft)
+      const movable = (stop) => stop.hora != null && !stop.turno && stop.lugar !== tour?.name && !placeByName.get(stop.lugar)?.turnos
+      const shift = (list) => list.map((stop) => (movable(stop) ? { ...stop, hora: toHHMM(Math.min(toMin(stop.hora) + delta, 23 * 60)) } : stop))
+      const fits = (list) => {
+        const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+        const run = runList(list, 'manana', { t: notBefore.at, coords: null }, probe)
+        if (probe.problems.some((problem) => problem.tipo === 'llega_tarde')) return false
+        return !draft.comida || lunchOf({ ...draft, manana: list }, run.cursor, skeletonDay, hours).start <= notBefore.lunchBy
+      }
+      let late = shift(draft.manana)
+      const dropped = []
+      while (!fits(late)) {
+        const at = late.findLastIndex((stop) => stop.tipo === 'opcional')
+        if (at < 0) break
+        dropped.push(late[at].lugar)
+        late = late.filter((_, i) => i !== at)
+      }
+      if (fits(late)) {
+        draft.manana = late
+        draft.manana_empieza = toHHMM(notBefore.at)
+        // (El nombre del día no promete la primera hora si ya no es la primera hora: «Trevi sin gente» a las 10:00.)
+        if (written.days[draft.id]?.nombre_empieza_tarde && draft.nombre === written.days[draft.id].nombre) draft.nombre = written.days[draft.id].nombre_empieza_tarde
+        draft.applied.push(`empieza:${toHHMM(notBefore.at)}`, ...dropped.map((name) => `empieza:sin ${name}`))
+      } else draft.applied.push('empieza:no_cabe')
+    }
     const startMorning = morningStartOf(draft)
     // La comida dura como mínimo LUNCH_MIN (PROMPT_TEXTOS_RITMO 6). Si no cabe antes de la hora escrita de la tarde, se
     // quitan primero las opcionales (las de la mañana, de la última hacia atrás; luego las de la tarde, hasta cubrir lo que

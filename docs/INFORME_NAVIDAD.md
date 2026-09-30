@@ -143,3 +143,42 @@ Comparando caso a caso: 26 arreglados y 13 nuevos.
   - 2 idas y vueltas por la misma zona (los Museos Capitolinos, con la experiencia de arte, el 1 de enero), del mismo tipo que las 9 que ya había.
   - 1 llegada 5 min tarde a San Clemente el 1 de enero, en el viaje que lleva las Termas de Caracalla elegidas por el viajero: ahora se espera a que abran (9:30) en vez de verlas por fuera.
 - El día del Free Tour ya no cae el 24 ni el 31 de diciembre si el viaje lo permite, como los domingos.
+
+## 8. Fin de Año (PROMPT_ROMA_FIN_DE_ANO, 2026-09-30)
+
+### Lo que cambió
+
+- **Aviso de Nochevieja.** Antes: «Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.» Ahora: «Roma despide el año en la calle, con un gran concierto en el Circo Máximo, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.» La página oficial del concierto (turismoroma.it) no habla de fuegos.
+- **Sugerencia del concierto**, como frase aparte del aviso del 31: «Después de cenar, si te apetece: el Concierto de Fin de Año del Circo Máximo suele empezar hacia las 21:00 y sigue hasta pasada la medianoche (compruébalo en turismoroma.it). Ve andando o en metro y vuelve en metro (línea B, Circo Massimo): esa noche los buses paran a las 21:00 y el metro sigue hasta las 2:30.» No dice «gratis» (regla de precios). **No es una parada de la ruta**: es una frase del aviso, con `verificar`. No quita la cena ni el paseo de esa noche.
+- **El 1 de enero tras la Nochevieja**: el día no empieza antes de las 10:00 si el 31 está en el viaje. Un viaje que empieza el 1 de enero sigue a su hora escrita.
+- **San Pedro el 1 de enero**, frase aparte del aviso: «En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va).» Comprobado en los boletines de press.vatican.va del 1 de enero de 2026.
+- **Aviso de restaurantes** el 31 y el 1: sale (ya salía).
+
+### Prueba (1.092 viajes, del 1 de diciembre al 8 de enero)
+
+| Qué | Casos |
+|---|---|
+| Un bus después de las 21:00 del 31 | 0 |
+| Un 1 de enero antes de las 10:00 tras la Nochevieja | **4** |
+| Una visita por dentro que empieza después de la última entrada (31 y 1) | 0 |
+| Un texto que promete fuegos | 0 |
+| Lo de Navidad de antes (cerrados, textos falsos, mercadillo, mismo sitio) | 0 |
+
+«Última entrada»: cuento la visita que **empieza** después de la última entrada. Una visita que empieza antes y acaba después es normal (se entra a tiempo).
+
+### Los 4 casos: para decidir
+
+Son el mismo viaje: **31 de diciembre-1 de enero, 2 días** (con y sin Free Tour, con y sin mercadillos). El 1 de enero le toca Roma Antigua (el 31 van los Museos Vaticanos, que el 1 cierran), y no hay otro día al que moverla.
+
+Si el Coliseo empieza a las 10:00 en vez de a las 8:30: el Foro acaba a las 13:30, el Altar de la Patria a las 14:40 y **la comida empieza a las 15:00**. Después, el Panteón hacia las 16:10 (última entrada a las 16:30) y anochece a las 16:49: el centro entero de noche. No lo he forzado: ese día se queda a las 8:30.
+
+Salidas posibles:
+1. Dejarlo así (8:30), con una frase en el aviso: «Hoy toca madrugar: el Coliseo y el Foro cierran a las 16:30».
+2. Empezar a las 10:00 y quitar de la mañana el Altar de la Patria por dentro y el Campidoglio (pasan a la tarde o fuera): comida hacia las 14:00.
+3. Empezar a las 9:30 (media hora menos de sueño, comida a las 14:30).
+
+En el resto de viajes el 1 de enero empieza a las 10:00 sin romper nada: el día del Aventino pasa de las 9:30 a las 10:00; el de Trevi, de las 8:30 a las 10:00, y pierde el «sin gente» del nombre.
+
+### Revisión
+
+`docs/revision/NAVIDAD_ROMA.md` lleva ahora 11 viajes: los 6 de antes y 29 dic-1 ene, 31 dic-3 ene con Free Tour, 28 dic-2 ene (6 días), 1-3 ene y 5-7 ene con mercadillos. El de 30 dic-2 ene ya estaba. Ya no hay ritmos: los que pedías en tranquilo salen con la ruta única.

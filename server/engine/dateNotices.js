@@ -318,7 +318,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
         title: curated.titulo_con_fecha ? `${datesTitle([iso])} · ${curated.titulo_con_fecha}` : curated.titulo,
         tag: tagOf(curated),
         // (`aviso_restaurantes`: Navidad y Ferragosto, muchos restaurantes cierran; una frase aparte, fuera de las 35 palabras.)
-        texts: [curatedText(curated), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
+        texts: [curatedText(curated), ...(curated.sugerencia_texto ? [curated.sugerencia_texto] : []), ...(curated.aviso_restaurantes ? [destData.fechas_especiales?._restaurantes ?? RESTAURANTES_TEXT] : [])].filter(Boolean),
         kind: 'curado',
       })
     }

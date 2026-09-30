@@ -12051,7 +12051,9 @@
       "sugerencia": "opcional: una parada o nocturna con hora que el motor puede ofrecer ese día (no la mete sola: sale como botón 'Añadir a mi ruta').",
       "horario_especial": "opcional: horarios distintos ese día, en el mismo formato que by_period. El motor los usa si 'confirmado': true.",
       "fuente": "de dónde sale el dato",
-      "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app."
+      "verificar": "true = el dato exacto (hora, programa) cambia cada año. El aviso SÍ sale, pero con prudencia: 'es posible que…', 'suele…' y 'compruébalo en la web oficial'. Decisión del usuario (2026-09-27): avisar aunque no sepamos lo exacto ya es un valor que no da ninguna otra app.",
+      "sugerencia_texto": "opcional: una frase aparte con algo que el viajero puede hacer ese día por su cuenta. No entra en la ruta ni quita nada; con prudencia («suele…», «compruébalo en…»).",
+      "empieza_desde": "opcional: { hora, si_viaje_incluye: \"MM-DD\" }. Ese día no empieza antes de esa hora si el viaje incluye la otra fecha (el 1 de enero tras la Nochevieja)."
     },
     "_regla": "Todo texto acaba con lo que hemos hecho (\"Hemos puesto…\", \"Hemos movido…\"), 35 palabras como mucho y sin precios.",
     "fechas": [
@@ -12062,7 +12064,7 @@
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
         "texto": "Hoy cierran los Museos Vaticanos, y el Coliseo y el Foro suelen abrir con horario corto (compruébalo en su web). Hemos puesto los Museos otro día y tus visitas dentro de ese horario.",
-        "fuente": "colosseo.it («Special opening on January 1, 2026») y cultura.gov.it («1 gennaio 2026 al Pantheon»); Museos Vaticanos: museivaticani.va. Horarios de la temporada 2025-26: revisar cada diciembre.",
+        "fuente": "colosseo.it («Special opening on January 1, 2026») y cultura.gov.it («1 gennaio 2026 al Pantheon»); Museos Vaticanos: museivaticani.va. Horarios de la temporada 2025-26: revisar cada diciembre. Misa de las 10:00 y Ángelus de las 12:00: press.vatican.va, boletines del 1 de enero de 2026.",
         "contexto": "Roma empieza el año con calma: muchos monumentos abren con horario corto.",
         "verificar": true,
         "comprobado": "2026-09-30",
@@ -12097,7 +12099,14 @@
             }
           }
         },
-        "aviso_restaurantes": true
+        "aviso_restaurantes": true,
+        "empieza_desde": {
+          "hora": "10:00",
+          "si_viaje_incluye": "12-31",
+          "comida_como_tarde": "14:30",
+          "_nota": "Si el viajero pasó la Nochevieja en el destino (el 31 está en su viaje), el 1 de enero no empieza antes de las 10:00. Si con eso la mañana no cabe (se llega tarde a una hora fija o la comida pasa de `comida_como_tarde`), el día se queda a su hora escrita y la prueba lo cuenta."
+        },
+        "sugerencia_texto": "En San Pedro, el Papa suele celebrar misa a las 10:00 y rezar el Ángelus a las 12:00 desde la ventana: la Basílica tiene tramos cerrados y a mediodía la plaza se llena (compruébalo en vatican.va)."
       },
       {
         "id": "reyes",
@@ -12299,13 +12308,18 @@
         "id": "nochevieja",
         "fecha": "12-31",
         "tipo": "evento",
-        "icono": "fuegos",
+        "icono": "musica",
         "titulo": "31 de diciembre · Nochevieja",
-        "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
+        "texto": "Roma despide el año en la calle, con un gran concierto en el Circo Máximo, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
         "verificar": true,
-        "fuente": "Programa a confirmar cada año en comune.roma.it; Te Deum: vatican.va, «Notificazione tempo di Natale» 2025-26",
+        "fuente": "turismoroma.it, «Concerto di Capodanno 2026 Roma al Circo Massimo» (31 de diciembre de 2025, desde las 21:00-21:30 y después de la medianoche; cuarto año seguido; la página no habla de fuegos artificiales, por eso no se prometen). Transporte: destination_config.transporte_festivos. Te Deum: vatican.va, «Notificazione tempo di Natale» 2025-26. Revisar cada diciembre.",
         "comprobado": "2026-09-30",
-        "aviso_restaurantes": true
+        "aviso_restaurantes": true,
+        "_antes": {
+          "texto": "Roma despide el año con conciertos y fuegos artificiales, y esta noche todo se llena. Hemos puesto tu cena en un barrio con ambiente: resérvala con tiempo.",
+          "icono": "fuegos"
+        },
+        "sugerencia_texto": "Después de cenar, si te apetece: el Concierto de Fin de Año del Circo Máximo suele empezar hacia las 21:00 y sigue hasta pasada la medianoche (compruébalo en turismoroma.it). Ve andando o en metro y vuelve en metro (línea B, Circo Massimo): esa noche los buses paran a las 21:00 y el metro sigue hasta las 2:30."
       },
       {
         "id": "domenica_al_museo",

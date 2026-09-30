@@ -2180,3 +2180,19 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Una parada `opcional` de lo escrito lleva la etiqueta «Opcional» en su tarjeta, con el estilo de las demás.
     - Las reglas que solo eran de tranquilo se han borrado (118, 138, 169, 175, 184, 234, 353, 366, 367 y 368: esos números
       quedan libres). En las reglas antiguas que aún nombran «tranquilo» o «los dos ritmos», vale solo la parte de completo.
+
+404. **Fin de Año** (PROMPT_ROMA_FIN_DE_ANO, 2026-09-30).
+    - **Un día puede no empezar antes de una hora por una fecha especial** (`fechas_especiales.fechas[].empieza_desde:
+      { hora, si_viaje_incluye, comida_como_tarde }`): el 1 de enero, solo si el 31 de diciembre está en el viaje, desde
+      las 10:00. Toda la mañana se corre lo mismo que la primera hora, menos lo que tiene turno. Si así se llega tarde a
+      una hora fija o la comida empieza después de `comida_como_tarde` (14:30), se quitan las opcionales de la mañana, de la
+      última hacia atrás. Si ni así cabe, **no se fuerza**: el día se queda a su hora escrita, queda apuntado en sus
+      variantes (`empieza:no_cabe`) y la prueba de Navidad lo cuenta.
+    - **El nombre del día no promete la primera hora si ya no lo es**: con el día corrido, vale `nombre_empieza_tarde` del
+      día escrito («Trevi, el Pincio y la tarde en Monti», sin «sin gente»).
+    - **Una fecha especial puede llevar una frase aparte** (`sugerencia_texto`): algo que el viajero puede hacer ese día por
+      su cuenta. No entra en la ruta ni quita nada, y se escribe con prudencia («suele…», «compruébalo en…»). El concierto
+      del Circo Máximo el 31 y la misa y el Ángelus del 1 de enero.
+    - **Ningún texto promete fuegos artificiales sin fuente oficial de ese año.**
+    - La prueba de Navidad cuenta, en el 31 y el 1: un bus después de las 21:00 del 31, un 1 de enero antes de las 10:00
+      tras la Nochevieja, una visita por dentro que empieza después de la última entrada y un texto que promete fuegos.
