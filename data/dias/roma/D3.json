@@ -512,7 +512,7 @@
           {
             "parada": {
               "lugar": "Mercadillo de Navidad de Piazza Navona",
-              "titulo": "Piazza Navona y su mercadillo de Navidad",
+              "titulo": "Piazza Navona y su mercadillo navideño",
               "texto_titulo": "Al caer la tarde, Navona con el mercadillo de la Befana encendido: puestos de dulces, figuritas para el belén y carbón de azúcar. Date una vuelta entre los puestos antes de cenar.",
               "min": 40,
               "si_cerrado": "quitar"

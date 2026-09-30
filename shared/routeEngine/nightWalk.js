@@ -323,6 +323,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       tags: [],
       schedule: null,
       is_night_experience: true,
+      // (De noche todo se ve desde la calle: sin pestaña «Entradas».)
+      free_access: true,
       ...(plan.beforeDinner ? { before_dinner: true } : {}),
       ...(entry.season_notice ? { season_notice: entry.season_notice } : {}),
       // La excepción de su día curado (la escalinata de D4, con la Plaza de España vista por la mañana).

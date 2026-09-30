@@ -368,6 +368,18 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (experienceTheme && (TAG_INTEREST_MAP[experienceTheme] ?? []).some((tag) => (visit.place.tags ?? []).includes(tag))) stop.experience = experienceTheme
     // De temporada con `aprox`, en el margen de 15 días: la parada lleva el aviso del propio dato.
     const source = destData.places?.find((candidate) => candidate.name === visit.place.name)
+    // La pestaña «Entradas» (PARA_CODE_NAVONA 6): un sitio de acceso libre no la lleva, salvo que esté en el recorrido de un
+    // Free Tour (entonces va en ella ese tour) o tenga una parte de pago (la cúpula, la cripta).
+    if (source && !visit.place.isFreeTour && !visit.place.isBreak) {
+      if (!(source.ticket_info ?? []).some((line) => /de pago|se pagan?\b/i.test(line))) stop.free_access = true
+      const tourCfg = destData.default_free_tour
+      if ((tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
+      // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)
+      if (source.sin_texto_ia) stop.no_ai_text = true
+    }
+    // El aspecto de la tarjeta (el de Navidad): el de la capa que lleva la parada o el de su lugar.
+    const aspect = unitById.get(visit.unitId)?.aspect ?? source?.aspecto ?? null
+    if (aspect) stop.season_kind = aspect
     if (source?.available) {
       const hours = tripDay.hours ?? {}
       const fit = seasonFit(source.available, { hasDates: Boolean(hours.weekday), month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) - 1 : null }, hours.dateIso ?? null, true)

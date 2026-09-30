@@ -508,7 +508,7 @@
           {
             "parada": {
               "lugar": "Luces de Navidad del Tridente",
-              "titulo": "Luces de Navidad: Via del Corso, Condotti, Babuino y Margutta",
+              "titulo": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
               "min": 40,
               "no_calle": true,
               "si_cerrado": "quitar"

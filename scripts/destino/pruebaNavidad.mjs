@@ -90,6 +90,11 @@ async function runTrip({ fecha, dias, ft, mercadillos }) {
     const iso = addDays(fecha, index)
     const where = `${label}, día ${n} (${iso.slice(5)})`
     const dayStops = day.stops.filter((stop) => !stop.is_night_experience)
+    // «…antes de cenar» en el texto de una parada: la cena tiene que ir después (PARA_CODE_NAVONA 5).
+    const dinnerAt = t2m(day.meals?.find((meal) => meal.time === 'dinner')?.suggested_time ?? '')
+    for (const stop of day.stops) if (/antes de cenar/i.test(stop.why ?? '') && day.meals?.some((meal) => meal.time === 'dinner') && t2m(stop.suggested_time) + (stop.duration_minutes ?? 0) > dinnerAt) add('texto_falso', where, `«antes de cenar» en ${stop.display_title ?? stop.name} (${stop.suggested_time}) y la cena es a las ${day.meals.find((meal) => meal.time === 'dinner').suggested_time}`)
+    // Una etiqueta interna nunca se ve: ningún título con guion bajo.
+    for (const stop of day.stops) if (/_/.test(`${stop.display_title ?? ''}${stop.category_label ?? ''}`)) add('texto_falso', where, `nombre interno en pantalla: ${stop.display_title ?? stop.category_label}`)
     // El Free Tour, a una de las horas a las que sale ese día.
     for (const rule of D.default_free_tour?.disponibilidad?.horas_especiales ?? []) {
       if (!rule.fechas.includes(iso.slice(5))) continue
