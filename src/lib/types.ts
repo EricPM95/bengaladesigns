@@ -305,6 +305,8 @@ export interface Stop {
   seasonNotice?: string | null
   /** La línea de temporada de la ficha (PROMPT_ROMA_NAVIDAD 3): «En Navidad, la escalinata tiene su árbol…». Arriba del Resumen, destacada. */
   seasonLine?: string | null
+  /** El icono de esa línea: «navidad» (por defecto) o «religioso» (el Ángelus de los domingos). */
+  seasonLineIcon?: string | null
   /** Imprescindible cerrado ese día que se enseña por fuera, o el grupo cuya ancla cierra todo el viaje: "El
       Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual." */
   closedNotice?: string | null
@@ -720,7 +722,8 @@ export interface Route {
   /** El viajero lo cerró con la X: no vuelve a salir en este viaje. */
   contextBannerDismissed?: boolean
   /** Nota de temporada (decisión del usuario, 2026-09-28): arriba de la ruta, con el efecto de temporada; se cierra. */
-  seasonNote?: { season: string; text: string } | null
+  /** (`icon: 'navidad'`: la nota navideña, en lugar de la de invierno.) */
+  seasonNote?: { season: string; text: string; icon?: string } | null
   seasonNoteDismissed?: boolean
   /** Motor v3: avisos de fechas especiales (festivos, cierres, eventos) — DateNoticesModal.tsx. */
   dateNotices?: DateNotice[]

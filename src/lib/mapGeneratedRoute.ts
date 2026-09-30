@@ -189,7 +189,7 @@ export interface GeneratedDay {
   /** Motor v3, solo en el primer día de ciudad: el banner de contexto de toda la ruta. */
   context_banner?: string | null
   /** Nota de temporada (Route.seasonNote), solo en el primer día de ciudad. */
-  season_note?: { season: string; text: string } | null
+  season_note?: { season: string; text: string; icon?: string } | null
   /** Motor v3, solo en el primer día de ciudad: los avisos de fechas especiales — Route.dateNotices. */
   date_notices?: { id: string; day_number: number | null; date_iso: string | null; icon: string; title: string; tag: string; texts: string[]; kind: 'auto' | 'curado' | 'mixto' }[] | null
   /** Motor v3: minutos andando de la última visita a la cena — ver DayPlan.dinnerWalkMinutes. */
@@ -429,7 +429,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.reservation ? { reservation: generated.reservation } : {}),
     ...(generated.hours_warning ? { hoursWarning: generated.hours_warning } : {}),
     ...(generated.season_notice ? { seasonNotice: generated.season_notice } : {}),
-    ...(generated.season_line?.text ? { seasonLine: generated.season_line.text } : {}),
+    ...(generated.season_line?.text ? { seasonLine: generated.season_line.text, ...(generated.season_line.icon ? { seasonLineIcon: generated.season_line.icon } : {}) } : {}),
     ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.is_break
@@ -838,7 +838,7 @@ export function mapGeneratedRouteToRoute(
     contextBanner: generated.days.find((day) => day.context_banner)?.context_banner ?? null,
     seasonNote: (() => {
       const note = generated.days.find((day) => day.season_note)?.season_note
-      return note ? { season: note.season, text: note.text } : null
+      return note ? { season: note.season, text: note.text, ...(note.icon ? { icon: note.icon } : {}) } : null
     })(),
     dateNotices: (generated.days.find((day) => day.date_notices?.length)?.date_notices ?? []).map((notice) => ({
       id: notice.id,

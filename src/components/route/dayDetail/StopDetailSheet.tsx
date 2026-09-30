@@ -554,11 +554,11 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
-                  {/* La línea de Navidad (PROMPT_ROMA_NAVIDAD 3): arriba, destacada y con su icono. */}
+                  {/* La línea de la ficha (Navidad, o el Ángelus de los domingos): arriba, destacada y con su icono. */}
                   {stop.seasonLine && (
                     <p className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-text">
                       <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-card text-accent">
-                        <DateNoticeSmallIcon icon="navidad" />
+                        <DateNoticeSmallIcon icon={stop.seasonLineIcon === 'religioso' ? 'religioso' : 'navidad'} />
                       </span>
                       <span>{stop.seasonLine}</span>
                     </p>

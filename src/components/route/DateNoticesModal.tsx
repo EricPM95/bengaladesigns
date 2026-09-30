@@ -16,7 +16,7 @@ function seasonNoticeOf(route: Route): DateNotice | null {
   if (!note?.text) return null
   const fx = SEASON_FX[FX_OF[note.season] ?? 'spring']
   const city = route.destination.split(',')[0].trim()
-  return { id: SEASON_NOTICE_ID, dayNumber: null, dateIso: null, icon: 'luz', title: `${fx.name} en ${city}`, tag: '', texts: [note.text], kind: 'auto' }
+  return { id: SEASON_NOTICE_ID, dayNumber: null, dateIso: null, icon: note.icon === 'navidad' ? 'navidad' : 'luz', title: `${note.icon === 'navidad' ? 'Navidad' : fx.name} en ${city}`, tag: '', texts: [note.text], kind: 'auto' }
 }
 
 /**
