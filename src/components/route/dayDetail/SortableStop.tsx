@@ -14,7 +14,7 @@ import { CSS } from '@dnd-kit/utilities'
  * que valga en un dedo). `touch-none` es obligatorio: sin él, el navegador se queda el gesto para
  * hacer scroll y el arrastre no llega a empezar.
  */
-export function SortableStop({ id, disabled, children }: { id: string; disabled?: boolean; children: ReactNode }) {
+export function SortableStop({ id, disabled, label = 'Mover esta parada', children }: { id: string; disabled?: boolean; label?: string; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id, disabled })
 
   return (
@@ -29,8 +29,8 @@ export function SortableStop({ id, disabled, children }: { id: string; disabled?
           type="button"
           {...attributes}
           {...listeners}
-          aria-label="Mover esta parada"
-          title="Mover esta parada"
+          aria-label={label}
+          title={label}
           className="absolute -left-[27px] bottom-[44px] z-10 flex h-7 w-[22px] cursor-grab touch-none items-center justify-center rounded-md bg-bg-card text-text/40 opacity-0 transition-opacity hover:text-text-soft focus-visible:opacity-100 group-hover:opacity-100 active:cursor-grabbing max-[768px]:opacity-60"
         >
           <GripIcon />

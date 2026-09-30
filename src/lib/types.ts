@@ -582,6 +582,11 @@ export interface RainPlanB {
 // ── Day plan ──────────────────────────────────────────────
 
 export interface DayPlan {
+  /**
+   * Dónde ha dejado el viajero la comida y la cena al arrastrarlas (PROMPT_UI_REPASO_3, 3): detrás de qué parada del día
+   * (su posición; -1 = antes de la primera). Un restaurante no es una parada del motor: solo cambia el orden en el que se ve.
+   */
+  mealAfter?: { lunch?: number; dinner?: number }
   id: string
   dayNumber: number
   city: string

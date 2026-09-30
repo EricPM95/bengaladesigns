@@ -423,6 +423,12 @@ interface RouteStoreState {
   setLegToNext: (dayId: string, stopId: string, minutes: number) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   /**
+   * Mueve la comida o la cena a otro sitio del día (PROMPT_UI_REPASO_3, 3): detrás de la parada `toAfter` (-1 = antes de la
+   * primera). Las horas se reparten por posición, igual que al mover una parada: la que pasa a ocupar un hueco se lleva su
+   * hora, y lo que se pisa se empuja. La comida o la cena no es una parada: solo cambia su hora y el orden en que se ve.
+   */
+  moveMeal: (dayId: string, mealTime: 'lunch' | 'dinner', fromAfter: number, toAfter: number) => void
+  /**
    * Cambia de sitio un día entero dentro del viaje (arrastrar en la lista de días, DayList.tsx).
    *
    * El día se lleva su contenido tal cual: las horas de sus paradas NO se tocan, porque lo que se
@@ -948,6 +954,47 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       return { route: updateDay(state.route, dayId, (day) => ({ ...day, stops: withLegToNext(day.stops, stopId, minutes) })) }
+    }),
+
+  moveMeal: (dayId, mealTime, fromAfter, toAfter) =>
+    set((state) => {
+      if (!state.route) return state
+      return {
+        route: updateDay(state.route, dayId, (day) => {
+          const meal = day.meals.find((candidate) => candidate.mealTime === mealTime)
+          if (!meal || fromAfter === toAfter) return day
+          const mealStart = parseTimeToMinutes(meal.time)
+          const mealEnd = meal.windowEnd ? parseTimeToMinutes(meal.windowEnd) : NaN
+          const mealMinutes = Number.isNaN(mealEnd) || Number.isNaN(mealStart) ? (mealTime === 'dinner' ? 90 : 75) : mealEnd - mealStart
+          type Item = { kind: 'stop'; stop: Stop } | { kind: 'meal' }
+          const before: Item[] = day.stops.map((stop) => ({ kind: 'stop', stop }))
+          before.splice(fromAfter + 1, 0, { kind: 'meal' })
+          const after: Item[] = day.stops.map((stop) => ({ kind: 'stop', stop }))
+          after.splice(toAfter + 1, 0, { kind: 'meal' })
+          const timeOf = (item: Item) => (item.kind === 'meal' ? meal.time : item.stop.time)
+          const durationOf = (item: Item) => (item.kind === 'meal' ? mealMinutes : item.stop.durationMinutes + (item.stop.walkingTimeToNextMinutes ?? 0))
+          // Por posición, como las paradas; y lo que se pisa, hacia delante (redondeado al cuarto de hora).
+          let cursor = -Infinity
+          const timed = after.map((item, index) => {
+            let start = parseTimeToMinutes(timeOf(before[index]))
+            if (Number.isNaN(start)) start = cursor
+            if (start < cursor) start = roundUpToQuarterHour(cursor)
+            cursor = start + durationOf(item)
+            return { item, time: minutesToTime(start) }
+          })
+          const stopTimes = new Map(timed.filter((entry) => entry.item.kind === 'stop').map((entry) => [(entry.item as { stop: Stop }).stop.id, entry.time]))
+          const newMealTime = timed.find((entry) => entry.item.kind === 'meal')!.time
+          const newMealStart = parseTimeToMinutes(newMealTime)
+          return {
+            ...day,
+            stops: day.stops.map((stop) => ({ ...stop, time: stopTimes.get(stop.id) ?? stop.time })),
+            meals: day.meals.map((candidate) =>
+              candidate === meal ? { ...candidate, time: newMealTime, ...(candidate.windowEnd ? { windowEnd: minutesToTime(newMealStart + mealMinutes) } : {}) } : candidate,
+            ),
+            mealAfter: { ...(day.mealAfter ?? {}), [mealTime]: toAfter },
+          }
+        }),
+      }
     }),
 
   reorderStops: (dayId, orderedStopIds) =>

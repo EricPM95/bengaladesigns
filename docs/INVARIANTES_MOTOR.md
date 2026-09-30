@@ -2295,3 +2295,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     foto de noche solo va en las experiencias y los paseos nocturnos. Las fotos del usuario llevan `fuente: "propia"` y van
     sin línea de crédito; las de Unsplash y Pexels, de momento, también. Comprobación con peticiones reales:
     `scripts/destino/comprobarFotos.mjs`.
+
+412. **El día, bien alineado** (PROMPT_UI_REPASO_3, 2026-10-01).
+    - Todas las tarjetas del día van alineadas entre sí, dentro de la línea del día, y con el mismo hueco entre ellas:
+      paradas, comidas, cenas, aperitivos, desayuno y «De camino». La comida y la cena llevan su hueco encima, como una
+      parada.
+    - Cada cabecera de franja lleva 28 px de margen arriba (también la primera, debajo de la llegada) y 12 abajo.
+    - Un tipo de transporte, un icono lineal, sin emojis: bus, metro, tranvía y taxi.
+    - La comida y la cena se arrastran con la misma asa que las paradas. La comida no acaba en la noche ni la cena en la
+      mañana: fuera de su parte, vuelven a su sitio. Las horas se recolocan por posición, como al mover una parada; un
+      restaurante sigue sin ser una parada del motor (`DayPlan.mealAfter`).
+    - En la pestaña Ruta, una tarjeta por destino: bandera, nombre del destino y sus días y fechas. Tocarla abre su
+      ventana de hoteles y actividades.

@@ -199,6 +199,10 @@ function computeStopSchedule(
 const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
 
 /** Índice de la parada TRAS la que insertar el acordeón dorado "Hora de comer"/"Hora de cenar" — el primer hueco (entre esa parada y la siguiente, o tras la última si el día termina dentro de la ventana) cuyo rango se solapa con la franja horaria dada. null si el día nunca llega a cruzarla (ej. un día corto que termina a las 12:00). */
+/** Los ids de arrastre de la comida y la cena (no son paradas: no llevan id de parada). */
+const MEAL_DRAG_ID = { lunch: 'meal-drag-lunch', dinner: 'meal-drag-dinner' } as const
+const mealOfDragId = (id: string): 'lunch' | 'dinner' | null => (id === MEAL_DRAG_ID.lunch ? 'lunch' : id === MEAL_DRAG_ID.dinner ? 'dinner' : null)
+
 function findMealInsertionIndex(schedule: StopSchedule[], window: [number, number]): number | null {
   for (let index = 0; index < schedule.length; index++) {
     const gapStart = schedule[index].endMinutes
@@ -297,6 +301,7 @@ export function DayDetailPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusStopId, day.stops.length])
   const reorderStops = useRouteStore((state) => state.reorderStops)
+  const moveMeal = useRouteStore((state) => state.moveMeal)
   const setLegToNext = useRouteStore((state) => state.setLegToNext)
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
   // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
@@ -458,6 +463,14 @@ export function DayDetailPanel({
   const handleStopDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
+    // La comida o la cena: a otro sitio del día, sin salirse de su parte (PROMPT_UI_REPASO_3, 3).
+    const activeMeal = mealOfDragId(String(active.id))
+    if (activeMeal) {
+      handleMealDrop(activeMeal, String(over.id))
+      return
+    }
+    // (Una parada que se suelta encima de una comida o una cena vuelve a su sitio.)
+    if (mealOfDragId(String(over.id))) return
     const ids = realStops.map((realStop) => realStop.id)
     const from = ids.indexOf(String(active.id))
     const to = ids.indexOf(String(over.id))
@@ -488,6 +501,31 @@ export function DayDetailPanel({
     // El store recoloca las horas por posición (reassignTimesByPosition): la parada que pasa a ser
     // la tercera hereda el hueco de la tercera, no se lleva su hora antigua a otro sitio del día.
     reorderStops(day.id, next)
+  }
+  /**
+   * La comida o la cena, soltada encima de una parada: detrás de ella si se baja, delante si se sube. La comida no puede
+   * acabar en la noche (ni detrás de la cena) y la cena no puede acabar en la mañana (ni delante de la comida): si se suelta
+   * fuera de su parte, vuelve a su sitio. Las horas se recolocan como al mover una parada.
+   */
+  const handleMealDrop = (mealTime: 'lunch' | 'dinner', overId: string) => {
+    const ids = realStops.map((realStop) => realStop.id)
+    const overIndex = ids.indexOf(overId)
+    const fromAfter = mealTime === 'lunch' ? lunchInsertionIndex : dinnerInsertionIndex
+    if (overIndex < 0 || fromAfter == null) return
+    const toAfter = overIndex > fromAfter ? overIndex : overIndex - 1
+    if (toAfter === fromAfter || toAfter < 0) return
+    const periodOf = (index: number) => placed.find((entry) => entry.item.type === 'stop' && entry.item.index === index)?.period ?? null
+    const firstNight = realStops.findIndex((_, index) => periodOf(index) === 'noche')
+    const lastMorning = realStops.reduce((last, _, index) => (periodOf(index) === 'manana' ? index : last), -1)
+    if (mealTime === 'lunch') {
+      if (firstNight >= 0 && toAfter >= firstNight) return
+      if (dinnerInsertionIndex != null && toAfter > dinnerInsertionIndex) return
+    } else {
+      if (toAfter < lastMorning) return
+      if (lunchInsertionIndex != null && toAfter < lunchInsertionIndex) return
+    }
+    if (day.stops.length === 0) seedDayStops(day.id, realStops)
+    moveMeal(day.id, mealTime, fromAfter, toAfter)
   }
   // El número de cada tarjeta es el de su pin en el mapa: misma lista y mismo orden de hora (stopNumbersOf).
   const stopNumbers = stopNumbersOf(day)
@@ -682,11 +720,16 @@ export function DayDetailPanel({
   // «Ajustar este día a tu llegada / vuelta» quita la comida o la cena que ya no toca (antes de llegar, después de irte):
   // sin ella en el día, el primer o el último día no la vuelven a poner por franja.
   const mealDroppedByTrip = (mealTime: 'lunch' | 'dinner') => (centerMinutes != null || leaveMinutes != null) && day.meals.length > 0 && !day.meals.some((meal) => meal.mealTime === mealTime)
-  const lunchInsertionIndex = mealDroppedByTrip('lunch') ? null : lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW)
+  // (Donde el viajero la dejó al arrastrarla, si la movió y ese sitio sigue existiendo: PROMPT_UI_REPASO_3, 3.)
+  const movedMeal = (mealTime: 'lunch' | 'dinner'): number | null => {
+    const at = day.mealAfter?.[mealTime]
+    return at != null && at >= -1 && at < schedule.length ? at : null
+  }
+  const lunchInsertionIndex = mealDroppedByTrip('lunch') ? null : movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
   const lunchTimeRange = lunchMeal?.windowEnd ? `${lunchMeal.time} – ${lunchMeal.windowEnd}` : null
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
-  const dinnerInsertionIndex = mealDroppedByTrip('dinner') ? null : findMealInsertionIndex(schedule, dinnerWindowFor(day))
+  const dinnerInsertionIndex = mealDroppedByTrip('dinner') ? null : movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day))
   const destino = route?.destination ?? day.city
 
   /**
@@ -911,7 +954,6 @@ export function DayDetailPanel({
         for (const entry of freeTimesOf(day)) {
           if (realStops[index]?.name === entry.after && entry.before === LUNCH_FREE_LABEL) timeline.push({ type: 'free', index, entry })
         }
-        timeline.push({ type: 'mealGap', index })
         timeline.push({ type: 'lunch', index })
         for (const entry of freeTimesOf(day)) {
           if (entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index: -1 - index, entry })
@@ -919,7 +961,8 @@ export function DayDetailPanel({
       }
       if (dinnerInsertionIndex === index && !freeDay) {
         const hasFree = dinnerFreeMinutes(index) !== null
-        timeline.push({ type: 'mealGap', index })
+        // (Con aperitivo, su hueco va delante del aperitivo; la cena lleva el suyo, como una parada.)
+        if (hasFree) timeline.push({ type: 'mealGap', index })
         if (hasFree) timeline.push({ type: 'dinnerFree', index })
         timeline.push({ type: 'dinner', index })
       }
@@ -978,6 +1021,10 @@ export function DayDetailPanel({
     }
     placed.push({ item, period, start, end })
   }
+  // Lo que se arrastra, en el orden en que se ve: las paradas, la comida y la cena.
+  const sortableIds = placed.flatMap((entry) =>
+    entry.item.type === 'stop' ? [realStops[entry.item.index]?.id ?? stops[entry.item.index].id] : entry.item.type === 'lunch' ? [MEAL_DRAG_ID.lunch] : entry.item.type === 'dinner' ? [MEAL_DRAG_ID.dinner] : [],
+  )
   const periodGroups: { period: DayPeriod; range: string; items: PlacedItem[] }[] = []
   for (const entry of placed) {
     const last = periodGroups[periodGroups.length - 1]
@@ -1019,7 +1066,8 @@ export function DayDetailPanel({
     if (item.type === 'lunch') {
       const index = item.index
       return (
-        <div key={`lunch-${index}`}>
+        <SortableStop key={`lunch-${index}`} id={MEAL_DRAG_ID.lunch} label="Mover la comida">
+          {renderMealGap(index + 1)}
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -1033,7 +1081,7 @@ export function DayDetailPanel({
             onChange={() => openMealPicker('lunch')}
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
           />
-        </div>
+        </SortableStop>
       )
     }
     if (item.type === 'dinnerFree') {
@@ -1084,7 +1132,8 @@ export function DayDetailPanel({
     if (item.type === 'dinner') {
       const index = item.index
       return (
-        <div key={`dinner-${index}`}>
+        <SortableStop key={`dinner-${index}`} id={MEAL_DRAG_ID.dinner} label="Mover la cena">
+          {renderMealGap(index + 1)}
           <MealTimeAccordion
             destino={destino}
             city={day.city}
@@ -1098,7 +1147,7 @@ export function DayDetailPanel({
             onChange={() => openMealPicker('dinner')}
             onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
           />
-        </div>
+        </SortableStop>
       )
     }
     // Una parada.
@@ -1276,8 +1325,8 @@ export function DayDetailPanel({
           {/* Llegada o vuelta: la misma tarjeta, en azul petróleo, sin número (no es una parada). */}
           {/* La llegada: el primer día, después del alojamiento y antes del primer tramo. */}
           {isFirstDayOfTrip && route && (
-            // (50 px hasta «MAÑANA», como entre los demás bloques: PROMPT_UI_REPASO 4.)
-            <div className="mb-[50px] space-y-1.5 pt-2">
+            // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
+            <div className="space-y-1.5 pt-2">
               <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               {arrivalConflict && centerMinutes != null && (
                 <button
@@ -1349,15 +1398,17 @@ export function DayDetailPanel({
 
           {muestraParadas && (
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
-          <SortableContext items={realStops.map((realStop) => realStop.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
           {periodGroups.map((group, groupIndex) => (
             // (50 px encima de cada tramo y de la comida y la cena: cinco bloques bien separados.)
             // (PROMPT_UI_REPASO 7-8: 50 px encima de cada cabecera; la comida y la cena, 50 encima y 50 debajo, como bloque propio.)
-            <div key={`${group.period}-${groupIndex}`} className={freeDay ? '' : `${groupIndex > 0 ? 'mt-[50px]' : ''} ${group.period === 'comida' || group.period === 'cena' ? 'mb-[50px]' : ''}`}>
+            // (PROMPT_UI_REPASO_3, 5 y 6: la comida y la cena, dentro de la línea del día y con el mismo hueco que dos paradas;
+            // la separación de cada tramo la pone su cabecera, 28 px arriba.)
+            <div key={`${group.period}-${groupIndex}`}>
               {!freeDay && PERIOD_WITH_HEADER.has(group.period) && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
-              {/* La línea punteada del día; las tarjetas cuelgan de ella. La comida y la cena, sin ella. */}
-              <div className={`relative flex flex-col ${PERIOD_WITH_HEADER.has(group.period) || freeDay ? 'pl-[26px]' : ''}`}>
-                {(PERIOD_WITH_HEADER.has(group.period) || freeDay) && <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />}
+              {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
+              <div className="relative flex flex-col pl-[26px]">
+                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
                 {group.items.map((entry, itemIndex) => renderTimelineItem(entry, itemIndex === 0))}
               </div>
             </div>

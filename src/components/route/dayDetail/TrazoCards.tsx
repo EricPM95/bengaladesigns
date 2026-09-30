@@ -167,8 +167,9 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
 export function PeriodHeader({ period, range }: { period: DayPeriod; range?: string | null }) {
   const style = PERIOD_STYLE[period]
   return (
-    // (12 px hasta el primer «+ Añadir parada»: PROMPT_UI_REPASO 7.)
-    <div className="mb-3 flex items-center gap-2 pl-0.5 pt-1">
+    // (28 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
+    // franja: PROMPT_UI_REPASO_3, 2.)
+    <div className="mb-3 mt-[28px] flex items-center gap-2 pl-0.5">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>
