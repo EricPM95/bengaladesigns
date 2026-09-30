@@ -45,6 +45,43 @@ function DrivingIcon({ className }: ModeIconProps) {
   )
 }
 
+/** El metro: el tren de frente, de trazo fino, como los demás. */
+function MetroIcon({ className }: ModeIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="6" y="3.5" width="12" height="13.5" rx="3" />
+      <path d="M6 11h12" />
+      <path d="M9.5 3.5v7.5M14.5 3.5v7.5" />
+      <path d="M8.5 20.5 10 17M15.5 20.5 14 17" />
+      <circle cx="9" cy="14" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="14" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+/** El tranvía: el vagón con su pantógrafo. */
+function TramIcon({ className }: ModeIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M9 2.5h6M12 2.5 10.5 5.5" />
+      <rect x="5.5" y="5.5" width="13" height="12" rx="2.5" />
+      <path d="M5.5 11.5h13" />
+      <path d="M8 20.5 9.5 17.5M16 20.5 14.5 17.5" />
+      <circle cx="8.5" cy="14.5" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="14.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+/** Un tramo en transporte escrito («Bus 115», «Metro A», «Tranvía 8», «Un taxi»): su icono lineal, uno solo. */
+export type TransitKind = 'bus' | 'metro' | 'tram' | 'taxi'
+export function TransitKindIcon({ kind, className = 'h-4 w-4' }: { kind: TransitKind; className?: string }) {
+  if (kind === 'metro') return <MetroIcon className={className} />
+  if (kind === 'tram') return <TramIcon className={className} />
+  if (kind === 'taxi') return <DrivingIcon className={className} />
+  return <TransitIcon className={className} />
+}
+
 export function TransportModeIcon({ mode, className = 'h-4 w-4' }: { mode: TransportMode; className?: string }) {
   if (mode === 'walking') return <WalkIcon className={className} />
   if (mode === 'transit') return <TransitIcon className={className} />

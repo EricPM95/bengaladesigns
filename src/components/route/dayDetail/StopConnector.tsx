@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
-import { TransportModeIcon } from './TransportModeIcons'
+import { TransitKindIcon, TransportModeIcon, type TransitKind } from './TransportModeIcons'
 import { TransportModeSheet } from './TransportModeSheet'
 import { OpenInMapsSheet } from './OpenInMapsSheet'
 
@@ -59,11 +59,14 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
  * «Bus 115 o el 870, unos 20 min» → { line: 'Bus 115', minutes: 20, mode: 'transit' }; «Un taxi, unos 20 min» → taxi en coche.
  * La primera opción es la que se enseña; las demás (y el taxi) siguen en la ficha.
  */
-function parseTransitLabel(label: string): { line: string; minutes: number | null; mode: TransportMode } {
+function parseTransitLabel(label: string): { line: string; minutes: number | null; mode: TransportMode; kind: TransitKind } {
   const minutes = /(\d+)\s*min/.exec(label)
-  const head = label.split(',')[0].split(/\s+o\s+/)[0].trim().replace(/^(un|una|el|la)\s+/i, '')
+  // (Sin el emoji que traían las rutas guardadas, «🚌 Bus 115»: el icono es el lineal, uno solo.)
+  const clean = label.replace(/^[^\p{L}\p{N}]+/u, '')
+  const head = clean.split(',')[0].split(/\s+o\s+/)[0].trim().replace(/^(un|una|el|la)\s+/i, '')
   const line = head.charAt(0).toUpperCase() + head.slice(1)
-  return { line, minutes: minutes ? Number(minutes[1]) : null, mode: /taxi/i.test(head) ? 'driving' : 'transit' }
+  const kind: TransitKind = /taxi/i.test(head) ? 'taxi' : /metro/i.test(head) ? 'metro' : /tranv|tram/i.test(head) ? 'tram' : 'bus'
+  return { line, minutes: minutes ? Number(minutes[1]) : null, mode: kind === 'taxi' ? 'driving' : 'transit', kind }
 }
 
 export function StopConnector({ connector, fromName, toName, mode, onSelectMode, onHide, onSetDefaultForDay, onAddStop, transitLabel }: StopConnectorProps) {
@@ -87,7 +90,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
       {transitLabel && transitRow && (
         <>
           <span className="flex items-center gap-1.5 text-text/60">
-            <TransportModeIcon mode={transitRow.mode} className="h-[15px] w-[15px] shrink-0" />
+            <TransitKindIcon kind={transitRow.kind} className="h-[15px] w-[15px] shrink-0" />
             <span className="font-mono text-[12px] font-medium">
               {transitRow.line}
               {transitRow.minutes ? ` · ${transitRow.minutes} min` : ''}

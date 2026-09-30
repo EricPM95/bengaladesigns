@@ -425,7 +425,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     // (El título propio de una estirable larga va por el mismo sitio: es el nombre que se ve en la tarjeta y la ficha.)
     ...(generated.display_title ? { nightViewTitle: generated.display_title } : {}),
     ...(generated.free_tour_end ? { freeTourEnd: generated.free_tour_end } : {}),
-    ...(generated.transit ? { transitLabel: `${generated.transit.icon} ${generated.transit.label}` } : {}),
+    // (Sin emoji: la app pone su icono lineal según el tipo, PROMPT_UI_REPASO_3 4.)
+    ...(generated.transit ? { transitLabel: generated.transit.label } : {}),
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día' } : {}),
     ...(generated.visit_mode ? { visitMode: generated.visit_mode } : {}),
     ...(generated.outside_kind ? { outsideKind: generated.outside_kind } : {}),
