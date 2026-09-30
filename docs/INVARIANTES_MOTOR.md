@@ -2307,3 +2307,37 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       restaurante sigue sin ser una parada del motor (`DayPlan.mealAfter`).
     - En la pestaña Ruta, una tarjeta por destino: bandera, nombre del destino y sus días y fechas. Tocarla abre su
       ventana de hoteles y actividades.
+
+413. **Roma como un local** (PROMPT_REPASO_LOCAL_ROMA, 2026-10-01).
+    - **Un paseo nocturno todas las noches** mientras queden sitios que valgan la pena, aunque haya que cruzar la ciudad
+      (un día sin paseo escrito toma el mejor que quede). Si el viajero no quiere, no va. Es por destino: uno con pocas
+      nocturnas tendrá menos.
+    - **Nada de noche y otra vez a la mañana siguiente**: se elige la nocturna que no repite lo de la mañana siguiente;
+      solo si no queda otra, se repite. El día del Free Tour, nada suelto de lo que el tour recorre (Trevi a las 8:30).
+    - **Un barrio, una vez al día**: se sube al Janículo por el Tempietto (por dentro mientras está abierto, cierra a las
+      18:00), la Acqua Paola y el mirador, y se baja a Trastevere una sola vez para el barrio, el aperitivo y la cena.
+      Con el sol después de las 19:45 (de mayo a agosto), el Janículo va con la luz de la tarde y el atardecer, en un
+      puente (el Ponte Sisto, el Puente Sant'Angelo). Monti, igual: al final, para el aperitivo y la cena.
+    - **Verano (julio y agosto)**: de 14:00 a 16:30, solo descanso o sitios a cubierto (el motor espera a las 16:30 antes
+      de lo que va al aire libre, y el rato sale como «Descanso a la sombra»). El Foro, más corto, y el Altar de la Patria,
+      a última hora.
+    - **Sábado**: sin comer en el Ghetto ni el texto de las alcachofas (es su día de descanso). **Domingo**: Santa Maria
+      del Popolo solo abre por la tarde.
+    - **Nochebuena y Nochevieja**: un paseo corto cerca de la cena, sin «terrazas hasta tarde», y cómo volver dicho claro;
+      el 25, que después de cenar se vuelve andando o en taxi. Ninguna excursión de día completo el 24, el 25, el 31 ni el
+      1 (`excursion_fechas_no`).
+    - Semana Santa: la Basílica de San Pedro cierra a las visitas el Jueves Santo por la mañana y el Viernes Santo por la
+      tarde (horario especial prudente, `verificar`), con 45-60 min de cola en el control. El cambio de hora dentro del
+      viaje se dice con sus dos horas de atardecer.
+    - Prueba: `auditoria.mjs` lleva `noche_y_manana`, `tour_repite` y `barrio_dos_veces`.
+
+414. **La llegada y la vuelta, verdad en cada punto** (PARA_CODE_LLEGADAS, 2026-10-01).
+    - **Ningún tip dice «ahora mismo» sin fecha de fin**: lo que dura unas semanas (los controles de frontera) lleva
+      `hasta` y su fuente, y deja de salir solo pasada esa fecha (la del viaje o, sin ella, la de hoy). Lo que es verdad
+      siempre va aparte («la aerolínea te pide el DNI para embarcar»).
+    - **Cada punto de llegada, lo suyo**: el resumen del punto (`por_que_llegada` / `por_que_vuelta`) si el del medio no
+      vale allí; los tips de un sitio (`solo_en`) solo en ese sitio; la consigna, la estación y «Tu última hora» de
+      Termini, solo si se pasa por Termini (`termini: false` en Tiburtina y en el crucero). Del centro a un punto, su
+      camino de ida (`a_la_salida`), nunca el de llegada al revés. Sin dato propio, no sale.
+    - Un precio sin comprobar en la web oficial no sale; con su fuente y su fecha, sí. Un traslado sin enlace de afiliado
+      no sale a la venta.

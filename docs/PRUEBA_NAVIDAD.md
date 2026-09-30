@@ -1,6 +1,6 @@
 # Prueba de Navidad (del 1 de diciembre de 2026 al 8 de enero de 2027)
 
-1092 viajes (salida cada día, de 1 a 7 días, con y sin Free Tour, con y sin mercadillos), en 34 s. **Total: 0**.
+1092 viajes (salida cada día, de 1 a 7 días, con y sin Free Tour, con y sin mercadillos), en 36 s. **Total: 0**.
 
 - **Un lugar cerrado ese día, planificado por dentro**: 0 ✅
 - **Parada fuera de su horario real de ese día (con los horarios especiales de los festivos)**: 0 ✅
@@ -14,14 +14,19 @@
 - **Free Tour a una hora a la que ese día no sale (el 24, 25 y 31 de diciembre y el 1 y 6 de enero, solo a las 12:00)**: 0 ✅
 - **Fin de Año: un texto que habla de fuegos, conciertos o desfiles (lo que pasa una vez al año no sale)**: 0 ✅
 - **El motor falla**: 0 ✅
-- **(Información) Viaje con la experiencia elegida en el que no añade nada (márgenes de la ventana, o viajes de 1 día)**: 34
-  - 2027-01-06 · 1 día · mercadillos
-  - 2027-01-06 · 1 día · FT · mercadillos
+- **(Información) Viaje con la experiencia elegida en el que no añade nada (márgenes de la ventana, o viajes de 1 día)**: 32
   - 2027-01-06 · 2 días · FT · mercadillos
   - 2027-01-06 · 3 días · FT · mercadillos
   - 2027-01-06 · 4 días · FT · mercadillos
   - 2027-01-06 · 5 días · FT · mercadillos
   - 2027-01-07 · 1 día · mercadillos
   - 2027-01-07 · 1 día · FT · mercadillos
-- **(Información) Viaje solo en parte dentro de la ventana, con la experiencia, sin el mercadillo de Navona**: 1
-  - 2027-01-05 · 2 días · mercadillos — 1 de 2 días en fechas
+  - 2027-01-07 · 2 días · mercadillos
+  - 2027-01-07 · 2 días · FT · mercadillos
+- **(Información) Viaje solo en parte dentro de la ventana, con la experiencia, sin el mercadillo de Navona**: 6
+  - 2027-01-06 · 2 días · FT · mercadillos — 1 de 2 días en fechas
+  - 2027-01-06 · 3 días · FT · mercadillos — 1 de 3 días en fechas
+  - 2027-01-06 · 4 días · FT · mercadillos — 1 de 4 días en fechas
+  - 2027-01-06 · 5 días · FT · mercadillos — 1 de 5 días en fechas
+  - 2027-01-06 · 6 días · FT · mercadillos — 1 de 6 días en fechas
+  - 2027-01-06 · 7 días · FT · mercadillos — 1 de 7 días en fechas

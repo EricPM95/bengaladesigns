@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 390 s. **Total: 23**.
+6180 viajes (todas las fechas de 2027), en 419 s. **Total: 21**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -10,9 +10,7 @@
 - **Tramo de más de 25 min andando sin transporte**: 0 ✅
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 2
-  - 2027-01-31 · 2 días, día 2 antes de Mirador del Janículo — 35 min
-  - 2027-02-07 · 2 días, día 2 antes de Mirador del Janículo — 40 min
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 0 ✅
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
 - **Zigzag: volver a una zona que ya se dejó ese día**: 0 ✅
@@ -37,6 +35,9 @@
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
+- **Un sitio de noche que vuelve a salir a la mañana siguiente**: 0 ✅
+- **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 0 ✅
+- **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
@@ -57,7 +58,6 @@
 
 ## Dónde caen (día escrito, versión y variantes)
 
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D2 A +lunes ×2
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×21
 
 ## Solo en las fechas clave de los viajeros españoles
