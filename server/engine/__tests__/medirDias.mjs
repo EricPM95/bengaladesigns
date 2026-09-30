@@ -491,7 +491,7 @@ const THEMES = [[], ['arte_museos'], ['barrios_sabores'], ['naturaleza_vistas']]
 const variants = []
 if (CASO) variants.push(CASO)
 else {
-  for (const pace of ['nonstop', 'tranquilo']) {
+  for (const pace of ['nonstop']) {
     for (let days = 1; days <= 7; days++) {
       for (const themes of THEMES) {
         for (const ft of [false, true]) variants.push({ days, pace, exps: [...themes, ...(ft ? ['free_tour'] : [])] })
@@ -550,7 +550,7 @@ function printSummaryTable(motor) {
   const rows = results.filter((r) => r.motor === motor)
   console.log(`\n=== Motor ${motor} — ${rows.length} viajes ===`)
   console.log('ritmo      días  paradas  muerto  hueco>tol  pre-comer  post-comer  pre-cena  fin      km  tarde+%  zigzag  fuera  perdidas  sinL1  grupos')
-  for (const pace of ['nonstop', 'tranquilo']) {
+  for (const pace of ['nonstop']) {
     for (let days = 1; days <= 7; days++) {
       const group = rows.filter((r) => r.pace === pace && r.days.length === days)
       if (group.length === 0) continue
@@ -704,7 +704,7 @@ function printSemaforo(motor) {
   const cells = []
   console.log(`\n=== Semáforo · ${D.destination} · motor ${motor} · ${rows.length} viajes ===`)
   console.log(`ritmo      días  ${SEMAFORO_CRITERIOS.map((c) => c.id.padStart(8)).join(' ')}   libre antes de cenar`)
-  for (const pace of ['nonstop', 'tranquilo']) {
+  for (const pace of ['nonstop']) {
     for (let n = 1; n <= 7; n++) {
       const group = rows.filter((r) => r.pace === pace && r.days.length === n)
       if (group.length === 0) continue

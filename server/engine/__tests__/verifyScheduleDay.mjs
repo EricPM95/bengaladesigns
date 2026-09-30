@@ -106,7 +106,7 @@ let days = 0
 let visits = 0
 
 // 1. Todos los días reales que reparte el motor, en los dos ritmos y con/sin Free Tour.
-for (const pace of ['nonstop', 'tranquilo']) {
+for (const pace of ['nonstop']) {
   const mode = MODE_V3
   for (const totalDays of [2, 3, 4, 5, 6, 8]) {
     for (const ft of [false, true]) {

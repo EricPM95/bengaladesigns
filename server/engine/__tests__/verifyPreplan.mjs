@@ -19,7 +19,7 @@ const fail = (m) => fails.push(m)
 const POOLS = [[], ['Galería Borghese'], ['Museos Vaticanos y Capilla Sixtina', 'Mercado de Testaccio']]
 let totalStops = 0, totalDays = 0
 
-for (const pace of ['nonstop', 'tranquilo']) {
+for (const pace of ['nonstop']) {
   for (const totalDays_ of [2, 3, 4, 5, 6, 7, 8]) {
     for (const ft of [false, true]) {
       for (const pool of POOLS) {

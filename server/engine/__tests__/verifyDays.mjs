@@ -39,7 +39,7 @@ let totalDays = 0
 let chained = 0
 let nightStops = 0
 
-for (const pace of ['nonstop', 'tranquilo']) {
+for (const pace of ['nonstop']) {
   for (const totalDaysN of [2, 3, 4, 5, 6, 7]) {
     for (const ft of [false, true]) {
       const tag = `${pace} ${totalDaysN}d${ft ? '+ft' : ''}`

@@ -68,7 +68,7 @@ for (const access of D.places.filter((p) => p.approach_to)) {
 let trips = 0
 let cityDays = 0
 
-for (const pace of ['nonstop', 'tranquilo']) {
+for (const pace of ['nonstop']) {
   for (let contentDays = 1; contentDays <= 7; contentDays++) {
     for (const themes of THEMES) {
       for (const ft of [false, true]) {

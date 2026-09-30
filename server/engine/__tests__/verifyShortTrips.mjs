@@ -35,7 +35,7 @@ const blockOrder = (id) => {
 
 let routes = 0
 for (const kind of ['1_dia', '1_5_dias_salida_mediodia', '1_5_dias_llegada_tarde']) {
-  for (const pace of ['nonstop', 'tranquilo']) {
+  for (const pace of ['nonstop']) {
     const mode = MODE_V3
     for (const exps of [[], ['arte_museos'], ['barrios_sabores'], ['naturaleza_vistas'], ['barrios_sabores', 'arte_museos']]) {
       for (const ft of [false, true]) {

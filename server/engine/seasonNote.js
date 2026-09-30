@@ -7,7 +7,7 @@
  * Lo que dice tiene que ser verdad en ese viaje:
  *  - invierno, "y veas Roma iluminada": alguna noche lleva paseo o experiencia nocturna; si no, "para que llegues a todo";
  *  - verano, "a primera hora de la mañana": en la mayoría de los días la primera visita es un imprescindible antes de
- *    las 10:00; si no (ritmo tranquilo), la versión sin esa promesa.
+ *    las 10:00; si no, la versión sin esa promesa.
  * {hora_atardecer}: la real de las fechas del viaje (sin fechas, la típica del mes), redondeada al cuarto de hora.
  */
 

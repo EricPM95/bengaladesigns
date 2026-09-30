@@ -56,8 +56,8 @@ export function slotBudgets(mode) {
  *   RUTA        16:00 en adelante
  *
  * Las horas de la excursión las pone el operador, no el ritmo del viaje: una excursión sale cuando
- * sale. Lo que sí depende del ritmo es hasta cuándo llega la tarde, así que el presupuesto se
- * calcula contra el `dayEndTarget` de cada modo (completo 20:00 → 4h; tranquilo 19:30 → 3,5h).
+ * sale. El presupuesto de la tarde se
+ * calcula contra el `dayEndTarget` del modo (20:00 → 4h).
  */
 export const HALF_DAY_EXCURSION_START = HHMM('08:00')
 export const HALF_DAY_EXCURSION_END = HHMM('14:00')

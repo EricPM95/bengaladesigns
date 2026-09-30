@@ -630,9 +630,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     nocturna cerca desempata, nunca aleja la cena.
 117. **Nocturnas con su tiempo real**: la duración de cada una más el paseo hasta la siguiente, en
     tramos de 5 min. Ninguna empieza después de las 23:00.
-118. **[SIN USO desde el 2026-09-30: regla 403] Tranquilo es menos paradas, no paradas más largas**: el extra de duración solo para visitas por
-    dentro. Madrugar (plan B, 08:00) solo si de verdad hace falta: antes se prueba a quitar un relleno. El
-    aviso nombra lo que se recupera de verdad (el Coliseo y el Foro, no el Arco).
 119. **Etiquetas de experiencias**: Naturaleza y Vistas = miradores y parques; Barrios y Sabores =
     barrios, mercados y sitios de comer. Una plaza, una calle o una fuente sin más no son ninguna. El "por
     qué" y la etiqueta de experiencia, solo si ese lugar es de ella (no se heredan del grupo).
@@ -708,8 +705,6 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     Si ni así, el mirador va como una parada más, en su sitio.
 137. **Comida y cena de su bloque**: se come donde acaba la mañana y se cena en el barrio que dice la tarde
     (`cena`); si nombra varios, el más cercano a donde acaba. Las nocturnas, solo las de su lista.
-138. **[SIN USO desde el 2026-09-30: regla 403] Tranquilo es menos paradas**: la tarde se recorta hasta las paradas del ritmo (lo de paso no
-    cuenta), quitando primero nivel 3, luego 2; nunca el ancla, el atardecer ni el pool.
 139. **Nada de horas muertas con bloques**: si la tarde acaba y quedan más de 90 min hasta la cena (o el día
     no llega a las paradas mínimas del ritmo y le sobra tarde), se sigue de camino al barrio de la cena (15 min de parada a parada, 15 de desvío); si hay más de 60 min
     esperando a que algo abra, se mete algo entre medias. Nunca algo con grupo suelto, ni el ancla de
@@ -806,17 +801,6 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     del día que la enseñó.
 168. **Lo de paso de un grupo no se cae primero**: si es del grupo de otra parada del bloque (Plaza
     Venecia con el Altar), se cae como una parada, no como lo de paso.
-169. **[SIN USO desde el 2026-09-30: regla 403] Ritmo tranquilo, nunca antes de las 10:00**, salvo si un imprescindible de nivel 1 se queda fuera
-    del día entero, ni siquiera de paso (no una joya ni un nivel 2-3); entonces a las 08:00, con aviso
-    (madrugar lo justo, a las 09:00 o 09:30, descolocaba el resto del día). Que un nivel 1 pase a después
-    de comer el mismo día NO es perderlo: va entero y en su orden antes de la tarde (el Foro tras el
-    Coliseo y la comida; la Plaza y la Basílica tras los Museos; Navona tras el Panteón), con la comida en
-    su ventana normal. Lo demás que no llega va de paso o a "No te dio tiempo" (`notEnoughTime`).
-    La reparación del viaje también puede madrugar un día (`madruga:<día>:<nombres>`) si un imprescindible
-    se queda fuera de todo el viaje por ese nivel 1 de después de comer, y solo si madrugar lo devuelve
-    de verdad a la mañana. Lo de la mañana del bloque vuelve a ser de la mañana en cada programación (la
-    marca "tarde" de una programación anterior no se arrastra). El aviso nombra lo que se recupera,
-    sea de la mañana o de la tarde, y si además se acorta la comida, dice las dos cosas.
 170. **Nocturnas**: en 3+ días, un lugar visto de día no es nocturna ese mismo día; en 1-2 días, solo si
     esa noche no hay otra nocturna posible.
 171. **Comida acortada solo si hace falta**: con el día ya montado (y después del rescate), se prueba la
@@ -830,11 +814,6 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     mañanas aún no lo busca.
 174. **Tiempo libre sin sugerencias**: una idea corta de la zona (el paseo de `zone_walks`, en una
     frase), sin más paradas: la espera al atardecer del Pincio con todo visto.
-175. **[SIN USO desde el 2026-09-30: regla 403] Tranquilo = la ruta completa con menos cosas** (decisión del 2026-09-26): mismos bloques, orden y
-    duraciones de visita (sin `visitDurationBonus`); empieza a las 10:00, come 90 min y cena a la misma
-    hora que completo (la cena dura 60 en los dos: `dinnerMinutes`). Para que quepa, se cae en este orden:
-    los rellenos, el nivel 3, el nivel 2 y lo de paso (`dropByLevel`); nunca un nivel 1 ni una joya.
-    Si un nivel 1 se queda fuera del día, se empieza antes lo justo (de media en media hora), con aviso.
 176. **Lo mejor primero, aplicado**: en viajes de 3+ días, una tarde de un día temprano (hasta el 3, y no
     el último) puede traer una joya que si no saldría tarde aunque su mañana vaya otro día (el centro
     barroco con el Panteón detrás del Coliseo), siempre que a esa mañana, si no es del último día, le
@@ -864,8 +843,6 @@ viajes de 2 días o más: los de 1 día siguen con `short_trips` (medido: con bl
     3; una joya que va tarde porque lo del pool ocupa los días de antes no cuenta; ni una joya cerrada todos
     los días posibles.
 183. **Aperitivo hasta 120 min antes de cenar** ("Aperitivo y paseo por {barrio}"); por encima, tarde libre.
-184. **Ritmo del cuestionario**: 'zen' y 'balanced' son tranquilo (`isTranquiloPace`). Antes solo se miraba
-    'tranquilo' y la app mandaba 'zen': todas las rutas tranquilas de la app salían completas.
 185. **Rescate de paso de una joya temprana** (`rescueOutside` con `upToDay`): puede quitar varias paradas de
     paso ligeras, no solo una (Trevi el día 1 a las 19:45 en tranquilo 4 días, en vez del día 4).
 186. **Mirador del atardecer que llega de noche** (más de 30 min después de la puesta de sol,
@@ -1084,7 +1061,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 233. **Invierno en los días curados con el sol antes de las 18:30** (antes 18:00). Una variante de invierno con
     `atardecer_antes_de` solo se aplica si el sol se pone antes de esa hora (D2: 18:20); `tranquilo_invierno` sigue
     la suya o, si no la trae, la de `invierno`.
-234. **[SIN USO desde el 2026-09-30: regla 403] Nocturnas en tranquilo**: una, salvo `maximo_tranquilo` del paseo (La Roma de las fuentes: 2, a 10 min).
 235. **La comida flexible, solo por un imprescindible**: en orden curado, una visita de nivel 1 puede alargar la
     mañana hasta las 14:00 (`lunchClose + 30`). Una comida que empieza a las 14:00 o más tarde dura 1 h más el paseo
     (`mealMinutes + 15`). Nunca para meter relleno antes de comer.
@@ -1809,11 +1785,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 352. **El aperitivo, 90 min como mucho, siempre** (2026-09-29): si el rato hasta la cena es más largo, la cena se
     adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar se mueve con ella.
 
-353. **[SIN USO desde el 2026-09-30: regla 403] Ritmo tranquilo por la tarde** (2026-09-29): la comida, como mucho 105 min; las paradas `opcional` de la tarde
-    (las más prescindibles: Letrán y San Clemente en D4M, los Mercados de Trajano en D5C) se quitan mientras la elástica,
-    que en tranquilo puede crecer el doble, absorba el rato; si no, vuelven en orden (en verano la tarde es larga).
-    Trevi en D3 a las 8:30, como en D4 (el texto habla de antes de la tasa de las 9:00).
-
 354. **UI · Pestaña Días** (2026-09-29, PROMPT_UI Parte 1):
     - **Color del día.** Cada día tiene su color (`colorIndex`), fijado al crear el viaje. Va con el día, no con su
       posición: si se mueve, su franja y sus pines se mueven con él.
@@ -1914,22 +1885,6 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 365. **La comida, como mucho 90 min en completo y 105 en tranquilo** (2026-09-29, PROMPT_ROMA_V4_REPASO 3), aunque lo
     escrito empiece la tarde más tarde: lo que sobra pasa a la tarde (antes, Nonna Betta de 13:30 a 15:30 en completo).
-
-366. **[SIN USO desde el 2026-09-30: regla 403] En tranquilo, la primera parada nunca antes de las 10:00** (2026-09-29, PROMPT_ROMA_V4_REPASO 4): una hora escrita
-    más temprana pasa a las 10:00 (el turno del Coliseo de las 10:00-10:30, el Vaticano a las 10:00, el Puente
-    Sant'Angelo). Solo las horas de la mañana; en completo, las de siempre.
-
-367. **[SIN USO desde el 2026-09-30: regla 403] El D1 en tranquilo, más ligero** (2026-09-29, PROMPT_ROMA_V4_REPASO 5):
-    - Solo en tranquilo son opcionales el Gesù, la Fuente de las Tortugas y también el Largo di Torre Argentina. Con el
-      Coliseo a las 10:00 (regla 366), San Luigi (cierra a las 18:15) no llegaba después del Panteón.
-    - En tranquilo, una sola nocturna, aunque el paseo escrito admita más.
-    - (Se probó una comida de al menos 60 min en tranquilo y se quitó: en diciembre el Castillo llegaba después del sol.
-      Sigue el mínimo de 45 de siempre.)
-
-368. **[SIN USO desde el 2026-09-30: regla 403] En tranquilo, las opcionales no vuelven nunca** (2026-09-29, PROMPT_ROMA_V4_REPASO 6; sustituye a la parte de
-    la regla 353 que las devolvía). El rato que sobra va al barrio elástico, hasta su máximo de paseo (Monti, 120 min), y
-    al aperitivo (hasta 90). Si una opcional quitada traía el traslado, lo hereda la siguiente (`traslado_si_va_primera`,
-    si tiene el suyo). En D4M, los Mercados de Trajano también son opcionales: en tranquilo, la tarde es Monti.
 
 369. **Cada tramo hacia delante, también entre basílicas** (2026-09-29, PROMPT_ROMA_V4_REPASO 7): D4M con Letrán va en
     metro A de Spagna a San Giovanni y sigue Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados de Trajano
@@ -2216,12 +2171,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 403. **Hay una sola ruta. El viajero la aligera quitando paradas; las opcionales se ven como tales** (PROMPT_QUITAR_RITMOS,
     2026-09-30).
     - La ruta única es la que era «completo». Cada día empieza a su hora escrita, casi siempre entre las 8:00 y las 9:30.
-    - El motor recibe siempre el ritmo único, venga lo que venga del formulario o de un viaje guardado con «tranquilo»
-      (`SINGLE_ROUTE` y `SINGLE_PACE` en shared/routeEngine/modes.js; el servidor lo fuerza en cada petición). Un viaje
-      guardado con «tranquilo» se abre igual; si se regenera, sale con la ruta única.
-    - **Apagado, no borrado:** `MODES_V3.tranquilo`, las variantes `tranquilo` de los días escritos,
-      `context_banners.tranquilo`, `pace_texts`, `pace_stats` y `StepPace.tsx` se quedan sin usar.
+    - **El motor no recibe ni mira ningún ritmo**: un solo modo (`MODE_V3` en shared/routeEngine/modes.js, `MODE_CONFIG` en
+      el servidor). Ningún motor, ni el servidor, ni las pruebas tienen parámetro de ritmo. Los datos de un destino no
+      llevan variantes ni textos por ritmo.
+    - Un viaje guardado con ritmo se abre igual: ese dato se ignora.
+    - La caché de rutas conserva su columna de ritmo con un valor fijo (columna antigua de la base de datos).
     - El formulario no tiene pantalla de ritmo (seis pasos), y ningún texto habla de ritmo.
     - Una parada `opcional` de lo escrito lleva la etiqueta «Opcional» en su tarjeta, con el estilo de las demás.
-    - Reglas que eran solo de tranquilo y quedan sin uso: 118, 138, 169, 175, 234, 353, 366, 367 y 368. En las que hablan
-      de «los dos ritmos» (35, 36, 56, 325, 365) vale solo la parte de completo.
+    - Las reglas que solo eran de tranquilo se han borrado (118, 138, 169, 175, 184, 234, 353, 366, 367 y 368: esos números
+      quedan libres). En las reglas antiguas que aún nombran «tranquilo» o «los dos ritmos», vale solo la parte de completo.
