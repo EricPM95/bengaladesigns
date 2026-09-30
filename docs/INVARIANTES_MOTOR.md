@@ -2197,3 +2197,11 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     completa "AAAA-MM-DD", que vale solo ese año (los Museos Vaticanos el lunes 1 de noviembre y el lunes 16 de agosto de
     2027, del calendario oficial). Cada una con su fuente en `closed_dates_audit`. En los avisos se nombra por su día
     ("11-01" → Todos los Santos).
+
+401. **El 24 y el 31 de diciembre, el Vaticano por la mañana** (2026-09-30). Esos dos días los Museos Vaticanos cierran a las
+    15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas por las celebraciones
+    del Papa. El día que lleva el Free Tour por la mañana y el Vaticano por la tarde (D3) se da la vuelta con su variante
+    de fecha: los Museos y la Basílica por la mañana, y por la tarde el Panteón por dentro y el Free Tour a las 16:00
+    (los tours tienen salida de tarde). Con mercadillos, el tour acaba en Piazza Navona y allí va el mercadillo.
+    - General: cuando un imprescindible solo se puede ver una mañana del viaje, esa mañana es suya y lo que tenía hora
+      fija se mueve a otra hora u otro día.

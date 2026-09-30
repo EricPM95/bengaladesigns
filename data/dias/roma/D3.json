@@ -1,5 +1,5 @@
 {
-  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. En tranquilo, Trevi de noche en lugar de al amanecer. (30-sep: tampoco el 24 ni el 31 de diciembre, que los Museos Vaticanos cierran a las 15:00 y aquí van a las 14:45.)",
+  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. En tranquilo, Trevi de noche en lugar de al amanecer. (30-sep: el 24 y el 31 de diciembre, su variante: el Vaticano por la mañana y el Free Tour a las 16:00.)",
   "id": "D3",
   "nombre": "Trevi sin gente, Free Tour y Vaticano por la tarde",
   "nombre_tranquilo": "Free Tour por el centro y el Vaticano por la tarde",
@@ -9,12 +9,6 @@
   "no_en": [
     {
       "dia_semana": "domingo"
-    },
-    {
-      "fecha": "12-24"
-    },
-    {
-      "fecha": "12-31"
     }
   ],
   "barrio_cena": "vaticano",
@@ -156,6 +150,146 @@
           }
         ]
       }
+    },
+    "fecha:12-24": {
+      "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (misa de la noche con el Papa a las 22:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
+      "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
+      "nombre_tranquilo": "El Vaticano por la mañana y Free Tour por la tarde",
+      "barrio_cena": "centro_historico",
+      "noche": "fuentes",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Museos Vaticanos y Capilla Sixtina",
+            "tipo": "fija",
+            "hora": {
+              "completo": "08:00",
+              "tranquilo": "08:30"
+            },
+            "min": 180,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 20
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "comida": {
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Ristorante Arlù"
+        }
+      },
+      "tarde.*": {
+        "empieza": "14:30",
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "traslado": {
+              "como": "el bus 40 (desde el Borgo hasta Largo di Torre Argentina) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 20,
+            "tipo": "opcional"
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 150,
+            "entrada": true
+          }
+        ],
+        "cena": {
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Dar Filettaro a Santa Barbara",
+          "hora": "19:30"
+        }
+      }
+    },
+    "fecha:12-31": {
+      "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial) y la Basílica cierra antes a las visitas (Te Deum con el Papa a las 17:00). Por eso ese día el Vaticano va por la mañana, y el Free Tour por la tarde, a las 16:00 (decisión del usuario, 2026-09-30). Antes del tour, el Panteón por dentro y la Fontana de Trevi.",
+      "nombre": "El Vaticano por la mañana y Free Tour por la tarde",
+      "nombre_tranquilo": "El Vaticano por la mañana y Free Tour por la tarde",
+      "barrio_cena": "centro_historico",
+      "noche": "fuentes",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Museos Vaticanos y Capilla Sixtina",
+            "tipo": "fija",
+            "hora": {
+              "completo": "08:00",
+              "tranquilo": "08:30"
+            },
+            "min": 180,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          },
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 20
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "comida": {
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Ristorante Arlù"
+        }
+      },
+      "tarde.*": {
+        "empieza": "14:30",
+        "paradas": [
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "traslado": {
+              "como": "el bus 40 (desde el Borgo hasta Largo di Torre Argentina) o un taxi",
+              "min": 20
+            }
+          },
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 20,
+            "tipo": "opcional"
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 150,
+            "entrada": true
+          }
+        ],
+        "cena": {
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Dar Filettaro a Santa Barbara",
+          "hora": "19:30"
+        }
+      }
     }
   },
   "experiencias": {
@@ -167,15 +301,9 @@
         "insertar": [
           {
             "parada": {
-              "lugar": "Puente Sant'Angelo",
-              "modo": "camino"
-            }
-          },
-          {
-            "parada": {
               "lugar": "Mercadillo de Navidad de Piazza Navona",
               "titulo": "Piazza Navona y su mercadillo de Navidad",
-              "texto_titulo": "Cruzas el Puente Sant'Angelo y en diez minutos estás en Navona, con el mercadillo de la Befana encendido: puestos de dulces, figuritas para el belén y carbón de azúcar. Date una vuelta entre los puestos antes de cenar.",
+              "texto_titulo": "Al caer la tarde, Navona con el mercadillo de la Befana encendido: puestos de dulces, figuritas para el belén y carbón de azúcar. Date una vuelta entre los puestos antes de cenar.",
               "min": 40,
               "si_cerrado": "quitar"
             }
