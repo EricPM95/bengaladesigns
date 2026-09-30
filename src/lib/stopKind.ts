@@ -7,7 +7,7 @@ import { parseTimeToMinutes } from './time'
  * museo azul, iglesia morado, parque verde, monumento/plaza/barrio/mirador ocre, comida y cena
  * terracota, vuelo y traslado azul petróleo. El atardecer y la noche tienen su tarjeta propia.
  */
-export type StopKind = 'museo' | 'iglesia' | 'parque' | 'monumento' | 'comida' | 'transporte' | 'atardecer' | 'noche'
+export type StopKind = 'museo' | 'iglesia' | 'parque' | 'monumento' | 'comida' | 'transporte' | 'atardecer' | 'noche' | 'navidad'
 
 export interface KindStyle {
   label: string
@@ -40,6 +40,8 @@ export const KIND_ICON = {
   ticket: 'M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM15 7v10',
   /** Por fuera: la cámara (se ve desde la calle). */
   camera: 'M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  /** Navidad: el árbol, de línea fina. */
+  tree: 'M12 3l4.5 5.5h-2.5l4 5h-2.5l4 5H4.5l4-5H6l4-5H7.5zM12 18.5V22',
 } as const
 
 const oklch = (l: number, c: number, h: number, a?: number) => (a == null ? `oklch(${l} ${c} ${h})` : `oklch(${l} ${c} ${h} / ${a})`)
@@ -60,6 +62,8 @@ export const KIND_STYLE: Record<StopKind, KindStyle> = {
   transporte: style('Traslado', [0.52, 0.09, 225], KIND_ICON.plane),
   atardecer: style('Atardecer', [0.66, 0.17, 38], KIND_ICON.sunset),
   noche: style('Noche', [0.42, 0.13, 285], KIND_ICON.moon),
+  // Navidad (PARA_CODE_NAVONA 7): el rojo de las fiestas, con el árbol.
+  navidad: style('Navidad', [0.5, 0.16, 25], KIND_ICON.tree),
 }
 
 /** Tags del JSON curado (ver tagColors.ts) → tipo de tarjeta. Lo que no está aquí es ocre. */
@@ -70,6 +74,7 @@ const TAG_KIND: Record<string, StopKind> = {
   parque: 'parque',
   jardin: 'parque',
   zoo: 'parque',
+  mercadillo_navideno: 'navidad',
 }
 
 /** Paradas generadas o añadidas a mano, sin tags curados: por la etiqueta de categoría o el nombre. */
@@ -81,12 +86,13 @@ function kindFromText(text: string): StopKind | null {
   return null
 }
 
-type KindInput = Pick<Stop, 'name' | 'tags' | 'categoryLabel' | 'isNightExperience' | 'isSunset' | 'isNightView'>
+type KindInput = Pick<Stop, 'name' | 'tags' | 'categoryLabel' | 'isNightExperience' | 'isSunset' | 'isNightView' | 'seasonKind'>
 
 /** El tipo de tarjeta de una parada. El atardecer y la noche mandan sobre el tipo de lugar. */
 export function stopKindOf(stop: KindInput): StopKind {
   if (stop.isNightExperience || stop.isNightView) return 'noche'
   if (stop.isSunset) return 'atardecer'
+  if (stop.seasonKind === 'navidad') return 'navidad'
   for (const tag of stop.tags ?? []) {
     const kind = TAG_KIND[tag]
     if (kind) return kind

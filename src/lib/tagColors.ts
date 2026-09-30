@@ -42,9 +42,15 @@ const TAG_LABELS: Record<string, string> = {
   jardin: 'Jardín',
   gastronomia: 'Gastronomía',
   curiosidad: 'Curiosidad',
+  subterraneo: 'Subterráneo',
+  mercadillo_navideno: 'Mercadillo de Navidad',
 }
 
-/** "arte" → "Arte", salvo los pocos casos con tilde/forma propia (ver TAG_LABELS). */
+/**
+ * "arte" → "Arte", salvo los pocos casos con tilde/forma propia (ver TAG_LABELS). Un nombre interno nunca se ve tal
+ * cual: sin guiones bajos, aunque falte en la tabla (PARA_CODE_NAVONA 1).
+ */
 export function tagLabel(tag: string): string {
-  return TAG_LABELS[tag] ?? (tag.charAt(0).toUpperCase() + tag.slice(1))
+  const readable = tag.replace(/_/g, ' ')
+  return TAG_LABELS[tag] ?? (readable.charAt(0).toUpperCase() + readable.slice(1))
 }

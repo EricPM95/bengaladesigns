@@ -3,7 +3,6 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagLabel } from '../../../lib/tagColors'
-import { EXPERIENCE_CATEGORY_BANK } from '../../../lib/experienceCategoryBank'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
@@ -71,7 +70,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     )
   }
 
-  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView })
+  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView, seasonKind: stop.seasonKind })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
 
@@ -107,12 +106,11 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       : stop.category
         ? [{ label: stop.category, kind }]
         : []
-  // «Revisita» y «Por tu experiencia», útiles de un vistazo: etiquetas, con el mismo estilo que las demás (PROMPT_UI_REPASO_2, 5).
-  const experienceTitle = stop.experience ? (EXPERIENCE_CATEGORY_BANK.find((category) => category.id === stop.experience)?.title ?? null) : null
+  // Las etiquetas solo dicen qué es el sitio (Plaza, Iglesia, Mercadillo de Navidad…); «Revisita» se queda y «Por tu
+  // experiencia» ya no sale en ninguna parada (PARA_CODE_NAVONA 2).
   // «Opcional» (PROMPT_QUITAR_RITMOS): hay una sola ruta y el viajero la aligera quitando paradas; estas son las primeras.
   if (stop.optional) tags.push({ label: 'Opcional', kind })
   if (stop.isRevisit) tags.push({ label: 'Revisita', kind })
-  if (experienceTitle) tags.push({ label: `Por tu experiencia · ${experienceTitle}`, kind })
 
   return (
     <TrazoCard

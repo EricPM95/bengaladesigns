@@ -307,6 +307,14 @@ export interface Stop {
   seasonLine?: string | null
   /** El icono de esa línea: «navidad» (por defecto) o «religioso» (el Ángelus de los domingos). */
   seasonLineIcon?: string | null
+  /** El aspecto de la tarjeta en sus fechas: «navidad» (icono de árbol y color navideño). */
+  seasonKind?: string | null
+  /** Sitio de acceso libre: sin pestaña «Entradas», salvo que vaya en un Free Tour (`inFreeTour`). */
+  freeAccess?: boolean
+  /** El Free Tour que recorre este sitio: va en su pestaña «Entradas». */
+  inFreeTour?: { name: string; durationMinutes: number | null; meetingPoint: string | null; url: string | null } | null
+  /** La ficha lleva solo nuestro texto: no se pide el de la IA. */
+  noAiText?: boolean
   /** Imprescindible cerrado ese día que se enseña por fuera, o el grupo cuya ancla cierra todo el viaje: "El
       Coliseo está cerrado el 25 de diciembre por Navidad: te lo enseñamos por fuera, merece la pena igual." */
   closedNotice?: string | null

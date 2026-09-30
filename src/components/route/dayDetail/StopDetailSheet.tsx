@@ -177,7 +177,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // es el mismo lugar contado en profundidad (qué ver, horarios por temporada, transporte, secretos)
   // frente a las dos líneas que trae la parada.
   const description = curated ? toStopDescription(curated) : externalContent ? externalContent.description : internalDescription
-  const descLoading = !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
+  const descLoading = stop?.noAiText ? false : !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
   /** Lista de puntos concretos de la ficha curada — la versión de Claude es un párrafo suelto (`whatYoullSee`). */
   const whatToSee = curated?.what_to_see ?? []
   // Extraídos por claridad: lo que las dependencias de los efectos de abajo necesitan saber es
@@ -220,8 +220,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     setDescFailed(false)
     // externalContent presente (aunque sea null) = AddStopScreen.tsx ya gestiona su propio fetch
     // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
-    if (externalContent || stop.isFreeTour || stop.isBreak) {
+    // (`noAiText`: la ficha lleva solo nuestro texto, el «por qué» de la ruta; no se pide nada a la IA.)
+    if (externalContent || stop.isFreeTour || stop.isBreak || stop.noAiText) {
       setInternalDescription(null)
+      setInternalDescLoading(false)
       return
     }
     if (!curatedResolved) return
@@ -359,7 +361,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
   // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
-  const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', 'tickets', 'tips']
+  // «Entradas» (PARA_CODE_NAVONA 6) nunca sale en un sitio de acceso libre, salvo que esté en el recorrido de un Free
+  // Tour, una visita guiada o una actividad: entonces sí, y en ella va ese tour o esa visita.
+  const showTickets = !stop?.freeAccess || Boolean(stop.inFreeTour) || tickets.length > 0
+  const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips']
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
   const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
@@ -404,7 +409,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
                     {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
                     {stop.isNightExperience && <MoonIcon className="text-[#5B6BC0]" />}
-                    {displayStopName(stop.name)}
+                    {stop.nightViewTitle ?? displayStopName(stop.name)}
                   </h1>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {stop.isNightExperience && (
@@ -723,7 +728,23 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
               {activeTab === 'tickets' && (
                 <div className="space-y-3">
-                  {ticketInfo.length === 0 && tickets.length === 0 && (
+                  {/* El Free Tour que recorre este sitio. */}
+                  {stop.inFreeTour && (
+                    <div className="rounded-xl border border-border p-3">
+                      <p className="text-small font-semibold text-text">{stop.inFreeTour.name}</p>
+                      <p className="mt-1 text-small text-text-soft">
+                        Este sitio forma parte de su recorrido
+                        {stop.inFreeTour.durationMinutes ? `, de ${formatDuration(stop.inFreeTour.durationMinutes)}` : ''}
+                        {stop.inFreeTour.meetingPoint ? `. Sale de ${stop.inFreeTour.meetingPoint}` : ''}.
+                      </p>
+                      {stop.inFreeTour.url && (
+                        <a href={stop.inFreeTour.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-small font-semibold text-accent underline">
+                          Ver el Free Tour
+                        </a>
+                      )}
+                    </div>
+                  )}
+                  {ticketInfo.length === 0 && tickets.length === 0 && !stop.inFreeTour && (
                     <p className="text-small text-text-soft">Aquí saldrán las entradas y las visitas guiadas de este lugar.</p>
                   )}
                   {/* «Reserva recomendada» (PROMPT_UI_REPASO 11: ya no va en la tarjeta); la obligatoria ya la dice la entrada. */}
