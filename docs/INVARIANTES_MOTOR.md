@@ -2275,3 +2275,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       se paga esa parte. Las nocturnas no la llevan.
     - Las paradas de Navidad llevan el aspecto normal (el aspecto propio se diseñará más adelante; decisión del usuario,
       2026-10-01). Un lugar sin ficha escrita a mano lleva `sin_texto_ia` hasta que tenga su texto.
+
+410. **Fotos propias y textos de ficha** (PARA_CODE_FOTOS y PARA_CODE_TEXTOS_FICHAS, 2026-10-01).
+    - **Una foto también es una promesa.** Las fotos propias de un destino (`data/dias/<destino>/_fotos.json`, ficheros en
+      `public/fotos/<destino>/`) van antes que las de Unsplash y Wikipedia. Una foto de unas fechas (Navidad) solo sale con
+      la fecha real de ese día dentro de su ventana; con `verificar`, no sale hasta confirmar que ese año hay lo que se ve.
+      Una foto de día nunca va en una parada de noche.
+    - **El crédito nunca se inventa:** sin autor, enlace y fuente, la foto va sin línea de crédito.
+    - Los originales no entran en git: en la app van reducidas (1.600 px de ancho como máximo para la ficha, 640 px para
+      la tarjeta).
+    - **Un lugar sin ficha escrita a mano lleva nuestro texto** (`por_que_lugares`) y `sin_texto_ia`. En su ficha, ese
+      texto va debajo del «por qué» de la ruta cuando no son el mismo.
+    - **Una línea de ficha no repite lo que la parada ya cuenta**: `si_repite` (sale su texto corto) y `no_si_parada` (no
+      sale el día que la ruta lleva la parada que ya lo cuenta).
+    - **Después de tocar el servidor, una petición real a la API** antes de darlo por bueno: las pruebas del motor no pasan
+      por ella (el 30 de septiembre se subió un servidor que arrancaba y respondía 500 a todo).
