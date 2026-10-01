@@ -121,7 +121,7 @@ export function auditarViaje(D, days, options = {}) {
       // tarde en D4, son dos paradas: PARA_CODE_TODO_2026-10-01, 5.5.)
       if (inDay.has(name) && !(stop.display_title && inDay.get(name).title && stop.display_title !== inDay.get(name).title)) add('repetido_dia', n, stop.suggested_time, name, `también a las ${inDay.get(name).time}`)
       else inDay.set(name, { time: stop.suggested_time, title: stop.display_title ?? null })
-      if (!stop.is_revisit && !stop.pass_through && !stop.is_pass_by) {
+      if (!stop.is_revisit && !stop.pass_through && !stop.is_pass_by && !stop.is_free_walk) {
         if (seenOnDay.has(name) && seenOnDay.get(name) !== n) add('repetido_viaje', n, stop.suggested_time, name, `ya en el día ${seenOnDay.get(name)}`)
         else seenOnDay.set(name, n)
       }

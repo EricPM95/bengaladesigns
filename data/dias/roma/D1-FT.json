@@ -190,7 +190,8 @@
           "lugar": "Basílica de Santa Cecilia in Trastevere",
           "min": 25,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "fuera",
+          "tipo": "opcional"
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -268,7 +269,8 @@
           "no_meses": [
             7,
             8
-          ]
+          ],
+          "tipo": "opcional"
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -293,7 +295,8 @@
           "meses": [
             7,
             8
-          ]
+          ],
+          "tipo": "opcional"
         },
         {
           "lugar": "Isla Tiberina",

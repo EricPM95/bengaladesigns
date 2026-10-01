@@ -2455,3 +2455,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     vuelta), cada una con su pregunta y su «Deshacer»; la que no tiene nada que recuperar, en gris con «Está tal como te lo
     preparamos». En un día que crea el viajero, solo la de la ruta. Ni en la cabecera ni en los tres puntos.
 
+
+426. **Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra**
+    (PARA_CODE_TODO_2026-10-01, ajuste final). Santa Cecilia in Trastevere es opcional en todos los días escritos: si a su
+    hora está cerrada o habría que esperar a que abra, se quita, y su tiempo lo recoge la parada que se estira.

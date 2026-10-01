@@ -252,10 +252,19 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     if (ideaPlace && Array.isArray(ideaPlace.coordinates)) {
       const walkIn = leg(fromCoords, ideaPlace.coordinates)
       const walkOut = leg(ideaPlace.coordinates, toCoords)
-      const start = ceil5(fromEnd + walkIn)
+      let start = ceil5(fromEnd + walkIn)
       // (Lo que sobra del hueco se lo lleva el sitio, hasta su máximo de paseo: una calle, 45 min.)
       const minutes = Math.min(floor5(toStart - start - walkOut), Math.max(ideaPlace.duration_minutes ?? 30, paseoMaxOf(ideaPlace) ?? 30, 30))
       if (minutes >= minMinutes) {
+        // Si aun así queda un hueco (el sitio no admite más), la parada de antes se alarga y el sitio se retrasa: sin esperas muertas.
+        const left = floor5(toStart - start - walkOut - minutes)
+        const room2 = prev ? stretchRoom(prev, placeByName.get(nameOf(prev)), tripDay.hours) : 0
+        if (left >= minMinutes && room2 > 0) {
+          const extra = Math.min(left, floor5(room2))
+          stretch(prev, extra)
+          start += extra
+          report.mid.push({ kind: 'alarga', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
+        }
         const stop = buildStop(ideaPlace, start, minutes, null)
         stop.why = destData.por_que_lugares?.[ideaPlace.name] && typeof destData.por_que_lugares[ideaPlace.name] === 'string' ? destData.por_que_lugares[ideaPlace.name] : stop.why ?? ''
         if (!(ideaPlace.ticket_info ?? []).some((line) => /de pago|se pagan?\b/i.test(line))) stop.free_access = true

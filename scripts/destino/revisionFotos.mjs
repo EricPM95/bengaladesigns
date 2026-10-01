@@ -68,6 +68,8 @@ const sorted = [...rows].sort((x, y) => Number(reviewed(x)) - Number(reviewed(y)
 const tr = (row) =>
   `<tr class="${reviewed(row) ? 'rev' : 'sin'}"><td><div class="name">${esc(row.name)}</div><div class="lvl">${esc(row.kind)} · nivel ${row.level}</div>${NOTES[row.name] ? `<div class="nota">${esc(NOTES[row.name])}</div>` : ''}<div class="when">${when(row)}</div></td><td>${cell(row.normal)}</td><td>${row.xmas.map((x) => cell(x.probe, ` · ${esc(x.foto.archivo)}`)).join('') || '<div class="none">—</div>'}</td></tr>`
 
+const CANDS = OWN.candidatas_dia ?? {}
+const candHtml = Object.entries(CANDS).filter(([k]) => !k.startsWith('_')).map(([name, list]) => `<h3>${esc(name)}</h3>${list.length ? `<div class="cands">${list.map((c, i) => `<figure><img src="${esc(c.small)}" alt=""><figcaption>Opción ${i + 1} · ${esc(c.autor)} · <a href="${esc(c.enlace)}">Unsplash</a><br>${esc(c.descripcion).slice(0, 80)}</figcaption></figure>`).join('')}</div>` : '<p>Sin candidata: Unsplash no trae una buena (la fachada de la basílica).</p>'}`).join('')
 const sinRevisar = sorted.filter((row) => !reviewed(row))
 const revisadas = sorted.filter(reviewed)
 const html = `<!doctype html>
@@ -82,11 +84,12 @@ td{background:var(--card);padding:10px;vertical-align:top}td:first-child{border-
 tr.sin td:first-child{border-left:5px solid var(--accent)}
 .name{font:400 18px Georgia,serif}.lvl{color:var(--soft);font-size:12px;margin-top:2px}.when{font-size:12px;margin-top:6px}.nota{font-size:12px;margin-top:6px;color:var(--accent);font-weight:600}
 img{width:100%;max-width:300px;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block;margin-top:6px}
-.src{font-size:11px;color:var(--soft);margin-top:4px}.none{color:var(--soft);font-size:12px;padding:20px 0}
+.src{font-size:11px;color:var(--soft);margin-top:4px}.cands{display:flex;gap:10px;flex-wrap:wrap}.cands figure{margin:0;width:280px}.cands img{max-width:280px}.cands figcaption{font-size:12px;color:var(--soft)}.none{color:var(--soft);font-size:12px;padding:20px 0}
 th{text-align:left;font:600 11px monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding:0 10px}
 </style></head><body>
 <h1>Revisión de fotos de Roma</h1>
 <p>${rows.length} fotos. Las ${sinRevisar.length} de arriba (borde naranja) se buscaron solas, en Unsplash o Wikipedia, y nadie las ha visto a ojo; las ${revisadas.length} de abajo son propias y las elegiste tú. Dime cuáles cambiar. Una parada normal lleva siempre foto de día; la de noche, solo las experiencias nocturnas (y las de Navidad, en sus fechas). Generado el ${new Date().toISOString().slice(0, 10)} con <code>scripts/destino/revisionFotos.mjs</code>.</p>
+<h2>Para elegir: fotos de día para los que van sin foto</h2><p>Dime la opción de cada uno; mientras tanto van sin foto (color neutro).</p>${candHtml}
 <h2>Buscadas solas, sin revisar (${sinRevisar.length})</h2>
 <table><thead><tr><th>Parada y cuándo sale</th><th>Foto</th><th>En Navidad</th></tr></thead><tbody>
 ${sinRevisar.map(tr).join('\n')}

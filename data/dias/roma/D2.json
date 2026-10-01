@@ -524,7 +524,8 @@
             "min": 25,
             "modo": "dentro",
             "si_cerrado": "fuera",
-            "elastica": 30
+            "elastica": 30,
+            "tipo": "opcional"
           },
           {
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -561,7 +562,8 @@
                 "como": "un taxi",
                 "min": 15
               },
-              "elastica": 30
+              "elastica": 30,
+              "tipo": "opcional"
             }
           },
           {
@@ -593,7 +595,8 @@
                 "como": "un taxi",
                 "min": 15
               },
-              "elastica": 30
+              "elastica": 30,
+              "tipo": "opcional"
             }
           },
           {
@@ -781,7 +784,8 @@
               "lugar": "Basílica de Santa Cecilia in Trastevere",
               "min": 25,
               "modo": "dentro",
-              "si_cerrado": "fuera"
+              "si_cerrado": "fuera",
+              "tipo": "opcional"
             }
           }
         ]
@@ -859,7 +863,8 @@
             "lugar": "Basílica de Santa Cecilia in Trastevere",
             "min": 25,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "tipo": "opcional"
           },
           {
             "lugar": "Trastevere",

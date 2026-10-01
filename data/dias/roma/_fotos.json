@@ -381,5 +381,53 @@
     "Pasear por el Centro Histórico": "Sin foto.",
     "Pasear por Prati y el Borgo": "Sin foto.",
     "Pasear por el Nomentano": "Sin foto."
+  },
+  "candidatas_dia": {
+    "_nota": "Candidatas de día de Unsplash (1-oct-2026) para elegir en docs/revision_fotos_roma.html. Hasta que el usuario elija, esos sitios van sin foto (color neutro). San Giovanni: Unsplash no trae la fachada de la basílica (solo San Pedro y otras iglesias); sin candidata.",
+    "Coliseo": [
+      {
+        "id": "LUdSrJw-BII",
+        "descripcion": "Rome, Italy - The Colosseum",
+        "small": "https://images.unsplash.com/photo-1591014979417-20f9a787a4da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTB8fENvbG9zc2V1bSUyMFJvbWUlMjBkYXl0aW1lfGVufDF8MHx8fDE3OTA4NzI4NzF8MA&ixlib=rb-4.1.0&q=80&w=400",
+        "regular": "https://images.unsplash.com/photo-1591014979417-20f9a787a4da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTB8fENvbG9zc2V1bSUyMFJvbWUlMjBkYXl0aW1lfGVufDF8MHx8fDE3OTA4NzI4NzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        "autor": "Mike Swigunski",
+        "enlace": "https://unsplash.com/photos/cars-parked-on-road-near-brown-concrete-building-during-daytime-LUdSrJw-BII"
+      },
+      {
+        "id": "p_JGegIg75U",
+        "descripcion": "Colosseum",
+        "small": "https://images.unsplash.com/photo-1610529028227-18045bd9960f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OXx8Q29sb3NzZW8lMjBSb21hJTIwZGF5fGVufDF8MHx8fDE3OTA4NzI4NzN8MA&ixlib=rb-4.1.0&q=80&w=400",
+        "regular": "https://images.unsplash.com/photo-1610529028227-18045bd9960f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OXx8Q29sb3NzZW8lMjBSb21hJTIwZGF5fGVufDF8MHx8fDE3OTA4NzI4NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        "autor": "Fabio Fistarol",
+        "enlace": "https://unsplash.com/photos/brown-concrete-building-during-daytime-p_JGegIg75U"
+      },
+      {
+        "id": "CzKI2-nejUk",
+        "descripcion": "Colosseum under white clouds during daytime",
+        "small": "https://images.unsplash.com/photo-1552432552-06c0b0a94dda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8Q29sb3NzZXVtJTIwUm9tZSUyMGRheXRpbWV8ZW58MXwwfHx8MTc5MDg3Mjg3MXww&ixlib=rb-4.1.0&q=80&w=400",
+        "regular": "https://images.unsplash.com/photo-1552432552-06c0b0a94dda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8Q29sb3NzZXVtJTIwUm9tZSUyMGRheXRpbWV8ZW58MXwwfHx8MTc5MDg3Mjg3MXww&ixlib=rb-4.1.0&q=80&w=1080",
+        "autor": "David Libeert",
+        "enlace": "https://unsplash.com/photos/colosseum-under-white-clouds-during-daytime-CzKI2-nejUk"
+      }
+    ],
+    "Puente Sant'Angelo": [
+      {
+        "id": "4UT-CDeMgsE",
+        "descripcion": "Castel Sant'Angelo, historical building in Rome, Italy.",
+        "small": "https://images.unsplash.com/photo-1618475667510-bd1315b1388a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8UG9udGUlMjBTYW50JTI3QW5nZWxvJTIwQ2FzdGVsJTIwU2FudCUyN0FuZ2VsbyUyMGRheXxlbnwxfDB8fHwxNzkwODcyODczfDA&ixlib=rb-4.1.0&q=80&w=400",
+        "regular": "https://images.unsplash.com/photo-1618475667510-bd1315b1388a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8UG9udGUlMjBTYW50JTI3QW5nZWxvJTIwQ2FzdGVsJTIwU2FudCUyN0FuZ2VsbyUyMGRheXxlbnwxfDB8fHwxNzkwODcyODczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "autor": "Angelo Casto",
+        "enlace": "https://unsplash.com/photos/brown-concrete-building-near-river-under-blue-sky-and-white-clouds-during-daytime-4UT-CDeMgsE"
+      },
+      {
+        "id": "Nv0gYSW1Th8",
+        "descripcion": "brown concrete building",
+        "small": "https://images.unsplash.com/photo-1557741999-ff7ded52cde5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8UG9udGUlMjBTYW50JTI3QW5nZWxvJTIwQ2FzdGVsJTIwU2FudCUyN0FuZ2VsbyUyMGRheXxlbnwxfDB8fHwxNzkwODcyODczfDA&ixlib=rb-4.1.0&q=80&w=400",
+        "regular": "https://images.unsplash.com/photo-1557741999-ff7ded52cde5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8UG9udGUlMjBTYW50JTI3QW5nZWxvJTIwQ2FzdGVsJTIwU2FudCUyN0FuZ2VsbyUyMGRheXxlbnwxfDB8fHwxNzkwODcyODczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "autor": "Michele Bitetto",
+        "enlace": "https://unsplash.com/photos/brown-concrete-building-Nv0gYSW1Th8"
+      }
+    ],
+    "Pasear por San Giovanni": []
   }
 }

@@ -682,7 +682,7 @@ export function planWrittenTrip(args) {
       const place = visit.place
       if (!place.visitOutside || !['cerrado', 'ya_cerrado', 'no_abre'].includes(place.outsideKind)) return visit
       const source = placeByName.get(place.name)
-      if (source?.minutos_fuera == null) return visit
+      if (source?.minutos_fuera == null && !place.outsideAuthored) return visit
       const near = [visits[i - 1], visits[i + 1]].find((other) => {
         const otherSource = other ? placeByName.get(other.place.name) : null
         return otherSource?.level === 1 && !other.place.passThrough && walkLeg(otherSource.coordinates, place.coordinates) <= NEXT_TO_ESSENTIAL_WALK
@@ -848,6 +848,11 @@ export function planWrittenTrip(args) {
         while (original.elastica != null && duration - 5 >= writtenMin && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, writtenMin, ctx.hours).closed) duration -= 5
         // (Lo escrito «si está cerrado, por fuera» no espera más de lo de siempre, 20 min: es el plan B que quien escribe el día prefiere.)
         const check = openCheck(place, at, duration, ctx.hours, stop.si_cerrado === 'fuera' && source.minutos_fuera != null ? OPEN_WAIT_AUTHORED : null)
+        // Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra (su tiempo lo recoge la parada que se estira).
+        if ((check.wait || check.closed) && original.tipo === 'opcional' && !place.sunset) {
+          if (stop.traslado) carry = stop.traslado
+          return
+        }
         if (check.wait) at += check.wait
         else if (check.closed) {
           const rule = stop.si_cerrado
