@@ -378,7 +378,7 @@ export function DayDetailPanel({
   const arrivalTime = route?.arrivalFlightTime ?? null
   const departureTime = route?.departureFlightTime ?? null
   const centerMinutes = isFirstDayOfTrip && modes.arrival !== 'coche' ? centerMinutesOf(arrivalTime, arrivalPoint) : null
-  const leaveMinutes = isLastDay ? leaveMinutesOf(departureTime, modes.departure, departureMedio) : null
+  const leaveMinutes = isLastDay ? leaveMinutesOf(departureTime, modes.departure, departureMedio, departurePoint) : null
   const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalPoint, origin, time: modes.arrival === 'coche' ? null : arrivalTime, keyMinutes: centerMinutes })
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departurePoint, origin, time: modes.departure === 'coche' ? null : departureTime, keyMinutes: leaveMinutes })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)

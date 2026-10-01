@@ -33,6 +33,8 @@ export interface ArrivalPoint {
   /** La foto fija del punto (comprobada a mano: es ese sitio) y su autor; sin ella se busca con `foto`. */
   foto_url?: string
   foto_credito?: string
+  /** Cuánto antes de la salida hay que dejar la ciudad desde este punto, si no vale el del medio (Ciampino ≠ Fiumicino). */
+  salir_antes_min?: number
   /** Del punto de llegada al centro, en minutos: la hora "EN EL CENTRO". */
   al_centro_min: number
   distancia?: string
@@ -106,7 +108,7 @@ export const minutesToHHMM = toHHMM
 export const centerMinutesOf: (arrivalTime: string | null | undefined, point: ArrivalPoint | null) => number | null = rules.centerMinutesOf
 
 /** La hora de salir, de 5 en 5 hacia abajo, según el medio (shared/arrival/arrivalRules.js). */
-export const leaveMinutesOf: (departureTime: string | null | undefined, mode: ArrivalMode, medio: ArrivalMedio | null) => number | null = rules.leaveMinutesOf
+export const leaveMinutesOf: (departureTime: string | null | undefined, mode: ArrivalMode, medio: ArrivalMedio | null, point?: ArrivalPoint | null) => number | null = rules.leaveMinutesOf
 
 export interface ArrivalBarText {
   /** "LLEGADA · VUELO 11:30 · FIUMICINO" */

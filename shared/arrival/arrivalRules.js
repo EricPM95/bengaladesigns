@@ -40,9 +40,9 @@ export function centerMinutesOf(arrivalTime, point) {
 /**
  * La hora de salir de la ciudad, de 5 en 5 hacia abajo: avión, la salida − 3 h; tren y autobús, − 45 min; ferry, − el
  * embarque de la naviera (2 h si no se sabe) − el trayecto al puerto; crucero, la hora de a bordo − el trayecto − 30 min.
- * En coche no hay hora clave.
+ * Cada punto de salida puede traer el suyo (`salir_antes_min`): Ciampino no es Fiumicino. En coche no hay hora clave.
  */
-export function leaveMinutesOf(departureTime, mode, medio) {
+export function leaveMinutesOf(departureTime, mode, medio, point) {
   const departure = toMinutes(departureTime)
   if (departure == null || mode === 'coche') return null
   const before =
@@ -50,7 +50,7 @@ export function leaveMinutesOf(departureTime, mode, medio) {
       ? (medio?.trayecto_min ?? 110) + (medio?.margen_min ?? 30)
       : mode === 'ferry'
         ? (medio?.salir_antes_min ?? 120) + (medio?.trayecto_min ?? 110)
-        : (medio?.salir_antes_min ?? (mode === 'avion' ? 180 : 45))
+        : (point?.salir_antes_min ?? medio?.salir_antes_min ?? (mode === 'avion' ? 180 : 45))
   return Math.floor((departure - before) / 5) * 5
 }
 

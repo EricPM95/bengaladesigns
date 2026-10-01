@@ -51,7 +51,7 @@ for (const [mode, medio] of Object.entries(info.medios)) {
   let puntos = ''
   for (const point of medio.puntos) {
     const center = centerMinutesOf(t.llegada, point)
-    const leave = leaveMinutesOf(t.vuelta, mode, medio)
+    const leave = leaveMinutesOf(t.vuelta, mode, medio, point)
     const bars = [
       barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, time: t.llegada, keyMinutes: center }),
       barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, time: null, keyMinutes: null }),

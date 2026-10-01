@@ -37,6 +37,7 @@ const timeInputClasses = 'w-full rounded-xl border border-border bg-bg px-3 py-2
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
+  const setArrivalPointId = useRouteStore((state) => state.setArrivalPointId)
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const transportBookings = useRouteStore((state) => state.transportBookings)
@@ -54,6 +55,14 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const bookingLabels = bookingLabelsOf(modes)
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
   const segments = buildDestinationSegments(route.days)
+  // El aeropuerto o la estación de cada trayecto (Fiumicino a la ida y Ciampino a la vuelta): lo que se elige aquí manda en las barras y en las ventanas.
+  const pointPicks = (['arrival', 'departure'] as const).map((kind) => {
+    const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
+    const points = medio?.puntos ?? []
+    const time = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
+    const chosenId = (kind === 'arrival' ? route.arrivalPointId : route.departurePointId) ?? points[0]?.id
+    return { kind, points, time, chosenId, show: Boolean(time) && points.length > 1 && modes[kind] !== 'coche' }
+  })
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
   const firstSegment = segments[0]
@@ -75,7 +84,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
     const pointId = kind === 'arrival' ? route.arrivalPointId : route.departurePointId
     const point = medio?.puntos.find((candidate) => candidate.id === pointId) ?? medio?.puntos[0] ?? null
-    const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio)
+    const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio, point)
     if (keyMinutes != null) await fitDayToTrip(dayId, kind, keyMinutes)
     setRecalculatingId(null)
     setSimulatedIds((prev) => new Set(prev).add(dayId))
@@ -140,6 +149,22 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                   onChange={(event) => setArrivalFlightTime(event.target.value || null)}
                   className={timeInputClasses}
                 />
+                {pointPicks[0].show && (
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {pointPicks[0].points.map((point) => (
+                      <button
+                        key={point.id}
+                        type="button"
+                        onClick={() => setArrivalPointId('arrival', point.id)}
+                        className={`rounded-full border px-2.5 py-1 text-caption font-medium transition-colors ${
+                          point.id === pointPicks[0].chosenId ? 'border-text bg-text text-bg' : 'border-text/20 text-text/70 hover:border-text/40'
+                        }`}
+                      >
+                        {point.nombre}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </label>
               <label className="space-y-1.5">
                 <span className="text-small font-medium text-text">{bookingLabels.departure}</span>
@@ -150,6 +175,22 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                   onChange={(event) => setDepartureFlightTime(event.target.value || null)}
                   className={timeInputClasses}
                 />
+                {pointPicks[1].show && (
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {pointPicks[1].points.map((point) => (
+                      <button
+                        key={point.id}
+                        type="button"
+                        onClick={() => setArrivalPointId('departure', point.id)}
+                        className={`rounded-full border px-2.5 py-1 text-caption font-medium transition-colors ${
+                          point.id === pointPicks[1].chosenId ? 'border-text bg-text text-bg' : 'border-text/20 text-text/70 hover:border-text/40'
+                        }`}
+                      >
+                        {point.nombre}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </label>
             </div>
 

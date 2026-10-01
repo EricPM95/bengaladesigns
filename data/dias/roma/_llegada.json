@@ -173,7 +173,8 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Aeropuerto_de_Roma-Ciampino.JPG/960px-Aeropuerto_de_Roma-Ciampino.JPG",
-          "foto_credito": "Wikimedia Commons"
+          "foto_credito": "Wikimedia Commons",
+          "salir_antes_min": 170
         }
       ],
       "tips_llegada": [
@@ -185,7 +186,10 @@
         {
           "titulo": "Los niños no pagan el Leonardo",
           "texto": "Los menores de 4 años viajan gratis y, con cada adulto que paga, un niño de 4 a 11 años también. Hay un billete de grupo (4 por 40 €), pero casi ningún tren lo admite.",
-          "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html"
+          "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html",
+          "solo_en": [
+            "fco"
+          ]
         },
         {
           "titulo": "Valida el billete de papel",
@@ -207,7 +211,10 @@
         {
           "titulo": "El Leonardo sale del fondo de Termini",
           "texto": "Andenes 23 y 24, al final de la estación: con maleta, cuenta unos 10 min andando desde la entrada.",
-          "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html"
+          "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html",
+          "solo_en": [
+            "fco"
+          ]
         },
         {
           "titulo": "Compra el billete antes",
@@ -305,7 +312,8 @@
               "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
               "comprobado": "2026-09-30"
             }
-          ]
+          ],
+          "salir_antes_min": 55
         }
       ],
       "tips_llegada": [
@@ -390,7 +398,8 @@
               "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
               "comprobado": "2026-09-30"
             }
-          ]
+          ],
+          "salir_antes_min": 55
         }
       ],
       "tips_llegada": [

@@ -2373,3 +2373,16 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 417. **Días, repaso 4** (PROMPT_UI_REPASO_4, 2026-10-01): las cifras del día con 20 px debajo; la zona de la foto de las
     tarjetas, el doble de ancha (208 px; 168 en el móvil), con el nombre en las líneas que haga falta y la hora sin
     partir; el asa de arrastrar, centrada en la tarjeta y nunca al lado de un hueco vacío.
+
+418. **Reservas manda en la llegada y la vuelta; cada aeropuerto, estación o puerto lleva sus textos**
+    (PARA_CODE_TODO_2026-10-01, paso 2).
+    - La vuelta es en el mismo medio que la llegada: no hay otra pregunta. Las horas y el sitio de cada trayecto salen
+      de Reservas (la hora y, con más de un sitio, el aeropuerto o la estación de cada uno: Fiumicino a la ida y
+      Ciampino a la vuelta). Quitar o cambiar la hora o el sitio vuelve a cambiar solas las barras, las ventanas y el
+      último día.
+    - Cada punto lleva lo suyo en `_llegada.json`: sus caminos de ida y de vuelta con fuente y fecha, su resumen si el
+      del medio no vale, sus tips (`solo_en`: el Leonardo es de Fiumicino, no de Ciampino) y, si no sale igual, su
+      `salir_antes_min` (Ciampino 170, no 180). «Tu última tarde» y la hora de salir usan los de ese punto, nunca los
+      del principal.
+    - Un tip con `solo_en` sale cuando ese punto está a la vista.
+    - Al curar un destino: cada sitio de llegada y de salida lleva sus propios textos, comprobados en la web oficial.

@@ -58,3 +58,11 @@ Criterio de siempre: un local, sin madrugones absurdos, sin esperas largas, sin 
 ## 6. Cada año
 
 Las fechas cambian: en otoño se vuelve a pasar el punto 3 con el calendario nuevo de cada sitio (lo marcado con `verificar` y `revisar` en los datos) y se regenera la revisión del curso.
+
+## 7. Llegadas y salidas, sitio por sitio
+
+Cada aeropuerto, estación, terminal de autobuses o puerto de `_llegada.json` lleva sus propios textos en las tres
+pestañas (Resumen, Traslados, Tips) y en «Tu última tarde»: caminos de ida y de vuelta con fuente y fecha, resumen propio,
+tips con `solo_en` y `salir_antes_min` si no es el del medio. Cada precio, horario y tiempo, comprobado en la web
+oficial (aeropuerto, Trenitalia, la naviera…). Los borradores se dejan en `docs/BORRADOR_LLEGADAS_*.md` hasta que se
+revisan.

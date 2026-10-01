@@ -166,11 +166,11 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const why = (arrival ? onePoint?.por_que_llegada : onePoint?.por_que_vuelta) ?? (arrival ? medio.textos.llegada_por_que : medio.textos.vuelta_por_que)
   // Sin enlace de afiliado, el traslado privado no sale a la venta (PARA_CODE_LLEGADAS, 5).
   const privatePoints = mode === 'coche' ? [] : shownPoints.filter((point) => point.privado && point.privado.url_afiliado && point.privado.url_afiliado !== '#')
-  // Un tip de un punto (`solo_en`) sale solo si todo lo que se ve es ese punto; uno con fecha de fin (`hasta`), solo hasta
+  // Un tip de un punto (`solo_en`) sale solo si ese punto está a la vista (con reserva, el elegido; sin ella, todos); uno con fecha de fin (`hasta`), solo hasta
   // esa fecha (la del viaje o, sin ella, la de hoy).
   const tipDate = dateIso ?? new Date().toISOString().slice(0, 10)
   const tips = (arrival ? medio.tips_llegada : medio.tips_vuelta).filter(
-    (tip) => (!tip.solo_en || (shownPoints.length > 0 && shownPoints.every((point) => tip.solo_en!.includes(point.id)))) && (!tip.hasta || tipDate <= tip.hasta),
+    (tip) => (!tip.solo_en || shownPoints.some((point) => tip.solo_en!.includes(point.id))) && (!tip.hasta || tipDate <= tip.hasta),
   )
   const tabs: Tab[] = ['resumen', ...(privatePoints.length > 0 ? (['traslados'] as const) : []), ...(tips.length > 0 ? (['tips'] as const) : [])]
   const activeTab = tabs.includes(tab) ? tab : 'resumen'
