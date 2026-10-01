@@ -60,9 +60,17 @@ export function suggestedTimeFor(day: DayPlan, stop: Stop): string {
   return timeForStopAfter(previous, day.stops[0]?.time ?? FREE_DAY_FIRST_STOP, stop)
 }
 
-/** Días renumerados 1..n y fechas del viaje movidas `delta` días por el final. */
-function withDayCount(route: Route, days: DayPlan[], delta: number): Route {
+/**
+ * Días renumerados 1..n. La duración del viaje (`answers.days` y sus fechas) es lo que eligió el viajero: añadir un día (o una excursión
+ * en un día nuevo) NO la alarga, y por eso puede haber más días en la lista que días de viaje (la línea «Tu viaje es de 4 días y ahora
+ * tienes 5»). Solo se acorta si quedan menos días que la duración (PARA_CODE_EXCURSIONES, 4).
+ */
+function withDayCount(route: Route, days: DayPlan[]): Route {
   const range = route.answers.dateRange
+  const base = route.answers.days ?? route.days.length
+  // Quitar días solo acorta el viaje si no eran de los de más; añadir o mover no lo cambia.
+  const removed = Math.max(0, route.days.length - days.length)
+  const delta = -Math.max(0, removed - Math.max(0, route.days.length - base))
   return {
     ...route,
     days: days.map((day, index) => (day.dayNumber === index + 1 ? day : { ...day, dayNumber: index + 1 })),
@@ -99,7 +107,7 @@ export function addFreeDay(route: Route, name: string): { route: Route; dayId: s
     userAdded: true,
   }
   const days = [...route.days.slice(0, at), day, ...route.days.slice(at)]
-  return { route: withDayCount(route, days, 1), dayId: day.id }
+  return { route: withDayCount(route, days), dayId: day.id }
 }
 
 /** Los días añadidos por el viajero: al rehacer el viaje, el motor planifica sin ellos (ver regenerateRouteForDates). */
@@ -117,14 +125,14 @@ export function withUserDaysBack(route: Route, userDays: DayPlan[]): Route {
     const limit = returnAt >= 0 ? returnAt : days.length
     days.splice(Math.min(Math.max(day.dayNumber - 1, 1), limit), 0, day)
   }
-  return withDayCount(route, days, userDays.length)
+  return withDayCount(route, days)
 }
 
 /** Quita un día añadido por el viajero (los nuestros no se quitan). */
 export function removeFreeDay(route: Route, dayId: string): Route {
   const day = route.days.find((candidate) => candidate.id === dayId)
   if (!day?.userAdded) return route
-  return withDayCount(route, route.days.filter((candidate) => candidate.id !== dayId), -1)
+  return withDayCount(route, route.days.filter((candidate) => candidate.id !== dayId))
 }
 
 /**
@@ -136,11 +144,13 @@ export function removeAnyDay(route: Route, dayId: string): Route {
   if (index < 0 || route.days.length <= 1) return route
   const days = route.days.filter((candidate) => candidate.id !== dayId)
   const range = route.answers.dateRange
-  if (index === 0 && range) {
-    const moved = withDayCount({ ...route, answers: { ...route.answers, dateRange: { ...range, start: addDaysToIso(range.start, 1), end: addDaysToIso(range.end, 1) } } }, days, -1)
+  // (Con días de más sobre la duración del viaje, quitar uno no cambia las fechas: solo desaparece uno de los de más.)
+  const inExcess = route.days.length > (route.answers.days ?? route.days.length)
+  if (index === 0 && range && !inExcess) {
+    const moved = withDayCount({ ...route, answers: { ...route.answers, dateRange: { ...range, start: addDaysToIso(range.start, 1), end: addDaysToIso(range.end, 1) } } }, days)
     return moved
   }
-  return withDayCount(route, days, -1)
+  return withDayCount(route, days)
 }
 
 /**
@@ -184,7 +194,7 @@ export function moveDay(route: Route, dayId: string, direction: -1 | 1): Route {
   const index = route.days.findIndex((day) => day.id === dayId)
   const days = [...route.days]
   ;[days[index], days[index + direction]] = [days[index + direction], days[index]]
-  return withDayCount(route, days, 0)
+  return withDayCount(route, days)
 }
 
 /**

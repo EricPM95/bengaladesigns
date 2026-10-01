@@ -8,8 +8,9 @@ import { HourglassIcon } from '../../ui/TimeIcons'
  * nuevo el día que se conecte una API real es solo una entrada más aquí.
  */
 const PROVIDER_STYLE: Record<StopTicket['proveedor'], { label: string; border: string; badgeBg: string }> = {
-  civitatis: { label: 'Civitatis', border: '#EC1561', badgeBg: '#EC1561' },
-  getyourguide: { label: 'GetYourGuide', border: '#FF5A00', badgeBg: '#FF5A00' },
+  // (La etiqueta que lee el viajero nunca nombra al proveedor: «Reserva». El color sí distingue uno de otro por dentro.)
+  civitatis: { label: 'Reserva', border: '#EC1561', badgeBg: '#EC1561' },
+  getyourguide: { label: 'Reserva', border: '#FF5A00', badgeBg: '#FF5A00' },
 }
 
 function formatPrice(precio: number, moneda: string): string {

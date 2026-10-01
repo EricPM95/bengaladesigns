@@ -104,7 +104,8 @@ export function ExcursionBanner({
 }) {
   const [dismissed, setDismissed] = useState(false)
   if (highlights.length === 0) return null
-  if (dismissed) return <ExcursionLink label="¿Prefieres una excursión este día?" onClick={onSeeAll} />
+  // (Descartado el banner, nada: las excursiones se abren desde el botón flotante del autobús.)
+  if (dismissed) return null
 
   return (
     <section className="rounded-xl border border-accent/30 bg-accent-soft/50 p-3">

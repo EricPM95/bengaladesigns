@@ -17,3 +17,15 @@ export function WalletLineIcon({ className = 'h-5 w-5' }: { className?: string }
     </svg>
   )
 }
+
+/** El autobús de las excursiones (trazo fino, sin relleno). */
+export function BusLineIcon({ className = 'h-6 w-6' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <rect x="4" y="3.5" width="16" height="14" rx="3" />
+      <path d="M4 11h16M8 17.5V20M16 17.5V20" />
+      <circle cx="8" cy="14.2" r=".6" />
+      <circle cx="16" cy="14.2" r=".6" />
+    </svg>
+  )
+}

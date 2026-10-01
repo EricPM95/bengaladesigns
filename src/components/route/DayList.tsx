@@ -25,6 +25,9 @@ import { ContextBanner } from './ContextBanner'
 import { ConfirmDialog } from './ConfirmDialog'
 import { DateNoticeTag } from './DateNoticesModal'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
+import { AddDayChooser } from './freeDay/AddDayChooser'
+import { useDestinationExcursions } from '../../lib/destinationExcursions'
+import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
@@ -37,6 +40,8 @@ interface DayListProps {
   onDayMapChange?: (map: DayMapView | null) => void
   onDayOverlayChange?: (open: boolean) => void
   showAllDaysOnMap?: boolean
+  /** «Añade un día más a tu viaje»: abre el calendario de fechas de la cabecera del mapa. */
+  onOpenDates?: () => void
 }
 
 const WEEKDAYS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
@@ -76,7 +81,7 @@ function ChevronIcon() {
  * contenedor con scroll (antes vivía fuera, en RouteView.tsx, por lo que quedaba fijo en pantalla
  * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
-export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
+export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap, onOpenDates }: DayListProps) {
   const reorderDays = useRouteStore((state) => state.reorderDays)
   const listRef = useRef<HTMLDivElement>(null)
   // La pregunta antes de recuperar el original de un día o de toda la ruta (la varita de cada día, paso 8).
@@ -107,6 +112,11 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   /** La ventana del nombre: crear un día o cambiar el de uno libre. */
   const [nameSheet, setNameSheet] = useState<{ dayId: string | null } | null>(null)
+  // «+ Añadir día»: primero qué quieres hacer, si el destino tiene excursiones (PARA_CODE_EXCURSIONES, 5).
+  const [chooserOpen, setChooserOpen] = useState(false)
+  const excursionInfo = useDestinationExcursions(route.destination)
+  const openExcursionsPage = useExcursionsStore((state) => state.openPage)
+  const tripDays = route.answers.days ?? route.days.length
   const [removeDayId, setRemoveDayId] = useState<string | null>(null)
   const removeDay = route.days.find((day) => day.id === removeDayId) ?? null
 
@@ -204,7 +214,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
         const expanded = activeDayId === day.id
         // Título real del día curado ("Roma Antigua y el centro barroco"); de viaje, el trayecto.
-        const title = travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
+        // (Un día que crea el viajero, una excursión en un día nuevo, se llama como lo llamó, aunque quede el último.)
+        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
         // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
@@ -248,7 +259,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
-                {travel && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
+                {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
                 {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
                 {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
                   <span className="mt-1 flex flex-wrap gap-1.5">
@@ -333,7 +344,38 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
       {/* Un día fuera: al final de la lista, solo si el viaje no lleva ya una excursión (PROMPT_UI, Parte 2). */}
       {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
-      <AddDayButton onClick={() => setNameSheet({ dayId: null })} disabled={!canAddDay(route)} />
+      <AddDayButton onClick={() => (excursionInfo.excursions.length > 0 ? setChooserOpen(true) : setNameSheet({ dayId: null }))} disabled={!canAddDay(route)} />
+      {/* Más días en la lista que en el viaje (PARA_CODE_EXCURSIONES, 4): una línea, con el enlace al calendario. Sin nada más. */}
+      {route.days.length > tripDays && (
+        <p className="mt-3 flex items-start gap-2 px-1 text-[13.5px] leading-snug text-text-soft">
+          <svg viewBox="0 0 24 24" className="mt-[2px] h-[15px] w-[15px] shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 4 3 19h18L12 4Z" />
+            <path d="M12 10v4M12 16.8v.1" />
+          </svg>
+          <span>
+            Tu viaje es de {tripDays} {tripDays === 1 ? 'día' : 'días'} y ahora tienes {route.days.length}.{' '}
+            <button type="button" onClick={onOpenDates} className="font-semibold text-accent underline underline-offset-2">
+              Añade un día más a tu viaje
+            </button>{' '}
+            o elimina el que menos te convenga.
+          </span>
+        </p>
+      )}
+      {chooserOpen && (
+        <AddDayChooser
+          dayNumber={route.days.filter((day) => !day.isReturnLeg).length + 1}
+          examples={excursionInfo.examples}
+          onClose={() => setChooserOpen(false)}
+          onPlaces={() => {
+            setChooserOpen(false)
+            setNameSheet({ dayId: null })
+          }}
+          onExcursion={() => {
+            setChooserOpen(false)
+            openExcursionsPage(true)
+          }}
+        />
+      )}
       {nameSheet && (
         <DayNameSheet
           title={nameSheet.dayId ? 'Cambiar el nombre' : 'Añadir un día'}

@@ -30,7 +30,7 @@ export function AccommodationRow({ segmentDayId, city, totalNights }: Accommodat
           onGet: () =>
             setAccommodationHotel(segmentDayId, {
               id: `stay22-${segmentDayId}`,
-              name: 'Reservado vía Stay22',
+              name: 'Tu reserva',
               stars: 0,
               pricePerNight: 0,
               rating: 0,

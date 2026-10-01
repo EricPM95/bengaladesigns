@@ -22,6 +22,12 @@ import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
 import { UndoToast } from './freeDay/UndoToast'
+import { ExcursionsFab } from './excursions/ExcursionsFab'
+import { ExcursionsPage } from './excursions/ExcursionsPage'
+import { useDestinationExcursions } from '../../lib/destinationExcursions'
+import { showsExcursionsButton } from '../../lib/excursionOffer'
+import { useExcursionsStore } from '../../store/useExcursionsStore'
+import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 
 // Límites del tirador gris (móvil) entre mapa y panel inferior — ninguno de los dos lados puede
 // llegar a desaparecer del todo: el mapa siempre deja al menos MOBILE_MAP_MIN_VH visible, y el
@@ -48,6 +54,9 @@ export function RouteView() {
   const devSimulatedTodayIso = useRouteStore((state) => state.dev_simulated_today_iso)
   // Fechas desde el mapa: en los curados, la ruta se rehace (y se pregunta si ya estaba editada a mano).
   const { onChangeDateRange: setRouteDateRange, dialog: datesDialog } = useDatesChange(route)
+  // El botón flotante de las excursiones: solo si el destino las tiene y el viaje llega a los días que marca (PARA_CODE_EXCURSIONES, 1).
+  const destinationExcursionInfo = useDestinationExcursions(route?.destination)
+  const openExcursions = useExcursionsStore((state) => state.openPage)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
@@ -258,6 +267,10 @@ export function RouteView() {
           {/* La barra de abajo, flotando sobre la lista (PROMPT_UI_REPASO_2 1). */}
           <BottomBar onMap={() => (mapHidden && canCollapseMap ? setMapCollapsed(false) : setMode('route'))} />
 
+          {mode === 'days' && showsExcursionsButton(route, destinationExcursionInfo.fromDays) && (
+            <ExcursionsFab destination={route.destination} onClick={() => openExcursions(false)} />
+          )}
+
           {mode === 'days' && (
             <>
               {route.isPreview && (
@@ -275,6 +288,11 @@ export function RouteView() {
                 onDayMapChange={setDayMap}
                 onDayOverlayChange={setDayOverlayOpen}
                 showAllDaysOnMap={showAllDaysOnMap}
+                onOpenDates={() => {
+                  // (Con el mapa recogido la cabecera con el calendario no está: se abre el mapa.)
+                  setMapCollapsed(false)
+                  useDatesCalendarStore.getState().request()
+                }}
               />
             </>
           )}
@@ -288,6 +306,7 @@ export function RouteView() {
       <TripTipsSheet open={tipsOpen} destination={route.destination} onClose={closeTips} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
+      <ExcursionsPage route={route} />
       <UndoToast />
       {datesDialog}
     </div>

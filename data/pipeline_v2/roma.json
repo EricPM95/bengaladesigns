@@ -13,7 +13,7 @@
     "duration_minutes": 150,
     "default_time": "10:00",
     "zone": "centro_historico",
-    "tip": "Reserva con antelación en Civitatis. Lleva agua y gorra en verano.",
+    "tip": "Reserva con antelación. Lleva agua y gorra en verano.",
     "covers": [
       "Plaza de España",
       "Via Condotti",
@@ -7947,6 +7947,8 @@
     }
   ],
   "excursions": {
+    "excursiones_desde_dias": 4,
+    "ejemplos_linea": "Pompeya, Florencia, la Costa Amalfitana…",
     "essential": false,
     "day_pattern": {
       "prominent_from": 4,

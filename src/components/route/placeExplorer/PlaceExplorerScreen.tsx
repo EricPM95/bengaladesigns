@@ -312,7 +312,7 @@ function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: 
               className="block w-full rounded-xl py-2 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
               style={{ backgroundColor: CIVITATIS_RED }}
             >
-              Ver en Civitatis
+              Reservar
             </a>
           )}
           <p className="text-caption text-text-muted">Precio orientativo: se reserva fuera de la app.</p>
@@ -844,7 +844,7 @@ export function PlaceExplorerScreen({
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-xl" aria-hidden="true">🛏️</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-small font-semibold text-text">Hoteles en {destination}</span>
-                  <span className="block text-caption text-text-soft">No van dentro de los días: se buscan en Booking.</span>
+                  <span className="block text-caption text-text-soft">No van dentro de los días: se reservan aparte.</span>
                 </span>
                 <a href={hotelsUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
                   Ver hoteles

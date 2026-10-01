@@ -370,6 +370,12 @@ interface RouteStoreState {
   setMealRestaurant: (dayId: string, mealTime: 'lunch' | 'dinner', restaurant: ChosenRestaurant | null) => void
   /** Una excursión desde la pantalla de añadir, en un día vacío. */
   addExcursionToDay: (dayId: string, excursion: Excursion) => void
+  /**
+   * «¿Dónde la ponemos?» (PARA_CODE_EXCURSIONES, 3): una excursión sustituye un día del viaje (el día pasa a ser la excursión y se llama
+   * como ella; sus paradas se quitan y el resto no cambia; con la varita del día vuelve tal como estaba) o va a un día nuevo al final. Una
+   * de medio día solo ocupa la mañana: la tarde sigue en el destino. Devuelve el día, que queda abierto en Días.
+   */
+  placeExcursion: (excursion: Excursion, target: { dayId: string } | { newDay: true }) => string | null
   /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
   openDateNoticeId: string | null
   setOpenDateNoticeId: (id: string | null) => void
@@ -777,6 +783,38 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         : state,
     )
     get().addBlankDayExcursion(dayId, excursion)
+  },
+  placeExcursion: (excursion, target) => {
+    let route = get().route
+    if (!route) return null
+    let dayId: string
+    const isNew = 'newDay' in target
+    if (isNew) {
+      const added = addFreeDayTo(route, excursion.title)
+      if (!added) return null
+      route = withDayColors(added.route)
+      dayId = added.dayId
+    } else dayId = target.dayId
+    const half = excursion.length === 'half-day'
+    route = updateDay(route, dayId, (day) => ({
+      ...day,
+      title: excursion.title,
+      curatedTitle: excursion.title,
+      excursions: (day.excursions ?? []).some((other) => other.id === excursion.id) ? day.excursions : [...(day.excursions ?? []), excursion],
+      selectedExcursionId: excursion.id,
+      excursionDeclined: false,
+      halfDayExcursionDeclined: false,
+      // Medio día: la mañana es de la excursión y la tarde sigue en el destino. Día entero: el día pasa a ser la excursión, sin paradas.
+      ...(half
+        ? {
+            dayType: isNew ? ('manual' as const) : day.dayType,
+            halfDayExcursion: { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '14:00' },
+            stops: isNew ? [] : day.stops.filter((stop) => !(stop.time && stop.time < '14:00')),
+          }
+        : { dayType: 'excursion' as const, halfDayExcursion: null, stops: [], meals: [] }),
+    }))
+    set({ route, activeDayId: dayId, mode: 'days' })
+    return dayId
   },
 
   openDateNoticeId: null,
@@ -1416,7 +1454,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
-  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',

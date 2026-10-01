@@ -284,6 +284,8 @@ export interface GeneratedExcursion {
   meeting_point?: string | null
   /** El precio y la nota están puestos a mano hasta que se integre la API de afiliados. */
   provisional_pricing?: boolean
+  /** La más reservada del destino (dato real del destino, nunca inventado). */
+  best_seller?: boolean
   suggested_day?: number
 }
 
@@ -574,6 +576,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       destinationCoords: excursion.destination_coords ?? null,
       meetingPoint: excursion.meeting_point ?? null,
       provisionalPricing: excursion.provisional_pricing ?? false,
+      bestSeller: excursion.best_seller === true,
       bookUrl: buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])

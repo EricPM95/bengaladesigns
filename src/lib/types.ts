@@ -532,6 +532,8 @@ export interface Excursion {
   meetingPoint?: string | null
   /** El precio y la nota de esta excursión están puestos a mano, no vienen de la API del operador. */
   provisionalPricing?: boolean
+  /** La más reservada del destino: solo si el dato es real (PARA_CODE_EXCURSIONES, 2). */
+  bestSeller?: boolean
 }
 
 /**

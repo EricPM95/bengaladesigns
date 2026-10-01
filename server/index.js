@@ -4163,6 +4163,28 @@ app.post('/api/place-detail', (req, res) => {
   res.json(detail ? { found: true, detail } : { found: false })
 })
 
+// Las excursiones de un destino para la página «Excursiones desde {destino}» (PARA_CODE_EXCURSIONES): todas, con la valoración media
+// calculada solo con las notas reales (las de precio provisional no cuentan, mismo criterio que en las tarjetas) y, si el destino lo
+// marca, cuál es la más reservada. `from_days`: desde cuántos días de viaje sale el botón (dato de cada destino).
+app.post('/api/destination-excursions', (req, res) => {
+  const destination = req.body?.destination
+  const data = destination ? findPipelineV2Data(destination) : null
+  const options = data?.excursions?.options ?? []
+  if (!data || options.length === 0) {
+    res.json({ found: false, from_days: null, excursions: [] })
+    return
+  }
+  const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
+  const average = rated.length > 0 ? rated.reduce((sum, option) => sum + option.rating, 0) / rated.length : null
+  res.json({
+    found: true,
+    from_days: data.excursions?.excursiones_desde_dias ?? null,
+    examples: data.excursions?.ejemplos_linea ?? null,
+    excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
+    rating: average == null ? null : { percent: Math.round(average * 20), excursions: rated.length, reviews: rated.reduce((sum, option) => sum + option.review_count, 0) },
+  })
+})
+
 app.post('/api/curated-places-pool', (req, res) => {
   const { destination, level, have_version: haveVersion } = req.body ?? {}
   const levelKey = String(level)

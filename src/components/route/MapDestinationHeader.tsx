@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DayPicker, type DateRange as PickerRange } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
 import type { DateRange } from '../../lib/types'
+import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import { daysBetweenInclusive, formatHeaderDateRangeEs, formatHeaderDateRangeShortEs, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
 
 interface MapDestinationHeaderProps {
@@ -24,6 +25,14 @@ export function MapDestinationHeader({ destination, dateRange, onChangeDateRange
     dateRange ? { from: isoToLocalDate(dateRange.start), to: isoToLocalDate(dateRange.end) } : undefined,
   )
   const [dateError, setDateError] = useState<string | null>(null)
+  // «Añade un día más a tu viaje» (la línea de más días que el viaje) abre este mismo calendario.
+  const calendarRequested = useDatesCalendarStore((state) => state.pending)
+  const clearCalendarRequest = useDatesCalendarStore((state) => state.clear)
+  useEffect(() => {
+    if (!calendarRequested) return
+    setShowCalendar(true)
+    clearCalendarRequest()
+  }, [calendarRequested, clearCalendarRequest])
 
   const handleRangeSelect = (range: PickerRange | undefined) => {
     setDraftRange(range)

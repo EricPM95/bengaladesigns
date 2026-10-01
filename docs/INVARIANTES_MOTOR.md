@@ -2474,3 +2474,39 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Ya no hay «parches» de minutos para que una cadena llegue (el Castillo de D4 con Free Tour o el 6 de enero): se escribe lo que
       se quiere ver y el motor lo ajusta. Vale para cualquier destino y cualquier hora fija.
     - La prueba de las 365 fechas no admite tolerancia: `v4_llega_tarde` salta en cuanto se llega después de lo que pide la hora.
+
+428. **Las excursiones se abren siempre desde el botón flotante del autobús, en todos los destinos, a partir de los días que marca cada destino**
+    (PARA_CODE_EXCURSIONES, 1 y 2).
+    - Botón redondo de 58 × 58, fondo crema, borde e icono terracota, abajo a la derecha justo encima de la barra oscura de Días; quieto, sin
+      animación; `aria-label` «Excursiones desde {destino}». Sale solo si el destino tiene excursiones y el viaje llega a los días que marca su
+      dato `excursions.excursiones_desde_dias` (Roma, 4). Sin excursiones, nunca. Con un día de excursión ya en el viaje, el botón sigue.
+    - Se quitó el enlace «¿Prefieres una excursión este día?» del final del día.
+    - La página («Un día fuera» / «Excursiones desde {destino}») es pantalla completa, en el body, con su cruz y sin mapa: la franja oscura con la
+      valoración media (el % sale solo de las notas reales de las excursiones del destino; sin notas reales, solo el texto), todas las excursiones
+      sin filtros (foto, nombre, «La más reservada desde {destino}» solo con el dato real `mas_reservada`, día entero o medio día + horas + dónde te
+      recogen, nota y opiniones si son reales, «desde {precio}», «Reservar» y «Añadir a mi viaje»). Todo sale de los datos del destino
+      (`/api/destination-excursions`); nada de Roma en el código.
+
+429. **«¿Dónde la ponemos?»: el viajero decide, sin avisos** (PARA_CODE_EXCURSIONES, 3).
+    - «Sustituye uno de tus días» (nunca el de llegada ni el de vuelta; un día que ya es una excursión se puede cambiar por otra) u «O en un día
+      nuevo» (al final de la lista, con el nombre de la excursión). El día sustituido pasa a ser la excursión y se llama como ella; sus paradas se
+      quitan y el resto del viaje no cambia; con la varita de ese día («Recuperar este día») vuelve tal como estaba. Una de medio día solo ocupa la
+      mañana (hasta las 14:00): la tarde sigue en el destino. En los dos casos, la app vuelve a Días con ese día abierto.
+    - Un día que crea el viajero se llama siempre como lo llamó, aunque quede el último de la lista.
+
+430. **Más días en la lista que en el viaje** (PARA_CODE_EXCURSIONES, 4). Añadir un día (o una excursión en un día nuevo) ya no alarga el viaje: la
+    duración (`answers.days` y sus fechas) es la que eligió el viajero y solo se acorta si quedan menos días que ella. Con más días que viaje,
+    debajo de «+ Añadir día» sale una sola línea con un aviso terracota: «Tu viaje es de {n} días y ahora tienes {m}. **Añade un día más a tu
+    viaje** (enlace: abre el calendario de fechas) o elimina el que menos te convenga». Desaparece en cuanto cuadran. Nada más.
+
+431. **«+ Añadir día»: primero qué quieres hacer** (PARA_CODE_EXCURSIONES, 5). Con excursiones en el destino, sube una ventana («DÍA {n} · NUEVO» /
+    «¿Qué quieres hacer este día?») con «Añadir lugares» (la de siempre: nombre del día y Explorar) y «Añadir una excursión» (con los sitios de
+    excursión del destino en una línea, dato `ejemplos_linea`); esta abre la página y la excursión va directa al día nuevo, sin «¿Dónde la
+    ponemos?». Sin excursiones en el destino, la ventana no sale.
+
+432. **Los textos que lee el viajero nunca nombran a las empresas con las que trabajamos** (proveedor de excursiones, de alojamiento, de vuelos…).
+    Se dice «Reservar», «tu reserva», «Ver más alojamientos». Cambiados al aplicarla: la etiqueta de las entradas («Civitatis» / «GetYourGuide» →
+    «Reserva»), «Ver más en Booking.com» (→ «Ver más alojamientos»), «se buscan en Booking» (→ «se reservan aparte»), «Ver en Civitatis»
+    (→ «Reservar»), «Reservado vía Stay22» y «Reservado vía Skyscanner» (→ «Tu reserva»), el proveedor que salía junto al hotel, y el consejo de
+    Roma «Reserva con antelación en Civitatis». Los enlaces y los datos internos sí pueden llevar el nombre; los nombres de trenes y autobuses
+    (Leonardo, Airlink…) son información, no proveedores.

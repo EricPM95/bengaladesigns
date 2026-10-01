@@ -47,7 +47,7 @@ export function HotelSection({ hotel, dayId }: HotelSectionProps) {
 
       {hotel.browseUrl && (
         <a href={hotel.browseUrl} target="_blank" rel="noopener noreferrer" className="block text-small font-medium text-accent hover:text-accent-hover">
-          🔍 Ver más en Booking.com →
+          🔍 Ver más alojamientos →
         </a>
       )}
 

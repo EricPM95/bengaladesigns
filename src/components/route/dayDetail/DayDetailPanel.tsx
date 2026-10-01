@@ -27,7 +27,6 @@ import {
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
-import { excursionOfferDay } from '../../../lib/excursionOffer'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { PeriodHeader, TrazoCard } from './TrazoCards'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
@@ -800,21 +799,10 @@ export function DayDetailPanel({
 
   // ── Prompt 4: tipo de día y prominencia de excursión ────────────────────────────────────────
   const dayType = day.dayType ?? 'normal'
-  const prominence = day.excursionProminence ?? 'none'
   // Un día de excursión o libre no enseña paradas: las suyas (si las tenía) siguen guardadas para
   // poder volver a la ruta, pero el contenido del día es otro.
   const showsRoute = dayType === 'normal' || dayType === 'smart_route'
   const excursionOptions = day.excursions ?? []
-  // Los días de llegada y de vuelta no pueden ser una excursión (decisión del usuario, 2026-09-29).
-  const arrivalOrReturnDay = isFirstDayOfTrip || isLastDay || Boolean(day.isReturnLeg)
-  // El banner de la oferta: en su día, o en el día completo más cercano si el de la oferta es el de llegada o vuelta.
-  const offerPlacement = route ? excursionOfferDay(route) : null
-  const bannerOffer =
-    offerPlacement && offerPlacement.day.id === day.id && offerPlacement.offerFrom.excursionOffer
-      ? { offer: offerPlacement.offerFrom.excursionOffer, highlights: offerPlacement.offerFrom.excursionHighlights ?? [] }
-      : !offerPlacement && prominence === 'prominent' && day.excursionHighlights && day.excursionHighlights.length > 0 && !day.excursionOffer
-        ? { offer: null, highlights: day.excursionHighlights }
-        : null
   const convertDay = (next: typeof dayType) => convertDayType(day.id, next)
 
   // ── El mapa se adapta al tipo de día ────────────────────────────────────────────────────────
@@ -1387,12 +1375,7 @@ export function DayDetailPanel({
               </button>
           )}
 
-          {/* Salidas del día. En prominencia sutil el link es lo ÚNICO que se ve de excursiones, y
-              tiene que quedarse pequeño: el 90% de los viajeros no busca una excursión el día 2. */}
-          {/* Solo en el día de la oferta (PROMPT_UI_REPASO 2): el resto de días, nada de excursiones. */}
-          {showsRoute && !halfDayExcursion && !arrivalOrReturnDay && bannerOffer && !day.excursionDeclined && (
-            <ExcursionLink label="¿Prefieres una excursión este día?" onClick={() => convertDay('excursion')} />
-          )}
+          {/* (Sin «¿Prefieres una excursión este día?»: las excursiones se abren desde el botón flotante del autobús, PARA_CODE_EXCURSIONES 1.) */}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
           {showsRoute && day.excursionDeclined && <ExcursionLink label="Añadir excursión" onClick={() => convertDay('excursion')} />}
           {/* No en un día en blanco: está en blanco porque el destino ya no da para más contenido

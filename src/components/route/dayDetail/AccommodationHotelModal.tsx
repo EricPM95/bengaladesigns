@@ -42,7 +42,7 @@ export function AccommodationHotelModal({ city, selected = null, onSelect, onRem
                       {hotel.name} {'★'.repeat(hotel.stars)}
                     </p>
                     <p className="text-text-muted">
-                      {hotel.provider} · ★{hotel.rating} · €{hotel.pricePerNight}/noche
+                      ★{hotel.rating} · €{hotel.pricePerNight}/noche
                     </p>
                   </div>
                   {isSelected ? (
