@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from '../reservas/ReservedMarks'
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
 
 /**
@@ -337,12 +338,14 @@ export function HalfDayExcursionBlock({
   /** En un día que el viajero montó él, "quitar" es lo que ha hecho, no "quedarse en la ciudad". */
   dismissLabel?: string
 }) {
+  const reserved = Boolean(useExcursionReservation(excursion.id))
   return (
     <div>
       <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
         Mañana · {startsAt} — {endsAt}
       </p>
       <div className="rounded-xl border border-accent bg-accent-soft p-3">
+        <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
             {excursion.emoji ?? '🚌'}
@@ -372,28 +375,32 @@ export function HalfDayExcursionBlock({
           </div>
         </div>
         {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
-        {excursion.meetingPoint && (
+        {excursion.meetingPoint && !reserved && (
           <p className="mt-2 text-caption text-text-muted">
             <span className="font-semibold">Punto de encuentro:</span> {excursion.meetingPoint}
           </p>
         )}
-        {excursion.bookUrl && (
-          <a
-            href={excursion.bookUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+        <ExcursionBookArea excursion={excursion}>
+          {excursion.bookUrl && (
+            <a
+              href={excursion.bookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Ver disponibilidad
+            </a>
+          )}
+        </ExcursionBookArea>
+        {!reserved && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="mt-2 w-full text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
           >
-            Ver disponibilidad
-          </a>
+            {dismissLabel}
+          </button>
         )}
-        <button
-          type="button"
-          onClick={onDismiss}
-          className="mt-2 w-full text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
-        >
-          {dismissLabel}
-        </button>
       </div>
     </div>
   )
@@ -411,9 +418,11 @@ export function HalfDayExcursionBlock({
  * sería prometer algo que no existe. La salida es quitar la excursión y volver a decidir.
  */
 export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excursion; onRemove: () => void }) {
+  const reserved = Boolean(useExcursionReservation(excursion.id))
   return (
     <div className="space-y-2 pt-1">
       <div className="rounded-xl border border-accent bg-accent-soft p-3">
+        <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
             {excursion.emoji ?? '🚌'}
@@ -438,34 +447,38 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
           </div>
         </div>
         {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
-        {excursion.meetingPoint && (
+        {excursion.meetingPoint && !reserved && (
           <p className="mt-2 text-caption text-text-muted">
             <span className="font-semibold">Punto de encuentro:</span> {excursion.meetingPoint}
           </p>
         )}
-        {excursion.bookUrl && (
-          <a
-            href={excursion.bookUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Ver disponibilidad
-          </a>
-        )}
+        <ExcursionBookArea excursion={excursion}>
+          {excursion.bookUrl && (
+            <a
+              href={excursion.bookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Ver disponibilidad
+            </a>
+          )}
+        </ExcursionBookArea>
       </div>
 
       <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
         Esta excursión ocupa el día entero — relájate y disfruta.
       </p>
 
-      <button
-        type="button"
-        onClick={onRemove}
-        className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
-      >
-        Quitar esta excursión
-      </button>
+      {!reserved && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+        >
+          Quitar esta excursión
+        </button>
+      )}
     </div>
   )
 }
@@ -540,7 +553,9 @@ export function ExcursionDayProposal({
   // quitarle el día que acaba de recuperar.
   const [asking, setAsking] = useState(false)
   const featured = options.find((option) => option.id === selectedId) ?? options[0] ?? null
-  const alternatives = options.filter((option) => option.id !== featured?.id)
+  // Una excursión reservada es el día: no se cambia por otra ni se deja (PARA_CODE_RESERVAS, 6).
+  const reserved = Boolean(useExcursionReservation(featured?.id))
+  const alternatives = reserved ? [] : options.filter((option) => option.id !== featured?.id)
   if (!featured) return null
 
   return (
@@ -553,6 +568,7 @@ export function ExcursionDayProposal({
       )}
 
       <div className="rounded-xl border border-accent bg-accent-soft p-3">
+        <ExcursionReservedTop excursion={featured} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
             {featured.emoji ?? '🚌'}
@@ -577,16 +593,18 @@ export function ExcursionDayProposal({
           </div>
         </div>
         {featured.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{featured.description}</p>}
-        {featured.bookUrl && (
-          <a
-            href={featured.bookUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Ver disponibilidad
-          </a>
-        )}
+        <ExcursionBookArea excursion={featured}>
+          {featured.bookUrl && (
+            <a
+              href={featured.bookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block w-full rounded-xl bg-accent py-2.5 text-center text-small font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Ver disponibilidad
+            </a>
+          )}
+        </ExcursionBookArea>
       </div>
 
       {alternatives.length > 0 && (
@@ -603,7 +621,7 @@ export function ExcursionDayProposal({
         </>
       )}
 
-      {asking ? (
+      {reserved ? null : asking ? (
         <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
           <p className="text-small font-semibold text-text">¿Qué hacemos con este día?</p>
           <div className="flex gap-2">

@@ -20,6 +20,9 @@ function buildTripPayload(): TripPayload | null {
       n26Added: state.n26Added,
       rentalVehicleBooking: state.rentalVehicleBooking,
       esimSelections: state.esimSelections,
+      reservations: state.reservations,
+      campaignCode: state.campaignCode,
+      sales: state.sales,
     },
     wishlist: state.wishlist,
     uiState: { mode: state.mode, activeDayId: state.activeDayId },
@@ -67,6 +70,9 @@ export function TripSync() {
   const n26Added = useRouteStore((state) => state.n26Added)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
   const esimSelections = useRouteStore((state) => state.esimSelections)
+  const reservations = useRouteStore((state) => state.reservations)
+  const campaignCode = useRouteStore((state) => state.campaignCode)
+  const sales = useRouteStore((state) => state.sales)
   const wishlist = useRouteStore((state) => state.wishlist)
   const mode = useRouteStore((state) => state.mode)
   const activeDayId = useRouteStore((state) => state.activeDayId)
@@ -135,7 +141,7 @@ export function TripSync() {
     const timeout = setTimeout(() => attemptSave(travelerId), SAVE_DEBOUNCE_MS)
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, wishlist, mode, activeDayId])
+  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, reservations, campaignCode, sales, wishlist, mode, activeDayId])
 
   useEffect(() => {
     const retry = () => {

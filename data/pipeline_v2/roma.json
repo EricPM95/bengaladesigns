@@ -7946,6 +7946,11 @@
       "comprobado": "2026-09-28"
     }
   ],
+  "entradas_reservas": [
+    { "nombre": "Coliseo, Foro y Palatino", "lugares": ["Coliseo", "Foro Romano y Palatino"] },
+    { "nombre": "Museos Vaticanos y Capilla Sixtina", "lugares": ["Museos Vaticanos y Capilla Sixtina"] },
+    { "nombre": "Panteón", "lugares": ["Panteón"] }
+  ],
   "excursions": {
     "excursiones_desde_dias": 4,
     "ejemplos_linea": "Pompeya, Florencia, la Costa Amalfitana…",

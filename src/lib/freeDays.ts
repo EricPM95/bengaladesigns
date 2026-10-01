@@ -5,7 +5,7 @@
  * Un día añadido es de tipo `manual` y lleva `userAdded`: el motor no lo toca nunca (tampoco al rehacer el viaje), y
  * es el único que se puede quitar. Va detrás del último día de ruta; si hay día de vuelta, la vuelta se mueve un día.
  */
-import type { ChosenRestaurant, Coordinates, DayPlan, MealSlot, Route, Stop } from './types'
+import type { ChosenRestaurant, Coordinates, DayPlan, Excursion, MealSlot, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
 import { minutesToTime, parseTimeToMinutes, roundUpToQuarterHour } from './time'
 
@@ -80,6 +80,48 @@ function withDayCount(route: Route, days: DayPlan[]): Route {
       dateRange: range ? { ...range, end: addDaysToIso(range.end, delta) } : range,
     },
   }
+}
+
+/**
+ * Una excursión sustituye un día del viaje o va a un día nuevo (PARA_CODE_EXCURSIONES, 3): el día pasa a ser la excursión y se llama como ella; sus
+ * paradas se quitan y el resto del viaje no cambia. Una de medio día solo ocupa la mañana (hasta las 14:00). Devuelve la ruta y el día, o null si ya
+ * hay 14 días.
+ */
+export function placeExcursionIn(route: Route, excursion: Excursion, target: { dayId: string } | { newDay: true }): { route: Route; dayId: string } | null {
+  let next = route
+  let dayId: string
+  const isNew = 'newDay' in target
+  if (isNew) {
+    const added = addFreeDay(route, excursion.title)
+    if (!added) return null
+    next = withDayColors(added.route)
+    dayId = added.dayId
+  } else dayId = target.dayId
+  const half = excursion.length === 'half-day'
+  next = {
+    ...next,
+    days: next.days.map((day) =>
+      day.id !== dayId
+        ? day
+        : {
+            ...day,
+            title: excursion.title,
+            curatedTitle: excursion.title,
+            excursions: (day.excursions ?? []).some((other) => other.id === excursion.id) ? day.excursions : [...(day.excursions ?? []), excursion],
+            selectedExcursionId: excursion.id,
+            excursionDeclined: false,
+            halfDayExcursionDeclined: false,
+            ...(half
+              ? {
+                  dayType: isNew ? ('manual' as const) : day.dayType,
+                  halfDayExcursion: { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '14:00' },
+                  stops: isNew ? [] : day.stops.filter((stop) => !(stop.time && stop.time < '14:00')),
+                }
+              : { dayType: 'excursion' as const, halfDayExcursion: null, stops: [], meals: [] }),
+          },
+    ),
+  }
+  return { route: next, dayId }
 }
 
 /** ¿Se puede añadir otro día? */

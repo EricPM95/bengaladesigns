@@ -105,7 +105,13 @@ export function RouteView() {
   // se resuelve aquí antes de montar ese layout en absoluto. Cerrar vuelve siempre a RUTA, mismo
   // criterio que DestinationDetailModal/AttractionsFinder.
   if (mode === 'bookings') {
-    return <ReservasPanel route={route} onClose={() => setMode('route')} />
+    return (
+      <>
+        <ReservasPanel route={route} onClose={() => setMode('route')} />
+        {/* La página de excursiones se abre también desde la fila «Excursiones desde {destino}» de Reservas. */}
+        <ExcursionsPage route={route} />
+      </>
+    )
   }
 
   const hasTripDates = Boolean(route.answers.dateRange)

@@ -98,7 +98,8 @@ for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
 
 const anthropic = new Anthropic()
 const app = express()
-app.use(express.json())
+// (6 MB: la captura o el PDF de una confirmación de reserva viaja en base64, ver /api/read-booking.)
+app.use(express.json({ limit: '6mb' }))
 // ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
 //
 // Objetivo: poder responder "¿cuántas llamadas reales dispara generar una ruta de Roma (pipeline
@@ -1036,6 +1037,124 @@ Respond ONLY in valid JSON (no markdown, no explanation):
 function buildZonaTuristicaPrompt(destino, zonaBruta) {
   return `Destino: "${destino}"\nNombre de zona en bruto (geocodificación administrativa): "${zonaBruta}"`
 }
+
+// ── Leer la confirmación de una reserva (PARA_CODE_RESERVAS, 4) ──────────────────────────────────────────────
+//
+// El email pegado, la captura o el PDF de la confirmación de una entrada o una excursión → fecha, hora de recogida o de entrada, punto de encuentro
+// y número de reserva, para que el viajero los vea («LO HEMOS LEÍDO ASÍ») y los corrija. Lo que se lee NO se guarda en ningún sitio: se devuelve y
+// ya (ni caché, ni base de datos, ni registro del contenido).
+const READ_BOOKING_SYSTEM_PROMPT = `Lees confirmaciones de reserva (emails, capturas o PDF) de entradas y excursiones para una app de viajes. Devuelves SOLO un JSON, sin texto alrededor, con estos campos:
+{"fecha": "YYYY-MM-DD" o null, "hora": "HH:MM" o null, "hora_vuelta": "HH:MM" o null, "punto_encuentro": texto o null, "localizador": texto o null, "personas": número o null}
+- "fecha": el día de la actividad (no el de la compra). Si no trae el año, usa el que te indico.
+- "hora": la hora de recogida (excursión) o de entrada (entrada), en 24 horas.
+- "hora_vuelta": la hora de vuelta o fin, solo si aparece.
+- "punto_encuentro": dónde empieza (punto de recogida, calle, estación), tal cual aparece.
+- "localizador": el número o código de la reserva.
+No inventes nada: lo que no aparezca claro, null.`
+
+app.post('/api/read-booking', async (req, res) => {
+  const { kind, name, text, file, year_hint: yearHint } = req.body ?? {}
+  const hasText = typeof text === 'string' && text.trim().length > 0
+  const hasFile = file && typeof file.data === 'string' && ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(file.media_type)
+  if (!hasText && !hasFile) {
+    res.status(400).json({ error: 'Falta el texto o el archivo de la confirmación.' })
+    return
+  }
+  try {
+    const intro = `Reserva de ${kind === 'excursion' ? 'una excursión' : 'una entrada'}: ${String(name ?? '').slice(0, 120)}. Año por defecto: ${Number.isInteger(yearHint) ? yearHint : new Date().getFullYear()}.`
+    const content = []
+    if (hasFile) content.push(file.media_type === 'application/pdf' ? { type: 'document', source: { type: 'base64', media_type: file.media_type, data: file.data } } : { type: 'image', source: { type: 'base64', media_type: file.media_type, data: file.data } })
+    content.push({ type: 'text', text: hasText ? `${intro}
+
+Confirmación:
+${text.slice(0, 20000)}` : intro })
+    const response = await anthropic.messages.create({ model: MODEL, max_tokens: 400, system: READ_BOOKING_SYSTEM_PROMPT, messages: [{ role: 'user', content }] })
+    logCallCost('read-booking', response)
+    const textBlock = response.content.find((block) => block.type === 'text')
+    if (!textBlock) throw new Error('Respuesta de Claude sin bloque de texto')
+    const parsed = JSON.parse(extractJsonText(textBlock.text))
+    const clean = (value, pattern) => (typeof value === 'string' && pattern.test(value.trim()) ? value.trim() : null)
+    res.json({
+      fecha: clean(parsed?.fecha, /^\d{4}-\d{2}-\d{2}$/),
+      hora: clean(parsed?.hora, /^\d{1,2}:\d{2}$/),
+      hora_vuelta: clean(parsed?.hora_vuelta, /^\d{1,2}:\d{2}$/),
+      punto_encuentro: typeof parsed?.punto_encuentro === 'string' && parsed.punto_encuentro.trim() ? parsed.punto_encuentro.trim().slice(0, 160) : null,
+      localizador: typeof parsed?.localizador === 'string' && parsed.localizador.trim() ? parsed.localizador.trim().slice(0, 60) : null,
+      personas: Number.isInteger(parsed?.personas) ? parsed.personas : null,
+    })
+  } catch (error) {
+    logAnthropicError('read-booking', error)
+    res.status(502).json({ error: 'No hemos podido leer la confirmación. Puedes añadirla a mano.' })
+  }
+})
+
+// ── Ventas del afiliado unidas a un viaje (PARA_CODE_RESERVAS, 5) ────────────────────────────────────────────
+//
+// Cada viaje lleva un código de campaña al azar en todos los enlaces de «Reservar». Cuando llega una venta con ese código (de la API o del informe
+// de ventas del afiliado: NO se leen correos de nadie) se guarda y la app la ofrece al viajero la próxima vez que abre el viaje.
+//   POST /api/sales/ingest  (cabecera x-ingest-secret = SALES_INGEST_SECRET): {campaign, sale_id, product, date, time, people, locator, status}
+//   POST /api/trip-sales    {campaign}: las ventas de ese código, para ese viaje.
+// Sin clave de servicio de Supabase (SUPABASE_SERVICE_ROLE_KEY), las ventas viven en memoria (desarrollo y pruebas); la tabla es
+// supabase/migrations/0017_affiliate_sales.sql (sin aplicar). Fuera de producción y sin secreto puesto, se puede ingerir sin cabecera (pruebas).
+const salesStore = new Map()
+const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY) : null
+const CAMPAIGN_PATTERN = /^v-[A-Z0-9]{5}$/
+
+app.post('/api/sales/ingest', async (req, res) => {
+  const secret = process.env.SALES_INGEST_SECRET
+  const allowed = secret ? req.get('x-ingest-secret') === secret : process.env.NODE_ENV !== 'production'
+  if (!allowed) {
+    res.status(401).json({ error: 'No autorizado.' })
+    return
+  }
+  const { campaign, sale_id: saleId, product, date, time, people, locator, status } = req.body ?? {}
+  if (!CAMPAIGN_PATTERN.test(String(campaign ?? '')) || !saleId || !product || !/^\d{4}-\d{2}-\d{2}$/.test(String(date ?? ''))) {
+    res.status(400).json({ error: 'Faltan datos de la venta (campaign, sale_id, product, date).' })
+    return
+  }
+  const row = {
+    campaign,
+    sale_id: String(saleId),
+    product: String(product).slice(0, 200),
+    activity_date: date,
+    activity_time: /^\d{1,2}:\d{2}$/.test(String(time ?? '')) ? String(time) : null,
+    people: Number.isInteger(people) ? people : null,
+    locator: locator ? String(locator).slice(0, 60) : null,
+    status: status === 'cancelled' ? 'cancelled' : 'confirmed',
+  }
+  try {
+    if (salesAdmin) {
+      const { error } = await salesAdmin.from('affiliate_sales').upsert(row, { onConflict: 'sale_id' })
+      if (error) throw error
+    } else salesStore.set(row.sale_id, row)
+    res.json({ ok: true })
+  } catch (error) {
+    logAnthropicError('sales-ingest', error)
+    res.status(500).json({ error: 'No se pudo guardar la venta.' })
+  }
+})
+
+app.post('/api/trip-sales', async (req, res) => {
+  const campaign = String(req.body?.campaign ?? '')
+  if (!CAMPAIGN_PATTERN.test(campaign)) {
+    res.json({ sales: [] })
+    return
+  }
+  try {
+    let rows
+    if (salesAdmin) {
+      const { data, error } = await salesAdmin.from('affiliate_sales').select('*').eq('campaign', campaign)
+      if (error) throw error
+      rows = data ?? []
+    } else rows = [...salesStore.values()].filter((row) => row.campaign === campaign)
+    res.json({
+      sales: rows.map((row) => ({ id: row.sale_id, product: row.product, date: row.activity_date, time: row.activity_time, people: row.people, locator: row.locator, status: row.status })),
+    })
+  } catch (error) {
+    logAnthropicError('trip-sales', error)
+    res.json({ sales: [] })
+  }
+})
 
 app.post('/api/zona-turistica', async (req, res) => {
   const { destino, zona_bruta: zonaBruta } = req.body ?? {}
@@ -4170,15 +4289,18 @@ app.post('/api/destination-excursions', (req, res) => {
   const destination = req.body?.destination
   const data = destination ? findPipelineV2Data(destination) : null
   const options = data?.excursions?.options ?? []
-  if (!data || options.length === 0) {
-    res.json({ found: false, from_days: null, excursions: [] })
+  // Las tres entradas imprescindibles de Reservas, elegidas al curar el destino (`entradas_reservas`): nombre y los lugares de la ruta que cubre.
+  const entradas = Array.isArray(data?.entradas_reservas) ? data.entradas_reservas.map((entry) => ({ name: entry.nombre, places: entry.lugares ?? [] })) : []
+  if (!data || (options.length === 0 && entradas.length === 0)) {
+    res.json({ found: false, from_days: null, excursions: [], entradas: [] })
     return
   }
   const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
   const average = rated.length > 0 ? rated.reduce((sum, option) => sum + option.rating, 0) / rated.length : null
   res.json({
     found: true,
-    from_days: data.excursions?.excursiones_desde_dias ?? null,
+    from_days: options.length > 0 ? (data.excursions?.excursiones_desde_dias ?? null) : null,
+    entradas,
     examples: data.excursions?.ejemplos_linea ?? null,
     excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
     rating: average == null ? null : { percent: Math.round(average * 20), excursions: rated.length, reviews: rated.reduce((sum, option) => sum + option.review_count, 0) },

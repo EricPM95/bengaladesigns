@@ -41,3 +41,27 @@ export function buildHotelSearchUrl(city: string, checkIn?: string | null, check
 export function buildActivitySearchUrl(query: string): string {
   return `https://www.civitatis.com/es/buscar?q=${encodeURIComponent(query)}`
 }
+
+/**
+ * El código de campaña de cada viaje en los enlaces de «Reservar» (PARA_CODE_RESERVAS, 5): así, cuando llega una venta con ese código, se sabe a
+ * qué viaje pertenece sin saber nada del viajero (el código es al azar, `v-8F3K2`: ni nombre, ni email, ni nada del viaje).
+ *
+ * Solo en los enlaces de Civitatis. La documentación pública del programa solo explica `?aid=XXX` (el número de afiliado); el nombre del campo de
+ * campaña es el que el panel del afiliado deja poner en cada enlace: se lee de `VITE_AFFILIATE_CAMPAIGN_PARAM` (por defecto `cmp`) y el número de
+ * afiliado de `VITE_CIVITATIS_AID`. Cuando haya los dos, todos los enlaces de la app los llevan sin tocar una sola pantalla.
+ */
+const CAMPAIGN_PARAM = (import.meta.env.VITE_AFFILIATE_CAMPAIGN_PARAM as string | undefined) || 'cmp'
+const AFFILIATE_ID = import.meta.env.VITE_CIVITATIS_AID as string | undefined
+
+export function withCampaign(url: string, campaignCode: string | null | undefined): string {
+  if (!url || url === '#') return url
+  try {
+    const parsed = new URL(url)
+    if (!/(^|\.)civitatis\.com$/.test(parsed.hostname)) return url
+    if (AFFILIATE_ID) parsed.searchParams.set('aid', AFFILIATE_ID)
+    if (campaignCode) parsed.searchParams.set(CAMPAIGN_PARAM, campaignCode)
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}

@@ -7,6 +7,8 @@ import { InsuranceRow } from './InsuranceRow'
 import { N26Row } from './N26Row'
 import { RentalVehicleRow } from './RentalVehicleRow'
 import { EsimRow } from './EsimRow'
+import { ReservasItemRow } from './ReservasItemRow'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 interface ReadinessBreakdownRowProps {
   item: ReadinessItem
@@ -34,6 +36,11 @@ export function ReadinessBreakdownRow({ item, route }: ReadinessBreakdownRowProp
   if (item.kind === 'esim') {
     const countryCode = item.id.slice('esim-'.length)
     return <EsimRow countryCode={countryCode} />
+  }
+
+  // Entradas y excursión: se añaden desde su pantalla (Reservas), con su ventana.
+  if (item.kind === 'entrada' || item.kind === 'excursion') {
+    return <ReservasItemRow kind={item.kind} label={item.label} resolved={item.resolved} subtitle={item.dayNumber ? `Día ${item.dayNumber}` : undefined} priority="gray" onClick={() => useRouteStore.getState().setMode('bookings')} />
   }
 
   return null

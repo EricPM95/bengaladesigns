@@ -7,18 +7,21 @@
 import { useEffect, useState } from 'react'
 import type { Excursion } from './types'
 import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
+import type { EssentialEntry } from './bookings'
 
 export interface DestinationExcursions {
   /** Desde cuántos días de viaje sale el botón; null = este destino no tiene excursiones. */
   fromDays: number | null
   excursions: Excursion[]
+  /** Las tres entradas imprescindibles del destino para Reservas (`entradas_reservas`). */
+  entradas: EssentialEntry[]
   /** Los sitios de excursión del destino, en una línea («Pompeya, Florencia…»), de los datos del destino. */
   examples: string | null
   /** La valoración media real (null mientras no haya notas reales). */
   rating: { percent: number; excursions: number; reviews: number } | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], examples: null, rating: null }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], examples: null, rating: null }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -30,8 +33,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
-      const result: DestinationExcursions = data?.found ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), examples: data.examples ?? null, rating: data.rating ?? null } : EMPTY
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; entradas?: EssentialEntry[]; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+      const result: DestinationExcursions = data?.found
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], examples: data.examples ?? null, rating: data.rating ?? null }
+        : EMPTY
       cache.set(key, result)
       return result
     })

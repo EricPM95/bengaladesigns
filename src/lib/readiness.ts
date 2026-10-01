@@ -2,8 +2,9 @@ import type { Route } from './types'
 import { buildDestinationSegments } from './destinationSegments'
 import { computeDayTravelInfo } from './dayTravelInfo'
 import { todayIso } from './dateRange'
+import type { EntryRow, ExcursionRowData } from './bookings'
 
-export type ReadinessItemKind = 'transport' | 'accommodation' | 'insurance' | 'n26' | 'rental-vehicle' | 'esim'
+export type ReadinessItemKind = 'transport' | 'accommodation' | 'insurance' | 'n26' | 'rental-vehicle' | 'esim' | 'entrada' | 'excursion'
 
 /** Ficha de reserva de un tramo de transporte (llegada o vuelta) — vuelo o tren. */
 export interface TransportBooking {
@@ -43,6 +44,18 @@ export interface ReadinessItem {
   destinationCity: string | null
   resolved: boolean
   priority: ReadinessPriority
+  /** Entradas y excursión: el día de la ruta en que están (para ordenarlas por fecha). */
+  dayNumber?: number
+}
+
+/**
+ * Lo que Reservas calcula desde la ruta y suma al %: las entradas imprescindibles que están en la ruta y la excursión, solo si el viaje tiene un
+ * día de excursión (PARA_CODE_RESERVAS, 3). No cuentan las de «Ver más» ni la fila «Excursiones desde {destino}» sin excursión: un viaje sin
+ * excursión llega al 100 %.
+ */
+export interface ReadinessExtras {
+  entries: EntryRow[]
+  excursion: ExcursionRowData | null
 }
 
 /** Estado ya resuelto de cada tipo de ítem, leído del store — buildReadinessItems es una función pura sobre esto. */
@@ -85,7 +98,7 @@ export function countryDisplayName(countryCode: string): string {
  * en los acordeones de RESERVAS (DestinationReservasAccordion.tsx), que repite el eSIM donde
  * corresponda sin duplicar su peso aquí.
  */
-export function buildReadinessItems(route: Route, resolved: ReadinessResolvedState): ReadinessItem[] {
+export function buildReadinessItems(route: Route, resolved: ReadinessResolvedState, extras?: ReadinessExtras): ReadinessItem[] {
   const items: ReadinessItem[] = []
   const segments = buildDestinationSegments(route.days)
   const isCamper = route.transportContext.vehicle_type === 'camper'
@@ -155,6 +168,21 @@ export function buildReadinessItems(route: Route, resolved: ReadinessResolvedSta
     priority: 'red',
   })
   items.push({ id: 'general-n26', kind: 'n26', label: 'Tarjeta N26', weight: 1, destinationCity: null, resolved: resolved.n26Added, priority: 'gray' })
+  for (const entry of extras?.entries ?? []) {
+    items.push({ id: `entrada-${entry.id}`, kind: 'entrada', label: entry.name, weight: 1, destinationCity: null, resolved: Boolean(entry.reservation), priority: 'gray', dayNumber: entry.day?.dayNumber })
+  }
+  if (extras?.excursion?.day && extras.excursion.excursion) {
+    items.push({
+      id: `excursion-${extras.excursion.excursion.id}`,
+      kind: 'excursion',
+      label: extras.excursion.excursion.title,
+      weight: 1,
+      destinationCity: null,
+      resolved: Boolean(extras.excursion.reservation),
+      priority: 'gray',
+      dayNumber: extras.excursion.day.dayNumber,
+    })
+  }
   if (hasRentalVehicle) {
     items.push({
       id: 'general-rental-vehicle',
@@ -203,6 +231,7 @@ function resolveDayNumber(route: Route, dayId: string): number {
 function itemDueDayNumber(route: Route, item: ReadinessItem): number {
   if (item.kind === 'transport') return resolveDayNumber(route, item.id.slice('transport-'.length))
   if (item.kind === 'accommodation') return resolveDayNumber(route, item.id.slice('accommodation-'.length))
+  if (item.kind === 'entrada' || item.kind === 'excursion') return item.dayNumber ?? Number.MAX_SAFE_INTEGER
   if (item.kind === 'esim') {
     const countryCode = item.id.slice('esim-'.length)
     return route.days.find((day) => day.countryCode === countryCode)?.dayNumber ?? Number.MAX_SAFE_INTEGER
@@ -216,7 +245,7 @@ const IMMINENT_TRIP_DAYS_THRESHOLD = 15
 /** Transporte y alojamiento primero (precio/disponibilidad que empeora con el tiempo), seguro justo después (imprescindible, pero sin esa presión de precio) — eSIM/N26/vehículo de alquiler NUNCA se muestran mientras quede alguno de estos tres pendiente. */
 const URGENT_KIND_ORDER: ReadinessItemKind[] = ['transport', 'accommodation', 'insurance']
 /** Solo se usa una vez los tres de arriba están completados — ninguno de estos tiene presión de precio, se resuelven el mismo día si hace falta. */
-const RELAXED_KIND_ORDER: ReadinessItemKind[] = ['esim', 'n26', 'rental-vehicle']
+const RELAXED_KIND_ORDER: ReadinessItemKind[] = ['esim', 'n26', 'rental-vehicle', 'entrada', 'excursion']
 
 function daysUntilTrip(route: Route): number | null {
   const startIso = route.answers.dateRange?.start

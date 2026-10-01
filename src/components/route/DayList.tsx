@@ -28,6 +28,8 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
+import { isDayPinned } from '../../lib/bookings'
+import { SaleCards } from './reservas/SaleCards'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
@@ -117,6 +119,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const excursionInfo = useDestinationExcursions(route.destination)
   const openExcursionsPage = useExcursionsStore((state) => state.openPage)
   const tripDays = route.answers.days ?? route.days.length
+  const reservations = useRouteStore((state) => state.reservations)
   const [removeDayId, setRemoveDayId] = useState<string | null>(null)
   const removeDay = route.days.find((day) => day.id === removeDayId) ?? null
 
@@ -207,6 +210,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       )}
       {/* Por qué la ruta es como es: uno solo, encima del Día 1 (la nota de temporada pasa a la ventana de los avisos). */}
       <ContextBanner route={route} />
+      {/* Una venta del afiliado con el código de este viaje: «Hemos visto que has reservado… ¿La ponemos en tu Día n?» (PARA_CODE_RESERVAS, 5). */}
+      <SaleCards route={route} />
       <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleDayDragEnd}>
       <SortableContext items={route.days.map((day) => day.id)} strategy={verticalListSortingStrategy}>
       {route.days.map((day, index) => {
@@ -222,7 +227,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const colorIndex = dayColorIndex(day, nonReturnIndex.get(day.id) ?? index)
 
         return (
-          <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index)}>
+          <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
             {(dragHandle) => (
           <div
             data-day-id={day.id}
@@ -283,7 +288,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
               <span onClick={(event) => event.stopPropagation()}>
                 <DayWandMenu
-                  dayChanged={isFreeDay(day) || day.userAdded ? null : Boolean(day.originalSnapshot)}
+                  dayChanged={isFreeDay(day) || day.userAdded ? null : isDayPinned(route, reservations, day) ? false : Boolean(day.originalSnapshot)}
                   routeChanged={Boolean(route.editedManually && route.originalRoute)}
                   onRestoreDay={() => setAskRestore({ kind: 'day', dayId: day.id, dayNumber: day.dayNumber })}
                   onRestoreRoute={() => setAskRestore({ kind: 'route' })}
@@ -292,14 +297,14 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
               <span onClick={(event) => event.stopPropagation()}>
                 <DayMenu
-                  onDelete={() => setRemoveDayId(day.id)}
+                  onDelete={isDayPinned(route, reservations, day) ? null : () => setRemoveDayId(day.id)}
                   freeDay={
                     isFreeDay(day) || day.userAdded
                       ? {
                           onAddPlaces: () => openAddFlow(day.id),
                           onRename: () => setNameSheet({ dayId: day.id }),
-                          onMoveBefore: canMoveDay(route, day.id, -1) ? () => moveFreeDay(day.id, -1) : null,
-                          onMoveAfter: canMoveDay(route, day.id, 1) ? () => moveFreeDay(day.id, 1) : null,
+                          onMoveBefore: canMoveDay(route, day.id, -1) && !isDayPinned(route, reservations, day) ? () => moveFreeDay(day.id, -1) : null,
+                          onMoveAfter: canMoveDay(route, day.id, 1) && !isDayPinned(route, reservations, day) ? () => moveFreeDay(day.id, 1) : null,
                         }
                       : undefined
                   }

@@ -244,6 +244,8 @@ export interface Stop {
       se ha recalculado: DayDetailPanel lo pide a Mapbox y lo guarda con `setLegToNext`. */
   nextLegPending?: boolean
   isRevisit?: boolean
+  /** La reserva que fija esta parada (su entrada): tiene fecha y hora fijas y nada del motor ni del viajero la mueve (PARA_CODE_RESERVAS, 6). */
+  reservedId?: string | null
   /** Parada opcional (PROMPT_QUITAR_RITMOS): lleva la etiqueta «Opcional» para que el viajero sepa qué puede saltarse. */
   optional?: boolean
   /** Por qué merece la pena volver — lo escribe el motor (ver revisits.js en el servidor). */

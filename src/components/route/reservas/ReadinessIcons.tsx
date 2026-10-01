@@ -63,6 +63,26 @@ function CarIcon({ className = DEFAULT_CLASS }: IconProps) {
   )
 }
 
+function TicketIcon({ className = DEFAULT_CLASS }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M4 8a2 2 0 0 0 0 4v0a2 2 0 0 1 0 4h0v1.5A1.5 1.5 0 0 0 5.5 19h13a1.5 1.5 0 0 0 1.5-1.5V16a2 2 0 0 1 0-4v0a2 2 0 0 0 0-4V6.5A1.5 1.5 0 0 0 18.5 5h-13A1.5 1.5 0 0 0 4 6.5V8z" />
+      <path d="M14 5v14" strokeDasharray="2 2" />
+    </svg>
+  )
+}
+
+function BusIcon({ className = DEFAULT_CLASS }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="4" y="3.5" width="16" height="14" rx="3" />
+      <path d="M4 11h16M8 17.5V20M16 17.5V20" />
+      <circle cx="8" cy="14.2" r=".6" />
+      <circle cx="16" cy="14.2" r=".6" />
+    </svg>
+  )
+}
+
 const READINESS_ICON: Record<ReadinessItemKind, (props: IconProps) => JSX.Element> = {
   insurance: ShieldIcon,
   esim: SimCardIcon,
@@ -70,6 +90,8 @@ const READINESS_ICON: Record<ReadinessItemKind, (props: IconProps) => JSX.Elemen
   transport: PlaneIcon,
   accommodation: HouseIcon,
   'rental-vehicle': CarIcon,
+  entrada: TicketIcon,
+  excursion: BusIcon,
 }
 
 export function ReadinessKindIcon({ kind, className }: { kind: ReadinessItemKind; className?: string }) {

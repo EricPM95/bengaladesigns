@@ -101,7 +101,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
-  const tags = stop.isFreeWalk
+  const tags: { label: string; kind: typeof kind; green?: boolean }[] = stop.isFreeWalk
     ? [{ label: 'Paseo libre', kind }]
     : stop.tags && stop.tags.length > 0
       ? stop.tags.slice(0, 2).map((tag) => ({ label: tagLabel(tag), kind: stopKindOf({ name: '', tags: [tag] }) }))
@@ -113,6 +113,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // «Opcional» (PROMPT_QUITAR_RITMOS): hay una sola ruta y el viajero la aligera quitando paradas; estas son las primeras.
   // Junto a un imprescindible y cerrado a esa hora: se ve por fuera, con su etiqueta y sin el aviso en rojo (paso 5.4).
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
+  // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
+  if (stop.reservedId) tags.unshift({ label: 'Reservada ✓', kind, green: true }, { label: 'Fijada', kind, green: true })
   if (stop.optional) tags.push({ label: 'Opcional', kind })
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })

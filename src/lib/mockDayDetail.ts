@@ -223,6 +223,8 @@ export interface MockStopDetail {
   isFreeWalk?: boolean
   noOwnPhoto?: boolean
   aperitivoTip?: string | null
+  /** Ver Stop.reservedId: la reserva que fija esta parada. */
+  reservedId?: string | null
   /** Ver Stop.isSunset / Stop.isNightView: mirador del atardecer y mirador de noche. */
   isSunset?: boolean
   isNightView?: boolean
@@ -486,6 +488,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     isFreeWalk: stop.isFreeWalk,
     noOwnPhoto: stop.noOwnPhoto,
     aperitivoTip: stop.aperitivoTip ?? null,
+    reservedId: stop.reservedId ?? null,
     isSunset: stop.isSunset,
     isNightView: stop.isNightView,
     nightViewTitle: stop.nightViewTitle,

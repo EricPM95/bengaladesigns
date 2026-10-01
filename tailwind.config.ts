@@ -21,6 +21,8 @@ export default {
         'accent-gold': withOpacity('--accent-gold'),
         'accent-red': withOpacity('--accent-red'),
         'accent-lilac': withOpacity('--accent-lilac'),
+        'accent-green': withOpacity('--accent-green'),
+        'accent-green-soft': withOpacity('--accent-green-soft'),
         text: withOpacity('--text'),
         'text-soft': withOpacity('--text-soft'),
         'text-muted': withOpacity('--text-muted'),

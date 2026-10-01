@@ -10,7 +10,7 @@ export interface FreeDayMenuActions {
 
 interface DayMenuProps {
   /** "Eliminar día": en todos los días, también el de llegada y el de vuelta (PROMPT_UI, Parte 1). */
-  onDelete: () => void
+  onDelete: (() => void) | null
   freeDay?: FreeDayMenuActions
 }
 

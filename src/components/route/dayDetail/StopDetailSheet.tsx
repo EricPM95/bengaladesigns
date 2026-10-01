@@ -21,6 +21,7 @@ import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
+import { StopReservationBlock, useStopReservation } from '../reservas/StopReservation'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -367,6 +368,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
   // «Entradas» (PARA_CODE_NAVONA 6) nunca sale en un sitio de acceso libre, salvo que esté en el recorrido de un Free
   // Tour, una visita guiada o una actividad: entonces sí, y en ella va ese tour o esa visita.
+  const stopReservation = useStopReservation(stop?.id)
   const showTickets = !stop?.freeAccess || Boolean(stop.inFreeTour) || tickets.length > 0
   const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips']
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
@@ -774,7 +776,9 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       </ul>
                     </div>
                   )}
-                  {tickets.map((ticket, index) => (
+                  {/* Reservada: «Ya tienes entrada · hora» en lugar de los enlaces para comprar (PARA_CODE_RESERVAS, 6). */}
+                  {dayNumber !== null && <StopReservationBlock stopId={stop.id} />}
+                  {!stopReservation && tickets.map((ticket, index) => (
                     <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
                   ))}
                 </div>

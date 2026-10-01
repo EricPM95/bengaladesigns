@@ -1,5 +1,7 @@
 import { useRouteStore } from '../store/useRouteStore'
 import { buildReadinessItems, computeReadinessPercent, type ReadinessResolvedState } from '../lib/readiness'
+import { buildEntryRows, buildExcursionRow, hasEnoughDaysForExcursions } from '../lib/bookings'
+import { useDestinationExcursions } from '../lib/destinationExcursions'
 
 /** null cuando no hay ruta cargada todavía. */
 export function useTripReadiness() {
@@ -10,6 +12,9 @@ export function useTripReadiness() {
   const n26Added = useRouteStore((state) => state.n26Added)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
   const esimSelections = useRouteStore((state) => state.esimSelections)
+  const reservations = useRouteStore((state) => state.reservations)
+  // Las entradas imprescindibles y la excursión salen de la ruta y de los datos del destino (PARA_CODE_RESERVAS, 3).
+  const destinationInfo = useDestinationExcursions(route?.destination)
 
   if (!route) return null
 
@@ -22,7 +27,9 @@ export function useTripReadiness() {
     esimResolvedCountries: new Set(Object.keys(esimSelections)),
   }
 
-  const items = buildReadinessItems(route, resolved)
+  const entries = buildEntryRows(route, destinationInfo.entradas, reservations).main
+  const excursion = destinationInfo.excursions.length > 0 && hasEnoughDaysForExcursions(route, destinationInfo.fromDays) ? buildExcursionRow(route, reservations) : null
+  const items = buildReadinessItems(route, resolved, { entries, excursion })
   const percent = computeReadinessPercent(items)
 
   return { route, items, percent }

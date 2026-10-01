@@ -1,6 +1,7 @@
 import type { Route, RouteMode, WishlistItem } from './types'
 import type { MockHotelResult } from './mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from './readiness'
+import type { Reservation, SaleMatch } from './bookings'
 import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
 import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
@@ -25,6 +26,10 @@ export interface TripBookings {
   n26Added: boolean
   rentalVehicleBooking: GeneralBooking | null
   esimSelections: Record<string, EsimStatus>
+  /** Entradas y excursiones reservadas (fijadas), el código de campaña del viaje y las ventas unidas (PARA_CODE_RESERVAS). Viajes guardados antes: sin ellas. */
+  reservations?: Reservation[]
+  campaignCode?: string
+  sales?: SaleMatch[]
 }
 
 export interface TripUiState {

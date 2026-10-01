@@ -5,6 +5,7 @@ import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { canAddDay } from '../../../lib/freeDays'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { isDayPinned } from '../../../lib/bookings'
 import { dayOptionLabel } from '../freeDay/AddToDaySheet'
 
 /**
@@ -14,7 +15,9 @@ import { dayOptionLabel } from '../freeDay/AddToDaySheet'
 export function WhereSheet({ route, excursion, onClose }: { route: Route; excursion: Excursion; onClose: () => void }) {
   const placeExcursion = useRouteStore((state) => state.placeExcursion)
   const closePage = useExcursionsStore((state) => state.closePage)
-  const days = excursionTargetDays(route)
+  const reservations = useRouteStore((state) => state.reservations)
+  // (Un día fijado por una excursión reservada no se ofrece: lo reservado no se sustituye.)
+  const days = excursionTargetDays(route).filter((day) => !isDayPinned(route, reservations, day))
   const newDayAllowed = canAddDay(route)
   const [choice, setChoice] = useState<string>(days[0]?.id ?? (newDayAllowed ? 'new' : ''))
   const chosenDay = days.find((day) => day.id === choice) ?? null

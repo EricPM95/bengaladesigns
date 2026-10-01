@@ -13,6 +13,7 @@ import { TransportRow } from './reservas/TransportRow'
 import { AccommodationRow } from './reservas/AccommodationRow'
 import { N26Row } from './reservas/N26Row'
 import { EsimRow } from './reservas/EsimRow'
+import { EntradasExcursionSections } from './reservas/EntradasExcursionSections'
 import { bookingLabelsOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 
 interface ReservasPanelProps {
@@ -307,6 +308,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
                 </div>
               </div>
             )}
+
+            {/* «ENTRADAS» y «EXCURSIÓN»: se calculan desde la ruta (PARA_CODE_RESERVAS, 1 y 2). */}
+            <EntradasExcursionSections route={route} />
           </div>
         </div>
 

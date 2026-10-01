@@ -24,6 +24,9 @@
   --accent-gold: 236 150 40;
   --accent-red: 204 39 46;
   --accent-lilac: 236 226 250;
+  /* Lo reservado (Reservas): verde. */
+  --accent-green: 47 125 79;
+  --accent-green-soft: 226 240 230;
   --text: 28 34 48;
   --text-soft: 106 108 114;
   --text-muted: 150 146 139;
@@ -43,6 +46,8 @@
   --accent-gold: 247 172 77;
   --accent-red: 248 113 113;
   --accent-lilac: 46 38 64;
+  --accent-green: 96 190 135;
+  --accent-green-soft: 28 58 42;
   --text: 243 238 228;
   --text-soft: 190 184 172;
   --text-muted: 140 136 128;

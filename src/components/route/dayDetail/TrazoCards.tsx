@@ -38,7 +38,8 @@ interface TrazoCardProps {
   /** Línea de horario, duración y notas (reserva, atardecer…). */
   meta?: CardMeta[]
   /** Píldoras de tipo de lugar (del JSON curado). */
-  tags?: { label: string; kind: StopKind }[]
+  /** `green`: lo reservado (Reservada ✓ / Fijada), en verde. */
+  tags?: { label: string; kind: StopKind; green?: boolean }[]
   photoUrl?: string | null
   /** Sin foto de verdad (comida, llegada): la franja de color se alarga y el hueco va en degradado. */
   noPhoto?: boolean
@@ -122,7 +123,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
               <span
                 key={tag.label}
                 className="inline-flex h-[19px] items-center rounded-full px-2 text-[10.5px] font-medium"
-                style={night ? { background: 'rgba(200,190,255,.16)', color: 'oklch(0.88 0.07 285)' } : { background: KIND_STYLE[tag.kind].soft, color: KIND_STYLE[tag.kind].ink }}
+                style={tag.green ? { background: 'rgb(var(--accent-green-soft))', color: 'rgb(var(--accent-green))' } : night ? { background: 'rgba(200,190,255,.16)', color: 'oklch(0.88 0.07 285)' } : { background: KIND_STYLE[tag.kind].soft, color: KIND_STYLE[tag.kind].ink }}
               >
                 {tag.label}
               </span>

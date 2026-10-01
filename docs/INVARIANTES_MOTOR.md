@@ -2510,3 +2510,45 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     (→ «Reservar»), «Reservado vía Stay22» y «Reservado vía Skyscanner» (→ «Tu reserva»), el proveedor que salía junto al hotel, y el consejo de
     Roma «Reserva con antelación en Civitatis». Los enlaces y los datos internos sí pueden llevar el nombre; los nombres de trenes y autobuses
     (Leonardo, Airlink…) son información, no proveedores.
+
+433. **Reservas se calcula siempre desde la ruta: nunca puede decir un día, una parada o una excursión distintos de los que hay en la pestaña Días**
+    (PARA_CODE_RESERVAS, 1 y 2). `src/lib/bookings.ts` (funciones puras). Debajo de lo de siempre, dos secciones con el mismo formato de filas:
+    - **«ENTRADAS»**: las tres entradas imprescindibles del destino (dato `entradas_reservas`: nombre y lugares de la ruta que cubre; en Roma, Coliseo + Foro y
+      Palatino, Museos Vaticanos y Capilla Sixtina, Panteón) que están en la ruta, cada una con su día («Día 2 · jue 15 oct»); y «Ver {n} entradas más de
+      tu ruta ›» con las demás paradas con entrada (de pago, con reserva obligatoria o con precio de entrada). Si no hay más, la línea no sale.
+    - **«EXCURSIÓN»**: una sola fila. Con un día de excursión en el viaje, esa excursión con su día; sin ninguno, «Excursiones desde {destino}» con «{n}
+      excursiones · {%} de valoración media» (solo «{n} excursiones» sin nota real) y «Ver excursiones», que abre la misma página del botón del autobús.
+      Sin excursiones en el destino, o con menos días que `excursiones_desde_dias`, la sección no sale.
+    - Si se mueven los días, la línea de cada fila cambia sola; si se quita una parada con entrada, su fila desaparece (con la imprescindible que cubre varias,
+      cuando se quitan todas); si se añade, aparece; si se añade, cambia o quita la excursión, cambia la fila.
+
+434. **El % de la cabecera suma lo de Reservas** (PARA_CODE_RESERVAS, 3). `buildReadinessItems(route, resolved, extras)`: cuentan las filas que se ven sin desplegar
+    (vuelos o transporte de ida y vuelta, alojamiento, seguro, eSIM, N26, vehículo si lo hay) más las entradas imprescindibles que están en la ruta y la excursión
+    solo si el viaje tiene un día de excursión (peso 1 cada una). No cuentan las de «Ver más» ni la fila «Excursiones desde {destino}» sin excursión: un viaje sin
+    excursión llega al 100 %. Como Reservas sigue a la ruta, el total cambia solo (se quita el Panteón y deja de contar).
+
+435. **«Añade tu reserva»: una sola ventana para todo, y el día lo pone la fecha de la reserva** (PARA_CODE_RESERVAS, 4). Desde «Añadir» de cada fila y desde «¿Ya la has
+    reservado? Añade tu confirmación» (tarjeta de la excursión y pestaña Entradas de una parada con entrada). Tres pestañas: «Pegar email», «Captura o PDF» (se leen
+    con IA, `/api/read-booking`; sale «Lo hemos leído así» para corregirlo) y «A mano» (día y hora, lo demás opcional). Nunca la app elige el día: busca el día del
+    viaje que cae en esa fecha; si es otro del que tenía, la pasa a él y lo dice («Tu reserva es del viernes 16: la pasamos a tu Día 3»); fuera del viaje, no se guarda
+    hasta que cuadre; sin fechas en el viaje, se elige el día. Lo que se lee del email no se guarda en ningún sitio (ni caché ni registro): se devuelve y ya.
+
+436. **Lo reservado tiene fecha y hora fijas: nada del motor ni del viajero lo mueve. Para cambiarlo, se quita y se vuelve a crear** (PARA_CODE_RESERVAS, 6).
+    - Una entrada reservada pone la parada a la hora de la entrada y en el día de su fecha (`Stop.reservedId`); una excursión reservada fija ese día (`isDayPinned`).
+      Tarjeta: «Reservada ✓» (verde) y un candado con «Fijada», sus datos (hora, punto de encuentro, n.º de reserva), sin «Reservar» ni «¿Ya la has reservado?»; en la
+      pestaña Entradas, «Ya tienes entrada · {hora}» en lugar de los enlaces para comprar.
+    - No se puede: mover ese día (arrastrar, «mover el día»), sustituirlo por otra excursión («¿Dónde la ponemos?» no lo ofrece), eliminarlo, ni cambiar la hora, mover
+      o quitar la parada reservada. La varita no quita lo reservado (la de un día de excursión reservada no tiene nada que recuperar; al recuperar un día o toda la ruta,
+      `reapplyReservations` deja lo reservado en su sitio y a su hora). Al mover los demás días, las entradas reservadas siguen a su fecha.
+    - «Quitar del viaje» (única salida): «¿Quitar {nombre} de tu viaje?» con el aviso amarillo «Quitarla de tu viaje no cancela tu reserva. **Cancela primero tu reserva** y
+      después quítala aquí.» y «Cancelar» / «Quitar del viaje».
+    - Pendiente (no hecho): que el motor, al rehacer la ruta con otras fechas, coloque lo reservado con `compressToFixedHours` (regla 427); hoy se recoloca después, con
+      `reapplyReservations`.
+
+437. **Saber solo que alguien ha reservado: el código de campaña de cada viaje** (PARA_CODE_RESERVAS, 5). Cada viaje lleva un código al azar (`v-8F3K2`: nada del viajero ni del
+    viaje dentro, `newCampaignCode`) y todos los enlaces de «Reservar» a Civitatis lo llevan (`CampaignLinks` lo pone al seguir el enlace). El nombre del campo sale de
+    `VITE_AFFILIATE_CAMPAIGN_PARAM` (por defecto `cmp`) y el número de afiliado de `VITE_CIVITATIS_AID`: la documentación pública de Civitatis solo explica `?aid=XXX`.
+    Las ventas llegan de la API o del informe de ventas del afiliado a `/api/sales/ingest` (cabecera `x-ingest-secret`; tabla en la migración 0017, sin aplicar; en memoria
+    mientras no esté `SUPABASE_SERVICE_ROLE_KEY`), **nunca de los correos de nadie**. Al abrir el viaje, arriba de Días: «Hemos visto que has reservado {x} el {día} a las
+    {hora}. ¿La ponemos en tu Día {n}?» con «Sí, ponla» (pasa a reservada y fijada) y «Ahora no»; si se cancela una ya unida, «Tu reserva de {x} se ha cancelado» con
+    «Quitar del viaje».

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
+import { dayOfReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
   AccommodationMode,
@@ -40,6 +41,7 @@ import { seasonOfMonth } from '../lib/season'
 import { addDaysToIso } from '../lib/dateRange'
 import {
   addFreeDay as addFreeDayTo,
+  placeExcursionIn,
   isFreeDay,
   moveDay,
   removeFreeDay as removeFreeDayFrom,
@@ -295,6 +297,12 @@ interface RouteStoreState {
   rentalVehicleBooking: GeneralBooking | null
   /** RESERVAS — clave: código de país en minúsculas, compartida entre todos los destinos de ese país. */
   esimSelections: Record<string, EsimStatus>
+  /** Entradas y excursiones reservadas: fijadas, con fecha y hora (PARA_CODE_RESERVAS). Lo reservado no se mueve: se quita y se vuelve a crear. */
+  reservations: Reservation[]
+  /** El código de campaña de este viaje, al azar (`v-8F3K2`): va en todos los enlaces de «Reservar» y así se sabe que alguien ha reservado, sin datos del viajero. */
+  campaignCode: string
+  /** Las ventas del afiliado unidas a este viaje: la tarjeta «¿La ponemos?» y el aviso de cancelación. */
+  sales: SaleMatch[]
   /** Wishlist — lugares que el viajero guardó por su cuenta desde el buscador (panel Pool/Wishlist/Buscar), independiente del Pool. Vive por viaje, no por día. */
   wishlist: WishlistItem[]
   /** Solo desarrollo — fecha ISO simulada para probar Modo Hoy en cualquier día del viaje sin cambiar el reloj del sistema (ver DevDateSimulator.tsx). null = usar la fecha real. */
@@ -368,6 +376,17 @@ interface RouteStoreState {
   addPlaceToDay: (dayId: string, stop: Stop, time: string | null) => void
   /** Un restaurante como comida o cena del día (null = volver a la zona). */
   setMealRestaurant: (dayId: string, mealTime: 'lunch' | 'dinner', restaurant: ChosenRestaurant | null) => void
+  /**
+   * Guarda una reserva (entrada o excursión) y la FIJA en la ruta: el día lo pone su fecha (la pasa a ese día si estaba en otro) y la entrada
+   * se coloca a su hora. Con una del mismo sitio, la sustituye. `excursion`: los datos de la excursión, para ponerla en su día.
+   */
+  addReservation: (reservation: Reservation, excursion?: Excursion | null) => void
+  /** Quita la reserva del viaje (no cancela nada fuera: la ventana lo avisa): la entrada o excursión vuelve a ser una más. */
+  removeReservation: (id: string) => void
+  /** Una venta del afiliado con el código de este viaje (o su cancelación). */
+  receiveSale: (sale: SaleMatch) => void
+  /** Lo que el viajero decide con la tarjeta de una venta: «Sí, ponla» (acepta), «Ahora no» (descarta) o «Quitar del viaje» (una cancelada). */
+  resolveSale: (id: string, action: 'accept' | 'dismiss' | 'remove', excursion?: Excursion | null) => void
   /** Una excursión desde la pantalla de añadir, en un día vacío. */
   addExcursionToDay: (dayId: string, excursion: Excursion) => void
   /**
@@ -566,6 +585,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   n26Added: false,
   rentalVehicleBooking: null,
   esimSelections: {},
+  reservations: [],
+  campaignCode: newCampaignCode(),
+  sales: [],
   wishlist: [],
   dev_simulated_today_iso: null,
   darkMode: getInitialDarkMode(),
@@ -741,9 +763,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   restoreOriginalDay: (dayId) =>
     set((state) => {
       if (!state.route) return state
+      // Una excursión reservada es el día entero: no hay nada que recuperar (lo reservado se queda).
+      const target = state.route.days.find((day) => day.id === dayId)
+      if (target && isDayPinned(state.route, state.reservations, target)) return state
       // (Con su número y su color de ahora: si el día se movió, se queda donde está.)
       const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, dayNumber: day.dayNumber, colorIndex: day.colorIndex, originalSnapshot: null } : day))
-      return { route: { ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) } }
+      // (Lo reservado se queda en su sitio y a su hora aunque se recupere el día.)
+      return { route: reapplyReservations({ ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) }, state.reservations) }
     }),
   setDayUntimed: (dayId, untimed) =>
     set((state) =>
@@ -761,16 +787,29 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     return added.dayId
   },
   removeFreeDay: (dayId) => set((state) => (state.route ? { route: removeFreeDayFrom(state.route, dayId) } : state)),
-  deleteDay: (dayId) => set((state) => (state.route ? { route: removeAnyDay(state.route, dayId) } : state)),
+  deleteDay: (dayId) =>
+    set((state) => {
+      const day = state.route?.days.find((candidate) => candidate.id === dayId)
+      // Un día fijado por una reserva no se elimina: primero se quita la reserva de su excursión.
+      if (!state.route || (day && isDayPinned(state.route, state.reservations, day))) return state
+      return { route: removeAnyDay(state.route, dayId) }
+    }),
   restoreOriginalRoute: () =>
     set((state) => {
       const original = state.route?.originalRoute
       if (!state.route || !original) return state
       const copy = JSON.parse(JSON.stringify(original)) as NonNullable<Route['originalRoute']>
-      return { route: { ...state.route, days: copy.days, answers: copy.answers, editedManually: false }, activeDayId: null }
+      return { route: reapplyReservations({ ...state.route, days: copy.days, answers: copy.answers, editedManually: false }, state.reservations), activeDayId: null }
     }),
   renameDay: (dayId, name) => set((state) => (state.route ? { route: renameDayIn(state.route, dayId, name) } : state)),
-  moveFreeDay: (dayId, direction) => set((state) => (state.route ? { route: moveDay(state.route, dayId, direction) } : state)),
+  moveFreeDay: (dayId, direction) =>
+    set((state) => {
+      if (!state.route) return state
+      const moving = state.route.days.find((day) => day.id === dayId)
+      const neighbour = moving ? state.route.days[state.route.days.indexOf(moving) + direction] : undefined
+      if ((moving && isDayPinned(state.route, state.reservations, moving)) || (neighbour && isDayPinned(state.route, state.reservations, neighbour))) return state
+      return { route: reapplyReservations(moveDay(state.route, dayId, direction), state.reservations) }
+    }),
   addPlaceToDay: (dayId, stop, time) =>
     set((state) => (state.route ? { route: updateDay(state.route, dayId, (day) => withStopAt(day, stop, time)) } : state)),
   setMealRestaurant: (dayId, mealTime, restaurant) =>
@@ -784,37 +823,55 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     )
     get().addBlankDayExcursion(dayId, excursion)
   },
+  addReservation: (reservation, excursion) => {
+    set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
+    const route = get().route
+    if (!route) return
+    if (reservation.kind === 'entrada') {
+      const previous = get().reservations.find((other) => other.kind === 'entrada' && other.refId === reservation.refId && other.id !== reservation.id)
+      set({ route: placeReservedEntrance(previous ? unpinReservedStops(route, previous.id) : route, reservation) })
+      return
+    }
+    const day = dayOfReservation(route, reservation)
+    if (day && excursion) get().placeExcursion(excursion, { dayId: day.id })
+  },
+  removeReservation: (id) =>
+    set((state) => ({
+      reservations: state.reservations.filter((reservation) => reservation.id !== id),
+      route: state.route ? unpinReservedStops(state.route, id) : state.route,
+    })),
+  receiveSale: (sale) =>
+    set((state) => {
+      const already = state.sales.find((other) => other.id === sale.id)
+      if (already && already.status !== 'nueva') return state
+      // Una venta que ya es una reserva del viaje no se pregunta otra vez.
+      if (sale.status === 'nueva' && state.reservations.some((reservation) => reservation.refId === sale.refId && reservation.locator && reservation.locator === sale.locator)) return state
+      return { sales: [...state.sales.filter((other) => other.id !== sale.id), sale] }
+    }),
+  resolveSale: (id, action, excursion) => {
+    const sale = get().sales.find((candidate) => candidate.id === id)
+    if (!sale) return
+    if (action === 'accept') {
+      get().addReservation(
+        { id: `res-${sale.id}`, kind: sale.kind, refId: sale.refId, name: sale.name, placeNames: sale.placeNames, dateIso: sale.dateIso, dayNumber: null, time: sale.time, locator: sale.locator ?? null, excursionId: sale.excursionId ?? null, excursionData: excursion ?? null },
+        excursion,
+      )
+      set((state) => ({ sales: state.sales.map((other) => (other.id === id ? { ...other, status: 'aceptada' as const } : other)) }))
+      return
+    }
+    if (action === 'remove') {
+      const linked = get().reservations.find((reservation) => reservation.refId === sale.refId && (!sale.locator || reservation.locator === sale.locator))
+      if (linked) get().removeReservation(linked.id)
+    }
+    set((state) => ({ sales: state.sales.map((other) => (other.id === id ? { ...other, status: 'descartada' as const } : other)) }))
+  },
   placeExcursion: (excursion, target) => {
-    let route = get().route
+    const route = get().route
     if (!route) return null
-    let dayId: string
-    const isNew = 'newDay' in target
-    if (isNew) {
-      const added = addFreeDayTo(route, excursion.title)
-      if (!added) return null
-      route = withDayColors(added.route)
-      dayId = added.dayId
-    } else dayId = target.dayId
-    const half = excursion.length === 'half-day'
-    route = updateDay(route, dayId, (day) => ({
-      ...day,
-      title: excursion.title,
-      curatedTitle: excursion.title,
-      excursions: (day.excursions ?? []).some((other) => other.id === excursion.id) ? day.excursions : [...(day.excursions ?? []), excursion],
-      selectedExcursionId: excursion.id,
-      excursionDeclined: false,
-      halfDayExcursionDeclined: false,
-      // Medio día: la mañana es de la excursión y la tarde sigue en el destino. Día entero: el día pasa a ser la excursión, sin paradas.
-      ...(half
-        ? {
-            dayType: isNew ? ('manual' as const) : day.dayType,
-            halfDayExcursion: { id: excursion.id, startsAt: '08:00', endsAt: '14:00', routeStartsAt: '14:00' },
-            stops: isNew ? [] : day.stops.filter((stop) => !(stop.time && stop.time < '14:00')),
-          }
-        : { dayType: 'excursion' as const, halfDayExcursion: null, stops: [], meals: [] }),
-    }))
-    set({ route, activeDayId: dayId, mode: 'days' })
-    return dayId
+    const placed = placeExcursionIn(route, excursion, target)
+    if (!placed) return null
+    set({ route: placed.route, activeDayId: placed.dayId, mode: 'days' })
+    return placed.dayId
   },
 
   openDateNoticeId: null,
@@ -846,7 +903,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       intensity: route.intensity,
       ...(state.keepBookingsOnNextRoute
         ? {}
-        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, wishlist: [] }),
+        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, reservations: [], campaignCode: newCampaignCode(), sales: [], wishlist: [] }),
       keepBookingsOnNextRoute: false,
       dev_simulated_today_iso: null,
       }
@@ -866,6 +923,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       n26Added: payload.bookings.n26Added,
       rentalVehicleBooking: payload.bookings.rentalVehicleBooking,
       esimSelections: payload.bookings.esimSelections,
+      reservations: payload.bookings.reservations ?? [],
+      campaignCode: payload.bookings.campaignCode ?? newCampaignCode(),
+      sales: payload.bookings.sales ?? [],
       wishlist: payload.wishlist,
       mode: payload.uiState.mode,
       activeDayId: payload.uiState.activeDayId,
@@ -979,6 +1039,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   removeStop: (dayId, stopId) =>
     set((state) => {
       if (!state.route) return state
+      // Una parada reservada solo se quita con «Quitar del viaje» (que quita antes la reserva).
+      if (state.route.days.find((day) => day.id === dayId)?.stops.some((stop) => stop.id === stopId && stop.reservedId)) return state
       return {
         // Quitar una parada no toca la hora de ninguna otra — ver LA REGLA arriba y withoutStop.
         route: updateDay(state.route, dayId, (day) => ({
@@ -1085,17 +1147,24 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       const reordenados = orderedDayIds.map((id) => daysById.get(id)).filter((day): day is DayPlan => Boolean(day))
       // Si falta alguno no se toca nada: reordenar medio viaje es peor que no reordenarlo.
       if (reordenados.length !== state.route.days.length) return state
+      // Un día fijado por una excursión reservada no se mueve: la reserva es de esa fecha.
+      if (reordenados.some((day, index) => day.dayNumber !== index + 1 && isDayPinned(state.route!, state.reservations, day))) return state
+      // (Las entradas reservadas siguen a su fecha: pasan al día que ahora cae en ella.)
       return {
-        route: {
-          ...state.route,
-          days: reordenados.map((day, index) => ({ ...day, dayNumber: index + 1 })),
-        },
+        route: reapplyReservations(
+          {
+            ...state.route,
+            days: reordenados.map((day, index) => ({ ...day, dayNumber: index + 1 })),
+          },
+          state.reservations,
+        ),
       }
     }),
 
   moveStopToDay: (stopId, fromDayId, toDayId) =>
     set((state) => {
       if (!state.route || fromDayId === toDayId) return state
+      if (state.route.days.find((day) => day.id === fromDayId)?.stops.some((stop) => stop.id === stopId && stop.reservedId)) return state
       const fromDay = state.route.days.find((day) => day.id === fromDayId)
       const stop = fromDay?.stops.find((s) => s.id === stopId)
       if (!stop) return state
@@ -1119,6 +1188,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   updateStopTime: (dayId, stopId, newTime) =>
     set((state) => {
       if (!state.route) return state
+      // La hora de lo reservado no se cambia.
+      if (state.route.days.find((day) => day.id === dayId)?.stops.some((stop) => stop.id === stopId && stop.reservedId)) return state
       return {
         // Solo cambia esa (decisión del usuario, 2026-09-28): las demás se quedan; si algo se pisa, se ve.
         route: updateDay(state.route, dayId, (day) => ({
@@ -1147,6 +1218,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   replaceStop: (dayId, stopId, updates) =>
     set((state) => {
       if (!state.route) return state
+      if (state.route.days.find((day) => day.id === dayId)?.stops.some((stop) => stop.id === stopId && stop.reservedId)) return state
       return {
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
@@ -1454,7 +1526,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
-  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'addReservation', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',

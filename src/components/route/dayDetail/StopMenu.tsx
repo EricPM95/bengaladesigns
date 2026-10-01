@@ -5,6 +5,7 @@ import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { withUndo } from '../../../store/useAddFlowStore'
 import { hasOwnTime } from '../../../lib/freeDays'
+import { RemoveReservationDialog } from '../reservas/ReservedMarks'
 
 interface StopMenuProps {
   dayId: string
@@ -46,6 +47,9 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const moveStopToDay = useRouteStore((state) => state.moveStopToDay)
   const updateStopTime = useRouteStore((state) => state.updateStopTime)
   const replaceStop = useRouteStore((state) => state.replaceStop)
+  // Una parada reservada está fijada: solo se quita con «Quitar del viaje» (PARA_CODE_RESERVAS, 6).
+  const removeReservation = useRouteStore((state) => state.removeReservation)
+  const [removingReservation, setRemovingReservation] = useState(false)
 
   /** No-op si el día ya tiene paradas reales — `realStops` ya es esa misma lista en ese caso. */
   const ensureSeeded = () => seedDayStops(dayId, realStops)
@@ -102,7 +106,23 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
             onClick={(event) => event.stopPropagation()}
             className="absolute right-0 top-[34px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
-            {view === 'menu' && freeDay && (
+            {view === 'menu' && stop.reservedId && (
+              <div className="space-y-0.5">
+                <p className="px-3 pb-1 pt-1.5 text-[12px] text-[#F3EEE4]/60">Reservada · fijada</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRemovingReservation(true)
+                    close()
+                  }}
+                  className={menuItemClass}
+                >
+                  <span className="text-[oklch(0.75_0.15_25)]">Quitar del viaje</span>
+                </button>
+              </div>
+            )}
+
+            {view === 'menu' && !stop.reservedId && freeDay && (
               <div className="space-y-0.5">
                 {/* Día libre: la hora es solo la que pone el viajero (decisión del usuario, 2026-09-28). */}
                 <button type="button" onClick={() => setView('change-time')} className={menuItemClass}>
@@ -143,7 +163,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
               </div>
             )}
 
-            {view === 'menu' && !freeDay && (
+            {view === 'menu' && !stop.reservedId && !freeDay && (
               <div className="space-y-0.5">
                 <button type="button" onClick={() => setPickerOpen(true)} className={menuItemClass}>
                   Cambiar parada
@@ -224,6 +244,16 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
         }}
         onClose={() => setPickerOpen(false)}
       />
+      {removingReservation && stop.reservedId && (
+        <RemoveReservationDialog
+          name={stop.name}
+          onCancel={() => setRemovingReservation(false)}
+          onConfirm={() => {
+            removeReservation(stop.reservedId as string)
+            setRemovingReservation(false)
+          }}
+        />
+      )}
     </div>
   )
 }

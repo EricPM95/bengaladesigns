@@ -9,6 +9,7 @@ import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
 import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
+import { CampaignLinks } from './components/sync/CampaignLinks'
 import { SyncStatusBanner } from './components/sync/SyncStatusBanner'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
 
@@ -98,6 +99,7 @@ function App() {
   return (
     <Layout>
       <TripSync />
+      <CampaignLinks />
       <SyncStatusBanner />
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
