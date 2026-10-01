@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface ModalProps {
@@ -17,7 +18,8 @@ export function Modal({ open, onClose, children }: ModalProps) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [open, onClose])
 
-  return (
+  // En el body y por encima de todo, barra flotante y menús incluidos (INVARIANTES: las ventanas van por encima de los menús).
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -25,7 +27,7 @@ export function Modal({ open, onClose, children }: ModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="map-cover-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center sm:p-6"
+          className="map-cover-overlay fixed inset-0 z-[90] flex items-end justify-center bg-black/50 sm:items-center sm:p-6"
         >
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -39,6 +41,7 @@ export function Modal({ open, onClose, children }: ModalProps) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

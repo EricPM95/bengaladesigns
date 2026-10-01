@@ -2386,3 +2386,72 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
       del principal.
     - Un tip con `solo_en` sale cuando ese punto está a la vista.
     - Al curar un destino: cada sitio de llegada y de salida lleva sus propios textos, comprobados en la web oficial.
+
+419. **El rato libre antes de cenar es «Pasea y piérdete por {zona}». No existe el «Tiempo libre»** (PARA_CODE_TODO_2026-10-01,
+    paso 5, puntos 1 y 7).
+    - El tiempo que sobra antes de cenar sale como «Pasea y piérdete por {zona}» (etiqueta «Paseo libre», el muñequito
+      andando, la foto de día de su zona; en Navidad, «…entre las luces de…»), con el consejo del aperitivo dentro de la
+      ficha (Tips). 20 min como mínimo y 90 como mucho. La cena dice «X min andando desde…» el sitio real de justo antes,
+      nunca «desde el aperitivo».
+    - Nunca va en el mismo sitio que la parada de antes (su nombre dentro del del paseo, o a menos de 250 m del centro de
+      la zona): si coincide, esa parada se alarga (con el consejo) y no hay tarjeta aparte. Una nocturna no se alarga. El
+      barrio que el día ya vio antes con otra cosa en medio no vuelve como paseo. Un paseo no se coge a más de 15 min
+      andando de lo último.
+    - No existe el «Tiempo libre»: el tiempo que sobra a mitad de día va, en este orden, a un sitio de camino como parada,
+      al paseo de la zona a la que se llega («Pasea y piérdete por…», a cualquier hora) o a recolocar las horas (la
+      parada de antes se alarga hasta su máximo, su cierre y nunca un «por fuera»). Menos de 20 min no sale nada. Nunca
+      un texto con «Una idea…». Lo que no cabe de cena se adelanta (no antes de las 19:30, ni de las 20:30 en verano).
+    - Lo que sí queda: los ratos con nombre y contenido propio (el descanso de después de comer o a la sombra en verano, el
+      paseo de antes del mirador).
+    - En lo que hace el viajero (días libres, ruta manual, «Añadir parada», «+ Añadir día») el motor no rellena ni
+      recoloca nada: solo calcula el tiempo entre paradas y el transporte recomendado.
+    - La prueba: `tiempo_libre_sigue` y `paseo_misma_zona` salen en 0; `scripts/destino/contarLibres.mjs` cuenta los
+      ratos libres de las 365 fechas.
+
+420. **Fotos: de noche solo en las experiencias nocturnas; nunca la misma foto dos veces en un día; sin foto antes que una
+    mala** (PARA_CODE_TODO_2026-10-01, paso 5, puntos 2, 3 y 6; sustituye a la 411).
+    - Todo lo que parezca de noche (noche, anochecer, amanecer con farolas) va solo en las experiencias nocturnas; una
+      parada, un paseo antes de cenar y una comida llevan siempre foto de día. Única excepción: las de Navidad (el árbol
+      de Plaza de España y el de San Pedro, el mercadillo de Navona), en sus fechas aunque la parada sea de día.
+    - Nunca la misma foto en dos tarjetas del mismo día: si dos paradas compartirían una foto propia, la segunda
+      (`no_own_photo`) pide la de siempre. Una parada puede pedir su foto con otro nombre (`foto` en lo escrito): el parque
+      de camino a la Galería y el del lago y el templo. La prueba (`foto_repetida`) y `scripts/destino/fotosRepetidas.mjs`
+      (todas las fuentes, contra la API).
+    - `sin_foto` (en `_fotos.json`): lugares que van con el color neutro hasta que el usuario pase una buena; nunca una
+      buscada sola. El degradado naranja y rosa no sale en ninguna tarjeta que no sea de atardecer.
+    - La hoja de contactos `docs/revision_fotos_roma.html` (`scripts/destino/revisionFotos.mjs`) enseña todas las fotos,
+      cuándo salen y de dónde vienen; arriba, las buscadas solas que nadie ha visto.
+
+421. **Junto a un imprescindible, aunque esté cerrado, se ve por fuera** (PARA_CODE_TODO_2026-10-01, paso 5, punto 4).
+    - Un lugar con su exterior curado (`minutos_fuera`) que a su hora está cerrado y tiene un imprescindible (nivel 1) a 5
+      min andando o menos, justo antes o justo después, sale «Por fuera» con su tiempo de por fuera, sin el aviso rojo y
+      con la línea «Por dentro abre de {hora} a {hora}». Lo escrito «por fuera» (`modo: fuera`, `si_cerrado: fuera`) es una
+      decisión del día y tampoco lleva el aviso. La parada no cambia de sitio en la ruta.
+    - Sin `minutos_fuera`, o con el interior como único motivo (San Luigi, la Vittoria), no va por fuera: se coloca a una
+      hora en que esté abierto (en la misma tarde, sin hora fija ni atardecer, sin zigzag ni perder el mirador) o, si es
+      de nivel 3 y no hay sitio, queda en «Quedó fuera». Se espera hasta 40 min a que abra (20 si lo escrito dice «si
+      cerrado, por fuera»).
+    - La prueba: `cerrada_a_su_hora` en 0.
+
+422. **La Galería Borghese nunca va sola: siempre con el Parque de Villa Borghese** (PARA_CODE_TODO_2026-10-01, paso 5,
+    punto 5). D4: Trevi, Plaza de España, Trinità (por fuera si cierra), el parque entrando por la Porta Pinciana y la
+    Galería a las 11:00; por la tarde, el lago y el Templo de Esculapio (la parada que se estira), los Jardines del Pincio
+    y el resto en el orden de cada versión de la luz. Nunca se cruza por la calle lo que se cruza por el parque.
+
+423. **Las ventanas van por encima de todo y llevan su cruz; abrir un día sube a su principio** (PARA_CODE_TODO_2026-10-01,
+    paso 6). Las ventanas (fichas, «Añadir parada», «Abrir ruta en…», alojamientos y actividades del destino) se pintan
+    en el body, por encima de los menús y de la barra flotante, con su cruz visible; la del destino, a pantalla completa
+    sin el mapa de debajo, con «Excursiones desde {destino}» solo si hay excursiones. Al tocar un día, los demás se cierran
+    y la pantalla sube sola hasta su primera parada.
+
+424. **El pool del formulario, guardado y listo desde el principio** (PARA_CODE_TODO_2026-10-01, paso 7). La lista del pool
+    se guarda en el navegador con la versión de los datos del servidor (`data_version`, que cambia sola al cambiar
+    roma.json o sus fotos) y se revalida en segundo plano; las fotos ligeras (640 px) llegan en una petición
+    (`/api/pool-photos`) en cuanto se sabe el destino, y las propias llevan `?v=` y caché larga en Vercel. Una foto ya
+    resuelta se guarda 24 h para el pool, Explorar y Añadir parada.
+
+425. **La varita, en cada día** (PARA_CODE_TODO_2026-10-01, paso 8). Entre los tres puntos y la flecha de cada día: «Recuperar
+    este día» (la copia de cuando se creó el viaje) y «Recuperar toda mi ruta» (también los días borrados y la llegada y la
+    vuelta), cada una con su pregunta y su «Deshacer»; la que no tiene nada que recuperar, en gris con «Está tal como te lo
+    preparamos». En un día que crea el viajero, solo la de la ruta. Ni en la cabecera ni en los tres puntos.
+

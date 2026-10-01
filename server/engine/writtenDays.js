@@ -8,6 +8,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 
 const DIAS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data', 'dias')
 const cache = new Map()
@@ -85,4 +86,15 @@ export function arrivalInfoFor(destinationKey) {
   const value = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
   arrivalCache.set(key, value)
   return value
+}
+
+/**
+ * La foto propia de un lugar (de `photosFor`) para una fecha, o null: la de sus fechas (Navidad) primero, sin las que esperan a
+ * comprobarse (`verificar`). Es lo que usa /api/place-photo y lo que mira la prueba para que un día no repita foto.
+ */
+export function ownPhotoFile(table, name, dateIso) {
+  if (!table) return null
+  const md = /^\d{4}-\d{2}-\d{2}$/.test(String(dateIso ?? '')) ? Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10)) : null
+  const valid = (table.fotos ?? []).filter((foto) => (foto.lugares ?? []).includes(name) && !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta))))
+  return valid.find((candidate) => candidate.fechas) ?? valid[0] ?? null
 }

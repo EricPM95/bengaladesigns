@@ -147,14 +147,15 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
   useEffect(() => {
-    if (!stop || stop.isBreak) { setPhoto(null); return }
+    // (Un paseo libre sin zona con foto no busca por su nombre: sale el color neutro.)
+    if (!stop || stop.isBreak || (stop.isFreeWalk && !stop.photoName)) { setPhoto(null); return }
     // Foto propia fija (el Free Tour, cuando la haya): tal cual, sin buscar.
     if (stop.fixedPhotoUrl) {
       setPhoto({ source: 'wikipedia', thumb: stop.fixedPhotoUrl, small: stop.fixedPhotoUrl, regular: stop.fixedPhotoUrl, blurHash: null, attribution: null })
       return
     }
     let cancelled = false
-    fetchPlacePhotoDetail(photoNameOf(stop), city, null, dateIso).then((result) => {
+    fetchPlacePhotoDetail(photoNameOf(stop), city, null, dateIso, Boolean(stop.noOwnPhoto)).then((result) => {
       if (!cancelled) setPhoto(result)
     })
     return () => {
@@ -177,7 +178,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // es el mismo lugar contado en profundidad (qué ver, horarios por temporada, transporte, secretos)
   // frente a las dos líneas que trae la parada.
   const description = curated ? toStopDescription(curated) : externalContent ? externalContent.description : internalDescription
-  const descLoading = stop?.noAiText ? false : !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
+  const descLoading = stop?.noAiText || stop?.isFreeWalk ? false : !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
   /** Lista de puntos concretos de la ficha curada — la versión de Claude es un párrafo suelto (`whatYoullSee`). */
   const whatToSee = curated?.what_to_see ?? []
   // Extraídos por claridad: lo que las dependencias de los efectos de abajo necesitan saber es
@@ -199,7 +200,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     setCuratedResolved(false)
     // El Free Tour es lo único que se salta esto: no es un lugar del destino, es una experiencia con
     // su propio contenido nativo (punto de encuentro, highlights, tips) y nunca va a tener ficha.
-    if (stop.isFreeTour || stop.isBreak) {
+    if (stop.isFreeTour || stop.isBreak || stop.isFreeWalk) {
       setCuratedResolved(true)
       return
     }
@@ -221,7 +222,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     // externalContent presente (aunque sea null) = AddStopScreen.tsx ya gestiona su propio fetch
     // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
     // (`noAiText`: la ficha lleva solo nuestro texto, el «por qué» de la ruta; no se pide nada a la IA.)
-    if (externalContent || stop.isFreeTour || stop.isBreak || stop.noAiText) {
+    if (externalContent || stop.isFreeTour || stop.isBreak || stop.noAiText || stop.isFreeWalk) {
       setInternalDescription(null)
       setInternalDescLoading(false)
       return
@@ -326,7 +327,8 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   })
 
   const visitMinutes = visitTime && /^\d{1,2}:\d{2}$/.test(visitTime) ? Number(visitTime.split(':')[0]) * 60 + Number(visitTime.split(':')[1]) : null
-  const hoursTag = stop
+  // (Un paseo libre es la calle: ni horario ni «Acceso libre».)
+  const hoursTag = stop && !stop.isFreeWalk
     ? computeStopHoursTag(stop.hours, visitMinutes ?? new Date().getHours() * 60 + new Date().getMinutes(), visitMinutes !== null)
     : null
   // Dos fuentes, las dos ya disponibles aquí sin pedir nada extra: el enlace de reserva de la ficha
@@ -350,13 +352,15 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // estratégicos, datos prácticos — ver DESCRIBE_STOP_SYSTEM_PROMPT en server/index.js).
   // Ficha curada (destinos con detalle escrito a mano): sus `tips` + `secrets` mandan sobre todo lo
   // anterior — es el mismo contenido pero verificado, y sin coste ni espera.
-  const tips: StopTip[] = stop?.isFreeTour
+  const baseTips: StopTip[] = stop?.isFreeTour
     ? (stop.freeTourTips ?? []).map((texto, index) => ({ tipo: index === 0 ? 'secreto' : 'practico', texto }))
     : curated
       ? toStopTips(curated)
       : isAnchor
         ? anchorTips
         : (description?.tips ?? [])
+  // El consejo del aperitivo (un spritz en una terraza) va primero, dentro de la ficha del paseo libre o de la parada que se alarga en su lugar.
+  const tips: StopTip[] = stop?.aperitivoTip ? [{ tipo: 'practico', texto: stop.aperitivoTip }, ...baseTips] : baseTips
   const hasTips = tips.length > 0
 
   // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
@@ -649,7 +653,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                   {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
                       de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
                       nunca redactado por Claude, para garantizar que aparece siempre igual. */}
-                  {(hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice || stop.closedNotice) && (
+                  {!stop.isFreeWalk && (hoursDetail || hoursTag || stop.hoursWarning || stop.seasonNotice || stop.closedNotice) && (
                     <div className="space-y-1 border-t border-border pt-3">
                       <h3 className="flex items-center gap-1.5 text-body font-semibold text-text">
                         <ClockIcon />

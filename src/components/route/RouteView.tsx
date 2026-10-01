@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Poin
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
-import { ConfirmDialog } from './ConfirmDialog'
-import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
@@ -67,20 +65,13 @@ export function RouteView() {
   // (ficha, comida, llegada, añadir parada) está abierta encima.
   const [dayMap, setDayMap] = useState<DayMapView | null>(null)
   const [dayOverlayOpen, setDayOverlayOpen] = useState(false)
+  // La ventana del destino (pestaña Ruta) es pantalla completa: el mapa de debajo no se monta mientras está abierta.
+  const [destinationOverlayOpen, setDestinationOverlayOpen] = useState(false)
   // "Ver todo": todos los días a la vez en vez de solo el abierto (Ronda 9, Mejora 1C).
   const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
-  // "Volver a mi ruta original": la pregunta, y si la varita ya se vio con su texto (luego va sola).
-  const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
-  const [askRestoreRoute, setAskRestoreRoute] = useState(false)
   // Los tips del viaje (la bombilla de la cabecera, PROMPT_UI_REPASO_2 3).
   const [tipsOpen, setTipsOpen] = useState(false)
   const closeTips = useCallback(() => setTipsOpen(false), [])
-  /** La varita: con cambios, pregunta si se vuelve a la original; sin cambios, lo dice (PROMPT_UI_REPASO 3). */
-  const onWand = () => {
-    if (route?.editedManually && route.originalRoute) setAskRestoreRoute(true)
-    else useAddFlowStore.setState({ toast: { message: 'Tu ruta está tal como te la preparamos', previous: null, id: Date.now() } })
-  }
-
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
   // fila y el ancho se controla con panelSplit/handleDragStart). Por defecto cerca del mínimo — el
@@ -126,7 +117,7 @@ export function RouteView() {
   // mapa de encima SÍ debe seguir viéndose; aquí, como no debe verse nada del mapa de abajo en
   // absoluto, la solución robusta es no renderizarlo mientras el día esté abierto).
   const dayDetailOpen = mode === 'days' && activeDayId !== null
-  const mapHidden = (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen)
+  const mapHidden = (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen) || (mode === 'route' && destinationOverlayOpen)
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
@@ -174,7 +165,7 @@ export function RouteView() {
 
   return (
     <div className="flex h-dvh flex-col bg-bg text-text">
-      <Header onTips={() => setTipsOpen(true)} onWand={onWand} />
+      <Header onTips={() => setTipsOpen(true)} />
 
       <div ref={containerRef} style={splitStyle} className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {!mapHidden && (
@@ -251,7 +242,7 @@ export function RouteView() {
 
           {mode === 'today' && hasTripDates && <TodayView route={route} />}
 
-          {mode === 'route' && <RouteOverview route={route} />}
+          {mode === 'route' && <RouteOverview route={route} onDetailOpenChange={setDestinationOverlayOpen} />}
 
           {mode === 'explore' && (
             <ExplorePanel
@@ -298,20 +289,6 @@ export function RouteView() {
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
       <UndoToast />
-      {askRestoreRoute && (
-        <ConfirmDialog
-          eyebrow="Ruta original"
-          text="¿Volver a tu ruta original? Tus días quedarán tal como te los preparamos y se perderán los cambios que has hecho."
-          confirmLabel="Volver a la original"
-          cancelLabel="Cancelar"
-          onCancel={() => setAskRestoreRoute(false)}
-          onConfirm={() => {
-            setAskRestoreRoute(false)
-            setDayMap(null)
-            withUndo('Ruta original recuperada', () => restoreOriginalRoute())
-          }}
-        />
-      )}
       {datesDialog}
     </div>
   )

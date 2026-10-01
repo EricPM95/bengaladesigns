@@ -7,6 +7,7 @@ import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
+import { prefetchPoolPhotos } from '../../lib/placePhoto'
 import { seasonOfMonth } from '../../lib/season'
 import { useRouteGeneration } from '../../lib/useRouteGeneration'
 import type { ConfirmedRoute } from '../destination/RouteSearch'
@@ -82,7 +83,12 @@ export function TrazoFlow() {
     if (!destinationName) return
     let alive = true
     setCuratedPool(null)
-    fetchPoolLevel(destinationName, 'pool').then((result) => alive && setCuratedPool(result.found ? result.places : false))
+    fetchPoolLevel(destinationName, 'pool').then((result) => {
+      if (!alive) return
+      setCuratedPool(result.found ? result.places : false)
+      // Mientras el viajero rellena los pasos de antes, se traen en una petición las fotos ligeras del pool: al llegar, salen al momento.
+      if (result.found) void prefetchPoolPhotos(destinationName, result.places.map((place) => place.name))
+    })
     return () => {
       alive = false
     }

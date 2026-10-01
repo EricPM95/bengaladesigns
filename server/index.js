@@ -4,11 +4,10 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
-import { arrivalInfoFor, photosFor, tipsFor } from './engine/writtenDays.js'
-import { withinMonthDays } from '../shared/routeEngine/openingHours.js'
+import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor } from './engine/writtenDays.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
@@ -4165,7 +4164,7 @@ app.post('/api/place-detail', (req, res) => {
 })
 
 app.post('/api/curated-places-pool', (req, res) => {
-  const { destination, level } = req.body ?? {}
+  const { destination, level, have_version: haveVersion } = req.body ?? {}
   const levelKey = String(level)
   if (!destination || !['pool', '1', '2', '3'].includes(levelKey)) {
     res.status(400).json({ error: "Faltan datos necesarios (destination, level 'pool' o 1-3)." })
@@ -4188,13 +4187,20 @@ app.post('/api/curated-places-pool', (req, res) => {
       is_free_access: place.is_free_access ?? place.type === 'exterior',
     })
     const all = pipelineV2Data.places ?? []
+    const dataVersion = dataVersionFor(findPipelineV2Key(destination))
+    // La lista del pool es la misma para todos los viajeros del destino: el navegador la guarda con su versión y solo pregunta si ha cambiado.
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400')
+    if (levelKey === 'pool' && haveVersion && haveVersion === dataVersion && !req.body?.days) {
+      res.json({ found: true, level: 'pool', unchanged: true, data_version: dataVersion })
+      return
+    }
     if (levelKey === 'pool') {
       // Con días escritos (motor v4) y los días del viaje: lo que ya va en la ruta sale como incluido y no cuenta como
       // elección; `max_extras`, cuántos extras caben (2 días, 2; 3, 3; 4, 4; 5 o más, 5). Sin esos datos, como siempre.
       const days = Number(req.body?.days)
       const status = Number.isInteger(days) && days > 0 && useWrittenDays(req.body?.engine) ? writtenPoolStatus(pipelineV2Data, destination, { days, hasFreeTour: Boolean(req.body?.free_tour), dateRangeStartIso: req.body?.start ?? null, pace: req.body?.pace ?? 'nonstop' }) : null
       const included = new Set(status?.included ?? [])
-      res.json({ found: true, level: 'pool', places: buildCuratedPoolV2(pipelineV2Data).map((place) => ({ ...toPoolPlace(place), ...(status ? { included: included.has(place.name) } : {}) })), ...(status ? { max_extras: status.maxExtras } : {}) })
+      res.json({ found: true, level: 'pool', data_version: dataVersion, places: buildCuratedPoolV2(pipelineV2Data).map((place) => ({ ...toPoolPlace(place), ...(status ? { included: included.has(place.name) } : {}) })), ...(status ? { max_extras: status.maxExtras } : {}) })
       return
     }
     const levelNumber = Number(levelKey)
@@ -4887,26 +4893,111 @@ app.post('/api/destination-tips', (req, res) => {
  * unas fechas (Navidad) solo salen con la fecha real de ese día dentro de su ventana, y nunca con `verificar` pendiente:
  * una foto también es una promesa. El crédito, solo si están el autor, el enlace y la fuente: nunca inventado.
  */
+/**
+ * La versión de los datos de un destino (PARA_CODE_TODO_2026-10-01, paso 7): cambia sola cuando cambian sus ficheros (roma.json, la tabla de
+ * fotos propias). El cliente guarda la lista del pool con esta versión y la renueva si el servidor dice otra.
+ */
+const dataVersionCache = new Map()
+function dataVersionFor(destinationKey) {
+  if (dataVersionCache.has(destinationKey)) return dataVersionCache.get(destinationKey)
+  const parts = []
+  for (const file of [`../data/pipeline_v2/${destinationKey}.json`, `../data/dias/${destinationKey}/_fotos.json`]) {
+    try {
+      const info = statSync(join(__dirname, file))
+      parts.push(`${Math.floor(info.mtimeMs)}-${info.size}`)
+    } catch {
+      parts.push('0')
+    }
+  }
+  const version = createHash('sha1').update(parts.join('|')).digest('hex').slice(0, 10)
+  dataVersionCache.set(destinationKey, version)
+  return version
+}
+
+/** El fichero de una foto propia cambia de versión cuando cambia el fichero (`?v=`): así el navegador puede guardarlo para siempre. */
+function versionedPhotoUrl(url) {
+  try {
+    const info = statSync(join(__dirname, '../public', url))
+    return `${url}?v=${Math.floor(info.mtimeMs / 1000).toString(36)}`
+  } catch {
+    return url
+  }
+}
+
 function ownPhotoFor(name, city, dateIso) {
   const table = photosFor(findPipelineV2Key(city) ?? '')
   if (!table) return null
-  const md = /^\d{4}-\d{2}-\d{2}$/.test(String(dateIso ?? '')) ? Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10)) : null
-  const valid = table.fotos.filter((foto) => (foto.lugares ?? []).includes(name) && !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta))))
-  const foto = valid.find((candidate) => candidate.fechas) ?? valid[0]
+  const foto = ownPhotoFile(table, name, dateIso)
   if (!foto) return null
   const base = `${table.carpeta}/${foto.archivo}`
   const credit = foto.autor && foto.enlace && foto.fuente ? { autor: foto.autor, enlace: foto.enlace, fuente: foto.fuente } : null
-  return { photo_source: 'propia', photo_url: base, photo_small: base.replace(/\.jpg$/, '_p.jpg'), photo_credit: credit, photo_night: foto.cuando === 'noche' }
+  const small = base.replace(/\.jpg$/, '_p.jpg')
+  return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_credit: credit, photo_night: foto.cuando === 'noche' }
 }
 
+/**
+ * Las fotos de una lista de lugares de una sola vez (la pantalla del pool de lugares, PARA_CODE_TODO_2026-10-01, paso 7): las propias al
+ * instante, las demás de la caché compartida de un solo golpe; solo lo que falta se busca. Siempre la versión pequeña (640 px la propia,
+ * w=400 la de Unsplash). Una petición en vez de una por lugar.
+ */
+app.post('/api/pool-photos', async (req, res) => {
+  const { destination, names, date } = req.body ?? {}
+  const list = Array.isArray(names) ? [...new Set(names.filter((name) => typeof name === 'string' && name.trim()))].slice(0, 60) : []
+  if (!destination || list.length === 0) {
+    res.status(400).json({ error: 'Faltan datos necesarios (destination, names).' })
+    return
+  }
+  const cityKey = stripAccentsLowerServer(destination)
+  const destKey = findPipelineV2Key(destination)
+  const photos = {}
+  const missing = []
+  const hidden = new Set(photosFor(destKey ?? '')?.sin_foto ?? [])
+  for (const name of list) {
+    if (hidden.has(name)) continue
+    const own = ownPhotoFor(name, destination, date)
+    if (own) photos[name] = { url: own.photo_small, source: 'propia' }
+    else missing.push(name)
+  }
+  if (supabaseAdmin && missing.length > 0) {
+    const { data, error } = await supabaseAdmin.from('place_photo_cache').select('place_name,photo_source,photo_url,unsplash_small').eq('city', cityKey).in('place_name', missing)
+    if (error) console.warn('[foto] no se pudo leer la caché en lote:', error.message)
+    for (const row of data ?? []) {
+      const url = row.photo_source === 'unsplash' ? row.unsplash_small ?? row.photo_url : row.photo_source === 'wikipedia' ? row.photo_url : null
+      if (url) photos[row.place_name] = { url, source: row.photo_source }
+    }
+  }
+  // Lo que no estaba en la caché se busca (con prudencia: de cuatro en cuatro) y queda guardado para el siguiente viajero.
+  const toSearch = missing.filter((name) => !photos[name])
+  for (let i = 0; i < toSearch.length; i += 4) {
+    await Promise.all(
+      toSearch.slice(i, i + 4).map(async (name) => {
+        try {
+          const result = await resolvePlacePhoto(name, destination, {})
+          const url = result.photo_source === 'unsplash' ? result.unsplash_small ?? result.photo_url : result.photo_source === 'wikipedia' ? result.photo_url : null
+          if (url) photos[name] = { url, source: result.photo_source }
+        } catch (error) {
+          console.warn('[foto] fallo en el lote con', name, error?.message)
+        }
+      }),
+    )
+  }
+  res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400')
+  res.json({ data_version: destKey ? dataVersionFor(destKey) : null, photos })
+})
+
 app.post('/api/place-photo', async (req, res) => {
-  const { name, city, force, wikipedia_title: wikipediaTitleOverride, date } = req.body ?? {}
+  const { name, city, force, wikipedia_title: wikipediaTitleOverride, date, exclude_own: excludeOwn } = req.body ?? {}
   if (!name || !city) {
     res.status(400).json({ error: 'Se requiere name y city.' })
     return
   }
   try {
-    const own = ownPhotoFor(name, city, date)
+    // Lugares sin foto hasta que el usuario pase una buena (`sin_foto` en _fotos.json): el color neutro de la app, nunca una buscada sola.
+    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name)) {
+      res.json({ photo_source: 'none' })
+      return
+    }
+    const own = excludeOwn ? null : ownPhotoFor(name, city, date)
     if (own) {
       res.json(own)
       return

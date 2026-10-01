@@ -1,7 +1,7 @@
 {
-  "_nota": "D4 escrito (2026-09-29, con las respuestas del usuario a la revisión). Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
+  "_nota": "D4 reescrito (PARA_CODE_TODO_2026-10-01, paso 5.5): la Galería Borghese nunca va sola, siempre con el Parque de Villa Borghese, y nunca se cruza por la calle lo que se cruza por el parque. Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
   "id": "D4",
-  "nombre": "Trevi a primera hora, la Borghese y el Popolo",
+  "nombre": "Trevi, la Borghese con su parque y el Popolo",
   "nombre_empieza_tarde": "Trevi, la Borghese y el Popolo",
   "joyas": [
     "Fontana de Trevi"
@@ -28,27 +28,22 @@
         "min": 20
       },
       {
-        "lugar": "Iglesia de San Ignacio de Loyola",
-        "tipo": "opcional",
-        "min": 15,
-        "modo": "dentro",
-        "si_cerrado": "fuera"
-      },
-      {
-        "lugar": "Via Condotti",
-        "modo": "camino",
-        "tipo": "opcional"
-      },
-      {
         "lugar": "Plaza de España",
         "min": 20
       },
       {
         "lugar": "Trinità dei Monti",
-        "tipo": "opcional",
         "min": 10,
         "modo": "dentro",
         "si_cerrado": "fuera"
+      },
+      {
+        "lugar": "Parque de Villa Borghese",
+        "min": 15,
+        "titulo": "El parque de Villa Borghese: Piazza di Siena, de camino a la Galería",
+        "modo": "parada",
+        "texto_titulo": null,
+        "foto": "Piazza di Siena"
       },
       {
         "lugar": "Galería Borghese",
@@ -57,14 +52,14 @@
         "min": 120,
         "modo": "dentro",
         "entrada": true,
+        "turno": true,
         "si_cerrado": {
           "cambiar_por": {
             "lugar": "Parque de Villa Borghese",
             "min": 60,
-            "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago"
+            "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
           }
-        },
-        "turno": true
+        }
       }
     ],
     "comida": {
@@ -75,50 +70,72 @@
   "tarde": {
     "empieza": "14:45",
     "A": {
-      "_sol": "antes de las 17:40: el Popolo después del Pincio, bajando; luego la escalinata y «luces y aperitivo» antes de cenar",
+      "_sol": "antes de las 17:40: el parque primero, para llegar al Pincio con el atardecer; lo de abajo, después, ya con las luces; Plaza de España de noche y cena",
+      "empieza": "14:25",
       "paradas": [
         {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via Margutta",
-          "titulo": "Via Margutta y Via del Babuino",
-          "min": 30
-        },
-        {
-          "lugar": "Piazza del Popolo",
-          "min": 10
+          "lugar": "Parque de Villa Borghese",
+          "min": 55,
+          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
+          "elastica": 30,
+          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
         },
         {
           "lugar": "Jardines del Pincio",
-          "min": 30,
-          "elastica": 30
+          "min": 20
         },
         {
           "lugar": "Terraza del Pincio",
           "modo": "atardecer"
         },
         {
+          "lugar": "Piazza del Popolo",
+          "min": 10
+        },
+        {
           "lugar": "Santa Maria del Popolo",
           "min": 25,
           "modo": "dentro",
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Ara Pacis",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Via Margutta",
+          "titulo": "Via Margutta y Via del Babuino",
+          "min": 30
         }
       ],
       "cena": {
         "restaurante": "Il Gabriello",
         "alternativa": "Sgarro Bistrot",
         "hora": "19:30"
-      },
-      "empieza": "14:25"
+      }
     },
     "B": {
-      "_sol": "de 17:40 a 18:44",
+      "_sol": "de 17:40 a 18:44: se baja por el parque y se vuelve a subir al Pincio para el atardecer",
+      "empieza": "14:35",
       "paradas": [
+        {
+          "lugar": "Parque de Villa Borghese",
+          "min": 55,
+          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
+          "elastica": 30,
+          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+        },
+        {
+          "lugar": "Jardines del Pincio",
+          "min": 20
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "min": 10
+        },
         {
           "lugar": "Ara Pacis",
           "min": 45,
@@ -132,20 +149,10 @@
           "min": 30
         },
         {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
           "lugar": "Santa Maria del Popolo",
-          "min": 30,
+          "min": 25,
           "modo": "dentro",
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Parque de Villa Borghese",
-          "titulo": "El lago de Villa Borghese",
-          "min": 30,
-          "elastica": 30
         },
         {
           "lugar": "Terraza del Pincio",
@@ -156,12 +163,26 @@
         "restaurante": "Il Gabriello",
         "alternativa": "Sgarro Bistrot",
         "hora": "20:00"
-      },
-      "empieza": "14:35"
+      }
     },
     "C": {
-      "_sol": "de 18:45 a 19:44",
+      "_sol": "de 18:45 a 19:44: igual que B, con la tarde más larga",
       "paradas": [
+        {
+          "lugar": "Parque de Villa Borghese",
+          "min": 60,
+          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
+          "elastica": 30,
+          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+        },
+        {
+          "lugar": "Jardines del Pincio",
+          "min": 20
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "min": 10
+        },
         {
           "lugar": "Ara Pacis",
           "min": 45,
@@ -175,24 +196,10 @@
           "min": 30
         },
         {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
           "lugar": "Santa Maria del Popolo",
-          "min": 30,
+          "min": 25,
           "modo": "dentro",
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Parque de Villa Borghese",
-          "titulo": "El lago de Villa Borghese",
-          "min": 55,
-          "elastica": 30
-        },
-        {
-          "lugar": "Jardines del Pincio",
-          "min": 29
         },
         {
           "lugar": "Terraza del Pincio",
@@ -206,8 +213,30 @@
       }
     },
     "D": {
-      "_sol": "desde las 19:45: el lago con su templo y el aperitivo en los jardines, arriba, antes del atardecer. La tarde empieza a las 15:15: en verano la comida va sin prisa.",
+      "_sol": "desde las 19:45: de 14:00 a 16:30, sombra y sitios cerrados; la cena en el Tridente y, después, la Terraza del Pincio de noche o la Plaza de España",
+      "empieza": "15:15",
       "paradas": [
+        {
+          "lugar": "Parque de Villa Borghese",
+          "min": 55,
+          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
+          "elastica": 30,
+          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+        },
+        {
+          "lugar": "Jardines del Pincio",
+          "min": 20
+        },
+        {
+          "lugar": "Piazza del Popolo",
+          "min": 10
+        },
+        {
+          "lugar": "Santa Maria del Popolo",
+          "min": 25,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
         {
           "lugar": "Ara Pacis",
           "min": 45,
@@ -219,39 +248,13 @@
           "lugar": "Via Margutta",
           "titulo": "Via Margutta y Via del Babuino",
           "min": 30
-        },
-        {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
-          "lugar": "Santa Maria del Popolo",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Parque de Villa Borghese",
-          "titulo": "El lago de Villa Borghese y el templo de Esculapio",
-          "min": 55,
-          "elastica": 30
-        },
-        {
-          "lugar": "Jardines del Pincio",
-          "titulo": "Aperitivo en los Jardines del Pincio",
-          "min": 60
-        },
-        {
-          "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
         }
       ],
       "cena": {
         "restaurante": "Il Gabriello",
         "alternativa": "Sgarro Bistrot",
         "hora": "20:30"
-      },
-      "empieza": "15:15"
+      }
     }
   },
   "variantes": {
@@ -287,7 +290,7 @@
       }
     },
     "domingo": {
-      "_nota": "Santa Maria del Popolo abre el domingo a las 16:30: en las cuatro tardes ya va después. Edy e Il Gabriello cierran el domingo. En A, con el sol a las 17:20 o más tarde, Santa Maria del Popolo va a las 16:30 (abre los festivos de 16:30 a 18:00), entre el Popolo y la Terraza; antes, después del atardecer, 20 min.",
+      "_nota": "Edy e Il Gabriello cierran el domingo. Santa Maria del Popolo abre el domingo a las 16:30 (y cierra a las 18:00): en A, por fuera si no llega (PARA_CODE_TODO_2026-10-01, paso 5.5).",
       "manana": {
         "restaurante": {
           "comida": "Poldo e Gianna Osteria",
@@ -299,80 +302,6 @@
           "cena": "Sgarro Bistrot",
           "alternativa": "Il Gabriello"
         }
-      },
-      "tarde.A": {
-        "empieza": "14:15",
-        "paradas": [
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via Margutta",
-            "titulo": "Via Margutta y Via del Babuino",
-            "min": 45,
-            "sol_desde": "17:20"
-          },
-          {
-            "lugar": "Via Margutta",
-            "titulo": "Via Margutta y Via del Babuino",
-            "min": 30,
-            "sol_hasta": "17:20"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "fija",
-            "hora": "16:30",
-            "sol_desde": "17:20"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20,
-            "elastica": 20,
-            "sol_desde": "17:20"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 30,
-            "elastica": 30,
-            "sol_hasta": "17:20"
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "sol_hasta": "17:20"
-          }
-        ]
-      },
-      "tarde.B": {
-        "empieza": "14:45",
-        "ajustar": {
-          "Parque de Villa Borghese": {
-            "min": 20
-          },
-          "Santa Maria del Popolo": {
-            "min": 20
-          }
-        }
-      },
-      "tarde.D": {
-        "empieza": "15:15"
       }
     },
     "con_free_tour": {
@@ -384,11 +313,21 @@
             "lugar": "Castillo de Sant'Angelo",
             "tipo": "fija",
             "hora": "09:00",
-            "min": 85,
+            "min": 65,
             "modo": "dentro",
             "entrada": true,
             "si_cerrado": "fuera",
             "revisita": "Lo viste por fuera {dia}, con el atardecer desde el Puente; hoy entras: la tumba de Adriano, las salas de los papas y la terraza del ángel."
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 15,
+            "titulo": "El parque de Villa Borghese: Piazza di Siena, de camino a la Galería",
+            "foto": "Piazza di Siena",
+            "traslado": {
+              "como": "un taxi (unos 15 min)",
+              "min": 20
+            }
           },
           {
             "lugar": "Galería Borghese",
@@ -398,10 +337,6 @@
             "modo": "dentro",
             "entrada": true,
             "turno": true,
-            "traslado": {
-              "como": "un taxi (unos 15 min)",
-              "min": 20
-            },
             "si_cerrado": {
               "cambiar_por": {
                 "lugar": "Parque de Villa Borghese",
@@ -463,7 +398,7 @@
       "tarde.A": {
         "ajustar": {
           "Jardines del Pincio": {
-            "min": 37
+            "min": 75
           }
         }
       }
@@ -512,7 +447,7 @@
               "verificar": "El mercadillo acaba el 6 de enero y la fiesta termina a las 14:00, con la llegada de la Befana (turismoroma.it, «Festa di Piazza Navona 2025»): confirmar cada año.",
               "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad, y acaba a las 14:00."
             },
-            "antes_de": "Galería Borghese"
+            "antes_de": "Parque de Villa Borghese"
           }
         ],
         "ajustar": {
@@ -523,7 +458,7 @@
             }
           },
           "Castillo de Sant'Angelo": {
-            "min": 55
+            "min": 35
           }
         }
       },

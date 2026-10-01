@@ -21,6 +21,9 @@ import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
 import { formatDayV3, nightWalkPlan, travelTimesFor } from './buildDayV3.js'
 import { dateNoticesFor } from './dateNotices.js'
+import { resolveFreeTime } from './freeTime.js'
+import { photosFor } from './writtenDays.js'
+import { ownPhotoFile } from './writtenDays.js'
 import { seasonNoteFor } from './seasonNote.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
@@ -482,13 +485,12 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     const barrioName = lastIsBarrio ? lastPlace.name : nightBarrio ?? null
     if (barrioName && day.aperitivo) {
       const sameNight = stops.filter((stop) => stop.is_night_experience && stop.before_dinner && norm(stop.name ?? '').startsWith(norm(barrioName)))
-      const merged = (lastIsBarrio ? lastStop.duration_minutes ?? 0 : 0) + sameNight.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0) + day.aperitivo.minutes
-      if (lastIsBarrio) day.stops = stops.filter((stop) => stop !== lastStop)
+      // (Paso 5, 2026-10-01: la parada del barrio se queda y se alarga —no hay tarjeta aparte en el mismo sitio—; la nocturna del barrio, después de cenar.)
       for (const stop of sameNight) {
         stop.before_dinner = false
         stop.after_dinner = true
       }
-      day.aperitivo = { ...day.aperitivo, title: `${barrioName} al anochecer y aperitivo`, minutes: merged }
+      day.aperitivo = { ...day.aperitivo, minutes: day.aperitivo.minutes + sameNight.reduce((sum, stop) => sum + (stop.duration_minutes ?? 0), 0) }
     }
     // La «Tarde libre» de justo antes de cenar es el aperitivo, con su nombre (PROMPT_ROMA_V4_REPASO 8: 135 min de tarde
     // libre en el D5C de invierno); así también se adelanta la cena si sobra.
@@ -532,6 +534,19 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   const step5 = (minutes) => Math.max(5, Math.floor(minutes / 5) * 5)
   for (const key of ['aperitivo', 'free_afternoon', 'free_time']) if (day[key]?.minutes != null) day[key].minutes = step5(day[key].minutes)
   for (const entry of day.free_times ?? []) entry.minutes = step5(entry.minutes)
+  // Sin «Aperitivo» ni «Tiempo libre» (paso 5, 2026-10-01): lo que sobra pasa a una parada con nombre, a «Pasea y piérdete por
+  // {zona}» o a recolocar las horas (freeTime.js). Solo en lo que monta el motor: nunca en lo que pone el viajero.
+  const freeReport = resolveFreeTime(day, {
+    destData,
+    tripDay,
+    dayVisitedNames,
+    travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')),
+    suggestionsFor: null,
+  })
+  if (process.env.FREE_DEBUG) day.free_report = freeReport
+  // Nunca la misma foto propia en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda pide la suya de siempre (la de
+  // Unsplash o Wikipedia) en vez de la propia.
+  markRepeatedOwnPhotos(day, photosFor(findPipelineV2Key(destData.destination ?? options.city ?? '') ?? ''), tripDay.hours?.dateIso ?? null)
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
   if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)
@@ -667,6 +682,24 @@ export function experiencesInSeason(destData, experiencesPositive, { dateRangeSt
     if (calendar.hasDates) return Array.from({ length: contentDays }, (_, i) => calendar.dateOfDay(i + 1)).some((date) => availableForTrip(window, calendar, date))
     return availableForTrip(window, calendar, null)
   })
+}
+
+/**
+ * Las fotos propias del destino (`_fotos.json`) que dos paradas del día compartirían: la primera la lleva; la otra, `no_own_photo`, y
+ * el cliente le pide la de siempre. La parada con otro nombre de foto (`photo_name`) cuenta con ese nombre.
+ */
+function markRepeatedOwnPhotos(day, table, dateIso) {
+  if (!table) return
+  const used = new Set()
+  for (const stop of day.stops ?? []) {
+    if (stop.is_break || (stop.is_free_walk && !stop.photo_name)) continue
+    const base = stop.photo_name ?? stop.name
+    const asked = stop.is_night_experience && !/(noche)$|sde noche$/i.test(base) ? `${base} (noche)` : base
+    const file = ownPhotoFile(table, asked, dateIso)?.archivo
+    if (!file) continue
+    if (used.has(file)) stop.no_own_photo = true
+    else used.add(file)
+  }
 }
 
 /** Tiempo libre antes de cenar a partir del cual la tarde se dice "Tarde libre", con sugerencias. */
@@ -819,7 +852,7 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
   const seenToday = new Set(dayVisitedNames)
   return gaps
     // (En verano, el rato de antes de las 16:30 sale como descanso aunque sea corto: si no, queda un hueco sin nombre.)
-    .filter((gap) => gap.minutes > FREE_GAP_MINUTES || (gap.minutes >= 15 && isSummerSiesta(tripDay, gap.from ? gap.from.end : gap.fromEnd, gap.end, gap.minutes)))
+    .filter((gap) => gap.minutes >= FREE_GAP_MINUTES || (gap.minutes >= 15 && isSummerSiesta(tripDay, gap.from ? gap.from.end : gap.fromEnd, gap.end, gap.minutes)))
     .map((gap) => {
       const from = gap.from ? coordsOf(gap.from) : gap.fromCoords
       const startMinutes = gap.from ? gap.from.end : gap.fromEnd
@@ -851,7 +884,7 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         ...(gap.rest ? { title: REST_TITLE, hint: REST_HINT, descanso: true } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
         ...(siesta ? { title: SIESTA_TITLE, hint: SIESTA_HINT, descanso: true } : {}),
-        ...(walkBefore ? { title: walkBefore.titulo, hint: walkBefore.texto } : {}),
+        ...(walkBefore ? { title: walkBefore.titulo, hint: walkBefore.texto, named: true } : {}),
       }
     })
 }

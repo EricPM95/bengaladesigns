@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 422 s. **Total: 34**.
+6180 viajes (todas las fechas de 2027), en 429 s. **Total: 48**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
@@ -9,7 +9,23 @@
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
 - **Tramo de más de 25 min andando sin transporte**: 0 ✅
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 12
+  - 2027-10-11 · 2 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+  - 2027-10-11 · 3 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+  - 2027-10-11 · 4 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+  - 2027-10-11 · 5 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+  - 2027-10-12 · 2 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+  - 2027-10-12 · 3 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: 9
+  - 2027-07-04 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+  - 2027-07-11 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+  - 2027-07-18 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+  - 2027-07-25 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+  - 2027-08-01 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+  - 2027-08-08 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+- **La misma foto propia en dos tarjetas del mismo día**: 0 ✅
+- **Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)**: 0 ✅
+- **El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)**: 0 ✅
 - **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 0 ✅
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
@@ -37,16 +53,16 @@
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
 - **El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)**: 0 ✅
 - **El día del Vaticano sin el Puente Sant'Angelo de día**: 0 ✅
-- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 13
-  - 2027-03-30 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
-  - 2027-03-31 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
-  - 2027-04-01 · 2 días · FT, día 2, 19:00 Ponte Sisto — 70 min hasta la cena y Campo de' Fiori a un paseo
-  - 2027-04-03 · 2 días · FT, día 2, 19:00 Ponte Sisto — 69 min hasta la cena y Campo de' Fiori a un paseo
-  - 2027-04-09 · 2 días · FT, día 2, 19:05 Ponte Sisto — 65 min hasta la cena y Campo de' Fiori a un paseo
-  - 2027-09-04 · 2 días · FT, día 2, 19:00 Ponte Sisto — 69 min hasta la cena y Campo de' Fiori a un paseo
+- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 0 ✅
 - **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 0 ✅
 - **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
-- **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: 6
+  - 2027-01-02 · 6 días · FT, día 5 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+  - 2027-01-02 · 7 días · FT, día 5 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+  - 2027-01-04 · 4 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+  - 2027-01-04 · 5 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+  - 2027-01-04 · 6 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+  - 2027-01-04 · 7 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
 - **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
@@ -66,27 +82,40 @@
 
 ## Dónde caen (día escrito, versión y variantes)
 
+- **Se llega tarde a una hora fija (o a recoger la entrada)**: D4 A miércoles ×6
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×21
-- **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: D1-FT D +luz:C→D ×5 · D1-FT D +domingo+fecha:primer_domingo+luz:C→D ×2 · D1-FT D +sabado ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D1 A +sabado+fecha:01-01+empieza:10:00+comida:sin Plaza del Campidoglio+relleno_cena:Campo de' Fiori ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1 · D1 A +fecha:01-01+arte_museos+relleno_cena:Campo de' Fiori ×1 · D1 A +sabado+fecha:01-01+arte_museos+empieza_tarde+empieza:10:00+empieza_tarde+relleno_cena:Campo de' Fiori ×1
+- **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: D2 D +lunes ×8 · D1 A +arte_museos ×1
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D1-FT C +luz:B→C ×12
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1133 viajes pisan alguna fecha clave. **Avisos de verdad: 5** · informativos (algo cierra ese día y el aviso lo explica): 21.
+1133 viajes pisan alguna fecha clave. **Avisos de verdad: 16** · informativos (algo cierra ese día y el aviso lo explica): 21.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
-| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 1 | 0 |
+| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 6 | 0 |
 | Semana Santa | 03-24 – 03-29 | 155 | 0 | 2 |
 | Puente de mayo | 04-30 – 05-02 | 93 | 0 | 2 |
-| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 0 | 0 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 1 | 0 |
 | Verano: el 15 de agosto | 08-13 – 08-16 | 112 | 0 | 8 |
-| Puente del Pilar | 10-09 – 10-12 | 112 | 0 | 0 |
+| Puente del Pilar | 10-09 – 10-12 | 112 | 8 | 0 |
 | Todos los Santos | 10-30 – 11-01 | 112 | 0 | 2 |
 | Puente de diciembre | 12-04 – 12-08 | 136 | 0 | 0 |
-| Navidad y Reyes | 12-24 – 12-31 | 184 | 4 | 7 |
+| Navidad y Reyes | 12-24 – 12-31 | 184 | 1 | 7 |
 
-- Navidad y Reyes (final): hueco_cena | 2027-01-01 · 3 días · arte_museos, día 1, 17:30 Campo de' Fiori — 73 min hasta la cena y Barrio Judío a un paseo
-- Navidad y Reyes: hueco_cena | 2027-12-24 · 2 días · FT, día 1, 17:00 Altar de la Patria — 93 min hasta la cena y Monti a un paseo
-- Navidad y Reyes: hueco_cena | 2027-12-31 · 2 días, día 2, 18:05 Campo de' Fiori — 83 min hasta la cena y Barrio Judío a un paseo
-- Navidad y Reyes: hueco_cena | 2027-12-31 · 2 días · FT, día 1, 17:00 Altar de la Patria — 93 min hasta la cena y Monti a un paseo
-- Navidad y Reyes: hueco_cena | 2027-12-31 · 3 días · arte_museos, día 2, 18:25 Campo de' Fiori — 63 min hasta la cena y Barrio Judío a un paseo
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-02 · 6 días · FT, día 5 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-02 · 7 días · FT, día 5 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-04 · 4 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-04 · 5 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-04 · 6 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Navidad y Reyes (final): v4_llega_tarde | 2027-01-04 · 7 días · FT, día 3 (D4 A, miércoles) — Galería Borghese · llega 10:57 para las 11:00
+- Verano: fin de semana de julio: cerrada_a_su_hora | 2027-07-18 · 2 días, día 2, 18:30 Basílica de Santa Cecilia in Trastevere — A esta hora ya ha cerrado
+- Puente del Pilar: hueco | 2027-10-11 · 2 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-11 · 3 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-11 · 4 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-11 · 5 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-12 · 2 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-12 · 3 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-12 · 4 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Puente del Pilar: hueco | 2027-10-12 · 5 días · FT, día 2, 16:30 Basílica de Santa Cecilia in Trastevere — 24 min
+- Navidad y Reyes: cerrada_a_su_hora | 2027-12-31 · 5 días · arte_museos, día 1, 14:55 Museos Capitolinos — A esta hora ya ha cerrado

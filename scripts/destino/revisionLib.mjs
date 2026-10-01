@@ -171,7 +171,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       let previousEnd = null
       let lunchShown = false
       let paradasDeVerdad = 0
-      const filaLibre = (entry) => out.push(`| | | ${entry.minutes} min | 🕐 **Tiempo libre** | ${entry.before === LUNCH_LABEL ? 'antes de comer' : `antes de ${cell(entry.before)}`}${libreIdeas(entry) ? ` · ${cell(libreIdeas(entry))}` : ''} | |`)
+      const filaLibre = (entry) => out.push(`| | | ${entry.minutes} min | 🕐 **Descanso** | ${entry.before === LUNCH_LABEL ? 'antes de comer' : `antes de ${cell(entry.before)}`}${libreIdeas(entry) ? ` · ${cell(libreIdeas(entry))}` : ''} | |`)
       const filaComida = () => {
         for (const entry of libres.filter((item) => item.before === LUNCH_LABEL && item.after === (previous?.place_name ?? previous?.name))) filaLibre(entry)
         const restaurante = lunch.restaurant ? cell(lunch.restaurant) : 'sin restaurante elegido'
@@ -250,7 +250,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
       // Lo de después de la última parada, en orden de hora (decisión del 2026-09-26: la nocturna de antes de
       // cenar va antes de la cena en la tabla).
       const cola = []
-      if (day.aperitivo) cola.push({ at: t2m(dayStops.at(-1)?.suggested_time ?? '00:00') + 1, row: `| | | ${day.aperitivo.minutes} min | 🕐 **Tiempo libre**: ${cell(day.aperitivo.title)} | ${cell(day.aperitivo.suggestions.map((s) => s.name).join(', '))} | |` })
+      if (day.aperitivo) cola.push({ at: t2m(dayStops.at(-1)?.suggested_time ?? '00:00') + 1, row: `| | | ${day.aperitivo.minutes} min | 🕐 **Descanso**: ${cell(day.aperitivo.title)} | ${cell(day.aperitivo.suggestions.map((s) => s.name).join(', '))} | |` })
       if (day.free_afternoon) cola.push({ at: t2m(dayStops.at(-1)?.suggested_time ?? '00:00') + 1, row: `| | | ${day.free_afternoon.minutes} min | 🕐 **Tarde libre** | ${cell(day.free_afternoon.suggestions.map((s) => s.name).join(', '))} | |` })
       if (dinner) {
         const walk = day.dinner_walk_minutes ?? null
@@ -386,7 +386,7 @@ export async function generarRevision({ viajes, path, titulo, intro, resumen = f
     '- **Llega / Sale**: la hora a la que se llega a la parada y a la que se sale; **Dura**: el tiempo en ella.',
     '- **Nota**: "por el camino" (se pasa por delante, sin pararse: calles, plazas, fuentes), "por fuera" (un monumento que ese día no se visita, con el motivo), 🌅 el mirador del atardecer, 🔒 cerrado ese día (con su aviso), "tiempo libre", y los avisos de horario.',
     `- **Traslado**: solo los de más de ${TRASLADO_VISIBLE} min andando, con los minutos (matriz del destino). El aviso de transporte del día (🚌) va arriba del día.`,
-    '- 🕐 tiempo libre (todo hueco de más de 30 min, con sugerencias); 🍝 comida con su restaurante y barrio; 🍷 cena con su barrio (el motor elige el barrio de la cena, no el restaurante); 🌙 experiencia nocturna, en su hora.',
+    '- 🕐 descanso con nombre (el de después de comer o a la sombra); 🍝 comida con su restaurante y barrio; 🍷 cena con su barrio (el motor elige el barrio de la cena, no el restaurante); 🌙 experiencia nocturna, en su hora.',
     '- Al final de cada viaje, lo que no entró; al final del documento, **lo que parece raro**, para decidir.',
     '',
     ...(comparaRitmos

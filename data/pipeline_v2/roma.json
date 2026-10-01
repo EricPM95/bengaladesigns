@@ -2841,7 +2841,8 @@
           "comprobado": "2026-10-01",
           "revisar": "diciembre de cada año"
         }
-      ]
+      ],
+      "minutos_fuera": 10
     },
     {
       "name": "Barrio Judío",
@@ -8411,25 +8412,6 @@
       "navidad_luces": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas, y como anochece sobre las {hora_atardecer}, las disfrutarás de sobra.",
       "navidad_luces_sin_noche": "{destino} ya se viste de Navidad: las calles estrenan luces. Hemos preparado tu ruta para que las veas."
     },
-    "aperitivo_invierno": {
-      "_nota": "Invierno (decisión del usuario, 2026-09-28): el rato libre antes de cenar lleva nombre y contenido, por barrio de cena. \"12-25\": ese día (las tiendas cierran); \"diciembre\"; \"invierno\": el resto. si_visto / si_visto_titulo: si ese día ya se vio lo que nombra, el otro título.",
-      "tridente": {
-        "12-25": "Paseo con las luces de Navidad y aperitivo",
-        "diciembre": "Luces de Navidad por Via del Corso y Via Condotti, y aperitivo",
-        "invierno": "Compras por Via del Corso y aperitivo",
-        "si_visto": [
-          "Luces de Navidad del Tridente"
-        ],
-        "si_visto_titulo": "Aperitivo por el Tridente"
-      },
-      "centro_historico": {
-        "si_visto": [
-          "Piazza Navona",
-          "Panteón"
-        ],
-        "si_visto_titulo": "Aperitivo en Campo de' Fiori y la Plaza Farnese"
-      }
-    },
     "night_view_texts": {
       "_nota": "El texto de cada mirador cuando ya es de noche (decisión del usuario, 2026-09-28); sin él, night_view_text.",
       "Mirador del Janículo": "El sol ya se ha puesto y, a cambio, tienes Roma encendida a tus pies: cúpulas, campanarios y tejados hasta el horizonte.",
@@ -8535,6 +8517,69 @@
       "comprobado": "2026-10-01",
       "verificar": true,
       "revisar": "noviembre de cada año"
+    },
+    "paseo_libre": {
+      "_nota": "El rato libre antes de cenar (PARA_CODE_TODO_2026-10-01, paso 5): «Pasea y piérdete por {zona}», con etiqueta «Paseo libre». Por barrio de cena (dinnerZones). nombre: la zona; iluminado: cómo se llama con el sol puesto (invierno); foto: el lugar cuya foto de día lleva la tarjeta (nunca una de noche); consejo: el spritz, dentro de la ficha. titulo_navidad: en diciembre y el 25, con las luces. si_visto / si_visto_nombre: si ese día ya se vio lo que nombra, la otra zona. Cuando el paseo cae en la misma zona que la parada de antes, no hay tarjeta aparte: esa parada se alarga.",
+      "minutos_min": 20,
+      "minutos_max": 90,
+      "consejo_aperitivo": "A esta hora los romanos se toman un spritz o una copa de vino antes de cenar. Si te apetece, siéntate en una terraza y mira pasar la ciudad.",
+      "zonas": {
+        "tridente": {
+          "nombre": "Via del Corso y Via Condotti",
+          "iluminado": "Via del Corso y Via Condotti iluminadas",
+          "foto": "Via del Corso",
+          "titulo_navidad": "Pasea y piérdete entre las luces de Via del Corso y Via Condotti",
+          "si_visto": [
+            "Luces de Navidad del Tridente"
+          ],
+          "si_visto_nombre": "el Tridente"
+        },
+        "trevi": {
+          "nombre": "Trevi y Via del Corso",
+          "iluminado": "la Fontana de Trevi y Via del Corso iluminadas",
+          "foto": "Fontana de Trevi"
+        },
+        "centro_historico": {
+          "nombre": "el Centro Histórico",
+          "iluminado": "Piazza Navona y el Panteón iluminados",
+          "foto": "Campo de' Fiori",
+          "si_visto": [
+            "Piazza Navona",
+            "Panteón"
+          ],
+          "si_visto_nombre": "Campo de' Fiori y la Plaza Farnese"
+        },
+        "monti": {
+          "nombre": "Monti",
+          "iluminado": "Monti y los Foros iluminados",
+          "foto": "Monti"
+        },
+        "coliseo": {
+          "nombre": "el Coliseo y el Celio",
+          "iluminado": "el Coliseo iluminado",
+          "foto": "Arco de Constantino"
+        },
+        "trastevere": {
+          "nombre": "Trastevere",
+          "iluminado": "Trastevere iluminado",
+          "foto": "Trastevere"
+        },
+        "testaccio": {
+          "nombre": "Testaccio",
+          "iluminado": "Testaccio y la Pirámide iluminados",
+          "foto": "Mercado de Testaccio"
+        },
+        "prati": {
+          "nombre": "el Borgo y Prati",
+          "iluminado": "Via della Conciliazione y el Castillo iluminados",
+          "foto": "Borgo Pio"
+        },
+        "vaticano": {
+          "nombre": "el Borgo",
+          "iluminado": "Via della Conciliazione y el Castillo iluminados",
+          "foto": "Borgo Pio"
+        }
+      }
     }
   },
   "museos_de_pago": {

@@ -249,6 +249,12 @@ export interface Stop {
   /** Por qué merece la pena volver — lo escribe el motor (ver revisits.js en el servidor). */
   revisitReason?: string
   isFreeTime?: boolean
+  /** «Pasea y piérdete por {zona}» (PARA_CODE_TODO_2026-10-01, paso 5): el rato libre antes de cenar o a mitad de día, con nombre, foto de su zona y etiqueta «Paseo libre». */
+  isFreeWalk?: boolean
+  /** La foto propia ya la lleva otra tarjeta de ese día: esta pide la de siempre (Unsplash o Wikipedia), no la propia. */
+  noOwnPhoto?: boolean
+  /** El consejo del aperitivo (un spritz en una terraza): va dentro de la ficha, en Tips, de este paseo o de la parada que se alarga en su lugar. */
+  aperitivoTip?: string | null
   detail?: PlaceDetail
   /** Modo Hoy: instante real (ISO) en que el viajero pulsó "Ya he estado aquí" / "Ya terminé, seguir" — null/undefined mientras no se ha hecho check-in. Vive en el Stop porque es un hecho de esa visita concreta, no del día. */
   checkedInAt?: string | null
@@ -279,7 +285,7 @@ export interface Stop {
   /** Un monumento con interior: se visita por dentro o se ve por fuera (con su motivo en `outsideReason`). */
   visitMode?: 'dentro' | 'fuera'
   /** Por qué va por fuera: cerrado ese día, ya cerrado a esa hora o no cabe (solo este deja pedir "Quiero entrar"). */
-  outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe'
+  outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado'
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
@@ -647,16 +653,9 @@ export interface DayPlan {
   dinnerWalkMinutes?: number | null
   /** Solo días de revisitas: la excursión de medio día que ocupa la mañana. Ver HalfDayExcursionSlot. */
   halfDayExcursion?: HalfDayExcursionSlot | null
-  /** Motor v3: tarde libre (el destino ya no daba para más ese día), con 2-3 sugerencias cerca de
-      donde acaba el día — pueden ser de pago, el viajero decide si las añade. */
-  freeAfternoon?: { minutes: number; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
-  /** Motor v3: 90 min o menos antes de cenar en un barrio con ambiente — "Aperitivo y paseo por {barrio}". */
-  aperitivo?: { title: string; barrio: string; minutes: number; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[] } | null
-  /** Motor v3: hueco de 60+ min a mitad de día (antes de una parada con hora), tras la parada `after`. */
-  /** `hint`: sin sugerencias de lugares, una idea corta de la zona ("Pasear por Villa Borghese: …"). */
-  freeTime?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null } | null
-  /** Motor v3: TODOS los huecos de más de 30 min, con nombre (decisión del 2026-09-26). `before`/`after` pueden
-      ser "la comida": el hueco antes de comer o el de después. */
+  /** Motor v3: los ratos con nombre y contenido propio (el descanso de después de comer, el paseo de antes del mirador).
+      Ya no existe el «Tiempo libre» ni el «Aperitivo» (paso 5, 2026-10-01): lo que sobra es una parada, un «Pasea y piérdete
+      por…» o horas recolocadas. `before`/`after` pueden ser "la comida". */
   freeTimes?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean

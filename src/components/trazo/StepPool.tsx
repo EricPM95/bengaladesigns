@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ExperienceId } from '../../lib/types'
 import type { PoolPlace } from '../../lib/placePoolCache'
-import { fetchPlacePhoto } from '../../lib/placePhoto'
+import { fetchPlacePhoto, getPoolPhoto, prefetchPoolPhotos } from '../../lib/placePhoto'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { useRouteStore } from '../../store/useRouteStore'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
@@ -57,12 +57,19 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
   const limit = poolSelectionLimit(days)
   const atLimit = selected.length >= limit
 
-  const [photos, setPhotos] = useState<Record<string, string>>({})
+  // Las fotos ligeras ya vienen traídas de antes (TrazoFlow las pide en cuanto se sabe el destino): salen al momento. Solo lo que falte se pide.
+  const fromBatch = (list: Tile[]) => Object.fromEntries(list.flatMap((tile) => { const url = getPoolPhoto(destinationName, tile.name); return url ? [[tile.name, url]] : [] }))
+  const [photos, setPhotos] = useState<Record<string, string>>(() => fromBatch(tiles))
   const namesKey = tiles.map((tile) => tile.name).join('|')
   useEffect(() => {
     let alive = true
+    const ready = fromBatch(tiles)
+    if (Object.keys(ready).length > 0) setPhotos((prev) => ({ ...ready, ...prev }))
+    if (curated) {
+      void prefetchPoolPhotos(destinationName, tiles.map((tile) => tile.name)).then(() => alive && setPhotos((prev) => ({ ...fromBatch(tiles), ...prev })))
+    }
     for (const tile of tiles) {
-      if (photos[tile.name]) continue
+      if (photos[tile.name] || ready[tile.name] || curated) continue
       fetchPlacePhoto(tile.name, destinationName).then((url) => {
         if (alive && url) setPhotos((prev) => ({ ...prev, [tile.name]: url }))
       })

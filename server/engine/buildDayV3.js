@@ -351,6 +351,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
         stop.wikipedia_title = photoPlace.wikipedia_title ?? null
       }
     }
+    // La foto con otro nombre (`foto` en lo escrito): la parada del parque de camino a la Galería y la del lago y el templo.
+    if (visit.place.photoName && !visit.place.isFreeTour) stop.photo_name = visit.place.photoName
     // Una pausa con nombre (el desayuno romano): no es un lugar, se pinta como la comida, con su icono, su texto
     // y dos cafés cerca de los restaurantes del destino. Sin horario, etiquetas ni ficha.
     if (visit.place.isBreak) {

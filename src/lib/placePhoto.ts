@@ -35,11 +35,104 @@ export interface PlacePhoto {
 }
 
 const cache = new Map<string, PlacePhoto | null>()
+
+// ── Lo guardado en el navegador (PARA_CODE_TODO_2026-10-01, paso 7) ─────────────────────────────────────────────────────────────
+// Una foto ya resuelta no se vuelve a pedir en el siguiente viaje, ni en Explorar ni en Añadir parada: se guarda 24 h. Las fotos propias
+// llevan su versión en la URL (`?v=`), así que una foto que cambia cambia de dirección y el navegador la renueva sola.
+const STORE_PREFIX = 'photo:v1:'
+const STORE_TTL_MS = 24 * 60 * 60 * 1000
+const STORE_MAX_ENTRIES = 400
+
+function readStored(key: string): PlacePhoto | undefined {
+  try {
+    const raw = localStorage.getItem(STORE_PREFIX + key)
+    if (!raw) return undefined
+    const parsed = JSON.parse(raw) as { at: number; photo: PlacePhoto }
+    if (!parsed?.photo || Date.now() - parsed.at > STORE_TTL_MS) {
+      localStorage.removeItem(STORE_PREFIX + key)
+      return undefined
+    }
+    return parsed.photo
+  } catch {
+    return undefined
+  }
+}
+
+function writeStored(key: string, photo: PlacePhoto): void {
+  try {
+    localStorage.setItem(STORE_PREFIX + key, JSON.stringify({ at: Date.now(), photo }))
+    // Sin crecer sin fin: pasadas las 400, se tiran las más viejas.
+    const keys = Object.keys(localStorage).filter((name) => name.startsWith(STORE_PREFIX))
+    if (keys.length > STORE_MAX_ENTRIES) {
+      const dated = keys.map((name) => ({ name, at: (JSON.parse(localStorage.getItem(name) ?? '{}') as { at?: number }).at ?? 0 })).sort((a, b) => a.at - b.at)
+      for (const { name } of dated.slice(0, keys.length - STORE_MAX_ENTRIES)) localStorage.removeItem(name)
+    }
+  } catch {
+    // sin espacio o sin localStorage: se sigue sin guardar
+  }
+}
+
+// ── Las fotos del pool, de una vez ────────────────────────────────────────────────────────────────────────────────────────────
+const poolPhotos = new Map<string, string>()
+const poolInFlight = new Map<string, Promise<void>>()
+
+/** La foto pequeña de un lugar del pool, si ya está traída (o guardada de otra vez). */
+export function getPoolPhoto(destination: string, name: string): string | null {
+  const key = `${destination.trim().toLowerCase()}|${name.toLowerCase()}`
+  const cached = poolPhotos.get(key)
+  if (cached) return cached
+  try {
+    const raw = localStorage.getItem(`poolphoto:v1:${key}`)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { at: number; url: string }
+    if (Date.now() - parsed.at > STORE_TTL_MS) return null
+    poolPhotos.set(key, parsed.url)
+    return parsed.url
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Trae en una sola petición las fotos pequeñas (las ligeras: 640 px) de los lugares del pool y las deja guardadas y precargadas. Se llama en
+ * cuanto se sabe el destino, mientras el viajero rellena los pasos de antes: al llegar al pool, salen al momento.
+ */
+export function prefetchPoolPhotos(destination: string, names: string[], dateIso?: string | null): Promise<void> {
+  const pending = names.filter((name) => !getPoolPhoto(destination, name))
+  if (pending.length === 0) return Promise.resolve()
+  const flightKey = `${destination.toLowerCase()}|${pending.join('|')}`
+  const running = poolInFlight.get(flightKey)
+  if (running) return running
+  const job = fetch('/api/pool-photos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destination, names: pending, ...(dateIso ? { date: dateIso } : {}) }),
+  })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data: { photos?: Record<string, { url: string }> } | null) => {
+      for (const [name, entry] of Object.entries(data?.photos ?? {})) {
+        if (!entry?.url) continue
+        const key = `${destination.trim().toLowerCase()}|${name.toLowerCase()}`
+        poolPhotos.set(key, entry.url)
+        try {
+          localStorage.setItem(`poolphoto:v1:${key}`, JSON.stringify({ at: Date.now(), url: entry.url }))
+        } catch {
+          // sin espacio: se sigue en memoria
+        }
+        // Precargada: cuando la baldosa la pida, ya está en el navegador.
+        if (typeof Image !== 'undefined') new Image().src = entry.url
+      }
+    })
+    .catch(() => undefined)
+    .finally(() => poolInFlight.delete(flightKey))
+  poolInFlight.set(flightKey, job)
+  return job
+}
 const inFlight = new Map<string, Promise<PlacePhoto | null>>()
 
 /** (Con la fecha del día: las fotos de unas fechas, las de Navidad, dependen de ella.) */
-function cacheKey(name: string, city: string, dateIso?: string | null): string {
-  return `${name.toLowerCase()}|${city.toLowerCase()}|${dateIso ?? ''}`
+function cacheKey(name: string, city: string, dateIso?: string | null, excludeOwn = false): string {
+  return `${name.toLowerCase()}|${city.toLowerCase()}|${dateIso ?? ''}${excludeOwn ? '|sin_propia' : ''}`
 }
 
 /**
@@ -47,9 +140,14 @@ function cacheKey(name: string, city: string, dateIso?: string | null): string {
  * lanza: sin foto (o con el backend caído) devuelve null y el componente enseña su icono de
  * categoría, que es el comportamiento de siempre.
  */
-export async function fetchPlacePhotoDetail(name: string, city: string, wikipediaTitle?: string | null, dateIso?: string | null): Promise<PlacePhoto | null> {
-  const key = cacheKey(name, city, dateIso)
+export async function fetchPlacePhotoDetail(name: string, city: string, wikipediaTitle?: string | null, dateIso?: string | null, excludeOwn = false): Promise<PlacePhoto | null> {
+  const key = cacheKey(name, city, dateIso, excludeOwn)
   if (cache.has(key)) return cache.get(key) ?? null
+  const stored = readStored(key)
+  if (stored) {
+    cache.set(key, stored)
+    return stored
+  }
   // Varias tarjetas del mismo lugar en pantalla no deben disparar varias peticiones idénticas.
   const pending = inFlight.get(key)
   if (pending) return pending
@@ -61,7 +159,7 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
       const response = await fetch('/api/place-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, city, wikipedia_title: wikipediaTitle ?? null, ...(dateIso ? { date: dateIso } : {}) }),
+        body: JSON.stringify({ name, city, wikipedia_title: wikipediaTitle ?? null, ...(dateIso ? { date: dateIso } : {}), ...(excludeOwn ? { exclude_own: true } : {}) }),
         signal: controller.signal,
       })
       if (!response.ok) return null
@@ -113,6 +211,7 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
   const result = await job
   inFlight.delete(key)
   cache.set(key, result)
+  if (result) writeStored(key, result)
   return result
 }
 
@@ -127,8 +226,9 @@ export async function fetchPlacePhoto(
   wikipediaTitle?: string | null,
   size: 'thumb' | 'small' | 'regular' = 'small',
   dateIso?: string | null,
+  excludeOwn = false,
 ): Promise<string | null> {
-  const photo = await fetchPlacePhotoDetail(name, city, wikipediaTitle, dateIso)
+  const photo = await fetchPlacePhotoDetail(name, city, wikipediaTitle, dateIso, excludeOwn)
   return photo ? photo[size] : null
 }
 
@@ -158,13 +258,22 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
   const jobs = route.days.flatMap((day) =>
     day.stops.map((stop) =>
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
-      stop.isBreak || stop.fixedPhotoUrl
+      stop.isBreak || stop.fixedPhotoUrl || (stop.isFreeWalk && !stop.photoName)
         ? Promise.resolve()
-        : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular', startIso ? addDaysToIso(startIso, day.dayNumber - 1) : null).then((photo) => {
+        : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular', startIso ? addDaysToIso(startIso, day.dayNumber - 1) : null, Boolean(stop.noOwnPhoto)).then((photo) => {
             if (photo) stop.photoUrl = photo
           }),
     ),
   )
   await Promise.allSettled(jobs)
+  // Nunca la misma foto en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda, sin foto (el color neutro).
+  for (const day of route.days) {
+    const used = new Set<string>()
+    for (const stop of day.stops) {
+      if (!stop.photoUrl) continue
+      if (used.has(stop.photoUrl)) stop.photoUrl = ''
+      else used.add(stop.photoUrl)
+    }
+  }
   return route
 }

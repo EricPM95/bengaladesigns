@@ -1,5 +1,4 @@
 import { TripReadinessBadge } from '../route/reservas/TripReadinessBadge'
-import { MagicWandIcon } from '../route/MagicWandIcon'
 
 /** Botón redondo blanco de la cabecera (diseño "Trazo Itinerario"). */
 const ROUND_BUTTON =
@@ -8,16 +7,13 @@ const ROUND_BUTTON =
 interface HeaderProps {
   /** La bombilla: los tips del viaje (PROMPT_UI_REPASO_2, 3). */
   onTips: () => void
-  /** La varita: «Volver a mi ruta original» (o «Tu ruta está tal como te la preparamos» si no hay cambios). */
-  onWand: () => void
 }
 
 /**
- * Cabecera mínima (diseño "Trazo Itinerario"): brújula, nombre, % de viaje listo, la bombilla de los tips y la varita
- * (PROMPT_UI_REPASO_2, 1: sustituyen a «Mis viajes», que pasa al perfil de la barra de abajo, y al modo noche). La varita
- * siempre visible y siempre igual, sin puntito ni aviso.
+ * Cabecera mínima (diseño "Trazo Itinerario"): brújula, nombre, % de viaje listo y la bombilla de los tips. La varita de
+ * «Volver a mi ruta original» ya no está aquí: va en cada día de la pestaña Días (PARA_CODE_TODO_2026-10-01, paso 8).
  */
-export function Header({ onTips, onWand }: HeaderProps) {
+export function Header({ onTips }: HeaderProps) {
   return (
     <header className="relative z-20 flex h-14 shrink-0 items-center gap-2.5 bg-bg pl-[18px] pr-4">
       <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-[#1C2230] text-[oklch(0.8_0.14_70)]" aria-hidden="true">
@@ -33,9 +29,6 @@ export function Header({ onTips, onWand }: HeaderProps) {
           <path d="M9 18h6M10 21h4" />
           <path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" />
         </svg>
-      </button>
-      <button type="button" onClick={onWand} title="Volver a mi ruta original" aria-label="Volver a mi ruta original" className={ROUND_BUTTON}>
-        <MagicWandIcon className="h-[18px] w-[18px]" />
       </button>
     </header>
   )

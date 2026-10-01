@@ -219,6 +219,10 @@ export interface MockStopDetail {
   freeTourTips?: string[]
   /** Ver Stop.isNightExperience en types.ts — StopAccordion/StopDetailSheet le dan un tratamiento visual oscuro diferenciado. */
   isNightExperience?: boolean
+  /** Ver Stop.isFreeWalk / Stop.aperitivoTip: «Pasea y piérdete por…» y el consejo del aperitivo. */
+  isFreeWalk?: boolean
+  noOwnPhoto?: boolean
+  aperitivoTip?: string | null
   /** Ver Stop.isSunset / Stop.isNightView: mirador del atardecer y mirador de noche. */
   isSunset?: boolean
   isNightView?: boolean
@@ -227,7 +231,7 @@ export interface MockStopDetail {
   freeTourEnd?: string
   outsideReason?: string | null
   /** Ver Stop.outsideKind: solo 'no_cabe' deja pedir "Quiero entrar"; 'cerrado' y 'ya_cerrado' van en rojo. */
-  outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe'
+  outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado'
   /** Ver Stop.tags en types.ts — píldoras de color en StopAccordion/StopDetailSheet (ver tagColors.ts). */
   tags?: string[]
   /** Ver Stop.scheduleText en types.ts. */
@@ -479,6 +483,9 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     freeTourHighlights: stop.freeTourHighlights,
     freeTourTips: stop.freeTourTips,
     isNightExperience: stop.isNightExperience,
+    isFreeWalk: stop.isFreeWalk,
+    noOwnPhoto: stop.noOwnPhoto,
+    aperitivoTip: stop.aperitivoTip ?? null,
     isSunset: stop.isSunset,
     isNightView: stop.isNightView,
     nightViewTitle: stop.nightViewTitle,

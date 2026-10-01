@@ -70,7 +70,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     )
   }
 
-  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView })
+  const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView, isFreeWalk: stop.isFreeWalk })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
 
@@ -81,7 +81,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (tripWarning) meta.push({ text: tripWarning, warn: true })
   // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez. Por fuera no hay horario de visita.
   const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
-  if (!stop.isNightExperience && stop.visitMode !== 'fuera') meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
+  // (Un paseo libre no tiene horario: es la calle.)
+  if (!stop.isNightExperience && stop.visitMode !== 'fuera' && !stop.isFreeWalk) meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
   meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   // Por fuera porque cierra: el motivo, en rojo. (Por falta de tiempo no es un problema: va en la ficha.)
   if (stop.visitMode === 'fuera') {
@@ -100,8 +101,9 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
-  const tags =
-    stop.tags && stop.tags.length > 0
+  const tags = stop.isFreeWalk
+    ? [{ label: 'Paseo libre', kind }]
+    : stop.tags && stop.tags.length > 0
       ? stop.tags.slice(0, 2).map((tag) => ({ label: tagLabel(tag), kind: stopKindOf({ name: '', tags: [tag] }) }))
       : stop.category
         ? [{ label: stop.category, kind }]
@@ -109,6 +111,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // Las etiquetas solo dicen qué es el sitio (Plaza, Iglesia, Mercadillo de Navidad…); «Revisita» se queda y «Por tu
   // experiencia» ya no sale en ninguna parada (PARA_CODE_NAVONA 2).
   // «Opcional» (PROMPT_QUITAR_RITMOS): hay una sola ruta y el viajero la aligera quitando paradas; estas son las primeras.
+  // Junto a un imprescindible y cerrado a esa hora: se ve por fuera, con su etiqueta y sin el aviso en rojo (paso 5.4).
+  if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   if (stop.optional) tags.push({ label: 'Opcional', kind })
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
@@ -124,7 +128,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       meta={meta}
       tags={tags}
       photoUrl={stop.photoUrl}
-      iconPath={stop.isFreeTour ? KIND_ICON.walk : undefined}
+      iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}
       onOpen={onOpen}
       menu={menu}
     />

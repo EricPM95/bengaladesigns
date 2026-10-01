@@ -1,9 +1,11 @@
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { DayPlan } from '../../lib/types'
 import { mockActivities, mockHotels } from '../../lib/mockAffiliateData'
 import { FlagIcon } from '../ui/FlagIcon'
 import { AffiliateCardCarousel } from '../ui/AffiliateCardCarousel'
 import { BOOKING_BLUE, CIVITATIS_RED, buildActivitySearchUrl, buildHotelSearchUrl } from '../../lib/affiliateLinks'
+import { destinationExcursions } from '../../lib/destinationExcursions'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -28,15 +30,17 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
   const countryCode = cityDays[0]?.countryCode ?? null
   const hotels = city ? mockHotels(city) : []
   const activities = city ? mockActivities(city) : []
+  const excursions = city ? destinationExcursions(city) : []
 
-  return (
+  // (En el body, por encima de la barra, la cabecera y el mapa: pantalla completa de verdad. PARA_CODE_TODO_2026-10-01, 6.1.)
+  return createPortal(
     <AnimatePresence>
       {city && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg"
+          className="map-cover-overlay fixed inset-0 z-[80] flex flex-col overflow-y-auto bg-bg"
         >
           <button
             type="button"
@@ -88,9 +92,18 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                 </button>
               </a>
             </div>
+
+            {/* Solo si hay excursiones que enseñar: sin datos, el bloque no sale. */}
+            {excursions.length > 0 && (
+              <div>
+                <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🧭 Excursiones desde {city}</p>
+                <AffiliateCardCarousel cards={excursions.map((excursion) => ({ id: excursion.id, name: excursion.name, photoUrl: excursion.photoUrl }))} />
+              </div>
+            )}
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

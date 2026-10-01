@@ -64,7 +64,6 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
-import { AperitivoCard } from './AperitivoCard'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
@@ -115,7 +114,6 @@ type TimelineItem =
   | { type: 'stop'; index: number }
   | { type: 'free'; index: number; entry: FreeTimeEntry }
   | { type: 'lunch'; index: number }
-  | { type: 'dinnerFree'; index: number }
   | { type: 'dinner'; index: number }
   /** El hueco con "+ Añadir parada" antes de la comida o la cena: al final del tramo de antes. */
   | { type: 'mealGap'; index: number }
@@ -156,9 +154,9 @@ function pairConnectorKey(dayId: string, stops: Stop[], index: number): string {
 }
 /** El otro extremo de un tiempo libre cuando es la comida (lo que manda el motor v3). */
 const LUNCH_FREE_LABEL = 'la comida'
-type FreeTimeEntry = NonNullable<DayPlan['freeTime']> & { title?: string | null }
-/** Los huecos con nombre del día: la lista nueva o, de rutas guardadas antes, el único que había. */
-const freeTimesOf = (day: DayPlan): FreeTimeEntry[] => day.freeTimes ?? (day.freeTime ? [day.freeTime] : [])
+type FreeTimeEntry = NonNullable<DayPlan['freeTimes']>[number]
+/** Los ratos con nombre del día (el descanso de después de comer): ya no hay «Tiempo libre» suelto (paso 5, 2026-10-01). */
+const freeTimesOf = (day: DayPlan): FreeTimeEntry[] => (day.freeTimes ?? []).filter((entry) => Boolean(entry.title))
 
 type TimeSlot = 'mañana' | 'tarde' | 'noche'
 
@@ -596,10 +594,9 @@ export function DayDetailPanel({
     if (!restaurant) return null
     const before = realStops[index]
     const after = realStops.slice(index + 1).find((candidate) => !candidate.isNightExperience)
-    // Desde el bloque de justo antes (PROMPT_UI_REPASO 14): con aperitivo antes de cenar, desde el aperitivo, no desde la
-    // última parada; y a menos de 1 min, «Justo al lado».
-    const fromAperitivo = mealTime === 'dinner' && Boolean(day.aperitivo)
-    const fromName = fromAperitivo ? 'el aperitivo' : before?.name
+    // Desde el sitio real de justo antes (nunca «desde el aperitivo»: ya no hay aperitivo, sino «Pasea y piérdete por…»); a
+    // menos de 1 min, «Justo al lado».
+    const fromName = before?.name
     const walkFrom = before ? estimatedWalkMinutes(before.coordinates, restaurant.coordinates) : null
     const parts = [
       before && fromName ? (walkFrom != null && walkFrom < 1 ? `Justo al lado de ${fromName}` : `${walkFrom} min andando desde ${fromName}`) : null,
@@ -785,26 +782,9 @@ export function DayDetailPanel({
   // pinta el de ANTES de la tarjeta dorada — el de después ya lo cubre el hueco que abre la
   // siguiente parada (o el de fin de día si la comida cierra el día), y pintar los dos dejaría dos
   // botones pegados.
-  const renderFreeTime = (entry: FreeTimeEntry, index: number, time: string | null) => (
+  const renderFreeTime = (entry: FreeTimeEntry, _index: number, time: string | null) => (
     <div key={`free-${entry.after}-${entry.before}`}>
-      <FreeTimeBlock
-        time={time}
-        hours={0}
-        city={day.city}
-        midDay={{ minutes: entry.minutes, before: entry.before, hint: entry.hint, title: entry.title }}
-        onOpenMap={() => {
-          const here = realStops[index]?.coordinates
-          setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-          setInsertAt(index + 1)
-        }}
-        suggestions={entry.suggestions}
-        onPickSuggestion={(name) => {
-          const here = realStops[index]?.coordinates
-          setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-          setAddStopInitialQuery(name)
-          setInsertAt(index + 1)
-        }}
-      />
+      <FreeTimeBlock time={time} title={entry.title ?? ''} hint={entry.hint} />
     </div>
   )
   const renderMealGap = (insertIndex: number) => renderGap(`${day.id}-meal-gap-${insertIndex}`, null, '', '', insertIndex)
@@ -960,12 +940,8 @@ export function DayDetailPanel({
         }
       }
       if (dinnerInsertionIndex === index && !freeDay) {
-        // (Con aperitivo del motor, su tarjeta sale siempre, aunque el rato sea corto: la cena dice «desde el aperitivo» y
-        // tiene que verse de dónde. PROMPT_UI_REPASO_4, 4.)
-        const hasFree = dinnerFreeMinutes(index) !== null || Boolean(day.aperitivo)
-        // (Con aperitivo, su hueco va delante del aperitivo; la cena lleva el suyo, como una parada.)
-        if (hasFree) timeline.push({ type: 'mealGap', index })
-        if (hasFree) timeline.push({ type: 'dinnerFree', index })
+        // (El hueco con «+ Añadir parada» antes de cenar; ya no hay un «Tiempo libre» ahí: paso 5, 2026-10-01.)
+        if (dinnerFreeMinutes(index) !== null) timeline.push({ type: 'mealGap', index })
         timeline.push({ type: 'dinner', index })
       }
     })
@@ -1000,9 +976,6 @@ export function DayDetailPanel({
     } else if (item.type === 'lunch') {
       start = Number.isNaN(lunchStart) ? (schedule[item.index]?.endMinutes ?? start) : lunchStart
       end = Number.isNaN(lunchEndMinutes) ? start + 75 : lunchEndMinutes
-    } else if (item.type === 'dinnerFree') {
-      start = schedule[item.index]?.endMinutes ?? start
-      end = start + (dinnerFreeMinutes(item.index) ?? 0)
     } else if (item.type === 'dinner') {
       start = Number.isNaN(dinnerStartMinutes) ? start : dinnerStartMinutes
       end = start + 90
@@ -1083,51 +1056,6 @@ export function DayDetailPanel({
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
           />
         </SortableStop>
-      )
-    }
-    if (item.type === 'dinnerFree') {
-      const index = item.index
-      const lastEnd = schedule[index]?.endMinutes ?? 0
-      const firstStart = schedule[0]?.startMinutes ?? lastEnd
-      return (
-        <div key={`dinner-free-${index}`}>
-          {/* El aperitivo, como una tarjeta más (PROMPT_UI_REPASO 13); sin él, el tiempo libre de siempre. */}
-          {day.aperitivo ? (
-            <AperitivoCard
-              time={minutesToTime(lastEnd)}
-              title={day.aperitivo.title}
-              minutes={day.aperitivo.minutes}
-              barrio={day.aperitivo.barrio}
-              city={day.city}
-              suggestions={day.aperitivo.suggestions}
-              onPickSuggestion={(name) => {
-                const here = realStops[index]?.coordinates
-                setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-                setAddStopInitialQuery(name)
-                setInsertAt(index + 1)
-              }}
-            />
-          ) : (
-          <FreeTimeBlock
-            time={minutesToTime(lastEnd)}
-            hours={Math.max(1, Math.round((lastEnd - firstStart) / 60))}
-            city={day.city}
-            onOpenMap={() => {
-              const here = realStops[index]?.coordinates
-              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-              setInsertAt(index + 1)
-            }}
-            suggestions={day.aperitivo?.suggestions ?? day.freeAfternoon?.suggestions}
-            aperitivo={day.aperitivo ? { title: day.aperitivo.title, minutes: day.aperitivo.minutes } : undefined}
-            onPickSuggestion={(name) => {
-              const here = realStops[index]?.coordinates
-              setAddStopFocus(here && hasRealCoordinates(here) ? here : null)
-              setAddStopInitialQuery(name)
-              setInsertAt(index + 1)
-            }}
-          />
-          )}
-        </div>
       )
     }
     if (item.type === 'dinner') {

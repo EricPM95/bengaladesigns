@@ -81,11 +81,12 @@ function kindFromText(text: string): StopKind | null {
   return null
 }
 
-type KindInput = Pick<Stop, 'name' | 'tags' | 'categoryLabel' | 'isNightExperience' | 'isSunset' | 'isNightView'>
+type KindInput = Pick<Stop, 'name' | 'tags' | 'categoryLabel' | 'isNightExperience' | 'isSunset' | 'isNightView'> & { isFreeWalk?: boolean }
 
 /** El tipo de tarjeta de una parada. El atardecer y la noche mandan sobre el tipo de lugar. */
 export function stopKindOf(stop: KindInput): StopKind {
   if (stop.isNightExperience || stop.isNightView) return 'noche'
+  if (stop.isFreeWalk) return 'parque'
   if (stop.isSunset) return 'atardecer'
   for (const tag of stop.tags ?? []) {
     const kind = TAG_KIND[tag]

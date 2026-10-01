@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Route } from '../../lib/types'
 import { buildDestinationSegments, formatSegmentNightsLabel, segmentCentroid } from '../../lib/destinationSegments'
 import { dayCountryCode, flagStripesGradient } from '../../lib/flagColors'
@@ -9,6 +9,8 @@ import { DestinationDetailModal } from './DestinationDetailModal'
 
 interface RouteOverviewProps {
   route: Route
+  /** La ventana del destino abierta o cerrada: RouteView desmonta su mapa mientras tanto. */
+  onDetailOpenChange?: (open: boolean) => void
 }
 
 const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic']
@@ -20,8 +22,12 @@ const shortDate = (iso: string) => `${iso.slice(8, 10)} ${MONTHS_SHORT[Number(is
  * nombre del destino y sus días y fechas («4 días · 03 sept – 06 sept»; sin fechas, solo «4 días»). Entre dos destinos,
  * la distancia. Tocar una tarjeta abre la ventana del destino, con sus hoteles y sus actividades.
  */
-export function RouteOverview({ route }: RouteOverviewProps) {
+export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps) {
   const [detailCity, setDetailCity] = useState<string | null>(null)
+  useEffect(() => {
+    onDetailOpenChange?.(detailCity !== null)
+    return () => onDetailOpenChange?.(false)
+  }, [detailCity, onDetailOpenChange])
 
   // Rutas guardadas antes de que la ruta llevara el país: el del destino elegido en el formulario.
   const fallbackCountry = useRouteStore((state) => state.destinationPlace?.countryCode ?? null)

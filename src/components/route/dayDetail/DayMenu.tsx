@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { MagicWandIcon } from '../MagicWandIcon'
 
 /** Las acciones de un día libre (decisión del usuario, 2026-09-28). */
 export interface FreeDayMenuActions {
@@ -10,8 +9,6 @@ export interface FreeDayMenuActions {
 }
 
 interface DayMenuProps {
-  /** "Volver al día original" (la varita): solo si el día tiene cambios; null, no sale. */
-  onRestore: (() => void) | null
   /** "Eliminar día": en todos los días, también el de llegada y el de vuelta (PROMPT_UI, Parte 1). */
   onDelete: () => void
   freeDay?: FreeDayMenuActions
@@ -21,14 +18,13 @@ interface DayMenuProps {
 const menuItemClass = 'flex h-[42px] w-full items-center gap-2.5 rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
- * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): "Volver al día original"
- * si el día tiene cambios; en un día libre, añadir lugares, cambiar el nombre y moverlo; y en todos, "Eliminar día".
+ * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): en un día libre, añadir lugares, cambiar el nombre y moverlo; y en todos, "Eliminar día".
  */
-export function DayMenu({ onRestore, onDelete, freeDay }: DayMenuProps) {
+export function DayMenu({ onDelete, freeDay }: DayMenuProps) {
   const [open, setOpen] = useState(false)
 
   const close = () => setOpen(false)
-  const item = (label: string, action: (() => void) | null | undefined, options: { danger?: boolean; wand?: boolean } = {}) =>
+  const item = (label: string, action: (() => void) | null | undefined, options: { danger?: boolean } = {}) =>
     action === undefined ? null : (
       <button
         key={label}
@@ -40,7 +36,6 @@ export function DayMenu({ onRestore, onDelete, freeDay }: DayMenuProps) {
         }}
         className={menuItemClass}
       >
-        {options.wand && <MagicWandIcon className="h-4 w-4 text-[#F3EEE4]/70" />}
         {options.danger ? <span className="text-[oklch(0.75_0.15_25)]">{label}</span> : label}
       </button>
     )
@@ -67,7 +62,6 @@ export function DayMenu({ onRestore, onDelete, freeDay }: DayMenuProps) {
             onClick={(event) => event.stopPropagation()}
             className="absolute right-0 top-[44px] z-30 flex min-w-[220px] flex-col rounded-2xl bg-[#1C2230] p-1.5 shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
-            {onRestore && item('Volver al día original', onRestore, { wand: true })}
             {freeDay && (
               <>
                 {item('Añadir lugares', freeDay.onAddPlaces)}

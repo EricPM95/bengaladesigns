@@ -102,7 +102,7 @@ function CuratedCard({ restaurant, selectable, active, justHighlighted, onSelect
 function NearbyRow({ place }: { place: NearbyPlaceResult }) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-bg-card p-2">
-      <img src={place.photoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
+      {place.photoUrl ? <img src={place.photoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" /> : <span className="h-11 w-11 shrink-0 rounded-lg bg-bg-hover" aria-hidden="true" />}
       <div className="min-w-0 flex-1">
         <p className="truncate text-small font-medium text-text">{place.name}</p>
         <p className="truncate text-caption text-text-soft">{place.address}</p>

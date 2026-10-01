@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
@@ -642,23 +643,24 @@ export function PlaceExplorerScreen({
 
   const selectedChip = selected ? findPlaceCategoryChip(selected.filter_category) : null
 
-  return (
+  // En el body y por encima de todo (el menú de arriba y la barra flotante incluidos), con su cruz para cerrar (paso 6.4).
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="map-cover-overlay fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg"
+        className="map-cover-overlay fixed inset-0 z-[90] flex flex-col overflow-hidden bg-bg"
       >
         <div className="flex shrink-0 items-center gap-3 border-b border-border bg-bg-card px-4 py-3">
           <button
             type="button"
             onClick={onClose}
-            aria-label="Volver"
-            title="Volver"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card text-text transition-colors hover:bg-bg-hover"
+            aria-label="Cerrar"
+            title="Cerrar"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
-            ←
+            ✕
           </button>
           <div className="min-w-0 flex-1 text-center">
             <p className="truncate text-body font-semibold text-text">{title}</p>
@@ -1057,6 +1059,7 @@ export function PlaceExplorerScreen({
           />
         )}
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

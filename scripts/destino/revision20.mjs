@@ -268,7 +268,7 @@ for (const [index, viaje] of VIAJES.entries()) {
       })()
       if (before == null) continue
       const idea = entry.suggestions?.length ? `ideas: ${entry.suggestions.map((s) => s.name).join(', ')}` : entry.hint ?? ''
-      row(before - 0.7, m2t(quarter(before - entry.minutes)), entry.title ? cell(`${entry.title} (antes de ${entry.before})`) : `Tiempo libre antes de ${cell(entry.before)}`, `${entry.minutes} min`, '🕐 Tiempo libre', '', cell(idea))
+      row(before - 0.7, m2t(quarter(before - entry.minutes)), entry.title ? cell(`${entry.title} (antes de ${entry.before})`) : `Tiempo libre antes de ${cell(entry.before)}`, `${entry.minutes} min`, '🕐 Descanso', '', cell(idea))
     }
     // Lo de antes de cenar: nocturnas, aperitivo o tarde libre; y la cena.
     const lastDay = dayStops.at(-1)
@@ -280,8 +280,8 @@ for (const [index, viaje] of VIAJES.entries()) {
     // El rato de luces y aperitivo va detrás de la nocturna de antes de cenar (repaso 3, 2026-09-28).
     const nightBefore = nights.filter((s) => s.before_dinner).map(endOf)
     const freeAt = Math.max(afterDay, ...nightBefore)
-    if (day.aperitivo) row(freeAt + 0.1, m2t(quarter(freeAt)), cell(day.aperitivo.title), `${day.aperitivo.minutes} min`, '🕐 Tiempo libre', '', cell(day.aperitivo.suggestions?.length ? `ideas: ${day.aperitivo.suggestions.map((s) => s.name).join(', ')}` : ''))
-    if (day.free_afternoon) row(freeAt + 0.1, m2t(quarter(freeAt)), 'Tarde libre', `${day.free_afternoon.minutes} min`, '🕐 Tiempo libre', '', cell(day.free_afternoon.suggestions?.length ? `ideas: ${day.free_afternoon.suggestions.map((s) => s.name).join(', ')}` : ''))
+    if (day.aperitivo) row(freeAt + 0.1, m2t(quarter(freeAt)), cell(day.aperitivo.title), `${day.aperitivo.minutes} min`, '🕐 Descanso', '', cell(day.aperitivo.suggestions?.length ? `ideas: ${day.aperitivo.suggestions.map((s) => s.name).join(', ')}` : ''))
+    if (day.free_afternoon) row(freeAt + 0.1, m2t(quarter(freeAt)), 'Tarde libre', `${day.free_afternoon.minutes} min`, '🕐 Descanso', '', cell(day.free_afternoon.suggestions?.length ? `ideas: ${day.free_afternoon.suggestions.map((s) => s.name).join(', ')}` : ''))
     if (dinner) {
       const walk = day.dinner_walk_minutes
       row(t2m(dinner.suggested_time) - 0.1, dinner.suggested_time, dinner.restaurant ? `Cena: ${cell(dinner.restaurant)}` : `Cena ${cell(dinner.zone_display ?? `en ${dinner.zone ?? 'el barrio'}`)}`, '', '🍷 Cena', walk != null ? `${Math.max(1, Math.round(walk))} min andando` : '—', cell(dinner.zone_display ?? dinner.zone ?? ''))
@@ -350,7 +350,7 @@ writeFileSync(path, [
   `${useWrittenDays() ? 'Motor v4 (días escritos)' : 'Motor v3 con los días curados'}, generado el ${new Date().toISOString().slice(0, 10)} con \`node ${globalThis.__REVISION_SCRIPT ?? 'scripts/destino/revision20.mjs'}\`. Sin arreglar nada: es para revisar que las rutas son bonitas.`,
   '',
   '- **Hora**: la que ve el usuario, de 5 en 5. **Tiempo**: minutos de visita (el atardecer es la hora real del sol).',
-  '- **Cómo sale en la app**: Parada / Por el camino / Por fuera (con su motivo) / 🌅 Atardecer / 🌙 Noche / 🍝 Comida / 🍷 Cena / 🕐 Tiempo libre.',
+  '- **Cómo sale en la app**: Parada / Por el camino / Por fuera (con su motivo) / 🌅 Atardecer / 🌙 Noche / 🍝 Comida / 🍷 Cena / 🕐 Descanso.',
   '- **Cómo llegas**: andando desde lo anterior (la comida, si va en medio), o el bus/metro del día ("🚌 Bus 118, 25 min").',
   '- **Por qué aquí**: el `por_que` de la parada (lo que ve el viajero; la nota es interna) y sus avisos (⚠️). Al final, el recuento de la Parte D.',
   '',

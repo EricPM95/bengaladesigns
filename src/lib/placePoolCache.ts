@@ -44,7 +44,9 @@ function sanitizePlace(raw: unknown): PoolPlace | null {
 // de Nivel 1 no se confundiría con la nueva, pero subirlo evita arrastrar niveles 2/3 huérfanos en
 // localStorage de todos los navegadores que ya los tenían.
 // v4 (2026-09-27): Roma pasa a su lista del pool a mano (`pool_lista`), distinta de la calculada.
-const CACHE_VERSION = 4
+// v5 (PARA_CODE_TODO_2026-10-01, paso 7): la lista se guarda con la versión de los datos del servidor (`data_version`, que cambia sola
+// al cambiar roma.json) y se revalida en segundo plano: ya no hace falta subir este número a mano por un cambio de datos.
+const CACHE_VERSION = 5
 
 /** Ronda 10: 'pool' es el bloque único que usa la app; 1|2|3 siguen existiendo para depurar. */
 export type PoolLevel = 'pool' | 1 | 2 | 3
@@ -61,20 +63,25 @@ function cacheKey(destination: string, level: PoolLevel): string {
  * mismo JSON curado del servidor, cambia solo cuando el propio JSON cambia, no con el tiempo — ver
  * CACHE_VERSION arriba para el caso real en que sí hace falta invalidar todo.
  */
-function readCache(destination: string, level: PoolLevel): PoolPlace[] | null {
+interface StoredPool {
+  version: string | null
+  places: PoolPlace[]
+}
+
+function readCache(destination: string, level: PoolLevel): StoredPool | null {
   try {
     const raw = localStorage.getItem(cacheKey(destination, level))
     if (!raw) return null
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : null
+    return parsed && Array.isArray(parsed.places) ? { version: typeof parsed.version === 'string' ? parsed.version : null, places: parsed.places } : null
   } catch {
     return null
   }
 }
 
-function writeCache(destination: string, level: PoolLevel, places: PoolPlace[]): void {
+function writeCache(destination: string, level: PoolLevel, places: PoolPlace[], version: string | null): void {
   try {
-    localStorage.setItem(cacheKey(destination, level), JSON.stringify(places))
+    localStorage.setItem(cacheKey(destination, level), JSON.stringify({ version, places }))
   } catch {
     // localStorage lleno/bloqueado (privado, cuota) — la pantalla sigue funcionando sin caché persistente.
   }
@@ -92,20 +99,29 @@ function writeCache(destination: string, level: PoolLevel, places: PoolPlace[]):
  */
 export async function fetchPoolLevel(destination: string, level: PoolLevel): Promise<{ found: boolean; places: PoolPlace[] }> {
   const cached = readCache(destination, level)
-  if (cached) return { found: true, places: cached }
+  // Lo guardado sale al momento; en segundo plano se pregunta al servidor si la versión de los datos ha cambiado (una respuesta de pocos
+  // bytes) y, si cambió, la lista nueva queda guardada para la próxima.
+  if (cached) {
+    void requestPool(destination, level, cached.version).catch(() => undefined)
+    return { found: true, places: cached.places }
+  }
+  return requestPool(destination, level, null)
+}
 
+async function requestPool(destination: string, level: PoolLevel, haveVersion: string | null): Promise<{ found: boolean; places: PoolPlace[] }> {
   try {
     const response = await fetch('/api/curated-places-pool', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ destination, level }),
+      body: JSON.stringify({ destination, level, ...(haveVersion ? { have_version: haveVersion } : {}) }),
     })
     if (!response.ok) return { found: false, places: [] }
     const data = await response.json()
     if (data?.found !== true) return { found: false, places: [] }
+    if (data.unchanged === true) return { found: true, places: readCache(destination, level)?.places ?? [] }
 
     const places = (Array.isArray(data.places) ? data.places : []).map(sanitizePlace).filter((place): place is PoolPlace => place !== null)
-    writeCache(destination, level, places)
+    writeCache(destination, level, places, typeof data.data_version === 'string' ? data.data_version : null)
     return { found: true, places }
   } catch {
     return { found: false, places: [] }

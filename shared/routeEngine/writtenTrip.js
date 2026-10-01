@@ -48,7 +48,8 @@ const SUNSET_STAY_EXTRA = 30 // si la cena espera, el mirador se alarga hasta 30
 /** A la entrada con turno se llega 10 min antes (recoger la entrada). */
 const TICKET_MARGIN = 10
 /** Si una parada abre dentro de estos minutos, se espera; si no, cuenta como cerrada a esa hora. */
-const OPEN_WAIT_MAX = 20
+const OPEN_WAIT_MAX = 40
+const OPEN_WAIT_AUTHORED = 20
 const OPEN_WAIT_MAX_POOL = 45 // lo que el viajero ha elegido se espera más antes que verlo por fuera (las Termas de Caracalla el 1 de enero, que abren a las 9:30)
 const PASS_THROUGH_MINUTES = 10
 const OUTSIDE_MINUTES = 15
@@ -66,6 +67,7 @@ const SUMMER_MONTHS = [7, 8]
 const SUMMER_SHADE_UNTIL = 16 * 60 + 30
 /** Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): desde cuántos minutos libres se busca un sitio, a cuánto
  * andando como mucho, cuánto dura (entre 20 y 45) y el paseo que se cuenta hasta la cena. */
+const NEXT_TO_ESSENTIAL_WALK = 5 // junto a un imprescindible: a 5 min andando o menos (el exterior de lo cerrado se ve y se fotografía)
 const FILLER_IDLE_MIN = 45
 const FILLER_WALK_MAX = 12
 const FILLER_MINUTES_MIN = 20
@@ -624,6 +626,8 @@ export function planWrittenTrip(args) {
         outsideKind: Object.keys(OUTSIDE_REASONS).find((k) => OUTSIDE_REASONS[k] === reason) ?? (reason.startsWith('Todavía') ? 'no_abre' : 'no_cabe'),
         coordinates: source.pass_by?.coordinates ?? source.coordinates,
         duration_minutes: stop.min_fuera ?? source.minutos_fuera ?? OUTSIDE_MINUTES,
+        // (Lo escrito «por fuera» o «si está cerrado, por fuera»: lo decide quien escribe el día, no el motor. 5.4)
+        ...(stop.modo === 'fuera' || stop.si_cerrado === 'fuera' ? { outsideAuthored: true } : {}),
         windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (modo === 'camino') {
@@ -642,6 +646,8 @@ export function planWrittenTrip(args) {
     if (stop.no_calle || (modo !== 'camino' && isStreet(source))) ready.notStreet = true
     if (stop.traslado?.min) ready = { ...ready, transitMinutes: stop.traslado.min, ...(stop.traslado.como ? { transitHow: stop.traslado.como } : {}) }
     if (stop.aviso) ready.stopNotice = stop.aviso
+    // (`foto`: el nombre con el que se pide la foto de esta parada, si no es el del lugar: el mismo parque dos veces en un día.)
+    if (stop.foto) ready.photoName = stop.foto
     if (Array.isArray(source.salida) && !ready.visitOutside && !ready.passThrough) ready.end_coordinates = source.salida
     // (El texto escrito en la parada; si no, el de los días curados; si no, el del destino: `_destino.json` → `textos`.)
     const why = stop.texto ?? curatedWhyOf(stop.lugar) ?? written.destino?.textos?.[stop.lugar] ?? null
@@ -651,7 +657,7 @@ export function planWrittenTrip(args) {
   }
 
   /** ¿Está abierto de `start` a `start + duration`? { ok } | { wait: minutos hasta que abre } | { closed, opensAt } */
-  function openCheck(place, start, duration, hours) {
+  function openCheck(place, start, duration, hours, maxWait = null) {
     if (place.isFreeTour || place.isBreak || place.visitOutside || place.passThrough || place.type === 'exterior' && !place.schedule && !place.windows && !place.by_day && !place.by_period && !place.by_season) return { ok: true }
     const sessions = parseHoursSessions(effectiveSchedule(place, hours)).sort((a, b) => a.open - b.open)
     if (sessions.length === 0) return { ok: true }
@@ -659,11 +665,36 @@ export function planWrittenTrip(args) {
     const inside = sessions.find((session) => start >= session.open && start + duration <= session.close)
     if (inside && (last == null || start <= last)) return { ok: true }
     const next = sessions.find((session) => session.open > start)
-    if (next && next.open - start <= (inPool(place.name) ? OPEN_WAIT_MAX_POOL : OPEN_WAIT_MAX) && next.open + duration <= next.close) return { wait: next.open - start }
+    if (next && next.open - start <= (inPool(place.name) ? OPEN_WAIT_MAX_POOL : maxWait ?? OPEN_WAIT_MAX) && next.open + duration <= next.close) return { wait: next.open - start }
     return { closed: true, opensAt: next?.open ?? null }
   }
 
   const walkLeg = (from, to) => (Array.isArray(from) && Array.isArray(to) ? Math.round(travel.leg(from, to)?.minutes ?? 0) : 0)
+
+  /**
+   * Al lado de un imprescindible, aunque esté cerrado, se ve por fuera (PARA_CODE_TODO_2026-10-01, 5.4): un lugar con su
+   * exterior curado (`minutos_fuera`) que a su hora está cerrado y tiene un imprescindible (nivel 1) a 5 min andando o menos,
+   * justo antes o justo después, sale «Por fuera» con su tiempo de por fuera y sin el aviso en rojo; la ficha dice cuándo
+   * abre («Por dentro abre de 12:00 a 19:00»). Lo escrito «por fuera» es una decisión del día: tampoco lleva el aviso.
+   */
+  function markOutsideNextToEssential(visits, hours) {
+    return visits.map((visit, i) => {
+      const place = visit.place
+      if (!place.visitOutside || !['cerrado', 'ya_cerrado', 'no_abre'].includes(place.outsideKind)) return visit
+      const source = placeByName.get(place.name)
+      if (source?.minutos_fuera == null) return visit
+      const near = [visits[i - 1], visits[i + 1]].find((other) => {
+        const otherSource = other ? placeByName.get(other.place.name) : null
+        return otherSource?.level === 1 && !other.place.passThrough && walkLeg(otherSource.coordinates, place.coordinates) <= NEXT_TO_ESSENTIAL_WALK
+      })
+      if (!near && !place.outsideAuthored) return visit
+      const sessions = place.outsideKind === 'cerrado' ? [] : parseHoursSessions(effectiveSchedule(source, hours)).sort((x, y) => x.open - y.open)
+      const opens = sessions.map((session) => `de ${toHHMM(session.open)} a ${toHHMM(session.close)}`).join(' y ')
+      return { ...visit, place: { ...place, outsideKind: 'al_lado', outsideNear: near?.place.name ?? null, outsideReason: opens ? `Por dentro abre ${opens}` : 'Hoy está cerrado por dentro' } }
+    })
+  }
+  /** Lo que sale «Por fuera» con el aviso en rojo (todavía no ha abierto, ya ha cerrado): lo que la regla de arriba no salva. */
+  const redOutside = (visits, hours) => markOutsideNextToEssential(visits, hours).filter((visit) => visit.place.visitOutside && ['no_abre', 'ya_cerrado'].includes(visit.place.outsideKind))
 
   /**
    * Una lista de paradas, en orden, desde `cursor`. `elasticDelta`: lo que se alarga o acorta la parada elástica.
@@ -719,6 +750,16 @@ export function planWrittenTrip(args) {
           // Catacumbas cerradas el 1 de enero y la Via Appia, dos veces. PROMPT_REPASO_LOCAL_ROMA, 3.)
           if (list[index + 1]?.lugar === rule.cambiar_por.lugar) {
             mergedMinutes += rule.cambiar_por.min ?? 30
+            return
+          }
+          // (Y si lo que viene a cambiar es lo que va justo antes, el parque de Villa Borghese de D4 cuando cierra la Galería, ese rato
+          // se suma a lo de antes.)
+          if (visits.at(-1)?.place.name === rule.cambiar_por.lugar && list[index - 1]?.lugar === rule.cambiar_por.lugar) {
+            const last = visits.at(-1)
+            const cap = paseoMaxOf(placeByName.get(last.place.name))
+            const extra = rule.cambiar_por.min ?? 30
+            last.end += cap != null ? Math.min(extra, Math.max(0, cap - (last.end - last.start))) : extra
+            t = last.end
             return
           }
           stop = { ...clone(rule.cambiar_por) }
@@ -805,7 +846,8 @@ export function planWrittenTrip(args) {
         // El Castillo a las 17:50 con 110 min salía «ya ha cerrado». PROMPT_REPASO_LOCAL_ROMA, 3.)
         const writtenMin = stop.min ?? source.duration_minutes ?? 30
         while (original.elastica != null && duration - 5 >= writtenMin && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, writtenMin, ctx.hours).closed) duration -= 5
-        const check = openCheck(place, at, duration, ctx.hours)
+        // (Lo escrito «si está cerrado, por fuera» no espera más de lo de siempre, 20 min: es el plan B que quien escribe el día prefiere.)
+        const check = openCheck(place, at, duration, ctx.hours, stop.si_cerrado === 'fuera' && source.minutos_fuera != null ? OPEN_WAIT_AUTHORED : null)
         if (check.wait) at += check.wait
         else if (check.closed) {
           const rule = stop.si_cerrado
@@ -835,7 +877,8 @@ export function planWrittenTrip(args) {
         }
         if (arrivalTransit && !place.transitMinutes) place = { ...place, ...arrivalTransit }
       }
-      const unitId = `${ctx.id}:${stop.lugar}${units.some((unit) => unit.id === `${ctx.id}:${stop.lugar}`) ? `#${index}` : ''}`
+      // (Un lugar que va por la mañana y por la tarde, el parque de Villa Borghese en D4, no comparte id: cada uno con su título.)
+      const unitId = `${ctx.id}:${stop.lugar}${slot === 'tarde' && ctx.morningNames?.has(stop.lugar) ? '~t' : ''}${units.some((unit) => unit.id === `${ctx.id}:${stop.lugar}`) ? `#${index}` : ''}`
       const level = source.level ?? 3
       const theme = selected.find((exp) => (source.tags ?? []).some((tag) => TAG_INTEREST_MAP[exp].includes(tag))) ?? null
       units.push({
@@ -949,7 +992,7 @@ export function planWrittenTrip(args) {
     }
     // Tranquilo: las opcionales no vuelven nunca (PROMPT_ROMA_V4_REPASO 6); el rato que sobra va al barrio elástico (hasta
     // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
-    const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null }
+    const ctx = { id: draft.id, day: skeletonDay, hours, problems: [], sunsetArrival: null, morningNames: new Set(draft.manana.flatMap((stop) => [stop.lugar, ...(stop.si_cerrado?.cambiar_por?.lugar ? [stop.si_cerrado.cambiar_por.lugar] : [])])) }
     // (Verano: la tarde no pone nada al sol antes de las 16:30; ver runList.)
     const dayMonth = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
     if (SUMMER_MONTHS.includes(dayMonth)) ctx.summerShade = true
@@ -1181,6 +1224,69 @@ export function planWrittenTrip(args) {
     const sunsetIsMirador = sunsetStop && (placeByName.get(sunsetStop.lugar)?.tags ?? []).includes('mirador')
     ctx.earlyBy = early >= 5 && sunsetIsMirador ? Math.min(LEAD_FLEX, early) : 0
     let afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+    // Lo que cae cerrado a su hora y no se salva por fuera se mueve a cuando está abierto (PARA_CODE_TODO_2026-10-01, 5.4): en la
+    // misma tarde, a otro sitio de la lista más cerca de donde estaba, sin tocar lo que tiene hora fija ni el atardecer, y solo
+    // si así la tarde no pierde nada (ni una hora fija, ni el mirador).
+    {
+      for (let guard = 0; guard < 3; guard++) {
+        const bad = redOutside(afternoon.visits, hours)[0]
+        if (!bad) break
+        const from = draft.tarde.findIndex((stop) => stop.lugar === bad.place.name)
+        if (from < 0 || draft.tarde[from].hora != null || draft.tarde[from].modo === 'atardecer' || draft.tarde[from].elastica != null || inPool(bad.place.name)) break
+        const before = { bad: redOutside(afternoon.visits, hours).length, problems: ctx.problems.length, sunset: ctx.sunsetArrival }
+        let moved = null
+        for (let distance = 1; distance < draft.tarde.length && !moved; distance++) {
+          for (const to of [from - distance, from + distance]) {
+            if (to < 0 || to >= draft.tarde.length || draft.tarde[to].hora != null || draft.tarde[to].modo === 'atardecer') continue
+            const trial = [...draft.tarde]
+            const [item] = trial.splice(from, 1)
+            trial.splice(to, 0, item)
+            const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+            const run = runList(trial, 'tarde', afterLunch, probe, elasticUsed)
+            const stillBad = redOutside(run.visits, hours)
+            if (stillBad.length >= before.bad || probe.problems.length > 0 || run.visits.length < afternoon.visits.length) continue
+            // (Y sin ir y venir: lo que se camina no crece más de 10 min, ni sale un zigzag nuevo: volver a menos de 300 m de algo de lo que
+            // se estuvo después de irse a más de 1,2 km.)
+            const walked = (list) => list.reduce((sum, visit) => sum + (visit.walkMinutes ?? 0), 0)
+            if (walked(run.visits) > walked(afternoon.visits) + 10) continue
+            const zigzags = (list) => {
+              let count = 0
+              const points = list.filter((visit) => !visit.place.passThrough && Array.isArray(visit.place.coordinates)).map((visit) => visit.place.coordinates)
+              points.forEach((here, index) => {
+                for (let i = 0; i < index - 1; i++) {
+                  if (metersBetween(here, points[i]) > 300) continue
+                  if (points.slice(i + 1, index).some((other) => metersBetween(other, points[i]) > 1200)) {
+                    count++
+                    break
+                  }
+                }
+              })
+              return count
+            }
+            if (zigzags(run.visits) > zigzags(afternoon.visits)) continue
+            // (Llegar antes al mirador no importa: espera a su hora; llegar más tarde de lo que se llegaba y de su hora, hasta 10 min, sí.)
+            const sunsetStopHere = draft.tarde.find((stop) => stop.modo === 'atardecer')
+            const sunsetTarget = hours.sunset != null ? hours.sunset - (sunsetStopHere?.lead ?? SUNSET_LEAD) : null
+            if (before.sunset != null && probe.sunsetArrival != null && probe.sunsetArrival > Math.max(before.sunset, sunsetTarget ?? 0) + 10) continue
+            moved = { trial, to }
+            break
+          }
+        }
+        if (!moved) {
+          // Sin sitio donde esté abierto, un lugar menor (nivel 3) no sale: ni un «ya ha cerrado» en rojo ni un exterior que no vale
+          // la pena. Sale en «Quedó fuera».
+          if ((placeByName.get(bad.place.name)?.level ?? 3) < 3) break
+          draft.tarde = draft.tarde.filter((_, index) => index !== from)
+          draft.applied.push(`quita:${bad.place.name}`)
+          notEnoughTime.push({ name: bad.place.name, reason: 'time', dayNumber: skeletonDay.dayNumber })
+          afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+          continue
+        }
+        draft.tarde = moved.trial
+        draft.applied.push(`mueve:${bad.place.name}`)
+        afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+      }
+    }
     // Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): si después de lo último quedan más de 45 min hasta la cena
     // y hay a un paseo un sitio del destino que el viaje no ve (nivel 1 o 2, abierto a esa hora), va ese sitio.
     if (!half) {
@@ -1213,7 +1319,7 @@ export function planWrittenTrip(args) {
         }
       }
     }
-    const visits = [...morning.visits, ...afternoon.visits]
+    const visits = markOutsideNextToEssential([...morning.visits, ...afternoon.visits], hours)
     const units = [...morning.units, ...afternoon.units]
     // La cena: su restaurante y su hora escritas (la hora es la de antes; si se llega más tarde, cuando se llega).
     const last = afternoon.cursor

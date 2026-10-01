@@ -1,6 +1,14 @@
 {
   "_que_es": "Fotos propias del destino (PARA_CODE_FOTOS, 2026-10-01): van antes que las de Unsplash y Wikipedia. Los ficheros están en public/fotos/<destino>/: <archivo> (1600 px de ancho como máximo, para la ficha) y <archivo sin .jpg>_p.jpg (640 px, para la tarjeta). `lugares`: el nombre con el que la app pide la foto; las experiencias y paseos nocturnos lo piden con « (noche)» (INVARIANTES 411: una parada lleva siempre su foto de día, aunque caiga después del atardecer). `fechas`: solo entre esas fechas (MM-DD) y solo con fechas reales de viaje. `verificar: true`: no sale hasta confirmar que ese año hay lo que se ve en la foto (una foto también es una promesa). `fuente`, `autor` y `enlace`: el crédito; mientras estén vacíos, la foto va sin línea de crédito, nunca con un autor o una web inventados.",
   "carpeta": "/fotos/roma",
+  "sin_foto": [
+    "Via Margutta",
+    "Via Margutta y Via del Babuino",
+    "Coliseo",
+    "Puente Sant'Angelo",
+    "Pasear por San Giovanni"
+  ],
+  "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Coliseo, Puente Sant'Angelo y Pasear por San Giovanni: la que salía parecía de anochecer o de noche y una parada de día no lleva fotos de noche (paso 5.3); la nocturna del Coliseo y del Puente llevan las suyas.",
   "fotos": [
     {
       "archivo": "noche_coliseo.jpg",
@@ -69,10 +77,7 @@
     },
     {
       "archivo": "navidad_basilica_san_pedro_arbol_dia.jpg",
-      "lugares": [
-        "Basílica de San Pedro",
-        "Plaza de San Pedro"
-      ],
+      "lugares": [],
       "cuando": "dia",
       "ancho": 850,
       "fechas": {
@@ -82,7 +87,8 @@
       "verificar_fechas": "El árbol de la plaza se pone todos los años; cambia el día en que se inaugura (2024: 7 de diciembre; 2025: 15 de diciembre). La foto sale desde el 16 de diciembre, la fecha segura de los dos últimos años; revisar cada diciembre en vaticannews.va.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "nota": "Sin uso desde PARA_CODE_TODO_2026-10-01 (paso 5): la Plaza de San Pedro lleva en Navidad navidad_noche_plaza_san_pedro.jpg y la Basílica, dia_basilica_san_pedro.jpg todo el año."
     },
     {
       "archivo": "navidad_plaza_espana_arbol_noche.jpg",
@@ -205,16 +211,16 @@
       "nota": "Los paseos nocturnos por Navona, solo en las fechas del mercadillo."
     },
     {
-      "cuando": "dia",
+      "cuando": "noche",
       "fuente": "propia",
       "autor": "",
       "enlace": "",
       "archivo": "amanecer_plaza_espana.jpg",
       "lugares": [
-        "Plaza de España"
+        "Plaza de España (noche)"
       ],
       "ancho": 1600,
-      "nota": "De día. En Navidad, de noche, sigue la del árbol."
+      "nota": "Cielo rosa y farolas encendidas: solo en la experiencia nocturna de Plaza de España (paso 5, punto 3). En Navidad, de noche, sigue la del árbol (con fechas va antes). La Plaza de España de día no lleva foto propia: la de siempre."
     },
     {
       "cuando": "dia",
@@ -260,7 +266,120 @@
       ],
       "ancho": 664,
       "nota": "Pequeña (664 px): tal cual, sin ampliarla. Sale con las azaleas de la escalinata, que solo están en primavera."
+    },
+    {
+      "archivo": "navidad_noche_plaza_san_pedro.jpg",
+      "lugares": [
+        "Plaza de San Pedro",
+        "Plaza de San Pedro y los 100 Presepi"
+      ],
+      "cuando": "dia",
+      "ancho": 1500,
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "verificar_fechas": "La misma ventana que los 100 Presepi (8 dic–6 ene): el árbol y el belén de la plaza. Revisar cada diciembre en turismoroma.it. Aunque la parada sea de día, en Navidad va esta (como en Plaza de España).",
+      "nota": "Mide 1.500 px: tal cual, sin ampliarla.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "dia_plaza_san_pedro.jpg",
+      "lugares": [
+        "Plaza de San Pedro",
+        "Plaza de San Pedro y los 100 Presepi"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "dia_basilica_san_pedro.jpg",
+      "lugares": [
+        "Basílica de San Pedro"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "nota": "Todo el año, también en Navidad.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "cupula_basilica_san_pedro.jpg",
+      "lugares": [
+        "Cúpula de San Pedro",
+        "Cúpula de San Pedro (noche)"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "nota": "Todas las tarjetas y fichas de la Cúpula, todo el año.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "dia_terraza_pincio.jpg",
+      "lugares": [
+        "Terraza del Pincio"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "nota": "De día, todo el año. La nocturna del Pincio (Terraza del Pincio (noche)) no la lleva.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "dia_parque_villa_borghese_templo_esculapio.jpg",
+      "lugares": [
+        "Parque de Villa Borghese",
+        "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+      ],
+      "cuando": "dia",
+      "ancho": 750,
+      "nota": "Pequeña (750 px): tal cual, sin ampliarla.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
+    },
+    {
+      "archivo": "dia_jardines_pincio_hidrocronometro.jpg",
+      "lugares": [
+        "Jardines del Pincio"
+      ],
+      "cuando": "dia",
+      "ancho": 783,
+      "nota": "El reloj de agua (Hidrocronómetro). Pequeña (783 px): tal cual, sin ampliarla.",
+      "fuente": "",
+      "autor": "",
+      "enlace": ""
     }
   ],
-  "_credito": "Fotos del usuario: fuente «propia», sin línea de crédito. Las de la primera tanda (Unsplash y Pexels), de momento también sin crédito (decisión del usuario, 2026-10-01)."
+  "notas_revision": {
+    "Coliseo": "Parecía de anochecer (cielo azul, arcos encendidos): una parada de día no la lleva. Sin foto de día hasta que pases una; el Coliseo de noche lleva la suya.",
+    "Puente Sant'Angelo": "Era una foto de noche (luces y reflejos): pasa a la nocturna. Sin foto de día hasta que pases una.",
+    "Pasear por San Giovanni": "Era de noche (cielo azul oscuro, escultura iluminada). Sin foto hasta que pases una de día.",
+    "Plaza de España": "La de siempre (Unsplash, de día). La del amanecer con farolas pasó a la nocturna.",
+    "Piazza Navona": "Dudosa: luz azulada de primera hora, puede parecer de anochecer.",
+    "Domus Aurea": "Es un mapa de la Domus Aurea, no una foto.",
+    "Pasear por el Esquilino": "Es un mapa antiguo de Roma.",
+    "Luces de Navidad del Tridente": "Es la bandera de un municipio español: no es el sitio.",
+    "100 Presepi in Vaticano": "Es un techo dorado (otra iglesia). La parada «Plaza de San Pedro y los 100 Presepi» usa la foto de la plaza.",
+    "Galería Nacional de Arte Moderno": "La imagen sale negra.",
+    "Barrio Judío": "En blanco y negro, de un café.",
+    "Quartiere Coppedè": "En blanco y negro.",
+    "Pasear por Trastevere": "En blanco y negro, un tranvía en movimiento.",
+    "Pirámide Cestia": "A contraluz, casi una silueta.",
+    "Via Veneto": "Sin foto.",
+    "Via del Babuino": "Sin foto.",
+    "Santo Bambino de Aracoeli": "Sin foto.",
+    "Pasear por el Centro Histórico": "Sin foto.",
+    "Pasear por Prati y el Borgo": "Sin foto.",
+    "Pasear por el Nomentano": "Sin foto."
+  }
 }

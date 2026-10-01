@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { closestCenter, DndContext, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -18,6 +18,7 @@ import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
+import { DayWandMenu } from './dayDetail/DayWandMenu'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
@@ -77,6 +78,26 @@ function ChevronIcon() {
  */
 export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
   const reorderDays = useRouteStore((state) => state.reorderDays)
+  const listRef = useRef<HTMLDivElement>(null)
+  // La pregunta antes de recuperar el original de un día o de toda la ruta (la varita de cada día, paso 8).
+  const [askRestore, setAskRestore] = useState<{ kind: 'day'; dayId: string; dayNumber: number } | { kind: 'route' } | null>(null)
+  const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
+  // Al abrir un día, los demás se cierran (activeDayId es uno solo) y la pantalla sube sola hasta el principio de ese día: si se
+  // estaba leyendo el final del Día 1 y se toca el Día 2, se abre por su primera parada (paso 6.5).
+  useEffect(() => {
+    if (!activeDayId) return
+    let inner = 0
+    const outer = window.requestAnimationFrame(() => {
+      inner = window.requestAnimationFrame(() => {
+        const card = listRef.current?.querySelector(`[data-day-id="${activeDayId}"]`)
+        card?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      })
+    })
+    return () => {
+      window.cancelAnimationFrame(outer)
+      window.cancelAnimationFrame(inner)
+    }
+  }, [activeDayId])
   const [dayReorderWarning, setDayReorderWarning] = useState<string | null>(null)
   const addFreeDay = useRouteStore((state) => state.addFreeDay)
   const renameDay = useRouteStore((state) => state.renameDay)
@@ -164,7 +185,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-36 pt-4">
+    <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-36 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -193,7 +214,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           <SortableDay key={day.id} id={day.id} disabled={!isMovableDay(day, index)}>
             {(dragHandle) => (
           <div
-            className={`relative ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+            data-day-id={day.id}
+            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
             {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
                 cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
@@ -249,8 +271,16 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>
+                <DayWandMenu
+                  dayChanged={isFreeDay(day) || day.userAdded ? null : Boolean(day.originalSnapshot)}
+                  routeChanged={Boolean(route.editedManually && route.originalRoute)}
+                  onRestoreDay={() => setAskRestore({ kind: 'day', dayId: day.id, dayNumber: day.dayNumber })}
+                  onRestoreRoute={() => setAskRestore({ kind: 'route' })}
+                />
+              </span>
+
+              <span onClick={(event) => event.stopPropagation()}>
                 <DayMenu
-                  onRestore={day.originalSnapshot ? () => withUndo(`Día ${day.dayNumber} como lo preparamos`, () => restoreOriginalDay(day.id)) : null}
                   onDelete={() => setRemoveDayId(day.id)}
                   freeDay={
                     isFreeDay(day) || day.userAdded
@@ -317,6 +347,29 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               if (dayId) openAddFlow(dayId)
             }
             setNameSheet(null)
+          }}
+        />
+      )}
+      {askRestore && (
+        <ConfirmDialog
+          eyebrow={askRestore.kind === 'day' ? `Día ${askRestore.dayNumber}` : 'Ruta original'}
+          text={
+            askRestore.kind === 'day'
+              ? '¿Recuperar este día? Quedará tal como te lo preparamos y se perderán los cambios que has hecho en él.'
+              : '¿Recuperar toda tu ruta? Tus días quedarán tal como te los preparamos y se perderán todos los cambios que has hecho.'
+          }
+          confirmLabel="Recuperar"
+          cancelLabel="Cancelar"
+          onCancel={() => setAskRestore(null)}
+          onConfirm={() => {
+            const ask = askRestore
+            setAskRestore(null)
+            if (ask.kind === 'day') withUndo('Día recuperado', () => restoreOriginalDay(ask.dayId))
+            else {
+              onSelectDay(null)
+              onDayMapChange(null)
+              withUndo('Ruta original recuperada', () => restoreOriginalRoute())
+            }
           }}
         />
       )}

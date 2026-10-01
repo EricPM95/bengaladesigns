@@ -44,6 +44,10 @@ interface GeneratedTravelToNext {
 interface GeneratedStop {
   /** Ver Stop.isZoneWalk — solo pipeline v2. */
   is_zone_walk?: boolean
+  /** «Pasea y piérdete por {zona}»: Stop.isFreeWalk, con el consejo del aperitivo (Stop.aperitivoTip). */
+  is_free_walk?: boolean
+  no_own_photo?: boolean
+  aperitivo_tip?: string | null
   is_revisit?: boolean
   /** Opcional en lo escrito: el viajero puede saltársela — Stop.optional. */
   is_optional?: boolean
@@ -97,7 +101,7 @@ interface GeneratedStop {
   /** Monumento con interior: por dentro o por fuera — Stop.visitMode. */
   visit_mode?: 'dentro' | 'fuera' | null
   /** Por qué va por fuera: cerrado, ya cerrado o no cabe — Stop.outsideKind. */
-  outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | null
+  outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | null
   /** Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona — Stop.freeTourEnd. */
   free_tour_end?: string | null
   /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("🚌 Bus 118, unos 25 min"). */
@@ -202,13 +206,7 @@ export interface GeneratedDay {
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
-  /** Motor v3: tarde libre con sugerencias cerca — DayPlan.freeAfternoon. */
-  free_afternoon?: { minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
-  /** Motor v3: aperitivo y paseo antes de cenar — DayPlan.aperitivo. */
-  aperitivo?: { title: string; barrio: string; minutes: number; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[] } | null
-  /** Motor v3: tiempo libre a mitad de día — DayPlan.freeTime. */
-  free_time?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null } | null
-  /** Motor v3: todos los huecos de más de 30 min — DayPlan.freeTimes. */
+  /** Motor v3: los ratos con nombre (descanso de después de comer…) — DayPlan.freeTimes. */
   free_times?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
@@ -384,8 +382,18 @@ function mapEntryOptions(stopId: string, options?: GeneratedEntryOption[]): Tick
     tras mapear la ruta). picsum.photos NO busca por contenido, solo asigna una imagen de stock
     aleatoria a partir del hash de la seed — por eso este placeholder es solo un último recurso, no
     un intento real de mostrar el lugar correcto. */
-function buildPlaceholderPhotoUrl(id: string, name: string): string {
-  return `https://picsum.photos/seed/${encodeURIComponent(id || name)}/600/400`
+function buildPlaceholderPhotoUrl(_id: string, _name: string): string {
+  // (PARA_CODE_TODO_2026-10-01, 5.6: sin foto, el color neutro de la app, nunca una imagen de stock al azar —era el «perro» de Via Margutta—.)
+  return ''
+}
+
+function uniqueStopIds(stops: Stop[]): Stop[] {
+  const seen = new Map<string, number>()
+  return stops.map((stop) => {
+    const count = (seen.get(stop.id) ?? 0) + 1
+    seen.set(stop.id, count)
+    return count === 1 ? stop : { ...stop, id: `${stop.id}-${count}` }
+  })
 }
 
 function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
@@ -399,6 +407,9 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     photoUrl: buildPlaceholderPhotoUrl(generated.id, generated.name),
     wikipediaTitle: generated.wikipedia_title ?? null,
     isZoneWalk: generated.is_zone_walk ?? false,
+    ...(generated.is_free_walk ? { isFreeWalk: true } : {}),
+    ...(generated.no_own_photo ? { noOwnPhoto: true } : {}),
+    ...(generated.aperitivo_tip ? { aperitivoTip: generated.aperitivo_tip } : {}),
     isRevisit: generated.is_revisit ?? false,
     ...(generated.is_optional ? { optional: true } : {}),
     revisitReason: generated.revisit_reason,
@@ -651,7 +662,9 @@ function mapDay(
     title: generated.title,
     ...(generated.curated_day?.name ? { curatedTitle: generated.curated_day.name } : {}),
     transport: transportByDay.get(generated.day_number),
-    stops: generated.stops.map((stop) => mapStop(generated.day_number, stop)),
+    // (Un lugar que sale dos veces el mismo día, el parque de Villa Borghese en D4, no comparte id: el número del mapa y la clave de la
+    // lista salen de él.)
+    stops: uniqueStopIds(generated.stops.map((stop) => mapStop(generated.day_number, stop))),
     meals: generated.meals.map((meal) => mapMeal(generated.day_number, meal)),
     excursions: excursionsByDay.get(generated.day_number),
     didntMakeCut: generated.day_number === 1 ? didntMakeCut : undefined,
@@ -667,35 +680,6 @@ function mapDay(
     excursionSocialProof: generated.excursion_social_proof ?? null,
     beyondAutoDays: generated.beyond_auto_days ?? false,
     maxAutoDays: generated.max_auto_days ?? null,
-    ...(generated.free_afternoon
-      ? {
-          freeAfternoon: {
-            minutes: generated.free_afternoon.minutes,
-            suggestions: generated.free_afternoon.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
-          },
-        }
-      : {}),
-    ...(generated.aperitivo
-      ? {
-          aperitivo: {
-            title: generated.aperitivo.title,
-            barrio: generated.aperitivo.barrio,
-            minutes: generated.aperitivo.minutes,
-            suggestions: generated.aperitivo.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
-          },
-        }
-      : {}),
-    ...(generated.free_time
-      ? {
-          freeTime: {
-            minutes: generated.free_time.minutes,
-            after: generated.free_time.after,
-            before: generated.free_time.before,
-            suggestions: generated.free_time.suggestions.map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, requiresTicket: item.requires_ticket })),
-            hint: generated.free_time.hint ?? null,
-          },
-        }
-      : {}),
     ...(generated.free_times?.length
       ? {
           freeTimes: generated.free_times.map((entry) => ({
