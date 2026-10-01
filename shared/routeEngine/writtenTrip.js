@@ -717,7 +717,9 @@ export function planWrittenTrip(args) {
     let { t, coords } = cursor
     let carry = null
     let mergedMinutes = 0
+    const cursorStart = cursor.t
     list.forEach((original, index) => {
+      let late = null
       // (La elástica que se quedaría por debajo de ELASTIC_DROP min se quita: su rato va al bloque siguiente.)
       if (original.elastica != null && ctx.dropElastic) return
       let stop = original
@@ -818,7 +820,8 @@ export function planWrittenTrip(args) {
         const slotted = Boolean(stop.turno || source.turnos || source.isFreeTour)
         const needed = fixed - (slotted ? TICKET_MARGIN : 0)
         // (Una hora escrita sin turno es orientativa: llegar hasta 10 min después no es llegar tarde.)
-        if (at > needed + (slotted ? 2 : FIXED_HOUR_SLACK)) ctx.problems.push({ tipo: 'llega_tarde', lugar: stop.lugar, llega: toHHMM(at), hora: toHHMM(fixed) })
+        // (Si se llega tarde, no se avisa aún: antes se recorta lo de antes, hacia atrás desde la hora fija: compressToFixedHours.)
+        if (at > needed) late = { arrival: at, needed, fixed, tol: 0, lugar: stop.lugar }
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
@@ -906,7 +909,7 @@ export function planWrittenTrip(args) {
         // `revisita`: si el viaje ya pasó por aquí otro día, sale como revisita con su texto ({dia}: el día en que se vio).
         ...(stop.revisita && seenDay.has(source.name) && seenDay.get(source.name) !== ctx.day.dayNumber ? { isRevisit: true, revisitReason: String(stop.revisita).replace('{dia}', `el día ${seenDay.get(source.name)}`) } : {}),
       })
-      visits.push({ unitId, place, start: at, end: at + duration, chained: false, walkMinutes: leg, walkSource: 'matrix', ...(stop.entrada ? { ticket: true } : {}), ...(fixed != null ? { fixedAt: fixed } : {}) })
+      visits.push({ unitId, place, start: at, end: at + duration, chained: false, walkMinutes: leg, walkSource: 'matrix', ...(stop.entrada ? { ticket: true } : {}), ...(fixed != null ? { fixedAt: fixed } : {}), ...(late ? { __late: late } : {}) })
       t = at + duration
       coords = place.end_coordinates ?? place.coordinates
       if (!ctx.probe) {
@@ -916,7 +919,94 @@ export function planWrittenTrip(args) {
         for (const name of place.outsideOf ?? []) seen.add(name)
       }
     })
+    if (visits.some((visit) => visit.__late)) {
+      compressToFixedHours(visits, cursorStart, ctx)
+      t = visits.at(-1).end
+    }
     return { visits, units, cursor: { t, coords } }
+  }
+
+  /**
+   * Una hora fija (el turno de la Galería, la entrada del Coliseo o de los Vaticanos, el Free Tour, la recogida de una excursión, una
+   * reserva con hora) no se mueve ni un minuto: si lo de antes, encadenado hacia delante, llega tarde, se recorta hacia atrás desde esa
+   * hora (lo más cercano primero, sin bajar de lo mínimo de cada parada) y lo que va detrás se recoloca. Si no basta, se avisa como siempre.
+   */
+  function compressToFixedHours(visits, startT, ctx) {
+    for (let k = 0; k < visits.length; k++) {
+      const late = visits[k].__late
+      if (!late) continue
+      const over = late.arrival - late.needed
+      if (over > 0) {
+        const gained = shrinkBefore(visits, k, over, startT, ctx)
+        if (gained > 0) {
+          for (let m = k + 1; m < visits.length; m++) if (visits[m].__late) visits[m].__late.arrival -= gained
+          late.arrival -= gained
+        }
+      }
+    }
+    for (const visit of visits) {
+      const late = visit.__late
+      if (!late) continue
+      delete visit.__late
+      if (late.arrival > late.needed + late.tol) ctx.problems.push({ tipo: 'llega_tarde', lugar: late.lugar, llega: toHHMM(late.arrival), hora: toHHMM(late.fixed) })
+    }
+  }
+
+  /**
+   * Recorta hasta `over` min de las visitas anteriores a la k (con k = visits.length, la hora en que acaba todo) y recoloca las de detrás.
+   * Devuelve los minutos que se ganan justo antes de la k (0 si no se pudo o si lo recolocado quedaría cerrado).
+   */
+  function shrinkBefore(visits, k, over, startT, ctx) {
+    // Primero hasta el 75 % de lo escrito (lo normal); si aun así no llega a la hora fija, hasta la mitad (nunca menos de 15 min, 20 un barrio):
+    // una hora fija pesa más que unos minutos de visita.
+    const floorOf = (visit, deep) => {
+      const duration = visit.end - visit.start
+      if (!deep) return shrinkFloor({ lugar: visit.place.name }, duration)
+      const barrio = (placeByName.get(visit.place.name)?.tags ?? []).includes('barrio')
+      return Math.min(duration, Math.max(Math.ceil(duration * 0.5), barrio ? BARRIO_MIN : STOP_MIN))
+    }
+    const reducible = (visit, deep, already) => {
+      const place = visit.place
+      if (place.visitOutside || place.passThrough || place.sunset != null || place.nightView) return 0
+      return Math.max(0, visit.end - visit.start - floorOf(visit, deep) - already)
+    }
+    const snapshot = visits.map((visit) => ({ start: visit.start, end: visit.end }))
+    const cuts = new Map()
+    let left = over
+    for (const deep of [false, true]) {
+      for (let i = k - 1; i >= 0 && left > 0; i--) {
+        const cut = Math.min(reducible(visits[i], deep, cuts.get(i) ?? 0), left)
+        if (cut > 0) {
+          cuts.set(i, (cuts.get(i) ?? 0) + cut)
+          left -= cut
+        }
+      }
+    }
+    if (cuts.size === 0) return 0
+    const first = Math.min(...cuts.keys())
+    for (let m = first; m < visits.length; m++) {
+      const visit = visits[m]
+      const duration = snapshot[m].end - snapshot[m].start - (cuts.get(m) ?? 0)
+      if (m > first) {
+        const oldPrevEnd = snapshot[m - 1].end
+        const slack = snapshot[m].start - (oldPrevEnd + visit.walkMinutes)
+        let base = visits[m - 1].end + visit.walkMinutes
+        if (slack > 0) base = Math.max(base, snapshot[m].start)
+        if (visit.fixedAt != null) base = Math.max(base, visit.fixedAt)
+        visit.start = base
+      }
+      visit.end = visit.start + duration
+    }
+    // Lo recolocado tiene que seguir abierto a su hora; si no, se deja como estaba.
+    const broken = visits.slice(first).some((visit) => !visit.place.visitOutside && !visit.place.passThrough && openCheck(visit.place, visit.start, visit.end - visit.start, ctx.hours).closed)
+    if (broken) {
+      visits.forEach((visit, i) => {
+        visit.start = snapshot[i].start
+        visit.end = snapshot[i].end
+      })
+      return 0
+    }
+    return k === 0 ? 0 : snapshot[k - 1].end - visits[k - 1].end
   }
 
   /** El día empieza a la hora de su primera parada fija, si la trae (el Coliseo a las 8:30). */
@@ -944,7 +1034,22 @@ export function planWrittenTrip(args) {
       short = end - start
       end = start + LUNCH_MIN
     }
-    return { spot, start, end, short }
+    // Una hora fija como lo primero de la tarde (San Clemente a las 14:00) no se mueve: la comida acaba antes, hasta su mínimo.
+    let lateBy = 0
+    const firstAfternoon = draft.tarde?.[0]
+    const fixedFirst = firstAfternoon ? hourOf(firstAfternoon) : null
+    const firstSource = firstAfternoon ? sourceOf(firstAfternoon) : null
+    if (fixedFirst != null && firstSource) {
+      const slotted = Boolean(firstAfternoon.turno || firstSource.turnos || firstSource.isFreeTour)
+      const legRaw = walkLeg(spot?.coordinates ?? cursor.coords, firstSource.coordinates)
+      const leg = firstAfternoon.traslado?.min ? Math.min(legRaw, firstAfternoon.traslado.min) : legRaw
+      const over = end + leg - (fixedFirst - (slotted ? TICKET_MARGIN : 0))
+      if (over > 0) {
+        end = Math.max(start + LUNCH_MIN, end - over)
+        lateBy = Math.max(0, end + leg - (fixedFirst - (slotted ? TICKET_MARGIN : 0)))
+      }
+    }
+    return { spot, start, end, short, lateBy }
   }
   /** Lo que querría la elástica ese día con ese borrador, sin apuntar nada (null si la tarde no tiene elástica y mirador). */
   function elasticNeed(draft, skeletonDay, hours, half) {
@@ -1111,7 +1216,33 @@ export function planWrittenTrip(args) {
     let afterLunch = morning.cursor
     let lunchName = null
     if (!half && draft.comida) {
-      const { spot, start, end, short } = lunchOf(draft, morning.cursor, skeletonDay, hours)
+      let lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
+      // Si ni con la comida al mínimo se llega a la hora fija con que empieza la tarde, se recorta la mañana hacia atrás.
+      if (lunchPlan.lateBy > 0 && morning.visits.length > 0) {
+        // (La comida empieza en un cuarto de hora exacto: se prueba recortando de 5 en 5 hasta que cuadre.)
+        const saved = morning.visits.map((visit) => ({ start: visit.start, end: visit.end }))
+        const savedCursor = morning.cursor
+        for (let extra = 0; extra <= 20 && lunchPlan.lateBy > 0; extra += 5) {
+          morning.visits.forEach((visit, i) => {
+            visit.start = saved[i].start
+            visit.end = saved[i].end
+          })
+          morning.cursor = savedCursor
+          const gained = shrinkBefore(morning.visits, morning.visits.length, lunchPlan.lateBy + extra, startMorning, ctx)
+          if (gained <= 0) break
+          morning.cursor = { ...savedCursor, t: morning.visits.at(-1).end }
+          lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
+        }
+        if (lunchPlan.lateBy > 0) {
+          morning.visits.forEach((visit, i) => {
+            visit.start = saved[i].start
+            visit.end = saved[i].end
+          })
+          morning.cursor = savedCursor
+          lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
+        }
+      }
+      const { spot, start, end, short } = lunchPlan
       // (La comida ya dura LUNCH_MIN; la tarde empieza más tarde y lo absorbe la elástica. Solo es un problema si no hay
       // elástica que lo absorba: entonces la tarde va con retraso.)
       // (Ni si la tarde no lleva ninguna hora fija a la que llegar tarde: empieza un rato después y ya está.)

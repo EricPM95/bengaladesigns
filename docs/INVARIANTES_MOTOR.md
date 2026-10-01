@@ -2459,3 +2459,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 426. **Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra**
     (PARA_CODE_TODO_2026-10-01, ajuste final). Santa Cecilia in Trastevere es opcional en todos los días escritos: si a su
     hora está cerrada o habría que esperar a que abra, se quita, y su tiempo lo recoge la parada que se estira.
+
+427. **Una hora fija no se mueve ni un minuto: lo de antes se coloca hacia atrás desde ella** (PARA_CODE, 2026-10-01).
+    - Hora fija es todo lo que trae `hora` en lo escrito: el turno de la Galería, la entrada del Coliseo o de los Vaticanos, el Free
+      Tour, la recogida de una excursión y, cuando existan, las reservas del viajero con hora. A la entrada con turno se llega 10 min
+      antes (`TICKET_MARGIN`); las demás, a su hora.
+    - El motor encadena las paradas hacia delante; si la suma de lo de antes (duraciones + paseos + traslados) llega después de lo que
+      pide la hora fija, `compressToFixedHours` recorta hacia atrás desde ella: primero la parada más cercana, sin bajar de su mínimo
+      (el 75 % de lo escrito; si aun así no llega, hasta la mitad; nunca menos de 15 min, 20 un barrio), nunca un «por fuera», un paso, un mirador ni una nocturna; y
+      recoloca lo de detrás (respetando sus propias horas fijas y esperas de apertura). Si algo recolocado quedaría cerrado, se deja
+      como estaba y se avisa.
+    - Si la hora fija es lo primero de la tarde (San Clemente a las 14:00), primero acaba antes la comida (hasta su mínimo, 45 min) y, si no
+      basta, se recorta la mañana por el mismo camino.
+    - Ya no hay «parches» de minutos para que una cadena llegue (el Castillo de D4 con Free Tour o el 6 de enero): se escribe lo que
+      se quiere ver y el motor lo ajusta. Vale para cualquier destino y cualquier hora fija.
+    - La prueba de las 365 fechas no admite tolerancia: `v4_llega_tarde` salta en cuanto se llega después de lo que pide la hora.

@@ -313,7 +313,7 @@
             "lugar": "Castillo de Sant'Angelo",
             "tipo": "fija",
             "hora": "09:00",
-            "min": 65,
+            "min": 85,
             "modo": "dentro",
             "entrada": true,
             "si_cerrado": "fuera",
@@ -458,7 +458,7 @@
             }
           },
           "Castillo de Sant'Angelo": {
-            "min": 30
+            "min": 55
           }
         }
       },
