@@ -346,6 +346,8 @@ export interface Stop {
   nightWalkName?: string | null
   /** Foto: buscar la de este otro lugar en vez de la del nombre de la parada (el Free Tour usa la de Piazza Navona). */
   photoName?: string | null
+  /** «Pasea y piérdete por…»: otros lugares de la zona cuya foto lleva el paseo si la de `photoName` ya sale en otra tarjeta del día. */
+  photoAlternatives?: string[]
   /** Foto propia fija (la del Free Tour, cuando la haya): se usa tal cual, sin buscar. */
   fixedPhotoUrl?: string | null
 }

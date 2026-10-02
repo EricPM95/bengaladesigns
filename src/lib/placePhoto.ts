@@ -266,13 +266,24 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
     ),
   )
   await Promise.allSettled(jobs)
-  // Nunca la misma foto en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda, sin foto (el color neutro).
+  // Nunca la misma foto en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda, sin foto (el color neutro) — salvo un
+  // «Pasea y piérdete por…», que prueba antes con otros lugares de su zona (la foto de Campo de' Fiori ya la lleva la parada de antes).
   for (const day of route.days) {
     const used = new Set<string>()
+    const dayIso = startIso ? addDaysToIso(startIso, day.dayNumber - 1) : null
     for (const stop of day.stops) {
       if (!stop.photoUrl) continue
-      if (used.has(stop.photoUrl)) stop.photoUrl = ''
-      else used.add(stop.photoUrl)
+      if (used.has(stop.photoUrl)) {
+        stop.photoUrl = ''
+        for (const alternative of stop.isFreeWalk ? (stop.photoAlternatives ?? []) : []) {
+          const photo = await fetchPlacePhoto(alternative, day.city, null, 'regular', dayIso)
+          if (photo && !used.has(photo)) {
+            stop.photoUrl = photo
+            break
+          }
+        }
+      }
+      if (stop.photoUrl) used.add(stop.photoUrl)
     }
   }
   return route

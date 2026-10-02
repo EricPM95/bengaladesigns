@@ -52,7 +52,7 @@ function zoneTitle(destData, zoneId, tripDay, dayVisitedNames) {
  * El paseo como parada: sin lugar propio (no se busca a Claude ni a Mapbox), con la foto de día de su zona, la etiqueta
  * «Paseo libre» y el consejo del aperitivo dentro de la ficha.
  */
-function paseoStop({ title, start, minutes, coordinates, photoName, tip, why }) {
+function paseoStop({ title, start, minutes, coordinates, photoName, photoAlternatives, tip, why }) {
   return {
     name: title,
     suggested_time: toHHMM(start),
@@ -70,6 +70,7 @@ function paseoStop({ title, start, minutes, coordinates, photoName, tip, why }) 
     free_access: true,
     is_free_walk: true,
     ...(photoName ? { photo_name: photoName } : {}),
+    ...(photoAlternatives?.length ? { photo_alternatives: photoAlternatives } : {}),
     aperitivo_tip: tip,
     why,
   }
@@ -181,6 +182,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
           minutes,
           coordinates: center,
           photoName: zoneConfig?.foto ?? null,
+          photoAlternatives: zoneConfig?.foto_alternativas ?? null,
           tip,
           why: 'Sin plan fijo: dejarse llevar por las calles es la mejor forma de despedir el día.',
         }),

@@ -4,11 +4,9 @@
   "sin_foto": [
     "Via Margutta",
     "Via Margutta y Via del Babuino",
-    "Coliseo",
-    "Puente Sant'Angelo",
     "Pasear por San Giovanni"
   ],
-  "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Coliseo, Puente Sant'Angelo y Pasear por San Giovanni: la que salía parecía de anochecer o de noche y una parada de día no lleva fotos de noche (paso 5.3); la nocturna del Coliseo y del Puente llevan las suyas.",
+  "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya.",
   "fotos": [
     {
       "archivo": "noche_coliseo.jpg",
@@ -358,11 +356,31 @@
       "fuente": "",
       "autor": "",
       "enlace": ""
+    },
+    {
+      "archivo": "dia_coliseo.jpg",
+      "lugares": [
+        "Coliseo"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "David Libeert",
+      "enlace": "https://unsplash.com/photos/colosseum-under-white-clouds-during-daytime-CzKI2-nejUk"
+    },
+    {
+      "archivo": "dia_puente_sant_angelo.jpg",
+      "lugares": [
+        "Puente Sant'Angelo"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Unsplash",
+      "autor": "Angelo Casto",
+      "enlace": "https://unsplash.com/photos/brown-concrete-building-near-river-under-blue-sky-and-white-clouds-during-daytime-4UT-CDeMgsE"
     }
   ],
   "notas_revision": {
-    "Coliseo": "Parecía de anochecer (cielo azul, arcos encendidos): una parada de día no la lleva. Sin foto de día hasta que pases una; el Coliseo de noche lleva la suya.",
-    "Puente Sant'Angelo": "Era una foto de noche (luces y reflejos): pasa a la nocturna. Sin foto de día hasta que pases una.",
     "Pasear por San Giovanni": "Era de noche (cielo azul oscuro, escultura iluminada). Sin foto hasta que pases una de día.",
     "Plaza de España": "La de siempre (Unsplash, de día). La del amanecer con farolas pasó a la nocturna.",
     "Piazza Navona": "Dudosa: luz azulada de primera hora, puede parecer de anochecer.",

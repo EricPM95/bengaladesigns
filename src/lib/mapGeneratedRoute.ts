@@ -137,6 +137,8 @@ interface GeneratedStop {
   night_walk_name?: string | null
   /** Foto de otro lugar / foto propia fija — Stop.photoName / Stop.fixedPhotoUrl. */
   photo_name?: string | null
+  /** Otros lugares de la zona del paseo, por si la foto de `photo_name` ya la lleva otra tarjeta del día. */
+  photo_alternatives?: string[] | null
   photo_url?: string | null
 }
 
@@ -465,6 +467,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
       : {}),
     ...(generated.night_walk_name ? { nightWalkName: generated.night_walk_name } : {}),
     ...(generated.photo_name ? { photoName: generated.photo_name } : {}),
+    ...(generated.photo_alternatives?.length ? { photoAlternatives: generated.photo_alternatives } : {}),
     ...(generated.photo_url ? { fixedPhotoUrl: generated.photo_url, photoUrl: generated.photo_url } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),

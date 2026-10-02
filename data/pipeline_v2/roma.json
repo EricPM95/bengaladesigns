@@ -8526,7 +8526,7 @@
       "revisar": "noviembre de cada año"
     },
     "paseo_libre": {
-      "_nota": "El rato libre antes de cenar (PARA_CODE_TODO_2026-10-01, paso 5): «Pasea y piérdete por {zona}», con etiqueta «Paseo libre». Por barrio de cena (dinnerZones). nombre: la zona; iluminado: cómo se llama con el sol puesto (invierno); foto: el lugar cuya foto de día lleva la tarjeta (nunca una de noche); consejo: el spritz, dentro de la ficha. titulo_navidad: en diciembre y el 25, con las luces. si_visto / si_visto_nombre: si ese día ya se vio lo que nombra, la otra zona. Cuando el paseo cae en la misma zona que la parada de antes, no hay tarjeta aparte: esa parada se alarga.",
+      "_nota": "El rato libre antes de cenar (PARA_CODE_TODO_2026-10-01, paso 5): «Pasea y piérdete por {zona}», con etiqueta «Paseo libre». Por barrio de cena (dinnerZones). nombre: la zona; iluminado: cómo se llama con el sol puesto (invierno); foto: el lugar cuya foto de día lleva la tarjeta (nunca una de noche); foto_alternativas: otros lugares de la zona, en orden, por si esa foto ya la lleva otra tarjeta del día (nunca la misma foto dos veces); consejo: el spritz, dentro de la ficha. titulo_navidad: en diciembre y el 25, con las luces. si_visto / si_visto_nombre: si ese día ya se vio lo que nombra, la otra zona. Cuando el paseo cae en la misma zona que la parada de antes, no hay tarjeta aparte: esa parada se alarga.",
       "minutos_min": 20,
       "minutos_max": 90,
       "consejo_aperitivo": "A esta hora los romanos se toman un spritz o una copa de vino antes de cenar. Si te apetece, siéntate en una terraza y mira pasar la ciudad.",
@@ -8535,6 +8535,7 @@
           "nombre": "Via del Corso y Via Condotti",
           "iluminado": "Via del Corso y Via Condotti iluminadas",
           "foto": "Via del Corso",
+          "foto_alternativas": ["Via Condotti"],
           "titulo_navidad": "Pasea y piérdete entre las luces de Via del Corso y Via Condotti",
           "si_visto": [
             "Luces de Navidad del Tridente"
@@ -8544,12 +8545,14 @@
         "trevi": {
           "nombre": "Trevi y Via del Corso",
           "iluminado": "la Fontana de Trevi y Via del Corso iluminadas",
-          "foto": "Fontana de Trevi"
+          "foto": "Fontana de Trevi",
+          "foto_alternativas": ["Via del Corso"]
         },
         "centro_historico": {
           "nombre": "el Centro Histórico",
           "iluminado": "Piazza Navona y el Panteón iluminados",
           "foto": "Campo de' Fiori",
+          "foto_alternativas": ["Piazza Farnese"],
           "si_visto": [
             "Piazza Navona",
             "Panteón"
@@ -8559,32 +8562,38 @@
         "monti": {
           "nombre": "Monti",
           "iluminado": "Monti y los Foros iluminados",
-          "foto": "Monti"
+          "foto": "Monti",
+          "foto_alternativas": ["Piazza della Madonna dei Monti"]
         },
         "coliseo": {
           "nombre": "el Coliseo y el Celio",
           "iluminado": "el Coliseo iluminado",
-          "foto": "Arco de Constantino"
+          "foto": "Arco de Constantino",
+          "foto_alternativas": ["Basílica de San Clemente"]
         },
         "trastevere": {
           "nombre": "Trastevere",
           "iluminado": "Trastevere iluminado",
-          "foto": "Trastevere"
+          "foto": "Trastevere",
+          "foto_alternativas": ["Isla Tiberina"]
         },
         "testaccio": {
           "nombre": "Testaccio",
           "iluminado": "Testaccio y la Pirámide iluminados",
-          "foto": "Mercado de Testaccio"
+          "foto": "Mercado de Testaccio",
+          "foto_alternativas": ["Pirámide Cestia"]
         },
         "prati": {
           "nombre": "el Borgo y Prati",
           "iluminado": "Via della Conciliazione y el Castillo iluminados",
-          "foto": "Borgo Pio"
+          "foto": "Borgo Pio",
+          "foto_alternativas": ["Via della Conciliazione"]
         },
         "vaticano": {
           "nombre": "el Borgo",
           "iluminado": "Via della Conciliazione y el Castillo iluminados",
-          "foto": "Borgo Pio"
+          "foto": "Borgo Pio",
+          "foto_alternativas": ["Via della Conciliazione"]
         }
       }
     }
