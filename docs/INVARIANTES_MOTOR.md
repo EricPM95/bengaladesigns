@@ -2578,3 +2578,22 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 443. **Lo reservado se marca en el día** (PARA_CODE_UI_DIAS, 7). Día cerrado: bajo el título, «🔒 Coliseo · 11:00» en el verde de Reservas (con dos o más, «🔒 2 reservas»). Parada con el día
     abierto: la franja de la tarjeta en verde y arriba «Reservada ✓» y el candado con «Fijada». Lo añadido sin reservar no se marca.
+
+444. **La misa del Panteón en festivos y vísperas** (2-oct-2026). La web oficial: misa a las 17:00 los sábados y las vísperas de festivo (venta cortada a las 16:00) y a las 10:30 los domingos
+    y los festivos (venta cortada a las 09:30). El lugar lo pide con `misas_festivos` (los festivos nacionales de Italia: 1 y 6 ene, Lunes de Pascua, 25 abr, 1 may, 2 jun, 15 ago, 1 nov, 8,
+    25 y 26 dic) y `massWeekday` (`openingHours.js`) lee el festivo como un domingo y su víspera como un sábado; el servidor lo manda a la ventana de «+ Añadir» (`hours_data`). Pendiente
+    de decidir: el 29 de junio (festivo solo en Roma).
+
+445. **El Castillo de Sant'Angelo va solo por fuera, 20 min, todos los días** (decisión del usuario, 2-oct-2026). Sin «Entra si quieres»: si alguien quiere entrar, cambia la hora y la
+    duración a mano. Su cierre de los lunes ya no bloquea el día de los Vaticanos. En lo escrito, `una_vez: true` hace que una parada que el viaje ya vio (por dentro o por fuera) no salga
+    otro día, y `si_visto` mira todo lo visto (no solo lo visto por dentro). La auditoría pide el Castillo en el día del Vaticano solo si ningún otro día del viaje lo lleva.
+
+446. **Una calle solo es parada si es un sitio en sí misma** (2-oct-2026). Via Margutta, Via del Babuino y Via del Corso (D7) ya no son parada: su rato va al paseo de la zona
+    («Pasea y piérdete por el Tridente») y sus textos van en «Por el camino», dentro de la ficha (`por_el_camino` del lugar o de la zona; `Stop.porElCamino`). Via Condotti sigue como parada
+    corta de camino; Conciliazione, Via dei Fori Imperiali, Via Appia y las luces de Navidad del Tridente se quedan. Venchi: solo la tienda de Via del Corso (cerca de Trevi, en la web
+    oficial de Venchi), como recomendación de camino en la ficha de Trevi o del paseo del Tridente, **una sola vez por viaje** (`una_vez`) y nunca como parada.
+
+447. **Un paseo con `una_vez_por_viaje` no se repite** (el del Tridente): si un día anterior del viaje ya cena en esa zona, el rato va a la parada que se estira. `minutos_max` por zona
+    sobre el máximo general (el Tridente, 120).
+
+448. **Borgo Pio pasa a paseo**: «Pasea y piérdete por Borgo Pio» (título de la parada, como los demás paseos escritos).

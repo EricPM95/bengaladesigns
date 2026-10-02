@@ -1,20 +1,38 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 445 s. **Total: 21**.
+6180 viajes (todas las fechas de 2027), en 538 s. **Total: 2897**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
-- **Parada fuera de su horario real de ese día**: 0 ✅
+- **Parada fuera de su horario real de ese día**: 8
+  - 2027-05-15 · 3 días · arte_museos, día 1, 19:05 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
+  - 2027-05-15 · 5 días · arte_museos, día 1, 19:05 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
+  - 2027-05-29 · 3 días · arte_museos, día 1, 19:20 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
+  - 2027-05-29 · 5 días · arte_museos, día 1, 19:20 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
+  - 2027-06-12 · 3 días · arte_museos, día 1, 19:25 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
+  - 2027-06-12 · 5 días · arte_museos, día 1, 19:25 Iglesia de Santa Maria sopra Minerva — abierto 10:00-12:30, 15:30-19:00
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
 - **Tramo de más de 25 min andando sin transporte**: 0 ✅
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 0 ✅
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 0 ✅
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 664
+  - 2027-04-09 · 2 días, día 2, 18:50 Puente Sant'Angelo — 38 min
+  - 2027-04-09 · 3 días, día 2, 18:50 Puente Sant'Angelo — 38 min
+  - 2027-04-09 · 4 días, día 2, 18:50 Puente Sant'Angelo — 38 min
+  - 2027-04-09 · 5 días, día 2, 18:50 Puente Sant'Angelo — 38 min
+  - 2027-04-09 · 6 días, día 2, 18:50 Puente Sant'Angelo — 38 min
+  - 2027-04-09 · 7 días, día 2, 18:50 Puente Sant'Angelo — 38 min
 - **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: 0 ✅
 - **La misma foto propia en dos tarjetas del mismo día**: 0 ✅
 - **Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)**: 0 ✅
 - **El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 0 ✅
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 767
+  - 2027-03-01 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
+  - 2027-03-01 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
+  - 2027-03-01 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
+  - 2027-03-01 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
+  - 2027-03-01 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
+  - 2027-03-01 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
 - **Zigzag: volver a una zona que ya se dejó ese día**: 0 ✅
@@ -36,13 +54,27 @@
 - **Tiempo libre con ideas de otra zona**: 0 ✅
 - **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: 0 ✅
 - **El mismo restaurante dos veces en el viaje**: 0 ✅
-- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 0 ✅
+- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: 1401
+  - 2027-02-12 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+  - 2027-02-12 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+  - 2027-02-12 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+  - 2027-02-12 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+  - 2027-02-12 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+  - 2027-02-12 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
-- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 0 ✅
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 34
+  - 2027-01-05 · 3 días, todo el viaje Panteón — ningún día por dentro
+  - 2027-01-05 · 4 días, todo el viaje Panteón — ningún día por dentro
+  - 2027-01-05 · 5 días, todo el viaje Panteón — ningún día por dentro
+  - 2027-01-05 · 6 días, todo el viaje Panteón — ningún día por dentro
+  - 2027-01-05 · 7 días, todo el viaje Panteón — ningún día por dentro
+  - 2027-06-01 · 2 días, todo el viaje Panteón — ningún día por dentro
 - **El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)**: 0 ✅
 - **El día del Vaticano sin el Puente Sant'Angelo de día**: 0 ✅
 - **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 0 ✅
-- **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 0 ✅
+- **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: 2
+  - 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
+  - 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
 - **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
 - **Parada fuera de su horario sin solución escrita**: 0 ✅
@@ -64,21 +96,625 @@
 
 ## Dónde caen (día escrito, versión y variantes)
 
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×34
+- **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas**: D2 D ×305 · D2 B ×279 · D2 C ×245 · D2 B +relleno_cena:Isla Tiberina ×136 · D2 D +miercoles ×69 · D2 C +miercoles ×52 · D2 D +naturaleza_vistas ×38 · D2 D +barrios_sabores ×38 · D2 B +naturaleza_vistas ×30 · D2 B +barrios_sabores ×30 · D2 C +naturaleza_vistas ×28 · D2 C +barrios_sabores ×28 · D2 B +fecha:easter-2 ×24 · D2 B +naturaleza_vistas+relleno_cena:Isla Tiberina ×18
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D2 B ×265 · D2 C ×253 · D2 B +relleno_cena:Isla Tiberina ×52 · D2 C +miercoles ×30 · D2 B +naturaleza_vistas ×30 · D2 B +barrios_sabores ×30 · D2 C +naturaleza_vistas ×28 · D2 C +barrios_sabores ×28 · D2 B +fecha:easter-2 ×25 · D2 B +naturaleza_vistas+relleno_cena:Isla Tiberina ×6 · D2 B +barrios_sabores+relleno_cena:Isla Tiberina ×6 · D2 C +miercoles+naturaleza_vistas ×4 · D2 C +miercoles+barrios_sabores ×4 · D2 B +fecha:easter-2+naturaleza_vistas ×2
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×21
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D2 D ×527 · D2 D +naturaleza_vistas ×63 · D2 D +barrios_sabores ×63 · D2 D +pool:Trastevere ×11
+- **Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
+- **Parada fuera de su horario real de ese día**: D1 D +sabado+arte_museos+comida:sin Plaza del Campidoglio ×8
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1133 viajes pisan alguna fecha clave. **Avisos de verdad: 0** · informativos (algo cierra ese día y el aviso lo explica): 21.
+1133 viajes pisan alguna fecha clave. **Avisos de verdad: 598** · informativos (algo cierra ese día y el aviso lo explica): 21.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
-| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 0 | 0 |
-| Semana Santa | 03-24 – 03-29 | 155 | 0 | 2 |
-| Puente de mayo | 04-30 – 05-02 | 93 | 0 | 2 |
-| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 0 | 0 |
-| Verano: el 15 de agosto | 08-13 – 08-16 | 112 | 0 | 8 |
-| Puente del Pilar | 10-09 – 10-12 | 112 | 0 | 0 |
-| Todos los Santos | 10-30 – 11-01 | 112 | 0 | 2 |
-| Puente de diciembre | 12-04 – 12-08 | 136 | 0 | 0 |
-| Navidad y Reyes | 12-24 – 12-31 | 184 | 0 | 7 |
+| Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 11 | 0 |
+| Semana Santa | 03-24 – 03-29 | 155 | 177 | 2 |
+| Puente de mayo | 04-30 – 05-02 | 93 | 31 | 2 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 120 | 0 |
+| Verano: el 15 de agosto | 08-13 – 08-16 | 112 | 71 | 8 |
+| Puente del Pilar | 10-09 – 10-12 | 112 | 62 | 0 |
+| Todos los Santos | 10-30 – 11-01 | 112 | 107 | 2 |
+| Puente de diciembre | 12-04 – 12-08 | 136 | 11 | 0 |
+| Navidad y Reyes | 12-24 – 12-31 | 184 | 8 | 7 |
 
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 4 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 6 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 7 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
+- Semana Santa: libre_largo | 2027-03-19 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 85 min
+- Semana Santa: fuera_con_tiempo | 2027-03-19 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-19 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 85 min
+- Semana Santa: fuera_con_tiempo | 2027-03-19 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 2 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 3 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 3 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 5 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 5 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 6 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 6 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 7 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 7 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 2 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 3 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 3 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 4 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 4 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 5 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 5 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 6 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 6 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 7 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-25 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-25 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 2 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 3 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 3 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 4 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 4 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 5 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 5 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 6 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 6 días, día 5, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 6 días · FT, día 2, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-27 · 7 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 7 días, día 5, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-27 · 7 días · FT, día 2, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 3 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 3 días, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 4 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 4 días, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 4 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 5 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 5 días, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 5 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 6 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 6 días, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 6 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 7 días, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 7 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 2 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 3 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 4 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 5 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 6 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-29 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-29 · 7 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 3 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 3 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 5 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 5 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 3 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 5 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 3 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-22 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-22 · 5 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 3 días · arte_museos, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 3 días · arte_museos, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 5 días · arte_museos, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 5 días · arte_museos, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 3 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 3 días · naturaleza_vistas, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 5 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 5 días · naturaleza_vistas, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 3 días · barrios_sabores, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 3 días · barrios_sabores, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-24 · 5 días · barrios_sabores, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-24 · 5 días · barrios_sabores, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 3 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 3 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 5 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 5 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 3 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 5 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 3 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-26 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Semana Santa: fuera_con_tiempo | 2027-03-26 · 5 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 3 días · arte_museos, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 3 días · arte_museos, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 5 días · arte_museos, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 5 días · arte_museos, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 3 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 3 días · naturaleza_vistas, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 5 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 5 días · naturaleza_vistas, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 3 días · barrios_sabores, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 3 días · barrios_sabores, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-28 · 5 días · barrios_sabores, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 120 min
+- Semana Santa: fuera_con_tiempo | 2027-03-28 · 5 días · barrios_sabores, día 3, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Cúpula de San Pedro, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Cúpula de San Pedro, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Trastevere, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Trastevere, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Galería Borghese, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Galería Borghese, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Castillo de Sant'Angelo, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Boca de la Verdad, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Boca de la Verdad, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Parque de Villa Borghese, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Parque de Villa Borghese, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Ojo de la Cerradura del Aventino, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Ojo de la Cerradura del Aventino, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Arco de Constantino, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Arco de Constantino, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Altar de la Patria, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Altar de la Patria, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Museos Capitolinos, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Museos Capitolinos, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Termas de Caracalla, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Termas de Caracalla, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 4 días · pool Basílica de San Juan de Letrán, día 4 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 4 días · pool Basílica de San Juan de Letrán, día 4, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 5 días · pool Trastevere+Galería Borghese, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 5 días · pool Trastevere+Galería Borghese, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Semana Santa: libre_largo | 2027-03-23 · 5 días · pool Museos Capitolinos+Basílica de San Juan de Letrán, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+- Semana Santa: fuera_con_tiempo | 2027-03-23 · 5 días · pool Museos Capitolinos+Basílica de San Juan de Letrán, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente de mayo: hueco | 2027-04-26 · 5 días, día 2, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-26 · 6 días, día 2, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-26 · 7 días, día 2, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-27 · 5 días, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-27 · 6 días, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-27 · 7 días, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-28 · 3 días, día 2, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-28 · 5 días, día 2, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-28 · 6 días, día 2, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-28 · 7 días, día 2, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 2 días, día 2, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 3 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 4 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 5 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 2 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 3 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 4 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 5 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 6 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-30 · 7 días, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: fuera_con_tiempo | 2027-05-01 · 2 días, día 1, 15:35 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente de mayo: fuera_con_tiempo | 2027-05-01 · 2 días · FT, día 1, 15:35 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente de mayo: hueco | 2027-04-27 · 5 días · arte_museos, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-27 · 5 días · naturaleza_vistas, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-27 · 5 días · barrios_sabores, día 1, 19:10 Puente Sant'Angelo — 58 min
+- Puente de mayo: hueco | 2027-04-29 · 3 días · arte_museos, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 5 días · arte_museos, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 3 días · naturaleza_vistas, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 5 días · naturaleza_vistas, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 3 días · barrios_sabores, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Puente de mayo: hueco | 2027-04-29 · 5 días · barrios_sabores, día 1, 19:15 Puente Sant'Angelo — 63 min
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 6 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 7 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-13 · 4 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-13 · 5 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-13 · 6 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-13 · 7 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 4 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 6 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 7 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 2 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 2 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 3 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 2 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 6 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 7 días, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 2 días, día 1, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-17 · 2 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · arte_museos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 5 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · naturaleza_vistas, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 5 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · barrios_sabores, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-12 · 5 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · arte_museos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 3 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 5 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · naturaleza_vistas, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 3 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · naturaleza_vistas, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 5 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · barrios_sabores, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 3 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · barrios_sabores, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-14 · 5 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · arte_museos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 3 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · arte_museos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 5 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · naturaleza_vistas, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 3 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · naturaleza_vistas, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 5 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · barrios_sabores, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 3 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · barrios_sabores, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 5 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Cúpula de San Pedro, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Cúpula de San Pedro, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Trastevere, día 2, 19:50 Puente Sant'Angelo — 38 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Trastevere, día 2, 17:50 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Galería Borghese, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Galería Borghese, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Boca de la Verdad, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Boca de la Verdad, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Parque de Villa Borghese, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Parque de Villa Borghese, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Arco de Constantino, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Arco de Constantino, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Altar de la Patria, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Altar de la Patria, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Museos Capitolinos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Museos Capitolinos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Termas de Caracalla, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Termas de Caracalla, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Basílica de San Juan de Letrán, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 4 días · pool Basílica de San Juan de Letrán, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días · pool Galería Borghese+Museos Capitolinos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-15 · 5 días · pool Galería Borghese+Museos Capitolinos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Cúpula de San Pedro, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Cúpula de San Pedro, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Trastevere, día 2, 19:50 Puente Sant'Angelo — 38 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Trastevere, día 2, 17:50 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Galería Borghese, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Galería Borghese, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Boca de la Verdad, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Boca de la Verdad, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Parque de Villa Borghese, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Parque de Villa Borghese, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Arco de Constantino, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Arco de Constantino, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Altar de la Patria, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Altar de la Patria, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Museos Capitolinos, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Museos Capitolinos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Termas de Caracalla, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Termas de Caracalla, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Basílica de San Juan de Letrán, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 4 días · pool Basílica de San Juan de Letrán, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · pool Galería Borghese+Termas de Caracalla, día 2, 19:50 Puente Sant'Angelo — 48 min
+- Verano: fin de semana de julio: fuera_con_tiempo | 2027-07-16 · 5 días · pool Galería Borghese+Termas de Caracalla, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-10 · 4 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-10 · 5 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-10 · 6 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-10 · 7 días, día 2, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 2 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 6 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-12 · 7 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 2 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 3 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 4 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 5 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 6 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 7 días, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 2 días, día 1, 11:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 2 días · FT, día 1, 16:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 3 días · FT, día 1, 16:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 4 días, día 4, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 4 días · FT, día 2, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 5 días, día 5, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 5 días · FT, día 2, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 6 días, día 5, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 6 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 7 días, día 5, 11:45 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-14 · 7 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 3 días, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 4 días, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 4 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 5 días, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 5 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 6 días, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 6 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 7 días, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 7 días · FT, día 1, 09:00 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 2 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 3 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 4 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 5 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 6 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-16 · 7 días, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 5 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 5 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-09 · 5 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 3 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 5 días · arte_museos, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 3 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 5 días · naturaleza_vistas, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 3 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-11 · 5 días · barrios_sabores, día 2, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 3 días · arte_museos, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 5 días · arte_museos, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 3 días · naturaleza_vistas, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 5 días · naturaleza_vistas, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 3 días · barrios_sabores, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-13 · 5 días · barrios_sabores, día 1, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 3 días · arte_museos, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 5 días · arte_museos, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 3 días · naturaleza_vistas, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 5 días · naturaleza_vistas, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 3 días · barrios_sabores, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Verano: el 15 de agosto: fuera_con_tiempo | 2027-08-15 · 5 días · barrios_sabores, día 3, 17:40 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-04 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-04 · 6 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-04 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-04 · 7 días, día 2, 15:20 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-07 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-07 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-07 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-07 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-07 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-07 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-09 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-09 · 2 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-11 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-11 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 5 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 5 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 5 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-06 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-06 · 5 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 3 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 3 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 5 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 5 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 3 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 5 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 3 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente del Pilar: libre_largo | 2027-10-08 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min
+- Puente del Pilar: fuera_con_tiempo | 2027-10-08 · 5 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-25 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-25 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-25 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-25 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 5 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 5 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 6 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 6 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 7 días, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-27 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-27 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-27 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-27 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-27 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-27 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-27 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-27 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 6 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 6 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 7 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 7 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 2 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 3 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 3 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 4 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 4 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 5 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 5 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 6 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-29 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-29 · 7 días, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 2 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 3 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 3 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 5 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 5 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 6 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 6 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 7 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 7 días, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 5 días · arte_museos, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 5 días · arte_museos, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 5 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 5 días · naturaleza_vistas, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-26 · 5 días · barrios_sabores, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-26 · 5 días · barrios_sabores, día 3, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 3 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 3 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 5 días · arte_museos, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 5 días · arte_museos, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 3 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 5 días · naturaleza_vistas, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 3 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-28 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-28 · 5 días · barrios_sabores, día 2, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 3 días · arte_museos, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 3 días · arte_museos, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 5 días · arte_museos, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 5 días · arte_museos, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 3 días · naturaleza_vistas, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 3 días · naturaleza_vistas, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 5 días · naturaleza_vistas, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 5 días · naturaleza_vistas, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 3 días · barrios_sabores, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 3 días · barrios_sabores, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 5 días · barrios_sabores, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 5 días · barrios_sabores, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Cúpula de San Pedro, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Cúpula de San Pedro, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Trastevere, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Trastevere, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Galería Borghese, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Galería Borghese, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Castillo de Sant'Angelo, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Boca de la Verdad, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Boca de la Verdad, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Parque de Villa Borghese, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Parque de Villa Borghese, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Ojo de la Cerradura del Aventino, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Ojo de la Cerradura del Aventino, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Arco de Constantino, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Arco de Constantino, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Altar de la Patria, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Altar de la Patria, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Museos Capitolinos, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Museos Capitolinos, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Termas de Caracalla, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Termas de Caracalla, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 4 días · pool Basílica de San Juan de Letrán, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 4 días · pool Basílica de San Juan de Letrán, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Todos los Santos: libre_largo | 2027-10-30 · 5 días · pool Boca de la Verdad+Termas de Caracalla, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- Todos los Santos: fuera_con_tiempo | 2027-10-30 · 5 días · pool Boca de la Verdad+Termas de Caracalla, día 1, 15:05 Castillo de Sant'Angelo — con tiempo libre ese día
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 4 días, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 6 días, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 7 días, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: tour_repite | 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
+- Navidad y Reyes: tour_repite | 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 3 días · FT, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
