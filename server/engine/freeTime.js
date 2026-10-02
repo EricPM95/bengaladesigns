@@ -164,7 +164,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       if (same) {
         const roomToNext = floor5(nextStart - leg(coordsOf(previous), nextCoords) - previousEnd)
         // (Antes de cenar, el barrio puede pasar de su máximo de paseo: lo que se alarga es el aperitivo, hasta 90 min.)
-        const extra = Math.min(roomToNext, stretchRoom(previous, placeByName.get(nameOf(previous)), tripDay.hours, { ignoreWalkMax: true }), maxMinutes)
+        const extra = Math.min(roomToNext, stretchRoom(previous, placeByName.get(nameOf(previous)), tripDay.hours, { ignoreWalkMax: true }), zoneConfig?.minutos_max ?? maxMinutes)
         if (extra >= minMinutes) {
           stretch(previous, extra, tip)
           previous.stretched_free_walk = true
@@ -176,7 +176,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       // (Un paseo no se coge a más de 15 min andando de lo último: de la nocturna del Puente al Campo de' Fiori no.)
       if (leg(coordsOf(previous), center) > MAX_PASEO_WALK) continue
       const start = ceil5(previousEnd + leg(coordsOf(previous), center))
-      const minutes = Math.min(maxMinutes, floor5(nextStart - leg(center, nextCoords) - start))
+      const minutes = Math.min(zoneConfig?.minutos_max ?? maxMinutes, floor5(nextStart - leg(center, nextCoords) - start))
       if (minutes < minMinutes) continue
       day.stops.push(
         paseoStop({

@@ -8568,6 +8568,7 @@
           "foto": "Via del Corso",
           "foto_alternativas": ["Via Condotti"],
           "una_vez_por_viaje": true,
+          "minutos_max": 120,
           "por_el_camino": [
             {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
             {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
