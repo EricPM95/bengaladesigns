@@ -2554,15 +2554,15 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     «Quitar del viaje».
 
 438. **Todo lo que se ve lleva foto; sin foto antes que una mala** (PARA_CODE_UI_DIAS, 1; completa la 420). El Coliseo y el Puente Sant'Angelo salen de `sin_foto`: llevan la foto de día
-    elegida entre las candidatas (`dia_coliseo.jpg`, `dia_puente_sant_angelo.jpg`, con su crédito de Unsplash). `scripts/destino/auditarFotos.mjs` pide a la API la foto de
+    (`dia_coliseo.jpg`, de las candidatas, con su crédito; `dia_puente_sant_angelo.jpg`, del usuario, sin crédito). `scripts/destino/auditarFotos.mjs` pide a la API la foto de
     todo lo que el viajero puede ver (paradas de los días escritos, paseos, nocturnas, pool, excursiones) y lista lo que se queda sin ella: hoy solo Via Margutta, Via del
     Babuino, Via Veneto, Santo Bambino de Aracoeli y «Pasear por San Giovanni» (sin foto buena en Unsplash: las pasa el usuario). Un «Pasea y piérdete por…» cuya foto de zona
     ya lleva otra tarjeta del día (Campo de' Fiori) no se queda en blanco: prueba con `foto_alternativas` de su zona (`destination_config.paseo_libre.zonas`; en Roma, Piazza
     Farnese para el Centro Histórico).
 
-439. **El viajero nunca ve los niveles ni las marcas internas del motor** (PARA_CODE_UI_DIAS, 2). Fuera de tarjetas y fichas: «Opcional», «Paseo libre», «Imprescindible» (en el pool
+439. **El viajero nunca ve los niveles ni las marcas internas del motor** (PARA_CODE_UI_DIAS, 2). Fuera de tarjetas y fichas: «Opcional», «Imprescindible» (en el pool
     del formulario) y las etiquetas de datos (`paseo`, `secreto`, `local`, `tranquilo`, `foto`…, `visibleTags` en `tagColors.ts`). Solo salen etiquetas que dicen qué es el sitio (Plaza,
-    Iglesia, Museo…) o algo útil al viajero (Revisita, Por fuera, Reservada ✓, Fijada).
+    Iglesia, Museo…) o algo útil al viajero (Revisita, Por fuera, Paseo libre, Reservada ✓, Fijada).
 
 440. **El mapa recogido deja una franja** (PARA_CODE_UI_DIAS, 3). Con la flecha del mapa pulsada en Días o Explorar queda arriba una franja con una flecha hacia abajo («Mostrar mapa»); al
     tocarla el mapa vuelve como estaba.

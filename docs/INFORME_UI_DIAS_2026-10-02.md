@@ -30,3 +30,9 @@ Capturas a 390 px en `docs/capturas_2026-10-02/` (`ud*`, y `rs2e` para la fecha 
 - Con la varita fuera de los días, el menú «Recuperar toda mi ruta» desaparece de Días; queda solo en Ruta.
 - En un viaje con una excursión de día entero, el día de la excursión no marca «🔒» hasta que esa excursión esté reservada.
 - El Free Tour no tiene reserva en la app (solo entradas y excursiones): no hay nada que marcar en verde para él.
+
+## Respuesta del usuario (mismo día)
+
+- «Paseo libre» vuelve a la tarjeta y a la ficha del paseo (regla 439 corregida).
+- Puente de Sant'Angelo: foto del usuario (`dia_puente_sant_angelo.jpg`), sin línea de crédito; ya no repite la del Castillo.
+- Tívoli y las 5 fotos que faltan: se quedan como están.

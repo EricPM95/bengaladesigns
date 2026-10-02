@@ -101,10 +101,10 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
-  // (Ni «Opcional» ni «Paseo libre»: son datos del motor, el viajero no los ve — PARA_CODE_UI_DIAS, 2.)
+  // (Sin «Opcional» ni los niveles del motor — PARA_CODE_UI_DIAS, 2. «Paseo libre» sí: es una etiqueta para el viajero, decidida el 1-oct.)
   const shownTags = visibleTags(stop.tags)
   const tags: { label: string; kind: typeof kind; green?: boolean }[] = stop.isFreeWalk
-    ? []
+    ? [{ label: 'Paseo libre', kind }]
     : shownTags.length > 0
       ? shownTags.slice(0, 2).map((tag) => ({ label: tagLabel(tag), kind: stopKindOf({ name: '', tags: [tag] }) }))
       : stop.category

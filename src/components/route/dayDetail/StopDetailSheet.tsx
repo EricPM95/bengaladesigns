@@ -449,7 +449,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                     )}
                     {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags
                         curados reales — ver mismo criterio en StopAccordion.tsx. */}
-                    {!stop.isFreeWalk && visibleTags(stop.tags).length === 0 && (
+                    {visibleTags(stop.tags).length === 0 && (
                       <span className="rounded-full bg-bg-hover px-2 py-0.5 text-caption font-medium text-text-muted">{stop.category}</span>
                     )}
                     {visibleTags(stop.tags).map((tag) => {
