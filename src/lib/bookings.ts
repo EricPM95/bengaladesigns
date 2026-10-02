@@ -169,13 +169,13 @@ export interface SaleMatch {
   locator?: string | null
 }
 
-/** Un código de campaña al azar para un viaje, tipo `v-8F3K2`: nada del viajero (ni nombre ni email ni viaje) va dentro. */
+/** Un código de campaña al azar para un viaje, tipo `app-8F3K2`: nada del viajero (ni nombre ni email ni viaje) va dentro. */
 export function newCampaignCode(): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   const bytes = new Uint8Array(5)
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes)
   else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256)
-  return `v-${Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('')}`
+  return `app-${Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('')}`
 }
 
 /**

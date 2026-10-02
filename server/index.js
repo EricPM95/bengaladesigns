@@ -1098,7 +1098,7 @@ ${text.slice(0, 20000)}` : intro })
 // supabase/migrations/0017_affiliate_sales.sql (sin aplicar). Fuera de producción y sin secreto puesto, se puede ingerir sin cabecera (pruebas).
 const salesStore = new Map()
 const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY) : null
-const CAMPAIGN_PATTERN = /^v-[A-Z0-9]{5}$/
+const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 
 app.post('/api/sales/ingest', async (req, res) => {
   const secret = process.env.SALES_INGEST_SECRET

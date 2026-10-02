@@ -2545,7 +2545,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     - Pendiente (no hecho): que el motor, al rehacer la ruta con otras fechas, coloque lo reservado con `compressToFixedHours` (regla 427); hoy se recoloca después, con
       `reapplyReservations`.
 
-437. **Saber solo que alguien ha reservado: el código de campaña de cada viaje** (PARA_CODE_RESERVAS, 5). Cada viaje lleva un código al azar (`v-8F3K2`: nada del viajero ni del
+437. **Saber solo que alguien ha reservado: el código de campaña de cada viaje** (PARA_CODE_RESERVAS, 5). Cada viaje lleva un código al azar (`app-8F3K2`: nada del viajero ni del
     viaje dentro, `newCampaignCode`) y todos los enlaces de «Reservar» a Civitatis lo llevan (`CampaignLinks` lo pone al seguir el enlace). El nombre del campo sale de
     `VITE_AFFILIATE_CAMPAIGN_PARAM` (por defecto `cmp`) y el número de afiliado de `VITE_CIVITATIS_AID`: la documentación pública de Civitatis solo explica `?aid=XXX`.
     Las ventas llegan de la API o del informe de ventas del afiliado a `/api/sales/ingest` (cabecera `x-ingest-secret`; tabla en la migración 0017, sin aplicar; en memoria

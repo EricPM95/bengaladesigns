@@ -1,5 +1,5 @@
 -- Ventas del afiliado unidas a un viaje por su código de campaña (PARA_CODE_RESERVAS, 5).
--- Cada viaje lleva un código al azar (`v-8F3K2`, nada del viajero dentro) en todos los enlaces de «Reservar»; cuando llega una venta con ese código
+-- Cada viaje lleva un código al azar (`app-8F3K2`, nada del viajero dentro) en todos los enlaces de «Reservar»; cuando llega una venta con ese código
 -- (de la API o del informe de ventas del afiliado) se guarda aquí y la app la ofrece al viajero («Hemos visto que has reservado…»).
 -- Sin datos personales: producto, fecha, hora, personas y número de reserva.
 --

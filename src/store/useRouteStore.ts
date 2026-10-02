@@ -299,7 +299,7 @@ interface RouteStoreState {
   esimSelections: Record<string, EsimStatus>
   /** Entradas y excursiones reservadas: fijadas, con fecha y hora (PARA_CODE_RESERVAS). Lo reservado no se mueve: se quita y se vuelve a crear. */
   reservations: Reservation[]
-  /** El código de campaña de este viaje, al azar (`v-8F3K2`): va en todos los enlaces de «Reservar» y así se sabe que alguien ha reservado, sin datos del viajero. */
+  /** El código de campaña de este viaje, al azar (`app-8F3K2`): va en todos los enlaces de «Reservar» y así se sabe que alguien ha reservado, sin datos del viajero. */
   campaignCode: string
   /** Las ventas del afiliado unidas a este viaje: la tarjeta «¿La ponemos?» y el aviso de cancelación. */
   sales: SaleMatch[]
