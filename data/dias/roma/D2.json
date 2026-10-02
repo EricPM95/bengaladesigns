@@ -60,7 +60,7 @@
       "paradas": [
         {
           "lugar": "Borgo Pio",
-          "titulo": "Borgo Pio y el Passetto",
+          "titulo": "Pasea y piérdete por Borgo Pio",
           "min": 20,
           "elastica": 25
         },
@@ -422,7 +422,8 @@
           {
             "lugar": "Borgo Pio",
             "min": 30,
-            "elastica": 30
+            "elastica": 30,
+            "titulo": "Pasea y piérdete por Borgo Pio"
           },
           {
             "lugar": "Via della Conciliazione",
@@ -476,7 +477,8 @@
         "paradas": [
           {
             "lugar": "Borgo Pio",
-            "min": 30
+            "min": 30,
+            "titulo": "Pasea y piérdete por Borgo Pio"
           },
           {
             "lugar": "Via della Conciliazione",
@@ -869,7 +871,8 @@
             "lugar": "Borgo Pio",
             "tipo": "fija",
             "hora": "11:30",
-            "min": 45
+            "min": 45,
+            "titulo": "Pasea y piérdete por Borgo Pio"
           }
         ],
         "comida": {

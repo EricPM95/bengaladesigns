@@ -146,7 +146,7 @@
           },
           {
             "lugar": "Borgo Pio",
-            "titulo": "Borgo Pio y el Passetto",
+            "titulo": "Pasea y piérdete por Borgo Pio",
             "min": 20,
             "elastica": 30
           },
@@ -216,7 +216,8 @@
             "min": 40,
             "elastica": 30,
             "no_calle": true,
-            "texto": "La calle del barrio pegado al Vaticano, con sus fachadas bajas y sus terrazas. A esta hora se llena de romanos: es buen sitio para un aperitivo sin prisa."
+            "texto": "La calle del barrio pegado al Vaticano, con sus fachadas bajas y sus terrazas. A esta hora se llena de romanos: es buen sitio para un aperitivo sin prisa.",
+            "titulo": "Pasea y piérdete por Borgo Pio"
           },
           {
             "lugar": "Puente Sant'Angelo",
