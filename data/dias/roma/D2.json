@@ -112,11 +112,17 @@
         },
         {
           "lugar": "Ponte Sisto",
-          "min": 10
+          "min": 10,
+          "una_vez": true,
+          "traslado_si_se_salta": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 15
+          }
         },
         {
           "lugar": "Plaza Trilussa",
-          "min": 10
+          "min": 5,
+          "una_vez": true
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -169,11 +175,17 @@
         },
         {
           "lugar": "Ponte Sisto",
-          "min": 10
+          "min": 10,
+          "una_vez": true,
+          "traslado_si_se_salta": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 15
+          }
         },
         {
           "lugar": "Plaza Trilussa",
-          "min": 10
+          "min": 5,
+          "una_vez": true
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -243,7 +255,12 @@
         },
         {
           "lugar": "Ponte Sisto",
-          "min": 10
+          "min": 10,
+          "una_vez": true,
+          "traslado_si_se_salta": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 15
+          }
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -1109,11 +1126,17 @@
           },
           {
             "lugar": "Ponte Sisto",
-            "min": 10
+            "min": 10,
+            "una_vez": true,
+            "traslado_si_se_salta": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
           },
           {
             "lugar": "Plaza Trilussa",
-            "min": 10
+            "min": 5,
+            "una_vez": true
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1165,11 +1188,17 @@
           },
           {
             "lugar": "Ponte Sisto",
-            "min": 10
+            "min": 10,
+            "una_vez": true,
+            "traslado_si_se_salta": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
           },
           {
             "lugar": "Plaza Trilussa",
-            "min": 10
+            "min": 5,
+            "una_vez": true
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1236,7 +1265,12 @@
           },
           {
             "lugar": "Ponte Sisto",
-            "min": 10
+            "min": 10,
+            "una_vez": true,
+            "traslado_si_se_salta": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
           },
           {
             "lugar": "Castillo de Sant'Angelo",
@@ -1279,10 +1313,19 @@
       }
     },
     "entrada:mediodia@miercoles": {
-      "_nota": "Miércoles con el orden 2: Borgo Pio por la mañana, los Museos y la comida; la Plaza y la Basílica, después de comer. La Cúpula, ese día, no.",
+      "_nota": "Miércoles con el orden 2: la Plaza y la Basílica no abren hasta las 12:30. La mañana empieza a las 9:00 con el Puente Sant'Angelo, el Castillo por fuera y Borgo Pio (elástica); después, los Museos y la comida; la Plaza y la Basílica, después de comer. La Cúpula, ese día, no.",
       "manana": {
-        "empieza": "07:30",
+        "empieza": "09:00",
         "paradas": [
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
           {
             "lugar": "Borgo Pio",
             "min": 20,
@@ -1329,7 +1372,7 @@
       "_nota": "El último domingo de mes los Museos abren de 9:00 a 14:00 (última entrada 12:30): solo cabe el orden 2, tal cual."
     },
     "entrada:primera_tarde": {
-      "_nota": "Orden 3 (entrada de 13:00 a 14:00): por la mañana la Plaza, la Basílica, la Cúpula, el Puente y el Castillo por fuera y Borgo Pio (que absorbe); comida antes de la entrada (Borghiciana o 200 Gradi) y los Museos de tarde. Después, según la luz: en A, sin atardecer (sales de noche); en B, el Janículo al atardecer subiendo en bus; en C y D, el Tempietto, la Fontana y el Janículo.",
+      "_nota": "Orden 3 (entrada de 13:00 a 14:00): por la mañana la Plaza, la Basílica, la Cúpula, el Puente y el Castillo por fuera y Borgo Pio (que absorbe); comida antes de la entrada (Borghiciana o 200 Gradi) y los Museos de tarde. Después, según la luz: en A, sin atardecer (sales de noche); en B, el Janículo al atardecer subiendo en bus; en C y D, el Tempietto, la Fontana y el Janículo. La comida, rápida (30 min) desde las 12:00 en Pizzarium (Bonci), a dos minutos de los Museos.",
       "manana": {
         "empieza": "07:30",
         "paradas": [
@@ -1372,8 +1415,8 @@
           }
         ],
         "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "200 Gradi"
+          "restaurante": "Pizzarium (Bonci)",
+          "alternativa": "Borghiciana Pastificio Artigianale"
         }
       },
       "tarde.A": {
@@ -1630,11 +1673,17 @@
           },
           {
             "lugar": "Ponte Sisto",
-            "min": 10
+            "min": 10,
+            "una_vez": true,
+            "traslado_si_se_salta": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
           },
           {
             "lugar": "Plaza Trilussa",
-            "min": 10
+            "min": 5,
+            "una_vez": true
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1806,11 +1855,17 @@
           },
           {
             "lugar": "Ponte Sisto",
-            "min": 10
+            "min": 10,
+            "una_vez": true,
+            "traslado_si_se_salta": {
+              "como": "el bus 23 por el Lungotevere",
+              "min": 15
+            }
           },
           {
             "lugar": "Plaza Trilussa",
-            "min": 10
+            "min": 5,
+            "una_vez": true
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1899,7 +1954,7 @@
       ],
       "tarde": [
         "14:30",
-        "18:00"
+        "16:00"
       ]
     }
   },

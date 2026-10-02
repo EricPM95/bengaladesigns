@@ -705,10 +705,36 @@
       }
     },
     "entrada:tarde": {
-      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso.",
+      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso. La mañana empieza por el Foro y el Palatino a las 9:00 (abre a esa hora), sigue con el Campidoglio y el Altar de la Patria (ya abierto, hacia las 11:00). Piazza Navona no se cae: si no cabe por la tarde, va de noche, después de cenar.",
       "manana": {
-        "empieza": "08:30",
+        "empieza": "09:00",
         "paradas": [
+          {
+            "lugar": "Foro Romano y Palatino",
+            "tipo": "fija",
+            "hora": "09:00",
+            "min": 100,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "no_meses": [
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "tipo": "fija",
+            "hora": "09:00",
+            "min": 90,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "meses": [
+              7,
+              8
+            ]
+          },
           {
             "lugar": "Plaza del Campidoglio",
             "min": 15,
@@ -723,28 +749,6 @@
             "min": 40,
             "modo": "dentro",
             "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "min": 100,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true,
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "min": 90,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true,
-            "meses": [
-              7,
-              8
-            ]
           },
           {
             "lugar": "Via dei Fori Imperiali",
@@ -948,6 +952,10 @@
           "alternativa": "Pizzeria Da Baffetto",
           "hora": "20:30"
         }
+      },
+      "noche_si_cae": {
+        "lugar": "Piazza Navona",
+        "noche": "navona_y_fuentes"
       }
     },
     "entrada:tarde@sabado": {

@@ -100,7 +100,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [] }) {
     const place = (D.places ?? []).find((candidate) => candidate.name === name)
     return Boolean(place) && days.some((day, index) => day?.stops?.length && closedOnDay(place, WEEKDAYS[new Date(`${addDays(fecha, index)}T12:00:00Z`).getUTCDay()], addDays(fecha, index)))
   }
-  for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg: legBetween, label })) {
+  for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg: legBetween, label, viajeCorto: days.length <= 2 })) {
     // (Si ese imprescindible cierra algún día del viaje, es la fecha: va aparte, como información.)
     if (caso.tipo === 'pago_sin_dentro' && closedAllTrip(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cerrado_fecha'
     add(caso.tipo, caso.donde, caso.detalle)

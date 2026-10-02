@@ -377,6 +377,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
     // Una hora fija (la entrada con hora, el Free Tour, el atardecer) no se redondea: lo lee quarterHourStops y no sale.
     if (visit.fixedAt != null || visit.place.sunset != null || visit.place.isFreeTour) stop._fixed = true
+    // La entrada que reservó el viajero: el tiempo de más antes de ella (hasta 60 min) no cuenta como hueco (la prueba lo lee).
+    if (visit.reservedEntry) stop.reserved_entry = true
     // Y su etiqueta: "🌅 El momento perfecto para ver el atardecer" (texto del destino), no "Elegido según tus gustos".
     if (visit.place.sunset != null && destData.destination_config?.sunset_text) stop.why = destData.destination_config.sunset_text
     // El mirador que llega ya de noche (en invierno): no se vende como atardecer, sino como la ciudad

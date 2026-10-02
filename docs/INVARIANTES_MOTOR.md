@@ -2645,3 +2645,19 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 459. **Tiempo libre de mitad de día: nunca pasada la hora de cierre** (3-oct-2026, `freeTime.js`). El sitio de camino que rellena un hueco se recorta hasta el cierre de ese día y no se retrasa más allá de él (la Santa Maria sopra Minerva los sábados,
     que cierra a las 19:00, salía a las 19:05).
+
+460. **La comida se adapta a la entrada reservada** (3-oct-2026, todos los destinos). Con una reserva, la comida sustituye a la ventana fija y al mínimo de 45 min: algo rápido desde las 12:00 (una pizza al corte, unos 30 min) o una comida tranquila a las 14:30 o 15:00,
+    según la hora elegida (`LUNCH_EARLIEST_RESERVED`, `LUNCH_MIN_RESERVED`; `reserva:<hora>` en el día). Sin reserva, todo como antes (12:30, 45 min).
+
+461. **Margen antes de una entrada reservada**: el tiempo de más antes de ella (hasta 60 min) no cuenta como hueco (imprevistos y llegar con calma; Trevi a las 8:00 y la Galería a las 10:00). La parada lleva `reserved_entry`; la auditoría usa
+    `HUECO_MARGEN_RESERVA = 60`. No hay que tener miedo a madrugar.
+
+462. **Nocturna el mismo día** (cambia la regla de «nunca de día y de noche el mismo día»): si la visita de día de un sitio fue **por la mañana** (antes de las 13:00), su nocturna puede ir ese mismo día (Trevi a las 8:00 y Trevi iluminada a las 22:00 son dos
+    experiencias distintas); si fue **por la tarde**, la nocturna va en otro día (`visitedThisAfternoon`, `AFTERNOON_FROM`). Solo no se repite la misma nocturna en el viaje.
+
+463. **Museos Vaticanos: el último turno online es siempre a las 16:00** (comprobado por el usuario en varias fechas). El orden 4 de D2 va de 14:30 a 16:00; sin entradas de las 17:00 ni de las 18:00 en la prueba.
+
+464. **D1, D2 y D4, decisiones del 3-oct-2026**: D2 con entrada a las 13:00 o 13:30, comida rápida en Pizzarium (Bonci) desde las 12:00; D2 miércoles con el orden 2, mañana desde las 9:00 (Puente, Castillo por fuera, Borgo Pio elástica); Ponte Sisto (10 min) y Plaza
+    Trilussa (5) `una_vez`, y si se saltan, del Castillo a Santa Maria in Trastevere en el bus 23 (`traslado_si_se_salta`); el Castillo va siempre por fuera a propósito (no cuenta como «imprescindible de pago nunca por dentro»); D4 con entrada a las 9:00 (la Galería lo
+    primero, Trevi, Plaza de España y Trinità por la tarde), a las 10:00 (Trevi a las 8:00 y a la Galería), a las 15:00 (solo comida y Parque antes; Jardines y Terraza del Pincio después, al atardecer); D4 C y D: el paseo de la tarde sale de Piazza del Popolo por Via del Babuino y
+    Via Margutta (no vuelve a Via Condotti ni a la Plaza de España); D1 orden 2: la mañana empieza por el Foro a las 9:00, y **Piazza Navona no se cae**: si no cabe por la tarde, va de noche (`noche_si_cae`, paseo `navona_y_fuentes`).

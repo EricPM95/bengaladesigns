@@ -70,7 +70,11 @@ export const TIPOS_AUDITORIA = {
 
 /** Cierre de Roma (2026-09-28): el máximo de una parada de paseo; una avenida, 45; el lugar puede traer el suyo (`max_minutos_paseo`: la Via Appia). */
 const LIBRE_CON_NOMBRE_MAX = 60
+/** Lo que va siempre por fuera a propósito: no cuenta para «imprescindible de pago nunca por dentro». */
+const POR_FUERA_A_PROPOSITO = new Set(["Castillo de Sant'Angelo"])
 const HUECO_MARGEN_MAX = 30
+/** Antes de una entrada que reservó el viajero, el tiempo de más hasta 60 min no es hueco (imprevistos y llegar con calma). */
+const HUECO_MARGEN_RESERVA = 60
 export const PASEO_MAX = { paseo: 90, calle: 45 }
 export function paseoMaxOf(place) {
   const tags = new Set(place?.tags ?? [])
@@ -244,7 +248,7 @@ export function auditarViaje(D, days, options = {}) {
         const named = (day.free_times ?? []).some((entry) => entry.before === name)
         // (Cierre de Roma: antes de un mirador del atardecer o de una entrada con turno, hasta 30 min son margen, no hueco:
         // se llega a la hora dorada o a recoger la entrada.)
-        const margin = stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
+        const margin = stop.reserved_entry ? HUECO_MARGEN_RESERVA : stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
         if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > margin) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
         // La hora de una parada es la anterior + su duración + el paseo (PROMPT_ROMA_V4_REPASO 1): con las horas de 5 en 5
         // pueden bailar hasta 4 min; más, no cuadra (el Arco acababa a las 10:20 y el Foro empezaba a las 10:20 con 9 min).
@@ -470,6 +474,8 @@ export function auditarViaje(D, days, options = {}) {
   const insideNames = new Set(days.flatMap((day) => (day?.stops ?? []).filter((stop) => stop.visit_mode === 'dentro').map((stop) => stop.place_name ?? stop.name)))
   for (const place of D.places ?? []) {
     if (place.level !== 1 || place.type !== 'interior' || !(place.ticket_info ?? []).some((line) => /de pago/i.test(line))) continue
+    // (El Castillo de Sant'Angelo va siempre por fuera a propósito, 3-oct-2026: no cuenta.)
+    if (POR_FUERA_A_PROPOSITO.has(place.name)) continue
     if (!viajeCorto && !insideNames.has(place.name)) add('pago_sin_dentro', 0, '', place.name, 'ningún día por dentro')
   }
   return casos

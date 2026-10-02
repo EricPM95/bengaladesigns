@@ -159,12 +159,13 @@
       "_sol": "de 18:45 a 19:44: igual que B, con la tarde más larga",
       "paradas": [
         {
-          "lugar": "Via Condotti",
+          "lugar": "Via del Babuino",
           "min": 30,
-          "titulo": "Pasea y piérdete por el Tridente",
+          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
           "no_calle": true,
           "elastica": 30,
-          "una_vez": true
+          "una_vez": true,
+          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
         },
         {
           "lugar": "Ara Pacis",
@@ -210,12 +211,13 @@
       "empieza": "15:15",
       "paradas": [
         {
-          "lugar": "Via Condotti",
+          "lugar": "Via del Babuino",
           "min": 30,
-          "titulo": "Pasea y piérdete por el Tridente",
+          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
           "no_calle": true,
           "elastica": 30,
-          "una_vez": true
+          "una_vez": true,
+          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
         },
         {
           "lugar": "Ara Pacis",
@@ -899,6 +901,673 @@
           "hora": "20:30"
         }
       }
+    },
+    "entrada:nueve": {
+      "_nota": "Entrada a las 9:00: la Galería lo primero. Trevi, la Plaza de España y la Trinità dei Monti, por la tarde (la nocturna de Trevi no repite el mismo día si la visita fue por la tarde: regla 3).",
+      "manana": {
+        "empieza": "08:30",
+        "paradas": [
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "09:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 20,
+            "elastica": 30,
+            "titulo": "Camino de la Galería, por el parque y Piazza di Siena"
+          }
+        ],
+        "comida": {
+          "restaurante": "Edy",
+          "alternativa": "Poldo e Gianna Osteria"
+        }
+      },
+      "tarde.A": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 25
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.B": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 25
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:00"
+        }
+      },
+      "tarde.C": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 25
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.D": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 25
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "min": 10
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Ara Pacis",
+            "min": 45,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "tipo": "opcional"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:30"
+        }
+      }
+    },
+    "entrada:diez": {
+      "_nota": "Entrada a las 10:00: Trevi a las 8:00 y de ahí a la Galería (el tiempo de más es margen: regla 2). La Plaza de España y la Trinità dei Monti pasan a la tarde.",
+      "manana": {
+        "empieza": "07:30",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "fija",
+            "hora": "08:00",
+            "min": 25
+          },
+          {
+            "lugar": "Desayuno romano",
+            "tipo": "opcional",
+            "min": 20
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 20,
+            "elastica": 30,
+            "titulo": "Camino de la Galería, por el parque y Piazza di Siena"
+          },
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "10:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          }
+        ],
+        "comida": {
+          "restaurante": "Edy",
+          "alternativa": "Poldo e Gianna Osteria"
+        }
+      },
+      "tarde.A": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.B": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:00"
+        }
+      },
+      "tarde.C": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.D": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "min": 10
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Ara Pacis",
+            "min": 45,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "tipo": "opcional"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:30"
+        }
+      }
+    },
+    "entrada:quince": {
+      "_nota": "Entrada a las 15:00: por la mañana lo de siempre (Trevi, Plaza de España, Tridente, Santa Maria del Popolo, Ara Pacis); antes de la Galería solo la comida y el Parque de Villa Borghese (elástica); los Jardines y la Terraza del Pincio, después, al atardecer.",
+      "manana": {
+        "empieza": "08:30",
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "fija",
+            "hora": "08:30",
+            "min": 25
+          },
+          {
+            "lugar": "Desayuno romano",
+            "tipo": "opcional",
+            "min": 20
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 10
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Trinità dei Monti",
+            "min": 10,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via Condotti",
+            "min": 30,
+            "titulo": "Pasea y piérdete por el Tridente",
+            "no_calle": true,
+            "elastica": 30,
+            "una_vez": true
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 10
+          },
+          {
+            "lugar": "Santa Maria del Popolo",
+            "min": 25,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Ara Pacis",
+            "min": 45,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          }
+        ],
+        "comida": {
+          "restaurante": "Edy",
+          "alternativa": "Poldo e Gianna Osteria"
+        }
+      },
+      "tarde.A": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 40,
+            "titulo": "El lago y el Templo de Esculapio",
+            "elastica": 30
+          },
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "15:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer",
+            "tipo": "opcional"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.B": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 40,
+            "titulo": "El lago y el Templo de Esculapio",
+            "elastica": 30
+          },
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "15:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:00"
+        }
+      },
+      "tarde.C": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 40,
+            "titulo": "El lago y el Templo de Esculapio",
+            "elastica": 30
+          },
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "15:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "19:30"
+        }
+      },
+      "tarde.D": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 40,
+            "titulo": "El lago y el Templo de Esculapio",
+            "elastica": 30
+          },
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "15:00",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true,
+            "si_cerrado": {
+              "cambiar_por": {
+                "lugar": "Parque de Villa Borghese",
+                "min": 60,
+                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
+              }
+            }
+          },
+          {
+            "lugar": "Jardines del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Il Gabriello",
+          "alternativa": "Sgarro Bistrot",
+          "hora": "20:30"
+        }
+      }
     }
   },
   "experiencias": {
@@ -922,18 +1591,30 @@
   "entradas": {
     "Galería Borghese": {
       "manana": [
-        "09:00",
+        "10:30",
         "11:00"
+      ],
+      "nueve": [
+        "09:00",
+        "09:30"
+      ],
+      "diez": [
+        "10:00",
+        "10:29"
       ],
       "mediodia": [
         "12:00",
         "14:00"
       ],
-      "tarde": [
+      "quince": [
         "15:00",
+        "15:29"
+      ],
+      "tarde": [
+        "15:30",
         "17:45"
       ]
     }
   },
-  "_nota_entradas": "Entrada reservada a la Galería Borghese (3-oct-2026, PARA_CODE_D1_D2_D4_SEGUNDO_ORDEN): el orden de siempre sirve de 9:00 a 11:00; `entrada:mediodia` (12:00-14:00) y `entrada:tarde` (15:00-17:45) son los órdenes nuevos. La hora de la parada de la Galería de cada variante es solo un ejemplo: la que vale es la reservada."
+  "_nota_entradas": "Entrada reservada a la Galería Borghese (3-oct-2026): `entrada:nueve` (9:00), `entrada:diez` (10:00), el orden de siempre (10:30-11:00), `entrada:mediodia` (12:00-14:00), `entrada:quince` (15:00) y `entrada:tarde` (15:30-17:45). La hora de la Galería de cada variante es solo un ejemplo: la que vale es la reservada."
 }

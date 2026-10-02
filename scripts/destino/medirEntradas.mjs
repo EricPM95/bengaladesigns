@@ -34,8 +34,8 @@ const GRID = { D1: 30, D2: 30, D4: 60 }
 function hoursOf(id) {
   const [place, franjas] = Object.entries(written.days[id].entradas)[0]
   const names = Object.keys(franjas)
-  const from = toMin(franjas[names[0]][0])
-  const to = toMin(franjas[names.at(-1)][1])
+  const from = Math.min(...names.map((name) => toMin(franjas[name][0])))
+  const to = Math.max(...names.map((name) => toMin(franjas[name][1])))
   const list = []
   for (let t = from; t <= to; t += GRID[id]) list.push(t)
   if (id === 'D4' && !list.includes(toMin('17:45'))) list.push(toMin('17:45'))
@@ -127,7 +127,8 @@ for (const id of DAYS) {
         // (El atardecer quitado por la reserva no es fallo; el resto de tipos no cambian lo que cabe.)
       }
       // Lo que se quitó: un imprescindible que había sin reserva y ya no está, sin aviso.
-      const names = new Set((day?.stops ?? []).map((stop) => stop.name))
+      // (La nocturna de un lugar cuenta: Piazza Navona (noche) es Piazza Navona de noche, no se cae.)
+      const names = new Set((day?.stops ?? []).map((stop) => stop.name.replace(/ \(noche\)$/, '')))
       const noticed = new Set((day?.not_included ?? []).map((item) => item.name))
       for (const stop of baseDay?.stops ?? []) {
         const data = placeByName.get(stop.name)

@@ -12481,6 +12481,17 @@
       ],
       "texto": "Después de cenar, a cinco minutos: el pórtico del Panteón iluminado y la plaza casi vacía. Siéntate en la fuente y míralo sin prisa: así lo veían los romanos hace dos mil años."
     },
+    "navona_y_fuentes": {
+      "nombre": "Navona y las fuentes iluminadas",
+      "_nota": "Si Piazza Navona no cabe de día (Coliseo por la tarde, D1 orden 2), no se cae: va de noche (3-oct-2026).",
+      "recorrido": [
+        "Piazza Navona (noche)",
+        "Fontana de Trevi (noche)",
+        "Plaza de España (noche)"
+      ],
+      "maximo": 3,
+      "texto": "Después de cenar, Roma de las fuentes: Navona con los Cuatro Ríos de Bernini iluminados, Trevi con el agua brillando y la escalinata de Plaza de España casi vacía."
+    },
     "sin_paseo": {
       "nombre": "Sin paseo de noche",
       "recorrido": [],
