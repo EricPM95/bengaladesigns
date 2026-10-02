@@ -1,15 +1,15 @@
 # Reservas dentro de la ruta · 2 · Medir si cabe
 
-Medido el 2-oct-2026 con `scripts/destino/medirReservas.mjs` (solo mide: no cambia nada de la app). 1095 viajes de 3, 4, 5 días (salida cada día de 2027: 365 fechas), 233974 reservas simuladas, 138 s.
+Medido el 2-oct-2026 con `scripts/destino/medirReservas.mjs` (solo mide: no cambia nada de la app). 1095 viajes de 3, 4, 5 días (salida cada día de 2027: 365 fechas), 233710 reservas simuladas, 170 s.
 
 ## 🟢 Fallos de la propuesta (ninguna hora fija rota, nada cerrado, nada quitado sin aviso, atardecer y cena intactos): **0**
 
-Cada caso resuelto se comprobó después con una revisión aparte (hora de la reserva, aperturas y última entrada, cena y nocturnas en su hora, 30 min de margen, ningún imprescindible quitado). Se resolvieron 133458 casos que caben y ninguno falló la revisión.
+Cada caso resuelto se comprobó después con una revisión aparte (hora de la reserva, aperturas y última entrada, cena y nocturnas en su hora, 30 min de margen, ningún imprescindible quitado). Se resolvieron 133210 casos que caben y ninguno falló la revisión.
 
 ## 🔴 Lo que el motor de hoy ya hace mal (sin ninguna reserva)
 
-- 🔴 **Visita por dentro de un sitio cerrado ese día**: 14 días. Ej.: 2027-01-01 (viernes): Cementerio Protestante a las 11:00 · 2027-01-01 (viernes): Cementerio Protestante a las 11:00 · 2027-01-06 (miércoles): Cementerio Protestante a las 11:00 · 2027-01-06 (miércoles): Cementerio Protestante a las 11:00 · 2027-12-08 (miércoles): Cementerio Protestante a las 11:00 · 2027-12-08 (miércoles): Cementerio Protestante a las 11:00
-- 🔴 **Panteón por dentro en la misa de sábado o víspera de festivo**: 9 días. Ej.: 2027-01-05 (martes): 16:25-16:55 · 2027-01-05 (martes): 16:25-16:55 · 2027-01-05 (martes): 16:25-16:55 · 2027-06-01 (martes): 17:05-17:35 · 2027-06-01 (martes): 17:05-17:35 · 2027-06-01 (martes): 17:05-17:35
+Nada: ni visitas por dentro de sitios cerrados ni el Panteón en misa.
+
 
 Misas del Panteón: el motor ya respeta los dos horarios de misa que traen los datos (sábado hasta las 16:00 y domingo de 09:00 a 09:30 y desde las 11:45). Lo que **no** cubre: las vísperas de festivo y los festivos entre semana (misa a las 17:00 y a las 10:30 respectivamente según la web), porque los datos solo conocen sábado y domingo. Los sábados y los domingos, el motor lo hace bien (ningún caso). Las vísperas y los festivos entre semana, no: salen arriba, con su fecha.
 
@@ -17,13 +17,13 @@ Fidelidad del modelo: de 4380 días que monta el motor, 4294 (98 %) caben tal cu
 
 ## Lo esencial, en pocas palabras
 
-- **Coliseo (Coliseo, Foro y Palatino)**: con la reserva el mismo día que ya está la parada, cabe en 93.3 % de los casos (11.4 % sin tocar nada, 33.1 % encogiendo o quitando algo, 48.8 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 62 %.
+- **Coliseo (Coliseo, Foro y Palatino)**: con la reserva el mismo día que ya está la parada, cabe en 93 % de los casos (11.4 % sin tocar nada, 33.2 % encogiendo o quitando algo, 48.4 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 62 %.
 - **Museos Vaticanos**: con la reserva el mismo día que ya está la parada, cabe en 51.3 % de los casos (18.6 % sin tocar nada, 16.7 % encogiendo o quitando algo, 16 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 45.7 %.
-- **Panteón**: con la reserva el mismo día que ya está la parada, cabe en 100 % de los casos (5.6 % sin tocar nada, 44.8 % encogiendo o quitando algo, 49.5 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 70.8 %.
+- **Panteón**: con la reserva el mismo día que ya está la parada, cabe en 99.9 % de los casos (5.8 % sin tocar nada, 45 % encogiendo o quitando algo, 49.1 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 70.8 %.
 - **Galería Borghese**: con la reserva el mismo día que ya está la parada, cabe en 64.8 % de los casos (7.4 % sin tocar nada, 11.7 % encogiendo o quitando algo, 45.7 % cambiando el orden). Con la reserva en otro día del viaje, cabe en 47.2 %.
 - **Free Tour**: con la reserva el mismo día que ya está la parada, cabe en 12.1 % de los casos (0 % sin tocar nada, 4.7 % encogiendo o quitando algo, 7.4 % cambiando el orden). Con la reserva en otro día del viaje, cabe en —.
 - **Vuelos**, % que no cabe — llegada: 9:00 → 5.7 %, 12:00 → 89.4 %, 15:00 → 100 %, 18:00 → 100 %, 21:00 → 100 %. Salida: 9:00 → 100 %, 12:00 → 100 %, 15:00 → 100 %, 18:00 → 98.2 %, 21:00 → 1.1 %.
-- **Horas de 10 en 10, a la más cercana**: mueve cada hora 2.3 min de media; dejan de caber de verdad 0 de 3514 días (0 %) y, entre las reservas que caben, 260 de 132398 (0.2 %); el coste: 57.3 % de los días llevan alguna visita enseñada más de 5 min más corta (24.1 min al día en total).
+- **Horas de 10 en 10, a la más cercana (sin recortar nunca más de 5 min)**: cuesta 39.3 min al día de horas enseñadas más tarde y 15 min al día de visitas recortadas; mueve cada hora 3.7 min de media; dejan de caber de verdad 0 de 3514 días (0 %) y, entre las reservas que caben, 1336 de 132150 (1 %); el coste: 4.3 % de los días llevan alguna visita enseñada más de 5 min más corta (15 min al día en total).
 
 ## Las horas de entrada y de dónde salen (comprobadas el 2-oct-2026)
 
@@ -59,26 +59,26 @@ Franjas: malla supuesta cada 30 min (la web no publica las franjas).
 | Hora | Casos | mismo día: sin tocar | encoge o quita | orden | no cabe | otro día: cabe | no cabe | no cabe aun quitando lo sin clasificar |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 08:30 | 4368 | 100 % | 0 % | 0 % | 0 % | 70 % | 30 % | 22.5 % |
-| 09:00 | 4368 | 66.1 % | 33.9 % | 0 % | 0 % | 57.6 % | 42.4 % | 22.5 % |
-| 09:30 | 4368 | 18.1 % | 81.9 % | 0 % | 0 % | 57.6 % | 42.4 % | 22.5 % |
-| 10:00 | 4368 | 16.5 % | 83.5 % | 0 % | 0 % | 57.6 % | 42.4 % | 22.5 % |
-| 10:30 | 4368 | 2.6 % | 97.4 % | 0 % | 0 % | 57.6 % | 42.4 % | 22.5 % |
-| 11:00 | 4368 | 0 % | 98.9 % | 1.1 % | 0 % | 57.6 % | 42.4 % | 22.5 % |
-| 11:30 | 4368 | 0 % | 98.4 % | 1.6 % | 0 % | 70 % | 30 % | 22.5 % |
+| 09:00 | 4368 | 67.1 % | 32.9 % | 0 % | 0 % | 57.7 % | 42.3 % | 22.5 % |
+| 09:30 | 4368 | 18.4 % | 81.6 % | 0 % | 0 % | 57.7 % | 42.3 % | 22.5 % |
+| 10:00 | 4368 | 16.5 % | 83.5 % | 0 % | 0 % | 57.7 % | 42.3 % | 22.5 % |
+| 10:30 | 4368 | 2.6 % | 97.4 % | 0 % | 0 % | 57.7 % | 42.3 % | 22.5 % |
+| 11:00 | 4368 | 0 % | 99.9 % | 0.1 % | 0 % | 57.7 % | 42.3 % | 22.5 % |
+| 11:30 | 4368 | 0 % | 99.5 % | 0.5 % | 0 % | 70 % | 30 % | 22.5 % |
 | 12:00 | 4368 | 0 % | 46.8 % | 53.2 % | 0 % | 70 % | 30 % | 22.5 % |
-| 12:30 | 4368 | 0 % | 19.2 % | 80.8 % | 0 % | 70 % | 30 % | 22.5 % |
-| 13:00 | 4368 | 0 % | 6.3 % | 93.4 % | 0.3 % | 69.5 % | 30.5 % | 22.7 % |
-| 13:30 | 4356 | 0 % | 19.4 % | 80.6 % | 0 % | 69.9 % | 30.1 % | 22.5 % |
+| 12:30 | 4368 | 0 % | 19.5 % | 80.5 % | 0 % | 70 % | 30 % | 22.5 % |
+| 13:00 | 4368 | 0 % | 6.3 % | 93.4 % | 0.3 % | 69.8 % | 30.2 % | 22.7 % |
+| 13:30 | 4356 | 0 % | 19.7 % | 80.3 % | 0 % | 69.9 % | 30.1 % | 22.5 % |
 | 14:00 | 4356 | 0 % | 7.2 % | 92.8 % | 0 % | 69.9 % | 30.1 % | 22.5 % |
-| 14:30 | 4356 | 0 % | 0 % | 100 % | 0 % | 69.7 % | 30.3 % | 22.5 % |
-| 15:00 | 4356 | 0 % | 0 % | 99.8 % | 0.2 % | 69.7 % | 30.3 % | 22.5 % |
-| 15:30 | 4356 | 0 % | 0 % | 64.4 % | 35.6 % | 45.3 % | 54.7 % | 49 % |
-| 16:00 | 2844 | 0 % | 0 % | 90.9 % | 9.1 % | 65.5 % | 34.5 % | 26.8 % |
-| 16:30 | 2664 | 0 % | 0 % | 93.1 % | 6.9 % | 66.1 % | 33.9 % | 25.8 % |
-| 17:00 | 2520 | 0 % | 0 % | 90.8 % | 9.2 % | 64 % | 36 % | 29 % |
-| 17:30 | 2520 | 0 % | 0 % | 70.5 % | 29.5 % | 50.5 % | 49.5 % | 44.2 % |
+| 14:30 | 4356 | 0 % | 0 % | 100 % | 0 % | 69.9 % | 30.1 % | 22.5 % |
+| 15:00 | 4356 | 0 % | 0 % | 98.8 % | 1.2 % | 69.7 % | 30.3 % | 22.5 % |
+| 15:30 | 4356 | 0 % | 0 % | 63.4 % | 36.6 % | 45.3 % | 54.7 % | 49 % |
+| 16:00 | 2844 | 0 % | 0 % | 89.3 % | 10.7 % | 65.5 % | 34.5 % | 26.8 % |
+| 16:30 | 2664 | 0 % | 0 % | 91.4 % | 8.6 % | 66.1 % | 33.9 % | 25.8 % |
+| 17:00 | 2520 | 0 % | 0 % | 89 % | 11 % | 64 % | 36 % | 29 % |
+| 17:30 | 2520 | 0 % | 0 % | 68.7 % | 31.3 % | 50.5 % | 49.5 % | 44.2 % |
 | 18:00 | 2232 | 0 % | 0 % | 0 % | 100 % | 0 % | 100 % | 100 % |
-| **Todas** | 78240 | 11.4 % | 33.1 % | 48.8 % | 6.7 % | 62 % | 38 % |  |
+| **Todas** | 78240 | 11.4 % | 33.2 % | 48.4 % | 7 % | 62 % | 38 % |  |
 
 ### Museos Vaticanos
 
@@ -115,15 +115,15 @@ Franjas: cada hora de 09:00 a 17:00 (web oficial).
 | Hora | Casos | mismo día: sin tocar | encoge o quita | orden | no cabe | otro día: cabe | no cabe | no cabe aun quitando lo sin clasificar |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 09:00 | 4356 | 0 % | 0 % | 100 % | 0 % | 70.2 % | 29.8 % | 22.3 % |
-| 10:00 | 3741 | 0 % | 0 % | 100 % | 0 % | 76.1 % | 23.9 % | 17.6 % |
-| 11:00 | 3741 | 0 % | 0 % | 100 % | 0 % | 76.1 % | 23.9 % | 17.6 % |
+| 10:00 | 3669 | 0 % | 0 % | 100 % | 0 % | 76.4 % | 23.6 % | 17.5 % |
+| 11:00 | 3669 | 0 % | 0 % | 100 % | 0 % | 76.4 % | 23.6 % | 17.5 % |
 | 12:00 | 4356 | 0 % | 16.5 % | 83.5 % | 0 % | 70.2 % | 29.8 % | 22.3 % |
 | 13:00 | 4356 | 16.5 % | 83.5 % | 0 % | 0 % | 70.2 % | 29.8 % | 22.3 % |
 | 14:00 | 4356 | 17 % | 83 % | 0 % | 0 % | 70.2 % | 29.8 % | 22.3 % |
 | 15:00 | 4356 | 16 % | 84 % | 0 % | 0 % | 70.2 % | 29.8 % | 22.3 % |
-| 16:00 | 3750 | 0 % | 100 % | 0 % | 0 % | 67.2 % | 32.8 % | 23.3 % |
-| 17:00 | 3738 | 0 % | 28.2 % | 71.8 % | 0 % | 66.7 % | 33.3 % | 23.4 % |
-| **Todas** | 36750 | 5.6 % | 44.8 % | 49.5 % | 0 % | 70.8 % | 29.2 % |  |
+| 16:00 | 3690 | 1 % | 99 % | 0 % | 0 % | 67 % | 33 % | 23.3 % |
+| 17:00 | 3678 | 0 % | 27.9 % | 71.1 % | 1 % | 66.6 % | 33.4 % | 23.4 % |
+| **Todas** | 36486 | 5.8 % | 45 % | 49.1 % | 0.1 % | 70.8 % | 29.2 % |  |
 
 ### Galería Borghese
 
@@ -149,7 +149,7 @@ Franjas: salidas a las 10:00 y a las 17:00; el tour cubre Plaza de España, Via 
 
 | Hora | Casos | mismo día: sin tocar | encoge o quita | orden | no cabe | otro día: cabe | no cabe | no cabe aun quitando lo sin clasificar |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10:00 | 4380 | 0 % | 1.5 % | 4.3 % | 94.2 % | — | — | 24.4 % |
+| 10:00 | 4380 | 0 % | 1.5 % | 4.3 % | 94.2 % | — | — | 24.1 % |
 | 17:00 | 4380 | 0 % | 7.9 % | 10.5 % | 81.6 % | — | — | 67.2 % |
 | **Todas** | 8760 | 0 % | 4.7 % | 7.4 % | 87.9 % | — | — |  |
 
@@ -159,12 +159,12 @@ Fuera de ruta: reservas de un sitio que el viaje no lleva (no se miden: la propu
 
 | Sitio | lun | mar | mié | jue | vie | sáb | dom |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coliseo (Coliseo, Foro y Palatino) | 29.6 % | 24 % | 30.4 % | 16.1 % | 16.2 % | 39.4 % | 55.6 % |
+| Coliseo (Coliseo, Foro y Palatino) | 29.6 % | 24 % | 30.4 % | 16.1 % | 16.2 % | 39.8 % | 55.4 % |
 | Museos Vaticanos | 51.1 % | 53.1 % | 52.4 % | 52.9 % | 52.2 % | 53.5 % | 58.3 % |
-| Panteón | 24.8 % | 18.6 % | 25.5 % | 10.5 % | 10.6 % | 15.7 % | 50.9 % |
+| Panteón | 24.8 % | 18.6 % | 25.5 % | 10.5 % | 10.3 % | 16 % | 50.9 % |
 | Galería Borghese | cerrado | 53.8 % | 43.9 % | 39.7 % | 41.7 % | 62.3 % | 48.2 % |
 
-De los 133458 casos que caben: 3302 obligan a empezar antes de las 8:30 (por una reserva temprana), 14567 dejan un hueco de más de 90 min entre dos paradas (la reserva está lejos de lo demás) y 59283 necesitan dejar un imprescindible en su versión corta.
+De los 133210 casos que caben: 3302 obligan a empezar antes de las 8:30 (por una reserva temprana), 14650 dejan un hueco de más de 90 min entre dos paradas (la reserva está lejos de lo demás) y 59189 necesitan dejar un imprescindible en su versión corta.
 
 ## 3. Vuelos: llegada y salida como horas fijas
 
@@ -173,13 +173,13 @@ Llegada: se está en el centro 60 min después de aterrizar (Fiumicino, `_llegad
 |  | Hora | Casos | sin tocar | encoge o quita | cambia el día | no cabe | no cabe aun quitando lo sin clasificar |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | llegada | 9:00 | 1095 | 20.7 % | 73.4 % | 0.2 % | 5.7 % | 0 % |
-| llegada | 12:00 | 1095 | 0 % | 5.6 % | 5 % | 89.4 % | 0.5 % |
+| llegada | 12:00 | 1095 | 0 % | 5.6 % | 5 % | 89.4 % | 0.6 % |
 | llegada | 15:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 9.2 % |
 | llegada | 18:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 59.5 % |
 | llegada | 21:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 100 % |
 | salida | 9:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 100 % |
 | salida | 12:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 33.9 % |
-| salida | 15:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 1.4 % |
+| salida | 15:00 | 1095 | 0 % | 0 % | 0 % | 100 % | 1.1 % |
 | salida | 18:00 | 1095 | 0 % | 1.7 % | 0.1 % | 98.2 % | 0.1 % |
 | salida | 21:00 | 1095 | 0 % | 84.5 % | 14.4 % | 1.1 % | 0 % |
 
@@ -187,11 +187,11 @@ Ojo: hoy los vuelos no pasan por el motor (los trata el cliente, `fitDayToTrip`,
 
 ## 4. Los casos que no caben, agrupados por motivo
 
-**Coliseo (Coliseo, Foro y Palatino)** (23604 casos): El día que cedería su hueco tiene algo que cierra en la nueva fecha (lunes, domingos…): 34.5 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 27.7 % · La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada: 14.3 % · El día que cedería su hueco no cabe en esa fecha: 12 % · Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 6.6 % · Algo del día cae en un horario cerrado (o pasada la última entrada): 4.9 %
+**Coliseo (Coliseo, Foro y Palatino)** (23641 casos): El día que cedería su hueco tiene algo que cierra en la nueva fecha (lunes, domingos…): 34.4 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 27.6 % · La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada: 14.3 % · El día que cedería su hueco no cabe en esa fecha: 12 % · Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 6.6 % · Algo del día cae en un horario cerrado (o pasada la última entrada): 5.1 %
 
 **Museos Vaticanos** (38362 casos): Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 43.8 % · No queda sitio para comer (entre las 12:15 y las 15:30): 18 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 16 % · La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada: 9.3 % · Algo del día cae en un horario cerrado (o pasada la última entrada): 6.6 % · Se pisa con el atardecer, la cena o la nocturna: 5.5 % · El día que cedería su hueco no cabe en esa fecha: 0.8 %
 
-**Panteón** (7933 casos): El día que cedería su hueco tiene algo que cierra en la nueva fecha (lunes, domingos…): 44.1 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 38.7 % · El día que cedería su hueco no cabe en esa fecha: 16.9 % · Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 0.2 % · Se pisa con el atardecer, la cena o la nocturna: 0 %
+**Panteón** (7880 casos): El día que cedería su hueco tiene algo que cierra en la nueva fecha (lunes, domingos…): 44 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 38.8 % · El día que cedería su hueco no cabe en esa fecha: 16.9 % · Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 0.2 % · Se pisa con el atardecer, la cena o la nocturna: 0 %
 
 **Galería Borghese** (13387 casos): Algo del día cae en un horario cerrado (o pasada la última entrada): 34.3 % · Ese día del viaje es el de la excursión (un día entero fuera: no se cambia por otro): 23.1 % · Se pisa con el atardecer, la cena o la nocturna: 21.8 % · El día que cedería su hueco tiene algo que cierra en la nueva fecha (lunes, domingos…): 20.8 % · Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben): 0.1 %
 
@@ -207,26 +207,26 @@ Mirando los días que hoy monta el motor. «Paseo recortable» = minutos de opci
 
 | Sitio | Días con el sitio | Paseo recortable antes: media | peor día | después: media | peor día | Hueco antes: media | % días con ≥15 min | Hueco después: media | % días con ≥15 min |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coliseo (Coliseo, Foro y Palatino) | 1095 | 0 | 0 | 66 | 20 | 0 | — | 0 | 0 % |
+| Coliseo (Coliseo, Foro y Palatino) | 1095 | 0 | 0 | 66.1 | 20 | 0 | — | 0 | 0 % |
 | Museos Vaticanos | 1094 | 0 | 0 | 47.1 | 10 | 0 | 0 % | 0 | 0 % |
-| Panteón | 1095 | 45.2 | 10 | 20.8 | 0 | 0 | 0 % | 0 | 0 % |
+| Panteón | 1095 | 45.2 | 10 | 20.9 | 0 | 0 | 0 % | 0 | 0 % |
 | Galería Borghese | 723 | 20 | 20 | 66.3 | 0 | 0 | 0 % | 0 | 0 % |
 
 ## 6. Horas de 10 en 10, a la más cercana
 
-La forma que pidió el usuario: 11:32 → 11:30, 11:38 → 11:40. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas (menos de 200 m) van seguidas, sin redondear. El motor sigue calculando con minutos exactos; se redondea la hora que se enseña y la visita dura lo que cuadra hasta la siguiente.
+La forma que pidió el usuario: a la decena más cercana (11:32 → 11:30, 11:38 → 11:40), **pero nunca se recorta una visita más de 5 min: en esos casos la hora sube a la siguiente decena**. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas (menos de 200 m) van seguidas, sin redondear. El motor sigue calculando con minutos exactos; se redondea la hora que se enseña y la visita dura lo que cuadra hasta la siguiente.
 
 Un caso **deja de caber de verdad** si, al redondear, una hora cae fuera del horario del sitio (antes de abrir o después de la última entrada) o un sitio abre a una hora que no es múltiplo de 10 (la tarjeta no puede ser redonda). **El coste** es otra cosa: como la visita dura lo que cuadra hasta la siguiente, al redondear a la más cercana a veces se enseña una visita unos minutos más corta; se cuentan los casos con alguna visita enseñada más de 5 min (y más de un cuarto) más corta.
 
 | Sobre | Casos | Dejan de caber | Por qué | Con alguna visita recortada (coste) |
 | --- | --- | --- | --- | --- |
-| Días que monta hoy el motor (sin reservas) | 3514 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 2015 (57.3 %) |
-| Reservas que caben: Coliseo (Coliseo, Foro y Palatino) | 54636 | 260 (0.5 %) | fuera de horario 74 · abre a media hora 186 | 32639 (59.7 %) |
-| Reservas que caben: Museos Vaticanos | 34562 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 21747 (62.9 %) |
-| Reservas que caben: Panteón | 28817 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 13473 (46.8 %) |
-| Reservas que caben: Galería Borghese | 14383 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 5010 (34.8 %) |
+| Días que monta hoy el motor (sin reservas) | 3514 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 151 (4.3 %) |
+| Reservas que caben: Coliseo (Coliseo, Foro y Palatino) | 54599 | 868 (1.6 %) | fuera de horario 653 · abre a media hora 215 | 13467 (24.7 %) |
+| Reservas que caben: Museos Vaticanos | 34562 | 468 (1.4 %) | fuera de horario 468 · abre a media hora 0 | 8549 (24.7 %) |
+| Reservas que caben: Panteón | 28606 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 3054 (10.7 %) |
+| Reservas que caben: Galería Borghese | 14383 | 0 (0 %) | fuera de horario 0 · abre a media hora 0 | 199 (1.4 %) |
 
-Minutos: cada hora se mueve 2.3 min de media (mediana 2, p90 3.6), y a las visitas se les quitan 24.1 min al día en total (p90 39).
+**Lo que cuesta, en minutos al día**: cada hora enseñada se mueve 3.7 min de media respecto a la real (mediana 3.7777777777777777, p90 5); en total, las horas enseñadas van 39.3 min más tarde que las reales al día (p90 58) y a las visitas se les quitan 15 min al día en total (p90 24). Los días que aun así llevan alguna visita recortada más de 5 min son los de la tabla (casi siempre, la que va justo antes de una hora fija).
 
 ## 7. Qué días de Roma reescribir, o dónde poner un paseo, para que no quede ningún «no cabe»
 
@@ -256,6 +256,7 @@ Por día escrito y sitio: cuántos casos no caben, a qué horas de entrada y qu�
 | D4 C+domingo | Galería Borghese | 132 | Se pisa con el atardecer, la cena o la nocturna | 15:00 … 17:45 (4 franjas) | Terraza del Pincio (132) |
 | D1 D+luz:C→D | Coliseo (Coliseo, Foro y Palatino) | 114 | La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada | 17:30 … 18:00 (2 franjas) | — (63), Arco de Constantino (34), Foro Romano y Palatino (13) |
 | D2 B+fecha:easter-2 | Museos Vaticanos | 84 | Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben) | 12:00 … 17:30 (12 franjas) | Museos Vaticanos y Capilla Sixtina (56), Trastevere de noche (21), — (7) |
+| D1 D+sabado+comida:sin Plaza del Campidoglio | Coliseo (Coliseo, Foro y Palatino) | 77 | Algo del día cae en un horario cerrado (o pasada la última entrada) | 15:00 … 18:00 (7 franjas) | Arco de Constantino (48), Coliseo (18), — (11) |
 | D2 C+miercoles+luz:B→C | Museos Vaticanos | 72 | Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben) | 12:00 … 17:30 (12 franjas) | Museos Vaticanos y Capilla Sixtina (48), Trastevere de noche (18), — (6) |
 | D1 C+domingo | Coliseo (Coliseo, Foro y Palatino) | 34 | Algo del día cae en un horario cerrado (o pasada la última entrada) | 15:00 … 18:00 (7 franjas) | Arco de Constantino (28), — (6) |
 | D1 B+domingo | Coliseo (Coliseo, Foro y Palatino) | 30 | La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada | 15:30 … 17:30 (4 franjas) | — (16), Arco de Constantino (14) |
@@ -263,8 +264,8 @@ Por día escrito y sitio: cuántos casos no caben, a qué horas de entrada y qu�
 | D4 A+fecha:01-06 | Galería Borghese | 24 | Algo del día cae en un horario cerrado (o pasada la última entrada) | 13:00 … 17:45 (6 franjas) | Parque de Villa Borghese (24) |
 | D4 B+luz:A→B | Galería Borghese | 24 | Se pisa con el atardecer, la cena o la nocturna | 15:00 … 17:45 (4 franjas) | Terraza del Pincio (12), Parque de Villa Borghese (12) |
 | D2 D+lunes | Museos Vaticanos | 14 | Se pisa con el atardecer, la cena o la nocturna | 12:30 … 17:30 (8 franjas) | Mirador del Janículo (7), Trastevere de noche (3), — (2) |
+| D1 D+sabado+comida:sin Plaza del Campidoglio | Panteón | 11 | Lo de antes no llega a la puerta 30 min antes de la hora (los imprescindibles de antes no caben) | 17:00 … 17:00 (1 franjas) | Panteón (11) |
 | D1 C+domingo+fecha:primer_domingo | Coliseo (Coliseo, Foro y Palatino) | 10 | Algo del día cae en un horario cerrado (o pasada la última entrada) | 15:30 … 17:30 (5 franjas) | Arco de Constantino (8), — (2) |
-| D1 D+domingo+fecha:primer_domingo+luz:C→D | Coliseo (Coliseo, Foro y Palatino) | 8 | La visita entera no cabe antes del cierre de ese sitio a esa hora de entrada | 17:30 … 18:00 (2 franjas) | — (4), Coliseo (2), Foro Romano y Palatino (2) |
 
 ### 7b. Reserva en otro día: por qué un día no se puede cambiar por otro
 
@@ -275,13 +276,13 @@ El grupo solo pasa a otro día si los dos días abren en la fecha nueva. Estos s
 | D4 D+domingo | Galería Borghese | lunes | desplazado | 2052 |
 | D2 D | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 1753 |
 | D4 A+domingo | Galería Borghese | lunes | desplazado | 1320 |
-| D2 A+relleno_cena:Isla Tiberina | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 1286 |
-| D4 D | Galería Borghese | lunes | desplazado | 1160 |
+| D2 A+relleno_cena:Isla Tiberina | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 1274 |
+| D4 D | Galería Borghese | lunes | desplazado | 1156 |
 | D4M D+lunes | no cabe en esa fecha | domingo | desplazado | 1102 |
 | D4 B+domingo | Galería Borghese | lunes | desplazado | 856 |
 | D4 C+domingo | Galería Borghese | lunes | desplazado | 740 |
-| D4M A+lunes | no cabe en esa fecha | domingo | desplazado | 696 |
-| D4 A | Galería Borghese | lunes | desplazado | 648 |
+| D4M A+lunes | no cabe en esa fecha | domingo | desplazado | 692 |
+| D4 A | Galería Borghese | lunes | desplazado | 642 |
 | D4 A+domingo | no cabe en esa fecha | viernes | desplazado | 594 |
 | D4 B | Galería Borghese | lunes | desplazado | 509 |
 | D2 B | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 488 |
@@ -289,15 +290,15 @@ El grupo solo pasa a otro día si los dos días abren en la fecha nueva. Estos s
 | D4 B+domingo | no cabe en esa fecha | viernes | desplazado | 428 |
 | D4 C | Galería Borghese | lunes | desplazado | 406 |
 | D4 C+domingo | no cabe en esa fecha | viernes | desplazado | 370 |
-| D2 D | Museos Vaticanos y Capilla Sixtina | sábado | desplazado | 368 |
+| D2 D | Museos Vaticanos y Capilla Sixtina | sábado | desplazado | 362 |
 | D2 C | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 346 |
 | D2 D+luz:C→D | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 281 |
 | D2 B+relleno_cena:Isla Tiberina | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 275 |
 | D4M C+lunes | no cabe en esa fecha | domingo | desplazado | 230 |
 | D2 A+relleno_cena:Isla Tiberina | Museos Vaticanos y Capilla Sixtina | miércoles | desplazado | 224 |
 | D2 C+luz:B→C | Museos Vaticanos y Capilla Sixtina | domingo | desplazado | 178 |
-| D4M D+lunes+luz:C→D | no cabe en esa fecha | domingo | desplazado | 174 |
 | D2 D | Museos Vaticanos y Capilla Sixtina | lunes | desplazado | 174 |
+| D4M D+lunes+luz:C→D | no cabe en esa fecha | domingo | desplazado | 170 |
 | D2 D+luz:C→D | Museos Vaticanos y Capilla Sixtina | lunes | desplazado | 145 |
 | D1 D | Panteón | domingo | grupo | 120 |
 

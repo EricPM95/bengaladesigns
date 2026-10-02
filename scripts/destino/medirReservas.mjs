@@ -126,7 +126,7 @@ function modelDay(day, dateIso) {
       const name = String(stop.name).replace(/ \(noche\)$/, '')
       const place = placeByName.get(name) ?? null
       const cls = classOf(stop, place)
-      const visit = cls === 'ancla' ? 'fuera' : stop.visit_mode
+      const visit = cls === 'ancla' || stop.pass_through ? 'fuera' : stop.visit_mode
       const sessions = sessionsOf(place, weekday, dateIso, visit)
       const tier = place ? TIER_OVERRIDE[place.name] ?? place.tier : null
       item = {
@@ -649,7 +649,22 @@ function roundedView(seq, starts) {
     let d
     if (fixed) d = starts[i]
     else if (i > 0 && chained(i)) d = shown[i - 1] + (starts[i] - starts[i - 1])
-    else d = nearest10(starts[i])
+    else {
+      d = nearest10(starts[i])
+      // Nunca se recorta una visita más de 5 min: si al redondear la visita de antes se queda corta, esta hora sube a la siguiente decena.
+      const before = seq[i - 1]
+      if (before) for (let guard = 0; guard < 2; guard++) {
+        const room = d - adjacentLeg(before, item) - shown[i - 1]
+        if (before.dur - room > 5) d += 10
+        else break
+      }
+      // (Y si lo que viene después es una hora fija, esta no sube más de lo que deja la visita sin recortarse más de 5 min.)
+      const after = seq[i + 1]
+      if (after && (after.anchorAt != null || after.reservedAt != null)) {
+        const latest = starts[i + 1] - adjacentLeg(item, after) - item.dur + 5
+        if (d > latest) d = Math.max(Math.floor(latest / 10) * 10, nearest10(starts[i]) - 10)
+      }
+    }
     // Nunca antes de que abra: si abre a una hora que no es múltiplo de 10, la tarjeta no puede ser redonda.
     if (!fixed && item.kind === 'stop' && item.visit !== 'fuera') {
       const session = item.sessions.find((x) => starts[i] >= x.open && starts[i] + item.dur <= x.close)
@@ -661,6 +676,7 @@ function roundedView(seq, starts) {
     shown.push(d)
   })
   let moved = 0
+  let later = 0
   let counted = 0
   let cutTotal = 0
   let longCut = 0
@@ -668,6 +684,7 @@ function roundedView(seq, starts) {
   seq.forEach((item, i) => {
     if (item.anchorAt == null && item.reservedAt == null) {
       moved += Math.abs(shown[i] - starts[i])
+      later += Math.max(0, shown[i] - starts[i])
       counted++
     }
     const next = seq[i + 1]
@@ -682,7 +699,7 @@ function roundedView(seq, starts) {
       if (!item.sessions.some((x) => shown[i] >= x.open && shown[i] <= x.close)) window++
     }
   })
-  return { moved: counted ? moved / counted : 0, cutTotal, fails: { corte: longCut, horario: window, abre_a_media_hora: forcedOdd }, ok: window + forcedOdd === 0, soft: longCut > 0 }
+  return { moved: counted ? moved / counted : 0, later, cutTotal, fails: { corte: longCut, horario: window, abre_a_media_hora: forcedOdd }, ok: window + forcedOdd === 0, soft: longCut > 0 }
 }
 // ── Principal ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 /** Los 56 viajes de las revisiones (revision20.mjs: 26 rutas; revisionCierre.mjs: 30 viajes), leídos de sus scripts. */
@@ -723,7 +740,7 @@ const byWeekday = {}
 const agg = {} // agg[site][T][target][bucket]
 const aggBroad = {}
 const reasons = {}
-const round10 = { days: 0, bad: 0, soft: 0, moved: [], cut: [], why: { horario: 0, abre_a_media_hora: 0 } }
+const round10 = { days: 0, bad: 0, soft: 0, moved: [], later: [], cut: [], why: { horario: 0, abre_a_media_hora: 0 } }
 const round10Fit = {}
 const flightAgg = {}
 const flightReasons = {}
@@ -800,6 +817,7 @@ async function main() {
             const view = roundedView(items, exact.starts)
             round10.days++
             round10.moved.push(view.moved)
+            round10.later.push(view.later)
             round10.cut.push(view.cutTotal)
             if (!view.ok) round10.bad++
             if (view.soft) round10.soft++
@@ -996,7 +1014,7 @@ function buildReport(summary) {
   out.push('## 🔴 Lo que el motor de hoy ya hace mal (sin ninguna reserva)', '')
   if (hoy.length === 0) out.push('Nada: ni visitas por dentro de sitios cerrados ni el Panteón en misa.', '')
   for (const [tipo, entry] of hoy) out.push(`- 🔴 **${tipo}**: ${entry.n} días. Ej.: ${entry.examples.join(' · ')}`)
-  out.push('', `Misas del Panteón: el motor ya respeta los dos horarios de misa que traen los datos (sábado hasta las 16:00 y domingo de 09:00 a 09:30 y desde las 11:45). Lo que **no** cubre: las vísperas de festivo y los festivos entre semana (misa a las 17:00 y a las 10:30 respectivamente según la web), porque los datos solo conocen sábado y domingo. Los sábados y los domingos, el motor lo hace bien (ningún caso). Las vísperas y los festivos entre semana, no: salen arriba, con su fecha.`, '')
+  out.push('', 'Misas del Panteón: el motor respeta los horarios de misa de sábado y domingo y, desde el 2-oct-2026, también los de los festivos (como un domingo) y sus vísperas (como un sábado): dato misas_festivos del Panteón y massWeekday en openingHours.js. Esta medida lo comprueba contra el calendario festivo italiano de 2027. Pendiente de decidir: el 29 de junio, festivo solo en Roma.', '')
   out.push(`Fidelidad del modelo: de ${fidelity.days} días que monta el motor, ${fidelity.ok} (${pct(fidelity.ok, fidelity.days)}) caben tal cual en la simulación. El resto: ${[...fidelity.byReason].map(([k, v]) => `${k} ${v}`).join(', ') || '—'}.`, '')
   // Lo esencial, en pocas palabras
   const totalsFor = (siteKey) => {
@@ -1021,7 +1039,7 @@ function buildReport(summary) {
   }
   const flightLine = (kind) => [9, 12, 15, 18, 21].map((H) => { const node = flightAgg[kind]?.[H] ?? {}; const n = BUCKETS.reduce((a, b) => a + (node[b] ?? 0), 0); return `${H}:00 → ${pct(node.no_cabe ?? 0, n)}` }).join(', ')
   out.push(`- **Vuelos**, % que no cabe — llegada: ${flightLine('llegada')}. Salida: ${flightLine('salida')}.`)
-  out.push(`- **Horas de 10 en 10, a la más cercana**: mueve cada hora ${avg(round10.moved)} min de media; dejan de caber de verdad ${round10.bad} de ${round10.days} días (${pct(round10.bad, round10.days)}) y, entre las reservas que caben, ${Object.values(round10Fit).reduce((a, v) => a + v.stop, 0)} de ${Object.values(round10Fit).reduce((a, v) => a + v.checked, 0)} (${pct(Object.values(round10Fit).reduce((a, v) => a + v.stop, 0), Object.values(round10Fit).reduce((a, v) => a + v.checked, 0))}); el coste: ${pct(round10.soft, round10.days)} de los días llevan alguna visita enseñada más de 5 min más corta (${avg(round10.cut)} min al día en total).`)
+  out.push(`- **Horas de 10 en 10, a la más cercana (sin recortar nunca más de 5 min)**: cuesta ${avg(round10.later)} min al día de horas enseñadas más tarde y ${avg(round10.cut)} min al día de visitas recortadas; mueve cada hora ${avg(round10.moved)} min de media; dejan de caber de verdad ${round10.bad} de ${round10.days} días (${pct(round10.bad, round10.days)}) y, entre las reservas que caben, ${Object.values(round10Fit).reduce((a, v) => a + v.stop, 0)} de ${Object.values(round10Fit).reduce((a, v) => a + v.checked, 0)} (${pct(Object.values(round10Fit).reduce((a, v) => a + v.stop, 0), Object.values(round10Fit).reduce((a, v) => a + v.checked, 0))}); el coste: ${pct(round10.soft, round10.days)} de los días llevan alguna visita enseñada más de 5 min más corta (${avg(round10.cut)} min al día en total).`)
   out.push('')
   // Fuentes
   out.push('## Las horas de entrada y de dónde salen (comprobadas el 2-oct-2026)', '',
@@ -1095,7 +1113,7 @@ function buildReport(summary) {
   }
   out.push('')
   // 6. Horas redondas
-  out.push('## 6. Horas de 10 en 10, a la más cercana', '', 'La forma que pidió el usuario: 11:32 → 11:30, 11:38 → 11:40. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas (menos de 200 m) van seguidas, sin redondear. El motor sigue calculando con minutos exactos; se redondea la hora que se enseña y la visita dura lo que cuadra hasta la siguiente.', '',
+  out.push('## 6. Horas de 10 en 10, a la más cercana', '', 'La forma que pidió el usuario: a la decena más cercana (11:32 → 11:30, 11:38 → 11:40), **pero nunca se recorta una visita más de 5 min: en esos casos la hora sube a la siguiente decena**. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas (menos de 200 m) van seguidas, sin redondear. El motor sigue calculando con minutos exactos; se redondea la hora que se enseña y la visita dura lo que cuadra hasta la siguiente.', '',
     'Un caso **deja de caber de verdad** si, al redondear, una hora cae fuera del horario del sitio (antes de abrir o después de la última entrada) o un sitio abre a una hora que no es múltiplo de 10 (la tarjeta no puede ser redonda). **El coste** es otra cosa: como la visita dura lo que cuadra hasta la siguiente, al redondear a la más cercana a veces se enseña una visita unos minutos más corta; se cuentan los casos con alguna visita enseñada más de 5 min (y más de un cuarto) más corta.', '',
     row(['Sobre', 'Casos', 'Dejan de caber', 'Por qué', 'Con alguna visita recortada (coste)']), row(Array(5).fill('---')))
   out.push(row(['Días que monta hoy el motor (sin reservas)', round10.days, `${round10.bad} (${pct(round10.bad, round10.days)})`, `fuera de horario ${round10.why.horario} · abre a media hora ${round10.why.abre_a_media_hora}`, `${round10.soft} (${pct(round10.soft, round10.days)})`]))
@@ -1103,7 +1121,7 @@ function buildReport(summary) {
     const v = round10Fit[key]
     if (v) out.push(row([`Reservas que caben: ${site.label}`, v.checked, `${v.stop} (${pct(v.stop, v.checked)})`, `fuera de horario ${v.why.horario} · abre a media hora ${v.why.abre_a_media_hora}`, `${v.soft} (${pct(v.soft, v.checked)})`]))
   }
-  out.push('', `Minutos: cada hora se mueve ${avg(round10.moved)} min de media (mediana ${quantile(round10.moved, 0.5)}, p90 ${quantile(round10.moved, 0.9)}), y a las visitas se les quitan ${avg(round10.cut)} min al día en total (p90 ${quantile(round10.cut, 0.9)}).`, '')
+  out.push('', `**Lo que cuesta, en minutos al día**: cada hora enseñada se mueve ${avg(round10.moved)} min de media respecto a la real (mediana ${quantile(round10.moved, 0.5)}, p90 ${quantile(round10.moved, 0.9)}); en total, las horas enseñadas van ${avg(round10.later)} min más tarde que las reales al día (p90 ${quantile(round10.later, 0.9)}) y a las visitas se les quitan ${avg(round10.cut)} min al día en total (p90 ${quantile(round10.cut, 0.9)}). Los días que aun así llevan alguna visita recortada más de 5 min son los de la tabla (casi siempre, la que va justo antes de una hora fija).`, '')
   // 7. Qué reescribir
   out.push('## 7. Qué días de Roma reescribir, o dónde poner un paseo, para que no quede ningún «no cabe»', '')
   out.push('### 7a. Reserva el mismo día en que ya está el grupo: lo que no cabe (y no es un cierre ni una franja imposible)', '',
