@@ -2622,3 +2622,26 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     Via dei Fori Imperiali, Plaza del Campidoglio, Altar de la Patria, Panteón, Santa Maria sopra Minerva, Piazza Navona y San Luigi dei Francesi (las iglesias gratis, por dentro). Tarde (desde las 14:30): Plaza y
     Basílica de San Pedro (gratis), Via della Conciliazione, Puente Sant'Angelo (al atardecer si cuadra) y Castillo por fuera. Cena en el Tridente y, **después de cenar**, Plaza de España y Fontana de
     Trevi iluminadas (`blocks.V.dinner_zone`, `night_names`, `night_whole_walk`). Con Free Tour se queda el reparto de antes (Roma Antigua + Centro); con los Museos Vaticanos en el pool, el de antes (Vaticano + Centro).
+
+454. **Horas de 10 en 10, a la más cercana** (3-oct-2026, `quarterHourStops`, `DISPLAY_STEP = 10`). La hora que se enseña de cada parada es la decena más cercana (11:32 → 11:30, 11:38 → 11:40); las duraciones, de 5 en 5.
+    Nunca se recorta una visita más de 5 min: si al redondear la de antes se queda corta, esta hora sube a la decena siguiente, y nunca antes de que acabe la anterior con su paseo (ni de su mínimo). Las horas fijas (entrada con hora,
+    Free Tour, atardecer) y las paradas pegadas (a menos de 200 m) no se redondean a 10: van de 5 en 5, como siempre. Nunca antes de que abra el sitio. La comida, de 10 en 10; la cena (hora fija), de 5 en 5.
+    El motor sigue calculando con los minutos exactos.
+
+455. **29 de junio, festivo con horario de domingo** (San Pedro y San Pablo, patronos de Roma). `festivos_domingo: ["06-29"]` en cada lugar con horario de domingo (`by_day`) y `06-29` en `misas_festivos` del Panteón; ese día
+    (sin la víspera) se lee el horario como domingo (`massWeekday`). Villa Farnesina y el Mercado de Testaccio cierran (`closed_dates`). Los Museos Vaticanos ya cerraban.
+
+456. **`por_fuera` solo donde se ve algo desde la calle, `si_cerrado: "quitar"` donde vale por dentro** (3-oct-2026). Textos `por_fuera` de la Basílica y la Cúpula de San Pedro, Santa Cecilia, San Ignacio y Santa Maria sopra Minerva.
+    San Clemente, las Catacumbas, la Domus Aurea, los Museos Capitolinos y el Palazzo Doria Pamphilj no tienen `por_fuera`: si están cerrados, `quitar` (su tiempo va al paseo de la zona o a la parada que se estira).
+
+457. **El viajero manda** (3-oct-2026, todos los destinos). Si su reserva coincide con el atardecer, la nocturna o cualquier otra cosa del día, ese día va sin ello, sin forzarlo y sin aviso. La ruta se adapta a sus horas, no al revés.
+    En las pruebas, un atardecer que no cabe por la hora de una reserva no cuenta como fallo. (Motor: con una entrada reservada, un mirador de atardecer al que se llega después de la puesta se quita, en vez de pasar a «vista nocturna».)
+
+458. **Entrada reservada: órdenes nuevos por franja** (3-oct-2026, D1 Coliseo, D2 Vaticano, D4 Galería). El día trae su orden de siempre y uno o dos órdenes nuevos según la hora de la entrada: `entradas` en el día (`{ lugar: { franja: [desde, hasta] } }`;
+    la primera franja es la de siempre) y una variante `entrada:<franja>` por cada franja nueva, con `entrada:<franja>@<día de la semana>` para lo que cambia ese día con ese orden (si no existe, vale el del día de siempre).
+    El motor las usa cuando recibe `entradas: { lugar: "HH:MM" }` (hoy, solo las pruebas: `scripts/destino/medirEntradas.mjs`). La parada de ese lugar sale a la hora reservada (la que trae la variante es solo un ejemplo), se llega 30 min antes
+    (`llegar_antes`) y la visita se recorta hasta el cierre si hace falta (`recorta_al_cierre`, nunca menos de 60 min). `si_entrada_desde: "15:30"`: la parada solo va si la reserva es a esa hora o después. Una parada elástica de antes de una hora
+    fija (Borgo Pio antes de los Museos) absorbe lo que falta hasta llegar a ella, hasta su máximo.
+
+459. **Tiempo libre de mitad de día: nunca pasada la hora de cierre** (3-oct-2026, `freeTime.js`). El sitio de camino que rellena un hueco se recorta hasta el cierre de ese día y no se retrasa más allá de él (la Santa Maria sopra Minerva los sábados,
+    que cierra a las 19:00, salía a las 19:05).

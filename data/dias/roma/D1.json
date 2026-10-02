@@ -492,7 +492,7 @@
               "min": 60,
               "modo": "dentro",
               "entrada": true,
-              "si_cerrado": "fuera",
+              "si_cerrado": "quitar",
               "si_experiencia": "arte_museos",
               "no_si_dia": [
                 "D5"
@@ -655,7 +655,7 @@
               "min": 60,
               "modo": "dentro",
               "entrada": true,
-              "si_cerrado": "fuera",
+              "si_cerrado": "quitar",
               "si_experiencia": "arte_museos",
               "no_si_dia": [
                 "D5"
@@ -703,6 +703,274 @@
           }
         ]
       }
+    },
+    "entrada:tarde": {
+      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso.",
+      "manana": {
+        "empieza": "08:30",
+        "paradas": [
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 15,
+            "tipo": "opcional"
+          },
+          {
+            "lugar": "Plaza Venecia",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Altar de la Patria",
+            "min": 40,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "min": 100,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true,
+            "no_meses": [
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "min": 90,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true,
+            "meses": [
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Via dei Fori Imperiali",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Boca de la Verdad",
+            "min": 20,
+            "tipo": "opcional"
+          },
+          {
+            "lugar": "Circo Máximo",
+            "min": 20,
+            "tipo": "opcional"
+          }
+        ],
+        "comida": {
+          "restaurante": "Trattoria Monti",
+          "alternativa": "La Taverna dei Fori Imperiali"
+        }
+      },
+      "tarde.A": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "turno": true
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          }
+        ],
+        "cena": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto",
+          "hora": "20:00"
+        }
+      },
+      "tarde.B": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "turno": true
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30,
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto",
+          "hora": "20:00"
+        }
+      },
+      "tarde.C": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "turno": true
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30,
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto",
+          "hora": "19:30"
+        }
+      },
+      "tarde.D": {
+        "empieza": "12:00",
+        "paradas": [
+          {
+            "lugar": "Coliseo",
+            "tipo": "fija",
+            "hora": "16:00",
+            "min": 75,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "turno": true
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "si_cerrado": "fuera",
+            "entrada": true
+          },
+          {
+            "lugar": "Elefantino de Bernini",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Iglesia de Santa Maria sopra Minerva",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30,
+            "modo": "atardecer"
+          }
+        ],
+        "cena": {
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto",
+          "hora": "20:30"
+        }
+      }
+    },
+    "entrada:tarde@sabado": {
+      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona.",
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Foro Romano y Palatino",
+            "parada": {
+              "lugar": "Panteón",
+              "min": 30,
+              "modo": "dentro",
+              "si_cerrado": "fuera",
+              "entrada": true
+            }
+          }
+        ]
+      },
+      "tarde.*": {
+        "quitar": [
+          "Panteón"
+        ]
+      }
     }
   },
   "experiencias": {
@@ -720,7 +988,7 @@
               "min": 60,
               "modo": "dentro",
               "entrada": true,
-              "si_cerrado": "fuera",
+              "si_cerrado": "quitar",
               "no_si_dia": [
                 "D5"
               ]
@@ -790,5 +1058,18 @@
       }
     }
   },
-  "_nota_verano": "Julio y agosto (PROMPT_REPASO_LOCAL_ROMA, 2): el Foro y el Palatino, más cortos (90 min en vez de 100; el Altar de la Patria sale de la mañana). Después de comer, lo que está a cubierto (el Panteón, Santa Maria sopra Minerva, San Luigi dei Francesi); el descanso hasta las 16:30, y desde ahí Largo Argentina, el Gesù y el Altar de la Patria (hacia las 17:30, con el sol ya bajo y antes de que cierre), Navona, Campo de' Fiori y el Ponte Sisto. El Ghetto ya se ve con la comida (sin volver a pleno sol)."
+  "_nota_verano": "Julio y agosto (PROMPT_REPASO_LOCAL_ROMA, 2): el Foro y el Palatino, más cortos (90 min en vez de 100; el Altar de la Patria sale de la mañana). Después de comer, lo que está a cubierto (el Panteón, Santa Maria sopra Minerva, San Luigi dei Francesi); el descanso hasta las 16:30, y desde ahí Largo Argentina, el Gesù y el Altar de la Patria (hacia las 17:30, con el sol ya bajo y antes de que cierre), Navona, Campo de' Fiori y el Ponte Sisto. El Ghetto ya se ve con la comida (sin volver a pleno sol).",
+  "entradas": {
+    "Coliseo": {
+      "manana": [
+        "08:30",
+        "15:00"
+      ],
+      "tarde": [
+        "15:30",
+        "18:15"
+      ]
+    }
+  },
+  "_nota_entradas": "Entrada reservada al Coliseo (3-oct-2026, PARA_CODE_D1_D2_D4_SEGUNDO_ORDEN): el orden de siempre sirve de 8:30 a 15:00; `entrada:tarde` (desde las 15:30) es el orden nuevo: la Roma antigua por la mañana sin el Coliseo y el Coliseo a su hora, con el centro barroco después. La entrada vale para el Foro y el Palatino el mismo día, antes o después del Coliseo."
 }

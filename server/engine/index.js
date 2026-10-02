@@ -221,7 +221,7 @@ export async function buildDayBlockV3(
   const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
   const destKey = findPipelineV2Key(destData.destination ?? options.city ?? '')
   const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null }) : null
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null, entradas: options.entradas ?? {} }) : null
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
