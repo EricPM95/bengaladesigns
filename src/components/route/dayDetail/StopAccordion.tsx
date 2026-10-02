@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
-import { tagLabel } from '../../../lib/tagColors'
+import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
@@ -101,10 +101,12 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   void addedByUser
 
   // Ronda 7, Issue A: la categoría genérica solo cuando no hay tags curados reales.
+  // (Ni «Opcional» ni «Paseo libre»: son datos del motor, el viajero no los ve — PARA_CODE_UI_DIAS, 2.)
+  const shownTags = visibleTags(stop.tags)
   const tags: { label: string; kind: typeof kind; green?: boolean }[] = stop.isFreeWalk
-    ? [{ label: 'Paseo libre', kind }]
-    : stop.tags && stop.tags.length > 0
-      ? stop.tags.slice(0, 2).map((tag) => ({ label: tagLabel(tag), kind: stopKindOf({ name: '', tags: [tag] }) }))
+    ? []
+    : shownTags.length > 0
+      ? shownTags.slice(0, 2).map((tag) => ({ label: tagLabel(tag), kind: stopKindOf({ name: '', tags: [tag] }) }))
       : stop.category
         ? [{ label: stop.category, kind }]
         : []
@@ -115,7 +117,6 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   if (stop.reservedId) tags.unshift({ label: 'Reservada ✓', kind, green: true }, { label: 'Fijada', kind, green: true })
-  if (stop.optional) tags.push({ label: 'Opcional', kind })
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 

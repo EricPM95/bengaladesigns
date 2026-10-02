@@ -51,7 +51,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
         // Espacios duros: "~90 min" nunca se parte en dos líneas.
         tag: [place.category, place.duration_min ? `~${place.duration_min}\u00a0min` : null].filter(Boolean).join('\u00a0· '),
       }))
-    : suggested.map((place) => ({ key: place.id, name: place.name, tag: place.isMainAttraction ? 'Imprescindible' : '' }))
+    : suggested.map((place) => ({ key: place.id, name: place.name, tag: '' }))
   const selected = curated ? curatedNames : selectedIds
   const toggle = curated ? toggleCurated : toggleSuggested
   const limit = poolSelectionLimit(days)

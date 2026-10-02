@@ -54,3 +54,13 @@ export function tagLabel(tag: string): string {
   const readable = tag.replace(/_/g, ' ')
   return TAG_LABELS[tag] ?? (readable.charAt(0).toUpperCase() + readable.slice(1))
 }
+
+/**
+ * Etiquetas que son datos del motor (para casar experiencias, el tono del paseo…) y no dicen qué es el sitio: el viajero nunca las ve
+ * (PARA_CODE_UI_DIAS, 2). Las que quedan son tipos de lugar (Plaza, Iglesia, Museo…).
+ */
+const INTERNAL_TAGS = new Set(['paseo', 'secreto', 'local', 'tranquilo', 'foto', 'optional', 'opcional', 'imprescindible', 'joya', 'si_entra', 'relleno', 'filler'])
+
+export function visibleTags(tags: readonly string[] | undefined): string[] {
+  return (tags ?? []).filter((tag) => !INTERNAL_TAGS.has(tag))
+}
