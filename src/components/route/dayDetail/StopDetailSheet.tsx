@@ -652,6 +652,21 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                     <p className="text-small text-text-soft">{stop.description}</p>
                   ) : null}
 
+                  {/* «Por el camino»: calles y recomendaciones de paso que ya no son parada (Via Margutta, Via del Babuino, Venchi). */}
+                  {stop.porElCamino && stop.porElCamino.length > 0 && (
+                    <div className="space-y-1 border-t border-border pt-3">
+                      <h3 className="text-body font-semibold text-text">Por el camino</h3>
+                      <ul className="space-y-1.5">
+                        {stop.porElCamino.map((item, index) => (
+                          <li key={index} className="flex gap-2 text-small text-text-soft">
+                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-text-muted" aria-hidden="true" />
+                            <span>{item.texto}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
                       de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
                       nunca redactado por Claude, para garantizar que aparece siempre igual. */}

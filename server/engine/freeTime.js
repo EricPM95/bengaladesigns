@@ -52,7 +52,7 @@ function zoneTitle(destData, zoneId, tripDay, dayVisitedNames) {
  * El paseo como parada: sin lugar propio (no se busca a Claude ni a Mapbox), con la foto de día de su zona, la etiqueta
  * «Paseo libre» y el consejo del aperitivo dentro de la ficha.
  */
-function paseoStop({ title, start, minutes, coordinates, photoName, photoAlternatives, tip, why }) {
+function paseoStop({ title, start, minutes, coordinates, photoName, photoAlternatives, porElCamino, tip, why }) {
   return {
     name: title,
     suggested_time: toHHMM(start),
@@ -71,6 +71,7 @@ function paseoStop({ title, start, minutes, coordinates, photoName, photoAlterna
     is_free_walk: true,
     ...(photoName ? { photo_name: photoName } : {}),
     ...(photoAlternatives?.length ? { photo_alternatives: photoAlternatives } : {}),
+    ...(porElCamino?.length ? { por_el_camino: porElCamino } : {}),
     aperitivo_tip: tip,
     why,
   }
@@ -105,7 +106,7 @@ function stretch(stop, minutes, tip = null) {
  * @param {object} day  El día que ha montado buildCityDayV3, con sus `aperitivo` / `free_afternoon` / `free_times` por resolver.
  * @param {{ destData: object, tripDay: object, dayVisitedNames: Set<string>, travel: { leg: Function }, suggestionsFor: Function }} ctx
  */
-export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, travel, suggestionsFor }) {
+export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, travel, suggestionsFor, trip = null }) {
   const config = destData.destination_config?.paseo_libre ?? {}
   const tip = config.consejo_aperitivo ?? FALLBACK_TIP
   const minMinutes = config.minutos_min ?? PASEO_MIN_MINUTES
@@ -151,7 +152,9 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       // nocturna no se alarga: dura lo que dura).
       const sameName = mentions(previous)
       const near = coordsOf(previous) && straightLineMeters(coordsOf(previous), center) <= SAME_PLACE_METERS && !previous.is_night_experience
-      const same = sameName || near
+      // Un paseo con `una_vez_por_viaje` (el del Tridente) no se repite: si un día anterior ya cena en esa zona, el rato va a la parada que se estira.
+      const repeated = Boolean(zoneConfig?.una_vez_por_viaje && trip?.days?.some((other) => other.dayNumber < tripDay.dayNumber && other.dinnerZone === tripDay.dinnerZone))
+      const same = sameName || near || repeated
       // El barrio que el día ya ha visto antes (con otra cosa en medio) no vuelve como paseo: sería el mismo sitio dos veces.
       const seenEarlier = !same && before.slice(0, before.indexOf(previous)).some((stop) => !stop.is_night_experience && (placeByName.get(nameOf(stop))?.tags ?? []).includes('barrio') && mentions(stop))
       if (seenEarlier) {
@@ -183,6 +186,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
           coordinates: center,
           photoName: zoneConfig?.foto ?? null,
           photoAlternatives: zoneConfig?.foto_alternativas ?? null,
+          porElCamino: zoneConfig?.por_el_camino ?? null,
           tip,
           why: 'Sin plan fijo: dejarse llevar por las calles es la mejor forma de despedir el día.',
         }),

@@ -348,6 +348,8 @@ export interface Stop {
   photoName?: string | null
   /** «Pasea y piérdete por…»: otros lugares de la zona cuya foto lleva el paseo si la de `photoName` ya sale en otra tarjeta del día. */
   photoAlternatives?: string[]
+  /** «Por el camino»: calles y recomendaciones de paso dentro de la ficha. `unaVez`: sale una sola vez por viaje (Venchi). */
+  porElCamino?: { texto: string; unaVez?: string }[]
   /** Foto propia fija (la del Free Tour, cuando la haya): se usa tal cual, sin buscar. */
   fixedPhotoUrl?: string | null
 }

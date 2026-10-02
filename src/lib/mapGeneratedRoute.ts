@@ -139,6 +139,8 @@ interface GeneratedStop {
   photo_name?: string | null
   /** Otros lugares de la zona del paseo, por si la foto de `photo_name` ya la lleva otra tarjeta del día. */
   photo_alternatives?: string[] | null
+  /** «Por el camino»: calles y recomendaciones de paso que van dentro de la ficha (los textos con `una_vez` salen una sola vez por viaje). */
+  por_el_camino?: { texto: string; una_vez?: string }[] | null
   photo_url?: string | null
 }
 
@@ -468,6 +470,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.night_walk_name ? { nightWalkName: generated.night_walk_name } : {}),
     ...(generated.photo_name ? { photoName: generated.photo_name } : {}),
     ...(generated.photo_alternatives?.length ? { photoAlternatives: generated.photo_alternatives } : {}),
+    ...(generated.por_el_camino?.length ? { porElCamino: generated.por_el_camino.map((item) => ({ texto: item.texto, ...(item.una_vez ? { unaVez: item.una_vez } : {}) })) } : {}),
     ...(generated.photo_url ? { fixedPhotoUrl: generated.photo_url, photoUrl: generated.photo_url } : {}),
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
@@ -775,6 +778,23 @@ function dedupeFreeTour(days: DayPlan[]): void {
   }
 }
 
+/** Los textos de «Por el camino» con `unaVez` (Venchi) salen una sola vez por viaje: en la primera parada que los lleva, por días y por horas. */
+function dedupeUnaVez(days: DayPlan[]): void {
+  const seen = new Set<string>()
+  for (const day of days) {
+    for (const stop of day.stops ?? []) {
+      if (!stop.porElCamino) continue
+      stop.porElCamino = stop.porElCamino.filter((item) => {
+        if (!item.unaVez) return true
+        if (seen.has(item.unaVez)) return false
+        seen.add(item.unaVez)
+        return true
+      })
+      if (stop.porElCamino.length === 0) delete stop.porElCamino
+    }
+  }
+}
+
 export function mapGeneratedRouteToRoute(
   generated: GeneratedRouteResponse,
   destination: string,
@@ -821,6 +841,7 @@ export function mapGeneratedRouteToRoute(
     mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay, poolNoticesByDay),
   )
   dedupeFreeTour(mappedDays)
+  dedupeUnaVez(mappedDays)
   const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
 
   return {

@@ -225,6 +225,8 @@ export interface MockStopDetail {
   aperitivoTip?: string | null
   /** Ver Stop.reservedId: la reserva que fija esta parada. */
   reservedId?: string | null
+  /** Ver Stop.porElCamino: «Por el camino» dentro de la ficha. */
+  porElCamino?: { texto: string; unaVez?: string }[]
   /** Ver Stop.isSunset / Stop.isNightView: mirador del atardecer y mirador de noche. */
   isSunset?: boolean
   isNightView?: boolean
@@ -489,6 +491,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     noOwnPhoto: stop.noOwnPhoto,
     aperitivoTip: stop.aperitivoTip ?? null,
     reservedId: stop.reservedId ?? null,
+    ...(stop.porElCamino?.length ? { porElCamino: stop.porElCamino } : {}),
     isSunset: stop.isSunset,
     isNightView: stop.isNightView,
     nightViewTitle: stop.nightViewTitle,

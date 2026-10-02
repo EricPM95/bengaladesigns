@@ -542,6 +542,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     dayVisitedNames,
     travel: travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? '')),
     suggestionsFor: null,
+    trip,
   })
   if (process.env.FREE_DEBUG) day.free_report = freeReport
   // Nunca la misma foto propia en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda pide la suya de siempre (la de

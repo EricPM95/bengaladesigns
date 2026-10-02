@@ -185,6 +185,8 @@ export function buildStop(place, startMinutes, durationMinutes, revisitReason) {
     tags: Array.isArray(place.tags) ? place.tags : [],
     schedule: place.schedule ?? null,
     // Horarios auditados (2026-09-24): el texto largo para la ficha y si hay que reservar.
+    // «Por el camino» (calles y recomendaciones de paso que no son parada): van dentro de la ficha. Los textos con `una_vez` salen una sola vez por viaje.
+    ...(Array.isArray(place.por_el_camino) && place.por_el_camino.length ? { por_el_camino: place.por_el_camino } : {}),
     ...(place.card_text ? { hours_card: place.card_text } : {}),
     ...(place.reservation ? { reservation: place.reservation } : {}),
     // Precio y condiciones de entrada: solo en la pestaña Tickets (ningún precio fuera de ahí).
