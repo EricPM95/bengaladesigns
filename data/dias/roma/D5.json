@@ -265,7 +265,7 @@
           "min": 60,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Largo di Torre Argentina",

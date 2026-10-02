@@ -61,7 +61,7 @@
           "min": 45,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera",
+          "si_cerrado": "quitar",
           "traslado": {
             "como": "el metro B (Piramide → Colosseo)",
             "min": 20
@@ -116,7 +116,7 @@
           "min": 45,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera",
+          "si_cerrado": "quitar",
           "traslado": {
             "como": "el metro B (Piramide → Colosseo)",
             "min": 20
@@ -168,7 +168,7 @@
           "min": 45,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera",
+          "si_cerrado": "quitar",
           "traslado": {
             "como": "el metro B (Piramide → Colosseo)",
             "min": 20
@@ -229,7 +229,7 @@
           "min": 45,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera",
+          "si_cerrado": "quitar",
           "traslado": {
             "como": "el metro B (Piramide → Colosseo)",
             "min": 20
@@ -309,7 +309,7 @@
                 "min": 45,
                 "modo": "dentro",
                 "entrada": true,
-                "si_cerrado": "fuera",
+                "si_cerrado": "quitar",
                 "traslado": {
                   "como": "el metro B (Piramide → Colosseo)",
                   "min": 20
@@ -334,7 +334,7 @@
                 "min": 45,
                 "modo": "dentro",
                 "entrada": true,
-                "si_cerrado": "fuera",
+                "si_cerrado": "quitar",
                 "traslado": {
                   "como": "el metro B (Piramide → Colosseo)",
                   "min": 20
@@ -359,7 +359,7 @@
                 "min": 45,
                 "modo": "dentro",
                 "entrada": true,
-                "si_cerrado": "fuera",
+                "si_cerrado": "quitar",
                 "traslado": {
                   "como": "el metro B (Piramide → Colosseo)",
                   "min": 20
@@ -384,7 +384,7 @@
                 "min": 45,
                 "modo": "dentro",
                 "entrada": true,
-                "si_cerrado": "fuera",
+                "si_cerrado": "quitar",
                 "traslado": {
                   "como": "el metro B (Piramide → Colosseo)",
                   "min": 20

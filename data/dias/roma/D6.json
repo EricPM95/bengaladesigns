@@ -58,7 +58,7 @@
           "min": 40,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Iglesia de San Pietro in Vincoli",
@@ -111,7 +111,7 @@
           "min": 40,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
@@ -151,7 +151,7 @@
           "min": 40,
           "modo": "dentro",
           "entrada": true,
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Basílica de San Juan de Letrán",
