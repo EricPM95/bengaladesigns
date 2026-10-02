@@ -1338,6 +1338,20 @@
         "Reserva recomendada.",
         "Se compra online o en taquilla (taquilla hasta las 18:00)."
       ],
+      "misas_festivos": [
+        "01-01",
+        "01-06",
+        "easter+1",
+        "04-25",
+        "05-01",
+        "06-02",
+        "08-15",
+        "11-01",
+        "12-08",
+        "12-25",
+        "12-26"
+      ],
+      "_misas_festivos": "Festivos nacionales de Italia. La web oficial del Panteón: misa a las 17:00 los sábados y las vísperas de festivo (venta cortada a las 16:00) y a las 10:30 los domingos y los festivos (venta cortada a las 09:30). El motor lee el festivo como un domingo y su víspera como un sábado (massWeekday, openingHours.js). Pendiente de decidir: el 29 de junio (San Pedro y San Pablo, festivo solo en Roma).",
       "closed_dates": [
         "08-15",
         "12-25"

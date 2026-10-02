@@ -280,6 +280,22 @@ export function matchesDateToken(token, dateIso) {
 }
 
 /**
+ * El día de la semana con el que se lee el horario de un lugar con misa (el Panteón): sus festivos van como domingo y sus vísperas como
+ * sábado (la web oficial: la misa es a las 17:00 los sábados y las vísperas de festivo, y a las 10:30 los domingos y los festivos). Un lugar
+ * lo pide con `misas_festivos`: la lista de sus festivos ("01-06", "easter+1"…). Un festivo que cae en domingo sigue siendo domingo y la
+ * víspera de un festivo que cae en domingo es sábado, que ya lo es. Sin fechas, el día de siempre.
+ */
+export function massWeekday(place, hours = {}) {
+  const tokens = place?.misas_festivos
+  if (!Array.isArray(tokens) || !hours.weekday || !hours.dateIso) return hours.weekday
+  const iso = String(hours.dateIso).slice(0, 10)
+  if (tokens.some((token) => matchesDateToken(token, iso))) return 'domingo'
+  const next = new Date(Date.parse(`${iso}T12:00:00Z`) + 86400000).toISOString().slice(0, 10)
+  if (stripAccents(hours.weekday) !== 'domingo' && tokens.some((token) => matchesDateToken(token, next))) return 'sábado'
+  return hours.weekday
+}
+
+/**
  * ¿Cierra el lugar ese día por fecha (`closed_dates`: "12-25", "easter+1")? Solo con fechas
  * reales: sin ellas el día 15 del mes es una referencia, no un día del viaje.
  */
@@ -372,7 +388,8 @@ function rawWindows(place, hours) {
   if (lastSunday && Array.isArray(lastSunday.windows)) return lastSunday.windows
   const byDay = place?.by_day
   if (hours.weekday && byDay) {
-    const day = dayIndex(hours.weekday)
+    // (Un lugar con misa: sus festivos van como domingo y sus vísperas como sábado.)
+    const day = dayIndex(massWeekday(place, hours))
     const entry = Object.entries(byDay).find(([key]) => daysOfKey(key).has(day))
     if (entry) return entry[1]
   }
