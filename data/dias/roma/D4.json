@@ -104,11 +104,6 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via Margutta",
-          "titulo": "Via Margutta y Via del Babuino",
-          "min": 30
         }
       ],
       "cena": {
@@ -142,11 +137,6 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via Margutta",
-          "titulo": "Via Margutta y Via del Babuino",
-          "min": 30
         },
         {
           "lugar": "Santa Maria del Popolo",
@@ -189,11 +179,6 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via Margutta",
-          "titulo": "Via Margutta y Via del Babuino",
-          "min": 30
         },
         {
           "lugar": "Santa Maria del Popolo",
@@ -243,11 +228,6 @@
           "modo": "dentro",
           "entrada": true,
           "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via Margutta",
-          "titulo": "Via Margutta y Via del Babuino",
-          "min": 30
         }
       ],
       "cena": {

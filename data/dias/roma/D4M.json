@@ -51,10 +51,6 @@
         "si_cerrado": "fuera"
       },
       {
-        "lugar": "Via del Babuino",
-        "modo": "camino"
-      },
-      {
         "lugar": "Piazza del Popolo",
         "min": 15
       },
@@ -368,17 +364,12 @@
             }
           },
           {
-            "lugar": "Via Margutta",
-            "titulo": "Via Margutta y Via del Babuino",
-            "min": 30,
+            "lugar": "Piazza del Popolo",
+            "min": 15,
             "traslado": {
               "como": "el metro A (Termini → Spagna) o un taxi",
               "min": 20
             }
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 15
           },
           {
             "lugar": "Santa Maria del Popolo",
@@ -415,17 +406,12 @@
         "empieza": "14:45",
         "paradas": [
           {
-            "lugar": "Via Margutta",
-            "titulo": "Via Margutta y Via del Babuino",
-            "min": 30,
+            "lugar": "Piazza del Popolo",
+            "min": 15,
             "traslado": {
               "como": "el metro A (Termini → Spagna) o un taxi",
               "min": 20
             }
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 15
           },
           {
             "lugar": "Parque de Villa Borghese",

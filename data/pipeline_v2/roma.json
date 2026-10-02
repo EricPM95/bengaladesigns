@@ -1244,6 +1244,9 @@
     },
     {
       "name": "Fontana de Trevi",
+      "por_el_camino": [
+        {"texto":"De camino, en Via del Corso, cerca de Trevi, está la tienda de Venchi: chocolate y helado artesanos si te apetece un capricho.","una_vez":"venchi"}
+      ],
       "level": 1,
       "tier": "joya",
       "zone": "centro_historico",
@@ -1423,6 +1426,10 @@
     },
     {
       "name": "Plaza de España",
+      "por_el_camino": [
+        {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
+        {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."}
+      ],
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
@@ -1460,6 +1467,10 @@
     },
     {
       "name": "Piazza del Popolo",
+      "por_el_camino": [
+        {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
+        {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."}
+      ],
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
@@ -8552,11 +8563,17 @@
       "consejo_aperitivo": "A esta hora los romanos se toman un spritz o una copa de vino antes de cenar. Si te apetece, siéntate en una terraza y mira pasar la ciudad.",
       "zonas": {
         "tridente": {
-          "nombre": "Via del Corso y Via Condotti",
-          "iluminado": "Via del Corso y Via Condotti iluminadas",
+          "nombre": "el Tridente",
+          "iluminado": "el Tridente iluminado",
           "foto": "Via del Corso",
           "foto_alternativas": ["Via Condotti"],
-          "titulo_navidad": "Pasea y piérdete entre las luces de Via del Corso y Via Condotti",
+          "una_vez_por_viaje": true,
+          "por_el_camino": [
+            {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
+            {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
+            {"texto":"De camino, en Via del Corso, cerca de Trevi, está la tienda de Venchi: chocolate y helado artesanos si te apetece un capricho.","una_vez":"venchi"}
+          ],
+          "titulo_navidad": "Pasea y piérdete entre las luces del Tridente",
           "si_visto": [
             "Luces de Navidad del Tridente"
           ],
