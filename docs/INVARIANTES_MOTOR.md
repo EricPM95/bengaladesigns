@@ -2547,8 +2547,34 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 437. **Saber solo que alguien ha reservado: el código de campaña de cada viaje** (PARA_CODE_RESERVAS, 5). Cada viaje lleva un código al azar (`app-8F3K2`: nada del viajero ni del
     viaje dentro, `newCampaignCode`) y todos los enlaces de «Reservar» a Civitatis lo llevan (`CampaignLinks` lo pone al seguir el enlace). El nombre del campo sale de
-    `VITE_AFFILIATE_CAMPAIGN_PARAM` (por defecto `cmp`) y el número de afiliado de `VITE_CIVITATIS_AID`: la documentación pública de Civitatis solo explica `?aid=XXX`.
+    `VITE_AFFILIATE_CAMPAIGN_PARAM` (por defecto `cmp`) y el número de afiliado de `VITE_CIVITATIS_AID` (por defecto el nuestro, 5206; los enlaces salen `…?aid=5206&cmp=app-8F3K2`; el servidor acepta también los `v-` de los viajes guardados antes): la documentación pública de Civitatis solo explica `?aid=XXX`.
     Las ventas llegan de la API o del informe de ventas del afiliado a `/api/sales/ingest` (cabecera `x-ingest-secret`; tabla en la migración 0017, sin aplicar; en memoria
     mientras no esté `SUPABASE_SERVICE_ROLE_KEY`), **nunca de los correos de nadie**. Al abrir el viaje, arriba de Días: «Hemos visto que has reservado {x} el {día} a las
     {hora}. ¿La ponemos en tu Día {n}?» con «Sí, ponla» (pasa a reservada y fijada) y «Ahora no»; si se cancela una ya unida, «Tu reserva de {x} se ha cancelado» con
     «Quitar del viaje».
+
+438. **Todo lo que se ve lleva foto; sin foto antes que una mala** (PARA_CODE_UI_DIAS, 1; completa la 420). El Coliseo y el Puente Sant'Angelo salen de `sin_foto`: llevan la foto de día
+    elegida entre las candidatas (`dia_coliseo.jpg`, `dia_puente_sant_angelo.jpg`, con su crédito de Unsplash). `scripts/destino/auditarFotos.mjs` pide a la API la foto de
+    todo lo que el viajero puede ver (paradas de los días escritos, paseos, nocturnas, pool, excursiones) y lista lo que se queda sin ella: hoy solo Via Margutta, Via del
+    Babuino, Via Veneto, Santo Bambino de Aracoeli y «Pasear por San Giovanni» (sin foto buena en Unsplash: las pasa el usuario). Un «Pasea y piérdete por…» cuya foto de zona
+    ya lleva otra tarjeta del día (Campo de' Fiori) no se queda en blanco: prueba con `foto_alternativas` de su zona (`destination_config.paseo_libre.zonas`; en Roma, Piazza
+    Farnese para el Centro Histórico).
+
+439. **El viajero nunca ve los niveles ni las marcas internas del motor** (PARA_CODE_UI_DIAS, 2). Fuera de tarjetas y fichas: «Opcional», «Paseo libre», «Imprescindible» (en el pool
+    del formulario) y las etiquetas de datos (`paseo`, `secreto`, `local`, `tranquilo`, `foto`…, `visibleTags` en `tagColors.ts`). Solo salen etiquetas que dicen qué es el sitio (Plaza,
+    Iglesia, Museo…) o algo útil al viajero (Revisita, Por fuera, Reservada ✓, Fijada).
+
+440. **El mapa recogido deja una franja** (PARA_CODE_UI_DIAS, 3). Con la flecha del mapa pulsada en Días o Explorar queda arriba una franja con una flecha hacia abajo («Mostrar mapa»); al
+    tocarla el mapa vuelve como estaba.
+
+441. **Añadir lugares** (PARA_CODE_UI_DIAS, 4 y 5). El ejemplo del nombre del día sale de los datos del destino (`destination_config.ejemplo_nombre_dia`; Roma: «Recorrido por el Centro
+    Histórico»). El pool de «Añadir lugares» se abre con «Atracciones» marcado. La ventana de «+ Añadir» sube con su tirador y su cruz: el nombre del lugar en letra pequeña,
+    «¿A qué día lo añades?», los días con su fecha y su título (el marcado en terracota suave; el que ya lo tiene, apagado con «Ya está en este día») y «Minutos / ¿Cuánto tiempo
+    quieres visitarlo?» con el tiempo recomendado del lugar. Al añadir, la pantalla se queda en el pool y sale «Añadido al Día {n} ✓» unos segundos (sin «Deshacer»).
+
+442. **Recuperar** (PARA_CODE_UI_DIAS, 6; cambia la varita de cada día de la 1-oct). «Recuperar este día» va en los tres puntos del día, solo si ese día tiene cambios; nunca en un día del
+    viajero (libre o creado con «+ Añadir día») ni en uno fijado por una excursión reservada. «Recuperar mi ruta» va con una varita en la tarjeta del destino, en Ruta (solo con un
+    destino: la ruta original es la del viaje entero), con la ventana «¿Recuperar tu ruta de {destino}?». En los dos, lo reservado se queda en su día y a su hora.
+
+443. **Lo reservado se marca en el día** (PARA_CODE_UI_DIAS, 7). Día cerrado: bajo el título, «🔒 Coliseo · 11:00» en el verde de Reservas (con dos o más, «🔒 2 reservas»). Parada con el día
+    abierto: la franja de la tarjeta en verde y arriba «Reservada ✓» y el candado con «Fijada». Lo añadido sin reservar no se marca.
