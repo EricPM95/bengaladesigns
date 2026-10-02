@@ -6,7 +6,7 @@ import { FREE_DAY_NAME_MAX } from '../../../lib/freeDays'
  * La ventana del nombre del día (decisión del usuario, 2026-09-28): solo el título, el campo y el botón. Vacío, el día se
  * llama "Día libre". La misma ventana cambia el nombre de un día libre.
  */
-export function DayNameSheet({ title, initialName = '', confirmLabel, onConfirm, onClose }: { title: string; initialName?: string; confirmLabel: string; onConfirm: (name: string) => void; onClose: () => void }) {
+export function DayNameSheet({ title, initialName = '', example, confirmLabel, onConfirm, onClose }: { title: string; initialName?: string; example?: string | null; confirmLabel: string; onConfirm: (name: string) => void; onClose: () => void }) {
   const [name, setName] = useState(initialName)
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="day-name-heading">
@@ -28,7 +28,7 @@ export function DayNameSheet({ title, initialName = '', confirmLabel, onConfirm,
             value={name}
             maxLength={FREE_DAY_NAME_MAX}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Por ejemplo: Compras por Via del Corso"
+            placeholder={example ? `Por ejemplo: ${example}` : undefined}
             className="mt-1 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text placeholder:text-text-muted"
           />
         </label>

@@ -17,11 +17,13 @@ export interface DestinationExcursions {
   entradas: EssentialEntry[]
   /** Los sitios de excursión del destino, en una línea («Pompeya, Florencia…»), de los datos del destino. */
   examples: string | null
+  /** El ejemplo del campo «Nombre del día» (+ Añadir día), de los datos del destino. */
+  dayNameExample: string | null
   /** La valoración media real (null mientras no haya notas reales). */
   rating: { percent: number; excursions: number; reviews: number } | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], examples: null, rating: null }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], examples: null, dayNameExample: null, rating: null }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -33,10 +35,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; entradas?: EssentialEntry[]; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], examples: data.examples ?? null, rating: data.rating ?? null }
-        : EMPTY
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
+        : { ...EMPTY, dayNameExample: data?.day_name_example ?? null }
       cache.set(key, result)
       return result
     })

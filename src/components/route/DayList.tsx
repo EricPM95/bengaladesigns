@@ -384,6 +384,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {nameSheet && (
         <DayNameSheet
           title={nameSheet.dayId ? 'Cambiar el nombre' : 'Añadir un día'}
+          example={excursionInfo.dayNameExample}
           initialName={nameSheet.dayId ? dayName(route.days.find((day) => day.id === nameSheet.dayId) ?? route.days[0]) : ''}
           confirmLabel={nameSheet.dayId ? 'Guardar' : 'Crear día'}
           onClose={() => setNameSheet(null)}

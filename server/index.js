@@ -4290,9 +4290,11 @@ app.post('/api/destination-excursions', (req, res) => {
   const data = destination ? findPipelineV2Data(destination) : null
   const options = data?.excursions?.options ?? []
   // Las tres entradas imprescindibles de Reservas, elegidas al curar el destino (`entradas_reservas`): nombre y los lugares de la ruta que cubre.
+  // El ejemplo del campo «Nombre del día» de «+ Añadir día» (dato de cada destino: `destination_config.ejemplo_nombre_dia`).
+  const dayNameExample = data?.destination_config?.ejemplo_nombre_dia ?? null
   const entradas = Array.isArray(data?.entradas_reservas) ? data.entradas_reservas.map((entry) => ({ name: entry.nombre, places: entry.lugares ?? [] })) : []
   if (!data || (options.length === 0 && entradas.length === 0)) {
-    res.json({ found: false, from_days: null, excursions: [], entradas: [] })
+    res.json({ found: false, from_days: null, excursions: [], entradas: [], day_name_example: dayNameExample })
     return
   }
   const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
@@ -4302,6 +4304,7 @@ app.post('/api/destination-excursions', (req, res) => {
     from_days: options.length > 0 ? (data.excursions?.excursiones_desde_dias ?? null) : null,
     entradas,
     examples: data.excursions?.ejemplos_linea ?? null,
+    day_name_example: dayNameExample,
     excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
     rating: average == null ? null : { percent: Math.round(average * 20), excursions: rated.length, reviews: rated.reduce((sum, option) => sum + option.review_count, 0) },
   })

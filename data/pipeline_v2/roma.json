@@ -8265,6 +8265,7 @@
     }
   ],
   "destination_config": {
+    "ejemplo_nombre_dia": "Recorrido por el Centro Histórico",
     "core_days": 4,
     "excursion_desde_dias": 5,
     "excursion_fechas_no": [
