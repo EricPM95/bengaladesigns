@@ -2597,3 +2597,18 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     sobre el máximo general (el Tridente, 120).
 
 448. **Borgo Pio pasa a paseo**: «Pasea y piérdete por Borgo Pio» (título de la parada, como los demás paseos escritos).
+
+449. **Viajes de 1 día: todo por fuera, salvo lo marcado en el pool** (3-oct-2026, todos los destinos con `short_trips`; en Roma `short_trips.todo_por_fuera`). En un día no da tiempo a
+    entrar: todo lo que tiene entrada va por fuera (con su `pass_by` o `minutos_fuera`; el Foro desde la Via dei Fori Imperiali). Solo va por dentro lo que el viajero marcó en el pool
+    (los Museos Vaticanos, el Coliseo…). Lo gratis sigue como estaba. Con fechas, si ese sitio cierra ese día sale el aviso y se cambia de bloque o se ve por fuera (el cierre manda); sin
+    fechas no se puede saber y se muestra igualmente. Con Free Tour, el tour enseña por fuera lo suyo y no se añade el Panteón por dentro. Una reserva que añada el viajero adapta la ruta
+    solo a esa reserva (en el cliente, `medirReservas`/`fitDayToTrip`): lo demás sigue por fuera. El texto de la parada dice «En un viaje de un día no da tiempo a entrar».
+
+450. **Viajes de 2 días (Roma): por dentro solo lo que dice `_destino.json › viajes_cortos.dos_dias`** (3-oct-2026). Sin nada marcado en el pool: el Coliseo (con el Foro y el Palatino) y el
+    Panteón por dentro, todo lo demás con entrada por fuera. Con algo marcado (`marcables`): lo marcado y sus acompañantes (Coliseo → Foro y Palatino; Museos Vaticanos solo ellos), y el
+    Panteón (`siempre_dentro`) en todos los casos. Si se marcan los dos: un día cada uno, y el centro (Trevi, Plaza de España…) por fuera. Un cierre siempre va por fuera. Lo que pasa a
+    fuera pierde su hora de entrada y su turno, y su razón es «En un viaje corto lo ves por fuera: no da tiempo a entrar» (`outsideKind: 'no_cabe'`: deja pedir «Quiero entrar»).
+    Una parada vista por fuera no cuenta como entrada en RESERVAS (`stopHasEntrance`).
+
+451. **Viajes de 2,5 días**: hoy el motor no conoce el medio día (los vuelos se recortan en el cliente con `fitDayToTrip`), así que un viaje de 3 días sale como 3 días enteros. La regla
+    (medio día = regla de 1 día; días enteros = viaje de esos días; la entrada solo en los días enteros) queda escrita y pendiente de implementar cuando el motor reciba los vuelos.
