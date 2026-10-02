@@ -2842,7 +2842,8 @@
           "revisar": "diciembre de cada año"
         }
       ],
-      "minutos_fuera": 10
+      "minutos_fuera": 10,
+      "por_fuera": "Hoy la ves por fuera, y ya merece la parada. El edificio blanco junto al Tíber es de Richard Meier y abrió en 2006. Rodéalo por el lado que mira al Mausoleo de Augusto: en la pared está copiado, en latín, el relato que el propio Augusto dejó escrito de todo lo que hizo en su vida."
     },
     {
       "name": "Barrio Judío",
@@ -4144,7 +4145,10 @@
         "ponte sisto"
       ],
       "coordinates_checked": true,
-      "contained_in": "Trastevere"
+      "contained_in": "Trastevere",
+      "neighbor_of": [
+        "Ponte Sisto"
+      ]
     },
     {
       "name": "Terraza del Pincio",
