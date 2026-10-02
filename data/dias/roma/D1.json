@@ -979,6 +979,52 @@
           "Panteón"
         ]
       }
+    },
+    "free_tour_despues:tarde": {
+      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De tarde (17:00): el tour sustituye la tarde del centro barroco del día del Coliseo (Navona, San Luigi, Campo de' Fiori…); el Panteón, por dentro, justo antes (el tour no entra en los sitios).",
+      "tarde.*": {
+        "quitar": [
+          "Iglesia de San Luigi dei Francesi",
+          "Iglesia de San Luigi dei Francesi",
+          "Piazza Navona",
+          "Campo de' Fiori",
+          "Ponte Sisto",
+          "Iglesia del Gesù",
+          "Iglesia de Santa Maria sopra Minerva",
+          "Iglesia de Santa Maria sopra Minerva",
+          "Elefantino de Bernini",
+          "Elefantino de Bernini"
+        ],
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Free Tour Centro Histórico",
+              "tipo": "fija",
+              "hora": "17:00",
+              "min": 150,
+              "modo": "parada"
+            }
+          }
+        ]
+      },
+      "noche": "sin_paseo"
+    },
+    "free_tour_despues:noche": {
+      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De noche: el tour sustituye la nocturna de ese día; el centro de día se queda y la cena va después del tour.",
+      "noche": "sin_paseo",
+      "tarde.*": {
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Free Tour Centro Histórico",
+              "tipo": "fija",
+              "hora": "18:30",
+              "min": 150,
+              "modo": "parada"
+            }
+          }
+        ]
+      }
     }
   },
   "experiencias": {

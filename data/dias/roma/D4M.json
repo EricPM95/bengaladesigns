@@ -458,6 +458,40 @@
           }
         ]
       }
+    },
+    "free_tour_despues:manana": {
+      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De mañana (10:00): el tour sustituye la mañana del centro de D4M: Trevi temprano, a las 8:00, antes del tour; se quita lo que el tour ya enseña (Plaza de España, Via Condotti, San Ignacio) y lo que queda de la mañana al otro lado de la ciudad.",
+      "manana": {
+        "empieza": "07:30",
+        "quitar": [
+          "Iglesia de San Ignacio de Loyola",
+          "Via Condotti",
+          "Plaza de España",
+          "Trinità dei Monti",
+          "Piazza del Popolo",
+          "Santa Maria del Popolo",
+          "Terraza del Pincio",
+          "Parque de Villa Borghese"
+        ],
+        "ajustar": {
+          "Fontana de Trevi": {
+            "hora": "08:00",
+            "tipo": "fija"
+          }
+        },
+        "insertar": [
+          {
+            "despues_de": "Desayuno romano",
+            "parada": {
+              "lugar": "Free Tour Centro Histórico",
+              "tipo": "fija",
+              "hora": "10:00",
+              "min": 150,
+              "modo": "parada"
+            }
+          }
+        ]
+      }
     }
   },
   "experiencias": {

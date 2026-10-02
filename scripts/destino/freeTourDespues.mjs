@@ -32,13 +32,28 @@ function d4() {
   write('D4', day)
 }
 
+function d4m() {
+  const day = read('D4M')
+  day.variantes ??= {}
+  day.variantes['free_tour_despues:manana'] = {
+    _nota: `${PREAMBULO} De mañana (10:00): el tour sustituye la mañana del centro de D4M: Trevi temprano, a las 8:00, antes del tour; se quita lo que el tour ya enseña (Plaza de España, Via Condotti, San Ignacio) y lo que queda de la mañana al otro lado de la ciudad.`,
+    manana: {
+      empieza: '07:30',
+      quitar: ['Iglesia de San Ignacio de Loyola', 'Via Condotti', 'Plaza de España', 'Trinità dei Monti', 'Piazza del Popolo', 'Santa Maria del Popolo', 'Terraza del Pincio', 'Parque de Villa Borghese'],
+      ajustar: { 'Fontana de Trevi': { hora: '08:00', tipo: 'fija' } },
+      insertar: [{ despues_de: 'Desayuno romano', parada: tour('10:00') }],
+    },
+  }
+  write('D4M', day)
+}
+
 function d1() {
   const day = read('D1')
   day.variantes['free_tour_despues:tarde'] = {
     _nota: `${PREAMBULO} De tarde (17:00): el tour sustituye la tarde del centro barroco del día del Coliseo (Navona, San Luigi, Campo de' Fiori…); el Panteón, por dentro, justo antes (el tour no entra en los sitios).`,
     'tarde.*': {
-      quitar: ['Iglesia de San Luigi dei Francesi', 'Piazza Navona', "Campo de' Fiori", 'Ponte Sisto', 'Iglesia del Gesù', 'Iglesia de Santa Maria sopra Minerva', 'Elefantino de Bernini'],
-      insertar: [{ despues_de: 'Panteón', parada: tour('17:00') }],
+      quitar: ['Iglesia de San Luigi dei Francesi', 'Iglesia de San Luigi dei Francesi', 'Piazza Navona', "Campo de' Fiori", 'Ponte Sisto', 'Iglesia del Gesù', 'Iglesia de Santa Maria sopra Minerva', 'Iglesia de Santa Maria sopra Minerva', 'Elefantino de Bernini', 'Elefantino de Bernini'],
+      insertar: [{ parada: tour('17:00') }],
     },
     noche: 'sin_paseo',
   }
@@ -51,5 +66,6 @@ function d1() {
 }
 
 d4()
+d4m()
 d1()
 console.log('Free Tour añadido después: D1 y D4')

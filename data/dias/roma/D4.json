@@ -1568,6 +1568,57 @@
           "hora": "20:30"
         }
       }
+    },
+    "free_tour_despues:manana": {
+      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De mañana (10:00): el tour sustituye la mañana del centro: Trevi temprano, a las 8:00, antes del tour; la Galería pasa a su orden de tarde. Se quita lo que el tour ya enseña (Via Condotti, Plaza de España, Trinità dei Monti) y lo que queda de la mañana al otro lado de la ciudad.",
+      "usa_entrada": "tarde",
+      "manana": {
+        "empieza": "07:30",
+        "quitar": [
+          "Via Condotti",
+          "Via Condotti",
+          "Plaza de España",
+          "Trinità dei Monti",
+          "Piazza del Popolo",
+          "Santa Maria del Popolo",
+          "Ara Pacis"
+        ],
+        "ajustar": {
+          "Fontana de Trevi": {
+            "hora": "08:00",
+            "tipo": "fija"
+          }
+        },
+        "insertar": [
+          {
+            "despues_de": "Desayuno romano",
+            "parada": {
+              "lugar": "Free Tour Centro Histórico",
+              "tipo": "fija",
+              "hora": "10:00",
+              "min": 150,
+              "modo": "parada"
+            }
+          }
+        ]
+      }
+    },
+    "free_tour_despues:noche": {
+      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De noche: el tour sustituye la nocturna de ese día (Trevi, Navona y Plaza de España iluminadas); el centro de día se queda y la cena va después del tour.",
+      "noche": "sin_paseo",
+      "tarde.*": {
+        "insertar": [
+          {
+            "parada": {
+              "lugar": "Free Tour Centro Histórico",
+              "tipo": "fija",
+              "hora": "18:30",
+              "min": 150,
+              "modo": "parada"
+            }
+          }
+        ]
+      }
     }
   },
   "experiencias": {
