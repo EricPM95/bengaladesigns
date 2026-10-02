@@ -30,7 +30,7 @@ import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { paseoMaxOf } from './curatedTrip.js'
 
-const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día' }
+const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Cortes de luz por defecto (Roma, 2026-09-28): A antes de 17:40, B hasta 18:44, C hasta 19:44, D desde 19:45. */
 const DEFAULT_CUTS = ['17:40', '18:45', '19:45']
 const VERSIONS = ['A', 'B', 'C', 'D']
@@ -556,7 +556,23 @@ export function planWrittenTrip(args) {
     applyOps(draft, site.cambios, `pool:${name}`)
     draft.poolOps.push([site.cambios, `pool:${name}`])
   }
+  // Viaje de 2 días: por dentro solo lo marcado en el pool (o, sin nada marcado, lo que dice el destino) y lo que va siempre
+  // dentro (el Panteón); el resto de lo que tiene entrada, por fuera (INVARIANTES 449).
+  const shortRule = cityDays.length <= 2 ? written.destino?.viajes_cortos?.dos_dias ?? null : null
+  const insideAllowed = (() => {
+    if (!shortRule) return null
+    const marked = Object.keys(shortRule.marcables ?? {}).filter((name) => inPool(name))
+    return new Set([...(shortRule.siempre_dentro ?? []), ...(marked.length > 0 ? marked.flatMap((name) => shortRule.marcables[name]) : shortRule.dentro_sin_marcar ?? []), ...poolNames, ...insideNames])
+  })()
   const finishDraft = (draft) => {
+    if (insideAllowed) for (const stop of [...draft.manana, ...draft.tarde]) if (stop.modo === 'dentro' && stop.entrada && !insideAllowed.has(stop.lugar)) {
+      stop.modo = 'fuera'
+      stop.motivoFuera = 'viaje_corto'
+      // (Por fuera no hay entrada con hora ni turno que cumplir.)
+      delete stop.hora
+      delete stop.turno
+      if (stop.tipo === 'fija') stop.tipo = 'normal'
+    }
     // "Quiero entrar": lo que el viajero pide ver por dentro.
     for (const stop of [...draft.manana, ...draft.tarde]) if (insideNames.includes(stop.lugar) && stop.modo === 'fuera') stop.modo = 'dentro'
   }
@@ -618,12 +634,12 @@ export function planWrittenTrip(args) {
     const modo = stop.modo ?? 'parada'
     let ready = { ...source }
     if (outsideReason || modo === 'fuera') {
-      const reason = outsideReason ?? OUTSIDE_REASONS.no_cabe
+      const reason = outsideReason ?? (stop.motivoFuera === 'viaje_corto' ? OUTSIDE_REASONS.viaje_corto : OUTSIDE_REASONS.no_cabe)
       ready = {
         ...source,
         visitOutside: true,
         outsideReason: reason,
-        outsideKind: Object.keys(OUTSIDE_REASONS).find((k) => OUTSIDE_REASONS[k] === reason) ?? (reason.startsWith('Todavía') ? 'no_abre' : 'no_cabe'),
+        outsideKind: reason === OUTSIDE_REASONS.viaje_corto ? 'no_cabe' : Object.keys(OUTSIDE_REASONS).find((k) => OUTSIDE_REASONS[k] === reason) ?? (reason.startsWith('Todavía') ? 'no_abre' : 'no_cabe'),
         coordinates: source.pass_by?.coordinates ?? source.coordinates,
         duration_minutes: stop.min_fuera ?? source.minutos_fuera ?? OUTSIDE_MINUTES,
         // (Lo escrito «por fuera» o «si está cerrado, por fuera»: lo decide quien escribe el día, no el motor. 5.4)

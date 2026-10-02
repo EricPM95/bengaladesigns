@@ -73,7 +73,8 @@ export function dayOfReservation(route: Route, reservation: Reservation): DayPla
 
 /** ¿Lleva entrada esta parada? De pago (no acceso libre) y con entradas, reserva obligatoria o un precio de entrada. */
 export function stopHasEntrance(stop: Stop): boolean {
-  if (stop.freeAccess || stop.isFreeWalk || stop.isBreak || stop.isNightExperience || stop.isFreeTime || stop.isZoneWalk) return false
+  // Visto por fuera (Coliseo en un viaje corto): no hay entrada que comprar.
+  if (stop.outsideReason || stop.freeAccess || stop.isFreeWalk || stop.isBreak || stop.isNightExperience || stop.isFreeTime || stop.isZoneWalk) return false
   if (stop.reservation === 'obligatoria') return true
   if ((stop.ticketOptions?.length ?? 0) > 0) return true
   return (stop.ticketInfo ?? []).some((line) => /de pago|se pagan?\b|entrada/i.test(line))

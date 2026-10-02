@@ -5,6 +5,17 @@
     "18:45",
     "19:45"
   ],
+  "viajes_cortos": {
+    "_nota": "Viaje de 2 días (INVARIANTES 449): por dentro solo lo que sigue. Sin nada marcado en el pool, lo de dentro_sin_marcar; con algo marcado (una clave de marcables), lo marcado y sus acompañantes; el Panteón (siempre_dentro) en todos los casos. Lo demás con entrada va por fuera. Un cierre va siempre por fuera.",
+    "dos_dias": {
+      "siempre_dentro": ["Panteón"],
+      "dentro_sin_marcar": ["Coliseo", "Foro Romano y Palatino"],
+      "marcables": {
+        "Coliseo": ["Coliseo", "Foro Romano y Palatino"],
+        "Museos Vaticanos y Capilla Sixtina": ["Museos Vaticanos y Capilla Sixtina"]
+      }
+    }
+  },
   "pool": {
     "_nota": "Cada extra del pool con su sitio escrito (día, mitad y qué sustituye), otro si ese día no está en el viaje y un segundo sitio si chocan (hueco). Manda el orden de pool_lista. Lo que ya va en la ruta no cuenta.",
     "Galería Borghese": {
