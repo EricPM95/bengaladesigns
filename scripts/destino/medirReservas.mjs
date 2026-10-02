@@ -140,6 +140,8 @@ function modelDay(day, dateIso) {
         short: tier === 'imprescindible' && cls === 'imprescindible' ? Math.min(stop.duration_minutes ?? 30, place?.minutos_fuera ?? 15) : null,
         walkMin: cls === 'paseo' ? Math.min(WALK_MIN, stop.duration_minutes ?? WALK_MIN) : null,
       }
+      // Cambio 1 del usuario (2-oct): el Castillo de Sant'Angelo es solo por fuera, 20 min, todos los días (su cierre de los lunes no bloquea nada).
+      if (item.baseName === "Castillo de Sant'Angelo") Object.assign(item, { visit: 'fuera', dur: 20, baseDur: 20, sessions: [{ open: 0, close: 1440 }], lastEntry: null, short: null, grid: null })
     } else {
       const meal = event.meal
       const lunch = meal.time === 'lunch'
@@ -515,10 +517,13 @@ function simulateEntry(trip, models, siteKey, T, targetIdx, stages = STAGES_STRI
   if (solved.bucket === 'no_cabe') return { family: 'entrada', site: siteKey, T, ...solved, target: 'otro', label }
   return { family: 'entrada', site: siteKey, T, ...solved, bucket: 'orden_o_dia', how: 'día', target: 'otro', label, model: moved, reserved }
 }
+/** Un sitio que, si cierra, impide que el grupo vaya a ese día: el sitio con entrada de cada grupo y las joyas. Lo demás se ve por fuera. */
+const blocksGroup = (item) => item.cls === 'joya' || Object.values(SITES).some((site) => site.stop === item.baseName)
+const asOutside = (item) => ({ ...item, visit: 'fuera', dur: Math.min(item.dur, item.place?.minutos_fuera ?? 15), sessions: [{ open: 0, close: 1440 }], lastEntry: null, grid: null, short: null, outsideByClosing: true })
 /** El primer sitio visitado por dentro que cierra en otra fecha (para decir por qué un día no se puede cambiar). */
 function closedItem(model, dateIso) {
   const weekday = weekdayOf(dateIso)
-  return model.items.find((item) => item.kind === 'stop' && item.place && item.visit !== 'fuera' && closedOnDay(item.place, weekday, dateIso))?.name ?? null
+  return model.items.find((item) => item.kind === 'stop' && item.place && item.visit !== 'fuera' && blocksGroup(item) && closedOnDay(item.place, weekday, dateIso))?.name ?? null
 }
 /** El mismo contenido de un día, con los horarios de otra fecha; null si algo de lo que se visita por dentro cierra ese día. */
 function remodel(model, dateIso) {
@@ -526,7 +531,12 @@ function remodel(model, dateIso) {
   const hours = { weekday, dateIso, season: seasonKey(null, dateIso) }
   const items = []
   for (const item of model.items) {
-    if (item.kind === 'stop' && item.place && item.visit !== 'fuera' && closedOnDay(item.place, weekday, dateIso)) return null
+    if (item.kind === 'stop' && item.place && item.visit !== 'fuera' && closedOnDay(item.place, weekday, dateIso)) {
+      // Cambio 2 del usuario: si cierra el sitio con entrada o una joya, el grupo no va a ese día; si cierra otra parada, el grupo va igual y esa se ve por fuera.
+      if (blocksGroup(item)) return null
+      items.push(asOutside(item))
+      continue
+    }
     items.push(item.kind === 'stop' ? { ...item, sessions: sessionsOf(item.place, weekday, dateIso, item.visit), lastEntry: item.place && item.visit !== 'fuera' ? lastEntryMinutes(item.place, item.base0, hours) : null } : { ...item })
   }
   return { ...model, items, dateIso, weekday, hours }
@@ -615,46 +625,65 @@ function simulateFlight(trip, models, kind, H, stages = STAGES_STRICT) {
   return { family: 'vuelo', kind, H, bucket: 'no_cabe', why: worst.why, failItem: worst.item, model }
 }
 
-// ── Horas redondas ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-const roundUpTo = (marks) => (minutes) => {
-  const hour = Math.floor(minutes / 60) * 60
-  for (const mark of marks) if (hour + mark >= minutes - 1e-9) return hour + mark
-  return hour + 60
-}
-const ROUND_VARIANTS = {
-  lista: { label: 'la lista :00 :15 :20 :30 :40 :45 (referencia)', fn: roundUpTo([0, 15, 20, 30, 40, 45]), quarters: false },
-  cinco: { label: '1. de 5 en 5, siempre hacia arriba', fn: roundUpTo(everyMinutes(0, 55, 5)), quarters: false },
-  cuartos: { label: '2. :00 :15 :30 :45 solo donde sobra tiempo', fn: null, quarters: true },
-  juntas: { label: '3. de 5 en 5 en todas y más redondas donde sobra', fn: roundUpTo(everyMinutes(0, 55, 5)), quarters: true },
-}
-const quarterUp = roundUpTo([0, 15, 30, 45])
-function roundingOutcome(items, bounds, variant) {
-  const exact = schedule(items, bounds)
-  if (!exact.ok) return null
-  let k = -1
-  items.forEach((item, i) => {
-    if (item.anchorAt == null && item.reservedAt == null && item.kind === 'stop') k = i
-  })
-  if (k < 0) return null
-  const endOf = (r) => r.starts[k] + items[k].dur
-  let seq = items.map((x) => ({ ...x }))
-  let result = variant.fn ? schedule(seq, bounds, variant.fn) : exact
-  if (!result.ok) return { fits: false }
-  if (variant.quarters) {
-    // Más redondas solo donde sobra: cada parada, de una en una, mientras el día siga cabiendo.
-    for (let i = 0; i < seq.length; i++) {
-      if (seq[i].kind !== 'stop' || seq[i].anchorAt != null || seq[i].reservedAt != null) continue
-      const tried = seq.map((x, j) => (j === i ? { ...x, roundFn: (m) => quarterUp(variant.fn ? variant.fn(m) : m) } : x))
-      const r = schedule(tried, bounds, variant.fn)
-      if (r.ok) {
-        seq = tried
-        result = r
+// ── Horas de 10 en 10, a la más cercana (cambio 3 del usuario) ────────────────────────────────────────────────────────────────
+// 11:32 → 11:30, 11:38 → 11:40, 11:35 → 11:40. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas
+// (menos de 200 m) van seguidas, sin redondear: llevan el mismo hueco que tenían. El motor sigue calculando con los minutos exactos; lo que se
+// redondea es la hora que se enseña, y la visita dura lo que cuadra hasta la siguiente. Se mide:
+//   - cuántos minutos se mueve cada hora (media) y cuántos minutos se le quitan a las visitas al día;
+//   - cuántos días / casos dejan de caber DE VERDAD: una hora enseñada fuera del horario del sitio (antes de abrir o después de la última entrada)
+//     o una apertura que no cae en un múltiplo de 10 (la tarjeta tendría que enseñar :05 o :15);
+//   - y, aparte, lo que cuesta: días con alguna visita enseñada más de 5 min (y un cuarto) más corta de lo que dura.
+const nearest10 = (m) => Math.round(m / 10) * 10
+const CHAIN_METERS = 200
+function roundedView(seq, starts) {
+  const shown = []
+  let forcedOdd = 0
+  const chained = (i) => {
+    const a = seq[i - 1]
+    const b = seq[i]
+    if (!a || !b || !a.coords || !b.coords) return false
+    return straightLineMeters(a.endCoords ?? a.coords, b.coords) < CHAIN_METERS
+  }
+  seq.forEach((item, i) => {
+    const fixed = item.anchorAt != null || item.reservedAt != null
+    let d
+    if (fixed) d = starts[i]
+    else if (i > 0 && chained(i)) d = shown[i - 1] + (starts[i] - starts[i - 1])
+    else d = nearest10(starts[i])
+    // Nunca antes de que abra: si abre a una hora que no es múltiplo de 10, la tarjeta no puede ser redonda.
+    if (!fixed && item.kind === 'stop' && item.visit !== 'fuera') {
+      const session = item.sessions.find((x) => starts[i] >= x.open && starts[i] + item.dur <= x.close)
+      if (session && d < session.open) {
+        d = session.open
+        if (d % 10 !== 0) forcedOdd++
       }
     }
-  }
-  return { fits: true, lost: endOf(result) - endOf(exact) }
+    shown.push(d)
+  })
+  let moved = 0
+  let counted = 0
+  let cutTotal = 0
+  let longCut = 0
+  let window = 0
+  seq.forEach((item, i) => {
+    if (item.anchorAt == null && item.reservedAt == null) {
+      moved += Math.abs(shown[i] - starts[i])
+      counted++
+    }
+    const next = seq[i + 1]
+    if (next) {
+      const available = shown[i + 1] - adjacentLeg(item, next) - shown[i]
+      const cut = Math.max(0, item.dur - available)
+      cutTotal += cut
+      if (cut > Math.max(5, item.dur * 0.25)) longCut++
+    }
+    if (item.kind === 'stop' && item.visit !== 'fuera') {
+      if (item.lastEntry != null && shown[i] > item.lastEntry) window++
+      if (!item.sessions.some((x) => shown[i] >= x.open && shown[i] <= x.close)) window++
+    }
+  })
+  return { moved: counted ? moved / counted : 0, cutTotal, fails: { corte: longCut, horario: window, abre_a_media_hora: forcedOdd }, ok: window + forcedOdd === 0, soft: longCut > 0 }
 }
-
 // ── Principal ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 /** Los 56 viajes de las revisiones (revision20.mjs: 26 rutas; revisionCierre.mjs: 30 viajes), leídos de sus scripts. */
 function trips56() {
@@ -694,14 +723,14 @@ const byWeekday = {}
 const agg = {} // agg[site][T][target][bucket]
 const aggBroad = {}
 const reasons = {}
-const roundingFit = {}
+const round10 = { days: 0, bad: 0, soft: 0, moved: [], cut: [], why: { horario: 0, abre_a_media_hora: 0 } }
+const round10Fit = {}
 const flightAgg = {}
 const flightReasons = {}
 const extras = { madrugon: 0, hueco: 0, cabe: 0, corto: 0, quitado: new Map(), fuera_de_ruta: new Map(), cierre: 0 }
 const failCurated = new Map()
 const failOther = new Map()
 const idle = {}
-const baseRounding = { lista: [], cinco: [], cuartos: [], juntas: [], noCabe: { lista: 0, cinco: 0, cuartos: 0, juntas: 0 }, days: 0 }
 const fidelity = { days: 0, ok: 0, byReason: new Map(), exampleBad: [] }
 const todayFindings = new Map()
 const bump = (obj, ...path) => {
@@ -763,18 +792,18 @@ async function main() {
             if (saturday && !sunday && end > 16 * 60) addToday('Panteón por dentro en la misa de sábado o víspera de festivo', `${model.dateIso} (${model.weekday}): ${hh(item.base0)}-${hh(end)}`)
           }
         }
-        // Las horas redondas sobre el día tal como está.
+        // Las horas de 10 en 10 sobre el día tal como está.
         if (model.items.filter((x) => x.kind === 'stop').length >= 4) {
           const items = linkBaseline(model.items.map((x) => ({ ...x })))
-          const b = { dayStart: model.items[0].base0 }
-          if (schedule(items, b).ok) {
-            baseRounding.days++
-            for (const [key, variant] of Object.entries(ROUND_VARIANTS)) {
-              const out = roundingOutcome(items, b, variant)
-              if (!out) continue
-              if (out.fits) baseRounding[key].push(out.lost)
-              else baseRounding.noCabe[key]++
-            }
+          const exact = schedule(items, { dayStart: model.items[0].base0 })
+          if (exact.ok) {
+            const view = roundedView(items, exact.starts)
+            round10.days++
+            round10.moved.push(view.moved)
+            round10.cut.push(view.cutTotal)
+            if (!view.ok) round10.bad++
+            if (view.soft) round10.soft++
+            for (const [k, v] of Object.entries(view.fails)) if (v > 0 && k !== 'corte') round10.why[k]++
           }
         }
       })
@@ -826,14 +855,14 @@ async function main() {
               if (res.starts && holeOf(res.seq, res.starts) > 90) extras.hueco++
               if ((res.actions ?? []).some((a) => a.tipo === 'corto')) extras.corto++
               for (const a of res.actions ?? []) tally(extras.quitado, `${a.tipo}: ${a.name}`)
-              if (scenarios % 4 === 0) {
-                for (const [key, variant] of Object.entries(ROUND_VARIANTS)) {
-                  if (!variant.fn || key === 'juntas') continue
-                  const again = simulateEntry(trip, models, siteKey, T, d, STAGES_STRICT, variant.fn)
-                  const entry = ((roundingFit[siteKey] ??= {})[key] ??= { checked: 0, stop: 0, worse: 0 })
-                  entry.checked++
-                  if (again.bucket === 'no_cabe') entry.stop++
-                  else if (BUCKET_RANK[again.bucket] > BUCKET_RANK[res.bucket]) entry.worse++
+              if (res.seq && res.starts) {
+                const view = roundedView(res.seq, res.starts)
+                const entry = (round10Fit[siteKey] ??= { checked: 0, stop: 0, soft: 0, why: { horario: 0, abre_a_media_hora: 0 } })
+                entry.checked++
+                if (view.soft) entry.soft++
+                if (!view.ok) {
+                  entry.stop++
+                  for (const [k, v] of Object.entries(view.fails)) if (v > 0 && k !== 'corte') entry.why[k]++
                 }
               }
             } else if (res.target === 'mismo') {
@@ -890,7 +919,7 @@ async function main() {
   return { trips, scenarios, starts: TRIPS56 ? 0 : starts.length }
 }
 
-export { failOther, byWeekday, schedule, modelDay, solveDay, SITES, GROUPS, simulateEntry, simulateFT, simulateFlight, buildTrip, STAGES_STRICT, STAGES_BROAD, applyStage, ROUND_VARIANTS, main, agg, aggBroad, reasons, flightAgg, flightReasons, extras, failCurated, idle, baseRounding, roundingFit, fidelity, todayFindings, failures, slotsFor, modelsOf, hh, pct, FREE_TOUR }
+export { failOther, byWeekday, schedule, modelDay, solveDay, SITES, GROUPS, simulateEntry, simulateFT, simulateFlight, buildTrip, STAGES_STRICT, STAGES_BROAD, applyStage, round10, round10Fit, main, agg, aggBroad, reasons, flightAgg, flightReasons, extras, failCurated, idle, fidelity, todayFindings, failures, slotsFor, modelsOf, hh, pct, FREE_TOUR }
 export const ARGS = { STEP, LENGTHS, YEAR, OUT, started, BROAD }
 
 // ── El informe ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -992,8 +1021,7 @@ function buildReport(summary) {
   }
   const flightLine = (kind) => [9, 12, 15, 18, 21].map((H) => { const node = flightAgg[kind]?.[H] ?? {}; const n = BUCKETS.reduce((a, b) => a + (node[b] ?? 0), 0); return `${H}:00 → ${pct(node.no_cabe ?? 0, n)}` }).join(', ')
   out.push(`- **Vuelos**, % que no cabe — llegada: ${flightLine('llegada')}. Salida: ${flightLine('salida')}.`)
-  const mean = (k) => avg(baseRounding[k])
-  out.push(`- **Horas redondas**: de 5 en 5 hacia arriba pierde de media ${mean('cinco')} min al día (y ${baseRounding.noCabe.cinco} días dejan de caber de ${baseRounding.days}); tu lista :00/:15/:20/:30/:40/:45 pierde ${mean('lista')} min y ${pct(baseRounding.noCabe.lista, baseRounding.days)} de los días dejan de caber; los cuartos de hora «donde sobra» cuestan ${mean('cuartos')} min y no rompen nada.`)
+  out.push(`- **Horas de 10 en 10, a la más cercana**: mueve cada hora ${avg(round10.moved)} min de media; dejan de caber de verdad ${round10.bad} de ${round10.days} días (${pct(round10.bad, round10.days)}) y, entre las reservas que caben, ${Object.values(round10Fit).reduce((a, v) => a + v.stop, 0)} de ${Object.values(round10Fit).reduce((a, v) => a + v.checked, 0)} (${pct(Object.values(round10Fit).reduce((a, v) => a + v.stop, 0), Object.values(round10Fit).reduce((a, v) => a + v.checked, 0))}); el coste: ${pct(round10.soft, round10.days)} de los días llevan alguna visita enseñada más de 5 min más corta (${avg(round10.cut)} min al día en total).`)
   out.push('')
   // Fuentes
   out.push('## Las horas de entrada y de dónde salen (comprobadas el 2-oct-2026)', '',
@@ -1067,18 +1095,15 @@ function buildReport(summary) {
   }
   out.push('')
   // 6. Horas redondas
-  out.push('## 6. Horas redondas', '', `Sobre ${baseRounding.days} días tal como los monta el motor (sin ninguna reserva), con las anclas (atardecer, nocturnas, cena) en su hora. Minutos que se pierden al día = lo que se retrasa la última parada del día antes de la cena; «no caben» = días que dejan de caber (se pisaría el atardecer, la cena o un cierre).`, '',
-    row(['Variante', 'Minutos perdidos al día: media', 'mediana', 'p90', 'Días que dejan de caber']), row(Array(5).fill('---')))
-  for (const [key, variant] of Object.entries(ROUND_VARIANTS)) {
-    const list = baseRounding[key]
-    out.push(row([variant.label, avg(list), quantile(list, 0.5), quantile(list, 0.9), `${baseRounding.noCabe[key]} de ${baseRounding.days} (${pct(baseRounding.noCabe[key], baseRounding.days)})`]))
-  }
-  out.push('', 'Las variantes 2 y 3 solo redondean a cuarto de hora cuando después sigue cabiendo todo (parada a parada, mientras el día aguante), así que **por construcción nunca hacen que algo deje de caber**; lo que cuestan es la media de la tabla. «Donde sobra» lo he generalizado a cualquier parada con holgura, no solo la de después de comer o antes de la nocturna.', '')
-  out.push('### Y con reservas: qué casos que caben dejan de caber al redondear', '', 'Se vuelve a resolver cada caso (una de cada cuatro reservas que caben) con el redondeo puesto.', '', row(['Sitio', 'Variante', 'Casos', 'Dejan de caber', 'Caben, pero tocando más']), row(Array(5).fill('---')))
+  out.push('## 6. Horas de 10 en 10, a la más cercana', '', 'La forma que pidió el usuario: 11:32 → 11:30, 11:38 → 11:40. Las horas fijas (entradas, atardecer, recogidas, cena) mantienen su hora real y las paradas pegadas (menos de 200 m) van seguidas, sin redondear. El motor sigue calculando con minutos exactos; se redondea la hora que se enseña y la visita dura lo que cuadra hasta la siguiente.', '',
+    'Un caso **deja de caber de verdad** si, al redondear, una hora cae fuera del horario del sitio (antes de abrir o después de la última entrada) o un sitio abre a una hora que no es múltiplo de 10 (la tarjeta no puede ser redonda). **El coste** es otra cosa: como la visita dura lo que cuadra hasta la siguiente, al redondear a la más cercana a veces se enseña una visita unos minutos más corta; se cuentan los casos con alguna visita enseñada más de 5 min (y más de un cuarto) más corta.', '',
+    row(['Sobre', 'Casos', 'Dejan de caber', 'Por qué', 'Con alguna visita recortada (coste)']), row(Array(5).fill('---')))
+  out.push(row(['Días que monta hoy el motor (sin reservas)', round10.days, `${round10.bad} (${pct(round10.bad, round10.days)})`, `fuera de horario ${round10.why.horario} · abre a media hora ${round10.why.abre_a_media_hora}`, `${round10.soft} (${pct(round10.soft, round10.days)})`]))
   for (const [key, site] of Object.entries(SITES)) {
-    for (const [vk, v] of Object.entries(roundingFit[key] ?? {})) out.push(row([site.label, ROUND_VARIANTS[vk].label, v.checked, `${v.stop} (${pct(v.stop, v.checked)})`, `${v.worse} (${pct(v.worse, v.checked)})`]))
+    const v = round10Fit[key]
+    if (v) out.push(row([`Reservas que caben: ${site.label}`, v.checked, `${v.stop} (${pct(v.stop, v.checked)})`, `fuera de horario ${v.why.horario} · abre a media hora ${v.why.abre_a_media_hora}`, `${v.soft} (${pct(v.soft, v.checked)})`]))
   }
-  out.push('')
+  out.push('', `Minutos: cada hora se mueve ${avg(round10.moved)} min de media (mediana ${quantile(round10.moved, 0.5)}, p90 ${quantile(round10.moved, 0.9)}), y a las visitas se les quitan ${avg(round10.cut)} min al día en total (p90 ${quantile(round10.cut, 0.9)}).`, '')
   // 7. Qué reescribir
   out.push('## 7. Qué días de Roma reescribir, o dónde poner un paseo, para que no quede ningún «no cabe»', '')
   out.push('### 7a. Reserva el mismo día en que ya está el grupo: lo que no cabe (y no es un cierre ni una franja imposible)', '',
