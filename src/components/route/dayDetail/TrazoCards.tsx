@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ReservedMarks } from '../reservas/ReservedMarks'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
 
 /**
@@ -53,6 +54,8 @@ interface TrazoCardProps {
   children?: ReactNode
   /** Un control propio abajo a la derecha, fuera del botón de abrir ("Quiero entrar"). */
   action?: ReactNode
+  /** Reservada (una entrada, una excursión): la franja de color, en verde, y arriba «Reservada ✓» con el candado de «Fijada». Lo añadido sin reservar no lo lleva. */
+  reserved?: boolean
   /** El número en el color del día (PROMPT_UI, Parte 2): relleno claro, número fuerte y borde blanco. */
   numberColors?: { bg: string; text: string }
 }
@@ -62,12 +65,15 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
-  const panel = sunset ? SUNSET_PANEL : night ? NIGHT_PANEL : style.color
-  const photoBg = sunset
+  const RESERVED_GREEN = 'rgb(var(--accent-green))'
+  const panel = reserved ? RESERVED_GREEN : sunset ? SUNSET_PANEL : night ? NIGHT_PANEL : style.color
+  const photoBg = reserved
+    ? 'linear-gradient(135deg, rgb(var(--accent-green) / .45), rgb(var(--accent-green) / .15))'
+    : sunset
     ? 'linear-gradient(180deg, oklch(0.8 0.12 60), oklch(0.66 0.17 25))'
     : night
       ? 'linear-gradient(180deg, oklch(0.3 0.08 275), oklch(0.45 0.1 60))'
@@ -91,6 +97,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
         </div>
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
+        {reserved && <ReservedMarks compact className="mb-0.5" />}
         {time && (
           <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
             {time}

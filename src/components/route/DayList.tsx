@@ -27,8 +27,10 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
-import { isDayPinned } from '../../lib/bookings'
+import { dayOfReservation, isDayPinned } from '../../lib/bookings'
+import { displayStopName } from '../../lib/format'
 import { SaleCards } from './reservas/SaleCards'
+import { DayReservedTag } from './reservas/ReservedMarks'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
@@ -270,6 +272,17 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                       <DateNoticeTag key={notice.id} notice={notice} />
                     ))}
                   </span>
+                )}
+                {/* Lo reservado de ese día (una entrada, una excursión, el Free Tour): el candado y lo fijado, en verde. */}
+                {!expanded && (
+                  <DayReservedTag
+                    items={reservations
+                      .filter((reservation) => dayOfReservation(route, reservation)?.id === day.id)
+                      .map((reservation) => ({
+                        name: reservation.kind === 'entrada' ? displayStopName(day.stops.find((stop) => stop.reservedId === reservation.id)?.name ?? reservation.placeNames[0] ?? reservation.name) : reservation.name,
+                        time: reservation.time,
+                      }))}
+                  />
                 )}
                 {/* Cerrado: un puntito por parada, del color de su tipo, y cuántas son. */}
                 {!expanded && numbered.length > 0 && (

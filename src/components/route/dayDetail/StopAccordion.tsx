@@ -116,7 +116,6 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // Junto a un imprescindible y cerrado a esa hora: se ve por fuera, con su etiqueta y sin el aviso en rojo (paso 5.4).
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
-  if (stop.reservedId) tags.unshift({ label: 'Reservada ✓', kind, green: true }, { label: 'Fijada', kind, green: true })
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 
@@ -130,6 +129,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}
+      reserved={Boolean(stop.reservedId)}
       photoUrl={stop.photoUrl}
       iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}
       onOpen={onOpen}

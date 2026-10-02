@@ -10,7 +10,7 @@ export function useExcursionReservation(excursionId: string | null | undefined):
   return useRouteStore((state) => (excursionId ? (state.reservations.find((reservation) => reservation.kind === 'excursion' && reservation.refId === excursionId) ?? null) : null))
 }
 
-function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
+export function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="5" y="11" width="14" height="9" rx="2" />
@@ -20,20 +20,35 @@ function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
 }
 
 /** Las dos marcas de lo reservado: «Reservada ✓» en verde y un candado con «Fijada» (PARA_CODE_RESERVAS, 6). */
-export function ReservedMarks({ className = '' }: { className?: string }) {
+export function ReservedMarks({ className = '', compact = false }: { className?: string; compact?: boolean }) {
+  const pill = compact ? 'px-2 py-0.5 text-[10.5px]' : 'px-2.5 py-1 text-[12px]'
   return (
-    <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
-      <span className="inline-flex items-center gap-1 rounded-full bg-accent-green px-2.5 py-1 text-[12px] font-semibold text-white">
+    <div className={`flex flex-wrap items-center ${compact ? 'gap-1' : 'gap-1.5'} ${className}`}>
+      <span className={`inline-flex items-center gap-1 rounded-full bg-accent-green font-semibold text-white ${pill}`}>
         <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <polyline points="20 6 9 17 4 12" />
         </svg>
         Reservada
       </span>
-      <span className="inline-flex items-center gap-1 rounded-full border border-text/20 bg-bg-card px-2.5 py-1 text-[12px] font-semibold text-text-soft">
+      <span className={`inline-flex items-center gap-1 rounded-full border border-text/20 bg-bg-card font-semibold text-text-soft ${pill}`}>
         <LockIcon className="h-3 w-3" />
         Fijada
       </span>
     </div>
+  )
+}
+
+/**
+ * La etiqueta pequeña de un día cerrado con algo reservado (PARA_CODE_UI_DIAS, 7): el candado y lo fijado, «Coliseo · 11:00»; con dos o más,
+ * «2 reservas». El mismo verde y el mismo candado de Reservas.
+ */
+export function DayReservedTag({ items }: { items: { name: string; time: string }[] }) {
+  if (items.length === 0) return null
+  return (
+    <span className="mt-1 inline-flex w-fit max-w-full items-center gap-1 text-[12.5px] font-medium text-accent-green">
+      <LockIcon className="h-3 w-3 shrink-0" />
+      <span className="truncate">{items.length === 1 ? `${items[0].name} · ${items[0].time}` : `${items.length} reservas`}</span>
+    </span>
   )
 }
 
