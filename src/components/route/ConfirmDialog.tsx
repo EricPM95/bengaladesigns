@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
  * Una pregunta antes de algo que no se deshace (retocar la ruta, decisión del usuario 2026-09-28): volver a la ruta
  * original, regenerar un día con cambios. El mismo panel que "Quiero entrar" y las fechas (diseño Trazo), en el body.
  */
-export function ConfirmDialog({ eyebrow, text, confirmLabel, cancelLabel = 'Mejor no', onConfirm, onCancel }: { eyebrow: string; text: string; confirmLabel: string; cancelLabel?: string; onConfirm: () => void; onCancel: () => void }) {
+export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel = 'Mejor no', onConfirm, onCancel }: { eyebrow: string; text: string; detail?: string; confirmLabel: string; cancelLabel?: string; onConfirm: () => void; onCancel: () => void }) {
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="confirm-heading">
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onCancel} />
@@ -13,6 +13,7 @@ export function ConfirmDialog({ eyebrow, text, confirmLabel, cancelLabel = 'Mejo
         <h2 id="confirm-heading" className="mt-2 font-display text-[24px] leading-[1.15] text-text">
           {text}
         </h2>
+        {detail && <p className="mt-2 text-[14.5px] leading-snug text-text-soft">{detail}</p>}
         <div className="mt-5 flex gap-2">
           <button type="button" onClick={onCancel} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover">
             {cancelLabel}

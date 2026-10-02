@@ -6,6 +6,9 @@ import { addDaysToIso } from '../../lib/dateRange'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DestinationDistanceConnector } from './DestinationDistanceConnector'
 import { DestinationDetailModal } from './DestinationDetailModal'
+import { ConfirmDialog } from './ConfirmDialog'
+import { MagicWandIcon } from './MagicWandIcon'
+import { withUndo } from '../../store/useAddFlowStore'
 
 interface RouteOverviewProps {
   route: Route
@@ -24,6 +27,9 @@ const shortDate = (iso: string) => `${iso.slice(8, 10)} ${MONTHS_SHORT[Number(is
  */
 export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps) {
   const [detailCity, setDetailCity] = useState<string | null>(null)
+  // «Recuperar mi ruta» (la varita de la tarjeta del destino): la pregunta antes de volver a la ruta que preparamos.
+  const [askRestoreCity, setAskRestoreCity] = useState<string | null>(null)
+  const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
   useEffect(() => {
     onDetailOpenChange?.(detailCity !== null)
     return () => onDetailOpenChange?.(false)
@@ -34,6 +40,9 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
   const segments = buildDestinationSegments(route.days).map((segment) => (segment.countryCode ? segment : { ...segment, countryCode: dayCountryCode(fallbackCountry, segment.city) }))
   const detailSegment = detailCity ? segments.find((segment) => segment.city === detailCity) : undefined
   const tripStart = route.answers.dateRange?.start ?? null
+  // La ruta original es la del viaje entero: con varios destinos la varita no sale (no se puede recuperar solo uno).
+  const canRestoreRoute = segments.length === 1 && Boolean(route.originalRoute)
+  const routeChanged = Boolean(route.editedManually && route.originalRoute)
 
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-36 pt-4">
@@ -46,11 +55,8 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         return (
           <div key={segment.id}>
             {index > 0 && <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />}
-            <button
-              type="button"
-              onClick={() => setDetailCity(segment.city)}
-              className="relative flex h-20 w-full items-center gap-3.5 overflow-hidden rounded-3xl border border-text/10 bg-bg-card pl-4 pr-3 text-left shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)]"
-            >
+            <div className="relative flex h-20 w-full items-center overflow-hidden rounded-3xl border border-text/10 bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)]">
+            <button type="button" onClick={() => setDetailCity(segment.city)} className="flex h-full min-w-0 flex-1 items-center gap-3.5 pl-4 pr-1 text-left">
               {/* La bandera: sus colores en franjas inclinadas, en un cuadrado de esquinas redondeadas. */}
               <span
                 aria-hidden="true"
@@ -64,15 +70,45 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                   {dates ? ` · ${dates}` : ''}
                 </span>
               </span>
-              <span className="flex w-[22px] justify-center text-text/45">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 6l6 6-6 6" />
-                </svg>
-              </span>
             </button>
+            {canRestoreRoute && (
+              <button
+                type="button"
+                disabled={!routeChanged}
+                onClick={() => setAskRestoreCity(segment.city)}
+                title={routeChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
+                aria-label="Recuperar mi ruta"
+                className="group flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"
+              >
+                <span className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
+                  <MagicWandIcon className="h-[19px] w-[19px]" />
+                </span>
+              </button>
+            )}
+            <button type="button" onClick={() => setDetailCity(segment.city)} aria-label={segment.city} tabIndex={-1} className="flex h-full w-[34px] shrink-0 items-center justify-center pr-2 text-text/45">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </button>
+            </div>
           </div>
         )
       })}
+
+      {askRestoreCity && (
+        <ConfirmDialog
+          eyebrow="Ruta original"
+          text={`¿Recuperar tu ruta de ${askRestoreCity}?`}
+          detail="Se pierden los cambios que has hecho en tus días. Lo que tienes reservado se queda en su día y a su hora."
+          confirmLabel="Recuperar"
+          cancelLabel="Cancelar"
+          onCancel={() => setAskRestoreCity(null)}
+          onConfirm={() => {
+            setAskRestoreCity(null)
+            withUndo('Ruta recuperada', () => restoreOriginalRoute())
+          }}
+        />
+      )}
 
       <DestinationDetailModal
         city={detailCity}

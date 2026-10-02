@@ -18,7 +18,6 @@ import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
-import { DayWandMenu } from './dayDetail/DayWandMenu'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ContextBanner } from './ContextBanner'
@@ -86,9 +85,8 @@ function ChevronIcon() {
 export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap, onOpenDates }: DayListProps) {
   const reorderDays = useRouteStore((state) => state.reorderDays)
   const listRef = useRef<HTMLDivElement>(null)
-  // La pregunta antes de recuperar el original de un día o de toda la ruta (la varita de cada día, paso 8).
-  const [askRestore, setAskRestore] = useState<{ kind: 'day'; dayId: string; dayNumber: number } | { kind: 'route' } | null>(null)
-  const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
+  // La pregunta antes de recuperar el original de un día («Recuperar este día», en los tres puntos). La de toda la ruta vive en la tarjeta del destino, en Ruta.
+  const [askRestore, setAskRestore] = useState<{ dayId: string; dayNumber: number } | null>(null)
   // Al abrir un día, los demás se cierran (activeDayId es uno solo) y la pantalla sube sola hasta el principio de ese día: si se
   // estaba leyendo el final del Día 1 y se toca el Día 2, se abre por su primera parada (paso 6.5).
   useEffect(() => {
@@ -287,16 +285,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>
-                <DayWandMenu
-                  dayChanged={isFreeDay(day) || day.userAdded ? null : isDayPinned(route, reservations, day) ? false : Boolean(day.originalSnapshot)}
-                  routeChanged={Boolean(route.editedManually && route.originalRoute)}
-                  onRestoreDay={() => setAskRestore({ kind: 'day', dayId: day.id, dayNumber: day.dayNumber })}
-                  onRestoreRoute={() => setAskRestore({ kind: 'route' })}
-                />
-              </span>
-
-              <span onClick={(event) => event.stopPropagation()}>
                 <DayMenu
+                  // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
+                  onRestoreDay={!isFreeDay(day) && !day.userAdded && !isDayPinned(route, reservations, day) && day.originalSnapshot ? () => setAskRestore({ dayId: day.id, dayNumber: day.dayNumber }) : undefined}
                   onDelete={isDayPinned(route, reservations, day) ? null : () => setRemoveDayId(day.id)}
                   freeDay={
                     isFreeDay(day) || day.userAdded
@@ -400,24 +391,16 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       )}
       {askRestore && (
         <ConfirmDialog
-          eyebrow={askRestore.kind === 'day' ? `Día ${askRestore.dayNumber}` : 'Ruta original'}
-          text={
-            askRestore.kind === 'day'
-              ? '¿Recuperar este día? Quedará tal como te lo preparamos y se perderán los cambios que has hecho en él.'
-              : '¿Recuperar toda tu ruta? Tus días quedarán tal como te los preparamos y se perderán todos los cambios que has hecho.'
-          }
+          eyebrow={`Día ${askRestore.dayNumber}`}
+          text="¿Recuperar este día?"
+          detail="Quedará tal como te lo preparamos y se perderán los cambios que has hecho en él. Lo que tienes reservado se queda en su día y a su hora."
           confirmLabel="Recuperar"
           cancelLabel="Cancelar"
           onCancel={() => setAskRestore(null)}
           onConfirm={() => {
             const ask = askRestore
             setAskRestore(null)
-            if (ask.kind === 'day') withUndo('Día recuperado', () => restoreOriginalDay(ask.dayId))
-            else {
-              onSelectDay(null)
-              onDayMapChange(null)
-              withUndo('Ruta original recuperada', () => restoreOriginalRoute())
-            }
+            withUndo('Día recuperado', () => restoreOriginalDay(ask.dayId))
           }}
         />
       )}
