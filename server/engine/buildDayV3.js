@@ -628,6 +628,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     stops: quarterHourStops([...stops, ...nightStops]),
     meals: meals.map((meal) => ({ ...meal, suggested_time: nearestQuarter(meal.suggested_time), ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end) } : {}) })),
     not_included: [],
+    // Un paseo de noche curado por el día (viaje de 1 día: Trevi y Plaza de España) que no cabe antes de las 23:00 no desaparece en silencio.
+    ...(tripDay.nightWholeWalk ? { night_dropped: chainForNight.filter((entry) => !nightStops.some((stop) => stop.name === entry.name)).map((entry) => (entry.conflicts_with ?? [])[0] ?? entry.name) } : {}),
     times_are_final: true,
     dinner_zone: tripDay.dinnerZone ?? dinnerZone,
     half_day_excursion: mediaJornada

@@ -39,6 +39,8 @@ const INSIDE_MAX_STOPS_LOST = 2
 /** En 1 día, a partir de aquí la tarde se da por libre y se rellena (`relleno_tarde_libre`). */
 const SHORT_FREE_AFTERNOON_MINUTES = 90
 const FILLER_CURATED_OFFSET = 1000
+/** Minutos que se espera, como mucho, a la hora de la puesta de sol en un mirador «si cuadra» (incluye el paseo hasta él; el relleno de hueco, Borgo Pio, cubre una parte). */
+const SUNSET_IF_FITS_MAX_WAIT = 100
 const EXTRA_PASS_BY_MINUTES = 15
 /** Prioridad para caerse cuando algo no cabe: cuanto más alta, antes se cae. */
 const DROP_RANK = { extra: 4, core: 3, pool: 2, joya: 1 }
@@ -128,7 +130,12 @@ function blockStops(block, experiencesPositive, destData) {
   }
   // Viajes cortos: ningún museo de pago de más (Parte A, regla 2: `museos_de_pago`); el arte, gratis.
   // Lo del pool entra por su propio camino (sustituciones), no por aquí.
-  return paidMuseumQuota(destData, 1) > 0 ? stops : stops.filter((stop) => !isPaidMuseum(placeOf(stop.name)))
+  // (Con todo por fuera, un museo con `minutos_fuera` —el Castillo de Sant'Angelo— no ocupa cupo: se ve desde la calle.)
+  const seenFromOutside = (place) => destData.short_trips?.todo_por_fuera === true && place?.minutos_fuera != null
+  const kept = paidMuseumQuota(destData, 1) > 0 ? stops : stops.filter((stop) => !isPaidMuseum(placeOf(stop.name)) || seenFromOutside(placeOf(stop.name)))
+  // El mirador del bloque a la hora del atardecer (el Puente Sant'Angelo de la tarde del Vaticano).
+  if (block.atardecer) for (const stop of kept) if (stop.name === block.atardecer) Object.assign(stop, { atSunset: true, sunsetIfFits: true })
+  return kept
 }
 
 /**
@@ -191,6 +198,8 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
   const combination = slots.length >= 3 ? config.combinations['1_5_dias'] : config.combinations['1_dia']
   let blockIds = [...combination.default]
   let nightHint = null
+  // Con Free Tour, el tour sustituye al bloque del Centro: se queda el reparto de siempre (Roma Antigua + Centro).
+  if (hasFreeTour && combination.if_free_tour) blockIds = [...combination.if_free_tour.blocks]
   for (const [name, rule] of Object.entries(combination.if_pool_contains ?? {})) {
     if (!poolNames.includes(name)) continue
     blockIds = [...rule.blocks]
@@ -212,14 +221,15 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
   // (El bloque que el Free Tour sustituye no se cae porque cierre su imprescindible: el tour recorre el centro igual, con
   // el Panteón cerrado el 25 de diciembre; ese día el Panteón se ve por fuera. PROMPT_ROMA_NAVIDAD 4.)
   const tourReplaces = (id) => hasFreeTour && Boolean(blocks[id]?.free_tour?.replaces_block)
-  const unusable = (id) => !tourReplaces(id) && (closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id]))
+  // (Los bloques de 1 día «por fuera» (M y V) no se cambian por otro: un cierre ya los deja por fuera, parada a parada.)
+  const unusable = (id) => !tourReplaces(id) && !blocks[id]?.nunca_cerrado && (closedEssentials(id).length > 0 || Boolean(unavailableBlocks[id]))
   const closedBlocks = blockIds.filter(unusable)
   // Un bloque con cierre y sin otra combinación NO desaparece: se hace por fuera, con lo gratis y lo
   // que se ve desde la calle (decisión del 2026-09-25; el 25 de diciembre, Roma Antigua: Arco, Coliseo
   // por fuera y el Foro desde la Via dei Fori Imperiali).
   const exteriorBlocks = new Set()
   if (closedBlocks.length > 0) {
-    const spare = Object.keys(blocks).filter((id) => !blockIds.includes(id) && !unusable(id))
+    const spare = Object.keys(blocks).filter((id) => !blockIds.includes(id) && !unusable(id) && !blocks[id].nunca_cerrado)
     blockIds = blockIds.map((id) => {
       if (!closedBlocks.includes(id)) return id
       const replacement = spare.shift()
@@ -332,7 +342,7 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       units.push({
         id: group ? `${group}:${blockId}` : stop.name,
         group,
-        places: [stop.atSunset ? { ...place, atSunset: true } : place],
+        places: [stop.atSunset ? { ...place, atSunset: true, ...(stop.sunsetIfFits ? { sunsetIfFits: true } : {}) } : place],
         dropRank: rank,
         slot,
         blockId,
@@ -435,8 +445,10 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
           .map((option) => ({ option, walk: travel.leg(lastOfAfternoon.end_coordinates ?? lastOfAfternoon.coordinates, option.coordinates)?.minutes ?? Infinity }))
           .sort((a, b) => a.walk - b.walk || a.option.id.localeCompare(b.option.id, 'es'))[0]?.option ?? null
       : null
-    const dinnerZone = nearestDinner?.id ?? (afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon ?? null : null)
-    const dinnerCoords = nearestDinner?.coordinates ?? (dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null)
+    // El bloque de la tarde puede fijar la cena (y su paseo de noche): el día completo acaba en el Tridente con Trevi y Plaza de España iluminadas.
+    const fixedDinner = afternoon && blocks[afternoon.id].dinner_zone ? dinnerZones(destData).find((option) => option.id === blocks[afternoon.id].dinner_zone) ?? null : null
+    const dinnerZone = fixedDinner?.id ?? nearestDinner?.id ?? (afternoon ? blocks[afternoon.id].dinner_zone_if_afternoon ?? null : null)
+    const dinnerCoords = fixedDinner?.coordinates ?? nearestDinner?.coordinates ?? (dinnerZone ? destData.meal_zones?.[dinnerZone]?.cena?.coordinates ?? null : null)
     const hours = hoursFor(dayNumber)
     // El mirador marcado para el atardecer, a su hora; si con el atardecer se pierde algo, a otra hora.
     const withSunset = (list) => list.map((unit) => ({ ...unit, places: unit.places.map((place) => (place.atSunset && hours.sunset != null ? { ...place, sunset: hours.sunset } : place)) }))
@@ -445,6 +457,9 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       const plain = scheduleFixed(dayMode, dayUnits)
       if (sunsetUnits.every((unit, index) => unit.places.every((place, i) => place === dayUnits[index].places[i]))) return plain
       const atSunset = scheduleFixed(dayMode, sunsetUnits)
+      // «Al atardecer, si cuadra»: si para llegar a la hora de la puesta hay que esperar más de ${SUNSET_IF_FITS_MAX_WAIT} min sin nada, no se espera: la tarde sigue (y se rellena) sin el atardecer.
+      const waitsTooLong = (result) => result.visits.some((visit, i) => i > 0 && visit.place.sunsetIfFits && visit.start - result.visits[i - 1].end > SUNSET_IF_FITS_MAX_WAIT)
+      if (waitsTooLong(atSunset)) return plain
       // El atardecer no vale un imprescindible: se cuenta lo que se pierde, lo de nivel 1 mucho más.
       const loss = (result) => result.dropped.reduce((sum, { unit }) => sum + unit.places.reduce((acc, place) => acc + (place.level === 1 ? 10 : 1), 0), 0)
       return loss(atSunset) <= loss(plain) ? atSunset : plain
@@ -634,6 +649,7 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       lunchZone,
       dinnerZone,
       blocks: daySlots.map((a) => ({ id: a.id, slot: a.slot, label: a.id === freeTourBlock ? 'Free Tour' : blocks[a.id].label })),
+      ...(afternoon && blocks[afternoon.id].night_names ? { nightNames: blocks[afternoon.id].night_names, nightWholeWalk: Boolean(blocks[afternoon.id].night_whole_walk) } : {}),
       isBlank: false,
       isExcursion: false,
       halfDayExcursion: null,

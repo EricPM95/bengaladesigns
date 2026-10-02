@@ -6319,6 +6319,53 @@
       "tarde": "desde la comida hasta la cena, con cena y nocturna al final"
     },
     "blocks": {
+      "M": {
+        "label": "Roma Antigua y Centro",
+        "nunca_cerrado": true,
+        "_nota": "Viaje de 1 día, mañana (2026-10-03, aprobado por el usuario): todo por fuera salvo lo gratis, para ver casi toda Roma. Coliseo, Arco, Foro desde Via dei Fori Imperiali, Altar de la Patria, Campidoglio, Panteón y Navona; las iglesias gratis cortas, por dentro.",
+        "preferred_slot": "manana",
+        "allowed_slots": [
+          "manana"
+        ],
+        "core": [
+          "Coliseo",
+          "Arco de Constantino",
+          "Foro Romano y Palatino",
+          "Plaza del Campidoglio",
+          "Altar de la Patria",
+          "Panteón",
+          "Iglesia de Santa Maria sopra Minerva",
+          "Piazza Navona",
+          "Iglesia de San Luigi dei Francesi"
+        ],
+        "extras_completo": [],
+        "lunch_zone_if_morning": "centro_historico"
+      },
+      "V": {
+        "label": "Vaticano por fuera",
+        "nunca_cerrado": true,
+        "_nota": "Viaje de 1 día, tarde: la Plaza y la Basílica (gratis), Via della Conciliazione y el Puente y el Castillo de Sant'Angelo por fuera, con el Puente al atardecer. Cena en el Tridente y, de noche, Trevi y Plaza de España iluminadas.",
+        "preferred_slot": "tarde",
+        "allowed_slots": [
+          "tarde"
+        ],
+        "afternoon_start": "14:30",
+        "atardecer": "Puente Sant'Angelo",
+        "core": [
+          "Plaza de San Pedro",
+          "Basílica de San Pedro",
+          "Via della Conciliazione",
+          "Puente Sant'Angelo",
+          "Castillo de Sant'Angelo"
+        ],
+        "extras_completo": [],
+        "dinner_zone": "tridente",
+        "night_whole_walk": true,
+        "night_names": [
+          "Fontana de Trevi (noche)",
+          "Plaza de España (noche)"
+        ]
+      },
       "A": {
         "label": "Roma Antigua",
         "preferred_slot": "manana",
@@ -6426,9 +6473,16 @@
     "combinations": {
       "1_dia": {
         "default": [
-          "A",
-          "B"
+          "M",
+          "V"
         ],
+        "if_free_tour": {
+          "blocks": [
+            "A",
+            "B"
+          ],
+          "_nota": "Con Free Tour, el tour hace el Centro (10:00): se queda Roma Antigua + Centro de siempre."
+        },
         "if_pool_contains": {
           "Museos Vaticanos y Capilla Sixtina": {
             "blocks": [
@@ -6438,9 +6492,7 @@
             "night_hint": "Coliseo iluminado por fuera después de cenar."
           }
         },
-        "not_included": {
-          "C": "Con medio día más podrías ver el Vaticano."
-        }
+        "not_included": {}
       },
       "1_5_dias": {
         "default": [

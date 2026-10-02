@@ -2612,3 +2612,13 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 
 451. **Viajes de 2,5 días**: hoy el motor no conoce el medio día (los vuelos se recortan en el cliente con `fitDayToTrip`), así que un viaje de 3 días sale como 3 días enteros. La regla
     (medio día = regla de 1 día; días enteros = viaje de esos días; la entrada solo en los días enteros) queda escrita y pendiente de implementar cuando el motor reciba los vuelos.
+
+452. **Lo que no se ve desde la calle no existe «por fuera»** (3-oct-2026, todos los destinos). Un lugar sin `minutos_fuera`, sin `pass_by` y que no es exterior (los Museos Vaticanos: por fuera son un
+    muro; la Cúpula de San Pedro) **no sale «por fuera»**: si no se entra, la parada desaparece y la visita de la zona son sus otros lugares (la Plaza y la Basílica de San Pedro, gratis). Vale en
+    los viajes de 1 y 2 días y en los avisos: el día dice «En un viaje corto no entra, y por fuera no hay nada que ver», con «Márcalo en tu selección si quieres entrar». Un cierre ya lo trataba
+    así (`closedAnchorNotice`). La mañana del Vaticano, sin el museo de las 08:00, empieza a las 09:30 y la Basílica se queda 90 min.
+
+453. **Viaje de 1 día de Roma: Roma Antigua y Centro por la mañana, Vaticano por fuera por la tarde, Tridente de noche** (3-oct-2026, aprobado por el usuario). Mañana: Coliseo, Arco, Foro desde
+    Via dei Fori Imperiali, Plaza del Campidoglio, Altar de la Patria, Panteón, Santa Maria sopra Minerva, Piazza Navona y San Luigi dei Francesi (las iglesias gratis, por dentro). Tarde (desde las 14:30): Plaza y
+    Basílica de San Pedro (gratis), Via della Conciliazione, Puente Sant'Angelo (al atardecer si cuadra) y Castillo por fuera. Cena en el Tridente y, **después de cenar**, Plaza de España y Fontana de
+    Trevi iluminadas (`blocks.V.dinner_zone`, `night_names`, `night_whole_walk`). Con Free Tour se queda el reparto de antes (Roma Antigua + Centro); con los Museos Vaticanos en el pool, el de antes (Vaticano + Centro).

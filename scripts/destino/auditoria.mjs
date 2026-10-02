@@ -87,7 +87,8 @@ export function paseoMaxOf(place) {
  * @returns {{ tipo: string, donde: string, detalle: string }[]}
  */
 export function auditarViaje(D, days, options = {}) {
-  const { startIso = null, poolNames = [], leg = () => null, label = '', dinnerWindowStart = 20 * 60 } = options
+  // `viajeCorto`: viajes de 1 y 2 días, donde «imprescindible de pago nunca por dentro» y «nivel 1-2 por el camino» son a propósito (INVARIANTES 449-450).
+  const { startIso = null, poolNames = [], leg = () => null, label = '', dinnerWindowStart = 20 * 60, viajeCorto = false } = options
   const byName = new Map((D.places ?? []).map((place) => [place.name, place]))
   const levelOf = (name) => byName.get(name)?.level ?? 3
   const casos = []
@@ -250,7 +251,7 @@ export function auditarViaje(D, days, options = {}) {
         if (!fromLunch && !stop.transit && walk != null && start - prevEnd < walk - 4) add('no_cuadra', n, stop.suggested_time, name, `acaba ${previous.name} a las ${String(Math.floor(prevEnd / 60)).padStart(2, '0')}:${String(prevEnd % 60).padStart(2, '0')} y hay ${Math.round(walk)} min andando`)
       }
       // Nivel 1-2 "Por el camino".
-      if (passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)
+      if (!viajeCorto && passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)
       // Duraciones.
       if (levelOf(name) === 1 && !outside && !passing && (stop.duration_minutes ?? 0) < 20) add('duracion_corta', n, stop.suggested_time, name, `${stop.duration_minutes} min`)
       if (stop.visit_mode === 'fuera' && place?.minutos_fuera != null && stop.duration_minutes !== place.minutos_fuera) add('fuera_minutos', n, stop.suggested_time, name, `${stop.duration_minutes} min (JSON: ${place.minutos_fuera})`)
@@ -469,7 +470,7 @@ export function auditarViaje(D, days, options = {}) {
   const insideNames = new Set(days.flatMap((day) => (day?.stops ?? []).filter((stop) => stop.visit_mode === 'dentro').map((stop) => stop.place_name ?? stop.name)))
   for (const place of D.places ?? []) {
     if (place.level !== 1 || place.type !== 'interior' || !(place.ticket_info ?? []).some((line) => /de pago/i.test(line))) continue
-    if (!insideNames.has(place.name)) add('pago_sin_dentro', 0, '', place.name, 'ningún día por dentro')
+    if (!viajeCorto && !insideNames.has(place.name)) add('pago_sin_dentro', 0, '', place.name, 'ningún día por dentro')
   }
   return casos
 }

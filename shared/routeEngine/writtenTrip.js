@@ -564,7 +564,30 @@ export function planWrittenTrip(args) {
     const marked = Object.keys(shortRule.marcables ?? {}).filter((name) => inPool(name))
     return new Set([...(shortRule.siempre_dentro ?? []), ...(marked.length > 0 ? marked.flatMap((name) => shortRule.marcables[name]) : shortRule.dentro_sin_marcar ?? []), ...poolNames, ...insideNames])
   })()
+  // Lo que no se ve desde la calle (los Museos Vaticanos: por fuera son un muro) no existe «por fuera»: si no se entra, la parada
+  // desaparece y la visita de la zona son sus otros lugares (la Plaza y la Basílica).
+  const hasOutsideView = (name) => {
+    const source = placeByName.get(name)
+    return !source || source.minutos_fuera != null || Boolean(source.pass_by) || source.type === 'exterior'
+  }
   const finishDraft = (draft) => {
+    if (insideAllowed) {
+      for (const section of ['manana', 'tarde']) {
+        const before = draft[section].length
+        draft[section] = draft[section].filter((stop) => !(stop.modo === 'dentro' && stop.entrada && !insideAllowed.has(stop.lugar) && !hasOutsideView(stop.lugar)))
+        // La mañana que se queda sin su museo se rellena con lo que sí hay en la zona: la Plaza y la Basílica con calma
+        // (la Basílica entera, con la Piedad, la tumba de Pedro y la subida a la cúpula vista desde dentro: 90 min).
+        // (Solo si la mañana no tiene otra cosa con hora fija: con los Museos marcados, siguen a las 08:00.)
+        if (section === 'manana' && draft[section].length < before && !draft.manana.some((stop) => stop.hora != null)) {
+          // Sin el museo de las 08:00 no hay prisa: la mañana empieza más tarde y acaba donde empezaba la comida.
+          if (!draft.manana_empieza) draft.manana_empieza = '09:30'
+          for (const stop of draft.manana) {
+            if (stop.lugar === 'Basílica de San Pedro') stop.min = Math.max(stop.min ?? 0, 90)
+            if (stop.lugar === 'Plaza de San Pedro') stop.min = Math.max(stop.min ?? 0, 30)
+          }
+        }
+      }
+    }
     if (insideAllowed) for (const stop of [...draft.manana, ...draft.tarde]) if (stop.modo === 'dentro' && stop.entrada && !insideAllowed.has(stop.lugar)) {
       stop.modo = 'fuera'
       stop.motivoFuera = 'viaje_corto'
@@ -1663,7 +1686,7 @@ export function planWrittenTrip(args) {
   const closedAllTrip = (name) => cityPlanned.length > 0 && cityPlanned.every((day) => closedThatDay(name, day))
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name) && !seenAtNight.has(place.name))
-    .map((place) => ({ unitId: place.name, name: place.name, reason: closedAllTrip(place.name) ? 'closed_every_day' : 'no_room', closedOn: place.closed_on ?? [] }))
+    .map((place) => ({ unitId: place.name, name: place.name, reason: closedAllTrip(place.name) ? 'closed_every_day' : insideAllowed && !insideAllowed.has(place.name) && !hasOutsideView(place.name) ? 'short_trip_no_outside_view' : 'no_room', closedOn: place.closed_on ?? [] }))
   // Un extra del pool nunca le quita a un imprescindible de pago su visita por dentro (decisión del usuario, 2026-09-29): si
   // el día de un extra deja uno por fuera por la hora, el viaje se vuelve a montar con ese extra en su siguiente sitio
   // (y se queda así solo si mejora).

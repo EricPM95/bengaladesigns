@@ -226,10 +226,12 @@ export function planNightWalks(destData, plan) {
       cursor = coordsOf(next)
     }
 
+    // Un paseo curado por el bloque del día (viaje de 1 día: Trevi y luego Plaza de España) va en el orden que dice el bloque.
+    if (day.nightWholeWalk && Array.isArray(day.nightNames)) chain.sort((a, b) => day.nightNames.indexOf(a.name) - day.nightNames.indexOf(b.name))
     for (const entry of chain) used.add(entry.name)
     // Con `aprox`, en el margen de 15 días: sale con su aviso ("Es probable que … aún no hayan abierto").
     // La nocturna del lugar visto ese mismo día a última hora (1-2 días) sustituye a esa visita de día.
-    if (chain.length > 0) byDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, ...(fitOf(entry).notice ? { season_notice: fitOf(entry).notice } : {}), ...(shortTrip && sameDay(entry) && lateDayVisit(entry, day) ? { replacesDayVisit: true } : {}) })))
+    if (chain.length > 0) byDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, ...(day.nightWholeWalk ? { wholeWalk: true } : {}), ...(fitOf(entry).notice ? { season_notice: fitOf(entry).notice } : {}), ...(shortTrip && sameDay(entry) && lateDayVisit(entry, day) ? { replacesDayVisit: true } : {}) })))
   }
   return byDay
 }
@@ -367,7 +369,7 @@ export function nightWalkPlan(trip) {
       // Lo de paso y lo visto por fuera también cuentan (decisión del 2026-09-26: nunca de día y de noche el
       // mismo día, tampoco de paso; y como mucho 2 veces en el viaje).
       const units = (day.schedule?.visits ?? []).map((visit) => ({ places: [visit.place], start: visit.start }))
-      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, nightNames: day.nightNames ?? null, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
+      return { dayNumber: day.dayNumber, isBlank: day.isBlank, isExcursion: day.isExcursion, dinnerZoneId: day.dinnerZone ?? null, hours: day.hours ?? null, nightNames: day.nightNames ?? null, nightWholeWalk: day.nightWholeWalk ?? false, slots: { morning: { zone, units }, afternoon: { zone, units: [] } } }
     }),
     // Los imprescindibles que no han entrado de día: su nocturna va sí o sí.
     mustNight: (trip.unplacedEssentials ?? []).map((item) => item.name),

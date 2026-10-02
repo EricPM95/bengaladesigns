@@ -52,6 +52,7 @@ const tally = {
   ahora: new Map(),
   avisosCierre: new Map(), // texto → { n, ejemplo }
   porDentro: new Map(), // «1 día · pool» → Map(sitio → veces dentro)
+  tramos: new Map(), // «parada (min andando)» → { n, ejemplos }: los tramos largos andando de estos viajes (todos son de viajes cortos)
 }
 const bump = (map, key, example) => {
   const rec = map.get(key) ?? { n: 0, ejemplos: [] }
@@ -79,10 +80,11 @@ for (const fecha of starts) {
         }
         setPolicy(true)
         tally.trips++
-        const audit = (days) => auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg, label })
+        const audit = (days) => auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg, label, viajeCorto: true })
         const auditNow = audit(now)
         const auditBefore = new Set(audit(before).map(keyOfCase))
         for (const caso of auditNow) {
+          if (caso.tipo === 'tramo_largo') bump(tally.tramos, `${caso.donde.split(', ').at(-1).replace(/^dd:dd /, '')} — ${caso.detalle}`, caso.donde)
           bump(tally.ahora, caso.tipo, `${caso.donde}${caso.detalle ? ' — ' + caso.detalle : ''}`)
           if (!auditBefore.has(keyOfCase(caso))) bump(tally.nuevos, caso.tipo, `${caso.donde}${caso.detalle ? ' — ' + caso.detalle : ''}`)
         }
@@ -178,6 +180,10 @@ const lines = [
   '## Avisos del auditor: antes → ahora',
   '',
   ['| Tipo | Antes | Ahora | Nuevos (no estaban antes) |', '|---|---|---|---|', ...[...new Set([...tally.antes.keys(), ...tally.ahora.keys()])].sort().map((tipo) => `| ${nameOf(tipo)} | ${tally.antes.get(tipo)?.n ?? 0} | ${tally.ahora.get(tipo)?.n ?? 0} | ${tally.nuevos.get(tipo)?.n ?? 0} |`)].join('\n'),
+  '',
+  '## Tramos largos andando (más de 25 min): todos son de viajes de 1 y 2 días',
+  '',
+  tally.tramos.size === 0 ? 'Ninguno.' : ['| Hasta la parada | Veces | Ejemplo |', '|---|---|---|', ...[...tally.tramos].sort((a, b) => b[1].n - a[1].n).map(([k, v]) => `| ${k} | ${v.n} | ${v.ejemplos[0]} |`)].join('\n'),
   '',
   '### Ejemplos de avisos nuevos',
   '',

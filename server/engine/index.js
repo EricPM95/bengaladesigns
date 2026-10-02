@@ -199,7 +199,8 @@ export async function buildDayBlockV3(
       tripDay.noTourText = tourOnlyAt.aviso_un_dia ?? null
     }
     const day = buildCityDayV3(destData, trip, tripDay, { ...options })
-    day.not_included = trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null }))
+    day.not_included = [...trip.notIncluded.map((item) => ({ name: item.name, reason: item.reason, suggestion: item.reason === 'No te dio tiempo' ? 'Alarga el viaje medio día' : null })), ...(day.night_dropped ?? []).map((name) => ({ name, reason: 'No te dio tiempo', suggestion: 'Alarga el viaje medio día' }))]
+    delete day.night_dropped
     day.night_hint = tripDay.nightHint ?? null
     applyExperienceLayers(destData, day, experiencesPositive ?? [], trip.calendar, tripDay.hours?.dateIso ?? null)
     return day
@@ -382,7 +383,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     // Lo que se queda solo con su nocturna no "falta": sale de noche.
-    ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+    ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : item.reason === 'short_trip_no_outside_view' ? { name: item.name, reason: 'En un viaje corto no entra, y por fuera no hay nada que ver', suggestion: 'Márcalo en tu selección si quieres entrar' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     // (Si era del pool, se avisa como lo del pool: nunca desaparece en silencio.)
     // (Decisión del usuario, 2026-09-28: lo que la ruta pasa ese día no "quedó fuera"; y si fue un cierre, el motivo es el cierre.)
