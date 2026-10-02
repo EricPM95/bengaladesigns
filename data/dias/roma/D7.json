@@ -32,12 +32,9 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_no_visto": true,
-          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -74,12 +71,9 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_no_visto": true,
-          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -115,12 +109,9 @@
       "paradas": [
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 65,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_no_visto": true,
-          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
         },
         {
           "lugar": "Palazzo Doria Pamphilj",
@@ -162,12 +153,9 @@
       "paradas": [
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 75,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_no_visto": true,
-          "revisita": "Ya lo viste por fuera {dia}; hoy toca por dentro, con la terraza del ángel."
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
         },
         {
           "lugar": "Palazzo Doria Pamphilj",

@@ -141,7 +141,9 @@ export function auditarViaje(D, days, options = {}) {
     const compressedVatican = (day.curated_day?.variants ?? []).some((variant) => /^fecha:12-(24|31)&/.test(variant))
     if (['D2', 'D3'].includes(day.curated_day?.id) && !compressedVatican) {
       const names = dayStops.map(nameOf)
-      if (!names.some((name) => name.includes("Castillo de Sant'Angelo"))) add('vaticano_sin_castillo', n, '', day.curated_day.id, 'el día del Vaticano sin el Castillo de Sant\'Angelo')
+      // (El Castillo va una sola vez por viaje, por fuera: basta con que lo lleve algún otro día.)
+      const castleElsewhere = days.some((other) => (other?.stops ?? []).some((stop) => String(stop.place_name ?? stop.name).includes("Castillo de Sant'Angelo")))
+      if (!castleElsewhere) add('vaticano_sin_castillo', n, '', day.curated_day.id, 'el día del Vaticano sin el Castillo de Sant\'Angelo')
       if (!names.some((name) => name.includes("Puente Sant'Angelo")) && !dayStops.some((stop) => (stop.display_title ?? stop.night_view_title ?? '').includes("Puente Sant'Angelo"))) add('vaticano_sin_puente', n, '', day.curated_day.id, 'el día del Vaticano sin el Puente Sant\'Angelo')
     }
     // 1b. Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo (menos de 800 m) y abierto.

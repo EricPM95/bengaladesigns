@@ -85,9 +85,9 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 10,
+          "min": 20,
           "modo": "fuera",
-          "revisita": "Lo viste por dentro {dia}; hoy, por fuera, con el Puente al atardecer."
+          "una_vez": true
         },
         {
           "lugar": "Puente Sant'Angelo",
@@ -156,17 +156,17 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "sol_desde": "17:40"
+            "min": 20,
+            "modo": "fuera",
+            "sol_desde": "17:40",
+            "una_vez": true
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 10,
+            "min": 20,
             "modo": "fuera",
-            "sol_hasta": "17:40"
+            "sol_hasta": "17:40",
+            "una_vez": true
           },
           {
             "lugar": "Puente Sant'Angelo",
@@ -182,14 +182,13 @@
         "paradas": [
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
+            "min": 20,
+            "modo": "fuera",
             "traslado": {
               "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
               "min": 20
-            }
+            },
+            "una_vez": true
           },
           {
             "lugar": "Via della Conciliazione",
@@ -267,7 +266,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "modo": "camino"
+            "modo": "fuera",
+            "una_vez": true
           },
           {
             "lugar": "Free Tour Centro Histórico",
@@ -343,7 +343,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "modo": "camino"
+            "modo": "fuera",
+            "una_vez": true
           },
           {
             "lugar": "Free Tour Centro Histórico",

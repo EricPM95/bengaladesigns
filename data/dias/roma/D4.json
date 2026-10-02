@@ -313,11 +313,9 @@
             "lugar": "Castillo de Sant'Angelo",
             "tipo": "fija",
             "hora": "09:00",
-            "min": 85,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "revisita": "Lo viste por fuera {dia}, con el atardecer desde el Puente; hoy entras: la tumba de Adriano, las salas de los papas y la terraza del ángel."
+            "min": 20,
+            "modo": "fuera",
+            "una_vez": true
           },
           {
             "lugar": "Parque de Villa Borghese",

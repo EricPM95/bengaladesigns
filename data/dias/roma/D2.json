@@ -75,10 +75,7 @@
         {
           "lugar": "Castillo de Sant'Angelo",
           "modo": "atardecer",
-          "lead": 85,
-          "entrada": true,
-          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel para el atardecer: tienes el Tíber, San Pedro y toda Roma a tus pies.",
-          "si_cerrado": "fuera"
+          "texto": "Míralo desde el puente de los ángeles con la luz del atardecer: la fortaleza se vuelve naranja y el Tíber la refleja."
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -110,11 +107,8 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 55,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "elastica": 30
+          "min": 20,
+          "modo": "fuera"
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -161,11 +155,8 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "elastica": 45
+          "min": 20,
+          "modo": "fuera"
         },
         {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
@@ -222,12 +213,8 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 65,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "elastica": 30,
-          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel con la luz de última hora: el Tíber, San Pedro y toda Roma a tus pies.",
+          "min": 20,
+          "modo": "fuera",
           "no_meses": [
             7,
             8
@@ -235,12 +222,8 @@
         },
         {
           "lugar": "Castillo de Sant'Angelo",
-          "min": 80,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "elastica": 30,
-          "texto": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Recórrelo sin prisa y sube a la terraza del ángel con la luz de última hora: el Tíber, San Pedro y toda Roma a tus pies.",
+          "min": 20,
+          "modo": "fuera",
           "meses": [
             7,
             8
@@ -286,9 +269,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true
+            "min": 20,
+            "modo": "fuera"
           }
         ],
         "comida": {
@@ -649,10 +631,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
+            "min": 20,
+            "modo": "fuera"
           }
         ],
         "comida": {
@@ -729,10 +709,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
+            "min": 20,
+            "modo": "fuera",
             "sol_hasta": "19:45"
           },
           {
@@ -757,10 +735,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
+            "min": 20,
+            "modo": "fuera",
             "sol_desde": "19:45",
             "meses": [
               6,
@@ -815,10 +791,8 @@
           },
           {
             "lugar": "Castillo de Sant'Angelo",
-            "min": 60,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
+            "min": 20,
+            "modo": "fuera",
             "sol_desde": "19:45",
             "no_meses": [
               6,
@@ -942,7 +916,7 @@
             "despues_de": "Puente Sant'Angelo",
             "parada": {
               "lugar": "Castillo de Sant'Angelo",
-              "min": 10,
+              "min": 20,
               "modo": "fuera"
             }
           },

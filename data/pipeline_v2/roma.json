@@ -1928,8 +1928,9 @@
         "De pago.",
         "Reserva recomendada."
       ],
-      "minutos_fuera": 15,
-      "por_fuera": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Hoy lo ves por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante.",
+      "minutos_fuera": 20,
+      "solo_por_fuera": true,
+      "por_fuera": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante.",
       "lo_mejor_dentro": "recorrerlo y subir a la terraza del ángel",
       "closed_dates": [
         "12-25",

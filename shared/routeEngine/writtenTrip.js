@@ -740,7 +740,9 @@ export function planWrittenTrip(args) {
         if (!(afterEarly || nextHour != null)) return
       }
       if (stop.si_no_visto && seenInside.has(stop.lugar)) return
-      if (stop.si_visto && !seenInside.has(stop.si_visto)) return
+      // `una_vez`: lo que ya salió en el viaje (por dentro o por fuera) no vuelve a salir (el Castillo, que ya solo va por fuera).
+      if (stop.una_vez && seen.has(stop.lugar)) return
+      if (stop.si_visto && !seen.has(stop.si_visto)) return
       let outsideReason = null
       // Cerrado ese día: lo escrito (por fuera, o el cambio por otra parada); si no hay nada escrito, por fuera si se
       // ve desde fuera y, si no, fuera del día (y la prueba lo marca).
