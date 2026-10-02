@@ -10,7 +10,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createTravelTimes } from '../../shared/routeEngine/travelTimes.js'
+import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
 import { mealZoneInfo } from '../routeAlgorithm.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
@@ -20,12 +20,16 @@ import { buildStop } from './buildDay.js'
  * Todas las horas y duraciones que ve el viajero, de 5 en 5 minutos (decisión del usuario, 2026-09-29; antes, al cuarto de
  * hora, y el redondeo se comía minutos de las visitas: el Barrio Judío de 20 min salía de 11).
  */
-const DISPLAY_STEP = 5
+const DISPLAY_STEP = 10
+/** Duraciones (no horas) de 5 en 5. */
+const DURATION_STEP = 5
+/** Paradas a menos de esta distancia van seguidas: no se redondean por separado. */
+const CHAINED_METERS = 200
 
 /** "10:07" → "10:05": los 5 minutos más cercanos (nunca siempre hacia arriba: el día acabaría con retraso). */
-function nearestQuarter(hhmm) {
+function nearestQuarter(hhmm, stepMinutes = DISPLAY_STEP) {
   const minutes = toMinutes(hhmm)
-  return Number.isFinite(minutes) ? toHHMM(Math.round(minutes / DISPLAY_STEP) * DISPLAY_STEP) : hhmm
+  return Number.isFinite(minutes) ? toHHMM(Math.round(minutes / stepMinutes) * stepMinutes) : hhmm
 }
 
 /**
@@ -92,19 +96,76 @@ const WINTER_IDLE_MAX = 90
 
 function quarterHourStops(stops) {
   const exact = stops.map((stop) => toMinutes(stop.suggested_time))
+  const isNight = (stop) => Boolean(stop?.is_night_experience)
+  const lengthOf = (stop) => stop.duration_minutes ?? 0
+  // Lo que necesita una visita para no recortarse más de 5 min (y nunca menos que su mínimo: un «por el camino» de 10 min no cabe en 3).
+  // (Lo que va «por fuera» dura sus minutos exactos y no se recorta.)
+  const needOf = (stop) => (stop.visit_mode === 'fuera' ? lengthOf(stop) : Math.max(lengthOf(stop) - 5, stop.min_minutes ?? 0))
+  // Lo que hay entre el final de una parada y el principio de la siguiente (el paseo, una espera), con sus minutos exactos.
+  const gapAfter = (index) => (index + 1 < stops.length && !isNight(stops[index + 1]) && !isNight(stops[index]) ? exact[index + 1] - (exact[index] + lengthOf(stops[index])) : null)
+  // La hora enseñada de cada parada: de 10 en 10, a la más cercana (decisión del usuario, 2026-10-02: 11:32 → 11:30, 11:38 → 11:40).
+  // Las horas fijas (la entrada con hora, el Free Tour, el atardecer) mantienen su hora real; las paradas pegadas (a menos de
+  // CHAINED_METERS) van seguidas, sin redondear; y nunca se recorta una visita más de 5 min: si al redondear la visita de antes se
+  // queda corta, la hora sube a la decena siguiente (y no sube más de lo que deja la visita sin recortarse más de 5 min si lo que
+  // viene después es una hora fija). Nunca antes de que abra el sitio. El motor sigue con los minutos exactos.
+  const shown = []
+  stops.forEach((stop, index) => {
+    const start = exact[index]
+    if (!Number.isFinite(start)) {
+      shown.push(start)
+      return
+    }
+    const previous = stops[index - 1]
+    const chained = previous && Number.isFinite(exact[index - 1]) && Number.isFinite(stop.latitude) && Number.isFinite(previous.latitude) && !isNight(stop) && !isNight(previous) && straightLineMeters([previous.latitude, previous.longitude], [stop.latitude, stop.longitude]) < CHAINED_METERS
+    let at
+    const isFixed = Boolean(stop.fixed_start || stop._fixed)
+    // (Las horas fijas y las paradas pegadas no son de 10 en 10, pero sí de 5 en 5: nunca 09:58.)
+    if (isFixed || chained) at = Math.round(start / DURATION_STEP) * DURATION_STEP
+    else {
+      at = Math.round(start / DISPLAY_STEP) * DISPLAY_STEP
+      for (let guard = 0; previous && Number.isFinite(shown[index - 1]) && guard < 2; guard++) {
+        const gap = gapAfter(index - 1)
+        if (gap == null) break
+        const room = at - gap - shown[index - 1]
+        if (needOf(previous) > room) at += DISPLAY_STEP
+        else break
+      }
+    }
+    if (!isFixed) {
+      // (No sube más de lo que deja la visita sin recortarse más de 5 min si lo que viene después es una hora fija.)
+      const after = stops[index + 1]
+      if (after && (after.fixed_start || after._fixed) && gapAfter(index) != null) {
+        const latest = exact[index + 1] - gapAfter(index) - needOf(stop)
+        if (at > latest) at = Math.max(Math.floor(latest / DURATION_STEP) * DURATION_STEP, Math.round(start / DURATION_STEP) * DURATION_STEP - DURATION_STEP)
+      }
+      // (Y nunca antes de que acabe la visita de antes con su paseo: la hora de una parada es la anterior + su duración + el paseo.)
+      if (previous && Number.isFinite(shown[index - 1]) && gapAfter(index - 1) != null) {
+        const lower = shown[index - 1] + gapAfter(index - 1) + needOf(previous)
+        if (at < lower) at = Math.ceil(lower / DURATION_STEP) * DURATION_STEP
+      }
+    }
+    // Nunca antes de que abra: si abre a una hora que no es múltiplo de 10, esa es la hora (la tarjeta enseña la de apertura).
+    if (!(stop.fixed_start || stop._fixed) && stop.visit_mode !== 'fuera' && stop.schedule) {
+      const session = parseHoursSessions(stop.schedule).find((candidate) => start >= candidate.open && start <= candidate.close)
+      if (session && at < session.open) at = session.open
+    }
+    shown.push(at)
+  })
+  return stops.map((stop, index) => {
+    const { _fixed, ...clean } = stop
+    return step(stepStop(clean, index))
+  })
   // (La duración, también de 5 en 5; el paseo entre paradas se queda con sus minutos exactos.)
-  const step = (stop) => (stop.duration_minutes == null ? stop : { ...stop, duration_minutes: Math.max(DISPLAY_STEP, Math.round(stop.duration_minutes / DISPLAY_STEP) * DISPLAY_STEP) })
-  return stops.map((stop, index) => step(stepStop(stop, index)))
+  function step(stop) {
+    return stop.duration_minutes == null ? stop : { ...stop, duration_minutes: Math.max(DURATION_STEP, Math.round(stop.duration_minutes / DURATION_STEP) * DURATION_STEP) }
+  }
   function stepStop(stop, index) {
     const start = exact[index]
     if (!Number.isFinite(start)) return stop
-    // (Hacia arriba: una llegada nunca se enseña antes de que se llegue, así el paseo se ve; como mucho 4 min, y no se
-    // acumula porque el motor cuenta con los minutos exactos. PROMPT_ROMA_V4_REPASO 1.)
-    const roundedStart = Math.ceil(start / DISPLAY_STEP) * DISPLAY_STEP
-    const next = index + 1 < stops.length && !stops[index + 1].is_night_experience && !stop.is_night_experience ? exact[index + 1] : NaN
-    if (!Number.isFinite(next)) return { ...stop, suggested_time: toHHMM(roundedStart) }
-    const gap = next - (start + (stop.duration_minutes ?? 0))
-    const duration = Math.ceil(next / DISPLAY_STEP) * DISPLAY_STEP - gap - roundedStart
+    const roundedStart = shown[index]
+    const gap = gapAfter(index)
+    if (gap == null) return { ...stop, suggested_time: toHHMM(roundedStart) }
+    const duration = shown[index + 1] - gap - roundedStart
     const rounded = duration >= (stop.duration_minutes ?? 0) / 2 ? duration : stop.duration_minutes
     // "Por el camino" dura 10 min como mucho: el sobrante del redondeo no se mete ahí, se queda esperando la hora de
     // la siguiente parada (PROMPT_AJUSTES_20_RUTAS B.1).
@@ -113,15 +174,15 @@ function quarterHourStops(stops) {
     // Por fuera, sus `minutos_fuera` exactos: ni se rellena ni se recorta con el redondeo (decisión del 2026-09-28).
     if (stop.visit_mode === 'fuera' && stop.duration_minutes != null) return { ...stop, suggested_time: toHHMM(roundedStart) }
     // (El mínimo nunca se come el paseo hasta la siguiente: la hora de una parada es la anterior + su duración + el paseo.)
-    const { min_minutes: floor, max_minutes: ceiling, ...clean } = stop
+    const { min_minutes: floor, max_minutes: ceiling, ...rest } = stop
     // (`max_minutes`: el puente no se queda con lo que sobra del redondeo.)
-    return { ...clean, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity, Math.max(rounded, duration + 4)) }
+    return { ...rest, suggested_time: toHHMM(roundedStart), duration_minutes: onTheWay ? Math.min(rounded, ON_THE_WAY_MAX_MINUTES) : Math.min(Math.max(rounded, floor ?? 0), ceiling ?? Infinity, Math.max(rounded, duration + 4)) }
   }
 }
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { hoursWarning, parseClosingMinutes, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { hoursWarning, parseClosingMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -314,6 +375,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     stop.why = whyFor(visit, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
     // Mirador del atardecer: la hora de la puesta de sol a la que se ajusta (para las comprobaciones).
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
+    // Una hora fija (la entrada con hora, el Free Tour, el atardecer) no se redondea: lo lee quarterHourStops y no sale.
+    if (visit.fixedAt != null || visit.place.sunset != null || visit.place.isFreeTour) stop._fixed = true
     // Y su etiqueta: "🌅 El momento perfecto para ver el atardecer" (texto del destino), no "Elegido según tus gustos".
     if (visit.place.sunset != null && destData.destination_config?.sunset_text) stop.why = destData.destination_config.sunset_text
     // El mirador que llega ya de noche (en invierno): no se vende como atardecer, sino como la ciudad
@@ -626,7 +689,19 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
     stops: quarterHourStops([...stops, ...nightStops]),
-    meals: meals.map((meal) => ({ ...meal, suggested_time: nearestQuarter(meal.suggested_time), ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end) } : {}) })),
+    // (La cena es una hora fija: de 5 en 5, como siempre; la comida, de 10 en 10.)
+    meals: meals.map((meal) => {
+      const end = meal.window_end ? toMinutes(nearestQuarter(meal.window_end, DURATION_STEP)) : null
+      const exactStart = toMinutes(meal.suggested_time)
+      // La comida, de 10 en 10, pero nunca más corta de lo que era (45 min como mínimo): si al redondear pierde minutos, se baja a la decena de antes.
+      let start = nearestQuarter(meal.suggested_time, meal.time === 'dinner' ? DURATION_STEP : DISPLAY_STEP)
+      if (meal.time !== 'dinner' && end != null && Number.isFinite(exactStart)) {
+        const shortBy = (candidate) => Math.max(0, Math.min(45, end - exactStart) - (end - toMinutes(candidate)))
+        if (shortBy(start) > 0) start = toHHMM(Math.floor(exactStart / DISPLAY_STEP) * DISPLAY_STEP)
+        if (shortBy(start) > 0) start = nearestQuarter(meal.suggested_time, DURATION_STEP)
+      }
+      return { ...meal, suggested_time: start, ...(meal.window_end ? { window_end: nearestQuarter(meal.window_end, DURATION_STEP) } : {}) }
+    }),
     not_included: [],
     // Un paseo de noche curado por el día (viaje de 1 día: Trevi y Plaza de España) que no cabe antes de las 23:00 no desaparece en silencio.
     ...(tripDay.nightWholeWalk ? { night_dropped: chainForNight.filter((entry) => !nightStops.some((stop) => stop.name === entry.name)).map((entry) => (entry.conflicts_with ?? [])[0] ?? entry.name) } : {}),

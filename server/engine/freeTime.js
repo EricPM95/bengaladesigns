@@ -260,16 +260,23 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       const walkOut = leg(ideaPlace.coordinates, toCoords)
       let start = ceil5(fromEnd + walkIn)
       // (Lo que sobra del hueco se lo lleva el sitio, hasta su máximo de paseo: una calle, 45 min.)
-      const minutes = Math.min(floor5(toStart - start - walkOut), Math.max(ideaPlace.duration_minutes ?? 30, paseoMaxOf(ideaPlace) ?? 30, 30))
+      let minutes = Math.min(floor5(toStart - start - walkOut), Math.max(ideaPlace.duration_minutes ?? 30, paseoMaxOf(ideaPlace) ?? 30, 30))
+      // Nunca pasada la hora de cierre de ese día (la Minerva, los sábados, cierra a las 19:00): se recorta hasta el cierre, y si no queda un mínimo, otro sitio.
+      const closing = parseClosingMinutes(effectiveSchedule(ideaPlace, tripDay.hours ?? {}))
+      if (closing != null && closing < 24 * 60) minutes = Math.min(minutes, floor5(closing - start))
       if (minutes >= minMinutes) {
         // Si aun así queda un hueco (el sitio no admite más), la parada de antes se alarga y el sitio se retrasa: sin esperas muertas.
         const left = floor5(toStart - start - walkOut - minutes)
         const room2 = prev ? stretchRoom(prev, placeByName.get(nameOf(prev)), tripDay.hours) : 0
         if (left >= minMinutes && room2 > 0) {
-          const extra = Math.min(left, floor5(room2))
+          // (Y el sitio no se retrasa más allá de su cierre.)
+          const shiftMax = closing != null && closing < 24 * 60 ? Math.max(0, floor5(closing - start - minutes)) : Infinity
+          const extra = Math.min(left, floor5(room2), shiftMax)
+          if (extra >= minMinutes) {
           stretch(prev, extra)
           start += extra
           report.mid.push({ kind: 'alarga', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
+          }
         }
         const stop = buildStop(ideaPlace, start, minutes, null)
         stop.why = destData.por_que_lugares?.[ideaPlace.name] && typeof destData.por_que_lugares[ideaPlace.name] === 'string' ? destData.por_que_lugares[ideaPlace.name] : stop.why ?? ''

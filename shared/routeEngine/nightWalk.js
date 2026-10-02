@@ -263,6 +263,12 @@ export function nightTiming(chain, timing = {}) {
       const start = Math.max(nightStart, roundUpToFive(lastEnd + (lastCoords ? walkMinutes(lastCoords, first) : WALK_MINUTES_BETWEEN)))
       const timed = timeChain(entries, start)
       const last = timed.at(-1)
+      // (Ninguna cabe antes de las 23:00: se sigue como si no cupiera entera.)
+      if (!last) {
+        if (entries[0].replacesDayVisit || entries[0].wholeWalk) break
+        entries = entries.slice(1)
+        continue
+      }
       const toDinner = dinnerCoords ? walkMinutes(coordsOf(last.entry), dinnerCoords) : 0
       if (timed.length === entries.length && last.start + last.duration + toDinner <= dinnerStart) return { entries, start, beforeDinner: true }
       // La que sustituye a una visita de día (1-2 días) no se puede quedar fuera, y un paseo curado va entero:

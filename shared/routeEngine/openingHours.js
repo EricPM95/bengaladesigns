@@ -286,6 +286,8 @@ export function matchesDateToken(token, dateIso) {
  * víspera de un festivo que cae en domingo es sábado, que ya lo es. Sin fechas, el día de siempre.
  */
 export function massWeekday(place, hours = {}) {
+  // `festivos_domingo` (3-oct-2026: el 29 de junio, San Pedro y San Pablo, patronos de Roma): ese día va como domingo, sin la víspera.
+  if (hours.weekday && hours.dateIso && Array.isArray(place?.festivos_domingo) && place.festivos_domingo.some((token) => matchesDateToken(token, String(hours.dateIso).slice(0, 10)))) return 'domingo'
   const tokens = place?.misas_festivos
   if (!Array.isArray(tokens) || !hours.weekday || !hours.dateIso) return hours.weekday
   const iso = String(hours.dateIso).slice(0, 10)

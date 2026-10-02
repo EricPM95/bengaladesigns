@@ -1343,6 +1343,7 @@
       ],
       "misas_festivos": [
         "01-01",
+        "06-29",
         "01-06",
         "easter+1",
         "04-25",
@@ -1681,6 +1682,10 @@
     },
     {
       "name": "Basílica de San Pedro",
+      "por_fuera": "Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "level": 1,
       "tier": "imprescindible",
       "zone": "vaticano",
@@ -2593,6 +2598,7 @@
     },
     {
       "name": "Cúpula de San Pedro",
+      "por_fuera": "Hoy no se sube, pero se ve mejor de lejos: desde la plaza, la fachada la tapa en parte. Échate atrás por Via della Conciliazione y la verás entera.",
       "duration_minutes": 45,
       "zone": "vaticano",
       "coordinates": [
@@ -2675,6 +2681,9 @@
     },
     {
       "name": "Iglesia del Gesù",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 30,
       "zone": "centro_historico",
       "coordinates": [
@@ -2725,6 +2734,9 @@
     },
     {
       "name": "Iglesia de San Luigi dei Francesi",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -2904,6 +2916,10 @@
     },
     {
       "name": "Iglesia de Santa Maria sopra Minerva",
+      "por_fuera": "Hoy la ves por fuera: delante tienes el Elefantino de Bernini, un elefante que carga un obelisco egipcio. Detrás de esa fachada tan sencilla está la única iglesia gótica de Roma.",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -2958,6 +2974,7 @@
     },
     {
       "name": "Iglesia de San Ignacio de Loyola",
+      "por_fuera": "Hoy la ves por fuera, y la plaza es lo mejor: Piazza di Sant'Ignazio parece un decorado de teatro, con sus edificios curvos del siglo XVIII mirando a la fachada.",
       "duration_minutes": 20,
       "zone": "centro_historico",
       "coordinates": [
@@ -3306,6 +3323,9 @@
     },
     {
       "name": "Basílica de San Clemente",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 45,
       "zone": "roma_antigua",
       "coordinates": [
@@ -3954,6 +3974,9 @@
     },
     {
       "name": "Iglesia de Santa Maria della Vittoria",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 20,
       "schedule": "08:00-12:00, 16:00-18:00",
       "is_free_access": true,
@@ -4075,6 +4098,9 @@
     },
     {
       "name": "Villa Farnesina",
+      "closed_dates": [
+        "06-29"
+      ],
       "duration_minutes": 45,
       "zone": "trastevere",
       "coordinates": [
@@ -4302,6 +4328,9 @@
     },
     {
       "name": "Mercado de Testaccio",
+      "closed_dates": [
+        "06-29"
+      ],
       "level": 3,
       "zone": "testaccio",
       "coordinates": [
@@ -4347,6 +4376,9 @@
     },
     {
       "name": "Palazzo Doria Pamphilj",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "level": 3,
       "zone": "centro_historico",
       "coordinates": [
@@ -4511,6 +4543,9 @@
     },
     {
       "name": "Cementerio Protestante",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "level": 3,
       "zone": "testaccio",
       "coordinates": [
@@ -4731,6 +4766,10 @@
     },
     {
       "name": "Basílica de Santa Cecilia in Trastevere",
+      "por_fuera": "Hoy la ves por fuera: desde la verja se ve el patio con su jardín y, detrás, el campanario románico. Es uno de los rincones más tranquilos de Trastevere.",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 30,
       "zone": "trastevere",
       "coordinates": [
@@ -4851,6 +4890,9 @@
     },
     {
       "name": "Santa Maria del Popolo",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 30,
       "zone": "villa_borghese",
       "coordinates": [
@@ -4946,6 +4988,9 @@
     },
     {
       "name": "Trinità dei Monti",
+      "festivos_domingo": [
+        "06-29"
+      ],
       "duration_minutes": 15,
       "zone": "centro_historico",
       "coordinates": [
