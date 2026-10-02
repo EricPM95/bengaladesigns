@@ -21,19 +21,15 @@ export function AddToTripScreen({ route }: { route: Route }) {
   const city = day?.city ?? route.days[0]?.city ?? route.destination
   const { places, excursions, resolved } = useDestinationPool(city, addFlow !== null)
   const [item, setItem] = useState<AddItem | null>(null)
-  const [previous, setPrevious] = useState<Route | null>(null)
 
   if (!addFlow) return null
 
-  const open = (next: AddItem) => {
-    setPrevious(route)
-    setItem(next)
-  }
+  const open = (next: AddItem) => setItem(next)
   const title = day ? `Añadiendo a Día ${day.dayNumber} · ${dayName(day)}` : `Añadir a tu viaje`
   const range = route.answers.dateRange
 
   const done = (result: AddedResult) => {
-    finishAdd(result, previous ?? route)
+    confirmAddedStaying(result)
     setItem(null)
   }
 
@@ -47,6 +43,7 @@ export function AddToTripScreen({ route }: { route: Route }) {
           excursions={excursions}
           title={title}
           subtitle={city}
+          initialFilters={['atracciones']}
           route={route}
           dayNumber={day?.dayNumber ?? null}
           dateIso={day && range ? addDaysToIso(range.start, day.dayNumber - 1) : null}
@@ -80,6 +77,15 @@ export function AddToTripScreen({ route }: { route: Route }) {
       {item && <AddToDaySheet route={route} item={item} initialDayId={addFlow.dayId} onClose={() => setItem(null)} onAdded={done} />}
     </>
   )
+}
+
+/**
+ * Al añadir desde el pool, la pantalla se queda donde está para seguir eligiendo (PARA_CODE_UI_DIAS, 5): solo sale una confirmación corta,
+ * «Añadido al Día 3 ✓». No se cierra ni lleva al día.
+ */
+export function confirmAddedStaying(result: AddedResult): void {
+  const target = useRouteStore.getState().route?.days.find((candidate) => candidate.id === result.dayId)
+  useAddFlowStore.setState({ toast: target ? { message: `Añadido al Día ${target.dayNumber} ✓`, previous: null, id: Date.now() } : null })
 }
 
 /** Vuelta al día: pestaña Días con el día abierto, desplazado hasta lo nuevo, y el aviso con "Deshacer". */

@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 
 const TOAST_MS = 6000
+/** Sin «Deshacer» (una confirmación sola, «Añadido al Día 3 ✓»): se va antes. */
+const CONFIRM_MS = 3000
 
 /** El aviso corto de abajo ("Añadido al Día 3 · Compras"), con "Deshacer". Se va solo a los pocos segundos. */
 export function UndoToast() {
@@ -12,7 +14,7 @@ export function UndoToast() {
 
   useEffect(() => {
     if (!toast) return
-    const timer = window.setTimeout(dismiss, TOAST_MS)
+    const timer = window.setTimeout(dismiss, toast.previous ? TOAST_MS : CONFIRM_MS)
     return () => window.clearTimeout(timer)
   }, [toast, dismiss])
 

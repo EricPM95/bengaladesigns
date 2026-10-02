@@ -8,7 +8,7 @@ import { DayPositionPicker } from './dayDetail/DayPositionPicker'
 import { NearbyPlacesView, toMarker } from './explore/NearbyPlacesView'
 import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
 import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
-import { finishAdd } from './freeDay/AddToTripScreen'
+import { confirmAddedStaying } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
 import { categoriesForFilters, type PlaceFilterId } from '../../lib/placeCategories'
 import { BOOKING_BLUE, buildHotelSearchUrl } from '../../lib/affiliateLinks'
@@ -157,7 +157,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
           initialDayId={null}
           onClose={() => setAddItem(null)}
           onAdded={(result) => {
-            finishAdd(result, route)
+            confirmAddedStaying(result)
             setAddItem(null)
           }}
         />

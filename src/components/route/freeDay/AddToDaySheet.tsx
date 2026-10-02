@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Excursion, Route, Stop } from '../../../lib/types'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
-import { findPlaceCategoryChip } from '../../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { addDaysToIso } from '../../../lib/dateRange'
 import { minutesToTime, parseTimeToMinutes } from '../../../lib/time'
@@ -126,7 +125,6 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   }
   const bookingNote = place && !isRestaurant ? (place.booking_note ?? (place.reservation ? 'Se entra con reserva.' : null)) : null
 
-  const kindLabel = item.kind === 'excursion' ? (item.excursion.length === 'full-day' ? 'Excursión de día entero' : 'Excursión de medio día') : (findPlaceCategoryChip(item.place.filter_category)?.label ?? item.place.type ?? 'Lugar')
   const name = item.kind === 'excursion' ? item.excursion.title : item.place.name
 
   const confirm = () => {
@@ -151,14 +149,21 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-to-day-heading">
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
       <div className="trazo-notice-panel relative flex max-h-[88dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-        <div className="overflow-y-auto px-6 pt-6">
-          <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">{kindLabel}</p>
-          <h2 id="add-to-day-heading" className="mt-1.5 font-display text-[24px] leading-[1.15] text-text">
-            {name}
+        <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
+          <span className="h-1 w-[42px] rounded-full bg-text/20" />
+        </div>
+        <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+        <div className="overflow-y-auto px-6 pt-4">
+          <p className="max-w-[calc(100%-2.5rem)] font-mono text-[10.5px] font-medium uppercase tracking-[.12em] text-accent">{name}</p>
+          <h2 id="add-to-day-heading" className="mt-1.5 font-display text-[26px] leading-[1.15] text-text">
+            {item.kind === 'excursion' ? '¿A qué día la añades?' : '¿A qué día lo añades?'}
           </h2>
 
-          <p className="mt-5 text-[13px] font-semibold text-text">¿A qué día lo añades?</p>
-          <div className="mt-2 flex flex-col gap-1.5">
+          <div className="mt-4 flex flex-col gap-1.5">
             {days.map((candidate) => {
               const reason = blockedReason(item, candidate)
               const active = candidate.id === dayId
@@ -193,16 +198,17 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
           )}
 
           {draft && day && (
-            <div className="mt-5 flex items-end gap-2">
+            <div className="mt-5 space-y-4">
               {!freeDay && (
-                <label className="flex-1">
-                  <span className="text-[12px] font-medium text-text-soft">Hora</span>
-                  <input type="time" value={time} onChange={(event) => setTime(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
+                <label className="block">
+                  <span className="block text-[14px] font-semibold text-text">Hora</span>
+                  <input type="time" value={time} onChange={(event) => setTime(event.target.value)} className="mt-1.5 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text" />
                 </label>
               )}
-              <label className="w-28">
-                <span className="text-[12px] font-medium text-text-soft">Minutos</span>
-                <input type="number" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text" />
+              <label className="block">
+                <span className="block text-[14px] font-semibold text-text">Minutos</span>
+                <span className="mt-0.5 block text-[12.5px] text-text-muted">¿Cuánto tiempo quieres visitarlo?</span>
+                <input type="number" inputMode="numeric" min={5} step={5} value={minutes} onChange={(event) => setMinutes(Number(event.target.value) || 0)} className="mt-1.5 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text" />
               </label>
             </div>
           )}
