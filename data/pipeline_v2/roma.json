@@ -6310,6 +6310,7 @@
     }
   },
   "short_trips": {
+    "todo_por_fuera": true,
     "_nota": "Rutas curadas a mano para viajes de 1 día (2 franjas) y 1,5 días (3 franjas). Fijan QUÉ se ve y EN QUÉ ORDEN. El motor calcula las horas y comprueba horarios, últimas entradas y cierres. Nombres ya mapeados a los de este JSON (2026-09-23): Piazza Venezia → Plaza Venecia, Altar de la Patria (Vittoriano) → Altar de la Patria, Ghetto Ebraico → Barrio Judío, Fontana di Trevi → Fontana de Trevi, Plaza España y Escalinata → Plaza de España, Castel/Ponte Sant'Angelo → Castillo/Puente Sant'Angelo; zona \"monti\" → roma_antigua (su cena es Monti).",
     "_nota_1_day": "\"1_day\" es el formato ANTERIOR, que sigue leyendo el motor viejo (routeAlgorithm.js, buildShortTripDay). El motor v3 usa franjas + blocks + combinations. Borrar \"1_day\" cuando el v3 sea el motor por defecto.",
     "franjas": {

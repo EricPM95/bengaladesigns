@@ -238,6 +238,8 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
     if (!blockIds.includes(blockId) && !closedBlocks.includes(blockId)) notIncluded.push({ name: blocks[blockId].label, reason: text })
   }
 
+  // Viajes de 1 (y 1,5) días: todo por fuera, salvo lo que el viajero marcó en el pool (`short_trips.todo_por_fuera`).
+  const outsideAll = config.todo_por_fuera === true
   const freeTourBlock = hasFreeTour && blocks.B?.free_tour?.replaces_block && blockIds.includes('B') ? 'B' : null
   const assignments = assignSlots(blockIds, slots, blocks, freeTourBlock)
   if (assignments.length === 0) throw new Error(`short_trips: no hay forma de repartir ${blockIds.join('+')} en ${slots.map((s) => s.slot).join('-')}`)
@@ -253,7 +255,9 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       const closed = place && tripDates.every((date) => closedOnDay(place, date.weekday, date.dateIso))
       return place && !closed && place.level === 1 && !(place.is_free_access ?? place.type === 'exterior')
     })
-    return [{ name: tour.name, role: 'core', freeTour: true }, ...paidInteriors.map((name) => ({ name, role: 'core' }))]
+    // (Con todo por fuera, el tour los enseña por fuera y ahí se quedan, salvo los del pool.)
+    const inside = outsideAll ? paidInteriors.filter((name) => poolNames.includes(name)) : paidInteriors
+    return [{ name: tour.name, role: 'core', freeTour: true }, ...inside.map((name) => ({ name, role: 'core' }))]
   }
 
   // ── Qué se ve en cada bloque.
@@ -311,6 +315,12 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       if (stop.removedBySubstitution) continue
       const place = stop.freeTour ? { ...destData.default_free_tour, isFreeTour: true, duration_minutes: destData.default_free_tour.duration_minutes ?? 150 } : placeByName.get(stop.name)
       if (!place) continue
+      // Todo por fuera (1 día): lo de pago que el viajero no marcó en el pool, por fuera y suelto; lo marcado y lo gratis, tal cual.
+      if (outsideAll && !stop.freeTour && paidInteriorOf(place) && !chosenInsideOf(place)) {
+        const unit = exteriorUnit(stop, place, blockId, slot, units.length)
+        if (unit) units.push(unit)
+        continue
+      }
       const group = groupOf.get(stop.name) ?? null
       const last = units[units.length - 1]
       const rank = place.tier === 'joya' ? DROP_RANK.joya : stop.role === 'pool' ? DROP_RANK.pool + (stop.poolIndex ?? 0) / 100 : DROP_RANK[stop.role]
@@ -335,6 +345,7 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
       })
     }
     return units.map((unit) => {
+      if (unit.id.endsWith(':fuera')) return unit
       const places = placesForScheduler({ id: unit.group ?? unit.id, places: unit.places }, destData, freeTourTime)
       // C por la tarde no empieza antes de su hora (short_trips: afternoon_start).
       const notBefore = slot === 'tarde' ? blocks[blockId]?.afternoon_start : null
@@ -349,45 +360,58 @@ function planShortTripOnce({ destData, slots, hasFreeTour = false, poolNames = [
    * (con `minutos_fuera`), 15 min por fuera. Lo que ni así se ve, fuera. Cada sitio va suelto: un
    * paso por fuera no arrastra a su grupo.
    */
+  const paidInteriorOf = (place) => !(place.is_free_access ?? place.type === 'exterior')
+  const closedAnyDay = (place) => tripDates.some((date) => closedOnDay(place, date.weekday, date.dateIso))
+  // Lo de pago que el viajero marcó en el pool va por dentro (si ese día no cierra); lo demás, por fuera.
+  const chosenInsideOf = (place) => outsideAll && poolNames.includes(place.name) && !closedAnyDay(place)
+  /** La unidad de UN sitio en modo exterior (null si ni por fuera se ve). */
+  function exteriorUnit(stop, place, blockId, slot, curatedIndex) {
+    const outside = !chosenInsideOf(place) && (paidInteriorOf(place) || closedAnyDay(place))
+    if (outside && !place.pass_by && !(place.minutos_fuera != null)) return null
+    const label = place.pass_by?.label ?? place.name
+    const from = outside ? place.pass_by?.from ?? null : null
+    const outsidePlace = outside
+      ? {
+          name: place.name,
+          coordinates: place.pass_by?.coordinates ?? place.coordinates,
+          duration_minutes: place.pass_by?.minutes ?? 15,
+          type: 'exterior',
+          tags: place.tags ?? [],
+          wikipedia_title: place.wikipedia_title,
+          zone: place.zone,
+          level: place.level,
+          passBy: { seenOnDay: null, includes: place.pass_by?.includes ?? [], from },
+        }
+      : place
+    const capitalized = `${label.charAt(0).toUpperCase()}${label.slice(1)}`
+    return {
+      id: `${place.name}:${blockId}:fuera`,
+      group: null,
+      places: placesForScheduler({ id: place.name, places: [outsidePlace] }, destData, freeTourTime),
+      dropRank: place.tier === 'joya' ? DROP_RANK.joya : DROP_RANK[stop.role] ?? DROP_RANK.extra,
+      slot,
+      blockId,
+      role: stop.role,
+      priority: PRIORITY.ESSENTIAL,
+      curatedIndex,
+      ...(outside
+        ? {
+            isRevisit: true,
+            revisitReason: closedAnyDay(place)
+              ? from ? `${capitalized} cierra hoy, pero desde aquí lo tienes entero a tus pies.` : `${capitalized} cierra hoy, pero por fuera lo tienes entero.`
+              : from ? 'En un viaje de un día no da tiempo a entrar, pero desde aquí lo tienes entero a tus pies.' : `En un viaje de un día no da tiempo a entrar: ${label} lo ves por fuera.`,
+          }
+        : {}),
+    }
+  }
+  /** El bloque en modo exterior (cierre sin otro bloque): lo gratis y abierto, tal cual; lo de pago o cerrado, por fuera. */
   function exteriorUnitsForBlock(blockId, slot) {
-    const paidInterior = (place) => !(place.is_free_access ?? place.type === 'exterior')
-    const closedAnyDay = (place) => tripDates.some((date) => closedOnDay(place, date.weekday, date.dateIso))
     const units = []
     for (const stop of stopsByBlock.get(blockId)) {
       const place = placeByName.get(stop.name)
       if (!place || stop.removedBySubstitution) continue
-      const outside = paidInterior(place) || closedAnyDay(place)
-      if (outside && !place.pass_by && !(place.minutos_fuera != null)) continue
-      const label = place.pass_by?.label ?? place.name
-      const from = outside ? place.pass_by?.from ?? null : null
-      const outsidePlace = outside
-        ? {
-            name: place.name,
-            coordinates: place.pass_by?.coordinates ?? place.coordinates,
-            duration_minutes: place.pass_by?.minutes ?? 15,
-            type: 'exterior',
-            tags: place.tags ?? [],
-            wikipedia_title: place.wikipedia_title,
-            zone: place.zone,
-            level: place.level,
-            passBy: { seenOnDay: null, includes: place.pass_by?.includes ?? [], from },
-          }
-        : place
-      const capitalized = `${label.charAt(0).toUpperCase()}${label.slice(1)}`
-      units.push({
-        id: `${place.name}:${blockId}:fuera`,
-        group: null,
-        places: placesForScheduler({ id: place.name, places: [outsidePlace] }, destData, freeTourTime),
-        dropRank: place.tier === 'joya' ? DROP_RANK.joya : DROP_RANK[stop.role] ?? DROP_RANK.extra,
-        slot,
-        blockId,
-        role: stop.role,
-        priority: PRIORITY.ESSENTIAL,
-        curatedIndex: units.length,
-        ...(outside
-          ? { isRevisit: true, revisitReason: from ? `${capitalized} cierra hoy, pero desde aquí lo tienes entero a tus pies.` : `${capitalized} cierra hoy, pero por fuera lo tienes entero.` }
-          : {}),
-      })
+      const unit = exteriorUnit(stop, place, blockId, slot, units.length)
+      if (unit) units.push(unit)
     }
     return units
   }
