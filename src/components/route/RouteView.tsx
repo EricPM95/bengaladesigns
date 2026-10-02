@@ -43,6 +43,15 @@ function CollapseMapIcon() {
   )
 }
 
+/** La flecha hacia abajo de la franja que reabre el mapa. */
+function OpenMapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  )
+}
+
 export function RouteView() {
   const route = useRouteStore((state) => state.route)
   const mode = useRouteStore((state) => state.mode)
@@ -132,6 +141,8 @@ export function RouteView() {
   // mapa de encima SÍ debe seguir viéndose; aquí, como no debe verse nada del mapa de abajo en
   // absoluto, la solución robusta es no renderizarlo mientras el día esté abierto).
   const dayDetailOpen = mode === 'days' && activeDayId !== null
+  // Con el mapa recogido a mano queda una franja arriba para volver a abrirlo (PARA_CODE_UI_DIAS, 3); si lo tapa otra pantalla, no hace falta.
+  const mapCollapsedByUser = canCollapseMap && mapCollapsed && !(dayDetailOpen && dayOverlayOpen) && !(mode === 'explore' && exploreFullScreen)
   const mapHidden = (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen) || (mode === 'route' && destinationOverlayOpen)
 
   const handleDragStart = () => {
@@ -244,7 +255,17 @@ export function RouteView() {
         <div
           className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden bg-bg ${mapHidden ? 'md:w-full' : 'max-md:-mt-[22px] max-md:rounded-t-[26px] max-md:shadow-[0_-10px_30px_-18px_rgba(28,34,48,.3)] md:w-[var(--split-w)]'}`}
         >
-          {/* (Sin «Mostrar mapa»: el mapa se abre desde la barra de abajo, PROMPT_UI_REPASO_2 1.) */}
+          {mapCollapsedByUser && (
+            <button
+              type="button"
+              onClick={() => setMapCollapsed(false)}
+              aria-label="Mostrar mapa"
+              title="Mostrar mapa"
+              className="flex h-8 w-full shrink-0 items-center justify-center border-b border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
+            >
+              <OpenMapIcon />
+            </button>
+          )}
           {mapHidden ? null : (
             <div
               onPointerDown={handleMobilePanelDragStart}
