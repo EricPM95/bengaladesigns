@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
@@ -73,6 +73,12 @@ export function RouteView() {
   // Publicado por ExplorePanel mientras "Comer y beber"/"Miradores y fotos" está activo — sustituye
   // a las paradas del día activo en este mismo mapa compartido (null = mapa normal de DIAS/Hoy).
   const [exploreMarkers, setExploreMarkers] = useState<StopsMapMarker[] | null>(null)
+  /** El centro de la ciudad para el mapa limpio de EXPLORAR: la media de las paradas con coordenadas reales de la ruta. */
+  const cityCenter = useMemo(() => {
+    const points = (route?.days ?? []).flatMap((day) => day.stops.map((stop) => stop.coordinates)).filter((c) => c && (c.lat !== 0 || c.lng !== 0))
+    if (points.length === 0) return null
+    return { lat: points.reduce((sum, c) => sum + c.lat, 0) / points.length, lng: points.reduce((sum, c) => sum + c.lng, 0) / points.length }
+  }, [route])
   const [exploreActiveId, setExploreActiveId] = useState<string | null>(null)
   // EXPLORAR abre su pantalla de lugares (PlaceExplorerScreen) con su PROPIO mapa por encima de
   // todo esto — mismo motivo que dayDetailOpen más abajo: mientras esté abierta, el mapa compartido
@@ -205,6 +211,9 @@ export function RouteView() {
                 )}
                 <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
               </>
+            ) : mode === 'explore' && exploreMarkers === null ? (
+              // EXPLORAR sin nada elegido todavía: el mapa es la ciudad limpia (sin la ruta), que se va llenando con los filtros.
+              <StopsMapView markers={[]} center={cityCenter} />
             ) : mode === 'explore' && exploreMarkers !== null ? (
               <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
             ) : dayDetailOpen && dayMap ? (

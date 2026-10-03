@@ -339,7 +339,10 @@ export function PlaceExplorerScreen({
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const chipsRowRef = useRef<HTMLDivElement>(null)
   /** El mapa grande (por defecto) o pequeño: el tirador de la hoja lo cambia. */
-  const [mapBig, setMapBig] = useState(true)
+  const [mapH, setMapH] = useState(() => Math.round(window.innerHeight * 0.38))
+  const [draggingSheet, setDraggingSheet] = useState(false)
+  const dragRef = useRef<{ startY: number; startH: number; moved: boolean } | null>(null)
+  const clampMapH = (value: number) => Math.max(Math.round(window.innerHeight * 0.14), Math.min(Math.round(window.innerHeight * 0.62), value))
   /** El mapa recogido a mano (como en Días): queda una franja para volver a abrirlo. */
   const [mapCollapsed, setMapCollapsed] = useState(false)
   /** Tocar un baño o una fuente de la lista acerca el mapa hasta él. */
@@ -428,7 +431,18 @@ export function PlaceExplorerScreen({
 
   const stopEntries = useMemo(() => (route ? buildRouteStopEntries(route) : []), [route])
 
+  /** Al apagar Excursiones el mapa vuelve de lejos: se encuadra lo que queda a la vista (o, si no hay nada, Roma). Se guarda al apagar para no mover la cámara después. */
+  const [recenterIds, setRecenterIds] = useState<string[] | null>(null)
+
   const toggleFilter = (id: PlaceFilterId) => {
+    if (id === 'excursiones') {
+      if (activeFilters.includes('excursiones')) {
+        const shown = [...visiblePinIds]
+        // Sin nada a la vista: la ciudad entera (los lugares de nuestro catálogo), no el último destino de excursión.
+        const cityIds = poiPlaces.filter((place) => place.kind === 'place').map((place) => poiId(place))
+        setRecenterIds(shown.length > 0 ? shown : cityIds)
+      } else setRecenterIds(null)
+    }
     setActiveFilters((prev) => {
       const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
       // Al apagar Restaurantes su sub-filtro deja de tener sentido (y de verse): si se volviera a
@@ -658,7 +672,7 @@ export function PlaceExplorerScreen({
   )
   const visibleMarkerCount = dayMarkers.length + visiblePinIds.size + (excursionsActive ? excursionMarkers.length : 0)
   // Con Excursiones encendido el mapa se aleja lo justo para ver los destinos (a veces lejos de la ciudad); si hay más filtros, también sus pines.
-  const fitIds = excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
+  const fitIds = !excursionsActive ? recenterIds : excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
 
   const onToggleLike = async (place: DestinationPlace) => {
     const next = !likes.mine.has(place.name)
@@ -857,8 +871,8 @@ export function PlaceExplorerScreen({
             </svg>
           </button>
         ) : (
-        <div className="relative shrink-0" style={{ height: mapBig ? '38vh' : '20vh', transition: 'height .6s cubic-bezier(.2,.8,.2,1)' }}>
-          {visibleMarkerCount > 0 ? (
+        <div className="relative shrink-0" style={{ height: mapH, transition: draggingSheet ? 'none' : 'height .35s cubic-bezier(.2,.8,.2,1)' }}>
+          {visibleMarkerCount > 0 || markers.length > 0 ? (
             <StopsMapView
               markers={markers}
               hiddenMarkerIds={hiddenMarkerIds}
@@ -934,7 +948,29 @@ export function PlaceExplorerScreen({
         )}
 
         <div className="relative z-10 flex min-h-0 flex-1 flex-col bg-bg" style={{ marginTop: mapCollapsed ? 0 : -22, borderRadius: '26px 26px 0 0', boxShadow: '0 -10px 30px -18px rgba(28,34,48,.3)' }}>
-          <button type="button" onClick={() => setMapBig((value) => !value)} aria-label="Arrastrar panel" className="flex h-[22px] shrink-0 items-center justify-center">
+          <button
+            type="button"
+            aria-label="Arrastrar panel"
+            className="flex h-[26px] shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
+            onPointerDown={(event) => {
+              event.currentTarget.setPointerCapture(event.pointerId)
+              dragRef.current = { startY: event.clientY, startH: mapH, moved: false }
+              setDraggingSheet(true)
+            }}
+            onPointerMove={(event) => {
+              const drag = dragRef.current
+              if (!drag) return
+              if (Math.abs(event.clientY - drag.startY) > 4) drag.moved = true
+              setMapH(clampMapH(drag.startH + (event.clientY - drag.startY)))
+            }}
+            onPointerUp={() => {
+              const drag = dragRef.current
+              dragRef.current = null
+              setDraggingSheet(false)
+              // Un toque sin arrastrar alterna entre mapa grande y pequeño.
+              if (drag && !drag.moved) setMapH(drag.startH > window.innerHeight * 0.3 ? clampMapH(window.innerHeight * 0.18) : clampMapH(window.innerHeight * 0.45))
+            }}
+          >
             <span className="h-1 w-[42px] rounded bg-text/20" />
           </button>
           <div className="flex shrink-0 flex-col gap-2.5 px-4">
