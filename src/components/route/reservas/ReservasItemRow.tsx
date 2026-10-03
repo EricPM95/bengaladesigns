@@ -35,6 +35,9 @@ const KIND_STYLE: Record<ReadinessItemKind, { color: string; eyebrow: string }> 
   excursion: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Excursión' },
 }
 
+/** El color del puntito de urgencia: los mismos que tenía el borde de la izquierda (rojo solo el seguro, ámbar lo muy recomendado, gris el resto). */
+const PRIORITY_DOT: Record<ReadinessPriority, string> = { red: 'rgb(var(--accent-red))', yellow: 'rgb(var(--accent-gold))', gray: 'rgba(28,34,48,.35)' }
+
 const GREEN = 'oklch(0.55 0.13 150 / .45)'
 
 /**
@@ -53,6 +56,7 @@ export function ReservaCard({
   bookAction,
   resolvedLabel = '✓ Añadido',
   trailing,
+  priority,
 }: {
   kind: ReadinessItemKind
   eyebrow?: string
@@ -63,6 +67,8 @@ export function ReservaCard({
   bookAction?: ReservasBookAction | { label: string; href: string | null; onGet?: () => void }
   resolvedLabel?: string
   trailing?: ReactNode
+  /** El puntito de urgencia junto a la categoría (rojo, ámbar o gris) mientras no está reservado. */
+  priority?: ReadinessPriority
 }) {
   const style = KIND_STYLE[kind]
   return (
@@ -81,7 +87,8 @@ export function ReservaCard({
         </span>
       </button>
       <button type="button" onClick={onAdd} className="flex min-w-0 flex-1 flex-col justify-center gap-[3px] py-2 pl-2.5 pr-2 text-left">
-        <span className="text-text/50" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase' }}>
+        <span className="flex items-center gap-1.5 text-text/50" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase' }}>
+          {priority && !resolved && <span aria-hidden="true" title="Urgencia" className="h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: PRIORITY_DOT[priority] }} />}
           {eyebrow ?? style.eyebrow}
         </span>
         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
@@ -141,6 +148,6 @@ export function ReservaCard({
  * pestaña RESERVAS y panel rápido del % (TripReadinessQuickPanel.tsx vía ReadinessBreakdownRow). Sin resolver y con `bookAction`: «Añadir» (abre la
  * ficha manual, `onClick`) y la vía de compra real (`bookAction`) conviven en la misma tarjeta. Resuelto: «✓ Añadido», que reabre la ficha para editar.
  */
-export function ReservasItemRow({ kind, label, resolved, subtitle, onClick, bookAction }: ReservasItemRowProps) {
-  return <ReservaCard kind={kind} name={label} subtitle={subtitle} resolved={resolved} onAdd={onClick} bookAction={bookAction} />
+export function ReservasItemRow({ kind, label, resolved, subtitle, onClick, bookAction, priority }: ReservasItemRowProps) {
+  return <ReservaCard kind={kind} name={label} subtitle={subtitle} resolved={resolved} onAdd={onClick} bookAction={bookAction} priority={priority} />
 }

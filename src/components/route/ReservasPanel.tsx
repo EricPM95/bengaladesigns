@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { Route, Stop } from '../../lib/types'
+import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { detectFlightOpportunities } from '../../lib/flightOpportunity'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { Button } from '../ui/Button'
-import { AttractionsFinder } from './attractionsFinder/AttractionsFinder'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
 import { InsuranceRow } from './reservas/InsuranceRow'
 import { RentalVehicleRow } from './reservas/RentalVehicleRow'
@@ -23,8 +21,6 @@ interface ReservasPanelProps {
   route: Route
   onClose: () => void
 }
-
-type LuggageChoice = 'hotel-first' | 'visit-first'
 
 const sectionTitleStyle = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const }
 
@@ -47,13 +43,8 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const transportBookings = useRouteStore((state) => state.transportBookings)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
-  const insertStopAt = useRouteStore((state) => state.insertStopAt)
-  const seedDayStops = useRouteStore((state) => state.seedDayStops)
-  const [recalculatingId, setRecalculatingId] = useState<string | null>(null)
-  const [simulatedIds, setSimulatedIds] = useState<Set<string>>(new Set())
-  const [luggageChoices, setLuggageChoices] = useState<Record<string, LuggageChoice>>({})
+  const [, setRecalculatingId] = useState<string | null>(null)
   const [openCity, setOpenCity] = useState<string | null>(null)
-  const [manualAddDayId, setManualAddDayId] = useState<string | null>(null)
   /** La ventana «¿Ajustamos tu ruta a tu vuelo?»: sale al terminar de poner la hora de llegada o de salida (se vuelve a abrir si la cambia otra vez). */
   const [adjustSheetOpen, setAdjustSheetOpen] = useState(false)
 
@@ -80,12 +71,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const firstSegment = segments[0]
   const lastDay = route.days[route.days.length - 1]
 
-  /** La pregunta de maletas solo aplica a la oportunidad del día 1 (llegada), y solo si su alojamiento ya está reservado — ver flightOpportunity.ts, que ya dispara día 1 y último día de forma independiente entre sí. */
   const day1Id = route.days[0]?.id
-  const day1HotelKnown = Boolean(segments[0] && accommodationSelections[segments[0].dayIds[0]])
 
-  const handleRecalculate = async (dayId: string, luggageChoice?: LuggageChoice) => {
-    if (luggageChoice) setLuggageChoices((prev) => ({ ...prev, [dayId]: luggageChoice }))
+  const handleRecalculate = async (dayId: string) => {
     setRecalculatingId(dayId)
     // Recalcula el horario REAL de ESTE día a partir del vuelo introducido (ver stopScheduling.ts,
     // "Optimizar ruta") — día 1 usa la hora de llegada, el último día la de vuelta; el resto del
@@ -99,7 +87,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio, point)
     if (keyMinutes != null) await fitDayToTrip(dayId, kind, keyMinutes)
     setRecalculatingId(null)
-    setSimulatedIds((prev) => new Set(prev).add(dayId))
   }
 
   /** «Sí, ajústala por mí»: lo que la app ya hacía con «Optimizar ruta», en cada día con oportunidad (llegada temprano, salida por la tarde), con las horas que ya hay. */
@@ -111,16 +98,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const adjustMyself = () => {
     setAdjustSheetOpen(false)
     setFlightAdjust('manual')
-  }
-
-  const manualAddDay = manualAddDayId ? route.days.find((day) => day.id === manualAddDayId) : null
-
-  const handleManualPick = (stop: Stop) => {
-    if (!manualAddDay) return
-    if (manualAddDay.stops.length === 0) seedDayStops(manualAddDay.id, manualAddDay.stops)
-    insertStopAt(manualAddDay.id, manualAddDay.stops.length, stop)
-    setManualAddDayId(null)
-    setSimulatedIds((prev) => new Set(prev).add(manualAddDay.id))
   }
 
   // Banner ámbar de bienvenida — solo mientras falte lo esencial (vuelo de llegada + alojamiento/
@@ -239,80 +216,22 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             />
 
             <FirstLastDayCard
-              adjusted={route.flightAdjust === 'auto'}
-              adjustLabel={route.flightAdjust === 'auto' ? 'Ajustado' : route.flightAdjust === 'manual' && flightsSet > 0 ? 'Lo ajustas tú' : 'Por ajustar'}
+              adjusted={route.flightAdjust === 'auto' && flightsSet > 0}
+              adjustLabel={route.flightAdjust === 'auto' && flightsSet > 0 ? 'Ajustado' : route.flightAdjust === 'manual' && flightsSet > 0 ? 'Lo ajustas tú' : 'Por ajustar'}
               first={{ day: `Día 1${dateRange?.start ? ` · ${ticketDate(dateRange.start).split(' · ')[1]}` : ''}`, flightTime: route.arrivalFlightTime ?? null, startMinutes: hhmmToMinutes(route.arrivalFlightTime) == null ? null : firstFree }}
               last={{ day: `Día ${lastDay?.dayNumber ?? ''}${dateRange?.end ? ` · ${ticketDate(dateRange.end).split(' · ')[1]}` : ''}`, flightTime: route.departureFlightTime ?? null, endMinutes: hhmmToMinutes(route.departureFlightTime) == null ? null : lastFree }}
             />
 
-            {opportunities.map((opportunity) => {
-              const isRecalculating = recalculatingId === opportunity.dayId
-              const isDone = simulatedIds.has(opportunity.dayId)
-              const chosenLuggage = luggageChoices[opportunity.dayId]
-              const needsLuggageQuestion = opportunity.dayId === day1Id && day1HotelKnown && !chosenLuggage && !isDone && !isRecalculating
-
-              if (!opportunity.actionable) {
-                return (
-                  <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
-                    <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
-                      🌙
-                    </span>
-                    <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
-                  </div>
-                )
-              }
-
-              return (
-                <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-accent/30 bg-accent-soft/40 p-3.5">
+            {opportunities
+              .filter((opportunity) => !opportunity.actionable)
+              .map((opportunity) => (
+                <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
                   <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
-                    ✨
+                    🌙
                   </span>
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <p className="text-small text-text">{opportunity.reason}</p>
-
-                    {isDone ? (
-                      <p className="text-caption font-medium text-accent-hover">
-                        ✓ Horario actualizado.{' '}
-                        {chosenLuggage === 'hotel-first'
-                          ? ` La ruta del Día ${opportunity.dayNumber} pasaría primero por el hotel a dejar las maletas.`
-                          : chosenLuggage === 'visit-first'
-                            ? ` La ruta del Día ${opportunity.dayNumber} empezaría a visitar directamente, dejando el hotel para más tarde.`
-                            : ` El Día ${opportunity.dayNumber} se actualizó con lo que hayas añadido.`}
-                      </p>
-                    ) : isRecalculating ? (
-                      <p className="text-caption font-medium text-text-soft">Recalculando…</p>
-                    ) : needsLuggageQuestion ? (
-                      <div className="space-y-2">
-                        <p className="text-small font-medium text-text">
-                          ¿Prefieres pasar primero por el hotel a dejar las maletas, o empezar a visitar directamente desde el centro?
-                        </p>
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleRecalculate(opportunity.dayId, 'hotel-first')} className="flex-1 text-caption font-bold shadow-sm">
-                            Pasar por el hotel primero
-                          </Button>
-                          <Button
-                            onClick={() => handleRecalculate(opportunity.dayId, 'visit-first')}
-                            variant="secondary"
-                            className="flex-1 text-caption font-bold"
-                          >
-                            Empezar a visitar
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2">
-                        <Button onClick={() => handleRecalculate(opportunity.dayId)} className="flex-1 text-caption font-bold shadow-sm">
-                          ✨ Optimizar ruta
-                        </Button>
-                        <Button onClick={() => setManualAddDayId(opportunity.dayId)} variant="secondary" className="flex-1 text-caption font-bold">
-                          Añadir yo mismo
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
                 </div>
-              )
-            })}
+              ))}
 
             <span className="mt-2 flex-none text-text/55" style={sectionTitleStyle}>
               Imprescindibles
@@ -370,9 +289,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
         {adjustSheetOpen && <FlightAdjustSheet onAuto={adjustForMe} onManual={adjustMyself} onClose={() => setAdjustSheetOpen(false)} />}
 
-        {manualAddDay && (
-          <AttractionsFinder route={route} city={manualAddDay.city} open title={`Añadir en el Día ${manualAddDay.dayNumber}`} onPick={handleManualPick} onClose={() => setManualAddDayId(null)} />
-        )}
       </motion.div>
     </AnimatePresence>
   )

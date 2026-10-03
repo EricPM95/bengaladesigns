@@ -24,7 +24,7 @@ function ReservaRow({
   bookHref: string | null
   onAdd: () => void
 }) {
-  return <ReservaCard kind={kind} name={label} subtitle={subtitle || undefined} resolved={reserved} resolvedLabel="✓ Reservado" onAdd={onAdd} bookAction={{ label: 'Reservar', href: bookHref }} />
+  return <ReservaCard kind={kind} name={label} subtitle={subtitle || undefined} resolved={reserved} resolvedLabel="✓ Reservado" priority="gray" onAdd={onAdd} bookAction={{ label: 'Reservar', href: bookHref }} />
 }
 
 /**

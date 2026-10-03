@@ -298,7 +298,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
               sub={label}
               photo={cardPhotos[card.id] ?? null}
               delay={index * 40}
-              wide={visibleCards.length % 2 === 1 && index === visibleCards.length - 1}
+              wide={false}
               onClick={() => setActiveCard(card.id)}
             />
           )

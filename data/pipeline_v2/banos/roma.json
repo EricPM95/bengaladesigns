@@ -2,7 +2,7 @@
  "fuente": "OpenStreetMap (amenity=toilets), descargado con la Overpass API",
  "licencia": "ODbL — © OpenStreetMap contributors (https://www.openstreetmap.org/copyright)",
  "descargado": "2026-10-03",
- "datos_osm_del": "2026-10-03T12:29:36Z",
+ "datos_osm_del": "2026-10-03T12:46:51Z",
  "zona_descargada": "41.8258,12.4236,41.9475,12.5438",
  "nota": "Solo baños públicos (sin access, o access=yes/permissive/public). de_pago: true/false/null (sin dato). accesible: si/limitado/no/null (sin dato).",
  "banos": [

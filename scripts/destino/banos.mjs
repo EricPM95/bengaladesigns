@@ -66,7 +66,14 @@ const toList = (amenity) => json.elements
   }))
   .sort((a, b) => a.id.localeCompare(b.id))
 const toilets = toList('toilets')
-const fountains = toList('drinking_water').map(({ de_pago, accesible, ...rest }) => rest)
+// Las fuentes son muchísimas: solo las de la zona que cubre la app (la de nuestros lugares) con 1 km de margen (≈0,009° de latitud, ≈0,012° de longitud).
+const fMargin = { lat: 0.009, lng: 0.012 }
+const inArea = (item) =>
+  item.lat >= Math.min(...coords.map((c) => c[0])) - fMargin.lat &&
+  item.lat <= Math.max(...coords.map((c) => c[0])) + fMargin.lat &&
+  item.lng >= Math.min(...coords.map((c) => c[1])) - fMargin.lng &&
+  item.lng <= Math.max(...coords.map((c) => c[1])) + fMargin.lng
+const fountains = toList('drinking_water').filter(inArea).map(({ de_pago, accesible, ...rest }) => rest)
 
 mkdirSync('data/pipeline_v2/banos', { recursive: true })
 writeFileSync(

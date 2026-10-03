@@ -360,7 +360,8 @@ export function PlaceExplorerScreen({
     setActiveFilters(initialFiltersKey ? (initialFiltersKey.split(',') as PlaceFilterId[]) : [])
     setActiveSubCategory(null)
     setQuery(initialQuery ?? '')
-    setTab('recommended')
+    // Baños y Fuentes se abren en «Cerca de ti» (los más cercanos primero); el resto, en «Recomendados».
+    setTab(initialFiltersKey === 'banos' || initialFiltersKey === 'fuentes' ? 'nearby' : 'recommended')
     setSelected(null)
     setSelectedExcursion(null)
     setSelectedPhoto(null)
@@ -1063,12 +1064,6 @@ export function PlaceExplorerScreen({
                               <span className="shrink-0">Agua potable</span>
                               <span>·</span>
                               <span className="shrink-0">Gratis</span>
-                              {place.zone_label && (
-                                <>
-                                  <span>·</span>
-                                  <span className="truncate">{place.zone_label}</span>
-                                </>
-                              )}
                             </>
                           ) : toilet ? (
                             <>

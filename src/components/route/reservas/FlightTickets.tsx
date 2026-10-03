@@ -205,7 +205,7 @@ export function FirstLastDayCard({
           ? 'Añade tu hora de llegada'
           : first.startMinutes >= DAY_END
             ? 'Sin tiempo libre'
-            : `Libre desde las ${fmt(first.startMinutes)}`,
+            : `Libre hacia las ${fmt(first.startMinutes)}`,
       on: first.startMinutes != null,
     },
     {
@@ -214,7 +214,7 @@ export function FirstLastDayCard({
       from: null as number | null,
       to: last.endMinutes,
       text:
-        last.endMinutes == null ? 'Añade tu hora de salida' : last.endMinutes <= DAY_START ? 'Sin tiempo libre' : `Libre hasta las ${fmt(last.endMinutes)}`,
+        last.endMinutes == null ? 'Añade tu hora de salida' : last.endMinutes <= DAY_START ? 'Sin tiempo libre' : `Libre hasta las ${fmt(last.endMinutes)} aprox.`,
       on: last.endMinutes != null,
     },
   ]
