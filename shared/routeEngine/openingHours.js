@@ -126,6 +126,11 @@ export function lastEntryMinutes(place, visitStart, seasonOrHours = null) {
   if (lastSunday) return lastSunday.last_entry == null ? null : hhmmToMinutes(lastSunday.last_entry)
   const period = periodFor(place, hours.dateIso)
   if (period) return period.last_entry == null ? null : hhmmToMinutes(period.last_entry)
+  // La última entrada de ese día de la semana (el Palazzo Doria Pamphilj: hasta las 19:00 de viernes a domingo, 18:00 el resto): `last_entry_by_day`.
+  if (hours.weekday && place?.last_entry_by_day) {
+    const index = dayIndex(hours.weekday)
+    for (const [key, value] of Object.entries(place.last_entry_by_day)) if (daysOfKey(key).has(index)) return hhmmToMinutes(value)
+  }
   const raw = place?.last_entry
   if (raw == null) return null
   if (typeof raw === 'string') return hhmmToMinutes(raw)

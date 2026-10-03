@@ -705,7 +705,7 @@
       }
     },
     "entrada:tarde": {
-      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso. La mañana empieza por el Foro y el Palatino a las 9:00 (abre a esa hora), sigue con el Campidoglio y el Altar de la Patria (ya abierto, hacia las 11:00). Piazza Navona no se cae: si no cabe por la tarde, va de noche, después de cenar.",
+      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso. La mañana empieza por el Foro y el Palatino a las 9:00 (abre a esa hora), sigue con el Campidoglio y el Altar de la Patria (ya abierto, hacia las 11:00). Piazza Navona no se cae: si no cabe por la tarde, va de noche, después de cenar. Con la entrada a las 15:30 o poco después sobra rato: la comida en Monti se alarga y «Pasea y piérdete por Monti» (elástica, una vez por viaje) llena lo que queda hasta la hora de la entrada.",
       "manana": {
         "empieza": "09:00",
         "paradas": [
@@ -774,6 +774,14 @@
         "empieza": "12:00",
         "paradas": [
           {
+            "lugar": "Monti",
+            "min": 30,
+            "titulo": "Pasea y piérdete por Monti",
+            "elastica": 90,
+            "una_vez": true,
+            "tipo": "opcional"
+          },
+          {
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
@@ -818,6 +826,14 @@
       "tarde.B": {
         "empieza": "12:00",
         "paradas": [
+          {
+            "lugar": "Monti",
+            "min": 30,
+            "titulo": "Pasea y piérdete por Monti",
+            "elastica": 90,
+            "una_vez": true,
+            "tipo": "opcional"
+          },
           {
             "lugar": "Coliseo",
             "tipo": "fija",
@@ -865,6 +881,14 @@
         "empieza": "12:00",
         "paradas": [
           {
+            "lugar": "Monti",
+            "min": 30,
+            "titulo": "Pasea y piérdete por Monti",
+            "elastica": 90,
+            "una_vez": true,
+            "tipo": "opcional"
+          },
+          {
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
@@ -910,6 +934,14 @@
       "tarde.D": {
         "empieza": "12:00",
         "paradas": [
+          {
+            "lugar": "Monti",
+            "min": 30,
+            "titulo": "Pasea y piérdete por Monti",
+            "elastica": 90,
+            "una_vez": true,
+            "tipo": "opcional"
+          },
           {
             "lugar": "Coliseo",
             "tipo": "fija",
@@ -959,18 +991,18 @@
       }
     },
     "entrada:tarde@sabado": {
-      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona.",
+      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona. (La ancla es la Plaza del Campidoglio y no el Foro: en julio y agosto el Foro está escrito dos veces según el mes, y el Panteón no puede quedar delante de la hora fija del Foro.)",
       "manana": {
         "insertar": [
           {
-            "despues_de": "Foro Romano y Palatino",
             "parada": {
               "lugar": "Panteón",
               "min": 30,
               "modo": "dentro",
               "si_cerrado": "fuera",
               "entrada": true
-            }
+            },
+            "antes_de": "Plaza del Campidoglio"
           }
         ]
       },

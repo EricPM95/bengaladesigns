@@ -4421,6 +4421,9 @@
         ]
       },
       "last_entry": "18:00",
+      "last_entry_by_day": {
+        "vie-dom": "19:00"
+      },
       "closed_on": [
         "miércoles"
       ],
