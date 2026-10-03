@@ -1,0 +1,27 @@
+# Cambios en las reglas de las rutas
+
+El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
+
+## 2026-10-04 — La hoja de reglas aprobada (V2) y su puesta en marcha
+
+Pedido por el usuario a partir de `docs/INFORME_REGLAS_RUTAS.md`. La hoja es `docs/archivo/REGLAS_RUTAS_V2.md`; pasa a `docs/REGLAS_RUTAS.md` con la ficha de cada regla.
+
+| Parte | Qué cambia | Reglas |
+|---|---|---|
+| 1 | Reproducido el error del Castillo (18-20 nov, 3 días, con Free Tour): el día del Vaticano, Castillo por fuera a las 19:50 y «El Puente y el Castillo iluminados» a las 20:15. | 5, 6 |
+| 2 | Cinco expresiones rotas arregladas (`nocturna_repite`, `foto_repetida` en la prueba y en el motor, `plaza_despues`, la tarjeta de excursión). `tour_repite` solo cuenta lo que sale **después** del tour. | 6, 8 |
+| 3 | Un `id` por sitio (106 ids), `site_id` y `muestra` en cada parada, la prueba compara por `id`, `validar.mjs` cruza los datos. | 0, 5, 31 |
+| 4.1 | Viniendo de San Pedro, el Castillo (por fuera) va antes que el Puente. Dato: `approach_lado`. 17 cambios en los días de Roma. | 18 |
+| 4.2 | Los huecos: hasta 30 min se estira la parada de antes si es de las que se disfrutan con calma; más de 30, un sitio de camino o el paseo; antes de una entrada, margen (hasta 60); antes del atardecer, el paseo del mirador. | 20 |
+| 4.3 | Un solo camino para «iluminado»: solo con foto de noche del lugar; cuenta como su nocturna; si no, parada normal con foto de día. Una parada de noche se funde con la que la precede si enseña el mismo sitio. | 6, 21 |
+| 4.4 | El pool contra un imprescindible de pago: si por fuera se ve bien, entra el extra y el imprescindible va por fuera; si no (Museos Vaticanos), el extra va a «No incluido». Sin avisos. | 3 |
+| 4.5 | Campo propio `hora_tipo` (`reserva` / `turno` / `orientativa`) en los días escritos (83 horas). | 2 |
+| 4.6 | La comida: de 45 a 90 min; unos 30 con una hora fija de verdad detrás. | 14 |
+| 4.7 | Verano solo en julio y agosto, de 14:00 a 16:30. | 21 |
+| 4.8 | Cada paseo, una vez por viaje si queda otro; si no queda, puede volver otro día, nunca el mismo. | 7 |
+| 5 | Ficheros: `REGLAS_RUTAS.md` manda; `INVARIANTES_MOTOR.md` en solo lectura; lo vivo, en `INVARIANTES_TECNICO`, `_PANTALLA` y `_DATOS`; lo muerto, en `archivo/INVARIANTES_V3.md`. | 30–32 |
+| 6 | La prueba imprime una línea por regla y mira lo que no miraba: viajes sin fechas, de 1 día y con una reserva por franja; reglas 2, 9, 10, 13, 17, 21, 22 y 25. | 30 |
+
+**Reglas de INVARIANTES que quedan sin efecto con estos cambios:** ver la línea «Sustituye a» de cada ficha de `REGLAS_RUTAS.md`. En particular la **416** (la nocturna puede volver a un sitio visto esa tarde): borrada de hecho; manda la **462**.
+
+**Cosas de la hoja que hoy no se cumplen o no se comprueban** (se dicen en cada ficha): vuelos, trenes y barcos (R-2, R-28, R-29); medio día (R-11); excursiones (R-27); «una nocturna cada noche» (R-6); los 15 min andando a la comida y la cena (R-14, R-15).

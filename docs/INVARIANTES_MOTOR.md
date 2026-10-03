@@ -1,3 +1,7 @@
+> **SOLO LECTURA (4-oct-2026).** Este fichero ya no se edita. Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md` (cada regla con su comprobación).
+> Lo vivo se ha movido a `docs/INVARIANTES_TECNICO.md`, `docs/INVARIANTES_PANTALLA.md` y `docs/INVARIANTES_DATOS.md`; lo muerto, a `docs/archivo/INVARIANTES_V3.md` (no vigente). Los cambios se apuntan en `docs/reglas/CAMBIOS.md`.
+> No se ha borrado nada: aquí sigue todo, con sus números.
+
 # Invariantes del motor de rutas
 
 Lo que el motor nuevo (Prompt 9, Entrega B) tiene que seguir cumpliendo aunque se reescriba desde
