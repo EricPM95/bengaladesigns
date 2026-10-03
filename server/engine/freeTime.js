@@ -294,7 +294,9 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       report.mid.push({ kind: 'alarga', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
       continue
     }
-    if (walk && Array.isArray(walk.coordinates)) {
+    // (Un mismo sitio, una vez al día: si el paseo de esa zona ya está en el día, el rato va a la parada que se estira, INVARIANTES 467.)
+    const walkTitle = walk ? `${PASEO_PREFIX}${String(walk.name).replace(/^Pasear por /i, '')}` : null
+    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle)) {
       const walkIn = leg(fromCoords, walk.coordinates)
       const walkOut = leg(walk.coordinates, toCoords)
       const start = ceil5(fromEnd + walkIn)

@@ -480,3 +480,21 @@ export function auditarViaje(D, days, options = {}) {
   }
   return casos
 }
+
+/**
+ * Un mismo sitio, una vez al día (INVARIANTES 467): sin la salvedad de los dos títulos de arriba. Solo la nocturna puede repetir un sitio
+ * que se vio de día. Devuelve «hora nombre (también a las hora)» por cada repetido.
+ */
+export function repetidosEnElDia(day) {
+  const seen = new Map()
+  const out = []
+  for (const stop of day?.stops ?? []) {
+    if (stop.is_night_experience || stop.pass_through || stop.is_pass_by || /\(noche\)\s*$/.test(String(stop.name))) continue
+    const name = stop.place_name ?? stop.name
+    // (Salvo el mismo lugar con dos nombres escritos distintos y ambos con título: el parque de Villa Borghese de camino a la Galería y su lago, en D4.)
+    const before = seen.get(name)
+    if (before && !(stop.display_title && before.title && stop.display_title !== before.title)) out.push(`${stop.suggested_time} ${name} (también a las ${before.time})`)
+    else seen.set(name, { time: stop.suggested_time, title: stop.display_title ?? null })
+  }
+  return out
+}

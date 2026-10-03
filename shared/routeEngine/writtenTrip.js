@@ -551,6 +551,12 @@ export function planWrittenTrip(args) {
     }
     // La hora reservada manda: la parada de ese lugar sale a esa hora y se llega 30 min antes.
     if (entryReserved) {
+      // (Un mismo sitio, una vez al día: si el día de la fecha especial ya lo traía en la otra parte del día, queda el de la hora reservada.)
+      const hasInside = (list) => list.some((stop) => stop.lugar === entryReserved.place && stop.modo === 'dentro')
+      if (hasInside(draft.manana) && hasInside(draft.tarde)) {
+        const drop = entryReserved.hour >= AFTERNOON_FROM ? 'manana' : 'tarde'
+        draft[drop] = draft[drop].filter((stop) => stop.lugar !== entryReserved.place)
+      }
       for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === entryReserved.place && stop.modo === 'dentro') Object.assign(stop, { tipo: 'fija', hora: toHHMM(entryReserved.hour), llegar_antes: ENTRY_ARRIVAL_MARGIN, turno: true, recorta_al_cierre: true })
       draft.applied.push(`reserva:${toHHMM(entryReserved.hour)}`)
     }
@@ -795,7 +801,7 @@ export function planWrittenTrip(args) {
     if (writtenCheck && barrio) return Math.max(abs, Math.ceil(base * 0.75))
     return Math.min(base, Math.max(Math.ceil(base * 0.75), abs))
   }
-  function runList(list, slot, cursor, ctx, elasticDelta = 0) {
+  function runListOnce(list, slot, cursor, ctx, elasticDelta = 0) {
     const visits = []
     const units = []
     let { t, coords } = cursor
@@ -903,7 +909,8 @@ export function planWrittenTrip(args) {
       let at = t + leg
       // Verano (julio y agosto, INVARIANTES 413): por la tarde, nada al sol antes de las 16:30. Lo que va al aire libre espera
       // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
-      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior') at = SUMMER_SHADE_UNTIL
+      // (Una hora fija de después manda sobre la sombra: la entrada reservada no se mueve, INVARIANTES 466.)
+      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior' && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       let fixedMargin = 0
       if (fixed != null) {
@@ -1066,8 +1073,81 @@ export function planWrittenTrip(args) {
       const late = visit.__late
       if (!late) continue
       delete visit.__late
-      if (late.arrival > late.needed + late.tol) ctx.problems.push({ tipo: 'llega_tarde', lugar: late.lugar, llega: toHHMM(late.arrival), hora: toHHMM(late.fixed) })
+      if (late.arrival > late.needed + late.tol) {
+        // (Con `dropLate`, lo que no cabe antes de la hora fija lo resuelve runList quitando paradas; si no, el aviso de siempre.)
+        if (ctx.dropLate) ctx.lateLeft.push(late)
+        else ctx.problems.push({ tipo: 'llega_tarde', lugar: late.lugar, llega: toHHMM(late.arrival), hora: toHHMM(late.fixed) })
+      }
     }
+  }
+
+  /**
+   * Una hora fija nunca se mueve ni se quita (INVARIANTES 466). Si lo de antes no cabe ni recortado, se quita lo de antes, en este orden:
+   * primero las opcionales, luego los lugares menores (nivel 3, 2 y 1), y el más cercano a la hora fija primero. Lo que se quita sale en
+   * «Quedó fuera» (la campana). Devuelve el índice de la lista a quitar, o -1.
+   */
+  function dropCandidate(list, beforeIndex) {
+    const rank = (stop) => {
+      const level = sourceOf(stop)?.level ?? 3
+      return (stop.tipo === 'opcional' ? 0 : 10) + (4 - level)
+    }
+    let best = -1
+    for (let i = beforeIndex - 1; i >= 0; i--) {
+      const stop = list[i]
+      if (hourOf(stop) != null || stop.modo === 'camino' || stop.modo === 'atardecer' || !sourceOf(stop)) continue
+      if (best < 0 || rank(stop) < rank(list[best])) best = i
+    }
+    return best
+  }
+  function runList(list, slot, cursor, ctx, elasticDelta = 0) {
+    if (ctx.dropLate) return runListOnce(list, slot, cursor, ctx, elasticDelta)
+    const snap = ctx.probe ? null : { seen: new Set(seen), seenInside: new Set(seenInside), seenDay: new Map(seenDay), problems: ctx.problems.length, notEnough: notEnoughTime.length }
+    let current = list
+    const dropped = []
+    for (let guard = 0; guard < 10; guard++) {
+      ctx.dropLate = true
+      ctx.lateLeft = []
+      let run
+      try {
+        run = runListOnce(current, slot, cursor, ctx, elasticDelta)
+      } finally {
+        ctx.dropLate = false
+      }
+      const left = ctx.lateLeft
+      ctx.lateLeft = null
+      if (left.length === 0) {
+        if (dropped.length > 0 && !ctx.probe) for (const stop of dropped) notEnoughTime.push({ name: stop.lugar, reason: 'time', dayNumber: ctx.day.dayNumber })
+        run.dropped = dropped
+        run.list = current
+        return run
+      }
+      const fixedAt = current.findIndex((stop) => stop.lugar === left[0].lugar && hourOf(stop) != null)
+      const at = fixedAt >= 0 ? dropCandidate(current, fixedAt) : -1
+      if (at < 0 || guard === 9) {
+        // Nada más que quitar: el aviso de siempre.
+        if (snap) {
+          for (const name of [...seen]) if (!snap.seen.has(name)) seen.delete(name)
+          for (const name of [...seenInside]) if (!snap.seenInside.has(name)) seenInside.delete(name)
+          for (const name of [...seenDay.keys()]) if (!snap.seenDay.has(name)) seenDay.delete(name)
+          ctx.problems.length = snap.problems
+          notEnoughTime.length = snap.notEnough
+        }
+        const final = runListOnce(current, slot, cursor, ctx, elasticDelta)
+        final.dropped = dropped
+        final.list = current
+        return final
+      }
+      dropped.push(current[at])
+      current = current.filter((_, i) => i !== at)
+      if (snap) {
+        for (const name of [...seen]) if (!snap.seen.has(name)) seen.delete(name)
+        for (const name of [...seenInside]) if (!snap.seenInside.has(name)) seenInside.delete(name)
+        for (const name of [...seenDay.keys()]) if (!snap.seenDay.has(name)) seenDay.delete(name)
+        ctx.problems.length = snap.problems
+        notEnoughTime.length = snap.notEnough
+      }
+    }
+    return runListOnce(current, slot, cursor, ctx, elasticDelta)
   }
 
   /**
@@ -1278,6 +1358,34 @@ export function planWrittenTrip(args) {
       } else draft.applied.push('empieza:no_cabe')
     }
     const startMorning = morningStartOf(draft)
+    // Un mismo sitio, una vez al día (INVARIANTES 467): si un sitio va de día y también al atardecer, va al atardecer si el atardecer cuadra
+    // (se prueba el día entero sin la visita de día); si no cuadra, va de día, y solo una vez.
+    if (!half) {
+      const sunsetNames = [...new Set(draft.tarde.filter((stop) => stop.modo === 'atardecer').map((stop) => stop.lugar))]
+      for (const name of sunsetNames) {
+        const isDay = (stop) => stop.lugar === name && stop.modo !== 'atardecer' && stop.modo !== 'camino'
+        if (![...draft.manana, ...draft.tarde].some(isDay)) continue
+        const trial = { ...draft, manana: draft.manana.filter((stop) => !isDay(stop)), tarde: draft.tarde.filter((stop) => !isDay(stop)) }
+        const probe = { ...ctx, problems: [], sunsetArrival: null, probe: true }
+        const morningRun = runList(trial.manana, 'manana', { t: morningStartOf(trial), coords: null }, probe)
+        let after = morningRun.cursor
+        if (trial.comida) {
+          const lunch = lunchOf(trial, morningRun.cursor, skeletonDay, hours)
+          after = { t: lunch.end, coords: lunch.spot?.coordinates ?? morningRun.cursor.coords }
+        }
+        const elastic = trial.tarde.find((stop) => stop.elastica != null)
+        const afternoonRun = runList(trial.tarde, 'tarde', after, probe, elastic ? -elastic.elastica : 0)
+        const survives = afternoonRun.visits.some((visit) => visit.place.name === name && visit.place.sunset != null)
+        if (survives) {
+          draft.manana = trial.manana
+          draft.tarde = trial.tarde
+          draft.applied.push(`una_vez:${name}:atardecer`)
+        } else {
+          draft.tarde = draft.tarde.filter((stop) => !(stop.lugar === name && stop.modo === 'atardecer'))
+          draft.applied.push(`una_vez:${name}:de_dia`)
+        }
+      }
+    }
     // La comida dura como mínimo LUNCH_MIN (PROMPT_TEXTOS_RITMO 6). Si no cabe antes de la hora escrita de la tarde, se
     // quitan primero las opcionales (las de la mañana, de la última hacia atrás; luego las de la tarde, hasta cubrir lo que
     // falta) y lo que quede lo absorbe la elástica. Nunca se acorta la comida. (El 1 de enero, con los Capitolinos y el
@@ -1327,7 +1435,9 @@ export function planWrittenTrip(args) {
         draft.tarde = withoutAt(draft.tarde, at)
       }
     }
-    const morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
+    const beforeMorning = { seen: new Set(seen), inside: new Set(seenInside), day: new Map(seenDay), problems: ctx.problems.length, notEnough: notEnoughTime.length }
+    let morning = half ? { visits: [], units: [], cursor: { t: HALF_DAY_AFTERNOON, coords: null } } : runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
+    if (morning.list) draft.manana = morning.list
     // La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje).
     const meals = []
     let summerRest = 0
@@ -1359,6 +1469,24 @@ export function planWrittenTrip(args) {
           morning.cursor = savedCursor
           lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
         }
+        // Una hora fija de la tarde (los Museos a las 15:00) no se mueve (INVARIANTES 466): si ni así se llega, se quita lo de la mañana, en el
+        // orden de siempre (opcionales, luego lo menor), y lo que se quita sale en «Quedó fuera».
+        const droppedMorning = []
+        for (let guard = 0; lunchPlan.lateBy > 0 && guard < 10; guard++) {
+          const at = dropCandidate(draft.manana, draft.manana.length)
+          if (at < 0) break
+          droppedMorning.push(draft.manana[at].lugar)
+          draft.manana = draft.manana.filter((_, i) => i !== at)
+          // (La mañana se vuelve a montar desde cero: lo que la primera vez dio por visto, no.)
+          for (const name of [...seen]) if (!beforeMorning.seen.has(name)) seen.delete(name)
+          for (const name of [...seenInside]) if (!beforeMorning.inside.has(name)) seenInside.delete(name)
+          for (const name of [...seenDay.keys()]) if (!beforeMorning.day.has(name)) seenDay.delete(name)
+          ctx.problems.length = beforeMorning.problems
+          notEnoughTime.length = beforeMorning.notEnough
+          morning = runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
+          lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
+        }
+        for (const name of droppedMorning) notEnoughTime.push({ name, reason: 'time', dayNumber: skeletonDay.dayNumber })
       }
       const { spot, start, end, short } = lunchPlan
       // (La comida ya dura LUNCH_MIN; la tarde empieza más tarde y lo absorbe la elástica. Solo es un problema si no hay
@@ -1378,7 +1506,7 @@ export function planWrittenTrip(args) {
       const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
       const first = draft.tarde.find((stop) => stop.modo !== 'camino')
       const covered = first && placeByName.get(first.lugar)?.type === 'interior' && first.modo !== 'fuera' && first.modo !== 'atardecer'
-      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered) {
+      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered && !draft.tarde.some((stop) => hourOf(stop) != null)) {
         summerRest = SUMMER_SHADE_UNTIL - afterLunch.t
         afterLunch = { ...afterLunch, t: SUMMER_SHADE_UNTIL }
       }
@@ -1478,6 +1606,7 @@ export function planWrittenTrip(args) {
     const sunsetIsMirador = sunsetStop && (placeByName.get(sunsetStop.lugar)?.tags ?? []).includes('mirador')
     ctx.earlyBy = early >= 5 && sunsetIsMirador ? Math.min(LEAD_FLEX, early) : 0
     let afternoon = runList(draft.tarde, 'tarde', afterLunch, ctx, elasticUsed)
+    if (afternoon.list) draft.tarde = afternoon.list
     // Lo que cae cerrado a su hora y no se salva por fuera se mueve a cuando está abierto (PARA_CODE_TODO_2026-10-01, 5.4): en la
     // misma tarde, a otro sitio de la lista más cerca de donde estaba, sin tocar lo que tiene hora fija ni el atardecer, y solo
     // si así la tarde no pierde nada (ni una hora fija, ni el mirador).

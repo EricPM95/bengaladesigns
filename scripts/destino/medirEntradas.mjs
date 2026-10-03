@@ -6,7 +6,7 @@
 import { writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
-import { auditarViaje } from './auditoria.mjs'
+import { auditarViaje, repetidosEnElDia } from './auditoria.mjs'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
 import { closedOnDay, placeWindows, parseHoursSessions, lastEntryMinutes, seasonKey } from '../../shared/routeEngine/openingHours.js'
@@ -59,7 +59,7 @@ const bump = (key, ok, why, example, gaps) => {
   }
   tally.set(key, rec)
 }
-const rojo = { llega_tarde: [], fuera_de_horario: [], sin_aviso: [], error: [] }
+const rojo = { llega_tarde: [], fuera_de_horario: [], sin_aviso: [], repetido: [], error: [] }
 
 const starts = []
 for (let i = 0; i < 365; i += STEP) starts.push(addDays('2027-01-01', i))
@@ -114,6 +114,10 @@ for (const id of DAYS) {
           rojo.llega_tarde.push(`${label}: sale a las ${reservedStop.suggested_time}`)
         }
       }
+      for (const item of repetidosEnElDia(day)) {
+        reasons.push(`un lugar sale dos veces el mismo día: ${item.split(' (')[0].replace(/^\S+ /, '')}`)
+        rojo.repetido.push(`${label}: ${item}`)
+      }
       const audit = auditarViaje(D, [day], { startIso: fecha, poolNames: [], leg, label, viajeCorto: true })
       const gaps = []
       for (const caso of audit) {
@@ -151,11 +155,12 @@ const lines = [
   '',
   `Medido con \`scripts/destino/medirEntradas.mjs\`: ${starts.length} fechas de 2027, ${escenarios} reservas simuladas (cada día escrito, el primero de un viaje de 3 días, con la reserva a cada hora que se vende). Cabe = la parada sale a su hora, nada llega tarde ni fuera de horario, y no se quita un imprescindible en silencio. Un atardecer que no cabe por la hora de la reserva no es fallo.`,
   '',
-  rojo.llega_tarde.length + rojo.fuera_de_horario.length + rojo.sin_aviso.length + rojo.error.length === 0 ? '## 🟢 Ningún fallo grave' : '## 🔴 Fallos graves',
+  rojo.llega_tarde.length + rojo.fuera_de_horario.length + rojo.sin_aviso.length + rojo.repetido.length + rojo.error.length === 0 ? '## 🟢 Ningún fallo grave' : '## 🔴 Fallos graves',
   '',
   `- **Hora fija rota (llega tarde)**: ${rojo.llega_tarde.length}`,
   `- **Parada fuera de horario o cerrada a su hora**: ${rojo.fuera_de_horario.length}${rojo.fuera_de_horario.length ? '\n' + rojo.fuera_de_horario.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
   `- **Imprescindible quitado sin aviso**: ${rojo.sin_aviso.length}${rojo.sin_aviso.length ? '\n' + rojo.sin_aviso.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
+  `- **Un lugar repetido el mismo día**: ${rojo.repetido.length}${rojo.repetido.length ? '\n' + rojo.repetido.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
   `- **El motor falla**: ${rojo.error.length}${rojo.error.length ? '\n' + rojo.error.slice(0, 5).map((x) => `  - ${x}`).join('\n') : ''}`,
   '',
   `## Qué porcentaje cabe el mismo día (sin contar los días en que el sitio cierra: ${total('cerrado')} casos)`,
@@ -169,4 +174,6 @@ const lines = [
   ...[...tally].filter(([, rec]) => rec.ejemplosHueco.length > 0).map(([key, rec]) => `- **${key}**: ${rec.ejemplosHueco.join(' ‖ ')}`),
 ]
 writeFileSync(OUT, lines.join('\n') + '\n')
+// (Todos los casos en rojo, sin recortar, para mirarlos uno a uno: `json=ruta`.)
+if (args.json) writeFileSync(args.json, JSON.stringify(rojo, null, 1))
 console.log(lines.slice(0, 30).join('\n'))

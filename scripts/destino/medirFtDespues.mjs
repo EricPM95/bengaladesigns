@@ -5,7 +5,7 @@
 import { writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
-import { auditarViaje } from './auditoria.mjs'
+import { auditarViaje, repetidosEnElDia } from './auditoria.mjs'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 
@@ -95,10 +95,11 @@ for (const fecha of starts) {
         if (caso.tipo === 'fuera_de_horario' || caso.tipo === 'cerrada_a_su_hora') {
           reasons.push(`fuera de horario: ${caso.donde.split(', ').slice(-1)[0]}`)
           rojo.fuera_de_horario.push(`${label}: ${caso.donde.split(', ').slice(-1)[0]}`)
-        } else if (caso.tipo === 'repetido_dia') {
-          reasons.push('un lugar sale dos veces el mismo día')
-          rojo.repetido.push(`${label}: ${caso.donde.split(', ').slice(-1)[0]}`)
         }
+      }
+      for (const item of repetidosEnElDia(days[tourDay])) {
+        reasons.push('un lugar sale dos veces el mismo día')
+        rojo.repetido.push(`${label}: ${item}`)
       }
       // Imprescindibles del viaje sin tour que ya no están (salvo lo que el tour enseña el día del tour).
       const after = visitedLevelOne(days)
