@@ -9,10 +9,24 @@
   box-sizing: border-box;
 }
 .trazo-root input::placeholder {
-  color: rgba(243, 238, 228, 0.32);
+  color: rgba(28,34,48,0.32);
 }
 .trazo-root .trazo-hover:hover {
-  background: rgba(243, 238, 228, 0.06);
+  background: rgba(28,34,48,0.06);
+}
+/* El efecto de temporada, por delante de todo (fondo oscuro): el título, la etiqueta de arriba y el contador pasan a un color claro para leerse. */
+.trazo-root .trazo-title,
+.trazo-root .trazo-title em,
+.trazo-root .trazo-eyebrow,
+.trazo-root .trazo-headtext {
+  transition: color 0.6s ease, text-shadow 0.6s ease;
+}
+.trazo-root.trazo-fx .trazo-title,
+.trazo-root.trazo-fx .trazo-title em,
+.trazo-root.trazo-fx .trazo-eyebrow,
+.trazo-root.trazo-fx .trazo-headtext {
+  color: #f6f1e6 !important;
+  text-shadow: 0 1px 14px rgba(5, 10, 24, 0.45);
 }
 .trazo-root .trazo-press:active {
   transform: scale(0.98);

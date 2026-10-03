@@ -4,7 +4,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import type { GenerationResumeState } from '../../lib/routeGenerationOrchestrator'
 import type { GenerationStatus } from '../../lib/useRouteGeneration'
 import { cityCode } from './cityCode'
-import { AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
+import { ACCENT, AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
 
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -99,37 +99,37 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
 
   return (
     <>
-      <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>Tu viaje</div>
+      <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>Tu viaje</div>
       <Title>{status === 'done' ? 'Tu viaje está listo.' : status === 'error' ? 'Algo ha fallado.' : 'Trazando tu ruta…'}</Title>
       <div style={{ flex: 1, minHeight: 12 }} />
-      <div style={{ background: 'rgba(12,16,26,.82)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(243,238,228,.1)', borderRadius: 26, overflow: 'hidden', color: INK }}>
+      <div style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(28,34,48,.1)', borderRadius: 26, overflow: 'hidden', color: INK }}>
         <div style={{ padding: '20px 20px 18px', display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: 14 }}>
           <div>
             <div style={{ font: `400 50px/1 ${SERIF}` }}>{cityCode(origin)}</div>
-            <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(243,238,228,.62)' }}>{origin?.name}</div>
+            <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{origin?.name}</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: AMBER }}>{transportOption?.title ?? ''}</span>
-            <div style={{ width: '100%', borderTop: '1px dashed rgba(243,238,228,.35)' }} />
+            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>{transportOption?.title ?? ''}</span>
+            <div style={{ width: '100%', borderTop: '1px dashed rgba(28,34,48,.35)' }} />
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ font: `400 50px/1 ${SERIF}`, color: AMBER }}>{cityCode(destination)}</div>
-            <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(243,238,228,.62)' }}>{destination?.name}</div>
+            <div style={{ font: `400 50px/1 ${SERIF}`, color: ACCENT }}>{cityCode(destination)}</div>
+            <div style={{ marginTop: 4, font: "400 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{destination?.name}</div>
           </div>
         </div>
-        <div style={{ borderTop: '1px dashed rgba(243,238,228,.16)', padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px' }}>
+        <div style={{ borderTop: '1px dashed rgba(28,34,48,.16)', padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px' }}>
           {summary.map((field) => (
             <div key={field.k} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-              <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(243,238,228,.5)' }}>{field.k}</span>
+              <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(28,34,48,.5)' }}>{field.k}</span>
               <span style={{ font: "400 15px 'Geist'" }}>{field.v}</span>
             </div>
           ))}
         </div>
         <div style={{ padding: '0 20px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ height: 3, borderRadius: 3, background: 'rgba(243,238,228,.1)', overflow: 'hidden' }}>
+          <div style={{ height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${Math.round(progress * 100)}%`, background: status === 'error' ? 'oklch(0.7 0.16 25)' : AMBER, transition: 'width .8s cubic-bezier(.2,.8,.2,1)' }} />
           </div>
-          <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.06em', color: 'rgba(243,238,228,.62)' }}>{statusText}</span>
+          <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.06em', color: 'rgba(28,34,48,.62)' }}>{statusText}</span>
         </div>
       </div>
       {status === 'error' ? (

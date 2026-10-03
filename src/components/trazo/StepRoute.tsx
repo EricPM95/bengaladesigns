@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Place } from '../../lib/types'
 import { searchPlaces } from '../../lib/mapboxGeocoding'
 import { cityCode, countryOf } from './cityCode'
-import { AMBER, Cta, Em, Eyebrow, INK, MONO, SERIF, Title } from './trazoUi'
+import { ACCENT, AMBER, Cta, Em, Eyebrow, INK, MONO, SERIF, Title } from './trazoUi'
 import { RouteSearch, type ConfirmedRoute } from '../destination/RouteSearch'
 
 interface StepRouteProps {
@@ -96,10 +96,10 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
               bottom: 10,
               maxHeight: '100%',
               overflow: 'auto',
-              background: 'rgba(12,16,26,.9)',
+              background: 'rgba(255,255,255,0.94)',
               backdropFilter: 'blur(18px)',
               WebkitBackdropFilter: 'blur(18px)',
-              border: '1px solid rgba(243,238,228,.09)',
+              border: '1px solid rgba(28,34,48,.09)',
               borderRadius: 22,
               padding: 8,
               display: 'flex',
@@ -107,7 +107,7 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
               animation: 'trazo-chipIn .35s ease both',
             }}
           >
-            <div style={{ padding: '8px 12px 6px', font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(243,238,228,.55)' }}>Resultados</div>
+            <div style={{ padding: '8px 12px 6px', font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Resultados</div>
             {results.map((place) => (
               <div
                 key={`${place.fullName}-${place.coordinates.lat}`}
@@ -118,22 +118,33 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
                 }}
                 style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 12, minHeight: 48, borderRadius: 14, cursor: 'pointer' }}
               >
-                <span style={{ font: `500 12px ${MONO}`, letterSpacing: '.06em', color: AMBER, width: 34 }}>{cityCode(place)}</span>
+                <span style={{ font: `500 12px ${MONO}`, letterSpacing: '.06em', color: ACCENT, width: 34 }}>{cityCode(place)}</span>
                 <span style={{ font: "400 16px 'Geist'", flex: 1, color: INK }}>{place.name}</span>
-                <span style={{ font: "400 12px 'Geist'", color: 'rgba(243,238,228,.55)' }}>{countryOf(place)}</span>
+                {/* La bandera del país, de nuestro paquete de banderas (sin web externa ni emojis); sin código, el nombre del país. */}
+                {place.countryCode ? (
+                  <span
+                    role="img"
+                    aria-label={countryOf(place)}
+                    title={countryOf(place)}
+                    className={`fi fi-${place.countryCode.toLowerCase()}`}
+                    style={{ width: 28, height: 20, flex: 'none', borderRadius: 4, backgroundSize: 'cover', boxShadow: '0 0 0 1px rgba(28,34,48,.1),0 2px 6px -2px rgba(28,34,48,.3)' }}
+                  />
+                ) : (
+                  <span style={{ font: "400 12px 'Geist'", color: 'rgba(28,34,48,.55)' }}>{countryOf(place)}</span>
+                )}
               </div>
             ))}
-            {!searching && results.length === 0 && <div style={{ padding: '14px 12px', font: "400 14px 'Geist'", color: 'rgba(243,238,228,.6)' }}>No encontramos esa ciudad todavía.</div>}
-            {searching && results.length === 0 && <div style={{ padding: '14px 12px', font: "400 14px 'Geist'", color: 'rgba(243,238,228,.6)' }}>Buscando…</div>}
+            {!searching && results.length === 0 && <div style={{ padding: '14px 12px', font: "400 14px 'Geist'", color: 'rgba(28,34,48,.6)' }}>No encontramos esa ciudad todavía.</div>}
+            {searching && results.length === 0 && <div style={{ padding: '14px 12px', font: "400 14px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Buscando…</div>}
           </div>
         )}
       </div>
-      <div style={{ position: 'relative', background: 'rgba(12,16,26,.74)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(243,238,228,.1)', borderRadius: 24 }}>
-        <div style={{ position: 'absolute', left: 23, top: 40, bottom: 40, borderLeft: '1px dashed rgba(243,238,228,.3)' }} />
+      <div style={{ position: 'relative', background: 'rgba(255,255,255,0.84)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(28,34,48,.1)', borderRadius: 24 }}>
+        <div style={{ position: 'absolute', left: 23, top: 40, bottom: 40, borderLeft: '1px dashed rgba(28,34,48,.3)' }} />
         <label style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 70px 16px 18px', cursor: 'text' }}>
           <span style={{ width: 11, height: 11, borderRadius: '50%', border: `2px solid ${INK}`, flex: 'none', background: '#0A0D14' }} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 0 }}>
-            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(243,238,228,.55)' }}>Origen</span>
+            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Origen</span>
             <input
               value={focus === 'o' ? query : origin?.name ?? ''}
               placeholder="Ciudad de salida"
@@ -144,11 +155,11 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
             />
           </span>
         </label>
-        <div style={{ height: 1, background: 'rgba(243,238,228,.08)', margin: '0 18px 0 46px' }} />
+        <div style={{ height: 1, background: 'rgba(28,34,48,.08)', margin: '0 18px 0 46px' }} />
         <label style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 70px 16px 18px', cursor: 'text' }}>
-          <span style={{ width: 11, height: 11, borderRadius: '50%', background: AMBER, flex: 'none', boxShadow: '0 0 0 4px rgba(242,181,68,.18)' }} />
+          <span style={{ width: 11, height: 11, borderRadius: '50%', background: AMBER, flex: 'none', boxShadow: '0 0 0 4px rgba(255,190,30,.18)' }} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 0 }}>
-            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(243,238,228,.55)' }}>Destino</span>
+            <span style={{ font: `500 10px ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Destino</span>
             <input
               ref={destinationRef}
               value={focus === 'd' ? query : destination?.name ?? ''}
@@ -168,7 +179,7 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
             onDestination(o)
           }}
           aria-label="Intercambiar"
-          style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(243,238,228,.14)', background: '#141925', color: INK, fontSize: 18, cursor: 'pointer' }}
+          style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(28,34,48,.14)', background: '#FFFFFF', color: INK, fontSize: 18, cursor: 'pointer' }}
         >
           ⇅
         </button>
@@ -179,12 +190,12 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
       <button
         type="button"
         onClick={() => setPanoramicOpen((open) => !open)}
-        style={{ marginTop: 10, border: 'none', background: 'transparent', color: 'rgba(243,238,228,.62)', font: "400 13px 'Geist'", textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' }}
+        style={{ marginTop: 10, border: 'none', background: 'transparent', color: 'rgba(28,34,48,.62)', font: "400 13px 'Geist'", textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer' }}
       >
         ¿Buscas una ruta panorámica?
       </button>
       {panoramicOpen && (
-        <div style={{ marginTop: 8, padding: 12, borderRadius: 18, background: '#F3EEE4' }}>
+        <div style={{ marginTop: 8, padding: 12, borderRadius: 18, background: '#FFFFFF' }}>
           <RouteSearch onConfirm={onPanoramic} defaultOpen />
         </div>
       )}
@@ -192,7 +203,7 @@ export function StepRoute({ origin, destination, onOrigin, onDestination, onPano
         <button
           type="button"
           onClick={() => import('../../store/useRouteStore').then(({ useRouteStore }) => useRouteStore.getState().setScreen('devQuickRoute'))}
-          style={{ marginTop: 6, border: 'none', background: 'transparent', color: 'rgba(243,238,228,.4)', font: "400 11px 'Geist'", textDecoration: 'underline', cursor: 'pointer' }}
+          style={{ marginTop: 6, border: 'none', background: 'transparent', color: 'rgba(28,34,48,.4)', font: "400 11px 'Geist'", textDecoration: 'underline', cursor: 'pointer' }}
         >
           🧪 Dev: ruta rápida (sin IA)
         </button>

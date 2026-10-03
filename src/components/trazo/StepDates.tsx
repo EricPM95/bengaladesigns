@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { DateRange, QuestionnaireAnswers } from '../../lib/types'
 import { seasonOfMonth } from '../../lib/season'
 import { daysBetweenInclusive, isoToLocalDate, localDateToIso } from '../../lib/dateRange'
-import { AMBER, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title, panelStyle } from './trazoUi'
+import { ACCENT, AMBER, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title, panelStyle } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -46,6 +46,8 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
     if (!start || end || ts < start) {
       setStart(ts)
       setEnd(null)
+      // En cuanto se elige el día de llegada, sale al momento el efecto de esa temporada.
+      onPreviewMonth(new Date(ts).getMonth())
       return
     }
     if (ts === start) return
@@ -67,6 +69,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
     const span = daysBetweenInclusive(startIso, endIso) ?? nights + 1
     const startMonth = new Date(start).getMonth()
     onChange({ dateRange: { start: startIso, end: endIso }, days: span, month: startMonth, season: seasonOfMonth(startMonth) })
+    onPreviewMonth(null)
     onNext()
   }
   const confirmFlex = () => {
@@ -81,16 +84,16 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
   for (let i = 0; i < offset; i++) cells.push({ key: `e${i}`, label: '', ts: null })
   for (let i = 1; i <= daysInMonth; i++) cells.push({ key: `d${i}`, label: String(i), ts: new Date(cy, cm, i).getTime() })
 
-  const navBtn = { width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(243,238,228,.12)', background: 'transparent', color: INK, cursor: 'pointer' }
+  const navBtn = { width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(28,34,48,.12)', background: 'transparent', color: INK, cursor: 'pointer' }
 
   return (
     <>
-      <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>03 — Fechas</div>
+      <div className="trazo-eyebrow" style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>03 — Fechas</div>
       <Title size={40}>
         ¿Cuándo llegas a <Em>{destinationName}</Em>?
       </Title>
       <div style={{ flex: 1, minHeight: 12 }} />
-      <div style={{ ...panelStyle, background: 'rgba(12,16,26,.8)', padding: '16px 14px 14px' }}>
+      <div style={{ ...panelStyle, background: 'rgba(255,255,255,0.90)', padding: '16px 14px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 12px' }}>
           <button
             type="button"
@@ -123,7 +126,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             ›
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 3, font: `500 10px ${MONO}`, letterSpacing: '.1em', color: 'rgba(243,238,228,.5)', textAlign: 'center', paddingBottom: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 3, font: `500 10px ${MONO}`, letterSpacing: '.1em', color: 'rgba(28,34,48,.5)', textAlign: 'center', paddingBottom: 6 }}>
           {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((d) => (
             <span key={d}>{d}</span>
           ))}
@@ -147,8 +150,8 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                   height: 42,
                   border: 'none',
                   borderRadius: inRange ? 6 : 12,
-                  background: isEdge ? AMBER : inRange ? 'rgba(242,181,68,.16)' : 'transparent',
-                  color: isEdge ? '#17120a' : INK,
+                  background: isEdge ? AMBER : inRange ? 'rgba(255,190,30,.16)' : 'transparent',
+                  color: isEdge ? '#FFFFFF' : INK,
                   font: `${isEdge ? 600 : 400} 14px 'Geist'`,
                   cursor: disabled ? 'default' : 'pointer',
                   opacity: disabled ? 0.28 : 1,
@@ -164,16 +167,16 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
           style={{
             marginTop: 12,
             padding: '12px 4px 0',
-            borderTop: '1px solid rgba(243,238,228,.08)',
+            borderTop: '1px solid rgba(28,34,48,.08)',
             font: "400 14px 'Geist'",
-            color: start ? INK : 'rgba(243,238,228,.6)',
+            color: start ? INK : 'rgba(28,34,48,.6)',
             display: 'flex',
             justifyContent: 'space-between',
             gap: 8,
           }}
         >
           <span>{summary}</span>
-          <span style={{ font: `500 12px ${MONO}`, color: AMBER }}>{nights ? `${nights + 1} días` : ''}</span>
+          <span style={{ font: `500 12px ${MONO}`, color: ACCENT }}>{nights ? `${nights + 1} días` : ''}</span>
         </div>
       </div>
       <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
@@ -192,12 +195,12 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
           onPreviewMonth(null)
         }}
       >
-        <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>Fechas flexibles</div>
+        <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>Fechas flexibles</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 10 }}>
           <h2 style={{ margin: 0, font: `400 32px/1.02 ${SERIF}`, maxWidth: 190 }}>¿Cuántos días?</h2>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{ font: `400 84px/.8 ${SERIF}`, color: AMBER }}>{flexDays}</span>
-            <span style={{ font: "400 15px 'Geist'", color: 'rgba(243,238,228,.75)' }}>{flexDays === 1 ? 'día' : 'días'}</span>
+            <span style={{ font: `400 84px/.8 ${SERIF}`, color: ACCENT }}>{flexDays}</span>
+            <span style={{ font: "400 15px 'Geist'", color: 'rgba(28,34,48,.75)' }}>{flexDays === 1 ? 'día' : 'días'}</span>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 4, marginTop: 20 }}>
@@ -213,8 +216,8 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                   height: 34,
                   border: 'none',
                   borderRadius: sel ? '50%' : 10,
-                  background: sel ? AMBER : under ? 'rgba(242,181,68,.16)' : 'rgba(243,238,228,.04)',
-                  color: sel ? '#17120a' : INK,
+                  background: sel ? AMBER : under ? 'rgba(255,190,30,.16)' : 'rgba(28,34,48,.04)',
+                  color: sel ? '#FFFFFF' : INK,
                   font: `${sel ? 600 : 400} 14px 'Geist'`,
                   cursor: 'pointer',
                   transition: 'background .25s,color .25s',
@@ -225,9 +228,9 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             )
           })}
         </div>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(243,238,228,.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(28,34,48,.08)' }}>
           <h2 style={{ margin: 0, font: `400 26px/1 ${SERIF}` }}>¿Qué mes?</h2>
-          <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: AMBER }}>
+          <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: ACCENT }}>
             {flexMonth != null ? `${MONTHS[flexMonth]} · ${SEASON_FX[seasonOfMonth(flexMonth)].name}` : ''}
           </span>
         </div>
@@ -243,7 +246,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             const on = flexMonth != null && (months as readonly number[]).includes(flexMonth)
             return (
               <div key={season} style={{ display: 'grid', gridTemplateColumns: '92px repeat(3,minmax(0,1fr))', gap: 6, alignItems: 'center' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 8, font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: on ? INK : 'rgba(243,238,228,.6)', transition: 'color .3s' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8, font: `500 10px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: on ? INK : 'rgba(28,34,48,.6)', transition: 'color .3s' }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', flex: 'none', background: SEASON_FX[season].swatch }} />
                   {SEASON_FX[season].name}
                 </span>
@@ -260,9 +263,9 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
                       style={{
                         height: 38,
                         borderRadius: 12,
-                        border: `1px solid ${active ? AMBER : 'rgba(243,238,228,.08)'}`,
-                        background: active ? AMBER : 'rgba(243,238,228,.04)',
-                        color: active ? '#17120a' : INK,
+                        border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.08)'}`,
+                        background: active ? AMBER : 'rgba(28,34,48,.04)',
+                        color: active ? '#FFFFFF' : INK,
                         font: `${active ? 600 : 400} 14px 'Geist'`,
                         cursor: 'pointer',
                         transition: 'background .25s,color .25s,border-color .25s',

@@ -14,7 +14,7 @@ import type { ConfirmedRoute } from '../destination/RouteSearch'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
 import { cityCode } from './cityCode'
 import { DECOR_ROUTES, LIGHTS, P, arcBetween, loadLand } from './worldMap'
-import { AMBER, INK, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
+import { ACCENT, AMBER, INK, SEASON_FX, SeasonFx, SERIF, MONO, THEME } from './trazoUi'
 import { StepRoute } from './StepRoute'
 import { StepTransport } from './StepTransport'
 import { StepDates } from './StepDates'
@@ -279,7 +279,7 @@ export function TrazoFlow() {
 
   return (
     <div
-      className="trazo-root"
+      className={`trazo-root${previewSeason ? ' trazo-fx' : ''}`}
       style={{
         minHeight: '100dvh',
         background: `radial-gradient(ellipse 70% 60% at 60% 40%,${THEME.page1} 0%,${THEME.page2} 70%)`,
@@ -296,17 +296,17 @@ export function TrazoFlow() {
         <aside style={{ width: 330, color: INK, display: 'flex', flexDirection: 'column', gap: 28 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
             <span style={{ font: `400 30px/1 ${SERIF}` }}>Trazo</span>
-            <span style={{ font: `500 10px/1 ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(243,238,228,.55)' }}>rutas a medida</span>
+            <span style={{ font: `500 10px/1 ${MONO}`, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>rutas a medida</span>
           </div>
           <h2 style={{ margin: 0, font: `400 50px/1 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>
-            Tu viaje se construye <em style={{ color: AMBER }}>mientras eliges.</em>
+            Tu viaje se construye <em style={{ color: ACCENT }}>mientras eliges.</em>
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {STEP_NAMES.map((name, i) => (
               <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '9px 0', borderTop: `1px solid ${THEME.track}` }}>
-                <span style={{ font: `500 11px ${MONO}`, color: i === step ? AMBER : 'rgba(243,238,228,.45)', width: 22 }}>{String(i + 1).padStart(2, '0')}</span>
-                <span style={{ font: "400 15px 'Geist'", color: i === step ? INK : i < step ? 'rgba(243,238,228,.8)' : 'rgba(243,238,228,.45)', flex: 1, transition: 'color .4s' }}>{name}</span>
-                <span style={{ font: "400 13px 'Geist'", color: 'rgba(243,238,228,.62)', maxWidth: 150, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{vals[i]}</span>
+                <span style={{ font: `500 11px ${MONO}`, color: i === step ? ACCENT : 'rgba(28,34,48,.45)', width: 22 }}>{String(i + 1).padStart(2, '0')}</span>
+                <span style={{ font: "400 15px 'Geist'", color: i === step ? INK : i < step ? 'rgba(28,34,48,.8)' : 'rgba(28,34,48,.45)', flex: 1, transition: 'color .4s' }}>{name}</span>
+                <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.62)', maxWidth: 150, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{vals[i]}</span>
               </div>
             ))}
           </div>
@@ -347,7 +347,7 @@ export function TrazoFlow() {
               ))}
               {[0, 3, 6, 9].map((ri, i) => (
                 <g key={ri}>
-                  <path d="M5 0L-3.5-3.6-1.8 0-3.5 3.6Z" transform={`scale(${1.5 / view.s})`} style={{ fill: AMBER }} />
+                  <path d="M5 0L-3.5-3.6-1.8 0-3.5 3.6Z" transform={`scale(${1.5 / view.s})`} style={{ fill: ACCENT }} />
                   <animateMotion dur={`${[16, 11, 19, 9][i]}s`} begin={`${-i * 3}s`} repeatCount="indefinite" rotate="auto" path={DECOR_ROUTES[ri]} />
                 </g>
               ))}
@@ -355,12 +355,12 @@ export function TrazoFlow() {
                 const [x, y] = P(la, lo)
                 return <circle key={`${la},${lo}`} cx={x} cy={y} r={1.1 / view.s} fill={THEME.dot} />
               })}
-              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(242,181,68,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
-              {arc && arc.part && <path d={arc.part} fill="none" strokeWidth={2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ stroke: AMBER }} />}
+              {arc && step === 0 && <path d={arc.full} fill="none" stroke="rgba(255,190,30,.4)" strokeWidth={1} strokeDasharray="2 5" vectorEffect="non-scaling-stroke" />}
+              {arc && arc.part && <path d={arc.part} fill="none" strokeWidth={2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ stroke: ACCENT }} />}
               {ends.map((end) => (
                 <g key={`${end.code}-${end.isD}`}>
                   <circle cx={end.x} cy={end.y} r={(end.isD ? 11 : 8) / view.s} fill={AMBER} opacity={0.18} />
-                  <circle cx={end.x} cy={end.y} r={3.6 / view.s} fill={end.isD ? AMBER : THEME.bg} strokeWidth={1.5} vectorEffect="non-scaling-stroke" style={{ stroke: AMBER }} />
+                  <circle cx={end.x} cy={end.y} r={3.6 / view.s} fill={end.isD ? AMBER : THEME.bg} strokeWidth={1.5} vectorEffect="non-scaling-stroke" style={{ stroke: ACCENT }} />
                   <text x={end.x} y={end.y - 12 / view.s} fontSize={10 / view.s} textAnchor="middle" style={{ fill: INK }} fontFamily="Geist Mono, monospace" letterSpacing=".08em">
                     {end.code}
                   </text>
@@ -404,8 +404,8 @@ export function TrazoFlow() {
                   height: 36,
                   flex: 'none',
                   borderRadius: '50%',
-                  border: '1px solid rgba(243,238,228,.14)',
-                  background: 'rgba(10,13,20,.5)',
+                  border: '1px solid rgba(28,34,48,.14)',
+                  background: 'rgba(255,255,255,0.80)',
                   backdropFilter: 'blur(10px)',
                   WebkitBackdropFilter: 'blur(10px)',
                   color: INK,
@@ -433,7 +433,7 @@ export function TrazoFlow() {
                   </div>
                 ))}
               </div>
-              <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(243,238,228,.7)', minWidth: 30, textAlign: 'right' }}>{step < 6 ? `${step + 1}/6` : 'LISTO'}</span>
+              <span className="trazo-headtext" style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)', minWidth: 30, textAlign: 'right' }}>{step < 6 ? `${step + 1}/6` : 'LISTO'}</span>
             </div>
             <div
               className="trazo-noscroll"
@@ -447,7 +447,7 @@ export function TrazoFlow() {
                 maskImage: 'linear-gradient(90deg,#000 82%,transparent)',
               }}
             >
-              {chips.length === 0 && <span style={{ height: 28, display: 'inline-flex', alignItems: 'center', font: "400 12px 'Geist'", color: 'rgba(243,238,228,.5)' }}>Tu viaje irá apareciendo aquí</span>}
+              {chips.length === 0 && <span style={{ height: 28, display: 'inline-flex', alignItems: 'center', font: "400 12px 'Geist'", color: 'rgba(28,34,48,.5)' }}>Tu viaje irá apareciendo aquí</span>}
               {chips.map((chip) => (
                 <span
                   key={chip}
@@ -459,8 +459,8 @@ export function TrazoFlow() {
                     alignItems: 'center',
                     gap: 7,
                     borderRadius: 999,
-                    background: 'rgba(10,13,20,.6)',
-                    border: '1px solid rgba(243,238,228,.12)',
+                    background: 'rgba(255,255,255,0.90)',
+                    border: '1px solid rgba(28,34,48,.12)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)',
                     font: "500 12px 'Geist'",

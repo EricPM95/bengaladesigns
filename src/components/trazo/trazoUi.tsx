@@ -1,23 +1,27 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Season } from '../../lib/types'
 
-/** Paleta y tipografías del prototipo "Trazo App" (tema Noche). */
-export const AMBER = 'oklch(0.8 0.14 70)'
-export const INK = '#F3EEE4'
-export const INK2 = 'rgba(243,238,228,.7)'
-export const DARK = '#17120a'
+/** Paleta y tipografías del diseño "Trazo App Piscina" (tema Día: el agua clara). */
+/** Relleno de acento: botones, barra de avance, puntos y fechas elegidas (azul marino del diseño). */
+export const AMBER = '#0B2A5B'
+/** Acento en letra: cursivas, etiquetas pequeñas y lo elegido (azul verdoso del diseño). */
+export const ACCENT = 'oklch(0.5 0.13 225)'
+export const INK = '#1C2230'
+export const INK2 = 'rgba(28,34,48,.7)'
+/** La letra sobre un relleno de acento: blanca. */
+export const DARK = '#FFFFFF'
 export const THEME = {
-  page1: '#152440',
-  page2: '#0A1222',
-  bg: '#0D1A2E',
-  bgrgb: '13 26 46',
-  land: 'oklch(0.34 0.055 240)',
-  landS: 'rgba(243,238,228,.2)',
-  route: 'rgba(242,181,68,.5)',
-  dot: 'rgba(243,238,228,.35)',
-  dot2: 'rgba(243,238,228,.75)',
-  track: 'rgba(243,238,228,.14)',
-  amb: 0.5,
+  page1: '#E4FBFA',
+  page2: '#B9E9EE',
+  bg: '#BDEEF3',
+  bgrgb: '189 238 243',
+  land: '#FFFDF5',
+  landS: 'rgba(0,110,140,.25)',
+  route: 'oklch(0.78 0.16 80 / .85)',
+  dot: 'rgba(28,34,48,.28)',
+  dot2: 'rgba(28,34,48,.6)',
+  track: 'rgba(28,34,48,.14)',
+  amb: 0.3,
 }
 export const SERIF = "'Instrument Serif', serif"
 export const MONO = "'Geist Mono', monospace"
@@ -48,23 +52,23 @@ export const SEASON_FX: Record<Season, { name: string; gradient: string; swatch:
 export function Eyebrow({ children, right }: { children: ReactNode; right?: ReactNode }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>{children}</span>
+      <span className="trazo-eyebrow" style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>{children}</span>
       {right}
     </div>
   )
 }
 
 export function Title({ children, size = 44 }: { children: ReactNode; size?: number }) {
-  return <h1 style={{ color: INK, margin: '12px 0 0', font: `400 ${size}px/1.02 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>{children}</h1>
+  return <h1 className="trazo-title" style={{ color: INK, margin: '12px 0 0', font: `400 ${size}px/1.02 ${SERIF}`, letterSpacing: '-.01em', textWrap: 'balance' }}>{children}</h1>
 }
 
-export const Em = ({ children }: { children: ReactNode }) => <em style={{ color: AMBER }}>{children}</em>
+export const Em = ({ children }: { children: ReactNode }) => <em style={{ color: ACCENT }}>{children}</em>
 
 export const panelStyle: CSSProperties = {
-  background: 'rgba(12,16,26,.78)',
+  background: 'rgba(255,255,255,0.88)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
-  border: '1px solid rgba(243,238,228,.1)',
+  border: '1px solid rgba(28,34,48,.1)',
   borderRadius: 24,
 }
 
@@ -100,7 +104,7 @@ export function GhostButton({ children, onClick, style }: { children: ReactNode;
       type="button"
       className="trazo-hover"
       onClick={onClick}
-      style={{ height: 58, borderRadius: 999, border: '1px solid rgba(243,238,228,.2)', background: 'rgba(10,13,20,.5)', color: INK, font: "500 15px 'Geist'", cursor: 'pointer', ...style }}
+      style={{ height: 58, borderRadius: 999, border: '1px solid rgba(28,34,48,.2)', background: 'rgba(255,255,255,0.80)', color: INK, font: "500 15px 'Geist'", cursor: 'pointer', ...style }}
     >
       {children}
     </button>
@@ -124,8 +128,8 @@ export function RadioRow({ label, description, active, onClick }: { label: strin
         minHeight: 44,
         border: 'none',
         borderRadius: 14,
-        background: active ? 'rgba(242,181,68,.08)' : 'transparent',
-        color: active ? AMBER : INK,
+        background: active ? 'rgba(255,190,30,.08)' : 'transparent',
+        color: active ? ACCENT : INK,
         textAlign: 'left',
         cursor: 'pointer',
         transition: 'background .35s,color .35s',
@@ -133,7 +137,7 @@ export function RadioRow({ label, description, active, onClick }: { label: strin
     >
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={{ font: "500 15px 'Geist'" }}>{label}</span>
-        {description && <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(243,238,228,.62)' }}>{description}</span>}
+        {description && <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(28,34,48,.62)' }}>{description}</span>}
       </span>
       <span
         style={{
@@ -141,9 +145,9 @@ export function RadioRow({ label, description, active, onClick }: { label: strin
           height: 18,
           flex: 'none',
           borderRadius: '50%',
-          border: `1.5px solid ${active ? AMBER : 'rgba(243,238,228,.4)'}`,
+          border: `1.5px solid ${active ? AMBER : 'rgba(28,34,48,.4)'}`,
           background: active ? AMBER : 'transparent',
-          boxShadow: 'inset 0 0 0 3px #11151f',
+          boxShadow: 'inset 0 0 0 3px #FFFFFF',
           transition: 'background .3s,border-color .3s',
         }}
       />
@@ -163,13 +167,13 @@ export function ConfirmedCard({ label, value, onChange }: { label: string; value
         padding: '12px 14px',
         minHeight: 48,
         borderRadius: 16,
-        background: 'rgba(242,181,68,.1)',
-        border: '1px solid rgba(242,181,68,.35)',
+        background: 'rgba(255,190,30,.1)',
+        border: '1px solid rgba(255,190,30,.35)',
         animation: 'trazo-chipIn .45s cubic-bezier(.2,.8,.2,1) both',
       }}
     >
       <span style={{ flex: 1, minWidth: 0, font: "400 15px 'Geist'", color: INK }}>
-        {label}: <strong style={{ fontWeight: 600 }}>{value}</strong> <span style={{ color: AMBER }}>✓</span>
+        {label}: <strong style={{ fontWeight: 600 }}>{value}</strong> <span style={{ color: ACCENT }}>✓</span>
       </span>
       {onChange && (
         <button
@@ -188,7 +192,7 @@ export function ConfirmedCard({ label, value, onChange }: { label: string; value
 export function Sheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 8, pointerEvents: open ? 'auto' : 'none' }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(5,7,12,.62)', opacity: open ? 1 : 0, transition: 'opacity .45s' }} />
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.35)', opacity: open ? 1 : 0, transition: 'opacity .45s' }} />
       <div
         style={{
           color: INK,
@@ -198,18 +202,18 @@ export function Sheet({ open, onClose, children }: { open: boolean; onClose: () 
           bottom: 0,
           maxHeight: '92%',
           overflowY: 'auto',
-          background: '#11151f',
+          background: '#FFFFFF',
           backdropFilter: 'blur(22px)',
           WebkitBackdropFilter: 'blur(22px)',
           borderRadius: '30px 30px 0 0',
-          borderTop: '1px solid rgba(243,238,228,.12)',
+          borderTop: '1px solid rgba(28,34,48,.12)',
           padding: '12px 20px 24px',
           transform: open ? 'none' : 'translateY(105%)',
           transition: 'transform .6s cubic-bezier(.2,.8,.2,1)',
         }}
         className="trazo-noscroll"
       >
-        <div style={{ width: 40, height: 4, borderRadius: 4, background: 'rgba(243,238,228,.2)', margin: '0 auto 18px' }} />
+        <div style={{ width: 40, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.2)', margin: '0 auto 18px' }} />
         {children}
       </div>
     </div>
@@ -260,7 +264,7 @@ export function SeasonFx({ season, visible, parts }: { season: Season; visible: 
       />,
     )
   }
-  return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: visible, transition: 'opacity 1.2s' }}>{kids}</div>
+  return <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: visible, transition: 'opacity 1.2s', pointerEvents: 'none' }}>{kids}</div>
 }
 
 /** Las siluetas de la tarjeta de compañía. */
@@ -283,7 +287,7 @@ export function Figures({ heights, gap, active, together }: { heights: number[];
 
 /** Stepper numérico (adultos, niños, tamaño de grupo). */
 export function Stepper({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (value: number) => void }) {
-  const btn: CSSProperties = { width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(243,238,228,.16)', background: 'transparent', color: INK, font: "500 18px 'Geist'", cursor: 'pointer' }
+  const btn: CSSProperties = { width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(28,34,48,.16)', background: 'transparent', color: INK, font: "500 18px 'Geist'", cursor: 'pointer' }
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0' }}>
       <span style={{ font: "400 15px 'Geist'", color: INK }}>{label}</span>
@@ -291,7 +295,7 @@ export function Stepper({ label, value, min, max, onChange }: { label: string; v
         <button type="button" style={{ ...btn, opacity: value <= min ? 0.3 : 1 }} onClick={() => value > min && onChange(value - 1)} aria-label={`Menos ${label}`}>
           −
         </button>
-        <span style={{ font: `400 28px ${SERIF}`, minWidth: 28, textAlign: 'center', color: AMBER }}>{value}</span>
+        <span style={{ font: `400 28px ${SERIF}`, minWidth: 28, textAlign: 'center', color: ACCENT }}>{value}</span>
         <button type="button" style={{ ...btn, opacity: value >= max ? 0.3 : 1 }} onClick={() => value < max && onChange(value + 1)} aria-label={`Más ${label}`}>
           +
         </button>

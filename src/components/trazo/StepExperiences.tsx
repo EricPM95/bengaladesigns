@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import type { DateRange, ExperienceCategoryId, Season } from '../../lib/types'
 import { EXPERIENCE_CATEGORY_BANK, MAX_POSITIVE_CATEGORIES, isCategoryVisible } from '../../lib/experienceCategoryBank'
 import { fetchSeasonalWindows, seasonStatus, type SeasonalWindow } from '../../lib/seasonalAvailability'
-import { AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
+import { ACCENT, AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
 
 const LOCKED: ExperienceCategoryId = 'imprescindibles'
 
@@ -45,9 +45,13 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
 
   const winter = isWinterTrip(season, dateRange)
   const statusOf = (id: ExperienceCategoryId) => seasonStatus(windows[id], month, dateRange)
-  const visible = EXPERIENCE_CATEGORY_BANK.filter((category) =>
+  const shown = EXPERIENCE_CATEGORY_BANK.filter((category) =>
     windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
+  // El Free Tour, segundo, justo debajo de Imprescindibles y con la etiqueta «Recomendado» (solo cambia el orden en que se ven).
+  const freeTour = shown.find((category) => category.id === 'free_tour')
+  const rest = shown.filter((category) => category.id !== 'free_tour')
+  const visible = freeTour ? [...rest.slice(0, 1), freeTour, ...rest.slice(1)] : shown
 
   // Imprescindibles siempre dentro, y fuera lo que ya no cabe en el mes elegido.
   useEffect(() => {
@@ -74,15 +78,15 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>05 — Experiencias</span>
-        <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(243,238,228,.7)' }}>
+        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>05 — Experiencias</span>
+        <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)' }}>
           {selected.length}/{MAX_POSITIVE_CATEGORIES}
         </span>
       </div>
       <Title>
         Elige tus <Em>favoritas</Em>
       </Title>
-      <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(243,238,228,.72)' }}>
+      <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(28,34,48,.72)' }}>
         Imprescindibles ya va incluido. Añade hasta 2 más… o ninguna: tu viaje será igual de único, nosotros nos encargamos.
       </p>
       <div className="trazo-noscroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, margin: '16px 0 12px' }}>
@@ -107,8 +111,8 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
                 minHeight: 64,
                 maxHeight: 104,
                 borderRadius: 20,
-                border: `1px solid ${active ? AMBER : 'rgba(243,238,228,.1)'}`,
-                background: 'rgba(10,13,20,.55)',
+                border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.1)'}`,
+                background: 'rgba(255,255,255,0.85)',
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
                 display: 'flex',
@@ -123,7 +127,26 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
               <span style={{ position: 'absolute', inset: 0, background: AMBER, transformOrigin: 'left center', transform: active ? 'scaleX(1)' : 'scaleX(0)', transition: 'transform .65s cubic-bezier(.2,.8,.2,1)' }} />
               <span style={{ position: 'relative', font: `500 11px ${MONO}`, opacity: 0.7, width: 20 }}>{String(index + 1).padStart(2, '0')}</span>
               <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <span style={{ font: `400 25px/1 ${SERIF}` }}>{category.title}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ font: `400 25px/1 ${SERIF}` }}>{category.title}</span>
+                  {category.id === 'free_tour' && (
+                    <span
+                      style={{
+                        flex: 'none',
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                        font: `500 10px/1 ${MONO}`,
+                        letterSpacing: '.08em',
+                        textTransform: 'uppercase',
+                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(255,190,30,.22)',
+                        color: active ? DARK : INK,
+                        transition: 'background .45s,color .45s',
+                      }}
+                    >
+                      Recomendado
+                    </span>
+                  )}
+                </span>
                 <span style={{ font: "400 12.5px/1.3 'Geist'", opacity: 0.78 }}>{descriptionOf(category.id, category.description)}</span>
                 {notice && <span style={{ font: "400 12px/1.3 'Geist'", opacity: 0.9 }}>{notice}</span>}
               </span>
@@ -140,7 +163,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
                   justifyContent: 'center',
                   font: "600 14px 'Geist'",
                   background: active ? DARK : 'transparent',
-                  color: AMBER,
+                  color: ACCENT,
                 }}
               >
                 {locked ? (

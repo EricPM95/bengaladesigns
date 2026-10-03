@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Companion, QuestionnaireAnswers } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { getCapacityWarning, isCompanionFullyResolved, totalCompanionPeople } from '../../lib/companionFlow'
-import { AMBER, Cta, Em, Figures, INK, MONO, RadioRow, SERIF, Sheet, Stepper, Title } from './trazoUi'
+import { ACCENT, AMBER, Cta, Em, Figures, INK, MONO, RadioRow, SERIF, Sheet, Stepper, Title } from './trazoUi'
 
 const GROUPS: { k: Companion; n: string; d: string; f: number[]; gap: number }[] = [
   { k: 'solo', n: 'Solo', d: 'Tu ritmo, tus reglas', f: [74], gap: 0 },
@@ -61,7 +61,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
 
   return (
     <>
-      <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>04 — Compañía</div>
+      <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>04 — Compañía</div>
       <Title>
         ¿Con quién <Em>viajas?</Em>
       </Title>
@@ -78,8 +78,8 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
               style={{
                 minHeight: 0,
                 borderRadius: 24,
-                border: `1px solid ${active ? AMBER : 'rgba(243,238,228,.1)'}`,
-                background: active ? 'rgba(242,181,68,.12)' : 'rgba(10,13,20,.5)',
+                border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.1)'}`,
+                background: active ? 'rgba(255,190,30,.12)' : 'rgba(255,255,255,0.80)',
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
                 display: 'flex',
@@ -95,7 +95,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
                 <Figures heights={g.f} gap={g.gap} active={active} together={g.k === 'couple'} />
               </div>
               <div style={{ font: `400 26px/1 ${SERIF}` }}>{g.n}</div>
-              <div style={{ marginTop: 5, font: "400 12.5px/1.3 'Geist'", color: 'rgba(243,238,228,.68)' }}>{summary ?? g.d}</div>
+              <div style={{ marginTop: 5, font: "400 12.5px/1.3 'Geist'", color: 'rgba(28,34,48,.68)' }}>{summary ?? g.d}</div>
             </button>
           )
         })}
@@ -106,13 +106,13 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
       {warning?.level === 'camper_over' && (
         <p style={{ margin: '0 4px 10px', font: "400 13px/1.4 'Geist'", color: INK }}>
           Sois {total} — es un grupo grande para este tipo de vehículo.{' '}
-          <button type="button" onClick={onChangeVehicle} style={{ border: 'none', background: 'transparent', color: AMBER, textDecoration: 'underline', cursor: 'pointer', font: "500 13px 'Geist'" }}>
+          <button type="button" onClick={onChangeVehicle} style={{ border: 'none', background: 'transparent', color: ACCENT, textDecoration: 'underline', cursor: 'pointer', font: "500 13px 'Geist'" }}>
             Cambiar vehículo
           </button>
         </p>
       )}
       {warning?.level === 'car_over' && !acknowledged && answers.companion && (answers.companionGroupSize !== undefined || answers.companionChildrenAges !== undefined) && (
-        <div style={{ margin: '0 0 10px', padding: 14, borderRadius: 18, background: 'rgba(242,181,68,.1)', border: '1px solid rgba(242,181,68,.35)' }}>
+        <div style={{ margin: '0 0 10px', padding: 14, borderRadius: 18, background: 'rgba(255,190,30,.1)', border: '1px solid rgba(255,190,30,.35)' }}>
           <p style={{ margin: '0 0 6px', font: "400 14px/1.4 'Geist'", color: INK }}>
             Sois {total} — un coche de alquiler estándar llega hasta 5 personas. ¿Alquilamos más de un coche, o prefieres cambiar de vehículo?
           </p>
@@ -126,7 +126,7 @@ export function StepCompanion({ answers, onChange, onChangeVehicle, onNext }: St
       </Cta>
 
       <Sheet open={sheet !== null} onClose={() => setSheet(null)}>
-        <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>{sheet === 'family' ? 'En familia' : 'Con amigos'}</div>
+        <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>{sheet === 'family' ? 'En familia' : 'Con amigos'}</div>
         <h2 style={{ margin: '10px 0 8px', font: `400 32px/1.02 ${SERIF}` }}>{sheet === 'family' ? '¿Quiénes vais?' : '¿Cuántos sois?'}</h2>
         {sheet === 'family' && (
           <>

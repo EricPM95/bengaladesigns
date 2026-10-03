@@ -8,7 +8,7 @@ import { classifyInBackground } from '../../lib/classifyInBackground'
 import { buildTransportRows, type TransportRow } from './transportRows'
 import { followUp, type VehiclePatch } from './vehicleFlow'
 import { kmBetween } from './cityCode'
-import { AMBER, ConfirmedCard, Cta, Em, INK, MONO, RadioRow, Title, panelStyle } from './trazoUi'
+import { ACCENT, AMBER, ConfirmedCard, Cta, Em, INK, MONO, RadioRow, Title, panelStyle } from './trazoUi'
 
 interface StepTransportProps {
   active: boolean
@@ -168,7 +168,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>
         {loadDone ? '02 — Ruta encontrada' : '02 — Calculando ruta…'}
       </div>
       <Title size={40}>
@@ -191,9 +191,9 @@ export function StepTransport({ active, origin, destination, destinationName, on
             font: `500 10px ${MONO}`,
             letterSpacing: '.14em',
             textTransform: 'uppercase',
-            color: 'rgba(243,238,228,.55)',
+            color: 'rgba(28,34,48,.55)',
             paddingBottom: 8,
-            borderBottom: '1px solid rgba(243,238,228,.08)',
+            borderBottom: '1px solid rgba(28,34,48,.08)',
           }}
         >
           <span>Distancia</span>
@@ -210,7 +210,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
         {classificationFailed && (
           <div style={{ paddingTop: 12, font: "400 14px/1.4 'Geist'", color: INK }}>
             No hemos podido saber qué tipo de destino es {destinationName} ahora mismo.{' '}
-            <button type="button" onClick={() => classifyInBackground(destinationName)} style={{ border: 'none', background: 'transparent', color: AMBER, textDecoration: 'underline', cursor: 'pointer', font: "500 14px 'Geist'" }}>
+            <button type="button" onClick={() => classifyInBackground(destinationName)} style={{ border: 'none', background: 'transparent', color: ACCENT, textDecoration: 'underline', cursor: 'pointer', font: "500 14px 'Geist'" }}>
               Reintentar
             </button>
           </div>
@@ -239,7 +239,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
                   height: 52,
                   border: 'none',
                   borderRadius: 14,
-                  background: selected ? 'rgba(242,181,68,.08)' : 'transparent',
+                  background: selected ? 'rgba(255,190,30,.08)' : 'transparent',
                   color: INK,
                   textAlign: 'left',
                   cursor: loadDone && row.apt ? 'pointer' : 'default',
@@ -248,7 +248,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
                 }}
               >
                 <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', minWidth: 0 }}>
-                  <span style={{ font: "500 15px 'Geist'", color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap' }}>{row.label}</span>
+                  <span style={{ font: "500 15px 'Geist'", color: selected ? ACCENT : INK, transition: 'color .4s', whiteSpace: 'nowrap' }}>{row.label}</span>
                   {/* Al final, "Recomendado": crece desde 0 de alto dentro de la fila (que no cambia de tamaño). */}
                   {row.recommended && !onlyOne && (
                     <span
@@ -268,7 +268,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
                           alignItems: 'center',
                           borderRadius: 999,
                           background: AMBER,
-                          color: '#17120a',
+                          color: '#FFFFFF',
                           font: `600 9px ${MONO}`,
                           letterSpacing: '.08em',
                           textTransform: 'uppercase',
@@ -282,18 +282,18 @@ export function StepTransport({ active, origin, destination, destinationName, on
                     </span>
                   )}
                 </span>
-                <div style={{ height: 4, borderRadius: 4, background: 'rgba(243,238,228,.08)', overflow: 'hidden' }}>
+                <div style={{ height: 4, borderRadius: 4, background: 'rgba(28,34,48,.08)', overflow: 'hidden' }}>
                   <div
                     style={{
                       height: '100%',
                       width: `${(easeInOut(local) * barShare * 100).toFixed(2)}%`,
-                      background: selected ? AMBER : 'rgba(243,238,228,.55)',
+                      background: selected ? AMBER : 'rgba(28,34,48,.55)',
                       borderRadius: 4,
                       transition: 'background .4s',
                     }}
                   />
                 </div>
-                <span style={{ font: `500 12px ${MONO}`, textAlign: 'right', color: selected ? AMBER : INK, transition: 'color .4s', whiteSpace: 'nowrap', minWidth: 64 }}>
+                <span style={{ font: `500 12px ${MONO}`, textAlign: 'right', color: selected ? ACCENT : INK, transition: 'color .4s', whiteSpace: 'nowrap', minWidth: 64 }}>
                   {/* Mientras crece, "···"; al terminar su fila, el tiempo o "Sin ruta" entran con un fundido. */}
                   <span key={done ? 'done' : 'wait'} style={{ display: 'inline-block', animation: done && !reduceMotion ? 'trazo-chipIn .45s cubic-bezier(.2,.8,.2,1) both' : 'none' }}>
                     {!done ? '···' : row.apt ? row.time || '—' : 'Sin ruta'}
@@ -305,7 +305,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
         </div>
 
         {loadDone && onlyOne && chosenRow && (
-          <div style={{ padding: '12px 0 2px', font: "400 13px/1.4 'Geist'", color: 'rgba(243,238,228,.75)', textWrap: 'pretty', overflow: 'hidden', animation: reduceMotion ? 'none' : 'trazo-growIn .7s cubic-bezier(.2,.8,.2,1) both' }}>
+          <div style={{ padding: '12px 0 2px', font: "400 13px/1.4 'Geist'", color: 'rgba(28,34,48,.75)', textWrap: 'pretty', overflow: 'hidden', animation: reduceMotion ? 'none' : 'trazo-growIn .7s cubic-bezier(.2,.8,.2,1) both' }}>
             Desde {origin?.name} solo tiene sentido llegar en {chosenRow.en}.
           </div>
         )}
@@ -317,7 +317,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
             style={{
               marginTop: 14,
               paddingTop: 14,
-              borderTop: '1px solid rgba(243,238,228,.08)',
+              borderTop: '1px solid rgba(28,34,48,.08)',
               display: 'flex',
               flexDirection: 'column',
               gap: 2,

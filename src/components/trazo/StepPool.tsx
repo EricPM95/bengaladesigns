@@ -5,7 +5,7 @@ import { fetchPlacePhoto, getPoolPhoto, prefetchPoolPhotos } from '../../lib/pla
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { useRouteStore } from '../../store/useRouteStore'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
-import { AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
+import { ACCENT, AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
 
 interface Tile {
   key: string
@@ -89,15 +89,15 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: AMBER, textTransform: 'uppercase' }}>06 — Lugares</span>
+        <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>06 — Lugares</span>
         <span
           style={{
             font: `600 11px ${MONO}`,
             letterSpacing: '.08em',
             padding: '5px 10px',
             borderRadius: 999,
-            background: atLimit ? AMBER : 'rgba(243,238,228,.08)',
-            color: atLimit ? DARK : 'rgba(243,238,228,.75)',
+            background: atLimit ? AMBER : 'rgba(28,34,48,.08)',
+            color: atLimit ? DARK : 'rgba(28,34,48,.75)',
             transition: 'background .3s,color .3s',
           }}
         >
@@ -107,15 +107,15 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
       <Title size={36}>
         Elige lo que siempre soñaste ver en <Em>{destinationName}</Em>
       </Title>
-      <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(243,238,228,.72)' }}>
+      <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(28,34,48,.72)' }}>
         Elige tus imprescindibles. Nosotros nos encargamos del resto.
       </p>
       <div className="trazo-noscroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', margin: '14px 0 8px' }}>
-        {waiting && <p style={{ font: "400 14px 'Geist'", color: 'rgba(243,238,228,.65)' }}>Viendo qué lugares hay en {destinationName}…</p>}
+        {waiting && <p style={{ font: "400 14px 'Geist'", color: 'rgba(28,34,48,.65)' }}>Viendo qué lugares hay en {destinationName}…</p>}
         {!curated && !waiting && suggested.length === 0 && suggestedFailed && (
-          <p style={{ font: "400 14px 'Geist'", color: 'rgba(243,238,228,.65)' }}>
+          <p style={{ font: "400 14px 'Geist'", color: 'rgba(28,34,48,.65)' }}>
             No pudimos cargar los lugares.{' '}
-            <button type="button" onClick={() => suggestPlacesOnDemand(destinationName, experiences)} style={{ border: 'none', background: 'transparent', color: AMBER, textDecoration: 'underline', cursor: 'pointer', font: 'inherit' }}>
+            <button type="button" onClick={() => suggestPlacesOnDemand(destinationName, experiences)} style={{ border: 'none', background: 'transparent', color: ACCENT, textDecoration: 'underline', cursor: 'pointer', font: 'inherit' }}>
               Reintentar
             </button>
           </p>
@@ -137,8 +137,8 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                   position: 'relative',
                   overflow: 'hidden',
                   borderRadius: 20,
-                  border: `1px solid ${active ? AMBER : 'rgba(243,238,228,.1)'}`,
-                  background: 'rgba(10,13,20,.5)',
+                  border: `1px solid ${active ? AMBER : 'rgba(28,34,48,.1)'}`,
+                  background: 'rgba(255,255,255,0.80)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -156,7 +156,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: active ? 'linear-gradient(180deg,rgba(242,181,68,.28),rgba(10,13,20,.88))' : 'linear-gradient(180deg,rgba(10,13,20,.15),rgba(10,13,20,.85))',
+                    background: active ? 'linear-gradient(180deg,rgba(255,190,30,.28),rgba(255,255,255,0.94))' : 'linear-gradient(180deg,rgba(255,255,255,0.40),rgba(255,255,255,0.94))',
                     transition: 'background .35s',
                   }}
                 />
@@ -171,8 +171,8 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                       alignItems: 'center',
                       justifyContent: 'center',
                       font: `600 11px ${MONO}`,
-                      background: active ? AMBER : 'rgba(10,13,20,.35)',
-                      border: active ? 'none' : '1.5px solid rgba(243,238,228,.8)',
+                      background: active ? AMBER : 'rgba(255,255,255,0.72)',
+                      border: active ? 'none' : '1.5px solid rgba(28,34,48,.8)',
                       color: DARK,
                       transition: 'background .3s',
                     }}
@@ -182,7 +182,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
                 </span>
                 <span style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <span style={{ font: `400 19px/1.05 ${SERIF}`, textWrap: 'balance', textShadow: '0 1px 8px rgba(0,0,0,.5)' }}>{tile.name}</span>
-                  {tile.tag && <span style={{ font: `500 9.5px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(243,238,228,.72)' }}>{tile.tag}</span>}
+                  {tile.tag && <span style={{ font: `500 9.5px ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(28,34,48,.72)' }}>{tile.tag}</span>}
                 </span>
               </button>
             )
@@ -227,7 +227,7 @@ export function StepPool({ destinationName, days, curatedPool, experiences, onNe
             </span>
           )}
         </div>
-        <span style={{ font: "400 13px 'Geist'", color: 'rgba(243,238,228,.75)', minWidth: 0 }}>{trayLabel}</span>
+        <span style={{ font: "400 13px 'Geist'", color: 'rgba(28,34,48,.75)', minWidth: 0 }}>{trayLabel}</span>
       </div>
       <Cta onClick={onNext} enabled={canCreate}>
         {canCreate ? 'Crear mi ruta' : 'Cargando lugares…'}
