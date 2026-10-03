@@ -107,7 +107,9 @@ const fromRow = (row) => {
   if (row.photo_source === 'wikipedia') return { fuente: 'wikipedia', tarjeta: row.photo_url, ficha: row.photo_url, detalle: row.photo_url }
   return { fuente: 'otra', detalle: row.photo_source }
 }
+const restaurantNames = new Set((data.restaurants ?? []).map((r) => r.name))
 const resolve = (name) => {
+  if (restaurantNames.has(name)) return { fuente: 'sin', detalle: 'restaurante, café o heladería: sin foto siempre (regla del servidor)' }
   if (hidden.has(name)) return { fuente: 'sin', detalle: 'va sin foto a propósito (sin_foto en _fotos.json)' }
   const own = ownPhotoFile(table, name, null)
   if (own) return { fuente: 'propia', archivo: own.archivo, tarjeta: `public/fotos/${key}/${own.archivo.replace(/\.jpg$/, '_p.jpg')}`, ficha: `public/fotos/${key}/${own.archivo}`, detalle: `public/fotos/${key}/${own.archivo}`, noche: own.cuando === 'noche' }

@@ -5003,10 +5003,28 @@ async function searchWikipediaPhoto(name, city, wikipediaTitle) {
 }
 
 /**
+ * Los restaurantes, cafés y heladerías de un destino (su lista `restaurants`, en roma.json y en los demás destinos) NUNCA llevan foto
+ * (decisión del usuario, 3-oct-2026): el color neutro, siempre y sin apuntarlo en ningún sitio. Así, un restaurante o un destino nuevo no
+ * busca foto jamás, y ninguno puede llevar la de un sitio que no es suyo.
+ */
+const restaurantNamesCache = new WeakMap()
+function isRestaurantName(city, name) {
+  const data = findPipelineV2Data(city)
+  if (!data) return false
+  let names = restaurantNamesCache.get(data)
+  if (!names) {
+    names = new Set((data.restaurants ?? []).map((restaurant) => restaurant.name))
+    restaurantNamesCache.set(data, names)
+  }
+  return names.has(name)
+}
+
+/**
  * Cascada completa de una foto. `force` salta la caché — solo lo usa el script de pre-población,
  * para poder repetir una búsqueda tras corregir un `search_en`.
  */
 async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOverride = null } = {}) {
+  if (isRestaurantName(city, name)) return { photo_source: 'none' }
   const cityKey = stripAccentsLowerServer(city)
   if (supabaseAdmin && !force) {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', name).maybeSingle()
@@ -5166,8 +5184,9 @@ app.post('/api/pool-photos', async (req, res) => {
   const photos = {}
   const missing = []
   const hidden = new Set(photosFor(destKey ?? '')?.sin_foto ?? [])
+  const isHidden = (name) => hidden.has(name) || isRestaurantName(destination, name)
   for (const name of list) {
-    if (hidden.has(name)) continue
+    if (isHidden(name)) continue
     const own = ownPhotoFor(name, destination, date)
     if (own) photos[name] = { url: own.photo_small, source: 'propia' }
     else missing.push(name)
@@ -5207,7 +5226,7 @@ app.post('/api/place-photo', async (req, res) => {
   }
   try {
     // Lugares sin foto hasta que el usuario pase una buena (`sin_foto` en _fotos.json): el color neutro de la app, nunca una buscada sola.
-    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name)) {
+    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name) || isRestaurantName(city, name)) {
       res.json({ photo_source: 'none' })
       return
     }
