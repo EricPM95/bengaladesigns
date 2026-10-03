@@ -5,14 +5,8 @@
     "Via Margutta",
     "Via Margutta y Via del Babuino",
     "Pasear por San Giovanni",
-    "Mercado de Testaccio",
     "Pasear por la Roma Antigua",
-    "Ostia Antica",
     "Pasear por el Esquilino",
-    "Galería Nacional de Arte Moderno",
-    "Luces de Navidad del Tridente",
-    "Naples Italy",
-    "Mirador del Janículo (noche)",
     "Terraza del Pincio (noche)"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca.",
@@ -530,6 +524,78 @@
       "autor": "Davide Mauro",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ADomus_Aurea_03.jpg",
       "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Domus Aurea»): Wikimedia Commons, File:Domus Aurea 03.jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_galeria_nacional_arte_moderno.jpg",
+      "lugares": [
+        "Galería Nacional de Arte Moderno"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Krzysztof Golik",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ANational_Gallery_of_Modern_Art_in_Rome_01.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Galería Nacional de Arte Moderno»): Wikimedia Commons, File:National Gallery of Modern Art in Rome 01.jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "navidad_luces_tridente.jpg",
+      "lugares": [
+        "Luces de Navidad del Tridente"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
+      "autor": "sailko",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3AIlluminazione_via_del_corso_natale_2011%2C_03.JPG",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Luces de Navidad del Tridente»): Wikimedia Commons, File:Illuminazione via del corso natale 2011, 03.JPG, CC BY-SA 3.0, pide crédito."
+    },
+    {
+      "archivo": "dia_mercado_testaccio.jpg",
+      "lugares": [
+        "Mercado de Testaccio"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
+      "autor": "Lalupa",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ATestaccio_-_il_nuovo_mercato_1280317.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mercado de Testaccio»): Wikimedia Commons, File:Testaccio - il nuovo mercato 1280317.jpg, CC BY-SA 3.0, pide crédito."
+    },
+    {
+      "archivo": "noche_mirador_janiculo.jpg",
+      "lugares": [
+        "Mirador del Janículo (noche)"
+      ],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
+      "autor": "Desmatron at Italian Wikipedia",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3AGianicolo_roma_di_notte.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mirador del Janículo (noche)»): Wikimedia Commons, File:Gianicolo roma di notte.jpg, CC BY-SA 3.0, pide crédito."
+    },
+    {
+      "archivo": "dia_napoles.jpg",
+      "lugares": [
+        "Naples Italy"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "PaestumPaestum",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ACastel_dell'_Ovo.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Nápoles (Naples Italy)»): Wikimedia Commons, File:Castel dell' Ovo.jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_ostia_antica.jpg",
+      "lugares": [
+        "Ostia Antica"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Rabax63",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ATheater_(Ostia_Antica).jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Ostia Antica (excursión)»): Wikimedia Commons, File:Theater (Ostia Antica).jpg, CC BY-SA 4.0, pide crédito."
     }
   ],
   "notas_revision": {
