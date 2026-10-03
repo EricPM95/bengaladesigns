@@ -341,12 +341,10 @@
     },
     {
       "archivo": "dia_parque_villa_borghese_templo_esculapio.jpg",
-      "lugares": [
-        "Parque de Villa Borghese"
-      ],
+      "lugares": [],
       "cuando": "dia",
       "ancho": 750,
-      "nota": "Pequeña (750 px): tal cual, sin ampliarla.",
+      "nota": "Sin uso desde el 3-oct-2026: el Parque lleva la foto del usuario y el lago y el Templo de Esculapio, una de Commons.",
       "fuente": "",
       "autor": "",
       "enlace": ""
@@ -664,6 +662,18 @@
       "autor": "Jamie Heath from United Kingdom",
       "enlace": "https://commons.wikimedia.org/wiki/File%3APiazza_del_Popolo_(49347286317).jpg",
       "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Terraza del Pincio (noche)»): Wikimedia Commons, File:Piazza del Popolo (49347286317).jpg, CC BY-SA 2.0, pide crédito."
+    },
+    {
+      "archivo": "dia_parque_villa_borghese.jpg",
+      "lugares": [
+        "Parque de Villa Borghese"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La del usuario (3-oct-2026). Original en docs/archivo/fotos_2026-10-03/. Comprobado que no se parece a la de Jardines del Pincio, que sale el mismo día."
     }
   ],
   "notas_revision": {
