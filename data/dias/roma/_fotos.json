@@ -5,21 +5,15 @@
     "Via Margutta",
     "Via Margutta y Via del Babuino",
     "Pasear por San Giovanni",
-    "Basílica de Santa Cecilia in Trastevere",
-    "Cementerio Protestante",
     "Mercado de Testaccio",
-    "100 Presepi in Vaticano",
     "Pasear por la Roma Antigua",
-    "Domus Aurea",
     "Ostia Antica",
     "Pasear por el Esquilino",
     "Galería Nacional de Arte Moderno",
     "Luces de Navidad del Tridente",
     "Naples Italy",
-    "Altar de la Patria (noche)",
     "Mirador del Janículo (noche)",
-    "Terraza del Pincio (noche)",
-    "Barrio Judío"
+    "Terraza del Pincio (noche)"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca.",
   "fotos": [
@@ -121,7 +115,6 @@
     {
       "archivo": "navidad_plaza_venecia_altar_patria_arbol_noche.jpg",
       "lugares": [
-        "Altar de la Patria (noche)",
         "Plaza Venecia (noche)"
       ],
       "cuando": "noche",
@@ -160,8 +153,7 @@
       "enlace": "",
       "archivo": "dia_trastevere.jpg",
       "lugares": [
-        "Trastevere",
-        "Basílica de Santa Cecilia in Trastevere"
+        "Trastevere"
       ],
       "ancho": 1200,
       "nota": "La trattoria con la Vespa: es Trastevere (3-oct-2026: ya no sale en la iglesia). Santa Cecilia sigue con ella de momento: pendiente de una foto propia de la basílica."
@@ -466,6 +458,78 @@
       "autor": "",
       "enlace": "",
       "nota": "La del usuario (3-oct-2026). Es la foto de la parada de noche única del Puente y el Castillo de Sant'Angelo; la usan también el paseo «El Castillo y el Tíber» y el mirador que llega de noche (night_view_overrides)."
+    },
+    {
+      "archivo": "dia_100_presepi_vaticano.jpg",
+      "lugares": [
+        "100 Presepi in Vaticano"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 3.0",
+      "autor": "Dguendel",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3AVatikan%2C_Petersdom%2C_die_Weihnachtskrippe.JPG",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «100 Presepi in Vaticano»): Wikimedia Commons, File:Vatikan, Petersdom, die Weihnachtskrippe.JPG, CC BY 3.0, pide crédito."
+    },
+    {
+      "archivo": "noche_altar_de_la_patria.jpg",
+      "lugares": [
+        "Altar de la Patria (noche)"
+      ],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Charlie27it",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3AVittoriano_di_Notte_(cropped).jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Altar de la Patria (noche)»): Wikimedia Commons, File:Vittoriano di Notte (cropped).jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_barrio_judio.jpg",
+      "lugares": [
+        "Barrio Judío"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 2.0",
+      "autor": "Jorge Franganillo",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-_Portico_d'Ottavia_-_52350512476.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Barrio Judío»): Wikimedia Commons, File:Roma- Portico d'Ottavia - 52350512476.jpg, CC BY 2.0, pide crédito."
+    },
+    {
+      "archivo": "dia_basilica_santa_cecilia_trastevere.jpg",
+      "lugares": [
+        "Basílica de Santa Cecilia in Trastevere"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 4.0",
+      "autor": "NateBergin",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ASanta_Cecilia_in_Trastevere_Facade.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Basílica de Santa Cecilia in Trastevere»): Wikimedia Commons, File:Santa Cecilia in Trastevere Facade.jpg, CC BY 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_cementerio_protestante.jpg",
+      "lugares": [
+        "Cementerio Protestante"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Pierrette13",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ATombes_orthodoxes%2C_cimeti%C3%A8re_anglais_de_Rome.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Cementerio Protestante»): Wikimedia Commons, File:Tombes orthodoxes, cimetière anglais de Rome.jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_domus_aurea.jpg",
+      "lugares": [
+        "Domus Aurea"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Davide Mauro",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ADomus_Aurea_03.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Domus Aurea»): Wikimedia Commons, File:Domus Aurea 03.jpg, CC BY-SA 4.0, pide crédito."
     }
   ],
   "notas_revision": {
