@@ -31,6 +31,7 @@ function AlertDot() {
 export function ModeSwitcher({ showToday }: ModeSwitcherProps) {
   const mode = useRouteStore((state) => state.mode)
   const setMode = useRouteStore((state) => state.setMode)
+  const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
   const readiness = useTripReadiness()
   const showBookingsAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
   const modes = showToday ? [{ id: 'today' as const, label: 'Hoy' }, ...BASE_MODES] : BASE_MODES
@@ -44,7 +45,11 @@ export function ModeSwitcher({ showToday }: ModeSwitcherProps) {
           <button
             key={item.id}
             type="button"
-            onClick={() => setMode(item.id)}
+            onClick={() => {
+              // Al volver a Días desde otra pestaña, los días se ven siempre cerrados (la lista), nunca el que se había abierto.
+              if (item.id === 'days' && mode !== 'days') setActiveDayId(null)
+              setMode(item.id)
+            }}
             className={`relative flex h-[46px] items-center justify-center gap-1.5 text-[15px] transition-colors ${active ? 'font-semibold text-text' : 'font-normal text-text/55 hover:text-text'}`}
           >
             {item.label}
