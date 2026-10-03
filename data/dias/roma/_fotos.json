@@ -147,11 +147,22 @@
       "archivo": "dia_trastevere.jpg",
       "lugares": [
         "Trastevere",
-        "Iglesia de Santa Maria in Trastevere",
         "Basílica de Santa Cecilia in Trastevere"
       ],
       "ancho": 1200,
-      "nota": "Todas las paradas que dicen Trastevere (decisión del usuario, 2026-10-01)."
+      "nota": "La trattoria con la Vespa: es Trastevere (3-oct-2026: ya no sale en la iglesia). Santa Cecilia sigue con ella de momento: pendiente de una foto propia de la basílica."
+    },
+    {
+      "archivo": "dia_iglesia_santa_maria_trastevere.jpg",
+      "lugares": [
+        "Iglesia de Santa Maria in Trastevere"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La fuente de la plaza delante de la iglesia (3-oct-2026). Wikimedia Commons, File:Santa Maria in Trastevere fountain.jpg, de Jensens: dominio público, sin crédito obligatorio. Es la que antes salía en Trastevere (venía de Wikipedia)."
     },
     {
       "cuando": "noche",
