@@ -63,7 +63,14 @@ const AFTERNOON_FROM = 13 * 60
 const LUNCH_EARLIEST_RESERVED = 12 * 60
 const LUNCH_MIN_RESERVED = 30
 const isReservedDraft = (draft) => (draft?.applied ?? []).some((label) => String(label).startsWith('reserva:'))
-const lunchMinOf = (draft) => (isReservedDraft(draft) ? LUNCH_MIN_RESERVED : LUNCH_MIN)
+/** Una hora fija de verdad (REGLAS_RUTAS 2): reserva o turno. Una `orientativa` no lo es: llegar unos minutos tarde no es llegar tarde. */
+const isHardHour = (stop) => stop?.hora != null && stop.hora_tipo !== 'orientativa'
+/** Con una hora fija justo detrás (la primera parada de la tarde), la comida se adapta: unos 30 min. Sin ella, de 45 a 90. */
+const hardHourBehind = (draft) => {
+  const first = (draft?.tarde ?? []).find((stop) => stop.tipo !== 'opcional' && stop.modo !== 'camino')
+  return isHardHour(first)
+}
+const lunchMinOf = (draft) => (isReservedDraft(draft) || hardHourBehind(draft) ? LUNCH_MIN_RESERVED : LUNCH_MIN)
 const LUNCH_DEFAULT = 60
 const DINNER_MINUTES = 90
 const DINNER_EARLIEST = 19 * 60 + 30
@@ -73,6 +80,7 @@ const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una vis
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
 /** Verano (julio y agosto): de 14:00 a 16:30, nada al sol (INVARIANTES 413). */
 const SUMMER_MONTHS = [7, 8]
+const SUMMER_SHADE_FROM = 14 * 60
 const SUMMER_SHADE_UNTIL = 16 * 60 + 30
 /** Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): desde cuántos minutos libres se busca un sitio, a cuánto
  * andando como mucho, cuánto dura (entre 20 y 45) y el paseo que se cuenta hasta la cena. */
@@ -171,6 +179,7 @@ export function planWrittenTrip(args) {
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const mode = MODE_V3
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
+  const placeNameById = new Map((destData.places ?? []).filter((place) => place.id).map((place) => [place.id, place.name]))
   const selected = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
   const inPool = (name) => poolNames.includes(name)
   const tour = destData.default_free_tour ?? null
@@ -464,7 +473,7 @@ export function planWrittenTrip(args) {
     if (entryKey && SUMMER_MONTHS.includes(monthNow) && variants[`${entryKey}@verano`]) applyOps(draft, variants[`${entryKey}@verano`], `${entryKey}@verano`)
     if (ftHere) {
       applyOps(draft, ftHere, ftKey)
-      for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour?.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora })
+      for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour?.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora, hora_tipo: 'turno' })
     }
     const weekdayKey = hours.weekday && calendar.hasDates ? norm(hours.weekday) : null
     if (weekdayKey) {
@@ -512,7 +521,7 @@ export function planWrittenTrip(args) {
     // (Si lo que cambia ese día, el domingo o una fecha, reescribió las paradas y se llevó el tour, el tour vuelve: su hora no se mueve ni se quita, INVARIANTES 466.)
     if (ftHere && tour && ![...draft.manana, ...draft.tarde].some((stop) => stop.lugar === tour.name)) {
       applyOps(draft, ftHere, `${ftKey}:otra_vez`)
-      for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora })
+      for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora, hora_tipo: 'turno' })
     }
     // Lo que depende del viaje: `no_si_dia` (la Isla Tiberina en D5 si el viaje ya lleva D1-FT) y `desde_dias` (solo en
     // viajes de tantos días o más).
@@ -596,7 +605,7 @@ export function planWrittenTrip(args) {
           draft.applied.push(`despues_de_la_reserva:${moved.map((stop) => stop.lugar).join('+')}`)
         }
       }
-      for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === entryReserved.place && stop.modo === 'dentro') Object.assign(stop, { tipo: 'fija', hora: toHHMM(entryReserved.hour), llegar_antes: ENTRY_ARRIVAL_MARGIN, turno: true, recorta_al_cierre: true })
+      for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === entryReserved.place && stop.modo === 'dentro') Object.assign(stop, { tipo: 'fija', hora: toHHMM(entryReserved.hour), hora_tipo: 'reserva', llegar_antes: ENTRY_ARRIVAL_MARGIN, turno: true, recorta_al_cierre: true })
       draft.applied.push(`reserva:${toHHMM(entryReserved.hour)}`)
     }
     return draft
@@ -964,10 +973,10 @@ export function planWrittenTrip(args) {
       // (Con sus minutos exactos: una rejilla de 5 min aquí sumaba redondeos y se llegaba tarde a los turnos; la pantalla
       // redondea y la hora de una parada sigue siendo la anterior + su duración + el paseo, con 4 min de margen.)
       let at = t + leg
-      // Verano (julio y agosto, INVARIANTES 413): por la tarde, nada al sol antes de las 16:30. Lo que va al aire libre espera
+      // Verano (REGLAS_RUTAS 21: solo julio y agosto, de 14:00 a 16:30): por la tarde, nada al sol. Lo que va al aire libre espera
       // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
       // (Una hora fija de después manda sobre la sombra: la entrada reservada no se mueve, INVARIANTES 466.)
-      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
+      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= SUMMER_SHADE_FROM && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       let fixedMargin = 0
       if (fixed != null) {
@@ -1073,7 +1082,7 @@ export function planWrittenTrip(args) {
         // `revisita`: si el viaje ya pasó por aquí otro día, sale como revisita con su texto ({dia}: el día en que se vio).
         ...(stop.revisita && seenDay.has(source.name) && seenDay.get(source.name) !== ctx.day.dayNumber ? { isRevisit: true, revisitReason: String(stop.revisita).replace('{dia}', `el día ${seenDay.get(source.name)}`) } : {}),
       })
-      visits.push({ unitId, place, start: at, end: at + duration, chained: false, walkMinutes: leg, walkSource: 'matrix', ...(stop.entrada ? { ticket: true } : {}), ...(fixed != null ? { fixedAt: fixed, fixedMargin } : {}), ...(stop.recorta_al_cierre ? { reservedEntry: true } : {}), ...(original.elastica != null ? { elasticMax: original.elastica } : {}), ...(late ? { __late: late } : {}) })
+      visits.push({ unitId, place, start: at, end: at + duration, chained: false, walkMinutes: leg, walkSource: 'matrix', ...(stop.entrada ? { ticket: true } : {}), ...(fixed != null ? { fixedAt: fixed, fixedMargin, horaTipo: stop.hora_tipo ?? 'reserva' } : {}), ...(stop.recorta_al_cierre ? { reservedEntry: true } : {}), ...(original.elastica != null ? { elasticMax: original.elastica } : {}), ...(late ? { __late: late } : {}) })
       t = at + duration
       coords = place.end_coordinates ?? place.coordinates
       if (!ctx.probe) {
@@ -1886,6 +1895,16 @@ export function planWrittenTrip(args) {
     }
   }
   const usedNights = new Set()
+  // «{lugar} iluminado» cuenta como la nocturna de ese lugar (REGLAS_RUTAS 21): un mirador al que se llega de noche y que tiene buena foto
+  // de noche (`night_view_overrides`) ya es esa nocturna; no vuelve en otra noche del viaje.
+  const nightViewOverrides = destData.destination_config?.night_view_overrides ?? {}
+  for (const day of cityPlanned) {
+    for (const visit of day.schedule?.visits ?? []) {
+      const late = visit.place.nightView || (visit.place.sunset != null && day.hours?.sunset != null && visit.start > day.hours.sunset)
+      const nocturna = late ? nightViewOverrides[visit.place.name]?.nocturna : null
+      if (nocturna) usedNights.add(nocturna)
+    }
+  }
   const nightsByDay = new Map()
   const walkText = (walk, chain, beforeDinner = false) => {
     const parts = walk.texto_partes
@@ -1917,7 +1936,13 @@ export function planWrittenTrip(args) {
     // repite la misma nocturna en el viaje.
     // Nocturna el mismo día (3-oct-2026): si la visita de día de ese sitio fue por la mañana, su nocturna puede ir ese mismo día (Trevi a
     // las 8:00 y Trevi iluminada a las 22:00 son dos experiencias); si fue por la tarde, la nocturna va en otro día.
-    const visitedThisAfternoon = (entry) => (entry.conflicts_with ?? []).some((name) => day.schedule.visits.some((visit) => visit.place.name === name && visit.start >= AFTERNOON_FROM))
+    // (REGLAS_RUTAS 6: lo que cuenta es lo que la nocturna ENSEÑA (`muestra`), no solo con lo que choca: «El Puente y el Castillo» enseña el
+    // Castillo, y «Trastevere de noche» enseña Trastevere. También cuentan los sitios que esa tarde se ven por fuera junto a la visita.)
+    const shownNames = (entry) => new Set([...(entry.conflicts_with ?? []), ...(entry.muestra ?? []).map((id) => placeNameById.get(id)).filter(Boolean)])
+    const visitedThisAfternoon = (entry) => {
+      const names = shownNames(entry)
+      return day.schedule.visits.some((visit) => visit.start >= AFTERNOON_FROM && (names.has(visit.place.name) || (visit.place.outsideOf ?? []).some((name) => names.has(name))))
+    }
     const allowed = (entry, { strictReach = false } = {}) => {
       if (!entry || usedNights.has(entry.name) || visitedThisAfternoon(entry)) return false
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
@@ -1937,10 +1962,15 @@ export function planWrittenTrip(args) {
       if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry)).sort(byDistance).slice(0, 1)
       fromAlternative = walk.recorrido.length > 0 || walk === NO_WALK
     }
-    chain = chain.slice(0, max).map((entry) => (entry.si_no && catalogue.get(entry.si_no) ? { ...entry, fallback: catalogue.get(entry.si_no) } : entry))
+    // (El relevo de lo que solo vale antes de cenar —Trastevere de noche, tras el Janículo— es otra nocturna: no vuelve si ya salió en el viaje ni si esa tarde se vio lo que enseña.)
+    chain = chain.slice(0, max).map((entry) => {
+      const relevo = entry.si_no ? catalogue.get(entry.si_no) : null
+      return relevo && !usedNights.has(relevo.name) && !visitedThisAfternoon(relevo) ? { ...entry, fallback: relevo } : entry
+    })
     if (chain.length === 0) continue
     for (const entry of chain) {
       usedNights.add(entry.name)
+      if (entry.fallback) usedNights.add(entry.fallback.name)
       for (const name of entry.conflicts_with ?? []) timesSeen.set(name, (timesSeen.get(name) ?? 0) + 1)
     }
     const sameAs = fromAlternative ? Object.values(walks).find((other) => other !== walk && Array.isArray(other.recorrido) && chain.every((entry) => other.recorrido.includes(entry.name))) : null
@@ -2015,14 +2045,16 @@ export function planWrittenTrip(args) {
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name) && !seenAtNight.has(place.name))
     .map((place) => ({ unitId: place.name, name: place.name, reason: closedAllTrip(place.name) ? 'closed_every_day' : insideAllowed && !insideAllowed.has(place.name) && !hasOutsideView(place.name) ? 'short_trip_no_outside_view' : 'no_room', closedOn: place.closed_on ?? [] }))
-  // Un extra del pool nunca le quita a un imprescindible de pago su visita por dentro (decisión del usuario, 2026-09-29): si
-  // el día de un extra deja uno por fuera por la hora, el viaje se vuelve a montar con ese extra en su siguiente sitio
-  // (y se queda así solo si mejora).
-  const lostInside = (dayList) => dayList.flatMap((day) => (day.schedule?.visits ?? []).filter((visit) => visit.ticket && placeByName.get(visit.place.name)?.level === 1 && visit.place.visitOutside && visit.place.outsideKind !== 'cerrado').map(() => day))
-  const clashes = [...new Set(lostInside(cityPlanned).flatMap((day) => (day.curatedDay.variantes ?? []).filter((label) => label.startsWith('pool:')).map((label) => `${day.curatedDay.id}:${label.slice(5)}`)))].filter((key) => !blockedPoolSites.includes(key))
-  if (clashes.length > 0 && blockedPoolSites.length < 8) {
+  // El pool contra un imprescindible de pago (REGLAS_RUTAS 3, 4-oct-2026), cuando no caben los dos por dentro:
+  //   - si el imprescindible se ve bien por fuera (el Coliseo), entra el extra y el imprescindible va por fuera: no se hace nada;
+  //   - si por fuera no vale (los Museos Vaticanos), el imprescindible se queda por dentro y el extra va a «No incluido»;
+  //   - las joyas nunca se pierden (por fuera, como mínimo). Sin avisos: el viajero lo cambia con «Quiero entrar» o desde «No incluido».
+  const poolKeysOf = (dayList) => [...new Set(dayList.flatMap((day) => (day.curatedDay.variantes ?? []).filter((label) => label.startsWith('pool:')).map((label) => `${day.curatedDay.id}:${label.slice(5)}`)))]
+  const lostForGood = (list) => list.filter((item) => item.reason === 'no_room' && placeByName.get(item.name)?.level === 1 && (placeByName.get(item.name)?.ticket_info ?? []).some((line) => /de pago/i.test(line)) && !hasOutsideView(item.name))
+  const clashes = poolKeysOf(cityPlanned).filter((key) => !blockedPoolSites.includes(key))
+  if (clashes.length > 0 && lostForGood(unplacedEssentials).length > 0 && blockedPoolSites.length < 8) {
     const again = planWrittenTrip({ ...args, blockedPoolSites: [...blockedPoolSites, ...clashes] })
-    if (again && lostInside(again.days.filter((day) => day.schedule)).length < lostInside(cityPlanned).length) return again
+    if (again && lostForGood(again.unplacedEssentials ?? []).length < lostForGood(unplacedEssentials).length) return again
   }
   const tourDay = hasFreeTour ? cityPlanned.find((day) => day.schedule.visits.some((visit) => visit.place.isFreeTour))?.dayNumber ?? 1 : null
 

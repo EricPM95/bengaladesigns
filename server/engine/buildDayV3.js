@@ -379,6 +379,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
     // Una hora fija (la entrada con hora, el Free Tour, el atardecer) no se redondea: lo lee quarterHourStops y no sale.
     if (visit.fixedAt != null || visit.place.sunset != null || visit.place.isFreeTour) stop._fixed = true
+    // Qué clase de hora es (REGLAS_RUTAS 2): reserva, turno u orientativa. Solo las dos primeras son una hora fija de verdad.
+    if (visit.fixedAt != null) stop.hora_tipo = visit.horaTipo
     // La última entrada de ese día: al redondear la hora enseñada (de 10 en 10) no se pasa de ella.
     if (!visit.place.visitOutside && !visit.place.passThrough && tripDay.hours?.weekday) {
       const lastEntry = lastEntryMinutes(visit.place, visit.start, tripDay.hours)
@@ -396,20 +398,23 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)) || curatedStops.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)
     // Si llega después de que se ponga el sol, ya es de noche (decisión del usuario, 2026-09-28: el Pincio a las 17:00
     // con el sol a las 16:39 no es "el atardecer más clásico"): "Roma iluminada desde el Pincio", sin 🌅.
-    const lateForSun = (sunsetMirador || visit.place.sunset != null) && sunsetToday != null && visit.start > sunsetToday
+    const lateForSun = ((!tripDay.written && sunsetMirador) || visit.place.sunset != null) && sunsetToday != null && visit.start > sunsetToday
+    // REGLAS_RUTAS 21 (4-oct-2026): un solo camino para «iluminado». El mirador al que se llega de noche cambia solo si el destino
+    // tiene buena foto de noche de ese lugar (`night_view_overrides`): sale como «{lugar} iluminado», con esa foto, y cuenta como su
+    // nocturna. Sin ella sigue como parada normal con su foto de día (y sin el texto del atardecer).
     if (visit.place.nightView || lateForSun) {
-      stop.night_view = true
-      delete stop.sunset_minutes
-      // Un texto por mirador (decisión del usuario, 2026-09-28): en el puente o en los Foros no se está en alto.
-      stop.why = destData.destination_config?.night_view_texts?.[visit.place.name] ?? destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
-      // Sale como experiencia nocturna, con su nombre: "Roma iluminada desde el Janículo" (decisión del 2026-09-27).
-      const desde = destData.destination_config?.night_view_names?.[visit.place.name]
-      const template = destData.destination_config?.night_view_title
-      if (desde && template) stop.night_view_title = template.replace('{desde}', desde)
-      // Una parada de noche única para el sitio (el Puente y el Castillo de Sant'Angelo, 3-oct-2026): su título y su foto, no la de día.
       const override = destData.destination_config?.night_view_overrides?.[visit.place.name]
-      if (override?.title) stop.night_view_title = override.title
-      if (override?.photo) stop.photo_name = override.photo
+      delete stop.sunset_minutes
+      if (override?.photo) {
+        stop.night_view = true
+        // Un texto por mirador (decisión del usuario, 2026-09-28): en el puente o en los Foros no se está en alto.
+        stop.why = destData.destination_config?.night_view_texts?.[visit.place.name] ?? destData.destination_config?.night_view_text ?? 'Vistas de la ciudad iluminada.'
+        stop.night_view_title = override.title ?? `${visit.place.name} iluminado`
+        stop.photo_name = override.photo
+      } else if (visit.place.sunset != null) {
+        // (Parada normal: su texto de siempre, no el del atardecer.)
+        stop.why = whyFor({ ...visit, place: { ...visit.place, sunset: undefined } }, unitById.get(visit.unitId), { destData, city, tripDay, lunchEnd, tour, tourToday, tourRepeats })
+      }
     }
     // El tramo en bus o metro hasta aquí (`traslado_min`): "🚌 Bus 118, unos 25 min".
     if (visit.place.transit) stop.transit = transitFields(visit.place.transit)
@@ -582,6 +587,21 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     return stop
   })
+  // REGLAS_RUTAS 6 (4-oct-2026): de noche, varios sitios pegados pueden ser UNA parada. Si «El Puente y el Castillo iluminados» enseña un
+  // sitio que salió justo antes (el Castillo por fuera, 25 min antes), esa parada se funde en la iluminada: una sola, con la hora y los
+  // minutos de las dos. Así el mismo sitio no sale dos veces seguidas.
+  for (let index = 1; index < stops.length; index++) {
+    const stop = stops[index]
+    if (!stop.night_view) continue
+    const shown = destData.destination_config?.night_view_overrides?.[stop.place_name ?? stop.name]?.muestra ?? []
+    const before = stops[index - 1]
+    const beforeId = (destData.places ?? []).find((place) => place.name === (before.place_name ?? before.name))?.id
+    if (!beforeId || !shown.includes(beforeId) || before.is_break || before.night_view) continue
+    stop.suggested_time = before.suggested_time
+    stop.duration_minutes = (before.duration_minutes ?? 0) + (stop.duration_minutes ?? 0)
+    stops.splice(index - 1, 1)
+    index--
+  }
 
   // Se come donde se está: la zona de la última visita antes de cada comida.
   const zoneBefore = (minutes) => [...schedule.visits].reverse().find((visit) => visit.end <= minutes)?.place.zone ?? null

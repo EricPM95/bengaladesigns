@@ -1,0 +1,38 @@
+// Qué línea de la prueba mira cada regla de docs/REGLAS_RUTAS.md (regla 30: «una línea por regla»).
+// `tipos`: los nombres de lo que cuenta la prueba (los de auditoria.mjs, auditoriaReglas.mjs y prueba365.mjs).
+// `nota`: si la regla no tiene comprobación en esta prueba (o solo en parte), dónde se mira o por qué no.
+// Una regla con `tipos` vacío sale como «SIN COMPROBACIÓN».
+export const REGLAS_PRUEBA = [
+  { id: 1, nombre: 'Nunca un sitio cerrado', tipos: ['fuera_de_horario', 'v4_fuera_de_horario', 'cerrada_a_su_hora', 'v4_cerrado_sin_solucion'], nota: 'La prueba mira también los viajes sin fechas (horario de laborable).' },
+  { id: 2, nombre: 'Una hora fija no se mueve ni se quita', tipos: ['v4_llega_tarde', 'hora_fija_movida'], nota: 'El orden de recorte y el aviso de la campana no se miran aquí.' },
+  { id: 3, nombre: 'El viajero manda', tipos: ['hora_fija_movida'], nota: 'Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).' },
+  { id: 4, nombre: 'Los imprescindibles salen siempre', tipos: ['pago_sin_dentro', 'basilica_fuera', 'vaticano_sin_castillo', 'vaticano_sin_puente'] },
+  { id: 5, nombre: 'Un sitio, una vez en el viaje y una vez al día (por id)', tipos: ['repetido_dia', 'repetido_viaje'] },
+  { id: 6, nombre: 'Las nocturnas', tipos: ['nocturna_repite', 'nocturna_repite_viaje'], nota: '«Una nocturna cada noche» no se mira.' },
+  { id: 7, nombre: 'Un barrio, una vez al día', tipos: ['barrio_dos_veces', 'paseo_repite_viaje', 'paseo_misma_zona'] },
+  { id: 8, nombre: 'El Free Tour sustituye lo que enseña', tipos: ['tour_repite'] },
+  { id: 9, nombre: 'Lo mejor, primero', tipos: ['joya_tarde'] },
+  { id: 10, nombre: 'Cada día tiene un sentido', tipos: ['dos_visitas_grandes', 'grupo_partido'] },
+  { id: 11, nombre: 'Según los días del viaje', tipos: [], nota: 'Los viajes de 1 día y sin fechas ya están en la prueba, pero ninguna línea mira «1 día, todo por fuera».' },
+  { id: 12, nombre: 'El pool entra primero', tipos: ['pool_fuera'], nota: 'El orden y el motivo de «No incluido» no se miran.' },
+  { id: 13, nombre: 'Una experiencia añade algo que se nota', tipos: ['experiencia_sin_efecto'] },
+  { id: 14, nombre: 'La comida, siempre', tipos: ['comida_menos_45', 'comida_mas_90', 'v4_comida_corta', 'restaurante_repetido'], nota: 'Los 15 min andando y «abierto ese día» no se miran aquí.' },
+  { id: 15, nombre: 'La tarde acaba donde se cena', tipos: ['cena_espera', 'hueco_cena', 'tiempo_libre_sigue'], nota: 'Los 15 min a la cena y la hora mínima (19:30 / 20:30) no se miran aquí.' },
+  { id: 16, nombre: 'La tarde va según la luz', tipos: ['v4_elastica', 'atardecer_corto', 'atardecer_tarde'] },
+  { id: 17, nombre: 'A primera hora, lo que luego se llena', tipos: ['se_llena_tarde'] },
+  { id: 18, nombre: 'Primero el acceso, si se llega por su lado', tipos: ['plaza_despues'] },
+  { id: 19, nombre: 'Sin ir y volver', tipos: ['zigzag', 'tramo_largo'] },
+  { id: 20, nombre: 'Los huecos', tipos: ['hueco', 'libre_largo', 'libre_pisa_comida'] },
+  { id: 21, nombre: 'La época del año', tipos: ['verano_al_sol'], nota: 'El «iluminado» solo con foto de noche se mira con la regla 5 y la 6.' },
+  { id: 22, nombre: 'Horas de 10 en 10', tipos: ['hora_no_10', 'duracion_no_5', 'no_cuadra'] },
+  { id: 23, nombre: 'Mínimos y máximos', tipos: ['duracion_corta', 'paseo_largo', 'fuera_minutos', 'v4_parada_corta'] },
+  { id: 24, nombre: 'Qué es una parada', tipos: ['nivel_camino', 'nivel_idea'] },
+  { id: 25, nombre: 'Por fuera, solo donde se ve algo', tipos: ['fuera_sin_vista', 'fuera_minutos', 'fuera_con_tiempo'] },
+  { id: 26, nombre: 'Variantes por cierre y por fecha', tipos: ['aviso_promete', 'aviso_lugar_ajeno', 'aviso_repetido', 'nota_promete'], nota: 'Las fechas clave tienen su sección aparte en el informe.' },
+  { id: 27, nombre: 'Las excursiones', tipos: [], nota: 'No hay ninguna línea en esta prueba.' },
+  { id: 28, nombre: 'Al llegar', tipos: [], nota: 'La mira scripts/destino/llegadas.mjs, no esta prueba (y está pendiente del encargo de vuelos).' },
+  { id: 29, nombre: 'Al irse', tipos: [], nota: 'La mira scripts/destino/llegadas.mjs, no esta prueba (y está pendiente del encargo de vuelos).' },
+  { id: 30, nombre: 'La prueba imprime una línea por regla', tipos: ['__esta_lista__'], nota: 'Es esta lista.' },
+  { id: 31, nombre: 'Los datos se cruzan solos', tipos: [], nota: 'La mira node scripts/destino/validar.mjs <destino>, no esta prueba.' },
+  { id: 32, nombre: 'La revisión como un local', tipos: [], nota: 'Es una revisión a mano de una lista fija de 20 viajes; no es automática.' },
+]

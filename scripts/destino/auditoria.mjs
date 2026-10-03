@@ -149,9 +149,10 @@ export function auditarViaje(D, days, options = {}) {
     for (const stop of day.stops) {
       if (stop.is_break || stop.is_free_tour || stop.is_revisit) continue
       // Una visita (ni nocturna, ni de paso, ni paseo): un sitio, una vez en el viaje. La nocturna y el paseo, aparte.
-      const kind = stop.is_night_experience ? 'nocturna' : stop.is_free_walk ? 'paseo' : stop.pass_through || stop.is_pass_by || stop.night_view ? null : 'visita'
+      const kind = isNight(stop) ? 'nocturna' : stop.is_free_walk ? 'paseo' : stop.pass_through || stop.is_pass_by ? null : 'visita'
       if (!kind) continue
-      const key = kind === 'visita' ? showsOf(stop) : [stop.site_id ?? nameOf(stop)]
+      // («{lugar} iluminado» cuenta como la nocturna de ese lugar: se mira por los sitios que enseña, igual que la nocturna.)
+      const key = kind === 'paseo' ? [stop.site_id ?? nameOf(stop)] : showsOf(stop)
       for (const id of key) {
         const seen = seenOnDay.get(`${kind}:${id}`)
         if (seen != null && seen !== n) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
@@ -174,7 +175,7 @@ export function auditarViaje(D, days, options = {}) {
     if (['D2', 'D3'].includes(day.curated_day?.id) && !compressedVatican) {
       const names = dayStops.map(nameOf)
       // (El Castillo va una sola vez por viaje, por fuera: basta con que lo lleve algún otro día.)
-      const castleElsewhere = days.some((other) => (other?.stops ?? []).some((stop) => String(stop.place_name ?? stop.name).includes("Castillo de Sant'Angelo")))
+      const castleElsewhere = days.some((other) => (other?.stops ?? []).some((stop) => String(stop.place_name ?? stop.name).includes("Castillo de Sant'Angelo") || (stop.muestra ?? []).includes('castillo_de_santangelo')))
       if (!castleElsewhere) add('vaticano_sin_castillo', n, '', day.curated_day.id, 'el día del Vaticano sin el Castillo de Sant\'Angelo')
       if (!names.some((name) => name.includes("Puente Sant'Angelo")) && !dayStops.some((stop) => (stop.display_title ?? stop.night_view_title ?? '').includes("Puente Sant'Angelo"))) add('vaticano_sin_puente', n, '', day.curated_day.id, 'el día del Vaticano sin el Puente Sant\'Angelo')
     }
@@ -278,7 +279,7 @@ export function auditarViaje(D, days, options = {}) {
         const named = (day.free_times ?? []).some((entry) => entry.before === name)
         // (Cierre de Roma: antes de un mirador del atardecer o de una entrada con turno, hasta 30 min son margen, no hueco:
         // se llega a la hora dorada o a recoger la entrada.)
-        const margin = stop.reserved_entry ? HUECO_MARGEN_RESERVA : stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
+        const margin = stop.reserved_entry || stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno' || stop.is_free_tour ? HUECO_MARGEN_RESERVA : stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
         if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > margin) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
         // La hora de una parada es la anterior + su duración + el paseo (PROMPT_ROMA_V4_REPASO 1): con las horas de 5 en 5
         // pueden bailar hasta 4 min; más, no cuadra (el Arco acababa a las 10:20 y el Foro empezaba a las 10:20 con 9 min).
@@ -329,7 +330,7 @@ export function auditarViaje(D, days, options = {}) {
       const beforeStop = dayStops.find((stop) => nameOf(stop) === libre.before)
       const libreEnd = beforeStop ? t2m(beforeStop.suggested_time) - (beforeStop.transit?.minutes ?? 0) : null
       const month = iso ? Number(iso.slice(5, 7)) : null
-      const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && (libreEnd <= 16 * 60 + 45 || libre.descanso)
+      const summerRest = month != null && month >= 7 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && (libreEnd <= 16 * 60 + 45 || libre.descanso)
       if (!summerRest && libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? (/Passeggiata del Gianicolo/.test(libre.title) ? 70 : LIBRE_CON_NOMBRE_MAX) : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)

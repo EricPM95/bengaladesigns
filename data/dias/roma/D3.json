@@ -34,6 +34,7 @@
         "lugar": "Free Tour Centro Histórico",
         "tipo": "fija",
         "hora": "10:00",
+        "hora_tipo": "turno",
         "min": 150,
         "entrada": true
       },
@@ -60,6 +61,7 @@
           "lugar": "Museos Vaticanos y Capilla Sixtina",
           "tipo": "fija",
           "hora": "14:45",
+          "hora_tipo": "turno",
           "min": 180,
           "modo": "dentro",
           "entrada": true,
@@ -244,6 +246,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "turno",
             "min": 130,
             "modo": "dentro",
             "entrada": true,
@@ -262,18 +265,19 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 5
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "modo": "fuera",
             "una_vez": true
           },
           {
+            "lugar": "Puente Sant'Angelo",
+            "min": 5
+          },
+          {
             "lugar": "Free Tour Centro Histórico",
             "tipo": "fija",
             "hora": "12:00",
+            "hora_tipo": "turno",
             "min": 150,
             "traslado": {
               "como": "un taxi",
@@ -321,6 +325,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "turno",
             "min": 130,
             "modo": "dentro",
             "entrada": true,
@@ -339,18 +344,19 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 5
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "modo": "fuera",
             "una_vez": true
           },
           {
+            "lugar": "Puente Sant'Angelo",
+            "min": 5
+          },
+          {
             "lugar": "Free Tour Centro Histórico",
             "tipo": "fija",
             "hora": "12:00",
+            "hora_tipo": "turno",
             "min": 150,
             "traslado": {
               "como": "un taxi",
@@ -416,6 +422,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "turno",
             "min": 165,
             "modo": "dentro",
             "entrada": true,
@@ -491,6 +498,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "turno",
             "min": 165,
             "modo": "dentro",
             "entrada": true,
@@ -564,6 +572,7 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "07:15",
+            "hora_tipo": "orientativa",
             "min": 15
           },
           {
@@ -577,6 +586,7 @@
             "lugar": "Free Tour Centro Histórico",
             "tipo": "fija",
             "hora": "10:00",
+            "hora_tipo": "turno",
             "min": 150,
             "entrada": true,
             "traslado": {

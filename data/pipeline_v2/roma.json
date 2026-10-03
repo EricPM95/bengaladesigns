@@ -2442,6 +2442,13 @@
       "approach_to": [
         "Castillo de Sant'Angelo"
       ],
+      "approach_lado": {
+        "Castillo de Sant'Angelo": {
+          "_nota": "Regla 18: el acceso va antes del monumento si se llega por su lado. Se llega al puente desde el centro (Navona, Campo de' Fiori): Puente y luego Castillo. Viniendo de San Pedro (zona vaticano) se llega antes al Castillo: Castillo por fuera y luego el Puente, hacia el centro.",
+          "se_llega_por": "centro",
+          "monumento_antes_si_viene_de": ["vaticano"]
+        }
+      },
       "group": "castillo_santangelo_group",
       "group_order": 1
     },
@@ -8651,8 +8658,13 @@
     },
     "night_view_title": "Roma iluminada desde {desde}",
     "night_view_overrides": {
-      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo iluminados", "photo": "El Puente y el Castillo de Sant'Angelo (noche)", "muestra": ["puente_santangelo", "castillo_de_santangelo"] }
+      "_nota": "REGLAS_RUTAS 21: un solo camino para «iluminado». Un mirador al que se llega de noche solo cambia si el destino tiene buena foto de noche de ese lugar (photo = el nombre de esa foto propia en _fotos.json): sale como «{lugar} iluminado» (title), con esa foto, y cuenta como su nocturna (nocturna). Sin foto de noche aquí, sigue como parada normal con su foto de día.",
+      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo iluminados", "photo": "El Puente y el Castillo de Sant'Angelo (noche)", "muestra": ["puente_santangelo", "castillo_de_santangelo"], "nocturna": "El Puente y el Castillo de Sant'Angelo (noche)" },
+      "Mirador del Janículo": { "title": "Mirador del Janículo iluminado", "photo": "Mirador del Janículo (noche)", "muestra": ["mirador_del_janiculo"], "nocturna": "Mirador del Janículo (noche)" },
+      "Terraza del Pincio": { "title": "Terraza del Pincio iluminada", "photo": "Terraza del Pincio (noche)", "muestra": ["terraza_del_pincio"], "nocturna": "Terraza del Pincio (noche)" },
+      "Plaza del Campidoglio": { "title": "Plaza del Campidoglio iluminada, con el Foro a sus pies", "photo": "Foro Romano desde el Campidoglio (noche)", "muestra": ["plaza_del_campidoglio", "foro_romano_y_palatino"], "nocturna": "Foro Romano desde el Campidoglio (noche)" }
     },
+    "se_llenan": ["Fontana de Trevi", "Coliseo", "Plaza de San Pedro"],
     "sitios_extra": {
       "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",
       "villa_borghese_lago_esculapio": "El lago y el Templo de Esculapio, en Villa Borghese",

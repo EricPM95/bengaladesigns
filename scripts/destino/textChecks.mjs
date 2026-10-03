@@ -114,8 +114,26 @@ export function grupoFueraDeOrdenEnDia(D, day) {
     for (const despues of paradas.slice(i + 1)) {
       const a = orden.get(primero.place_name ?? primero.name)
       const b = orden.get(despues.place_name ?? despues.name)
+      // (Al revés: el puente antes que el castillo, viniendo de San Pedro, sería ir y volver.)
+      if (a.group === b.group && a.group_order < b.group_order && a.approach_lado?.[b.name] && !conHora.has(b.name)) {
+        const index = (day?.stops ?? []).indexOf(primero)
+        const anterior = (day?.stops ?? []).slice(0, index).reverse().find((stop) => !stop.is_break)
+        const zonaAnterior = (D.places ?? []).find((place) => place.name === (anterior?.place_name ?? anterior?.name))?.zone
+        if (zonaAnterior && (a.approach_lado[b.name].monumento_antes_si_viene_de ?? []).includes(zonaAnterior) && !despues.sunset_minutes) avisos.push(`${a.name} (${primero.suggested_time}) antes que ${b.name} (${despues.suggested_time}), viniendo de ${anterior.place_name ?? anterior.name}: el monumento va primero`)
+      }
       if (a.group !== b.group || a.group_order < b.group_order) continue
-      if (conHora.has(a.name) || despues.sunset_minutes != null || despues.is_night_experience || despues.night_view) continue
+      // (Una hora fija de verdad en cualquiera de las dos —reserva o turno, `hora_tipo`— manda sobre el orden del grupo: los Museos reservados a las 15:00 van después de la Plaza.)
+      const fixedHour = (stop) => stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno'
+      if (conHora.has(a.name) || primero.hora_tipo != null || fixedHour(despues) || despues.sunset_minutes != null || despues.is_night_experience || despues.night_view) continue
+      // Regla 18: el acceso va antes del monumento SI SE LLEGA POR SU LADO. Viniendo de San Pedro (la parada de antes es de la zona
+      // `monumento_antes_si_viene_de`), el monumento va primero y el acceso después, hacia el centro (el Castillo y luego el Puente).
+      const lado = b.approach_lado?.[a.name]
+      if (lado) {
+        const index = (day?.stops ?? []).indexOf(primero)
+        const anterior = (day?.stops ?? []).slice(0, index).reverse().find((stop) => !stop.is_break && (stop.place_name ?? stop.name) !== a.name)
+        const zonaAnterior = (D.places ?? []).find((place) => place.name === (anterior?.place_name ?? anterior?.name))?.zone
+        if (zonaAnterior && (lado.monumento_antes_si_viene_de ?? []).includes(zonaAnterior)) continue
+      }
       avisos.push(`${a.name} (${primero.suggested_time}) antes que ${b.name} (${despues.suggested_time})`)
     }
   })

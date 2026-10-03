@@ -19,6 +19,7 @@
         "lugar": "Coliseo",
         "tipo": "fija",
         "hora": "08:30",
+        "hora_tipo": "turno",
         "min": 85,
         "modo": "dentro",
         "entrada": true,
@@ -543,6 +544,7 @@
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "10:00",
+            "hora_tipo": "orientativa",
             "modo": "fuera"
           },
           {
@@ -713,6 +715,7 @@
             "lugar": "Foro Romano y Palatino",
             "tipo": "fija",
             "hora": "09:00",
+            "hora_tipo": "reserva",
             "min": 100,
             "modo": "dentro",
             "entrada": true,
@@ -726,6 +729,7 @@
             "lugar": "Foro Romano y Palatino",
             "tipo": "fija",
             "hora": "09:00",
+            "hora_tipo": "reserva",
             "min": 90,
             "modo": "dentro",
             "entrada": true,
@@ -785,6 +789,7 @@
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
@@ -838,6 +843,7 @@
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
@@ -892,6 +898,7 @@
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
@@ -946,6 +953,7 @@
             "lugar": "Coliseo",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 75,
             "modo": "dentro",
             "entrada": true,
@@ -1033,6 +1041,7 @@
               "lugar": "Free Tour Centro Histórico",
               "tipo": "fija",
               "hora": "17:00",
+              "hora_tipo": "turno",
               "min": 150,
               "modo": "parada"
             }
@@ -1051,6 +1060,7 @@
               "lugar": "Free Tour Centro Histórico",
               "tipo": "fija",
               "hora": "18:30",
+              "hora_tipo": "turno",
               "min": 150,
               "modo": "parada"
             }

@@ -24,6 +24,7 @@
         "lugar": "Museos Vaticanos y Capilla Sixtina",
         "tipo": "fija",
         "hora": "08:00",
+        "hora_tipo": "turno",
         "min": 180,
         "modo": "dentro",
         "entrada": true,
@@ -69,11 +70,13 @@
           "modo": "camino"
         },
         {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 20,
+          "modo": "fuera"
         },
         {
-          "lugar": "Castillo de Sant'Angelo",
+          "lugar": "Puente Sant'Angelo",
+          "min": 10,
           "modo": "atardecer",
           "texto": "Míralo desde el puente de los ángeles con la luz del atardecer: la fortaleza se vuelve naranja y el Tíber la refleja."
         },
@@ -102,13 +105,13 @@
           "modo": "camino"
         },
         {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
-        },
-        {
           "lugar": "Castillo de Sant'Angelo",
           "min": 20,
           "modo": "fuera"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "min": 10
         },
         {
           "lugar": "Ponte Sisto",
@@ -165,13 +168,13 @@
           "modo": "camino"
         },
         {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
-        },
-        {
           "lugar": "Castillo de Sant'Angelo",
           "min": 20,
           "modo": "fuera"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "min": 10
         },
         {
           "lugar": "Ponte Sisto",
@@ -292,6 +295,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -302,13 +306,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           }
         ],
         "comida": {
@@ -468,12 +472,12 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Mirador del Janículo",
@@ -519,12 +523,12 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Isla Tiberina",
@@ -638,6 +642,7 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "09:00",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -658,13 +663,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           }
         ],
         "comida": {
@@ -689,6 +694,7 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25,
             "sol_hasta": "19:45"
           },
@@ -696,10 +702,10 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25,
             "sol_desde": "19:45",
             "meses": [
-              6,
               7,
               8
             ]
@@ -708,10 +714,10 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "10:00",
+            "hora_tipo": "orientativa",
             "min": 25,
             "sol_desde": "19:45",
             "no_meses": [
-              6,
               7,
               8
             ]
@@ -735,14 +741,14 @@
             "sol_hasta": "19:45"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_hasta": "19:45"
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera",
+            "sol_hasta": "19:45"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
             "sol_hasta": "19:45"
           },
           {
@@ -750,17 +756,6 @@
             "modo": "camino",
             "sol_desde": "19:45",
             "meses": [
-              6,
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_desde": "19:45",
-            "meses": [
-              6,
               7,
               8
             ]
@@ -771,7 +766,15 @@
             "modo": "fuera",
             "sol_desde": "19:45",
             "meses": [
-              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
+            "sol_desde": "19:45",
+            "meses": [
               7,
               8
             ]
@@ -806,17 +809,6 @@
             "modo": "camino",
             "sol_desde": "19:45",
             "no_meses": [
-              6,
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_desde": "19:45",
-            "no_meses": [
-              6,
               7,
               8
             ]
@@ -827,7 +819,15 @@
             "modo": "fuera",
             "sol_desde": "19:45",
             "no_meses": [
-              6,
+              7,
+              8
+            ]
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
+            "sol_desde": "19:45",
+            "no_meses": [
               7,
               8
             ]
@@ -839,9 +839,9 @@
             "si_cerrado": "fuera",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "orientativa",
             "sol_desde": "19:45",
             "meses": [
-              6,
               7,
               8
             ]
@@ -853,7 +853,6 @@
             "si_cerrado": "fuera",
             "sol_desde": "19:45",
             "no_meses": [
-              6,
               7,
               8
             ]
@@ -901,6 +900,7 @@
             "lugar": "Borgo Pio",
             "tipo": "fija",
             "hora": "11:30",
+            "hora_tipo": "orientativa",
             "min": 45,
             "titulo": "Pasea y piérdete por Borgo Pio"
           }
@@ -941,16 +941,16 @@
           {
             "despues_de": "Via della Conciliazione",
             "parada": {
-              "lugar": "Puente Sant'Angelo",
-              "min": 10
-            }
-          },
-          {
-            "despues_de": "Puente Sant'Angelo",
-            "parada": {
               "lugar": "Castillo de Sant'Angelo",
               "min": 20,
               "modo": "fuera"
+            }
+          },
+          {
+            "despues_de": "Castillo de Sant'Angelo",
+            "parada": {
+              "lugar": "Puente Sant'Angelo",
+              "min": 10
             }
           },
           {
@@ -999,6 +999,7 @@
             "lugar": "Plaza de San Pedro",
             "tipo": "fija",
             "hora": "07:30",
+            "hora_tipo": "orientativa",
             "min": 15
           },
           {
@@ -1012,6 +1013,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "10:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1053,6 +1055,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "12:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1072,16 +1075,16 @@
             "modo": "camino"
           },
           {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
+          {
             "lugar": "Puente Sant'Angelo",
             "min": 10,
             "modo": "atardecer",
             "lead": 30,
             "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo."
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1108,13 +1111,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Ponte Sisto",
@@ -1170,13 +1173,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Ponte Sisto",
@@ -1314,6 +1317,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "12:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1377,13 +1381,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Borgo Pio",
@@ -1404,6 +1408,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "13:30",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1433,6 +1438,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "13:30",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1476,6 +1482,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "13:30",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1519,6 +1526,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "13:30",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1635,13 +1643,13 @@
             "modo": "camino"
           },
           {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
             "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
           },
           {
             "lugar": "Ponte Sisto",
@@ -1691,6 +1699,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1716,6 +1725,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1741,6 +1751,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,
@@ -1766,6 +1777,7 @@
             "lugar": "Museos Vaticanos y Capilla Sixtina",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 180,
             "modo": "dentro",
             "entrada": true,

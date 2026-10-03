@@ -20,6 +20,7 @@
         "lugar": "Fontana de Trevi",
         "tipo": "fija",
         "hora": "08:30",
+        "hora_tipo": "orientativa",
         "min": 25
       },
       {
@@ -49,6 +50,7 @@
         "lugar": "Galería Borghese",
         "tipo": "fija",
         "hora": "11:00",
+        "hora_tipo": "turno",
         "min": 120,
         "modo": "dentro",
         "entrada": true,
@@ -311,6 +313,7 @@
             "lugar": "Castillo de Sant'Angelo",
             "tipo": "fija",
             "hora": "09:00",
+            "hora_tipo": "orientativa",
             "min": 20,
             "modo": "fuera",
             "una_vez": true
@@ -329,6 +332,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "11:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -356,6 +360,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "09:30",
+            "hora_tipo": "orientativa",
             "min": 25,
             "no_si_dia": [
               "D3"
@@ -365,7 +370,8 @@
             "lugar": "Via Condotti",
             "modo": "camino",
             "tipo": "fija",
-            "hora": "10:05"
+            "hora": "10:05",
+            "hora_tipo": "orientativa"
           },
           {
             "lugar": "Plaza de España",
@@ -469,6 +475,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -500,6 +507,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "13:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -671,6 +679,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -744,6 +753,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -785,6 +795,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -831,6 +842,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -877,6 +889,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -911,6 +924,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "09:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1136,6 +1150,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "08:00",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -1153,6 +1168,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "10:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1356,6 +1372,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -1420,6 +1437,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1461,6 +1479,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1501,6 +1520,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1541,6 +1561,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "15:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1596,6 +1617,7 @@
               "lugar": "Free Tour Centro Histórico",
               "tipo": "fija",
               "hora": "10:00",
+              "hora_tipo": "turno",
               "min": 150,
               "modo": "parada"
             }
@@ -1613,6 +1635,7 @@
               "lugar": "Free Tour Centro Histórico",
               "tipo": "fija",
               "hora": "18:30",
+              "hora_tipo": "turno",
               "min": 150,
               "modo": "parada"
             }
@@ -1628,6 +1651,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,
@@ -1665,6 +1689,7 @@
             "lugar": "Galería Borghese",
             "tipo": "fija",
             "hora": "16:00",
+            "hora_tipo": "turno",
             "min": 120,
             "modo": "dentro",
             "entrada": true,

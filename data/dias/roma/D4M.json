@@ -21,6 +21,7 @@
         "lugar": "Fontana de Trevi",
         "tipo": "fija",
         "hora": "08:30",
+        "hora_tipo": "orientativa",
         "min": 25
       },
       {
@@ -286,6 +287,7 @@
             "lugar": "Fontana de Trevi",
             "tipo": "fija",
             "hora": "08:30",
+            "hora_tipo": "orientativa",
             "min": 25
           },
           {
@@ -486,6 +488,7 @@
               "lugar": "Free Tour Centro Histórico",
               "tipo": "fija",
               "hora": "10:00",
+              "hora_tipo": "turno",
               "min": 150,
               "modo": "parada"
             }

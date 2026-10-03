@@ -9,6 +9,9 @@ import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
+import { TIPOS_REGLAS, auditarReglas } from './auditoriaReglas.mjs'
+import { REGLAS_PRUEBA } from './reglasPrueba.mjs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 import { enFechaClave, fechasClaveDe } from './fechasClave.mjs'
@@ -19,6 +22,10 @@ const quick = Boolean(args.rapida)
 const out = args.out ?? 'docs/PRUEBA365.md'
 const D = findPipelineV2Data('Roma')
 const travel = travelTimesFor('roma')
+const hasOutside = (name) => {
+  const place = (D.places ?? []).find((candidate) => candidate.name === name)
+  return Boolean(place) && (place.minutos_fuera != null || Boolean(place.pass_by) || place.type === 'exterior')
+}
 const legBetween = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
 const EXTRA_TIPOS = {
   v4_llega_tarde: 'Se llega tarde a una hora fija (o a recoger la entrada)',
@@ -30,10 +37,12 @@ const EXTRA_TIPOS = {
   v4_antes_de_cenar: '«Antes de cenar» en una parada que va después de cenar',
   v4_titulo: 'Título del día que no se cumple',
   v4_error: 'El motor falla',
-  comida_menos_45: 'Comida de menos de 45 min en la ruta (la regla: 45 como mínimo, siempre)',
+  comida_menos_45: 'Comida de menos de 45 min en la ruta (30 si hay una hora fija de verdad justo detrás)',
+  comida_mas_90: 'Comida de más de 90 min en la ruta (regla 14)',
+  pago_cedido_al_pool: '(Información, regla 3) Imprescindible de pago por fuera porque entró un extra del pool y por fuera se ve bien (el Coliseo, el Panteón)',
   pago_cerrado_fecha: '(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)',
 }
-const TIPOS = { ...TIPOS_AUDITORIA, ...EXTRA_TIPOS }
+const TIPOS = { ...TIPOS_AUDITORIA, ...EXTRA_TIPOS, ...TIPOS_REGLAS }
 const counts = new Map()
 /** Por tipo, en qué día escrito y versión cae ("D4 A lun"), para saber qué arreglar. */
 const byDay = new Map()
@@ -47,7 +56,7 @@ const dumped = []
 let trips = 0
 // Las fechas clave de ese año: el viaje que pisa alguna cuenta aparte.
 const CLAVES = fechasClaveDe(year)
-const INFORMATIVOS = new Set(['pago_cerrado_fecha'])
+const INFORMATIVOS = new Set(['pago_cerrado_fecha', 'pago_cedido_al_pool'])
 let currentKey = null
 const keyTrips = new Map()
 const keyCases = new Map()
@@ -70,12 +79,19 @@ const t2m = (t) => {
   return Number.isFinite(h) ? h * 60 + (m || 0) : null
 }
 
-async function runTrip({ fecha, dias, ft, exps = [], pool = [] }) {
-  const positive = [...(ft ? ['free_tour'] : []), ...exps]
-  const label = `${fecha} · ${dias} días${ft ? ' · FT' : ''}${exps.length ? ` · ${exps.join('+')}` : ''}${pool.length ? ` · pool ${pool.join('+')}` : ''}`
+/** Los días de un viaje, tal como los monta el motor (con una reserva por lugar si se pide). */
+async function buildTripDays({ fecha, dias, ft, pool = [], positive = [], reservas = null }) {
   const days = []
+  for (let n = 1; n <= dias; n++) days.push(await buildDayBlockV3(D, dias + 1, ft, n, null, fecha, pool, positive.length ? ['imprescindibles', ...positive] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', ...(reservas ? { entradas: reservas } : {}) }))
+  return days
+}
+
+async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null }) {
+  const positive = [...(ft ? ['free_tour'] : []), ...exps]
+  const label = `${fecha ?? 'sin fechas'} · ${dias} día${dias === 1 ? '' : 's'}${ft ? ' · FT' : ''}${exps.length ? ` · ${exps.join('+')}` : ''}${pool.length ? ` · pool ${pool.join('+')}` : ''}${reservas ? ` · reserva ${Object.entries(reservas).map(([place, hour]) => `${place} ${hour}`).join('+')}` : ''}`
+  let days = []
   try {
-    for (let n = 1; n <= dias; n++) days.push(await buildDayBlockV3(D, dias + 1, ft, n, null, fecha, pool, positive.length ? ['imprescindibles', ...positive] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4' }))
+    days = await buildTripDays({ fecha, dias, ft, pool, positive, reservas })
   } catch (error) {
     add('v4_error', label, String(error?.message ?? error).slice(0, 160))
     return
@@ -89,7 +105,12 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [] }) {
     const end = lunch.window_end ? t2m(lunch.window_end) : null
     const next = (day.stops ?? []).map((stop) => t2m(stop.suggested_time)).filter((t) => t != null && t > start).sort((a, b) => a - b)[0]
     const minutes = Math.min(end != null ? end - start : Infinity, next != null ? next - start : Infinity)
-    if (minutes < 45) add('comida_menos_45', `${label}, día ${i + 1}`, `${lunch.suggested_time}: ${minutes} min`)
+    // (Regla 14: de 45 a 90 min; con una hora fija de verdad justo detrás —reserva, turno o el Free Tour—, unos 30.)
+    const nextStop = (day.stops ?? []).filter((stop) => t2m(stop.suggested_time) === next)[0]
+    const hardBehind = Boolean(nextStop && (nextStop.hora_tipo === 'reserva' || nextStop.hora_tipo === 'turno' || nextStop.reserved_entry || nextStop.is_free_tour))
+    // (Con una entrada reservada en el viaje, la comida se adapta a ella: 30 min, regla 14.)
+    if (minutes < (hardBehind || reservas ? 30 : 45)) add('comida_menos_45', `${label}, día ${i + 1}`, `${lunch.suggested_time}: ${minutes} min${hardBehind ? ' (con hora fija detrás)' : ''}`)
+    if (end != null && end - start > 90) add('comida_mas_90', `${label}, día ${i + 1}`, `${lunch.suggested_time}: ${end - start} min`)
   }
   const keyOf = (n) => {
     const day = days[n - 1]
@@ -98,14 +119,30 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [] }) {
   const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
   const closedAllTrip = (name) => {
     const place = (D.places ?? []).find((candidate) => candidate.name === name)
-    return Boolean(place) && days.some((day, index) => day?.stops?.length && closedOnDay(place, WEEKDAYS[new Date(`${addDays(fecha, index)}T12:00:00Z`).getUTCDay()], addDays(fecha, index)))
+    return Boolean(place) && Boolean(fecha) && days.some((day, index) => day?.stops?.length && closedOnDay(place, WEEKDAYS[new Date(`${addDays(fecha, index)}T12:00:00Z`).getUTCDay()], addDays(fecha, index)))
   }
   for (const caso of auditarViaje(D, days, { startIso: fecha, poolNames: pool, leg: legBetween, label, viajeCorto: days.length <= 2 })) {
     // (Si ese imprescindible cierra algún día del viaje, es la fecha: va aparte, como información.)
     if (caso.tipo === 'pago_sin_dentro' && closedAllTrip(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cerrado_fecha'
+    // (Regla 3: si el viajero marcó un extra del pool y el imprescindible se ve bien por fuera, entra el extra y el imprescindible va por fuera, sin aviso.)
+    else if (caso.tipo === 'pago_sin_dentro' && pool.length > 0 && hasOutside(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cedido_al_pool'
     add(caso.tipo, caso.donde, caso.detalle)
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
+  }
+  // Las reglas 2, 9, 10, 17, 21, 22 y 25 (auditoriaReglas.mjs).
+  for (const caso of auditarReglas(D, days, { startIso: fecha, label, reservas })) {
+    add(caso.tipo, caso.donde, caso.detalle)
+    const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    tally(caso.tipo, n ? keyOf(n) : 'viaje')
+  }
+  // La regla 13: una experiencia elegida cambia algo del viaje (el mismo viaje con y sin ella).
+  if (exps.length > 0 && !ft && !reservas && pool.length === 0) {
+    try {
+      const baseline = await buildTripDays({ fecha, dias, ft, pool, positive: [] })
+      const sketch = (list) => list.map((day) => (day?.stops ?? []).map((stop) => stop.name).join('>')).join('|')
+      if (sketch(baseline) === sketch(days)) add('experiencia_sin_efecto', label, exps.join('+'))
+    } catch {}
   }
   for (const [index, day] of days.entries()) {
     if (!day?.stops?.length) continue
@@ -152,7 +189,18 @@ const starts = Array.from({ length: 365 }, (_, i) => addDays(`${year}-01-01`, i)
 const grid = []
 // 1. Todas las fechas, de 2 a 7 días, con y sin Free Tour.
 for (const fecha of quick ? starts.filter((_, i) => i % 7 === 0) : starts) {
-  for (const dias of [2, 3, 4, 5, 6, 7]) for (const ft of [false, true]) grid.push({ fecha, dias, ft })
+  for (const dias of [1, 2, 3, 4, 5, 6, 7]) for (const ft of [false, true]) grid.push({ fecha, dias, ft })
+}
+// 1b. Sin fechas: de 1 a 7 días, con y sin Free Tour (horario de laborable y avisos).
+for (const dias of [1, 2, 3, 4, 5, 6, 7]) for (const ft of [false, true]) grid.push({ fecha: null, dias, ft })
+// 1c. Con una reserva en cada franja de entrada (los `entradas` de los días escritos), 4 días, cada dos semanas.
+{
+  const franjas = []
+  for (const file of readdirSync('data/dias/roma').filter((name) => /^D.*[.]json$/.test(name))) {
+    const written = JSON.parse(readFileSync(`data/dias/roma/${file}`, 'utf8'))
+    for (const [place, byFranja] of Object.entries(written.entradas ?? {})) for (const range of Object.values(byFranja)) franjas.push({ place, hour: range[0] })
+  }
+  for (const fecha of starts.filter((_, i) => i % (quick ? 56 : 14) === 0)) for (const { place, hour } of franjas) grid.push({ fecha, dias: 4, ft: false, reservas: { [place]: hour } })
 }
 // 2. Cada experiencia (3 y 5 días, completo, sin Free Tour).
 for (const fecha of starts.filter((_, i) => i % (quick ? 14 : 2) === 0)) for (const exp of ['arte_museos', 'naturaleza_vistas', 'barrios_sabores']) for (const dias of [3, 5]) grid.push({ fecha, dias, ft: false, exps: [exp] })
@@ -166,9 +214,9 @@ for (const [w, fecha] of weekly.entries()) {
 }
 
 for (const [index, trip] of grid.entries()) {
-  currentKey = enFechaClave(CLAVES, trip.fecha, trip.dias)
+  currentKey = trip.fecha ? enFechaClave(CLAVES, trip.fecha, trip.dias) : null
   if (currentKey) keyTrips.set(currentKey.id, (keyTrips.get(currentKey.id) ?? 0) + 1)
-  planChecks(trip)
+  if (trip.dias > 1) planChecks(trip) // (el viaje de 1 día no pasa por el plan escrito: lo monta short_trips)
   await runTrip(trip)
   if (index % 500 === 0) process.stderr.write(`\r${index}/${grid.length} viajes (${Math.round((Date.now() - started) / 1000)} s)   `)
 }
@@ -208,6 +256,18 @@ lines.push(
   '',
   ...CLAVES.flatMap((item) => (keyCases.get(item.id) ?? []).filter((c) => !INFORMATIVOS.has(c.tipo)).map((c) => `- ${item.nombre}: ${c.tipo} | ${c.text}`)),
 )
+// Una línea por regla (REGLAS_RUTAS 30): «R-14: 0 fallos» o «SIN COMPROBACIÓN».
+const INFO_TIPOS = new Set(['pago_cerrado_fecha', 'pago_cedido_al_pool'])
+const ruleLines = REGLAS_PRUEBA.map((rule) => {
+  if (rule.tipos[0] === '__esta_lista__') return `R-${rule.id}: esta lista (${rule.nombre})`
+  if (rule.tipos.length === 0) return `R-${rule.id}: SIN COMPROBACIÓN en esta prueba — ${rule.nombre}. ${rule.nota ?? ''}`.trim()
+  const fails = rule.tipos.filter((tipo) => !INFO_TIPOS.has(tipo)).reduce((sum, tipo) => sum + (counts.get(tipo) ?? 0), 0)
+  const detail = rule.tipos.filter((tipo) => (counts.get(tipo) ?? 0) > 0 && !INFO_TIPOS.has(tipo)).map((tipo) => `${tipo} ${counts.get(tipo)}`).join(', ')
+  return `R-${rule.id}: ${fails} fallos${detail ? ` (${detail})` : ''} — ${rule.nombre}${rule.nota ? `. (${rule.nota})` : ''}`
+})
+const unmapped = [...counts.keys()].filter((tipo) => !REGLAS_PRUEBA.some((rule) => rule.tipos.includes(tipo)) && !INFO_TIPOS.has(tipo))
+lines.push('', '## Una línea por regla', '', ...ruleLines.map((line) => `- ${line}`), ...(unmapped.length > 0 ? ['', `Cuentan en la prueba pero no están en ninguna regla: ${unmapped.map((tipo) => `${tipo} ${counts.get(tipo)}`).join(', ')}`] : []))
+console.log(ruleLines.join('\n'))
 writeFileSync(out, lines.join('\n') + '\n')
 if (args.volcar) writeFileSync(args.volcado ?? `volcado_${args.volcar}.txt`, dumped.join('\n') + '\n')
 console.log(JSON.stringify({ viajes: trips, total, clave: { reales: keyReal.length, informativos: keyAll.length - keyReal.length }, tipos: Object.fromEntries([...counts.entries()].sort((a, b) => b[1] - a[1])) }))

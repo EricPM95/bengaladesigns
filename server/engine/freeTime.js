@@ -11,6 +11,7 @@
  * Nunca un texto con «Una idea…». Lo que pone el viajero (días libres, Añadir parada) no pasa por aquí.
  */
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
+import { muestraOf } from '../../shared/routeEngine/sitios.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { buildStop } from './buildDay.js'
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
@@ -23,6 +24,10 @@ const SAME_PLACE_METERS = 250
 const MAX_DINNER_WAIT = 20
 const MAX_PASEO_WALK = 15
 const DINNER_BLOCK_MINUTES = 90
+/** Hasta aquí un hueco de a mitad de día se cubre estirando la parada de antes; antes de una entrada, hasta aquí es margen. */
+const HUECO_ESTIRAR_MAX = 30
+const HUECO_ANTES_DE_ENTRADA_MAX = 60
+const CALM_TAGS = new Set(['parque', 'mirador', 'barrio', 'jardin', 'plaza'])
 const FALLBACK_TIP = 'A esta hora los romanos se toman un spritz o una copa de vino antes de cenar. Si te apetece, siéntate en una terraza y mira pasar la ciudad.'
 
 const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -152,11 +157,16 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       // nocturna no se alarga: dura lo que dura).
       const sameName = mentions(previous)
       const near = coordsOf(previous) && straightLineMeters(coordsOf(previous), center) <= SAME_PLACE_METERS && !previous.is_night_experience
-      // Un paseo con `una_vez_por_viaje` (el del Tridente) no se repite: si un día anterior ya cena en esa zona, el rato va a la parada que se estira.
-      const repeated = Boolean(zoneConfig?.una_vez_por_viaje && trip?.days?.some((other) => other.dayNumber < tripDay.dayNumber && other.dinnerZone === tripDay.dinnerZone))
+      // Cada paseo, una vez por viaje si queda otro (REGLAS_RUTAS 7): si un día anterior ya cena en esa zona, el rato va a la parada que se estira.
+      // Si esa parada no admite más, el paseo vuelve otro día (nunca el mismo día).
+      const repeated = Boolean(trip?.days?.some((other) => other.dayNumber < tripDay.dayNumber && other.dinnerZone === tripDay.dinnerZone))
+      const onlyRepeated = repeated && !sameName && !near
       const same = sameName || near || repeated
       // El barrio que el día ya ha visto antes (con otra cosa en medio) no vuelve como paseo: sería el mismo sitio dos veces.
-      const seenEarlier = !same && before.slice(0, before.indexOf(previous)).some((stop) => !stop.is_night_experience && (placeByName.get(nameOf(stop))?.tags ?? []).includes('barrio') && mentions(stop))
+      // (REGLAS_RUTAS 5: por sitio, no por nombre — el paseo no enseña nada que el día ya haya enseñado, Campo de' Fiori a las 17:50 y otra vez en su paseo.)
+      const paseoSites = muestraOf(destData, { name: title, is_free_walk: true }).muestra
+      const shownToday = new Set(day.stops.flatMap((stop) => muestraOf(destData, stop).muestra))
+      const seenEarlier = !same && (paseoSites.some((id) => shownToday.has(id)) || before.slice(0, before.indexOf(previous)).some((stop) => !stop.is_night_experience && (placeByName.get(nameOf(stop))?.tags ?? []).includes('barrio') && mentions(stop)))
       if (seenEarlier) {
         report.evening = { kind: 'omitido', name: title }
         continue
@@ -171,7 +181,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
           report.evening = { kind: 'alarga', name: nameOf(previous), minutes: extra, title }
           break
         }
-        continue
+        if (!onlyRepeated) continue
       }
       // (Un paseo no se coge a más de 15 min andando de lo último: de la nocturna del Puente al Campo de' Fiori no.)
       if (leg(coordsOf(previous), center) > MAX_PASEO_WALK) continue
@@ -246,16 +256,33 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     // La zona: la de la parada de antes; si a la siguiente se llega en bus o metro, la de la siguiente.
     const prevZone = prev ? placeByName.get(nameOf(prev))?.zone ?? null : null
     const nextZone = next ? placeByName.get(nameOf(next))?.zone ?? null : null
-    const walkZone = next?.transit && nextZone ? nextZone : prevZone ?? nextZone
+    // Antes del atardecer, el paseo es el de la zona del mirador (REGLAS_RUTAS 20).
+    const sunsetNext = next?.sunset_minutes != null
+    const walkZone = (sunsetNext || next?.transit) && nextZone ? nextZone : prevZone ?? nextZone
     const walk = (destData.zone_walks ?? []).find((candidate) => candidate.zone === walkZone) ?? null
     const insertAt = (stop) => {
       day.stops.push(stop)
       sortStops()
     }
+    // Antes de una entrada (reserva o turno, hasta 60 min): es margen para llegar con calma; no se llena.
+    const nextIsEntry = Boolean(next && (next.reserved_entry || next.hora_tipo === 'reserva' || next.hora_tipo === 'turno' || next.is_free_tour))
+    if (nextIsEntry && room <= HUECO_ANTES_DE_ENTRADA_MAX) continue
+    // Hasta 30 min: se estira la parada de antes, si es de las que se disfrutan con calma (plaza, parque, mirador, barrio, jardín).
+    // Si es un sitio pequeño (una iglesia, una fuente), pasa a lo de abajo: un sitio de camino o el paseo.
+    const prevPlace = prev ? placeByName.get(nameOf(prev)) : null
+    const calm = Boolean(prevPlace && ((prevPlace.tags ?? []).some((tag) => CALM_TAGS.has(tag)) || /^(Plaza|Piazza|Parque|Jardín|Terraza|Mirador)/.test(prevPlace.name)))
+    const stretchable = prev ? stretchRoom(prev, prevPlace, tripDay.hours) : 0
+    if (room <= HUECO_ESTIRAR_MAX && calm && stretchable >= minMinutes && !sunsetNext) {
+      const extra = Math.min(floor5(room), floor5(stretchable))
+      stretch(prev, extra)
+      report.mid.push({ kind: 'alarga', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
+      continue
+    }
+    // Más de 30 min: un sitio que pille de camino y valga la pena; si no lo hay, el paseo de la zona. Antes del atardecer, directo al paseo del mirador.
     // 1. Un sitio de camino, como parada.
     const idea = (entry.suggestions ?? []).find((item) => placeByName.has(item.name)) ?? null
     const ideaPlace = idea ? placeByName.get(idea.name) : null
-    if (ideaPlace && Array.isArray(ideaPlace.coordinates)) {
+    if (ideaPlace && Array.isArray(ideaPlace.coordinates) && !sunsetNext) {
       const walkIn = leg(fromCoords, ideaPlace.coordinates)
       const walkOut = leg(ideaPlace.coordinates, toCoords)
       let start = ceil5(fromEnd + walkIn)

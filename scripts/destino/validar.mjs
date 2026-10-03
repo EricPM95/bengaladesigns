@@ -139,8 +139,11 @@ const section = (title) => {
     for (const id of entry.muestra ?? []) if (!conflicts.has(id) && known.has(id) && !(entry.allow_same_day === false)) s.warn.push(`night_experiences "${entry.name}": enseña "${id}" pero su conflicts_with no lo nombra`)
   }
   for (const [name, override] of Object.entries(config.night_view_overrides ?? {})) {
+    if (name.startsWith('_')) continue
     if (!byName.has(name)) s.red.push(`night_view_overrides: "${name}" no existe`)
     check(`night_view_overrides "${name}".muestra`, override.muestra)
+    if (!override.photo) s.red.push(`night_view_overrides "${name}": sin photo (sin foto de noche no hay «iluminado»: borra la entrada)`)
+    if (override.nocturna && !(D.night_experiences ?? []).some((entry) => entry.name === override.nocturna)) s.red.push(`night_view_overrides "${name}": la nocturna "${override.nocturna}" no existe`)
   }
   for (const [zone, titles] of Object.entries(config.paseo_muestras ?? {})) {
     if (zone.startsWith('_')) continue
