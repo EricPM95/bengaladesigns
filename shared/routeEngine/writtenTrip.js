@@ -405,8 +405,12 @@ export function planWrittenTrip(args) {
 
   // Free Tour añadido después (3-oct-2026): el tour sustituye la parte del día que enseña lo mismo. `freeTourDespues: { franja: 'manana' | 'tarde' | 'noche', hora }`;
   // va en el primer día (por orden) cuyo día escrito trae la variante `free_tour_despues:<franja>`.
-  const ftKey = freeTourDespues?.franja ? `free_tour_despues:${freeTourDespues.franja}` : null
-  const ftDayIndex = ftKey ? order.findIndex((id) => written.days[id].variantes?.[ftKey]) : -1
+  // El tour se clasifica por su hora, no por su nombre (3-oct-2026): antes de las 13:00 es de mañana; de las 13:00 a las 18:59, de tarde; a partir de las 19:00, de noche.
+  const ftHour = freeTourDespues?.hora ? toMin(freeTourDespues.hora) : null
+  const ftFranja = ftHour != null ? (ftHour < 13 * 60 ? 'manana' : ftHour < 19 * 60 ? 'tarde' : 'noche') : freeTourDespues?.franja ?? null
+  const ftKey = ftFranja ? `free_tour_despues:${ftFranja}` : null
+  let ftDayIndex = -1
+  const ftWhy = [] // por qué un día que trae el tour no lo lleva (para las pruebas)
   const makeDraft = (id, index, version) => {
     const w = written.days[id]
     const day = cityDays[index]
@@ -505,6 +509,11 @@ export function planWrittenTrip(args) {
       return fit.enters && !fit.notice
     }
     for (const exp of selected) if (w.experiencias?.[exp] && (!w.experiencias[exp].si_disponible || inDates(w.experiencias[exp].si_disponible))) applyOps(draft, w.experiencias[exp], exp)
+    // (Si lo que cambia ese día, el domingo o una fecha, reescribió las paradas y se llevó el tour, el tour vuelve: su hora no se mueve ni se quita, INVARIANTES 466.)
+    if (ftHere && tour && ![...draft.manana, ...draft.tarde].some((stop) => stop.lugar === tour.name)) {
+      applyOps(draft, ftHere, `${ftKey}:otra_vez`)
+      for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora })
+    }
     // Lo que depende del viaje: `no_si_dia` (la Isla Tiberina en D5 si el viaje ya lleva D1-FT) y `desde_dias` (solo en
     // viajes de tantos días o más).
     // (`sol_desde` / `sol_hasta`: la parada va solo si el sol se pone a partir de / antes de esa hora; una versión abarca una hora de sol.)
@@ -564,6 +573,18 @@ export function planWrittenTrip(args) {
       draft.applied.push(`reserva:${toHHMM(entryReserved.hour)}`)
     }
     return draft
+  }
+  // (El tour va en el primer día, por orden, cuyo día escrito trae la variante y cuyo borrador acaba llevando el tour: un domingo, un festivo sin tour o una fecha que
+  // reescribe el día pueden quitarlo, y entonces va en el siguiente.)
+  if (ftKey && tour) {
+    for (let candidate = 0; candidate < order.length; candidate++) {
+      if (!written.days[order[candidate]].variantes?.[ftKey]) continue
+      ftDayIndex = candidate
+      const trial = makeDraft(order[candidate], candidate, lightVersionOf(hoursOf(cityDays[candidate]).sunset, cuts))
+      if ([...trial.manana, ...trial.tarde].some((stop) => stop.lugar === tour.name)) break
+      ftWhy.push(`${order[candidate]}: ${noTourOn(cityDays[candidate]) ? 'ese día no hay Free Tour (festivo)' : 'el día escrito de ese día no lo lleva'}`)
+      ftDayIndex = -1
+    }
   }
   const drafts = order.map((id, index) => makeDraft(id, index, lightVersionOf(hoursOf(cityDays[index]).sunset, cuts)))
   /** Lo que ya va en la ruta y está en el pool: por dentro y no opcional. */
@@ -705,6 +726,8 @@ export function planWrittenTrip(args) {
     return placeByName.get(stop.lugar) ?? null
   }
   const hourOf = (stop) => (stop.hora == null ? null : toMin(stop.hora))
+  const firstRequiredOf = (list) => (list ?? []).find((stop) => stop.tipo !== 'opcional' && stop.modo !== 'camino') ?? null
+  const entryTolerance = (stop) => (stop.llegar_antes != null ? Math.max(0, stop.llegar_antes - TICKET_MARGIN) : 0)
 
   /** El lugar listo para el formato, según cómo sale (`modo`) y por qué va por fuera si va. */
   function readyPlace(stop, source, outsideReason, hours) {
@@ -913,7 +936,7 @@ export function planWrittenTrip(args) {
       // Verano (julio y agosto, INVARIANTES 413): por la tarde, nada al sol antes de las 16:30. Lo que va al aire libre espera
       // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
       // (Una hora fija de después manda sobre la sombra: la entrada reservada no se mueve, INVARIANTES 466.)
-      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior' && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
+      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= 13 * 60 && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       let fixedMargin = 0
       if (fixed != null) {
@@ -923,7 +946,9 @@ export function planWrittenTrip(args) {
         const needed = fixed - fixedMargin
         // (Una hora escrita sin turno es orientativa: llegar hasta 10 min después no es llegar tarde.)
         // (Si se llega tarde, no se avisa aún: antes se recorta lo de antes, hacia atrás desde la hora fija: compressToFixedHours.)
-        if (at > needed) late = { arrival: at, needed, fixed, tol: 0, lugar: stop.lugar }
+        // (Llegar 30 min antes a una entrada reservada es lo bueno, no lo obligado: hasta 10 min antes vale, y no hace falta recortar nada.)
+        const tol = entryTolerance(stop)
+        if (at > needed + tol) late = { arrival: at, needed, fixed, tol, lugar: stop.lugar }
         at = Math.max(at, fixed)
       }
       let duration = place.duration_minutes ?? 30
@@ -955,6 +980,8 @@ export function planWrittenTrip(args) {
         while (original.elastica != null && duration - 5 >= writtenMin && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, writtenMin, ctx.hours).closed) duration -= 5
         // La entrada reservada se recorta hasta el cierre (la visita de las 17:30 acaba a las 20:00 si el sitio cierra a esa hora; nunca menos de 60 min).
         if (stop.recorta_al_cierre) while (duration > 60 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 60, ctx.hours).closed) duration -= 5
+        // Un imprescindible de entrada libre (la Basílica de San Pedro) que se pasaría de la hora de cierre se recorta hasta el cierre, no menos de 30 min, antes que verlo por fuera estando abierto.
+        else if (source.level === 1 && source.is_free_access && source.type === 'interior' && !stop.entrada) while (duration > 30 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 30, ctx.hours).closed) duration -= 5
         // (Lo escrito «si está cerrado, por fuera» no espera más de lo de siempre, 20 min: es el plan B que quien escribe el día prefiere.)
         const check = openCheck(place, at, duration, ctx.hours, stop.si_cerrado === 'fuera' && source.minutos_fuera != null ? OPEN_WAIT_AUTHORED : null)
         // Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra (su tiempo lo recoge la parada que se estira).
@@ -1092,12 +1119,14 @@ export function planWrittenTrip(args) {
   function dropCandidate(list, beforeIndex) {
     const rank = (stop) => {
       const level = sourceOf(stop)?.level ?? 3
-      return (stop.tipo === 'opcional' ? 0 : 10) + (4 - level)
+      // (Un atardecer es lo último que se quita: la hora fija de después manda sobre el sol, y no sale en «Quedó fuera».)
+      // (Y una hora escrita que no es una reserva ni el tour, la Basílica a las 12:00 el Jueves Santo, solo se quita si no hay nada más: la reservada no se mueve.)
+      return (hourOf(stop) != null ? 30 : 0) + (stop.modo === 'atardecer' ? 20 : 0) + (stop.tipo === 'opcional' ? 0 : 10) + (4 - level)
     }
     let best = -1
     for (let i = beforeIndex - 1; i >= 0; i--) {
       const stop = list[i]
-      if (hourOf(stop) != null || stop.modo === 'camino' || stop.modo === 'atardecer' || !sourceOf(stop)) continue
+      if ((hourOf(stop) != null && (stop.recorta_al_cierre || stop.lugar === tour?.name)) || stop.modo === 'camino' || !sourceOf(stop)) continue
       if (best < 0 || rank(stop) < rank(list[best])) best = i
     }
     return best
@@ -1118,14 +1147,22 @@ export function planWrittenTrip(args) {
       }
       const left = ctx.lateLeft
       ctx.lateLeft = null
+      // Un lugar que ya no se puede ver por dentro por llegar tarde (la Basílica a las 14:50 con cierre a las 15:00) y una opcional delante: la opcional se quita
+      // antes que perder el lugar (INVARIANTES 466, «primero salen las opcionales»).
+      let optionalAt = -1
       if (left.length === 0) {
-        if (dropped.length > 0 && !ctx.probe) for (const stop of dropped) notEnoughTime.push({ name: stop.lugar, reason: 'time', dayNumber: ctx.day.dayNumber })
+        const late = run.visits.find((visit) => visit.place.visitOutside && ['ya_cerrado', 'no_abre'].includes(visit.place.outsideKind))
+        const lateAt = late ? current.findIndex((stop) => stop.lugar === late.place.name && stop.modo !== 'fuera') : -1
+        if (lateAt > 0) optionalAt = current.findLastIndex((stop, index) => index < lateAt && stop.tipo === 'opcional' && stop.modo !== 'camino' && hourOf(stop) == null)
+      }
+      if (left.length === 0 && optionalAt < 0) {
+        if (dropped.length > 0 && !ctx.probe) for (const stop of dropped.filter((item) => item.tipo !== 'opcional' && item.modo !== 'atardecer')) notEnoughTime.push({ name: stop.lugar, reason: 'time', dayNumber: ctx.day.dayNumber })
         run.dropped = dropped
         run.list = current
         return run
       }
-      const fixedAt = current.findIndex((stop) => stop.lugar === left[0].lugar && hourOf(stop) != null)
-      const at = fixedAt >= 0 ? dropCandidate(current, fixedAt) : -1
+      const fixedAt = left.length > 0 ? current.findIndex((stop) => stop.lugar === left[0].lugar && hourOf(stop) != null) : -1
+      const at = optionalAt >= 0 ? optionalAt : fixedAt >= 0 ? dropCandidate(current, fixedAt) : -1
       if (at < 0 || guard === 9) {
         // Nada más que quitar: el aviso de siempre.
         if (snap) {
@@ -1222,12 +1259,21 @@ export function planWrittenTrip(args) {
     const pick = (names) => recommendedRestaurant(destData, { names, meal: 'comida', near: cursor.coords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
     // (El escrito o su alternativa, si están a LUNCH_WALK_MAX min andando de la parada de antes; si no, el más cercano.)
     const writtenSpots = [draft.comida.restaurante, draft.comida.alternativa].filter(Boolean).map((name) => pick([name])).filter(Boolean)
-    const spot = writtenSpots.find((candidate) => walkLeg(cursor.coords, candidate.coordinates) <= LUNCH_WALK_MAX) ?? pick(null) ?? writtenSpots[0] ?? null
+    // (Con una entrada reservada justo después de comer, el restaurante escrito que está junto a la entrada, la pizza al corte de Bonci a dos
+    // minutos de los Museos, gana al más cercano a la parada de antes, aunque haya que andar algo más: hasta LUNCH_WALK_MAX + 12.)
+    const entranceStop = isReservedDraft(draft) ? firstRequiredOf(draft.tarde) : null
+    const entranceSource = entranceStop && hourOf(entranceStop) != null ? sourceOf(entranceStop) : null
+    const nextToEntrance = entranceSource ? writtenSpots.find((candidate) => walkLeg(candidate.coordinates, entranceSource.coordinates) <= 10 && walkLeg(cursor.coords, candidate.coordinates) <= LUNCH_WALK_MAX + 12) : null
+    const spot = nextToEntrance ?? writtenSpots.find((candidate) => walkLeg(cursor.coords, candidate.coordinates) <= LUNCH_WALK_MAX) ?? pick(null) ?? writtenSpots[0] ?? null
     const walk = spot ? walkLeg(cursor.coords, spot.coordinates) : 5
     // (En un cuarto de hora exacto, como la cena: la app pinta las comidas redondeadas.)
     const start = Math.max(roundUp15(cursor.t + walk), isReservedDraft(draft) ? LUNCH_EARLIEST_RESERVED : LUNCH_EARLIEST)
     const written = draft.empieza ? toMin(draft.empieza) : null
-    let end = written != null ? written : start + LUNCH_DEFAULT
+    // (Lo primero de la tarde que no es opcional: una opcional delante, Santa Cecilia, se quita antes que mover la hora fija.)
+    const firstAfternoon = firstRequiredOf(draft.tarde)
+    const fixedFirst = firstAfternoon ? hourOf(firstAfternoon) : null
+    // (Con una entrada reservada justo después de comer, la comida no acaba donde empieza la tarde escrita: se alarga, 60 min, hasta lo que deje la hora fija, INVARIANTES 460.)
+    let end = written != null && !(isReservedDraft(draft) && fixedFirst != null) ? written : start + LUNCH_DEFAULT
     // (La comida dura como mucho 90 min, aunque lo escrito empiece la tarde más tarde: lo demás es tarde.)
     end = Math.min(end, start + LUNCH_MAX_COMPLETO)
     let short = null
@@ -1237,17 +1283,16 @@ export function planWrittenTrip(args) {
     }
     // Una hora fija como lo primero de la tarde (San Clemente a las 14:00) no se mueve: la comida acaba antes, hasta su mínimo.
     let lateBy = 0
-    const firstAfternoon = draft.tarde?.[0]
-    const fixedFirst = firstAfternoon ? hourOf(firstAfternoon) : null
     const firstSource = firstAfternoon ? sourceOf(firstAfternoon) : null
     if (fixedFirst != null && firstSource) {
       const slotted = Boolean(firstAfternoon.turno || firstSource.turnos || firstSource.isFreeTour)
       const legRaw = walkLeg(spot?.coordinates ?? cursor.coords, firstSource.coordinates)
       const leg = firstAfternoon.traslado?.min ? Math.min(legRaw, firstAfternoon.traslado.min) : legRaw
-      const over = end + leg - (fixedFirst - (firstAfternoon.llegar_antes ?? (slotted ? TICKET_MARGIN : 0)))
+      const tolerance = entryTolerance(firstAfternoon)
+      const over = end + leg - (fixedFirst - (firstAfternoon.llegar_antes ?? (slotted ? TICKET_MARGIN : 0)) + tolerance)
       if (over > 0) {
         end = Math.max(start + lunchMinOf(draft), end - over)
-        lateBy = Math.max(0, end + leg - (fixedFirst - (firstAfternoon.llegar_antes ?? (slotted ? TICKET_MARGIN : 0))))
+        lateBy = Math.max(0, end + leg - (fixedFirst - (firstAfternoon.llegar_antes ?? (slotted ? TICKET_MARGIN : 0)) + tolerance))
       }
     }
     return { spot, start, end, short, lateBy }
@@ -1389,6 +1434,19 @@ export function planWrittenTrip(args) {
         }
       }
     }
+    // (Y lo demás que el día escrito pone en la mañana y otra vez en la tarde, el Castillo del miércoles con la entrada a mediodía: la segunda vez sobra. Salvo el
+    // mismo lugar con dos títulos escritos distintos, el parque de Villa Borghese de camino a la Galería y su lago.)
+    if (!half) {
+      const titleOf = (stop) => stop.titulo ?? null
+      draft.tarde = draft.tarde.filter((stop) => {
+        if (stop.modo === 'camino' || stop.modo === 'atardecer') return true
+        const before = draft.manana.find((other) => other.lugar === stop.lugar && other.modo !== 'camino')
+        if (!before) return true
+        if (titleOf(before) && titleOf(stop) && titleOf(before) !== titleOf(stop)) return true
+        draft.applied.push(`una_vez:${stop.lugar}`)
+        return false
+      })
+    }
     // La comida dura como mínimo LUNCH_MIN (PROMPT_TEXTOS_RITMO 6). Si no cabe antes de la hora escrita de la tarde, se
     // quitan primero las opcionales (las de la mañana, de la última hacia atrás; luego las de la tarde, hasta cubrir lo que
     // falta) y lo que quede lo absorbe la elástica. Nunca se acorta la comida. (El 1 de enero, con los Capitolinos y el
@@ -1478,7 +1536,7 @@ export function planWrittenTrip(args) {
         for (let guard = 0; lunchPlan.lateBy > 0 && guard < 10; guard++) {
           const at = dropCandidate(draft.manana, draft.manana.length)
           if (at < 0) break
-          droppedMorning.push(draft.manana[at].lugar)
+          droppedMorning.push(draft.manana[at])
           draft.manana = draft.manana.filter((_, i) => i !== at)
           // (La mañana se vuelve a montar desde cero: lo que la primera vez dio por visto, no.)
           for (const name of [...seen]) if (!beforeMorning.seen.has(name)) seen.delete(name)
@@ -1489,7 +1547,7 @@ export function planWrittenTrip(args) {
           morning = runList(draft.manana, 'manana', { t: startMorning, coords: null }, ctx)
           lunchPlan = lunchOf(draft, morning.cursor, skeletonDay, hours)
         }
-        for (const name of droppedMorning) notEnoughTime.push({ name, reason: 'time', dayNumber: skeletonDay.dayNumber })
+        for (const stop of droppedMorning.filter((item) => item.tipo !== 'opcional')) notEnoughTime.push({ name: stop.lugar, reason: 'time', dayNumber: skeletonDay.dayNumber })
       }
       const { spot, start, end, short } = lunchPlan
       // (La comida ya dura LUNCH_MIN; la tarde empieza más tarde y lo absorbe la elástica. Solo es un problema si no hay
@@ -1591,7 +1649,8 @@ export function planWrittenTrip(args) {
     // abriese Santa Cecilia; el descanso va antes que el aperitivo.)
     if (elasticStop && lunchName) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
-      if (spare > 20 && !summerRest) {
+      // (Nunca si lo primero de la tarde es una hora fija: el descanso no la mueve, INVARIANTES 466; San Clemente a las 14:00.)
+      if (spare > 20 && !summerRest && hourOf(firstRequiredOf(draft.tarde) ?? {}) == null) {
         restAfterLunch = Math.floor(Math.min(spare, REST_AFTER_LUNCH_MAX) / 5) * 5
         // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
         // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
@@ -1937,6 +1996,8 @@ export function planWrittenTrip(args) {
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
     dateMoves,
     problems,
+    // Para las pruebas: dónde quedó el Free Tour añadido después y, si no quedó en ningún día, por qué.
+    ...(ftKey ? { freeTourInfo: { franja: ftFranja, hora: freeTourDespues?.hora ?? null, dayId: ftDayIndex >= 0 ? order[ftDayIndex] : null, order: [...order], motivo: ftDayIndex >= 0 ? null : order.some((id) => written.days[id].variantes?.[ftKey]) ? ftWhy.join('; ') : `ningún día del viaje (${order.join(', ')}) trae el tramo escrito de un tour de ${ftFranja}` } } : {}),
   }
 }
 

@@ -2,7 +2,7 @@
 // Cada fecha del año, el viaje con el tour a cada hora (de mañana 10:00; de tarde 16:00 y 17:00; de noche, saliendo un rato antes de la puesta de sol).
 //   node scripts/destino/medirFtDespues.mjs [paso=1] [dias=3,4,5] [out=docs/MEDIR_FT_DESPUES_2026-10-03.md]
 // «Cabe» = el tour sale a su hora, ningún imprescindible se pierde en el viaje (lo que el tour enseña cuenta como visto ese día), nada fuera de horario y no se repite nada el mismo día.
-import { writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { auditarViaje, repetidosEnElDia } from './auditoria.mjs'
@@ -12,7 +12,8 @@ import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
 const STEP = Number(args.paso ?? 1)
 const LENGTHS = String(args.dias ?? '3,4,5').split(',').map(Number)
-const OUT = args.out ?? 'docs/MEDIR_FT_DESPUES_2026-10-03.md'
+const OUT = args.out ?? 'docs/MEDIR_FT_ROJOS_2026-10-03.md'
+const ANTES = args.antes ?? 'docs/MEDIR_FT_ANTES_2026-10-03.md'
 const D = findPipelineV2Data('Roma')
 const travel = travelTimesFor('roma')
 const leg = (a, b) => (a && b ? travel.leg(a, b)?.minutes ?? null : null)
@@ -33,8 +34,30 @@ const SCENARIOS = [
   { key: 'de noche · sale 20 min antes de la puesta', franja: 'noche', hour: (fecha) => Math.round(((sunsetFor(D, { dateIso: fecha }) ?? 18 * 60) - 20) / 5) * 5 },
 ]
 const tally = new Map()
+const conAviso = []
 const rojo = { llega_tarde: [], fuera_de_horario: [], se_pierde: [], repetido: [], error: [] }
+// (Por mes, el tour de noche: a qué hora sale y qué franja le toca; y las fechas de frontera: el cambio de hora y el día en que cambia la franja.)
+const monthTally = new Map()
+const edges = []
+let lastFranja = null
+let current = { fecha: null, scenario: null, hour: null, dias: null }
+const noteMonth = (ok) => {
+  if (current.scenario?.franja !== 'noche' || current.dias !== LENGTHS[0]) return
+  const month = current.fecha.slice(5, 7)
+  const rec = monthTally.get(month) ?? { n: 0, ok: 0, min: Infinity, max: 0, franjas: new Set() }
+  rec.n++
+  if (ok) rec.ok++
+  rec.min = Math.min(rec.min, current.hour)
+  rec.max = Math.max(rec.max, current.hour)
+  rec.franjas.add(current.hour < 13 * 60 ? 'mañana' : current.hour < 19 * 60 ? 'tarde' : 'noche')
+  monthTally.set(month, rec)
+  const franja = current.hour < 19 * 60 ? 'tarde' : 'noche'
+  const dst = ['2027-03-27', '2027-03-28', '2027-03-29', '2027-10-30', '2027-10-31', '2027-11-01'].includes(current.fecha)
+  if (dst || (lastFranja && lastFranja !== franja)) edges.push({ fecha: current.fecha, hour: current.hour, franja, ok, cambio: lastFranja && lastFranja !== franja ? 'cambia la franja' : 'cambio de hora' })
+  lastFranja = franja
+}
 const bump = (key, ok, why, example) => {
+  noteMonth(ok)
   const rec = tally.get(key) ?? { casos: 0, caben: 0, motivos: new Map() }
   rec.casos++
   if (ok) rec.caben++
@@ -71,6 +94,7 @@ for (const fecha of starts) {
     for (const scenario of SCENARIOS) {
       escenarios++
       const hour = scenario.hour(fecha)
+      current = { fecha, scenario, hour, dias }
       const label = `${fecha} · ${dias} d · tour ${scenario.key.split(' · ')[0]} ${hhmm(hour)}`
       const key = `${dias} días · tour ${scenario.key}`
       let days
@@ -82,7 +106,7 @@ for (const fecha of starts) {
       }
       const tourDay = days.findIndex((day) => (day?.stops ?? []).some(isTour))
       if (tourDay < 0) {
-        bump(key, false, 'ningún día del viaje lleva el tour de esa franja (el motor no lo pone)', label)
+        bump(key, false, `ningún día del viaje lleva el tour de ${hour < 13 * 60 ? 'mañana' : hour < 19 * 60 ? 'tarde' : 'noche'}: ${days[0]?.free_tour_info?.motivo ?? 'sin dato'}`, label)
         continue
       }
       const reasons = []
@@ -103,7 +127,11 @@ for (const fecha of starts) {
       }
       // Imprescindibles del viaje sin tour que ya no están (salvo lo que el tour enseña el día del tour).
       const after = visitedLevelOne(days)
-      const lost = [...baseSeen].filter((name) => levelOne.has(name) && !after.has(name) && !covers.has(name))
+      // (Lo que no cabe sale en la campana, «Quedó fuera», y ese tramo pasa a manos del viajero: con aviso no es un fallo.)
+      const noticed = new Set(days.flatMap((day) => (day?.not_included ?? []).map((item) => item.name)))
+      const lostAll = [...baseSeen].filter((name) => levelOne.has(name) && !after.has(name) && !covers.has(name))
+      const lost = lostAll.filter((name) => !noticed.has(name))
+      for (const name of lostAll.filter((item) => noticed.has(item))) conAviso.push(`${label}: ${name}`)
       if (lost.length > 0) {
         reasons.push(`se pierde ${lost.slice(0, 2).join(' y ')}`)
         rojo.se_pierde.push(`${label}: ${lost.join(', ')}`)
@@ -114,6 +142,14 @@ for (const fecha of starts) {
   if (starts.indexOf(fecha) % 30 === 0) process.stderr.write(`\r${fecha} · ${escenarios}`)
 }
 process.stderr.write('\n')
+// (La tabla de antes: las filas «| Viaje y tour | Casos | Caben |…» del informe anterior, por su clave.)
+const before = new Map()
+if (existsSync(ANTES)) {
+  for (const row of readFileSync(ANTES, 'utf8').split(/\r?\n/)) {
+    const cells = row.split('|').map((cell) => cell.trim())
+    if (cells.length > 4 && /^\d días · tour/.test(cells[1])) before.set(cells[1], cells[3])
+  }
+}
 const pct = (n, d) => (d === 0 ? '—' : `${Math.round((n / d) * 1000) / 10} %`)
 const redTotal = Object.values(rojo).reduce((sum, list) => sum + list.length, 0)
 const list = (items) => (items.length === 0 ? '— ninguno' : items.slice(0, 6).map((x) => `  - ${x}`).join('\n') + (items.length > 6 ? `\n  - … y ${items.length - 6} más` : ''))
@@ -130,11 +166,27 @@ const lines = [
   `- **Lugar repetido el mismo día** (${rojo.repetido.length}):\n${list(rojo.repetido)}`,
   `- **El motor falla** (${rojo.error.length}):\n${list(rojo.error)}`,
   '',
-  '## Cuánto cabe',
+  `## Quitado con aviso en la campana (no es fallo): ${conAviso.length}`,
   '',
-  '| Viaje y tour | Casos | Caben | Por qué no caben (lo más repetido) |',
-  '|---|---|---|---|',
-  ...[...tally].sort((a, b) => a[0].localeCompare(b[0], 'es')).map(([key, rec]) => `| ${key} | ${rec.casos} | ${rec.caben} (${pct(rec.caben, rec.casos)}) | ${[...rec.motivos].sort((a, b) => b[1].n - a[1].n).slice(0, 3).map(([why, v]) => `${why} (${v.n}, p. ej. ${v.ejemplo})`).join(' · ') || '—'} |`),
+  list(conAviso),
+  '',
+  '## Cuánto cabe (antes → ahora)',
+  '',
+  '| Viaje y tour | Casos | Antes | Ahora | Por qué no caben (lo más repetido) |',
+  '|---|---|---|---|---|',
+  ...[...tally].sort((a, b) => a[0].localeCompare(b[0], 'es')).map(([key, rec]) => `| ${key} | ${rec.casos} | ${before.get(key) ?? '—'} | ${rec.caben} (${pct(rec.caben, rec.casos)}) | ${[...rec.motivos].sort((a, b) => b[1].n - a[1].n).slice(0, 3).map(([why, v]) => `${why} (${v.n}, p. ej. ${v.ejemplo})`).join(' · ') || '—'} |`),
+  '',
+  '## El tour de noche, mes a mes (viaje de 3 días; la hora es la de 20 min antes de la puesta)',
+  '',
+  '| Mes | Hora de salida | Franja que le toca | Casos | Caben |',
+  '|---|---|---|---|---|',
+  ...[...monthTally].sort((a, b) => a[0].localeCompare(b[0])).map(([month, rec]) => `| ${month} | ${hhmm(rec.min)}${rec.max !== rec.min ? ` a ${hhmm(rec.max)}` : ''} | ${[...rec.franjas].join(' y ')} | ${rec.n} | ${rec.ok} (${pct(rec.ok, rec.n)}) |`),
+  '',
+  '## Fechas de frontera (el cambio de hora y el día en que el tour pasa de tarde a noche o al revés)',
+  '',
+  '| Fecha | Hora del tour | Franja | Qué pasa | Cabe |',
+  '|---|---|---|---|---|',
+  ...edges.map((edge) => `| ${edge.fecha} | ${hhmm(edge.hour)} | ${edge.franja} | ${edge.cambio} | ${edge.ok ? 'sí' : 'no'} |`),
 ]
 writeFileSync(OUT, lines.join('\n') + '\n')
 console.log(lines.slice(0, 25).join('\n'))

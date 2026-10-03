@@ -2679,3 +2679,22 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 468. **D4 en verano con la entrada a la Galería de 15:00 a 17:45** (3-oct-2026). La regla de «nada al sol antes de las 16:30» (INVARIANTES 413) es para el parque, no para la Galería, que es por dentro. En julio y agosto, con esa entrada, el orden es: comida,
     la Galería en las horas de calor, el Parque de Villa Borghese (con elástica) cuando baja el sol y, al final, los Jardines y la Terraza del Pincio al atardecer (variantes `entrada:quince@verano` y `entrada:tarde@verano`; el motor las aplica después de
     `entrada:<franja>` cuando el mes es 7 u 8). La Terraza del Pincio sale una sola vez (INVARIANTES 467): al atardecer si cuadra con la reserva y, si no, de día.
+
+469. **La comida con una hora fija detrás** (3-oct-2026, todos los destinos; amplía 460). Si lo primero que no es opcional de la tarde es una hora fija (una entrada reservada, San Clemente a las 14:00, el Free Tour), la comida dura 60 min si cabe y se acorta
+    hasta lo que deje esa hora (30 min como mínimo con reserva); no acaba donde empieza «la tarde escrita». A una entrada reservada se llega 30 min antes, pero hasta 10 min antes vale y no se recorta nada por eso. Si lo escrito del día trae un restaurante
+    junto a la entrada (la pizza al corte de Bonci a 2 min de los Museos), gana al más cercano a la parada de antes aunque haya que andar algo más. El descanso de después de comer (`restAfterLunch`) nunca mueve una hora fija. Un opcional que está delante
+    de un lugar que, por su culpa, se pasaría de la hora de cierre (la Cúpula antes de la Basílica el 24 de diciembre) se quita primero. Un imprescindible de entrada libre que se pasaría del cierre (la Basílica) se recorta hasta el cierre, no menos de 30 min.
+
+470. **Última entrada por día de la semana** (3-oct-2026): `last_entry_by_day` en la ficha del lugar (`{ "vie-dom": "19:00" }`). El Palazzo Doria Pamphilj abre de viernes a domingo de 10:00 a 20:00 con la última entrada a las 19:00 (el resto, 09:00-19:00 y 18:00):
+    doriapamphilj.it, «La Visita (Roma)», comprobado el 3-oct-2026. Antes, los sábados a las 19:00 salía «fuera de horario».
+
+471. **D1, Coliseo desde las 15:30**: «Pasea y piérdete por Monti» (`Monti`, 30 min, elástica 90, opcional, `una_vez`) delante del Coliseo en `entrada:tarde`: llena el rato que queda hasta la hora de la entrada, y si no queda, no sale (ni avisa). Con la comida más larga (469)
+    los huecos de más de 30 min de ese orden pasan de 201 a 31.
+
+472. **El Castillo de Sant'Angelo, siempre por fuera; el Tempietto, quitado si cierra** (3-oct-2026). Lo escrito `modo: "fuera"` lleva `outside_authored` en la parada: no es «por fuera para llegar a todo» y la prueba no lo cuenta. El Tempietto de Bramante, si cierra, `si_cerrado: "quitar"`
+    (nunca «por fuera» forzado). La Basílica de San Pedro no sale por fuera el día de los Vaticanos salvo que esté cerrada (`basilica_fuera` en la prueba). D2, miércoles con la entrada de 13:00 a 14:00: la mañana desde las 9:00 (Puente, Castillo por fuera, Borgo Pio), comida
+    rápida en Pizzarium, los Museos y, después de ellos, la Plaza y la Basílica. Los Museos Vaticanos cierran los domingos (el último de cada mes, gratis de 9:00 a 14:00, última entrada a las 12:30, sin reserva: cola): no hay entradas reservadas en domingo.
+
+473. **El Free Tour añadido después se clasifica por su hora** (3-oct-2026, amplía 465): antes de las 13:00, de mañana; de las 13:00 a las 18:59, de tarde; a partir de las 19:00, de noche. El tour de «noche» de invierno (sale hacia las 16:30) cuenta como de tarde. La hora del tour no se mueve
+    nunca (466). Va en el primer día, por orden, cuyo día escrito trae esa franja y acaba llevando el tour; si lo que cambia ese día (un domingo, una fecha) reescribe las paradas y se lo lleva, el tour vuelve a ponerse. Si lo de antes no cabe, se quita lo menor y sale en la campana;
+    la sombra de verano no mueve el tour. Un atardecer se quita el último y sin aviso. (Motor: `freeTourDespues: { hora }`; `free_tour_info` en el día dice dónde quedó y, si no quedó, por qué.)

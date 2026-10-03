@@ -402,6 +402,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     for (const stop of day.stops) if (stop.is_night_experience) stop.night_walk_name = tripDay.nightWalk.nombre
   }
   // El día curado y las variantes que se le han aplicado (para la revisión y la ficha).
+  if (trip.freeTourInfo) day.free_tour_info = trip.freeTourInfo
   if (tripDay.curatedDay) day.curated_day = { id: tripDay.curatedDay.id, name: tripDay.curatedDay.nombre, variants: tripDay.curatedDay.variantes }
   // El título no promete un atardecer que ese día no hay (el Janículo llega ya de noche): "… y Trastevere", sin "al atardecer".
   if (day.curated_day?.name && / al atardecer$/.test(day.curated_day.name) && !(day.stops ?? []).some((stop) => stop.sunset_minutes != null)) day.curated_day.name = day.curated_day.name.replace(/ al atardecer$/, '')
