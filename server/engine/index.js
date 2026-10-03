@@ -699,7 +699,7 @@ function markRepeatedOwnPhotos(day, table, dateIso) {
   for (const stop of day.stops ?? []) {
     if (stop.is_break || (stop.is_free_walk && !stop.photo_name)) continue
     const base = stop.photo_name ?? stop.name
-    const asked = stop.is_night_experience && !/(noche)$|sde noche$/i.test(base) ? `${base} (noche)` : base
+    const asked = stop.is_night_experience && !/(\(noche\)|\sde noche)$/i.test(base) ? `${base} (noche)` : base
     const file = ownPhotoFile(table, asked, dateIso)?.archivo
     if (!file) continue
     if (used.has(file)) stop.no_own_photo = true

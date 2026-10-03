@@ -65,7 +65,7 @@ export const TIPOS_AUDITORIA = {
   vaticano_sin_castillo: "El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)",
   vaticano_sin_puente: "El día del Vaticano sin el Puente Sant'Angelo de día",
   hueco_cena: 'Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo',
-  tour_repite: 'Un sitio del recorrido del Free Tour que sale también suelto el día del tour (Trevi a las 8:30 y el tour a las 10:00)',
+  tour_repite: 'Un sitio del recorrido del Free Tour que sale suelto DESPUÉS del tour el mismo día (lo de antes, Trevi a las 8:00, está bien)',
   barrio_dos_veces: 'El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)',
 }
 
@@ -180,14 +180,17 @@ export function auditarViaje(D, days, options = {}) {
         if (idle > 45 && near) add('hueco_cena', n, last.suggested_time, nameOf(last), `${idle} min hasta la cena y ${near.name} a un paseo`)
       }
     }
-    // 2. El día del Free Tour, nada suelto de lo que el tour ya recorre (salvo entrar en lo que el tour enseña por fuera).
+    // 2. El día del Free Tour, nada suelto de lo que el tour recorre DESPUÉS de él. Lo que va antes (Trevi a las 8:00) está bien, y entrar
+    // por dentro en lo que el tour enseña por fuera también (el Panteón).
     const tourCfg = D.default_free_tour
-    if (tourCfg && day.stops.some((stop) => nameOf(stop) === tourCfg.name)) {
+    const tourStop = tourCfg ? day.stops.find((stop) => nameOf(stop) === tourCfg.name) : null
+    if (tourCfg && tourStop) {
       for (const stop of dayStops) {
         const name = nameOf(stop)
         if (!(tourCfg.covers ?? []).includes(name) || stop.pass_through) continue
+        if (t2m(stop.suggested_time) + (stop.duration_minutes ?? 0) <= t2m(tourStop.suggested_time)) continue
         const place = byName.get(name)
-        const inside = place?.type === 'interior' && stop.visit_mode !== 'fuera' && (place.ticket_info ?? []).some((line) => /de pago/i.test(line))
+        const inside = place?.type === 'interior' && stop.visit_mode !== 'fuera'
         if (!inside) add('tour_repite', n, stop.suggested_time, name, 'y el Free Tour pasa por ahí')
       }
     }
@@ -315,7 +318,7 @@ export function auditarViaje(D, days, options = {}) {
       for (const stop of day.stops) {
         if (stop.is_break || stop.no_own_photo || stop.is_free_walk && !stop.photo_name) continue
         const base = stop.photo_name ?? stop.name
-        const asked = stop.is_night_experience && !/(noche)$|sde noche$/i.test(base) ? `${base} (noche)` : base
+        const asked = stop.is_night_experience && !/(\(noche\)|\sde noche)$/i.test(base) ? `${base} (noche)` : base
         const file = ownPhotoFile(table, asked, iso)?.archivo
         if (!file) continue
         if (seenPhotos.has(file)) add('foto_repetida', n, stop.suggested_time, nameOf(stop), `como ${seenPhotos.get(file)} (${file})`)
@@ -331,7 +334,7 @@ export function auditarViaje(D, days, options = {}) {
       for (let i = 1; i < ordered.length; i++) {
         if (!ordered[i].is_free_walk) continue
         const before = ordered[i - 1]
-        const base = String(nameOf(before)).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/^(el|la|los|las)s+/, '')
+        const base = String(nameOf(before)).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/^(el|la|los|las)\s+/, '')
         const title = String(ordered[i].name).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
         const here = coordsOf(ordered[i])
         const there = coordsOf(before)
@@ -384,7 +387,7 @@ export function auditarViaje(D, days, options = {}) {
       if (stop.sunset_minutes != null && sunset != null && start != null && start + (stop.duration_minutes ?? 0) < sunset - ROUNDING) add('atardecer_corto', n, stop.suggested_time, nameOf(stop), `acaba antes del sol (${Math.floor(sunset / 60)}:${String(sunset % 60).padStart(2, '0')})`)
       // La nocturna repite lo que ya salió ese día.
       if (stop.is_night_experience) {
-        const base = String(stop.name).replace(/s*(noche)$/, '').replace(/s+de noche$/, '')
+        const base = String(stop.name).replace(/\s*\(noche\)$/, '').replace(/\s+de noche$/, '')
         if (dayNames.has(base)) add('nocturna_repite', n, stop.suggested_time, stop.name, `${base} ya salió de día`)
       }
       // Textos genéricos en las nocturnas y en "Roma iluminada".

@@ -19,7 +19,7 @@ function catalogOf(route: Route): Excursion[] {
 /** El primer sitio de la excursión ("Pompeya" de "Pompeya y Sorrento"): con él se busca su foto. */
 function mainPlaceOf(excursion: Excursion): string {
   if (excursion.photoName) return excursion.photoName
-  return placeOf(excursion).split(/s+(?:y|en|con)s+/)[0]
+  return placeOf(excursion).split(/\s+(?:y|en|con)\s+/)[0]
 }
 
 /** Las palabras que dicen a dónde se va ("pompeya", "sorrento"): dos excursiones al mismo sitio no salen juntas. */
