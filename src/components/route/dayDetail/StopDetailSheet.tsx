@@ -592,7 +592,9 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       <p className={`flex items-center gap-2 rounded-xl bg-bg-hover px-3 py-2 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre' ? 'text-accent-red' : 'text-text'}`}>
                         <CameraIcon />
                         <span>
-                          <span className="font-medium">Por fuera</span> · {stop.outsideReason}
+                          <span className="font-medium">Por fuera</span>
+                          {/* (Lo escrito «por fuera» a propósito lleva su texto de la ficha, el mismo del «por qué» de abajo: no se repite.) */}
+                          {stop.outsideKind === 'a_proposito' && withoutLeadingEmoji(stop.why ?? '') === stop.outsideReason ? null : <> · {stop.outsideReason}</>}
                         </span>
                       </p>
                       {stop.outsideKind === 'no_cabe' && onWantInside && (

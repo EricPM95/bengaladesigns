@@ -382,6 +382,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
                 : 'No cabía en ningún día del viaje',
       suggestion: item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
+    // Los avisos del día que no son «Quedó fuera»: llegar tarde a una entrada reservada, la Basílica que cierra pronto.
+    ...(trip.dayNotices ?? []).filter((item) => item.dayNumber === tripDay.dayNumber).map((item) => ({ name: item.name, reason: item.reason, suggestion: item.suggestion ?? null, is_notice: true })),
     // Lo que se queda solo con su nocturna no "falta": sale de noche.
     ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : item.reason === 'short_trip_no_outside_view' ? { name: item.name, reason: 'En un viaje corto no entra, y por fuera no hay nada que ver', suggestion: 'Márcalo en tu selección si quieres entrar' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).

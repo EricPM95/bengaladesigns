@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6180 viajes (todas las fechas de 2027), en 442 s. **Total: 522**.
+6180 viajes (todas las fechas de 2027), en 511 s. **Total: 484**.
 
 - **Lugar repetido en el mismo día**: 0 ✅
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: 69
@@ -40,13 +40,13 @@
 - **La misma foto propia en dos tarjetas del mismo día**: 0 ✅
 - **Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)**: 0 ✅
 - **El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: 94
-  - 2027-03-08 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
-  - 2027-03-09 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
-  - 2027-03-10 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
-  - 2027-03-11 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
-  - 2027-03-12 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
-  - 2027-03-13 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 70 min
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: 56
+  - 2027-03-15 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+  - 2027-03-16 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+  - 2027-05-02 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min
+  - 2027-05-09 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min
+  - 2027-05-13 · 6 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
+  - 2027-05-13 · 7 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
 - **Zigzag: volver a una zona que ya se dejó ese día**: 0 ✅
@@ -70,8 +70,8 @@
 - **El mismo restaurante dos veces en el viaje**: 0 ✅
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas (salvo lo escrito «por fuera» a propósito, el Castillo)**: 0 ✅
 - **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: 2
-  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy lo ves por fuera para llegar a todo lo del día
-  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy lo ves por fuera para llegar a todo lo del día
+  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.
+  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: 44
   - 2027-01-05 · 3 días, todo el viaje Panteón — ningún día por dentro
@@ -113,7 +113,7 @@
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×44
 - **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D2 B +lunes ×42 · D7 C ×16 · D5 D ×16 · D2 C +lunes ×15 · D2 B ×8 · D1-FT C +sabado ×8 · D2 B +luz:A→B ×4 · D1-FT B +lunes ×2 · D1-FT C +lunes ×2 · D2 B +lunes+luz:A→B ×1 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1
 - **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D3 D ×81 · D2 D ×33 · D3 B ×16 · D3 D +sabado ×12 · D1 D +sabado+arte_museos+comida:sin Plaza del Campidoglio ×8 · D3 C ×4 · D2 D +luz:C→D ×3 · D3 B +sabado ×2 · D3 B +fecha:easter-2 ×2 · D2 D +naturaleza_vistas ×2 · D2 D +barrios_sabores ×2
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo)**: D2 D +lunes ×70 · D2 B +relleno_cena:Isla Tiberina ×16 · D2 D +lunes+barrios_sabores ×8
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: D2 D +lunes ×52 · D2 B +relleno_cena:Isla Tiberina ×4
 - **Lugar repetido otro día (salvo nocturnas y revisitas)**: D1 D +domingo ×16 · D1 D +sabado ×12 · D1 D +sabado+comida:sin Plaza del Campidoglio ×11 · D1 D +sabado+arte_museos ×5 · D1 D +luz:C→D ×4 · D1 D +domingo+fecha:primer_domingo ×3 · D7 D +cerrado:Palazzo Doria Pamphilj ×3 · D1 C +domingo ×3 · D1 D +sabado+barrios_sabores+comida:sin Plaza del Campidoglio ×3 · D1 D +domingo+luz:C→D ×2 · D1 D +domingo+fecha:primer_domingo+luz:C→D ×2 · D1 D ×2 · D1 D +sabado+barrios_sabores ×2 · D1 C +domingo+fecha:primer_domingo ×1
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×3
 - **Parada fuera de su horario real de ese día**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1
@@ -124,17 +124,17 @@
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1133 viajes pisan alguna fecha clave. **Avisos de verdad: 119** · informativos (algo cierra ese día y el aviso lo explica): 3.
+1133 viajes pisan alguna fecha clave. **Avisos de verdad: 114** · informativos (algo cierra ese día y el aviso lo explica): 3.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
 | Navidad y Reyes (final) | 01-01 – 01-06 | 104 | 11 | 0 |
 | Semana Santa | 03-24 – 03-29 | 155 | 15 | 0 |
 | Puente de mayo | 04-30 – 05-02 | 93 | 26 | 0 |
-| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 16 | 0 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 125 | 13 | 0 |
 | Verano: el 15 de agosto | 08-13 – 08-16 | 112 | 19 | 2 |
 | Puente del Pilar | 10-09 – 10-12 | 112 | 6 | 0 |
-| Todos los Santos | 10-30 – 11-01 | 112 | 3 | 0 |
+| Todos los Santos | 10-30 – 11-01 | 112 | 1 | 0 |
 | Puente de diciembre | 12-04 – 12-08 | 136 | 11 | 0 |
 | Navidad y Reyes | 12-24 – 12-31 | 184 | 12 | 1 |
 
@@ -190,10 +190,7 @@
 - Puente de mayo: repetido_viaje | 2027-04-29 · 5 días · naturaleza_vistas, día 3, 19:35 Ponte Sisto — ya en el día 1
 - Puente de mayo: repetido_viaje | 2027-04-29 · 3 días · barrios_sabores, día 3, 19:35 Ponte Sisto — ya en el día 1
 - Puente de mayo: repetido_viaje | 2027-04-29 · 5 días · barrios_sabores, día 3, 19:35 Ponte Sisto — ya en el día 1
-- Verano: fin de semana de julio: libre_largo | 2027-07-10 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
-- Verano: fin de semana de julio: libre_largo | 2027-07-11 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
 - Verano: fin de semana de julio: no_cuadra | 2027-07-11 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando
-- Verano: fin de semana de julio: libre_largo | 2027-07-11 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
 - Verano: fin de semana de julio: no_cuadra | 2027-07-11 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando
 - Verano: fin de semana de julio: no_cuadra | 2027-07-12 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando
 - Verano: fin de semana de julio: no_cuadra | 2027-07-12 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando
@@ -232,8 +229,6 @@
 - Puente del Pilar: no_cuadra | 2027-10-10 · 6 días, día 2, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando
 - Puente del Pilar: no_cuadra | 2027-10-10 · 7 días, día 2, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando
 - Todos los Santos: no_cuadra | 2027-10-24 · 7 días, día 2, 17:50 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:40 y hay 16 min andando
-- Todos los Santos: libre_largo | 2027-10-29 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
-- Todos los Santos: libre_largo | 2027-10-30 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 65 min
 - Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: pago_sin_dentro | 2027-12-07 · 4 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días, todo el viaje Panteón — ningún día por dentro
@@ -247,10 +242,10 @@
 - Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: fuera_de_horario | 2027-12-24 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30
 - Navidad y Reyes: tour_repite | 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
-- Navidad y Reyes: basilica_fuera | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy lo ves por fuera para llegar a todo lo del día
+- Navidad y Reyes: basilica_fuera | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.
 - Navidad y Reyes: fuera_de_horario | 2027-12-31 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30
 - Navidad y Reyes: tour_repite | 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí
-- Navidad y Reyes: basilica_fuera | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy lo ves por fuera para llegar a todo lo del día
+- Navidad y Reyes: basilica_fuera | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.
 - Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 3 días · FT, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días, todo el viaje Panteón — ningún día por dentro

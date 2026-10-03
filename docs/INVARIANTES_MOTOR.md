@@ -2681,7 +2681,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     `entrada:<franja>` cuando el mes es 7 u 8). La Terraza del Pincio sale una sola vez (INVARIANTES 467): al atardecer si cuadra con la reserva y, si no, de día.
 
 469. **La comida con una hora fija detrás** (3-oct-2026, todos los destinos; amplía 460). Si lo primero que no es opcional de la tarde es una hora fija (una entrada reservada, San Clemente a las 14:00, el Free Tour), la comida dura 60 min si cabe y se acorta
-    hasta lo que deje esa hora (30 min como mínimo con reserva); no acaba donde empieza «la tarde escrita». A una entrada reservada se llega 30 min antes, pero hasta 10 min antes vale y no se recorta nada por eso. Si lo escrito del día trae un restaurante
+    hasta lo que deje esa hora (30 min como mínimo con reserva); no acaba donde empieza «la tarde escrita». A una entrada reservada se llega siempre 30 min antes (la tarjeta dice «Llega 30 min antes»), sin tolerancia: si no caben, se recorta lo de antes (opcionales, elástica, comida) y, si aun así no cabe, aviso en la campana («Llegarás N min más tarde de lo recomendado»). Si lo escrito del día trae un restaurante
     junto a la entrada (la pizza al corte de Bonci a 2 min de los Museos), gana al más cercano a la parada de antes aunque haya que andar algo más. El descanso de después de comer (`restAfterLunch`) nunca mueve una hora fija. Un opcional que está delante
     de un lugar que, por su culpa, se pasaría de la hora de cierre (la Cúpula antes de la Basílica el 24 de diciembre) se quita primero. Un imprescindible de entrada libre que se pasaría del cierre (la Basílica) se recorta hasta el cierre, no menos de 30 min.
 
@@ -2698,3 +2698,12 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
 473. **El Free Tour añadido después se clasifica por su hora** (3-oct-2026, amplía 465): antes de las 13:00, de mañana; de las 13:00 a las 18:59, de tarde; a partir de las 19:00, de noche. El tour de «noche» de invierno (sale hacia las 16:30) cuenta como de tarde. La hora del tour no se mueve
     nunca (466). Va en el primer día, por orden, cuyo día escrito trae esa franja y acaba llevando el tour; si lo que cambia ese día (un domingo, una fecha) reescribe las paradas y se lo lleva, el tour vuelve a ponerse. Si lo de antes no cabe, se quita lo menor y sale en la campana;
     la sombra de verano no mueve el tour. Un atardecer se quita el último y sin aviso. (Motor: `freeTourDespues: { hora }`; `free_tour_info` en el día dice dónde quedó y, si no quedó, por qué.)
+
+474. **Avisos de la campana que no son «Quedó fuera»** (3-oct-2026): `dayNotices` en el plan y `is_notice` en `not_included`. Llegar tarde a una entrada reservada, y la Basílica de San Pedro por fuera un día de Vaticanos: «Hoy la Basílica cierra a las {hora}; si quieres entrar, ve otro día del viaje.»
+    (con la hora de cierre de ese día sacada del dato; el 24 y el 31 de diciembre de D3 con Free Tour, que están escritos así a propósito: el viajero manda).
+
+475. **Una hora escrita que choca con la reserva pasa a después de ella** (3-oct-2026): la Basílica de San Pedro a las 12:00 el Jueves Santo (abre entonces) va después de los Museos si la entrada la pisa (`despues_de_la_reserva`); la Plaza de San Pedro, al aire libre, sale siempre.
+    La comida tranquila (460): con una entrada reservada de la tarde, la comida se retrasa hasta como mucho las 15:00 (17:00 → 14:30; 17:45 → 15:00) y lo que sobra antes de la entrada es margen (hasta 60 min no es hueco).
+
+476. **Lo escrito «por fuera» a propósito** (3-oct-2026): `outsideKind: 'a_proposito'`. En la ficha sale su texto de `por_fuera` y no sale «Hoy lo ves por fuera para llegar a todo lo del día» ni el botón «Quiero entrar» (que es solo de `no_cabe`). En viajes de 1 y 2 días se queda como antes
+    (el viajero puede marcarlo en el pool). La Passeggiata del Gianicolo de los lunes puede durar hasta 70 min en la prueba. Último domingo de mes de los Museos Vaticanos: el día va sin ellos y la ficha lo explica en Entradas (gratis de 9:00 a 12:30, sin reserva, con cola; no vale en Pascua, 29 de junio, 25, 26 y 31 de diciembre).

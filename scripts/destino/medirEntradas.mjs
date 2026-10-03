@@ -61,6 +61,7 @@ const bump = (key, ok, why, example, gaps) => {
   tally.set(key, rec)
 }
 const allGaps = []
+const recortes = [] // por reserva: lo que se avisa (llegar tarde, quitado) y lo que se recorta (opcionales, comida)
 const rojo = { llega_tarde: [], fuera_de_horario: [], sin_aviso: [], repetido: [], basilica_fuera: [], error: [] }
 
 const starts = []
@@ -147,6 +148,11 @@ for (const id of DAYS) {
           rojo.sin_aviso.push(`${label}: ${stop.name}`)
         }
       }
+      {
+        const notices = (day?.not_included ?? []).map((item) => (item.is_notice ? `aviso: ${item.reason}` : `fuera: ${item.name}`))
+        const cuts = (day?.curated_day?.variants ?? []).filter((variant) => /^(comida:sin|quita:|mueve:|despues_de_la_reserva)/.test(variant))
+        if (notices.length > 0 || cuts.length > 0) recortes.push({ key, label, notices, cuts })
+      }
       bump(key, reasons.length === 0, reasons[0] ?? '', label, gaps)
     }
     if (starts.indexOf(fecha) % 30 === 0) process.stderr.write(`\r${id} ${fecha} · ${escenarios}`)
@@ -182,5 +188,5 @@ const lines = [
 ]
 writeFileSync(OUT, lines.join('\n') + '\n')
 // (Todos los casos en rojo, sin recortar, para mirarlos uno a uno: `json=ruta`.)
-if (args.json) writeFileSync(args.json, JSON.stringify({ ...rojo, huecos: allGaps }, null, 1))
+if (args.json) writeFileSync(args.json, JSON.stringify({ ...rojo, huecos: allGaps, recortes }, null, 1))
 console.log(lines.slice(0, 30).join('\n'))

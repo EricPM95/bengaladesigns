@@ -36,7 +36,7 @@ export const TIPOS_AUDITORIA = {
   foto_repetida: 'La misma foto propia en dos tarjetas del mismo día',
   tiempo_libre_sigue: 'Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)',
   paseo_misma_zona: 'El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)',
-  libre_largo: 'Tiempo libre de más de 30 min (60 si sale con nombre de paseo)',
+  libre_largo: 'Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)',
   libre_pisa_comida: 'Tiempo libre que pisa la comida o la cena',
   cena_espera: 'Cena que empieza más de 20 min después de llegar, sin motivo',
   zigzag: 'Zigzag: volver a una zona que ya se dejó ese día',
@@ -301,7 +301,7 @@ export function auditarViaje(D, days, options = {}) {
       const libreEnd = beforeStop ? t2m(beforeStop.suggested_time) - (beforeStop.transit?.minutes ?? 0) : null
       const month = iso ? Number(iso.slice(5, 7)) : null
       const summerRest = month != null && month >= 6 && month <= 8 && libreEnd != null && libreEnd - libre.minutes >= 13 * 60 + 30 && (libreEnd <= 16 * 60 + 45 || libre.descanso)
-      if (!summerRest && libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? LIBRE_CON_NOMBRE_MAX : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
+      if (!summerRest && libre.minutes > (libre.descanso ? 120 : libre.aperitivo ? 90 : libre.title ? (/Passeggiata del Gianicolo/.test(libre.title) ? 70 : LIBRE_CON_NOMBRE_MAX) : 30) && !libre.evening) add('libre_largo', n, '', libre.title ? `«${libre.title}» antes de ${libre.before}` : `antes de ${libre.before}`, `${libre.minutes} min`)
       if (libre.evening && dinnerStart != null && lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) > dinnerStart + 1) add('libre_pisa_comida', n, '', 'antes de la cena', `acaba ${lastEnd + libre.minutes + (day.dinner_walk_minutes ?? 0) - dinnerStart} min tarde`)
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
     }
