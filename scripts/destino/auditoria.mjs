@@ -58,7 +58,8 @@ export const TIPOS_AUDITORIA = {
   ideas_lejos: 'Tiempo libre con ideas de otra zona',
   paseo_largo: 'Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo',
   restaurante_repetido: 'El mismo restaurante dos veces en el viaje',
-  fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas',
+  fuera_con_tiempo: '"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas (salvo lo escrito «por fuera» a propósito, el Castillo)',
+  basilica_fuera: 'La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)',
   manana_tarde: '"Por la mañana" en el texto de una parada que va por la tarde',
   pago_sin_dentro: 'Imprescindible de pago que no sale nunca por dentro en el viaje',
   vaticano_sin_castillo: "El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)",
@@ -351,7 +352,11 @@ export function auditarViaje(D, days, options = {}) {
       if (start != null && start >= 13 * 60 && /por la mañana/i.test(stop.why ?? '')) add('manana_tarde', n, stop.suggested_time, nameOf(stop), 'el texto habla de la mañana')
     }
     const hasFree = libres.some((libre) => !libre.evening && libre.minutes > 30)
-    for (const stop of dayStops) if (stop.outside_kind === 'no_cabe' && (hasFree || stretched.length > 0)) add('fuera_con_tiempo', n, stop.suggested_time, nameOf(stop), hasFree ? 'con tiempo libre ese día' : `con ${stretched.join(', ')} estirado`)
+    for (const stop of dayStops) if (stop.outside_kind === 'no_cabe' && !stop.outside_authored && (hasFree || stretched.length > 0)) add('fuera_con_tiempo', n, stop.suggested_time, nameOf(stop), hasFree ? 'con tiempo libre ese día' : `con ${stretched.join(', ')} estirado`)
+    // La Basílica de San Pedro no sale por fuera el día de los Vaticanos, salvo que esté cerrada (PARA_CODE_ROJOS, 8).
+    if (dayStops.some((stop) => nameOf(stop) === 'Museos Vaticanos y Capilla Sixtina' && stop.visit_mode !== 'fuera')) {
+      for (const stop of dayStops) if (nameOf(stop) === 'Basílica de San Pedro' && stop.visit_mode === 'fuera' && !['cerrado', 'ya_cerrado', 'no_abre', 'al_lado'].includes(stop.outside_kind)) add('basilica_fuera', n, stop.suggested_time, nameOf(stop), stop.outside_reason ?? '')
+    }
     // (Restaurantes de todo el viaje, más abajo.)
     for (const meal of day.meals ?? []) if (meal.restaurant) restaurantsSeen.push({ name: meal.restaurant, n, time: meal.time })
     // La comida: el tiempo libre de antes no la pisa.

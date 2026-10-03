@@ -54,12 +54,14 @@ const bump = (key, ok, why, example, gaps) => {
     rec.motivos.set(why, entry)
   }
   if (ok && gaps.length > 0) {
+    allGaps.push({ key, label: example, gaps })
     rec.huecos++
     if (rec.ejemplosHueco.length < 3) rec.ejemplosHueco.push(`${example} (${gaps.join('; ')})`)
   }
   tally.set(key, rec)
 }
-const rojo = { llega_tarde: [], fuera_de_horario: [], sin_aviso: [], repetido: [], error: [] }
+const allGaps = []
+const rojo = { llega_tarde: [], fuera_de_horario: [], sin_aviso: [], repetido: [], basilica_fuera: [], error: [] }
 
 const starts = []
 for (let i = 0; i < 365; i += STEP) starts.push(addDays('2027-01-01', i))
@@ -93,7 +95,8 @@ for (const id of DAYS) {
         if (sessions.length > 0 && !closedOnDay(placeData, weekday, fecha) && (!sessions.some((x) => T >= x.open && T <= x.close) || (last != null && T > last))) continue
       }
       // Cerrado ese día (cierre semanal, festivo): no se vende entrada; no cuenta.
-      if (closedOnDay(placeData, weekday, fecha)) {
+      // (Los Museos Vaticanos cierran los domingos: no existe una entrada reservada en domingo. El último domingo de mes es gratis, de 9:00 a 14:00, y no se reserva: cola. Fuera de la prueba.)
+      if (closedOnDay(placeData, weekday, fecha) || (place === 'Museos Vaticanos y Capilla Sixtina' && weekday === 'domingo')) {
         bump(key, false, 'cerrado', label, [])
         continue
       }
@@ -124,6 +127,9 @@ for (const id of DAYS) {
         if (caso.tipo === 'fuera_de_horario' || caso.tipo === 'cerrada_a_su_hora') {
           reasons.push(`${caso.tipo === 'fuera_de_horario' ? 'fuera de horario' : 'a su hora ya cerrado o sin abrir'}: ${caso.donde.split(', ').slice(-1)[0]}`)
           rojo.fuera_de_horario.push(`${label}: ${caso.donde.split(', ').slice(-1)[0]}`)
+        } else if (caso.tipo === 'basilica_fuera') {
+          reasons.push('la Basílica de San Pedro por fuera el día de los Vaticanos')
+          rojo.basilica_fuera.push(`${label}: ${caso.detalle}`)
         } else if (caso.tipo === 'hueco') {
           const minutes = Number(/(\d+) min/.exec(caso.detalle)?.[1] ?? 0)
           if (minutes > 30) gaps.push(`${caso.donde.split(', ').slice(-1)[0]} ${minutes} min`)
@@ -155,12 +161,13 @@ const lines = [
   '',
   `Medido con \`scripts/destino/medirEntradas.mjs\`: ${starts.length} fechas de 2027, ${escenarios} reservas simuladas (cada día escrito, el primero de un viaje de 3 días, con la reserva a cada hora que se vende). Cabe = la parada sale a su hora, nada llega tarde ni fuera de horario, y no se quita un imprescindible en silencio. Un atardecer que no cabe por la hora de la reserva no es fallo.`,
   '',
-  rojo.llega_tarde.length + rojo.fuera_de_horario.length + rojo.sin_aviso.length + rojo.repetido.length + rojo.error.length === 0 ? '## 🟢 Ningún fallo grave' : '## 🔴 Fallos graves',
+  rojo.llega_tarde.length + rojo.fuera_de_horario.length + rojo.sin_aviso.length + rojo.repetido.length + rojo.basilica_fuera.length + rojo.error.length === 0 ? '## 🟢 Ningún fallo grave' : '## 🔴 Fallos graves',
   '',
   `- **Hora fija rota (llega tarde)**: ${rojo.llega_tarde.length}`,
   `- **Parada fuera de horario o cerrada a su hora**: ${rojo.fuera_de_horario.length}${rojo.fuera_de_horario.length ? '\n' + rojo.fuera_de_horario.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
   `- **Imprescindible quitado sin aviso**: ${rojo.sin_aviso.length}${rojo.sin_aviso.length ? '\n' + rojo.sin_aviso.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
   `- **Un lugar repetido el mismo día**: ${rojo.repetido.length}${rojo.repetido.length ? '\n' + rojo.repetido.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
+  `- **La Basílica de San Pedro por fuera el día de los Vaticanos**: ${rojo.basilica_fuera.length}${rojo.basilica_fuera.length ? '\n' + rojo.basilica_fuera.slice(0, 8).map((x) => `  - ${x}`).join('\n') : ''}`,
   `- **El motor falla**: ${rojo.error.length}${rojo.error.length ? '\n' + rojo.error.slice(0, 5).map((x) => `  - ${x}`).join('\n') : ''}`,
   '',
   `## Qué porcentaje cabe el mismo día (sin contar los días en que el sitio cierra: ${total('cerrado')} casos)`,
@@ -175,5 +182,5 @@ const lines = [
 ]
 writeFileSync(OUT, lines.join('\n') + '\n')
 // (Todos los casos en rojo, sin recortar, para mirarlos uno a uno: `json=ruta`.)
-if (args.json) writeFileSync(args.json, JSON.stringify(rojo, null, 1))
+if (args.json) writeFileSync(args.json, JSON.stringify({ ...rojo, huecos: allGaps }, null, 1))
 console.log(lines.slice(0, 30).join('\n'))

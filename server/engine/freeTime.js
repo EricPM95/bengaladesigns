@@ -14,7 +14,7 @@ import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { buildStop } from './buildDay.js'
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
-import { effectiveSchedule, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
+import { effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 
 export const PASEO_MIN_MINUTES = 20
 export const PASEO_MAX_MINUTES = 90
@@ -264,6 +264,9 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       // Nunca pasada la hora de cierre de ese día (la Minerva, los sábados, cierra a las 19:00): se recorta hasta el cierre, y si no queda un mínimo, otro sitio.
       const closing = parseClosingMinutes(effectiveSchedule(ideaPlace, tripDay.hours ?? {}))
       if (closing != null && closing < 24 * 60) minutes = Math.min(minutes, floor5(closing - start))
+      // (Ni pasada la última entrada de ese día: el Palazzo Doria Pamphilj, hasta las 19:00 de viernes a domingo y hasta las 18:00 el resto.)
+      const lastEntry = lastEntryMinutes(ideaPlace, start, tripDay.hours ?? {})
+      if (lastEntry != null && start > lastEntry) minutes = 0
       if (minutes >= minMinutes) {
         // Si aun así queda un hueco (el sitio no admite más), la parada de antes se alarga y el sitio se retrasa: sin esperas muertas.
         const left = floor5(toStart - start - walkOut - minutes)

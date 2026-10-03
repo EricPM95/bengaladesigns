@@ -134,7 +134,7 @@
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -197,7 +197,7 @@
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 15,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -230,7 +230,7 @@
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 20,
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "si_cerrado": "quitar"
         },
         {
           "lugar": "Fontana dell'Acqua Paola",
@@ -427,7 +427,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 15,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -504,10 +504,6 @@
           "Castillo de Sant'Angelo": {
             "lugar": "Castillo de Sant'Angelo",
             "modo": "fuera"
-          },
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
           }
         }
       },
@@ -548,10 +544,6 @@
             "si_cerrado": "fuera",
             "elastica": 30,
             "tipo": "opcional"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1148,7 +1140,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1210,7 +1202,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 15,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1240,7 +1232,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1294,23 +1286,9 @@
       }
     },
     "entrada:mediodia@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (por fuera) y el Castillo ya va por fuera.",
-      "manana": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      },
-      "tarde.*": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      }
+      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
+      "manana": {},
+      "tarde.*": {}
     },
     "entrada:mediodia@miercoles": {
       "_nota": "Miércoles con el orden 2: la Plaza y la Basílica no abren hasta las 12:30. La mañana empieza a las 9:00 con el Puente Sant'Angelo, el Castillo por fuera y Borgo Pio (elástica); después, los Museos y la comida; la Plaza y la Basílica, después de comer. La Cúpula, ese día, no.",
@@ -1507,7 +1485,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 15,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1550,7 +1528,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 15,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1579,28 +1557,14 @@
       }
     },
     "entrada:primera_tarde@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (por fuera) y el Castillo ya va por fuera.",
-      "manana": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      },
-      "tarde.*": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      }
+      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
+      "manana": {},
+      "tarde.*": {}
     },
     "entrada:primera_tarde@miercoles": {
-      "_nota": "Miércoles con el orden 3: por la mañana, el Puente, el Castillo y Borgo Pio; la Plaza y la Basílica, a las 12:30, antes de comer.",
+      "_nota": "Miércoles con el orden 3 (entrada de 13:00 a 14:00): la mañana como la del orden 2 del miércoles: a las 9:00 el Puente Sant'Angelo, el Castillo por fuera y «Pasea y piérdete por Borgo Pio» (elástica); luego comida rápida en Pizzarium (Bonci), los Museos a su hora, y la Plaza y la Basílica de San Pedro después de los Museos (la Basílica, ese día, abre a las 12:30 y cierra a las 20:00; PARA_CODE_ROJOS, 5).",
       "manana": {
-        "empieza": "07:30",
+        "empieza": "09:00",
         "paradas": [
           {
             "lugar": "Puente Sant'Angelo",
@@ -1615,25 +1579,33 @@
             "lugar": "Borgo Pio",
             "min": 20,
             "titulo": "Pasea y piérdete por Borgo Pio",
-            "elastica": 60
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20,
-            "tipo": "fija",
-            "hora": "12:30"
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
+            "elastica": 90
           }
         ],
         "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "200 Gradi"
+          "restaurante": "Pizzarium (Bonci)",
+          "alternativa": "Borghiciana Pastificio Artigianale"
         }
+      },
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Museos Vaticanos y Capilla Sixtina",
+            "parada": {
+              "lugar": "Basílica de San Pedro",
+              "min": 60,
+              "modo": "dentro",
+              "si_cerrado": "fuera"
+            }
+          },
+          {
+            "despues_de": "Museos Vaticanos y Capilla Sixtina",
+            "parada": {
+              "lugar": "Plaza de San Pedro",
+              "min": 25
+            }
+          }
+        ]
       }
     },
     "entrada:tarde": {
@@ -1695,7 +1667,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",
@@ -1821,23 +1793,9 @@
       }
     },
     "entrada:tarde@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (por fuera) y el Castillo ya va por fuera.",
-      "manana": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      },
-      "tarde.*": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      }
+      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
+      "manana": {},
+      "tarde.*": {}
     },
     "entrada:tarde@miercoles": {
       "_nota": "Miércoles con el orden 4: la mañana empieza por el Puente y el Castillo y sigue con Trastevere y el Janículo. La Plaza y la Basílica, después de comer y antes de los Museos, solo si la entrada es a las 15:30 o más tarde; si no, quedan fuera ese día.",
@@ -1877,7 +1835,7 @@
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
-            "si_cerrado": "fuera"
+            "si_cerrado": "quitar"
           },
           {
             "lugar": "Fontana dell'Acqua Paola",

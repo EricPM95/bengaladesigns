@@ -149,10 +149,12 @@ function quarterHourStops(stops) {
       const session = parseHoursSessions(stop.schedule).find((candidate) => start >= candidate.open && start <= candidate.close)
       if (session && at < session.open) at = session.open
     }
+    // (Y nunca después de la última entrada: el redondeo no manda un sitio de 17:30 a 17:40 si la última entrada es a las 17:30.)
+    if (stop._last_entry != null && at > stop._last_entry && start <= stop._last_entry) at = Math.max(Math.floor(start / DURATION_STEP) * DURATION_STEP, Math.floor(stop._last_entry / DURATION_STEP) * DURATION_STEP)
     shown.push(at)
   })
   return stops.map((stop, index) => {
-    const { _fixed, ...clean } = stop
+    const { _fixed, _last_entry, ...clean } = stop
     return step(stepStop(clean, index))
   })
   // (La duración, también de 5 en 5; el paseo entre paradas se queda con sus minutos exactos.)
@@ -182,7 +184,7 @@ function quarterHourStops(stops) {
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { hoursWarning, parseClosingMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { hoursWarning, lastEntryMinutes, parseClosingMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -377,6 +379,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (visit.place.sunset != null) stop.sunset_minutes = visit.place.sunset
     // Una hora fija (la entrada con hora, el Free Tour, el atardecer) no se redondea: lo lee quarterHourStops y no sale.
     if (visit.fixedAt != null || visit.place.sunset != null || visit.place.isFreeTour) stop._fixed = true
+    // La última entrada de ese día: al redondear la hora enseñada (de 10 en 10) no se pasa de ella.
+    if (!visit.place.visitOutside && !visit.place.passThrough && tripDay.hours?.weekday) {
+      const lastEntry = lastEntryMinutes(visit.place, visit.start, tripDay.hours)
+      if (lastEntry != null) stop._last_entry = lastEntry
+    }
     // La entrada que reservó el viajero: el tiempo de más antes de ella (hasta 60 min) no cuenta como hueco (la prueba lo lee).
     if (visit.reservedEntry) stop.reserved_entry = true
     // Y su etiqueta: "🌅 El momento perfecto para ver el atardecer" (texto del destino), no "Elegido según tus gustos".
@@ -476,6 +483,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.outside = true
       stop.outside_reason = visit.place.outsideReason
       stop.outside_kind = visit.place.outsideKind ?? 'no_cabe'
+      // (Lo escrito «por fuera» es una decisión del día, el Castillo de Sant'Angelo: no es «por fuera para llegar a todo».)
+      if (visit.place.outsideAuthored) stop.outside_authored = true
     } else if (sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
     // Un imprescindible es parada de verdad: 20 min como mínimo (la Plaza de España no se ve en 10), salvo por fuera.
     if (sourcePlace?.level === 1 && !visit.place.visitOutside && !stop.pass_through && !visit.place.passBy && !stop.is_night_experience) stop.min_minutes = IMPRESCINDIBLE_MIN_MINUTES
