@@ -4,10 +4,7 @@
   "sin_foto": [
     "Via Margutta",
     "Via Margutta y Via del Babuino",
-    "Pasear por San Giovanni",
-    "Pasear por la Roma Antigua",
-    "Pasear por el Esquilino",
-    "Terraza del Pincio (noche)"
+    "Pasear por San Giovanni"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca.",
   "fotos": [
@@ -345,8 +342,7 @@
     {
       "archivo": "dia_parque_villa_borghese_templo_esculapio.jpg",
       "lugares": [
-        "Parque de Villa Borghese",
-        "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+        "Parque de Villa Borghese"
       ],
       "cuando": "dia",
       "ancho": 750,
@@ -596,6 +592,78 @@
       "autor": "Rabax63",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ATheater_(Ostia_Antica).jpg",
       "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Ostia Antica (excursión)»): Wikimedia Commons, File:Theater (Ostia Antica).jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_palazzo_doria_pamphilj.jpg",
+      "lugares": [
+        "Palazzo Doria Pamphilj"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 2.0",
+      "autor": "antmoose",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-palazzodoriapamphili.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Palazzo Doria Pamphilj (fachada)»): Wikimedia Commons, File:Roma-palazzodoriapamphili.jpg, CC BY 2.0, pide crédito."
+    },
+    {
+      "archivo": "dia_villa_borghese_lago_templo.jpg",
+      "lugares": [
+        "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 4.0",
+      "autor": "Pierre-Selim Huard",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma_-_2016-05-21_-_Villa_Borghese_-_0697.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Parque de Villa Borghese: el lago y el Templo de Esculapio»): Wikimedia Commons, File:Roma - 2016-05-21 - Villa Borghese - 0697.jpg, CC BY 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_esquilino.jpg",
+      "lugares": [
+        "Pasear por el Esquilino"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 4.0",
+      "autor": "Cezar Suceveanu",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3APiazza_Santa_Maria_Maggiore_din_Roma1.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Pasear por el Esquilino»): Wikimedia Commons, File:Piazza Santa Maria Maggiore din Roma1.jpg, CC BY-SA 4.0, pide crédito."
+    },
+    {
+      "archivo": "dia_roma_antigua.jpg",
+      "lugares": [
+        "Pasear por la Roma Antigua"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 2.0",
+      "autor": "Jorge Franganillo",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-_Via_dei_Fori_Imperiali_-_52345440539.jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Pasear por la Roma Antigua»): Wikimedia Commons, File:Roma- Via dei Fori Imperiali - 52345440539.jpg, CC BY 2.0, pide crédito."
+    },
+    {
+      "archivo": "dia_pasear_trastevere.jpg",
+      "lugares": [
+        "Pasear por Trastevere"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 2.0",
+      "autor": "daryl_mitchell from Saskatoon, Saskatchewan, Canada",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3AFront_Entrance_(15116765677).jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Pasear por Trastevere (calle con color)»): Wikimedia Commons, File:Front Entrance (15116765677).jpg, CC BY-SA 2.0, pide crédito."
+    },
+    {
+      "archivo": "noche_terraza_pincio.jpg",
+      "lugares": [
+        "Terraza del Pincio (noche)"
+      ],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY-SA 2.0",
+      "autor": "Jamie Heath from United Kingdom",
+      "enlace": "https://commons.wikimedia.org/wiki/File%3APiazza_del_Popolo_(49347286317).jpg",
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Terraza del Pincio (noche)»): Wikimedia Commons, File:Piazza del Popolo (49347286317).jpg, CC BY-SA 2.0, pide crédito."
     }
   ],
   "notas_revision": {
