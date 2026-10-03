@@ -455,6 +455,9 @@ export function planWrittenTrip(args) {
     const ftHere = ftDayIndex === index ? variants[ftKey] : null
     if (!entryKey && ftHere?.usa_entrada) entryKey = `entrada:${ftHere.usa_entrada}`
     if (entryKey && variants[entryKey]) applyOps(draft, variants[entryKey], entryKey)
+    // (Y en verano, julio y agosto, lo que cambia con ese orden: la Galería en las horas de calor, el parque cuando baja el sol: `entrada:<franja>@verano`.)
+    const monthNow = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+    if (entryKey && SUMMER_MONTHS.includes(monthNow) && variants[`${entryKey}@verano`]) applyOps(draft, variants[`${entryKey}@verano`], `${entryKey}@verano`)
     if (ftHere) {
       applyOps(draft, ftHere, ftKey)
       for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour?.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora })

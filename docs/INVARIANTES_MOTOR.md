@@ -2675,3 +2675,7 @@ bandera `ROUTE_V3_PLANNER` (por defecto `dias`; `bloques` vuelve al planificador
     no vuelve al atardecer el mismo día. Si un sitio sirve para el atardecer, va al atardecer; si el atardecer no cuadra (la hora de una reserva, el sol), va de día, y solo una vez. (Motor: antes de montar la tarde se prueba el día sin la visita de día; si el
     atardecer llega con sol, queda el atardecer y, si no, la visita de día. Un paseo de zona («Pasea y piérdete por…») tampoco sale dos veces el mismo día. La única salvedad que queda es el mismo lugar con dos nombres escritos distintos y ambos con título, el
     parque de Villa Borghese en D4: de camino a la Galería y el lago.) Si una fecha especial trae el mismo lugar reservado en la mañana y en la tarde, queda el de la parte del día de la hora reservada.
+
+468. **D4 en verano con la entrada a la Galería de 15:00 a 17:45** (3-oct-2026). La regla de «nada al sol antes de las 16:30» (INVARIANTES 413) es para el parque, no para la Galería, que es por dentro. En julio y agosto, con esa entrada, el orden es: comida,
+    la Galería en las horas de calor, el Parque de Villa Borghese (con elástica) cuando baja el sol y, al final, los Jardines y la Terraza del Pincio al atardecer (variantes `entrada:quince@verano` y `entrada:tarde@verano`; el motor las aplica después de
+    `entrada:<franja>` cuando el mes es 7 u 8). La Terraza del Pincio sale una sola vez (INVARIANTES 467): al atardecer si cuadra con la reserva y, si no, de día.
