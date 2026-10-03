@@ -1,0 +1,176 @@
+[
+ {
+  "dia": "D1-FT.json",
+  "a": "Armando al Pantheon",
+  "b": "Panteón",
+  "d": 0
+ },
+ {
+  "dia": "D1.json",
+  "a": "Monti",
+  "b": "Trattoria Monti",
+  "d": 0
+ },
+ {
+  "dia": "D5.json",
+  "a": "Felice a Testaccio",
+  "b": "Testaccio",
+  "d": 0
+ },
+ {
+  "dia": "D1.json",
+  "a": "Iglesia de San Luigi dei Francesi",
+  "b": "Iglesia del Gesù",
+  "d": 16
+ },
+ {
+  "dia": "D1.json",
+  "a": "Boca de la Verdad",
+  "b": "Fuente de las Tortugas",
+  "d": 16
+ },
+ {
+  "dia": "D5.json",
+  "a": "La Boccaccia",
+  "b": "Pirámide Cestia",
+  "d": 16
+ },
+ {
+  "dia": "D5.json",
+  "a": "Iglesia del Gesù",
+  "b": "Jardín de los Naranjos",
+  "d": 16
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Desayuno romano",
+  "b": "Iglesia de Santa Maria in Trastevere",
+  "d": 17
+ },
+ {
+  "dia": "D1.json",
+  "a": "Foro Romano y Palatino",
+  "b": "Iglesia del Gesù",
+  "d": 17
+ },
+ {
+  "dia": "D4M.json",
+  "a": "Basílica de Santa María la Mayor",
+  "b": "Desayuno romano",
+  "d": 17
+ },
+ {
+  "dia": "D5.json",
+  "a": "Catacumbas de San Calixto",
+  "b": "Teatro de Marcelo",
+  "d": 17
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Free Tour Centro Histórico",
+  "b": "Supplizio",
+  "d": 19
+ },
+ {
+  "dia": "D1.json",
+  "a": "Largo di Torre Argentina",
+  "b": "Trattoria Monti",
+  "d": 19
+ },
+ {
+  "dia": "D1.json",
+  "a": "Largo di Torre Argentina",
+  "b": "Monti",
+  "d": 19
+ },
+ {
+  "dia": "D4M.json",
+  "a": "Plaza de España",
+  "b": "Trattoria Monti",
+  "d": 19
+ },
+ {
+  "dia": "D4M.json",
+  "a": "Mercados de Trajano",
+  "b": "Trattoria Valentino",
+  "d": 19
+ },
+ {
+  "dia": "D4M.json",
+  "a": "Monti",
+  "b": "Plaza de España",
+  "d": 19
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Arco de Constantino",
+  "b": "Giggetto al Portico d'Ottavia",
+  "d": 20
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Fuente de las Tortugas",
+  "b": "Trastevere",
+  "d": 20
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Iglesia de Santa Maria in Trastevere",
+  "b": "Panteón",
+  "d": 20
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Desayuno romano",
+  "b": "Museos Capitolinos",
+  "d": 20
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Armando al Pantheon",
+  "b": "Iglesia de Santa Maria in Trastevere",
+  "d": 20
+ },
+ {
+  "dia": "D1-FT.json",
+  "a": "Museos Capitolinos",
+  "b": "Teatro de Marcelo",
+  "d": 20
+ },
+ {
+  "dia": "D1.json",
+  "a": "Iglesia de San Luigi dei Francesi",
+  "b": "Museos Capitolinos",
+  "d": 20
+ },
+ {
+  "dia": "D2.json",
+  "a": "Fontana dell'Acqua Paola",
+  "b": "Plaza Trilussa",
+  "d": 20
+ },
+ {
+  "dia": "D3.json",
+  "a": "Basílica de San Pedro",
+  "b": "Desayuno romano",
+  "d": 20
+ },
+ {
+  "dia": "D3.json",
+  "a": "Arco de Constantino",
+  "b": "Castillo de Sant'Angelo",
+  "d": 20
+ },
+ {
+  "dia": "D4.json",
+  "a": "Desayuno romano",
+  "b": "Porta Pinciana",
+  "d": 20
+ },
+ {
+  "dia": "D5.json",
+  "a": "Plaza del Campidoglio",
+  "b": "Trattoria Valentino",
+  "d": 20
+ }
+]
