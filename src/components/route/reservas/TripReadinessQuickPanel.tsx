@@ -58,7 +58,7 @@ export function TripReadinessQuickPanel({ open, onClose, percent, items, route }
         </div>
 
         {urgentItems.length > 0 && (
-          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-bg-card">
+          <div className="space-y-2.5">
             {urgentItems.map((item) => (
               <ReadinessBreakdownRow key={item.id} item={item} route={route} />
             ))}

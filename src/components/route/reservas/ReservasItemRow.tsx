@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react'
 import type { ReadinessItemKind, ReadinessPriority } from '../../../lib/readiness'
-import { CheckIcon, PlusIcon, ReadinessKindIcon } from './ReadinessIcons'
+import { ReadinessKindIcon } from './ReadinessIcons'
 
 export interface ReservasBookAction {
   /** "Reservar" para la mayoría de ítems, "Obtener con 5% dto." para eSIM/Seguro de viaje. */
@@ -18,106 +19,128 @@ interface ReservasItemRowProps {
   onClick: () => void
   /** Vía de compra real, sin pasar por la ficha manual — "Añadir" (registro manual) y esta acción conviven en la misma fila cuando el ítem no está resuelto. */
   bookAction?: ReservasBookAction
-  /** Color del borde izquierdo mientras no está resuelto — rojo (solo Seguro de viaje), ámbar (transporte/alojamiento/vehículo altamente recomendado) o gris (N26/eSIM/vehículo no recomendado). Resuelto siempre pinta verde, ignora esto (ver readiness.ts). */
+  /** Antes pintaba el borde izquierdo según la urgencia (rojo/ámbar/gris). Con el diseño nuevo (3-oct-2026) las filas son tarjetas sin ese borde; se conserva la propiedad por si vuelve a hacer falta. */
   priority: ReadinessPriority
 }
 
-// `!` (important) a propósito en las cuatro — el contenedor padre siempre es un `divide-y` (ver
-// ReservasPanel.tsx/DestinationReservasAccordion.tsx), y la propia utilidad `divide-y` de Tailwind
-// fija `border-color` (los 4 lados, no solo el superior) en todas las filas menos la primera de
-// cada lista — sin `!important` esa regla gana por orden de aparición en la hoja de estilos y el
-// borde de color de la izquierda desaparece en cualquier fila que no sea la primera.
-const PRIORITY_BORDER_CLASS: Record<ReadinessPriority, string> = {
-  red: '!border-accent-red',
-  yellow: '!border-accent-gold',
-  gray: '!border-text-muted',
-}
-const RESOLVED_BORDER_CLASS = '!border-accent'
-
-const rowBaseClass = 'flex w-full items-center gap-3 border-l-[3px] py-3 pl-3 pr-2 text-left transition-colors hover:bg-bg-hover'
-const labelBlockClass = 'min-w-0 flex-1'
-
-function iconSlotClass(resolved: boolean) {
-  return `flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
-    resolved ? 'bg-accent-soft text-accent' : 'bg-bg-hover text-text-muted'
-  }`
+/** El color del bloque en diagonal de cada tipo y la palabra pequeña de encima del nombre (diseño «Trazo Reservas», pantalla 13). */
+const KIND_STYLE: Record<ReadinessItemKind, { color: string; eyebrow: string }> = {
+  transport: { color: 'oklch(0.68 0.14 60)', eyebrow: 'Transporte' },
+  accommodation: { color: 'oklch(0.62 0.14 45)', eyebrow: 'Alojamiento' },
+  insurance: { color: 'oklch(0.6 0.19 25)', eyebrow: 'Imprescindible' },
+  n26: { color: 'oklch(0.45 0.03 250)', eyebrow: 'Pagos sin comisión' },
+  'rental-vehicle': { color: 'oklch(0.55 0.12 295)', eyebrow: 'Vehículo' },
+  esim: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Datos móviles' },
+  entrada: { color: 'oklch(0.6 0.18 10)', eyebrow: 'Entrada' },
+  excursion: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Excursión' },
 }
 
-function RowIconAndLabel({ kind, label, subtitle, resolved }: { kind: ReadinessItemKind; label: string; subtitle?: string; resolved: boolean }) {
+const GREEN = 'oklch(0.55 0.13 150 / .45)'
+
+/**
+ * La tarjeta de una reserva (diseño «Trazo Reservas», 3-oct-2026): un bloque de color en diagonal con el icono del tipo, la palabra pequeña
+ * de la categoría, el nombre en Instrument Serif y, a la derecha, «Añadir» y el botón en píldora. Reservada, el borde se pone verde y el botón
+ * pasa a «✓ Añadido» en oscuro (reabre la ficha, como antes). Se usa en Reservas, en el panel rápido del % y en Entradas y Excursión.
+ * `trailing` sustituye a la columna de botones (p. ej. «Ver excursiones»).
+ */
+export function ReservaCard({
+  kind,
+  eyebrow,
+  name,
+  subtitle,
+  resolved,
+  onAdd,
+  bookAction,
+  resolvedLabel = '✓ Añadido',
+  trailing,
+}: {
+  kind: ReadinessItemKind
+  eyebrow?: string
+  name: string
+  subtitle?: string
+  resolved: boolean
+  onAdd: () => void
+  bookAction?: ReservasBookAction | { label: string; href: string | null; onGet?: () => void }
+  resolvedLabel?: string
+  trailing?: ReactNode
+}) {
+  const style = KIND_STYLE[kind]
   return (
-    <>
-      <span className={iconSlotClass(resolved)}>
-        <ReadinessKindIcon kind={kind} />
-      </span>
-      <div className={labelBlockClass}>
-        <p className="truncate text-small font-semibold text-text">{label}</p>
-        {subtitle && <p className="truncate text-caption text-text-soft">{subtitle}</p>}
-      </div>
-    </>
+    <div
+      className="relative flex min-h-[84px] w-full bg-white transition-colors"
+      style={{
+        borderRadius: 18,
+        border: `1px solid ${resolved ? GREEN : 'rgba(28,34,48,.08)'}`,
+        boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)',
+      }}
+    >
+      <button type="button" onClick={onAdd} aria-label={name} className="relative w-[74px] shrink-0 overflow-hidden text-white" style={{ borderRadius: '17px 0 0 17px' }}>
+        <span aria-hidden="true" className="absolute inset-0" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)', background: style.color }} />
+        <span aria-hidden="true" className="absolute bottom-0 left-0 top-0 flex w-[58px] items-center justify-center">
+          <ReadinessKindIcon kind={kind} className="h-[22px] w-[22px]" />
+        </span>
+      </button>
+      <button type="button" onClick={onAdd} className="flex min-w-0 flex-1 flex-col justify-center gap-[3px] py-2 pl-2.5 pr-2 text-left">
+        <span className="text-text/50" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase' }}>
+          {eyebrow ?? style.eyebrow}
+        </span>
+        <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
+          {name}
+        </span>
+        {subtitle && <span className="truncate text-text/55" style={{ font: "400 11.5px 'Geist'" }}>{subtitle}</span>}
+      </button>
+      {trailing ? (
+        <div className="flex shrink-0 items-center pr-3">{trailing}</div>
+      ) : (
+        <div className="flex shrink-0 flex-col items-end justify-center gap-[5px] pr-3">
+          {resolved ? (
+            <button
+              type="button"
+              onClick={onAdd}
+              className="whitespace-nowrap"
+              style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid #1C2230', background: '#1C2230', color: '#FFFDF8', font: "600 12px 'Geist'" }}
+            >
+              {resolvedLabel}
+            </button>
+          ) : (
+            <>
+              <button type="button" onClick={onAdd} className="text-text/55" style={{ font: "500 11px 'Geist'" }}>
+                Añadir
+              </button>
+              {bookAction && bookAction.href ? (
+                <a
+                  href={bookAction.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={bookAction.onGet}
+                  className="flex items-center whitespace-nowrap"
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                >
+                  {bookAction.label}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onAdd}
+                  className="whitespace-nowrap"
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                >
+                  Añadir +
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
 /**
- * Fila compartida para cualquier ítem de RESERVAS (transporte, alojamiento, seguro, N26, vehículo
- * de alquiler, eSIM) — mismo estilo en toda la app: pestaña RESERVAS, panel rápido del %
- * (TripReadinessQuickPanel.tsx vía ReadinessBreakdownRow), no hay una variante distinta. Fila plana
- * (sin fondo de color ni tarjeta propia) pensada para vivir dentro de una lista con `divide-y` — el
- * único acento de color es el borde izquierdo de 3px: verde si está añadido, si no según `priority`
- * (rojo solo Seguro de viaje, ámbar alta prioridad, gris el resto — ver readiness.ts).
- *
- * Sin resolver y con `bookAction`: dos acciones en la misma fila — "Añadir" (abre la ficha manual,
- * `onClick`, texto discreto sin caja) y la vía de compra real (`bookAction`, botón pastel verde
- * suave, para no competir visualmente con el resto de CTAs de la app). Sin `bookAction` (no debería
- * pasar ya que todos los ítems lo tienen, pero queda de red de seguridad), cae al texto único
- * "Añadir +". Resuelto: toda la fila es un único botón "✓ Añadido" (texto, sin caja) que reabre la
- * ficha para editar.
+ * Fila compartida para cualquier ítem de RESERVAS (transporte, alojamiento, seguro, N26, vehículo de alquiler, eSIM) — mismo estilo en toda la app:
+ * pestaña RESERVAS y panel rápido del % (TripReadinessQuickPanel.tsx vía ReadinessBreakdownRow). Sin resolver y con `bookAction`: «Añadir» (abre la
+ * ficha manual, `onClick`) y la vía de compra real (`bookAction`) conviven en la misma tarjeta. Resuelto: «✓ Añadido», que reabre la ficha para editar.
  */
-export function ReservasItemRow({ kind, label, resolved, subtitle, onClick, bookAction, priority }: ReservasItemRowProps) {
-  const accentBorderClass = resolved ? RESOLVED_BORDER_CLASS : PRIORITY_BORDER_CLASS[priority]
-
-  if (resolved) {
-    return (
-      <button type="button" onClick={onClick} className={`${rowBaseClass} ${accentBorderClass}`}>
-        <RowIconAndLabel kind={kind} label={label} subtitle={subtitle} resolved />
-        <span className="flex shrink-0 items-center gap-1 text-caption font-semibold text-accent-hover">
-          <CheckIcon />
-          Añadido
-        </span>
-      </button>
-    )
-  }
-
-  if (bookAction) {
-    return (
-      <div className={`flex w-full items-center gap-3 border-l-[3px] ${accentBorderClass} py-3 pl-3 pr-2`}>
-        <button type="button" onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-          <RowIconAndLabel kind={kind} label={label} subtitle={subtitle} resolved={false} />
-        </button>
-        <div className="flex w-28 shrink-0 flex-col items-stretch gap-1.5">
-          <button
-            type="button"
-            onClick={onClick}
-            className="rounded-lg py-1 text-center text-caption font-semibold text-text-soft transition-colors hover:text-text"
-          >
-            Añadir
-          </button>
-          <a href={bookAction.href} target="_blank" rel="noopener noreferrer" onClick={bookAction.onGet}>
-            <span className="block rounded-lg border border-accent/30 bg-accent-soft py-1 text-center text-caption font-semibold text-accent-hover transition-colors hover:bg-accent-soft/70">
-              {bookAction.label}
-            </span>
-          </a>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <button type="button" onClick={onClick} className={`${rowBaseClass} ${accentBorderClass}`}>
-      <RowIconAndLabel kind={kind} label={label} subtitle={subtitle} resolved={false} />
-      <span className="flex shrink-0 items-center gap-1 text-caption font-semibold text-text-soft">
-        Añadir
-        <PlusIcon />
-      </span>
-    </button>
-  )
+export function ReservasItemRow({ kind, label, resolved, subtitle, onClick, bookAction }: ReservasItemRowProps) {
+  return <ReservaCard kind={kind} name={label} subtitle={subtitle} resolved={resolved} onAdd={onClick} bookAction={bookAction} />
 }

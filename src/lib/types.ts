@@ -733,6 +733,8 @@ export interface Route {
   /** El punto de llegada y el de salida elegidos en la ficha (ids de _llegada.json: 'fco', 'cia'…); ausente = el primero. */
   arrivalPointId?: string | null
   departurePointId?: string | null
+  /** Lo que eligió el viajero al poner la hora del vuelo (ventana «¿Ajustamos tu ruta a tu vuelo?»): `auto` = ajustar el primer y el último día a sus horas, `manual` = la ruta se queda como está. Ausente = aún no ha elegido. */
+  flightAdjust?: 'auto' | 'manual' | null
   /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */
   defaultTransport?: TripDefaultTransport
   /** Nombres de las anclas (Paso 1 del pipeline, /api/generate-anchors) usadas para generar esta ruta — permite a StopDetailSheet saber si una parada es una "ancla" (lugar obligatorio del destino, con tip cacheado + búsqueda web en tips_anclas) o una parada normal del pool (tip simple, sin caché). Vacío en rutas dev/manuales, que no pasan por ese paso. */

@@ -58,7 +58,7 @@ export function DestinationReservasAccordion({ route, segment, isFirstSegment, i
       </button>
 
       {expanded && (
-        <div className="divide-y divide-border border-t border-border">
+        <div className="space-y-2.5 border-t border-border p-3">
           {showArrivalTransport && arrival && <TransportRow dayId={segment.dayIds[0]} label={`${arrival.fromCity} → ${arrival.toCity}`} />}
           {!isCamper && segment.nights > 0 && <AccommodationRow segmentDayId={segment.dayIds[0]} city={segment.city} totalNights={segment.nights} />}
           {isLastSegment && <TransportRow dayId={lastDay.id} label={`${segment.city} → ${route.origin}`} />}

@@ -5,12 +5,10 @@ import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
-import { CheckIcon, ReadinessKindIcon } from './ReadinessIcons'
+import { ReservaCard } from './ReservasItemRow'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 
-const rowBorder = 'border-l-[3px] py-3 pl-3 pr-2'
-
-/** Una fila de «ENTRADAS» o «EXCURSIÓN»: icono, nombre, línea pequeña, «Añadir» y «Reservar»; reservada, en verde con su check y sin botones. */
+/** Una tarjeta de «ENTRADAS» o «EXCURSIÓN»: la misma de todo Reservas (ReservaCard); reservada, en verde con «✓ Reservado». */
 function ReservaRow({
   kind,
   label,
@@ -26,45 +24,7 @@ function ReservaRow({
   bookHref: string | null
   onAdd: () => void
 }) {
-  if (reserved) {
-    return (
-      <div className={`flex w-full items-center gap-3 ${rowBorder} !border-accent-green`}>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-green-soft text-accent-green">
-          <ReadinessKindIcon kind={kind} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-small font-semibold text-text">{label}</p>
-          <p className="flex items-center gap-1 truncate text-caption font-medium text-accent-green">
-            <CheckIcon className="h-3 w-3 shrink-0" />
-            <span className="truncate">{subtitle}</span>
-          </p>
-        </div>
-      </div>
-    )
-  }
-  return (
-    <div className={`flex w-full items-center gap-3 ${rowBorder} !border-text-muted`}>
-      <button type="button" onClick={onAdd} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bg-hover text-text-muted">
-          <ReadinessKindIcon kind={kind} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-small font-semibold text-text">{label}</p>
-          <p className="truncate text-caption text-text-soft">{subtitle}</p>
-        </div>
-      </button>
-      <div className="flex w-28 shrink-0 flex-col items-stretch gap-1.5">
-        <button type="button" onClick={onAdd} className="rounded-lg py-1 text-center text-caption font-semibold text-text-soft transition-colors hover:text-text">
-          Añadir
-        </button>
-        {bookHref && (
-          <a href={bookHref} target="_blank" rel="noopener noreferrer">
-            <span className="block rounded-lg border border-accent/30 bg-accent-soft py-1 text-center text-caption font-semibold text-accent-hover transition-colors hover:bg-accent-soft/70">Reservar</span>
-          </a>
-        )}
-      </div>
-    </div>
-  )
+  return <ReservaCard kind={kind} name={label} subtitle={subtitle || undefined} resolved={reserved} resolvedLabel="✓ Reservado" onAdd={onAdd} bookAction={{ label: 'Reservar', href: bookHref }} />
 }
 
 /**
@@ -103,12 +63,12 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
     <>
       {(main.length > 0 || more.length > 0) && (
         <div className="space-y-2">
-          <h3 className="text-caption font-semibold uppercase tracking-wide text-text-muted">Entradas</h3>
-          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-bg-card">
+          <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Entradas</h3>
+          <div className="space-y-2.5">
             {main.map(entryRow)}
             {showMore && more.map(entryRow)}
             {more.length > 0 && (
-              <button type="button" onClick={() => setShowMore((value) => !value)} className="flex w-full items-center justify-between px-3.5 py-3 text-left text-caption font-semibold text-accent-hover transition-colors hover:bg-bg-hover">
+              <button type="button" onClick={() => setShowMore((value) => !value)} className="flex w-full items-center justify-between rounded-[18px] border border-text/[.08] bg-white px-4 py-3 text-left text-caption font-semibold text-accent-hover transition-colors hover:bg-bg-hover">
                 {showMore ? 'Ver menos' : `Ver ${more.length} ${more.length === 1 ? 'entrada más' : 'entradas más'} de tu ruta`}
                 <span aria-hidden="true" className={`transition-transform ${showMore ? 'rotate-90' : ''}`}>
                   ›
@@ -121,8 +81,8 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
 
       {excursionsAvailable && excursionRow && (
         <div className="space-y-2">
-          <h3 className="text-caption font-semibold uppercase tracking-wide text-text-muted">Excursión</h3>
-          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-bg-card">
+          <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Excursión</h3>
+          <div className="space-y-2.5">
             {excursionRow.excursion && excursionRow.day ? (
               <ReservaRow
                 kind="excursion"
@@ -135,19 +95,19 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
                 }
               />
             ) : (
-              <div className={`flex w-full items-center gap-3 ${rowBorder} !border-text-muted`}>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-bg-hover text-text-muted">
-                  <ReadinessKindIcon kind="excursion" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-small font-semibold text-text">Excursiones desde {route.destination}</p>
-                  <p className="text-caption text-text-soft">{ratingLine}</p>
-                </div>
-                <button type="button" onClick={() => openExcursions(false)} className="shrink-0 rounded-lg border border-accent/30 bg-accent-soft px-3 py-1.5 text-caption font-semibold text-accent-hover transition-colors hover:bg-accent-soft/70">
-                  Ver excursiones
-                </button>
-              </div>
-            )}
+              <ReservaCard
+                kind="excursion"
+                name={`Excursiones desde ${route.destination}`}
+                subtitle={ratingLine}
+                resolved={false}
+                onAdd={() => openExcursions(false)}
+                trailing={
+                  <button type="button" onClick={() => openExcursions(false)} className="whitespace-nowrap" style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}>
+                    Ver excursiones
+                  </button>
+                }
+              />
+                          )}
           </div>
         </div>
       )}

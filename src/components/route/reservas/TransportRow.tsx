@@ -17,7 +17,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
     <>
       <ReservasItemRow
         kind="transport"
-        label={`Transporte: ${label}`}
+        label={label}
         resolved={Boolean(booking)}
         subtitle={booking ? `${booking.operator} · €${booking.price}` : undefined}
         priority="yellow"

@@ -519,6 +519,7 @@ interface RouteStoreState {
   setDepartureFlightTime: (time: string | null) => void
   /** El punto de llegada o de salida elegido en la ficha (Fiumicino o Ciampino…): lo enseña la barra. */
   setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string) => void
+  setFlightAdjust: (choice: 'auto' | 'manual' | null) => void
   /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
   optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
   /** «Ajustar este día a tu llegada / vuelta»: la llegada reprograma desde la hora en el centro; la vuelta quita lo que acaba después de la hora de salir. Las comidas siguen a las paradas. */
@@ -1477,6 +1478,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => (state.route ? { route: { ...state.route, arrivalFlightTime: time } } : state)),
   setDepartureFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time } } : state)),
+  setFlightAdjust: (choice) => set((state) => (state.route ? { route: { ...state.route, flightAdjust: choice } } : state)),
   setArrivalPointId: (kind, pointId) =>
     set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
 
