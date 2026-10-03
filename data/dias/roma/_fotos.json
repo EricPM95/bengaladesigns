@@ -13,7 +13,6 @@
     "Domus Aurea",
     "Ostia Antica",
     "Pasear por el Esquilino",
-    "Free Tour Centro Histórico",
     "Galería Nacional de Arte Moderno",
     "Luces de Navidad del Tridente",
     "Naples Italy",
@@ -22,7 +21,7 @@
     "Terraza del Pincio (noche)",
     "Barrio Judío"
   ],
-  "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Free Tour Centro Histórico, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. Nota: el Free Tour usa la foto de Piazza Navona (photo_from), no la suya.",
+  "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca.",
   "fotos": [
     {
       "archivo": "noche_coliseo.jpg",
