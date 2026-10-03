@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { GenerationResumeState } from '../lib/routeGenerationOrchestrator'
-import type { SavedTrip } from '../lib/tripPersistence'
+import type { SavedTrip, TripPayload } from '../lib/tripPersistence'
 
 export type SyncStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error' | 'disabled'
 
@@ -36,6 +36,9 @@ interface SyncStoreState {
   /** Quita un viaje de la lista en memoria tras borrarlo en Supabase — sin recargar toda la lista. */
   removeSavedTrip: (id: string) => void
   setGenerationComplete: (value: boolean) => void
+  /** El viaje que estaba abierto cuando se pulsó «+» (nuevo viaje): su copia exacta y su fila, para «Volver a mi viaje» desde el formulario. Null = no hay a dónde volver. */
+  resumeTrip: { payload: TripPayload; tripId: string | null } | null
+  setResumeTrip: (value: { payload: TripPayload; tripId: string | null } | null) => void
 }
 
 /**
@@ -59,4 +62,6 @@ export const useSyncStore = create<SyncStoreState>((set) => ({
   setSavedTrips: (trips) => set({ savedTrips: trips }),
   removeSavedTrip: (id) => set((state) => ({ savedTrips: state.savedTrips?.filter((trip) => trip.id !== id) ?? null })),
   setGenerationComplete: (value) => set({ generationComplete: value }),
+  resumeTrip: null,
+  setResumeTrip: (value) => set({ resumeTrip: value }),
 }))

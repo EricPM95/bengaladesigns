@@ -269,7 +269,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined)
 
   return (
-    <div className="flex-1 space-y-4 overflow-y-auto p-3.5 pb-36">
+    <div className="flex-1 space-y-4 overflow-y-auto p-3.5 pb-6">
       {cities.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {cities.map((candidate) => (

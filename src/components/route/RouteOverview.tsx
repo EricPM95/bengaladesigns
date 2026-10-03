@@ -45,7 +45,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
   const routeChanged = Boolean(route.editedManually && route.originalRoute)
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-36 pt-4">
+    <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
       {segments.map((segment, index) => {
         const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
         const count = segmentDays.length

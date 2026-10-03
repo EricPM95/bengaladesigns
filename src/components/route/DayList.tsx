@@ -20,7 +20,6 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
-import { ContextBanner } from './ContextBanner'
 import { ConfirmDialog } from './ConfirmDialog'
 import { DateNoticeTag } from './DateNoticesModal'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
@@ -43,8 +42,6 @@ interface DayListProps {
   onDayMapChange?: (map: DayMapView | null) => void
   onDayOverlayChange?: (open: boolean) => void
   showAllDaysOnMap?: boolean
-  /** «Añade un día más a tu viaje»: abre el calendario de fechas de la cabecera del mapa. */
-  onOpenDates?: () => void
 }
 
 const WEEKDAYS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
@@ -84,7 +81,7 @@ function ChevronIcon() {
  * contenedor con scroll (antes vivía fuera, en RouteView.tsx, por lo que quedaba fijo en pantalla
  * mientras el resto del contenido se desplazaba) — así se desplaza junto con el resto.
  */
-export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap, onOpenDates }: DayListProps) {
+export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDayOverlayChange, showAllDaysOnMap }: DayListProps) {
   const reorderDays = useRouteStore((state) => state.reorderDays)
   const listRef = useRef<HTMLDivElement>(null)
   // La pregunta antes de recuperar el original de un día («Recuperar este día», en los tres puntos). La de toda la ruta vive en la tarjeta del destino, en Ruta.
@@ -118,7 +115,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const [chooserOpen, setChooserOpen] = useState(false)
   const excursionInfo = useDestinationExcursions(route.destination)
   const openExcursionsPage = useExcursionsStore((state) => state.openPage)
-  const tripDays = route.answers.days ?? route.days.length
   const reservations = useRouteStore((state) => state.reservations)
   const [removeDayId, setRemoveDayId] = useState<string | null>(null)
   const removeDay = route.days.find((day) => day.id === removeDayId) ?? null
@@ -198,7 +194,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-36 pt-4">
+    <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-6 pt-4">
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">
@@ -209,7 +205,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         </div>
       )}
       {/* Por qué la ruta es como es: uno solo, encima del Día 1 (la nota de temporada pasa a la ventana de los avisos). */}
-      <ContextBanner route={route} />
       {/* Una venta del afiliado con el código de este viaje: «Hemos visto que has reservado… ¿La ponemos en tu Día n?» (PARA_CODE_RESERVAS, 5). */}
       <SaleCards route={route} />
       <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleDayDragEnd}>
@@ -354,22 +349,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       {/* Un día fuera: al final de la lista, solo si el viaje no lleva ya una excursión (PROMPT_UI, Parte 2). */}
       {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
       <AddDayButton onClick={() => (excursionInfo.excursions.length > 0 ? setChooserOpen(true) : setNameSheet({ dayId: null }))} disabled={!canAddDay(route)} />
-      {/* Más días en la lista que en el viaje (PARA_CODE_EXCURSIONES, 4): una línea, con el enlace al calendario. Sin nada más. */}
-      {route.days.length > tripDays && (
-        <p className="mt-3 flex items-start gap-2 px-1 text-[13.5px] leading-snug text-text-soft">
-          <svg viewBox="0 0 24 24" className="mt-[2px] h-[15px] w-[15px] shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 4 3 19h18L12 4Z" />
-            <path d="M12 10v4M12 16.8v.1" />
-          </svg>
-          <span>
-            Tu viaje es de {tripDays} {tripDays === 1 ? 'día' : 'días'} y ahora tienes {route.days.length}.{' '}
-            <button type="button" onClick={onOpenDates} className="font-semibold text-accent underline underline-offset-2">
-              Añade un día más a tu viaje
-            </button>{' '}
-            o elimina el que menos te convenga.
-          </span>
-        </p>
-      )}
+      {/* El aviso de «más días que fechas» ahora sale en la campana de la cabecera (useAppNotices.ts). */}
       {chooserOpen && (
         <AddDayChooser
           dayNumber={route.days.filter((day) => !day.isReturnLeg).length + 1}

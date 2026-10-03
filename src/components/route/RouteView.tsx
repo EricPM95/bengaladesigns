@@ -197,7 +197,16 @@ export function RouteView() {
 
   return (
     <div className="flex h-dvh flex-col bg-bg text-text">
-      <Header onTips={() => setTipsOpen(true)} />
+      <Header
+        onTips={() => setTipsOpen(true)}
+        onOpenDates={() => {
+          // El aviso «más días que fechas» abre el calendario de la cabecera del mapa (en Días, con el mapa a la vista).
+          setActiveDayId(null)
+          setMode('days')
+          setMapCollapsed(false)
+          useDatesCalendarStore.getState().request()
+        }}
+      />
 
       <div ref={containerRef} style={splitStyle} className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {!mapHidden && (
@@ -300,8 +309,6 @@ export function RouteView() {
             />
           )}
 
-          {/* La barra de abajo, flotando sobre la lista (PROMPT_UI_REPASO_2 1). */}
-          <BottomBar onMap={() => (mapHidden && canCollapseMap ? setMapCollapsed(false) : setMode('route'))} />
 
           {mode === 'days' && showsExcursionsButton(route, destinationExcursionInfo.fromDays) && (
             <ExcursionsFab destination={route.destination} onClick={() => openExcursions(false)} />
@@ -324,16 +331,14 @@ export function RouteView() {
                 onDayMapChange={setDayMap}
                 onDayOverlayChange={setDayOverlayOpen}
                 showAllDaysOnMap={showAllDaysOnMap}
-                onOpenDates={() => {
-                  // (Con el mapa recogido la cabecera con el calendario no está: se abre el mapa.)
-                  setMapCollapsed(false)
-                  useDatesCalendarStore.getState().request()
-                }}
               />
             </>
           )}
         </div>
       </div>
+
+      {/* La barra de abajo: fija al borde, a todo el ancho, como la de cualquier app de móvil. */}
+      <BottomBar />
 
       {/* Primero la tarjeta de temporada; al tocar «Entendido», los avisos de fechas (la primera vez que se abre la ruta, y al
           tocar la etiqueta de un día). */}

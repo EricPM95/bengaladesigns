@@ -21,28 +21,21 @@ function Icon({ children }: { children: ReactNode }) {
   )
 }
 
+/** Un sitio de la barra: icono de línea en crema, 44 px de toque como mínimo. */
 function Slot({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} aria-label={label} title={label} className="relative flex h-11 w-11 items-center justify-center rounded-full transition-opacity hover:opacity-80" style={{ color: CREAM }}>
+    <button type="button" onClick={onClick} aria-label={label} title={label} className="relative flex h-12 w-14 items-center justify-center rounded-full transition-opacity hover:opacity-80" style={{ color: CREAM }}>
       {children}
     </button>
   )
 }
 
-interface BottomBarProps {
-  /** El mapa: lo abre si está plegado; si ya se ve, va a la pestaña Ruta (el mapa de todo el viaje). */
-  onMap: () => void
-}
-
 /**
- * La barra de abajo (PROMPT_UI_REPASO_2, 1): una píldora oscura que flota sobre la lista, con cinco sitios sin texto,
- * iconos de línea en crema y 44 × 44 px de toque. Maleta (nuevo viaje), presupuesto, perfil en el centro (círculo
- * terracota: «Hola, viajero» y MIS VIAJES), mapa y reservas (con su «!» naranja mientras falte algo por reservar).
- * Sustituye a los botones flotantes sueltos y a la pestaña Reservas de arriba. En escritorio, igual, con el ancho de la
- * lista (va dentro de su columna).
+ * La barra de abajo (3-oct-2026): fija al borde, a todo el ancho, como la de cualquier app de móvil, y respeta la zona de abajo del iPhone.
+ * Tres sitios, sin texto: Presupuesto (la bolsa de dinero), Perfil (con «Mis viajes») y Reservas (con su «!» naranja mientras falte algo).
+ * El resto de lo que tenía la barra de antes se movió: «Nuevo viaje» es el «+» de la cabecera y el mapa se abre con la flecha de su franja.
  */
-export function BottomBar({ onMap }: BottomBarProps) {
-  const setScreen = useRouteStore((state) => state.setScreen)
+export function BottomBar() {
   const setMode = useRouteStore((state) => state.setMode)
   const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
   const savedTrips = useSyncStore((state) => state.savedTrips) ?? []
@@ -52,14 +45,10 @@ export function BottomBar({ onMap }: BottomBarProps) {
   const [budgetOpen, setBudgetOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
 
-  const newTrip = () => {
-    // El próximo guardado crea una fila nueva, no sobrescribe el viaje abierto (como «+ Crear nuevo viaje»).
-    useSyncStore.getState().setActiveTripId(null)
-    setScreen('destination')
-  }
   const openTrip = (trip: SavedTrip) => {
     setProfileOpen(false)
     useSyncStore.getState().setActiveTripId(trip.id)
+    useSyncStore.getState().setResumeTrip(null)
     hydrateTrip(trip)
   }
 
@@ -67,15 +56,9 @@ export function BottomBar({ onMap }: BottomBarProps) {
     <>
       <nav
         aria-label="Barra del viaje"
-        className="pointer-events-auto absolute bottom-[26px] left-6 right-6 z-30 flex h-16 items-center justify-between rounded-full px-3 shadow-[0_14px_34px_-14px_rgba(20,16,12,.55)]"
-        style={{ background: '#1F1B16' }}
+        className="relative z-30 flex w-full shrink-0 items-center justify-around px-6 pt-1.5"
+        style={{ background: '#1F1B16', paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}
       >
-        <Slot label="Nuevo viaje" onClick={newTrip}>
-          <Icon>
-            <rect x="4" y="8" width="16" height="12" rx="2" />
-            <path d="M9 8V5h6v3M9 12v4M15 12v4" />
-          </Icon>
-        </Slot>
         <Slot label="Presupuesto" onClick={() => setBudgetOpen(true)}>
           <Icon>
             <path d="M7 8V7a5 5 0 0 1 10 0v1" />
@@ -87,7 +70,7 @@ export function BottomBar({ onMap }: BottomBarProps) {
           onClick={() => setProfileOpen(true)}
           aria-label="Perfil y mis viajes"
           title="Perfil y mis viajes"
-          className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-accent transition-transform active:scale-95"
+          className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-accent transition-transform active:scale-95"
           style={{ color: CREAM }}
         >
           <Icon>
@@ -95,19 +78,13 @@ export function BottomBar({ onMap }: BottomBarProps) {
             <path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" />
           </Icon>
         </button>
-        <Slot label="Mapa" onClick={onMap}>
-          <Icon>
-            <path d="m9 4-6 2.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z" />
-            <path d="M9 4v13M15 6.5v13" />
-          </Icon>
-        </Slot>
         <Slot label={bookingsAlert ? 'Reservas (falta algo por reservar)' : 'Reservas'} onClick={() => setMode('bookings')}>
           <Icon>
             <path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" />
             <path d="M14 7v10" strokeDasharray="1.5 2" />
           </Icon>
           {bookingsAlert && (
-            <span className="absolute right-0.5 top-0.5 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-accent-gold text-[10px] font-bold leading-none text-white" aria-hidden="true">
+            <span className="absolute right-2 top-1.5 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-accent-gold text-[10px] font-bold leading-none text-white" aria-hidden="true">
               !
             </span>
           )}

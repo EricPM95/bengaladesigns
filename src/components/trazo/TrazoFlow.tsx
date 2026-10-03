@@ -10,6 +10,7 @@ import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
 import { prefetchPoolPhotos } from '../../lib/placePhoto'
 import { seasonOfMonth } from '../../lib/season'
 import { useRouteGeneration } from '../../lib/useRouteGeneration'
+import { useSyncStore } from '../../store/useSyncStore'
 import type { ConfirmedRoute } from '../destination/RouteSearch'
 import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
 import { cityCode } from './cityCode'
@@ -59,6 +60,15 @@ export function TrazoFlow() {
   const updateAnswers = useRouteStore((state) => state.updateAnswers)
   const trimCuratedPlaceSelection = useRouteStore((state) => state.trimCuratedPlaceSelection)
 
+  const resumeTrip = useSyncStore((state) => state.resumeTrip)
+  /** «Volver a mi viaje»: el viaje que se tenía abierto vuelve tal cual (su copia exacta y su fila), sin haber tocado nada. */
+  const backToMyTrip = () => {
+    if (!resumeTrip) return
+    const sync = useSyncStore.getState()
+    sync.setActiveTripId(resumeTrip.tripId)
+    sync.setResumeTrip(null)
+    store.getState().hydrateTrip(resumeTrip.payload)
+  }
   const [step, setStep] = useState(0)
   const [maxStep, setMaxStep] = useState(0)
   const [origin, setOrigin] = useState<Place | null>(answers.originPlace ?? null)
@@ -394,6 +404,39 @@ export function TrazoFlow() {
 
           {/* Cabecera: atrás, siete segmentos, n/7 y las fichas del viaje. */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, zIndex: 6, padding: `${desk ? 26 : 14}px 20px 0`, display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
+            {resumeTrip && step < 6 && (
+              <button
+                type="button"
+                onClick={backToMyTrip}
+                aria-label="Volver a mi viaje"
+                style={{
+                  // Fuera del flujo: no mueve nada del formulario. A la derecha, bajo la barra de pasos.
+                  position: 'absolute',
+                  right: 20,
+                  top: desk ? 72 : 60,
+                  zIndex: 7,
+                  pointerEvents: 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  height: 36,
+                  padding: '0 14px 0 10px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(28,34,48,.14)',
+                  background: 'rgba(255,255,255,0.88)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  color: INK,
+                  font: '600 13px Geist, sans-serif',
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+                Volver a mi viaje
+              </button>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, pointerEvents: 'auto' }}>
               <button
                 type="button"

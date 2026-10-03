@@ -8,7 +8,7 @@ import { getTodayTripContext } from '../../lib/todayMode'
 const SAVE_DEBOUNCE_MS = 1500
 
 /** Instantánea del estado a persistir, leída siempre "en caliente" vía `.getState()` — no depende de closures de ningún efecto, así el mismo intento sirve tanto al debounce normal como al reintento por reconexión. */
-function buildTripPayload(): TripPayload | null {
+export function buildTripPayload(): TripPayload | null {
   const state = useRouteStore.getState()
   if (!state.route) return null
   return {
@@ -142,6 +142,16 @@ export function TripSync() {
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, reservations, campaignCode, sales, wishlist, mode, activeDayId])
+
+  // Si el viajero acaba creando OTRO viaje, ya no hay a dónde volver desde el formulario.
+  useEffect(
+    () =>
+      useRouteStore.subscribe((state) => {
+        const resume = useSyncStore.getState().resumeTrip
+        if (resume && state.route && state.route.createdAt !== resume.payload.route.createdAt) useSyncStore.getState().setResumeTrip(null)
+      }),
+    [],
+  )
 
   useEffect(() => {
     const retry = () => {
