@@ -36,6 +36,9 @@ export interface StopsMapMarker {
       routeMapMarkers.ts), donde el tamaño es lo que distingue el día que se está mirando del resto,
       en vez de una opacidad tan baja que dejaba el número ilegible. */
   small?: boolean
+  /** Diseño «Trazo Explorar» (3-oct-2026): un pin con un icono de trazo fino (el `d` de un <path> de 24x24) en vez de número o emoji, de `size` px. */
+  iconPath?: string
+  size?: number
 }
 
 /** Ronda 9 (Mejora 1A): línea recta uniendo las paradas de un día en orden — un `StopsMapMarkerLine`
@@ -81,6 +84,12 @@ interface StopsMapViewProps {
   fitToMarkerIds?: string[] | null
   /** Arrancar centrado en este punto, a escala de barrio, en vez de encuadrar todos los marcadores. */
   focusCenter?: Coordinates | null
+  /** Pines con el aro dorado de «en tu ruta». Va aparte de los marcadores a propósito: cambiar el aro no reconstruye el mapa ni mueve la cámara. */
+  ringIds?: string[]
+  /** Dónde está el viajero: el punto azul que late. Aparte de los marcadores por lo mismo. */
+  userPosition?: Coordinates | null
+  /** Cada vez que cambia, la cámara vuela a `userPosition` (el botón de localizarte). */
+  recenterKey?: number
 }
 
 /**
@@ -93,20 +102,21 @@ interface StopsMapViewProps {
 /** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
 const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
 
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0 }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mapRef = useRef<mapboxgl.Map | null>(null)
   // Prompt 3 (bug 1): deliberadamente FUERA de markersKey. Cambiar qué pines se ven no puede
   // reconstruir el mapa — ver el comentario de hiddenMarkerIds en las props.
+  const ringKey = (ringIds ?? []).join('|')
   const hiddenKey = (hiddenMarkerIds ?? []).join('|')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hidden = useMemo(() => new Set(hiddenMarkerIds ?? []), [hiddenKey])
   const markersKey = markers
     .map(
       (marker) =>
-        `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}:${marker.small ? 's' : 'n'}`,
+        `${marker.id}:${marker.coordinates.lat.toFixed(5)},${marker.coordinates.lng.toFixed(5)}:${marker.icon ?? marker.number}:${marker.bg}:${marker.opacity ?? 1}:${marker.small ? 's' : 'n'}:${marker.iconPath ? marker.size ?? 30 : ''}`,
     )
     .join('|')
   const centerKey = [center, focusCenter].map((point) => (point ? `${point.lat.toFixed(4)},${point.lng.toFixed(4)}` : '')).join('|')
@@ -191,8 +201,20 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         // Ronda 10: h-6/h-5 en vez de h-7 fijo — los pines numerados tapaban demasiado mapa. El
         // borde blanco se mantiene en ring-2 (y el número en font-bold) también en el tamaño
         // pequeño: es justo lo que hacía ilegibles los días no activos de "Ver todo".
-        inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-[11px] font-semibold shadow-[0_6px_14px_-4px_rgba(28,34,48,.5)] ring-2 ring-white transition-transform`
-        inner.textContent = marker.icon ?? String(marker.number)
+        if (marker.iconPath) {
+          // El pin del diseño «Trazo Explorar»: un círculo del color de la categoría con borde blanco y su icono de trazo fino.
+          const size = marker.size ?? 30
+          inner.className = 'flex cursor-pointer items-center justify-center rounded-full text-white transition-transform'
+          inner.style.width = `${size}px`
+          inner.style.height = `${size}px`
+          inner.style.border = '2.5px solid #fff'
+          inner.style.boxShadow = '0 6px 14px -4px rgba(28,34,48,.5)'
+          const iconSize = Math.round(size * 0.47)
+          inner.innerHTML = `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${marker.iconPath}"/></svg>`
+        } else {
+          inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-[11px] font-semibold shadow-[0_6px_14px_-4px_rgba(28,34,48,.5)] ring-2 ring-white transition-transform`
+          inner.textContent = marker.icon ?? String(marker.number)
+        }
         root.appendChild(inner)
         root.addEventListener('click', (event) => {
           event.stopPropagation()
@@ -271,6 +293,8 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       el.style.opacity = isHidden ? '0' : String(marker?.opacity ?? 1)
       el.style.transform = isHidden ? 'scale(0.6)' : stopId === activeStopId ? 'scale(1.2)' : ''
       el.style.zIndex = !isHidden && stopId === activeStopId ? '10' : ''
+      // El aro dorado de «en tu ruta» (solo los pines con icono de trazo fino).
+      if (marker?.iconPath) el.style.boxShadow = `${ringKey && ringKey.split('|').includes(stopId) ? '0 0 0 2.5px oklch(0.74 0.16 65),' : ''}0 6px 14px -4px rgba(28,34,48,.5)`
     }
     // El pointer-events sí va en el raíz (Mapbox no lo toca): un pin invisible no debe seguir
     // capturando clicks ni abriendo su popup.
@@ -278,7 +302,32 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       root.style.pointerEvents = hidden.has(stopId) ? 'none' : ''
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStopId, hidden, markersKey])
+  }, [activeStopId, hidden, markersKey, ringKey])
+
+  // El punto azul de «dónde estás», y el vuelo hasta él cuando se pulsa el botón de localizarte.
+  const userMarkerRef = useRef<mapboxgl.Marker | null>(null)
+  useEffect(() => {
+    const map = mapRef.current
+    userMarkerRef.current?.remove()
+    userMarkerRef.current = null
+    if (!map || !userPosition) return
+    const el = document.createElement('div')
+    el.style.cssText = 'position:relative;width:18px;height:18px;pointer-events:none'
+    el.innerHTML =
+      '<span style="position:absolute;inset:0;border-radius:50%;background:oklch(0.6 0.15 240 / .5);animation:explore-pulse 2s ease-out infinite"></span><span style="position:absolute;inset:3px;border-radius:50%;background:oklch(0.6 0.15 240);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></span>'
+    userMarkerRef.current = new mapboxgl.Marker({ element: el }).setLngLat([userPosition.lng, userPosition.lat]).addTo(map)
+    return () => {
+      userMarkerRef.current?.remove()
+      userMarkerRef.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userPosition?.lat, userPosition?.lng, markersKey, linesKey, centerKey])
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !userPosition || recenterKey === 0) return
+    map.flyTo({ center: [userPosition.lng, userPosition.lat], zoom: Math.max(map.getZoom(), 14.5), duration: 700 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recenterKey])
 
   const fitKey = (fitToMarkerIds ?? []).join('|')
   useEffect(() => {

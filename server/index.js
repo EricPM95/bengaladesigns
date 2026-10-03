@@ -4178,8 +4178,74 @@ app.post('/api/destination-places', (req, res) => {
   // Aquí van TODAS (no las `max_display` de un día): el tope existe para no abrumar a quien está
   // decidiendo qué hacer un día concreto, pero esto es un catálogo que el viajero abre para ver qué
   // hay — recortarlo sería esconderle opciones que existen.
-  res.json({ found: true, places: [...places, ...restaurants], excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
+  // Los baños públicos (OpenStreetMap, descargados una vez: scripts/destino/banos.mjs) también viven aparte y también son solo puntos del mapa: no se
+  // añaden a un día. © OpenStreetMap contributors (ODbL): la lista lo dice.
+  const toilets = toiletsFor(findPipelineV2Key(destination)).map((toilet) => ({
+    kind: 'toilet',
+    name: toilet.name ?? 'Baño público',
+    coordinates: { lat: toilet.lat, lng: toilet.lng },
+    filter_category: 'banos',
+    zone: null,
+    zone_label: toilet.zona ?? null,
+    duration_min: null,
+    type: null,
+    tags: [],
+    level: null,
+    schedule: toilet.horario ?? null,
+    search_aliases: ['bano', 'banos', 'wc', 'aseo', 'aseos', 'servicios', 'toilet', 'toilets'],
+    requires_ticket: false,
+    de_pago: toilet.de_pago ?? null,
+    accesible: toilet.accesible ?? null,
+    osm_id: toilet.id,
+  }))
+  // Las fuentes de agua potable (los «nasoni» de Roma) salen de la misma descarga de OpenStreetMap: data/pipeline_v2/fuentes/<destino>.json.
+  const fountains = fountainsFor(findPipelineV2Key(destination)).map((fountain) => ({
+    kind: 'fountain',
+    name: 'Fuente de agua potable',
+    coordinates: { lat: fountain.lat, lng: fountain.lng },
+    filter_category: 'fuentes',
+    zone: null,
+    zone_label: fountain.zona ?? null,
+    duration_min: null,
+    type: null,
+    tags: [],
+    level: null,
+    schedule: null,
+    search_aliases: ['fuente', 'fuentes', 'agua', 'nasone', 'nasoni', 'beber', 'fountain', 'water'],
+    requires_ticket: false,
+    osm_id: fountain.id,
+  }))
+  res.json({ found: true, places: [...places, ...restaurants, ...toilets, ...fountains], excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
 })
+
+/** Los baños públicos de un destino (data/pipeline_v2/banos/<destino>.json), leídos una vez. Sin fichero, ninguno. */
+const toiletsCache = new Map()
+function toiletsFor(destinationKey) {
+  if (!destinationKey) return []
+  if (toiletsCache.has(destinationKey)) return toiletsCache.get(destinationKey)
+  let list = []
+  try {
+    list = JSON.parse(readFileSync(join(__dirname, '../data/pipeline_v2/banos', `${destinationKey}.json`), 'utf8')).banos ?? []
+  } catch {
+    // Un destino sin baños descargados es normal: la tarjeta de Baños no se pinta.
+  }
+  toiletsCache.set(destinationKey, list)
+  return list
+}
+
+const fountainsCache = new Map()
+function fountainsFor(destinationKey) {
+  if (!destinationKey) return []
+  if (fountainsCache.has(destinationKey)) return fountainsCache.get(destinationKey)
+  let list = []
+  try {
+    list = JSON.parse(readFileSync(join(__dirname, '../data/pipeline_v2/fuentes', `${destinationKey}.json`), 'utf8')).fuentes ?? []
+  } catch {
+    // Un destino sin fuentes descargadas es normal: la tarjeta de Fuentes no se pinta.
+  }
+  fountainsCache.set(destinationKey, list)
+  return list
+}
 
 // ── Detalle ampliado de un lugar (las 3 pestañas de la ficha de parada) ──────────────────────
 //

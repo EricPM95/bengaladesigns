@@ -1,0 +1,9850 @@
+{
+ "fuente": "OpenStreetMap (amenity=drinking_water), descargado con la Overpass API (la misma descarga que los baños)",
+ "licencia": "ODbL — © OpenStreetMap contributors (https://www.openstreetmap.org/copyright)",
+ "descargado": "2026-10-03",
+ "datos_osm_del": "2026-10-03T12:29:36Z",
+ "zona_descargada": "41.8258,12.4236,41.9475,12.5438",
+ "nota": "Fuentes de agua potable (en Roma, los nasoni). Solo las públicas (sin access, o access=yes/permissive/public).",
+ "fuentes": [
+  {
+   "id": "node/10082714502",
+   "lat": 41.891976,
+   "lng": 12.481803,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1009265256",
+   "lat": 41.914216,
+   "lng": 12.443365,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/10103770188",
+   "lat": 41.889487,
+   "lng": 12.462815,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/10117396942",
+   "lat": 41.909464,
+   "lng": 12.489441,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/10123943218",
+   "lat": 41.854768,
+   "lng": 12.472627,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1012758234",
+   "lat": 41.915803,
+   "lng": 12.48388,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/10182221526",
+   "lat": 41.925584,
+   "lng": 12.465228,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/10182221528",
+   "lat": 41.924988,
+   "lng": 12.468236,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1043162429",
+   "lat": 41.901645,
+   "lng": 12.474928,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/10436409967",
+   "lat": 41.876183,
+   "lng": 12.472763,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/10595224163",
+   "lat": 41.873836,
+   "lng": 12.489653,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/10606691505",
+   "lat": 41.875255,
+   "lng": 12.468182,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/10707506858",
+   "lat": 41.878235,
+   "lng": 12.460511,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/10707506859",
+   "lat": 41.877828,
+   "lng": 12.461897,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/10707506860",
+   "lat": 41.879176,
+   "lng": 12.46303,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/10737491435",
+   "lat": 41.844244,
+   "lng": 12.492231,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/10763886211",
+   "lat": 41.879367,
+   "lng": 12.475759,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/10801687904",
+   "lat": 41.89591,
+   "lng": 12.468347,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/10864579441",
+   "lat": 41.91504,
+   "lng": 12.512598,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1086982665",
+   "lat": 41.858625,
+   "lng": 12.46006,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/10956877341",
+   "lat": 41.892829,
+   "lng": 12.513174,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/10961889849",
+   "lat": 41.925609,
+   "lng": 12.464425,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/10994133196",
+   "lat": 41.890986,
+   "lng": 12.482565,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/11027303648",
+   "lat": 41.93751,
+   "lng": 12.500528,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/11048024400",
+   "lat": 41.896261,
+   "lng": 12.455066,
+   "name": "Casa dell'Acqua",
+   "horario": "24/7",
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11048215798",
+   "lat": 41.907248,
+   "lng": 12.447212,
+   "name": "Casa dell'Acqua",
+   "horario": "24/7",
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11049200376",
+   "lat": 41.861722,
+   "lng": 12.473524,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/11049200377",
+   "lat": 41.861812,
+   "lng": 12.473234,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/11049210644",
+   "lat": 41.861528,
+   "lng": 12.472739,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1106045952",
+   "lat": 41.858341,
+   "lng": 12.492621,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/11160649169",
+   "lat": 41.881724,
+   "lng": 12.501024,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/11167460918",
+   "lat": 41.887514,
+   "lng": 12.473084,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/11183079186",
+   "lat": 41.896742,
+   "lng": 12.475673,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1118942777",
+   "lat": 41.903595,
+   "lng": 12.516039,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1118942799",
+   "lat": 41.902825,
+   "lng": 12.514085,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1118942806",
+   "lat": 41.901685,
+   "lng": 12.51691,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1118942831",
+   "lat": 41.903095,
+   "lng": 12.516306,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1118942876",
+   "lat": 41.90413,
+   "lng": 12.516876,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1119375650",
+   "lat": 41.888716,
+   "lng": 12.468546,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/11202843519",
+   "lat": 41.853403,
+   "lng": 12.474254,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/11219505495",
+   "lat": 41.878111,
+   "lng": 12.458846,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/11248332587",
+   "lat": 41.884522,
+   "lng": 12.482966,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/1142429777",
+   "lat": 41.917977,
+   "lng": 12.456545,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1142436425",
+   "lat": 41.875812,
+   "lng": 12.48748,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1142453098",
+   "lat": 41.919563,
+   "lng": 12.464883,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/11469105851",
+   "lat": 41.903996,
+   "lng": 12.467058,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1147711810",
+   "lat": 41.883971,
+   "lng": 12.474843,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/11482468156",
+   "lat": 41.875277,
+   "lng": 12.48118,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/11483345317",
+   "lat": 41.904156,
+   "lng": 12.498304,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/11494105831",
+   "lat": 41.894257,
+   "lng": 12.505741,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/1151085005",
+   "lat": 41.914875,
+   "lng": 12.455559,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1151090487",
+   "lat": 41.914916,
+   "lng": 12.457517,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11521887423",
+   "lat": 41.833758,
+   "lng": 12.49302,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1152505204",
+   "lat": 41.888155,
+   "lng": 12.445508,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1152505212",
+   "lat": 41.88866,
+   "lng": 12.531503,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1152505214",
+   "lat": 41.885172,
+   "lng": 12.51725,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1157932638",
+   "lat": 41.886755,
+   "lng": 12.49547,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1166403864",
+   "lat": 41.904736,
+   "lng": 12.477104,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1166747360",
+   "lat": 41.892385,
+   "lng": 12.504418,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1168549494",
+   "lat": 41.900973,
+   "lng": 12.469274,
+   "name": "Fontanella per cani",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1170494282",
+   "lat": 41.890038,
+   "lng": 12.494221,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/11736485965",
+   "lat": 41.894574,
+   "lng": 12.449468,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1174441693",
+   "lat": 41.917042,
+   "lng": 12.460038,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11755104679",
+   "lat": 41.902118,
+   "lng": 12.460836,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11773723130",
+   "lat": 41.886821,
+   "lng": 12.491015,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/11804315669",
+   "lat": 41.904175,
+   "lng": 12.514493,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/11812551762",
+   "lat": 41.89278,
+   "lng": 12.494785,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/11835037840",
+   "lat": 41.898338,
+   "lng": 12.512872,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/1184304673",
+   "lat": 41.919038,
+   "lng": 12.473135,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1186377713",
+   "lat": 41.902177,
+   "lng": 12.512747,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1186377715",
+   "lat": 41.902484,
+   "lng": 12.512244,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1186379825",
+   "lat": 41.902705,
+   "lng": 12.514167,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/11885861241",
+   "lat": 41.89035,
+   "lng": 12.48968,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1189767747",
+   "lat": 41.923078,
+   "lng": 12.513108,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1191560472",
+   "lat": 41.911881,
+   "lng": 12.468649,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/11917495173",
+   "lat": 41.937279,
+   "lng": 12.465884,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1195429135",
+   "lat": 41.922657,
+   "lng": 12.445744,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1195436852",
+   "lat": 41.91287,
+   "lng": 12.436286,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/11959119369",
+   "lat": 41.869385,
+   "lng": 12.463654,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/11964241969",
+   "lat": 41.882069,
+   "lng": 12.461103,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12002699669",
+   "lat": 41.930571,
+   "lng": 12.46259,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/12003607170",
+   "lat": 41.91253,
+   "lng": 12.513564,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12003607369",
+   "lat": 41.914553,
+   "lng": 12.509537,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12017183010",
+   "lat": 41.88764,
+   "lng": 12.540981,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/12033088194",
+   "lat": 41.890183,
+   "lng": 12.490284,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/12033095972",
+   "lat": 41.89045,
+   "lng": 12.489295,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/12039857518",
+   "lat": 41.912444,
+   "lng": 12.511032,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12068614740",
+   "lat": 41.937905,
+   "lng": 12.465789,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/12095537538",
+   "lat": 41.886725,
+   "lng": 12.507677,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/12097935090",
+   "lat": 41.892475,
+   "lng": 12.487023,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1211869206",
+   "lat": 41.919063,
+   "lng": 12.489742,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1212697221",
+   "lat": 41.902912,
+   "lng": 12.502676,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/12140483725",
+   "lat": 41.862534,
+   "lng": 12.533251,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1214196046",
+   "lat": 41.898731,
+   "lng": 12.429186,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12157588201",
+   "lat": 41.8568,
+   "lng": 12.510126,
+   "name": "Nasone",
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/12165363228",
+   "lat": 41.880546,
+   "lng": 12.458737,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12170209793",
+   "lat": 41.877566,
+   "lng": 12.439941,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1217611041",
+   "lat": 41.906405,
+   "lng": 12.457383,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1217678869",
+   "lat": 41.915373,
+   "lng": 12.449495,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12176925685",
+   "lat": 41.843759,
+   "lng": 12.49047,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/12177026084",
+   "lat": 41.840887,
+   "lng": 12.491446,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/12236111960",
+   "lat": 41.889827,
+   "lng": 12.467648,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12264630301",
+   "lat": 41.87046,
+   "lng": 12.479323,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1226972681",
+   "lat": 41.907932,
+   "lng": 12.458836,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1227933179",
+   "lat": 41.937243,
+   "lng": 12.424227,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1227933197",
+   "lat": 41.939117,
+   "lng": 12.424625,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1228124134",
+   "lat": 41.909971,
+   "lng": 12.424768,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1228124135",
+   "lat": 41.905825,
+   "lng": 12.426346,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1228199662",
+   "lat": 41.879044,
+   "lng": 12.501002,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/1228398937",
+   "lat": 41.881278,
+   "lng": 12.49916,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/1228398969",
+   "lat": 41.880763,
+   "lng": 12.499503,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/12293923989",
+   "lat": 41.932737,
+   "lng": 12.520188,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12293927571",
+   "lat": 41.933928,
+   "lng": 12.519598,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1232930125",
+   "lat": 41.90167,
+   "lng": 12.518768,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12334051763",
+   "lat": 41.828622,
+   "lng": 12.470382,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/12334542944",
+   "lat": 41.899809,
+   "lng": 12.513773,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/1239500205",
+   "lat": 41.924521,
+   "lng": 12.508043,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1240685029",
+   "lat": 41.932847,
+   "lng": 12.467784,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1240689401",
+   "lat": 41.929844,
+   "lng": 12.468406,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1240868978",
+   "lat": 41.909483,
+   "lng": 12.462099,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1244429232",
+   "lat": 41.90477,
+   "lng": 12.447199,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12460564153",
+   "lat": 41.922948,
+   "lng": 12.495053,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/12474287599",
+   "lat": 41.887935,
+   "lng": 12.514568,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/12481085570",
+   "lat": 41.902452,
+   "lng": 12.465074,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1248116067",
+   "lat": 41.900256,
+   "lng": 12.484676,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1248514529",
+   "lat": 41.908508,
+   "lng": 12.458142,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12492698171",
+   "lat": 41.903647,
+   "lng": 12.495658,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/12497045447",
+   "lat": 41.829175,
+   "lng": 12.48949,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1251979406",
+   "lat": 41.866733,
+   "lng": 12.444503,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1252035749",
+   "lat": 41.879326,
+   "lng": 12.444544,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1253210982",
+   "lat": 41.902704,
+   "lng": 12.480783,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/12535981672",
+   "lat": 41.873041,
+   "lng": 12.463089,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1254094233",
+   "lat": 41.920921,
+   "lng": 12.504086,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1254094235",
+   "lat": 41.920096,
+   "lng": 12.503294,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12565903345",
+   "lat": 41.924005,
+   "lng": 12.51602,
+   "name": "Casa dell'acqua",
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12571509622",
+   "lat": 41.905587,
+   "lng": 12.540665,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1258578610",
+   "lat": 41.877699,
+   "lng": 12.442515,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1259526669",
+   "lat": 41.886968,
+   "lng": 12.457293,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1259526670",
+   "lat": 41.887203,
+   "lng": 12.451622,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1259526671",
+   "lat": 41.881974,
+   "lng": 12.441176,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1259526673",
+   "lat": 41.888739,
+   "lng": 12.452579,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12622944323",
+   "lat": 41.889864,
+   "lng": 12.490257,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/12623101980",
+   "lat": 41.890695,
+   "lng": 12.487093,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1262577404",
+   "lat": 41.914406,
+   "lng": 12.474692,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1262595088",
+   "lat": 41.876343,
+   "lng": 12.51994,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1266858721",
+   "lat": 41.926134,
+   "lng": 12.511648,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1272997138",
+   "lat": 41.923407,
+   "lng": 12.459099,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1273209178",
+   "lat": 41.871573,
+   "lng": 12.450125,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/12785810301",
+   "lat": 41.868348,
+   "lng": 12.425026,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12786251401",
+   "lat": 41.871182,
+   "lng": 12.463054,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/12800066857",
+   "lat": 41.905952,
+   "lng": 12.453863,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12804520446",
+   "lat": 41.853804,
+   "lng": 12.468545,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/12814031178",
+   "lat": 41.894512,
+   "lng": 12.453394,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12816938731",
+   "lat": 41.889061,
+   "lng": 12.476921,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12842608601",
+   "lat": 41.922915,
+   "lng": 12.444215,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12851143081",
+   "lat": 41.897219,
+   "lng": 12.477706,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1286444368",
+   "lat": 41.911517,
+   "lng": 12.523326,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1286918256",
+   "lat": 41.93531,
+   "lng": 12.538122,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12873430690",
+   "lat": 41.893071,
+   "lng": 12.497845,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/12879288358",
+   "lat": 41.904159,
+   "lng": 12.486537,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1290837141",
+   "lat": 41.913073,
+   "lng": 12.441618,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12914384733",
+   "lat": 41.852126,
+   "lng": 12.490949,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1291665258",
+   "lat": 41.911733,
+   "lng": 12.441797,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1291671499",
+   "lat": 41.909046,
+   "lng": 12.43587,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/12938191585",
+   "lat": 41.858566,
+   "lng": 12.492529,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1297064089",
+   "lat": 41.908018,
+   "lng": 12.466036,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1297345171",
+   "lat": 41.881748,
+   "lng": 12.439456,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1297345176",
+   "lat": 41.882849,
+   "lng": 12.439338,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1297345178",
+   "lat": 41.883783,
+   "lng": 12.435831,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/12987526642",
+   "lat": 41.919018,
+   "lng": 12.517502,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/12988033144",
+   "lat": 41.905834,
+   "lng": 12.542698,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1299991558",
+   "lat": 41.92202,
+   "lng": 12.493258,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/13013980203",
+   "lat": 41.905266,
+   "lng": 12.476016,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1303776721",
+   "lat": 41.918771,
+   "lng": 12.468727,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1303837852",
+   "lat": 41.915853,
+   "lng": 12.4829,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/13038987453",
+   "lat": 41.840048,
+   "lng": 12.486236,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/13045340104",
+   "lat": 41.896745,
+   "lng": 12.496156,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/1306148317",
+   "lat": 41.923888,
+   "lng": 12.497021,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1307902516",
+   "lat": 41.8753,
+   "lng": 12.446967,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/13084163375",
+   "lat": 41.907876,
+   "lng": 12.497259,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/13089183501",
+   "lat": 41.942674,
+   "lng": 12.525818,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1314329047",
+   "lat": 41.908853,
+   "lng": 12.440143,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13158433905",
+   "lat": 41.912689,
+   "lng": 12.523238,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1317583544",
+   "lat": 41.920457,
+   "lng": 12.442439,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1318977072",
+   "lat": 41.910708,
+   "lng": 12.452826,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13197431588",
+   "lat": 41.897854,
+   "lng": 12.45528,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13238440564",
+   "lat": 41.903427,
+   "lng": 12.458518,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1324874797",
+   "lat": 41.903731,
+   "lng": 12.460327,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1328464530",
+   "lat": 41.903301,
+   "lng": 12.468152,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1330290602",
+   "lat": 41.915405,
+   "lng": 12.505708,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1332242237",
+   "lat": 41.898261,
+   "lng": 12.427958,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13325948829",
+   "lat": 41.840462,
+   "lng": 12.486758,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/13325964377",
+   "lat": 41.834516,
+   "lng": 12.482758,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/13344266401",
+   "lat": 41.906663,
+   "lng": 12.518013,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13344900674",
+   "lat": 41.913629,
+   "lng": 12.515972,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1340634230",
+   "lat": 41.908812,
+   "lng": 12.494935,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1340662875",
+   "lat": 41.89926,
+   "lng": 12.455828,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1341735160",
+   "lat": 41.897578,
+   "lng": 12.473576,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1341744302",
+   "lat": 41.896757,
+   "lng": 12.472298,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1341744308",
+   "lat": 41.896359,
+   "lng": 12.472334,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1343175169",
+   "lat": 41.926324,
+   "lng": 12.50837,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13435845001",
+   "lat": 41.939079,
+   "lng": 12.469005,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1343937563",
+   "lat": 41.884898,
+   "lng": 12.510683,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13452246905",
+   "lat": 41.907202,
+   "lng": 12.470974,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/13464037701",
+   "lat": 41.910321,
+   "lng": 12.495192,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/13464234101",
+   "lat": 41.875978,
+   "lng": 12.532781,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1349038366",
+   "lat": 41.889613,
+   "lng": 12.471119,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/13516449383",
+   "lat": 41.875964,
+   "lng": 12.47199,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/13573745236",
+   "lat": 41.887577,
+   "lng": 12.540629,
+   "name": "Casa dell'acqua",
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13671956401",
+   "lat": 41.885467,
+   "lng": 12.540428,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13680523001",
+   "lat": 41.887665,
+   "lng": 12.537719,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13706214601",
+   "lat": 41.87563,
+   "lng": 12.531125,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13710388001",
+   "lat": 41.896975,
+   "lng": 12.452161,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13718602745",
+   "lat": 41.894583,
+   "lng": 12.457737,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/13758097442",
+   "lat": 41.890599,
+   "lng": 12.476905,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1380533835",
+   "lat": 41.921613,
+   "lng": 12.447961,
+   "name": "Fons Eleonorae",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1380595679",
+   "lat": 41.921937,
+   "lng": 12.448165,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13841781248",
+   "lat": 41.909684,
+   "lng": 12.529556,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13871600909",
+   "lat": 41.88794,
+   "lng": 12.434435,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/13871821901",
+   "lat": 41.932997,
+   "lng": 12.511865,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1391159111",
+   "lat": 41.920915,
+   "lng": 12.445372,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/13921994932",
+   "lat": 41.896215,
+   "lng": 12.520748,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13921994933",
+   "lat": 41.90522,
+   "lng": 12.518409,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1393843656",
+   "lat": 41.910536,
+   "lng": 12.513487,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1393846546",
+   "lat": 41.912968,
+   "lng": 12.482397,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1393905944",
+   "lat": 41.89237,
+   "lng": 12.475626,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/13948560392",
+   "lat": 41.938039,
+   "lng": 12.52585,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13974559763",
+   "lat": 41.897343,
+   "lng": 12.535456,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13974559764",
+   "lat": 41.898113,
+   "lng": 12.535941,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13974559765",
+   "lat": 41.898599,
+   "lng": 12.535204,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13974559766",
+   "lat": 41.897509,
+   "lng": 12.533744,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/13974559767",
+   "lat": 41.899125,
+   "lng": 12.533101,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/13974559768",
+   "lat": 41.899149,
+   "lng": 12.534463,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1397809372",
+   "lat": 41.905123,
+   "lng": 12.48999,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/13979139012",
+   "lat": 41.839822,
+   "lng": 12.424769,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/13986176401",
+   "lat": 41.838443,
+   "lng": 12.452505,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/14041052877",
+   "lat": 41.890436,
+   "lng": 12.491755,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/14059293283",
+   "lat": 41.903542,
+   "lng": 12.437195,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/14066961463",
+   "lat": 41.85923,
+   "lng": 12.468886,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1407542660",
+   "lat": 41.89524,
+   "lng": 12.491949,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1410727606",
+   "lat": 41.902491,
+   "lng": 12.485532,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1410730478",
+   "lat": 41.901684,
+   "lng": 12.484607,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1410731988",
+   "lat": 41.899052,
+   "lng": 12.470947,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/14112298876",
+   "lat": 41.934735,
+   "lng": 12.533833,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/14112397316",
+   "lat": 41.911367,
+   "lng": 12.524875,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/14114184987",
+   "lat": 41.929799,
+   "lng": 12.473589,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/14114218969",
+   "lat": 41.933044,
+   "lng": 12.461475,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1412552556",
+   "lat": 41.887689,
+   "lng": 12.506964,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1412936359",
+   "lat": 41.882656,
+   "lng": 12.543131,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1412939934",
+   "lat": 41.86158,
+   "lng": 12.501339,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1412942711",
+   "lat": 41.885152,
+   "lng": 12.542755,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1412947841",
+   "lat": 41.885415,
+   "lng": 12.542457,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/14159255601",
+   "lat": 41.893491,
+   "lng": 12.48456,
+   "name": "Fontanella",
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/14166906259",
+   "lat": 41.854504,
+   "lng": 12.484878,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1416937151",
+   "lat": 41.904153,
+   "lng": 12.487939,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1417673738",
+   "lat": 41.897801,
+   "lng": 12.47017,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/14196507002",
+   "lat": 41.935645,
+   "lng": 12.513234,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/14197847001",
+   "lat": 41.934982,
+   "lng": 12.513238,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/14207968073",
+   "lat": 41.894811,
+   "lng": 12.45731,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/14214015140",
+   "lat": 41.922107,
+   "lng": 12.504399,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1421868281",
+   "lat": 41.900189,
+   "lng": 12.476542,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/14231559901",
+   "lat": 41.87597,
+   "lng": 12.471988,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/14231560001",
+   "lat": 41.928981,
+   "lng": 12.428287,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1429380536",
+   "lat": 41.903248,
+   "lng": 12.475258,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1429382773",
+   "lat": 41.902501,
+   "lng": 12.472963,
+   "name": "Acqua Vergine",
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1436034864",
+   "lat": 41.900501,
+   "lng": 12.467084,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1462422577",
+   "lat": 41.919047,
+   "lng": 12.461317,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1464397417",
+   "lat": 41.847054,
+   "lng": 12.526346,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1464397418",
+   "lat": 41.883903,
+   "lng": 12.511846,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1468045823",
+   "lat": 41.880405,
+   "lng": 12.448852,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468051863",
+   "lat": 41.88735,
+   "lng": 12.465847,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468453028",
+   "lat": 41.877404,
+   "lng": 12.452304,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468453509",
+   "lat": 41.87854,
+   "lng": 12.45188,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468454162",
+   "lat": 41.877369,
+   "lng": 12.450958,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468481059",
+   "lat": 41.876727,
+   "lng": 12.455177,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1468545317",
+   "lat": 41.879884,
+   "lng": 12.466372,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1472098069",
+   "lat": 41.91715,
+   "lng": 12.459885,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1475920611",
+   "lat": 41.865421,
+   "lng": 12.449344,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1475928294",
+   "lat": 41.860673,
+   "lng": 12.455287,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1476642115",
+   "lat": 41.933514,
+   "lng": 12.529713,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1477754356",
+   "lat": 41.881604,
+   "lng": 12.455705,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1479087634",
+   "lat": 41.914794,
+   "lng": 12.466243,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1479089106",
+   "lat": 41.914961,
+   "lng": 12.465122,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1479202496",
+   "lat": 41.893065,
+   "lng": 12.473793,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1484879602",
+   "lat": 41.862762,
+   "lng": 12.453865,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1485692256",
+   "lat": 41.896911,
+   "lng": 12.469819,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1488901940",
+   "lat": 41.86467,
+   "lng": 12.45804,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1493055410",
+   "lat": 41.890095,
+   "lng": 12.432348,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1493055430",
+   "lat": 41.880578,
+   "lng": 12.43747,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1507661501",
+   "lat": 41.897751,
+   "lng": 12.467345,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1509850122",
+   "lat": 41.861618,
+   "lng": 12.47052,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1511867897",
+   "lat": 41.919123,
+   "lng": 12.44153,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1514242936",
+   "lat": 41.917139,
+   "lng": 12.462296,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1514242942",
+   "lat": 41.917535,
+   "lng": 12.461058,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1515977006",
+   "lat": 41.88524,
+   "lng": 12.460844,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1520157117",
+   "lat": 41.865812,
+   "lng": 12.460689,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1528871492",
+   "lat": 41.88585,
+   "lng": 12.469734,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1530077751",
+   "lat": 41.887356,
+   "lng": 12.471796,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1536713988",
+   "lat": 41.885765,
+   "lng": 12.466319,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1536760433",
+   "lat": 41.883314,
+   "lng": 12.469067,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1542236935",
+   "lat": 41.889958,
+   "lng": 12.474555,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1542745894",
+   "lat": 41.898502,
+   "lng": 12.518343,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/1546275854",
+   "lat": 41.87291,
+   "lng": 12.525626,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1546277700",
+   "lat": 41.873667,
+   "lng": 12.52676,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1546285109",
+   "lat": 41.873867,
+   "lng": 12.525584,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1557648297",
+   "lat": 41.944024,
+   "lng": 12.537778,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1564305314",
+   "lat": 41.900438,
+   "lng": 12.435575,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1564305350",
+   "lat": 41.901361,
+   "lng": 12.436095,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1565325823",
+   "lat": 41.889069,
+   "lng": 12.471804,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1567119678",
+   "lat": 41.881643,
+   "lng": 12.476798,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/1567119679",
+   "lat": 41.880252,
+   "lng": 12.476229,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1584641250",
+   "lat": 41.900645,
+   "lng": 12.428048,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1593912169",
+   "lat": 41.916913,
+   "lng": 12.442747,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1594842671",
+   "lat": 41.891191,
+   "lng": 12.520355,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1600564868",
+   "lat": 41.902121,
+   "lng": 12.460773,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1600564873",
+   "lat": 41.902129,
+   "lng": 12.461269,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1605062945",
+   "lat": 41.894381,
+   "lng": 12.476805,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1606505050",
+   "lat": 41.871787,
+   "lng": 12.479863,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1606507254",
+   "lat": 41.870583,
+   "lng": 12.478516,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1623595300",
+   "lat": 41.904503,
+   "lng": 12.50243,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1641216571",
+   "lat": 41.893166,
+   "lng": 12.536893,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1641654227",
+   "lat": 41.926404,
+   "lng": 12.515856,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1641654452",
+   "lat": 41.928563,
+   "lng": 12.518833,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1654329464",
+   "lat": 41.862966,
+   "lng": 12.467225,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1654329525",
+   "lat": 41.862894,
+   "lng": 12.467734,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1654333840",
+   "lat": 41.864225,
+   "lng": 12.469725,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1656861982",
+   "lat": 41.890717,
+   "lng": 12.488396,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1686449476",
+   "lat": 41.905094,
+   "lng": 12.500235,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1697618063",
+   "lat": 41.843077,
+   "lng": 12.490111,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1701085924",
+   "lat": 41.890171,
+   "lng": 12.507231,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1701226235",
+   "lat": 41.889019,
+   "lng": 12.501966,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/1703615330",
+   "lat": 41.871689,
+   "lng": 12.483561,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1703615337",
+   "lat": 41.88153,
+   "lng": 12.480744,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/1709763209",
+   "lat": 41.838422,
+   "lng": 12.507095,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/1716791634",
+   "lat": 41.909272,
+   "lng": 12.454027,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1729006478",
+   "lat": 41.907692,
+   "lng": 12.479528,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1731729096",
+   "lat": 41.917345,
+   "lng": 12.460378,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1749626671",
+   "lat": 41.909551,
+   "lng": 12.470886,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1750847857",
+   "lat": 41.891119,
+   "lng": 12.50912,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1757121430",
+   "lat": 41.909832,
+   "lng": 12.466632,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1768600407",
+   "lat": 41.884873,
+   "lng": 12.523019,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1776336688",
+   "lat": 41.934955,
+   "lng": 12.527077,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1776348154",
+   "lat": 41.913859,
+   "lng": 12.523335,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1786266531",
+   "lat": 41.882572,
+   "lng": 12.505619,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/1786273188",
+   "lat": 41.916743,
+   "lng": 12.498741,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1787512204",
+   "lat": 41.909431,
+   "lng": 12.521582,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1788814177",
+   "lat": 41.910056,
+   "lng": 12.537924,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1793356716",
+   "lat": 41.91277,
+   "lng": 12.520581,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1796927440",
+   "lat": 41.907093,
+   "lng": 12.464299,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1812711628",
+   "lat": 41.892035,
+   "lng": 12.469045,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1816091365",
+   "lat": 41.863071,
+   "lng": 12.443787,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1819985172",
+   "lat": 41.861584,
+   "lng": 12.442151,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1852712861",
+   "lat": 41.905846,
+   "lng": 12.451663,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1870067479",
+   "lat": 41.92713,
+   "lng": 12.461534,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1871754634",
+   "lat": 41.923776,
+   "lng": 12.448195,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/1878991188",
+   "lat": 41.930409,
+   "lng": 12.478123,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/1880658315",
+   "lat": 41.905367,
+   "lng": 12.486606,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/1895350343",
+   "lat": 41.924513,
+   "lng": 12.513524,
+   "name": "Acqua Marcia",
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1901213758",
+   "lat": 41.94635,
+   "lng": 12.525617,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1901216582",
+   "lat": 41.947239,
+   "lng": 12.525764,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1910223342",
+   "lat": 41.846054,
+   "lng": 12.461625,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1913411910",
+   "lat": 41.845636,
+   "lng": 12.459386,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1914030964",
+   "lat": 41.884096,
+   "lng": 12.458675,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/1914031509",
+   "lat": 41.847735,
+   "lng": 12.460279,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1916102399",
+   "lat": 41.87592,
+   "lng": 12.464324,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/1917038317",
+   "lat": 41.941338,
+   "lng": 12.525416,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1917038602",
+   "lat": 41.943931,
+   "lng": 12.521329,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1917039327",
+   "lat": 41.941633,
+   "lng": 12.519397,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/1954622623",
+   "lat": 41.937,
+   "lng": 12.46679,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2001966313",
+   "lat": 41.88672,
+   "lng": 12.469447,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/2035792335",
+   "lat": 41.933724,
+   "lng": 12.533451,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2069405527",
+   "lat": 41.871694,
+   "lng": 12.44774,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069405637",
+   "lat": 41.868713,
+   "lng": 12.449425,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069416499",
+   "lat": 41.874571,
+   "lng": 12.447867,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/2069423257",
+   "lat": 41.871456,
+   "lng": 12.450418,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069436466",
+   "lat": 41.87225,
+   "lng": 12.45065,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069447403",
+   "lat": 41.875507,
+   "lng": 12.449518,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/2069452514",
+   "lat": 41.869902,
+   "lng": 12.453189,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069455838",
+   "lat": 41.870365,
+   "lng": 12.45508,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2069456580",
+   "lat": 41.873384,
+   "lng": 12.465897,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2101954153",
+   "lat": 41.90841,
+   "lng": 12.535541,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2105948243",
+   "lat": 41.896843,
+   "lng": 12.487869,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/2106522362",
+   "lat": 41.902747,
+   "lng": 12.454461,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2110963584",
+   "lat": 41.895378,
+   "lng": 12.429442,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2112210532",
+   "lat": 41.913476,
+   "lng": 12.483405,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2112210533",
+   "lat": 41.913726,
+   "lng": 12.483429,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2125461285",
+   "lat": 41.911463,
+   "lng": 12.475526,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2127629609",
+   "lat": 41.906497,
+   "lng": 12.479719,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/2147111497",
+   "lat": 41.881467,
+   "lng": 12.522896,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2147125780",
+   "lat": 41.884597,
+   "lng": 12.522928,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2150779629",
+   "lat": 41.912859,
+   "lng": 12.541948,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2194365022",
+   "lat": 41.856425,
+   "lng": 12.49232,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2229492209",
+   "lat": 41.944586,
+   "lng": 12.472514,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2262016573",
+   "lat": 41.908715,
+   "lng": 12.519736,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2265009228",
+   "lat": 41.909665,
+   "lng": 12.464683,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2276193954",
+   "lat": 41.90836,
+   "lng": 12.46721,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2308930705",
+   "lat": 41.937774,
+   "lng": 12.541285,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2333139638",
+   "lat": 41.892978,
+   "lng": 12.535827,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2339283618",
+   "lat": 41.914042,
+   "lng": 12.435517,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2343418750",
+   "lat": 41.930162,
+   "lng": 12.471511,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2343418751",
+   "lat": 41.931914,
+   "lng": 12.471848,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2351682406",
+   "lat": 41.854339,
+   "lng": 12.474692,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2351682450",
+   "lat": 41.875517,
+   "lng": 12.528208,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2351682485",
+   "lat": 41.918064,
+   "lng": 12.525078,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2351682487",
+   "lat": 41.9183,
+   "lng": 12.520645,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2398576225",
+   "lat": 41.835213,
+   "lng": 12.479333,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2418161850",
+   "lat": 41.911771,
+   "lng": 12.49859,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2420554497",
+   "lat": 41.879458,
+   "lng": 12.496969,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/2458537111",
+   "lat": 41.925766,
+   "lng": 12.469958,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2461001123",
+   "lat": 41.943233,
+   "lng": 12.423897,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2461996630",
+   "lat": 41.928424,
+   "lng": 12.514007,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/246569214",
+   "lat": 41.852621,
+   "lng": 12.478329,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/246569216",
+   "lat": 41.863749,
+   "lng": 12.478948,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/246571139",
+   "lat": 41.904287,
+   "lng": 12.513278,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/246571141",
+   "lat": 41.90479,
+   "lng": 12.516243,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/246571142",
+   "lat": 41.903148,
+   "lng": 12.500819,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/246572369",
+   "lat": 41.888292,
+   "lng": 12.514729,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/246572370",
+   "lat": 41.889443,
+   "lng": 12.513346,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/246572372",
+   "lat": 41.893844,
+   "lng": 12.505516,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246572374",
+   "lat": 41.893941,
+   "lng": 12.505611,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246574144",
+   "lat": 41.895318,
+   "lng": 12.503133,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246574145",
+   "lat": 41.895242,
+   "lng": 12.503058,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246574149",
+   "lat": 41.894806,
+   "lng": 12.49194,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/246574150",
+   "lat": 41.894887,
+   "lng": 12.490946,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/246574151",
+   "lat": 41.894498,
+   "lng": 12.487739,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/246574153",
+   "lat": 41.854964,
+   "lng": 12.500038,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/246574154",
+   "lat": 41.855305,
+   "lng": 12.497918,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/246661213",
+   "lat": 41.895028,
+   "lng": 12.504683,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246661214",
+   "lat": 41.894966,
+   "lng": 12.504794,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246661215",
+   "lat": 41.897583,
+   "lng": 12.5032,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246661218",
+   "lat": 41.897553,
+   "lng": 12.490121,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/246661219",
+   "lat": 41.897291,
+   "lng": 12.497751,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/246661220",
+   "lat": 41.865534,
+   "lng": 12.488225,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/248663397",
+   "lat": 41.889692,
+   "lng": 12.523669,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248663400",
+   "lat": 41.889215,
+   "lng": 12.524983,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248663404",
+   "lat": 41.888897,
+   "lng": 12.526238,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248663407",
+   "lat": 41.89034,
+   "lng": 12.534451,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248663469",
+   "lat": 41.887859,
+   "lng": 12.521805,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248674902",
+   "lat": 41.887857,
+   "lng": 12.471651,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/248676418",
+   "lat": 41.890444,
+   "lng": 12.469217,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/248676419",
+   "lat": 41.889744,
+   "lng": 12.472972,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/248676420",
+   "lat": 41.889314,
+   "lng": 12.473886,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/248678317",
+   "lat": 41.888639,
+   "lng": 12.473999,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/248678318",
+   "lat": 41.883673,
+   "lng": 12.473644,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/248741444",
+   "lat": 41.852745,
+   "lng": 12.469344,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/248741445",
+   "lat": 41.867409,
+   "lng": 12.466384,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/248743319",
+   "lat": 41.896714,
+   "lng": 12.485913,
+   "name": "Fontana delle tre cannelle",
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/248743322",
+   "lat": 41.896066,
+   "lng": 12.487037,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/248743358",
+   "lat": 41.863526,
+   "lng": 12.483904,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/248834835",
+   "lat": 41.89299,
+   "lng": 12.515711,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248834836",
+   "lat": 41.895111,
+   "lng": 12.513424,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248834837",
+   "lat": 41.898926,
+   "lng": 12.518215,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/248834839",
+   "lat": 41.898734,
+   "lng": 12.515088,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/248834840",
+   "lat": 41.897058,
+   "lng": 12.511567,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/248977095",
+   "lat": 41.889242,
+   "lng": 12.530231,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248977097",
+   "lat": 41.88775,
+   "lng": 12.536573,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248977098",
+   "lat": 41.885829,
+   "lng": 12.543409,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/248979100",
+   "lat": 41.892895,
+   "lng": 12.541601,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2491626145",
+   "lat": 41.904457,
+   "lng": 12.515474,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/249331407",
+   "lat": 41.894669,
+   "lng": 12.465176,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/249331968",
+   "lat": 41.879092,
+   "lng": 12.478606,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/249332045",
+   "lat": 41.895972,
+   "lng": 12.460932,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/249333234",
+   "lat": 41.889887,
+   "lng": 12.46244,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/2503990560",
+   "lat": 41.864892,
+   "lng": 12.447574,
+   "name": "Fontanella nel Parco pubblico",
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250884089",
+   "lat": 41.895411,
+   "lng": 12.471736,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/250884715",
+   "lat": 41.856301,
+   "lng": 12.471784,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250885316",
+   "lat": 41.905006,
+   "lng": 12.504296,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/250886296",
+   "lat": 41.896833,
+   "lng": 12.5152,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/250886298",
+   "lat": 41.898943,
+   "lng": 12.516512,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/250886787",
+   "lat": 41.91207,
+   "lng": 12.52205,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/250886788",
+   "lat": 41.913608,
+   "lng": 12.520931,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/250887056",
+   "lat": 41.859036,
+   "lng": 12.471839,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250887057",
+   "lat": 41.859271,
+   "lng": 12.474845,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250889343",
+   "lat": 41.875798,
+   "lng": 12.481373,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250889346",
+   "lat": 41.878293,
+   "lng": 12.476552,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250889642",
+   "lat": 41.89599,
+   "lng": 12.490389,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/250889643",
+   "lat": 41.830541,
+   "lng": 12.465008,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/250890422",
+   "lat": 41.862115,
+   "lng": 12.48859,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/250890423",
+   "lat": 41.861887,
+   "lng": 12.490348,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/250890425",
+   "lat": 41.860585,
+   "lng": 12.491741,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/250890426",
+   "lat": 41.860265,
+   "lng": 12.493199,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/250890428",
+   "lat": 41.859881,
+   "lng": 12.494003,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/251772703",
+   "lat": 41.852379,
+   "lng": 12.476505,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251772704",
+   "lat": 41.852558,
+   "lng": 12.473447,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251773253",
+   "lat": 41.865332,
+   "lng": 12.484227,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251773254",
+   "lat": 41.864776,
+   "lng": 12.484194,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251773259",
+   "lat": 41.863234,
+   "lng": 12.486744,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251773306",
+   "lat": 41.863013,
+   "lng": 12.488039,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251773307",
+   "lat": 41.89578,
+   "lng": 12.511973,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/251773316",
+   "lat": 41.843176,
+   "lng": 12.492826,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/251773348",
+   "lat": 41.885391,
+   "lng": 12.485289,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/251773349",
+   "lat": 41.887001,
+   "lng": 12.482773,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/251773551",
+   "lat": 41.893317,
+   "lng": 12.483855,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/251774233",
+   "lat": 41.901258,
+   "lng": 12.484968,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/251774236",
+   "lat": 41.901662,
+   "lng": 12.485754,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/251774238",
+   "lat": 41.911419,
+   "lng": 12.487827,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/251774241",
+   "lat": 41.892383,
+   "lng": 12.51261,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/251774243",
+   "lat": 41.893211,
+   "lng": 12.509447,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/251774246",
+   "lat": 41.892285,
+   "lng": 12.508577,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/251774248",
+   "lat": 41.92266,
+   "lng": 12.519491,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/251783879",
+   "lat": 41.933526,
+   "lng": 12.525682,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/251783883",
+   "lat": 41.880136,
+   "lng": 12.475314,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/251792639",
+   "lat": 41.88858,
+   "lng": 12.483668,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/2522559243",
+   "lat": 41.858938,
+   "lng": 12.540174,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2522559247",
+   "lat": 41.865156,
+   "lng": 12.540634,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2522559251",
+   "lat": 41.87725,
+   "lng": 12.532702,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2522559257",
+   "lat": 41.886033,
+   "lng": 12.532374,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2522559276",
+   "lat": 41.91862,
+   "lng": 12.510235,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2522559277",
+   "lat": 41.919277,
+   "lng": 12.512946,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2522559278",
+   "lat": 41.92322,
+   "lng": 12.484395,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2522559280",
+   "lat": 41.938776,
+   "lng": 12.514943,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2522579546",
+   "lat": 41.874213,
+   "lng": 12.542332,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2522579547",
+   "lat": 41.932034,
+   "lng": 12.511929,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2522579548",
+   "lat": 41.934541,
+   "lng": 12.520018,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2523207006",
+   "lat": 41.944123,
+   "lng": 12.53,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/252420331",
+   "lat": 41.880881,
+   "lng": 12.474401,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/252441818",
+   "lat": 41.894178,
+   "lng": 12.503869,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/252441819",
+   "lat": 41.894123,
+   "lng": 12.503971,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/2524481464",
+   "lat": 41.918429,
+   "lng": 12.456782,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2524487978",
+   "lat": 41.922863,
+   "lng": 12.456565,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/252602350",
+   "lat": 41.896122,
+   "lng": 12.492903,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/252609581",
+   "lat": 41.896136,
+   "lng": 12.49709,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/252699691",
+   "lat": 41.904536,
+   "lng": 12.476933,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/252899499",
+   "lat": 41.891768,
+   "lng": 12.502205,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/252899503",
+   "lat": 41.894222,
+   "lng": 12.517257,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/253704796",
+   "lat": 41.855707,
+   "lng": 12.458801,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/253704799",
+   "lat": 41.866096,
+   "lng": 12.478911,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/253704800",
+   "lat": 41.866988,
+   "lng": 12.47846,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/253704802",
+   "lat": 41.883512,
+   "lng": 12.50303,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2537299968",
+   "lat": 41.891168,
+   "lng": 12.498721,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/2537300012",
+   "lat": 41.91344,
+   "lng": 12.499733,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/253871563",
+   "lat": 41.907389,
+   "lng": 12.475953,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/254523696",
+   "lat": 41.868543,
+   "lng": 12.490121,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/255019798",
+   "lat": 41.832138,
+   "lng": 12.475588,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/255020313",
+   "lat": 41.882354,
+   "lng": 12.514219,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255020314",
+   "lat": 41.882106,
+   "lng": 12.514133,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255020316",
+   "lat": 41.881979,
+   "lng": 12.513798,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255020317",
+   "lat": 41.88165,
+   "lng": 12.51411,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255020318",
+   "lat": 41.88137,
+   "lng": 12.513957,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255023443",
+   "lat": 41.8871,
+   "lng": 12.522689,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255023460",
+   "lat": 41.887105,
+   "lng": 12.519195,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255117810",
+   "lat": 41.886934,
+   "lng": 12.508155,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/255118657",
+   "lat": 41.900355,
+   "lng": 12.517512,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/255118660",
+   "lat": 41.902644,
+   "lng": 12.519808,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/255332025",
+   "lat": 41.862961,
+   "lng": 12.491358,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/255332124",
+   "lat": 41.856024,
+   "lng": 12.482358,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/255454063",
+   "lat": 41.899506,
+   "lng": 12.496123,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/255454064",
+   "lat": 41.89902,
+   "lng": 12.490225,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/255577312",
+   "lat": 41.897152,
+   "lng": 12.504753,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/256170026",
+   "lat": 41.859866,
+   "lng": 12.499913,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/256170027",
+   "lat": 41.860274,
+   "lng": 12.499998,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/256170031",
+   "lat": 41.867328,
+   "lng": 12.502811,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/256170032",
+   "lat": 41.873186,
+   "lng": 12.501797,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/256572272",
+   "lat": 41.89472,
+   "lng": 12.496371,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/256638790",
+   "lat": 41.889968,
+   "lng": 12.510236,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/256816899",
+   "lat": 41.876767,
+   "lng": 12.507984,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/257348839",
+   "lat": 41.88762,
+   "lng": 12.469347,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/257348840",
+   "lat": 41.887706,
+   "lng": 12.470086,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/257352140",
+   "lat": 41.895346,
+   "lng": 12.472528,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/257360905",
+   "lat": 41.895939,
+   "lng": 12.513457,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/257361194",
+   "lat": 41.896688,
+   "lng": 12.51375,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/257473781",
+   "lat": 41.915308,
+   "lng": 12.494193,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257473786",
+   "lat": 41.917174,
+   "lng": 12.496388,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475245",
+   "lat": 41.914923,
+   "lng": 12.491266,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475247",
+   "lat": 41.915249,
+   "lng": 12.490141,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475250",
+   "lat": 41.915197,
+   "lng": 12.490075,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475935",
+   "lat": 41.913733,
+   "lng": 12.491758,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475937",
+   "lat": 41.913794,
+   "lng": 12.491666,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475939",
+   "lat": 41.912699,
+   "lng": 12.485007,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257475940",
+   "lat": 41.912636,
+   "lng": 12.484934,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257476153",
+   "lat": 41.913654,
+   "lng": 12.481246,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/257669110",
+   "lat": 41.85484,
+   "lng": 12.476259,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/257669112",
+   "lat": 41.851843,
+   "lng": 12.476561,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/258755618",
+   "lat": 41.895722,
+   "lng": 12.477253,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/258755703",
+   "lat": 41.896963,
+   "lng": 12.514165,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/258898189",
+   "lat": 41.91168,
+   "lng": 12.51712,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/258898190",
+   "lat": 41.910933,
+   "lng": 12.516201,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/258898191",
+   "lat": 41.906715,
+   "lng": 12.509652,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/259206421",
+   "lat": 41.926794,
+   "lng": 12.521672,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/259701220",
+   "lat": 41.857188,
+   "lng": 12.523756,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/259865022",
+   "lat": 41.854965,
+   "lng": 12.478373,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/259865501",
+   "lat": 41.877747,
+   "lng": 12.479667,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/259867027",
+   "lat": 41.891104,
+   "lng": 12.528098,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/259867393",
+   "lat": 41.891971,
+   "lng": 12.532215,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/259867679",
+   "lat": 41.871467,
+   "lng": 12.51061,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/260201677",
+   "lat": 41.874886,
+   "lng": 12.533974,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/260204144",
+   "lat": 41.917302,
+   "lng": 12.465897,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/260540023",
+   "lat": 41.857266,
+   "lng": 12.477356,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/260540024",
+   "lat": 41.860778,
+   "lng": 12.477892,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/260540145",
+   "lat": 41.852914,
+   "lng": 12.479481,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/261634325",
+   "lat": 41.884318,
+   "lng": 12.529629,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2621497464",
+   "lat": 41.928319,
+   "lng": 12.462508,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/262330637",
+   "lat": 41.892918,
+   "lng": 12.513098,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/262461036",
+   "lat": 41.900464,
+   "lng": 12.508583,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/2627430749",
+   "lat": 41.856039,
+   "lng": 12.516347,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2642163020",
+   "lat": 41.905592,
+   "lng": 12.470419,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/264249021",
+   "lat": 41.851497,
+   "lng": 12.521159,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264249791",
+   "lat": 41.848831,
+   "lng": 12.4807,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264250532",
+   "lat": 41.845764,
+   "lng": 12.483235,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264250537",
+   "lat": 41.847847,
+   "lng": 12.483821,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264253408",
+   "lat": 41.834291,
+   "lng": 12.540448,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264261346",
+   "lat": 41.841773,
+   "lng": 12.488349,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264261365",
+   "lat": 41.841114,
+   "lng": 12.489136,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264261799",
+   "lat": 41.839531,
+   "lng": 12.489906,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264268923",
+   "lat": 41.835718,
+   "lng": 12.507782,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264268970",
+   "lat": 41.841215,
+   "lng": 12.511634,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/264672605",
+   "lat": 41.894161,
+   "lng": 12.510944,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/264672606",
+   "lat": 41.894353,
+   "lng": 12.537098,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/264672607",
+   "lat": 41.893877,
+   "lng": 12.536605,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/264897052",
+   "lat": 41.888312,
+   "lng": 12.480963,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/265752122",
+   "lat": 41.85972,
+   "lng": 12.481906,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/265752125",
+   "lat": 41.861421,
+   "lng": 12.48577,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/265758250",
+   "lat": 41.880441,
+   "lng": 12.510229,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/265767259",
+   "lat": 41.886309,
+   "lng": 12.509786,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/265837380",
+   "lat": 41.886553,
+   "lng": 12.503842,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/266310817",
+   "lat": 41.892685,
+   "lng": 12.493111,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/266317282",
+   "lat": 41.893261,
+   "lng": 12.490166,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/266773743",
+   "lat": 41.88248,
+   "lng": 12.484016,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/266773744",
+   "lat": 41.885061,
+   "lng": 12.480327,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/266773746",
+   "lat": 41.875502,
+   "lng": 12.476871,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/266788725",
+   "lat": 41.872051,
+   "lng": 12.478768,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/266962468",
+   "lat": 41.878272,
+   "lng": 12.486478,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/266962469",
+   "lat": 41.877803,
+   "lng": 12.485479,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/266962641",
+   "lat": 41.881448,
+   "lng": 12.486715,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/266965232",
+   "lat": 41.88335,
+   "lng": 12.487526,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/267112897",
+   "lat": 41.891464,
+   "lng": 12.469102,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/267112898",
+   "lat": 41.896555,
+   "lng": 12.464326,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/267112935",
+   "lat": 41.894047,
+   "lng": 12.473535,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/267157923",
+   "lat": 41.887357,
+   "lng": 12.513268,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/267157924",
+   "lat": 41.887449,
+   "lng": 12.513881,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/267157925",
+   "lat": 41.886417,
+   "lng": 12.510729,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/267158306",
+   "lat": 41.884808,
+   "lng": 12.508319,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/267941846",
+   "lat": 41.911388,
+   "lng": 12.477897,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/267941855",
+   "lat": 41.912058,
+   "lng": 12.50319,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/267944268",
+   "lat": 41.87743,
+   "lng": 12.506526,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2679604597",
+   "lat": 41.906848,
+   "lng": 12.515726,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2683729570",
+   "lat": 41.929522,
+   "lng": 12.469661,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/269224072",
+   "lat": 41.891324,
+   "lng": 12.510347,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2698096342",
+   "lat": 41.859162,
+   "lng": 12.478084,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/270193647",
+   "lat": 41.920018,
+   "lng": 12.497668,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/270193648",
+   "lat": 41.909536,
+   "lng": 12.506429,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270194436",
+   "lat": 41.873905,
+   "lng": 12.508974,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/270194708",
+   "lat": 41.867861,
+   "lng": 12.520502,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270196887",
+   "lat": 41.909357,
+   "lng": 12.507843,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270197750",
+   "lat": 41.906974,
+   "lng": 12.513865,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270197842",
+   "lat": 41.909639,
+   "lng": 12.510542,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270197843",
+   "lat": 41.904232,
+   "lng": 12.517291,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270197916",
+   "lat": 41.900433,
+   "lng": 12.514264,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/270198478",
+   "lat": 41.885525,
+   "lng": 12.494358,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/270198479",
+   "lat": 41.88376,
+   "lng": 12.494784,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/270198480",
+   "lat": 41.885478,
+   "lng": 12.493231,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/270199174",
+   "lat": 41.913005,
+   "lng": 12.501169,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270199175",
+   "lat": 41.911625,
+   "lng": 12.501573,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/270199359",
+   "lat": 41.861936,
+   "lng": 12.482332,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/270287292",
+   "lat": 41.865724,
+   "lng": 12.501917,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270287296",
+   "lat": 41.86577,
+   "lng": 12.502318,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270287297",
+   "lat": 41.866479,
+   "lng": 12.500227,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270287332",
+   "lat": 41.864637,
+   "lng": 12.502637,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270296197",
+   "lat": 41.853658,
+   "lng": 12.49799,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270302557",
+   "lat": 41.845781,
+   "lng": 12.491293,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/270315816",
+   "lat": 41.887532,
+   "lng": 12.511982,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/270317883",
+   "lat": 41.911049,
+   "lng": 12.508505,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2713386499",
+   "lat": 41.920599,
+   "lng": 12.48067,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2724305949",
+   "lat": 41.887721,
+   "lng": 12.502052,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2735002363",
+   "lat": 41.89432,
+   "lng": 12.46617,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/2735002367",
+   "lat": 41.900771,
+   "lng": 12.490351,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/2735002372",
+   "lat": 41.901558,
+   "lng": 12.473154,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/2735002378",
+   "lat": 41.901706,
+   "lng": 12.473573,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/2743701013",
+   "lat": 41.874557,
+   "lng": 12.483465,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/2746642187",
+   "lat": 41.875338,
+   "lng": 12.527571,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/2753902519",
+   "lat": 41.88634,
+   "lng": 12.530103,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276548701",
+   "lat": 41.874525,
+   "lng": 12.506154,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/276549297",
+   "lat": 41.899067,
+   "lng": 12.510665,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/276549965",
+   "lat": 41.908053,
+   "lng": 12.530136,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/276551773",
+   "lat": 41.889672,
+   "lng": 12.523173,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276551793",
+   "lat": 41.886198,
+   "lng": 12.515466,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276552067",
+   "lat": 41.880431,
+   "lng": 12.506257,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276553156",
+   "lat": 41.875594,
+   "lng": 12.507486,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276553272",
+   "lat": 41.862975,
+   "lng": 12.502792,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/276555586",
+   "lat": 41.876456,
+   "lng": 12.509986,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/276555834",
+   "lat": 41.889054,
+   "lng": 12.507615,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/279783447",
+   "lat": 41.868615,
+   "lng": 12.517821,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/279788988",
+   "lat": 41.88417,
+   "lng": 12.517158,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/279788989",
+   "lat": 41.881416,
+   "lng": 12.519152,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/279878641",
+   "lat": 41.872995,
+   "lng": 12.514426,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/280114851",
+   "lat": 41.881402,
+   "lng": 12.467911,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/280155143",
+   "lat": 41.889461,
+   "lng": 12.500904,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/280888442",
+   "lat": 41.876787,
+   "lng": 12.525587,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281140126",
+   "lat": 41.875529,
+   "lng": 12.514612,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281140127",
+   "lat": 41.874886,
+   "lng": 12.51527,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281140562",
+   "lat": 41.8742,
+   "lng": 12.51861,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281140563",
+   "lat": 41.874263,
+   "lng": 12.519325,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281141273",
+   "lat": 41.871929,
+   "lng": 12.517577,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/281141310",
+   "lat": 41.869586,
+   "lng": 12.516273,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/281141311",
+   "lat": 41.870184,
+   "lng": 12.516029,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/281348356",
+   "lat": 41.896514,
+   "lng": 12.471068,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/281348357",
+   "lat": 41.895165,
+   "lng": 12.474127,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/281348358",
+   "lat": 41.893653,
+   "lng": 12.478664,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/281348359",
+   "lat": 41.89603,
+   "lng": 12.473505,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/281348360",
+   "lat": 41.892906,
+   "lng": 12.476747,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/281348403",
+   "lat": 41.876265,
+   "lng": 12.499945,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/281348404",
+   "lat": 41.875791,
+   "lng": 12.501265,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/281351519",
+   "lat": 41.896325,
+   "lng": 12.492223,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/281351520",
+   "lat": 41.864168,
+   "lng": 12.488946,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/281351621",
+   "lat": 41.851565,
+   "lng": 12.49198,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/281351996",
+   "lat": 41.877742,
+   "lng": 12.527909,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281351999",
+   "lat": 41.879412,
+   "lng": 12.521465,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/281352641",
+   "lat": 41.891591,
+   "lng": 12.500399,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/2816155544",
+   "lat": 41.91646,
+   "lng": 12.439242,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/281630057",
+   "lat": 41.861806,
+   "lng": 12.499991,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/281643625",
+   "lat": 41.875699,
+   "lng": 12.504027,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/2830517842",
+   "lat": 41.895481,
+   "lng": 12.473025,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/2840546131",
+   "lat": 41.938884,
+   "lng": 12.479815,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2843428986",
+   "lat": 41.910933,
+   "lng": 12.519629,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2871325936",
+   "lat": 41.932171,
+   "lng": 12.469543,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2871325940",
+   "lat": 41.932416,
+   "lng": 12.470608,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2871412682",
+   "lat": 41.932837,
+   "lng": 12.475917,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/2882375865",
+   "lat": 41.905708,
+   "lng": 12.505888,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/2884611090",
+   "lat": 41.936214,
+   "lng": 12.437324,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2896634819",
+   "lat": 41.861978,
+   "lng": 12.542824,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/289941615",
+   "lat": 41.854814,
+   "lng": 12.530676,
+   "name": "Fonte Egeria",
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2919060501",
+   "lat": 41.90836,
+   "lng": 12.439834,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081659",
+   "lat": 41.907053,
+   "lng": 12.440659,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081660",
+   "lat": 41.922338,
+   "lng": 12.43664,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081661",
+   "lat": 41.925635,
+   "lng": 12.434422,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081662",
+   "lat": 41.927578,
+   "lng": 12.432986,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081663",
+   "lat": 41.929518,
+   "lng": 12.423853,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081664",
+   "lat": 41.933283,
+   "lng": 12.424064,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081665",
+   "lat": 41.933777,
+   "lng": 12.424155,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081666",
+   "lat": 41.93426,
+   "lng": 12.42423,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2919081667",
+   "lat": 41.93467,
+   "lng": 12.424281,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2924531713",
+   "lat": 41.884258,
+   "lng": 12.525565,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/294113462",
+   "lat": 41.8384,
+   "lng": 12.481559,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/294703373",
+   "lat": 41.849306,
+   "lng": 12.485192,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/294703377",
+   "lat": 41.848193,
+   "lng": 12.486676,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/2955942622",
+   "lat": 41.907305,
+   "lng": 12.441269,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2955958501",
+   "lat": 41.908626,
+   "lng": 12.441861,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/2963529033",
+   "lat": 41.911127,
+   "lng": 12.50127,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/299617520",
+   "lat": 41.854419,
+   "lng": 12.488152,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/300564719",
+   "lat": 41.85484,
+   "lng": 12.475704,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/300578572",
+   "lat": 41.896764,
+   "lng": 12.512835,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/300580540",
+   "lat": 41.905711,
+   "lng": 12.500447,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/300607489",
+   "lat": 41.916569,
+   "lng": 12.501948,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/300607490",
+   "lat": 41.894835,
+   "lng": 12.514119,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/300614369",
+   "lat": 41.879244,
+   "lng": 12.541932,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/300614370",
+   "lat": 41.879457,
+   "lng": 12.537748,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/301491693",
+   "lat": 41.913672,
+   "lng": 12.503245,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/302112951",
+   "lat": 41.882482,
+   "lng": 12.502863,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/302112953",
+   "lat": 41.879695,
+   "lng": 12.504382,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/302113233",
+   "lat": 41.86172,
+   "lng": 12.501564,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/303873366",
+   "lat": 41.866916,
+   "lng": 12.523862,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/303873368",
+   "lat": 41.866901,
+   "lng": 12.524451,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/303873369",
+   "lat": 41.867774,
+   "lng": 12.526552,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/304151931",
+   "lat": 41.845108,
+   "lng": 12.483969,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/304151933",
+   "lat": 41.842677,
+   "lng": 12.483241,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3050205970",
+   "lat": 41.862143,
+   "lng": 12.463767,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/3056141350",
+   "lat": 41.891166,
+   "lng": 12.482163,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/305813661",
+   "lat": 41.877588,
+   "lng": 12.537952,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/305813668",
+   "lat": 41.88262,
+   "lng": 12.539042,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/305813670",
+   "lat": 41.878188,
+   "lng": 12.540856,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/305814178",
+   "lat": 41.885838,
+   "lng": 12.537549,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/305814414",
+   "lat": 41.934861,
+   "lng": 12.535944,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/307552031",
+   "lat": 41.873796,
+   "lng": 12.529895,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/307557541",
+   "lat": 41.869289,
+   "lng": 12.529929,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3078216019",
+   "lat": 41.913601,
+   "lng": 12.510907,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/307961720",
+   "lat": 41.887848,
+   "lng": 12.476673,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/309560164",
+   "lat": 41.885006,
+   "lng": 12.521185,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/309560165",
+   "lat": 41.88552,
+   "lng": 12.524375,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/309562123",
+   "lat": 41.868959,
+   "lng": 12.538582,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/309566299",
+   "lat": 41.872056,
+   "lng": 12.513082,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/309568191",
+   "lat": 41.927516,
+   "lng": 12.463694,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/309568303",
+   "lat": 41.928638,
+   "lng": 12.468858,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/309568304",
+   "lat": 41.920913,
+   "lng": 12.472081,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/309569305",
+   "lat": 41.906511,
+   "lng": 12.468902,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/309569311",
+   "lat": 41.906762,
+   "lng": 12.473118,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/309569715",
+   "lat": 41.874868,
+   "lng": 12.485282,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/3098527533",
+   "lat": 41.891516,
+   "lng": 12.484115,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/310470008",
+   "lat": 41.852538,
+   "lng": 12.502843,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3139782381",
+   "lat": 41.875194,
+   "lng": 12.467305,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/319116317",
+   "lat": 41.879964,
+   "lng": 12.501567,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/3242620885",
+   "lat": 41.832478,
+   "lng": 12.51359,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/327114989",
+   "lat": 41.893773,
+   "lng": 12.501032,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/330879692",
+   "lat": 41.881496,
+   "lng": 12.511874,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/332092567",
+   "lat": 41.87996,
+   "lng": 12.510931,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/332092570",
+   "lat": 41.880098,
+   "lng": 12.51093,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/332092590",
+   "lat": 41.880019,
+   "lng": 12.510049,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/332093624",
+   "lat": 41.878575,
+   "lng": 12.515989,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/334497041",
+   "lat": 41.91706,
+   "lng": 12.523801,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3357881555",
+   "lat": 41.83121,
+   "lng": 12.490518,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3357898799",
+   "lat": 41.827437,
+   "lng": 12.490973,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3357938429",
+   "lat": 41.836296,
+   "lng": 12.500668,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3357950764",
+   "lat": 41.834658,
+   "lng": 12.504304,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/336591743",
+   "lat": 41.886367,
+   "lng": 12.521507,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/336636532",
+   "lat": 41.873193,
+   "lng": 12.524511,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/336636539",
+   "lat": 41.872593,
+   "lng": 12.5228,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3368369594",
+   "lat": 41.908253,
+   "lng": 12.440663,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/3385874180",
+   "lat": 41.911438,
+   "lng": 12.43485,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/3385879625",
+   "lat": 41.909979,
+   "lng": 12.435186,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/339409293",
+   "lat": 41.856808,
+   "lng": 12.497764,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/339410242",
+   "lat": 41.859334,
+   "lng": 12.502309,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3398034128",
+   "lat": 41.916822,
+   "lng": 12.510399,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3398087229",
+   "lat": 41.916452,
+   "lng": 12.50987,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3447037973",
+   "lat": 41.906608,
+   "lng": 12.490104,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/3471914044",
+   "lat": 41.907184,
+   "lng": 12.51223,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3471923482",
+   "lat": 41.908623,
+   "lng": 12.510979,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3471930664",
+   "lat": 41.906041,
+   "lng": 12.513457,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3471933568",
+   "lat": 41.908059,
+   "lng": 12.513076,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3531834099",
+   "lat": 41.899498,
+   "lng": 12.477956,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/3531834100",
+   "lat": 41.902962,
+   "lng": 12.477628,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/353905326",
+   "lat": 41.856177,
+   "lng": 12.49775,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/353906538",
+   "lat": 41.861117,
+   "lng": 12.498851,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/356707639",
+   "lat": 41.910093,
+   "lng": 12.51811,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/358415348",
+   "lat": 41.854554,
+   "lng": 12.480955,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/358421553",
+   "lat": 41.899985,
+   "lng": 12.473001,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/358421556",
+   "lat": 41.90073,
+   "lng": 12.471817,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/358425632",
+   "lat": 41.858226,
+   "lng": 12.543163,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3606092352",
+   "lat": 41.891346,
+   "lng": 12.479314,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/361132365",
+   "lat": 41.891198,
+   "lng": 12.542015,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/3632902049",
+   "lat": 41.880068,
+   "lng": 12.448816,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/3647179424",
+   "lat": 41.914276,
+   "lng": 12.48246,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/3663625756",
+   "lat": 41.926238,
+   "lng": 12.521844,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3663625811",
+   "lat": 41.92614,
+   "lng": 12.521095,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3663627634",
+   "lat": 41.925881,
+   "lng": 12.522117,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3663627670",
+   "lat": 41.926511,
+   "lng": 12.52154,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3669629029",
+   "lat": 41.928754,
+   "lng": 12.51213,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/367849358",
+   "lat": 41.83707,
+   "lng": 12.425651,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/367850050",
+   "lat": 41.834618,
+   "lng": 12.43092,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/368237711",
+   "lat": 41.837012,
+   "lng": 12.431317,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/368240326",
+   "lat": 41.837767,
+   "lng": 12.429171,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/373834232",
+   "lat": 41.826585,
+   "lng": 12.445702,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/3751654257",
+   "lat": 41.925198,
+   "lng": 12.510638,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3753046606",
+   "lat": 41.855651,
+   "lng": 12.483941,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/3760870717",
+   "lat": 41.894179,
+   "lng": 12.450305,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/3760870718",
+   "lat": 41.894447,
+   "lng": 12.450306,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/3760870724",
+   "lat": 41.895385,
+   "lng": 12.44865,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/377079548",
+   "lat": 41.909052,
+   "lng": 12.446533,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/3777784821",
+   "lat": 41.928847,
+   "lng": 12.512328,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3780804950",
+   "lat": 41.886925,
+   "lng": 12.476641,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/3785014818",
+   "lat": 41.887338,
+   "lng": 12.493439,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/3786621294",
+   "lat": 41.886711,
+   "lng": 12.492721,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/3806344866",
+   "lat": 41.899743,
+   "lng": 12.451773,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/388829715",
+   "lat": 41.928371,
+   "lng": 12.505235,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388829841",
+   "lat": 41.927789,
+   "lng": 12.506892,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388837896",
+   "lat": 41.928864,
+   "lng": 12.524551,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388837903",
+   "lat": 41.930002,
+   "lng": 12.528895,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388839944",
+   "lat": 41.926824,
+   "lng": 12.532694,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388853793",
+   "lat": 41.9023,
+   "lng": 12.506153,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/388853795",
+   "lat": 41.902374,
+   "lng": 12.504834,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/388870113",
+   "lat": 41.860315,
+   "lng": 12.487355,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/388870114",
+   "lat": 41.860336,
+   "lng": 12.480268,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/388907969",
+   "lat": 41.907781,
+   "lng": 12.525519,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/388924805",
+   "lat": 41.8784,
+   "lng": 12.507927,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/388983995",
+   "lat": 41.886937,
+   "lng": 12.494945,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/388984003",
+   "lat": 41.887741,
+   "lng": 12.494519,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/3901523314",
+   "lat": 41.904164,
+   "lng": 12.47803,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/393466818",
+   "lat": 41.874996,
+   "lng": 12.489377,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/394259748",
+   "lat": 41.899095,
+   "lng": 12.520981,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3964515546",
+   "lat": 41.876225,
+   "lng": 12.47353,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/3969450899",
+   "lat": 41.926371,
+   "lng": 12.543208,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/3971000486",
+   "lat": 41.895595,
+   "lng": 12.452025,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/3978214109",
+   "lat": 41.903789,
+   "lng": 12.48184,
+   "name": "Fontana del Moretto",
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/402536349",
+   "lat": 41.859077,
+   "lng": 12.510809,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4092720013",
+   "lat": 41.874498,
+   "lng": 12.541154,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4092731837",
+   "lat": 41.926992,
+   "lng": 12.461014,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/4095691132",
+   "lat": 41.875387,
+   "lng": 12.543493,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/410773095",
+   "lat": 41.879037,
+   "lng": 12.501202,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/410773096",
+   "lat": 41.878432,
+   "lng": 12.502396,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/410780417",
+   "lat": 41.880229,
+   "lng": 12.512477,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/410783553",
+   "lat": 41.899951,
+   "lng": 12.47977,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/4113841890",
+   "lat": 41.903214,
+   "lng": 12.457179,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/412045679",
+   "lat": 41.869573,
+   "lng": 12.521334,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/413495062",
+   "lat": 41.884682,
+   "lng": 12.468605,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/413506165",
+   "lat": 41.923022,
+   "lng": 12.49362,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/413517362",
+   "lat": 41.922374,
+   "lng": 12.523494,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/413517363",
+   "lat": 41.921463,
+   "lng": 12.522898,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/413517621",
+   "lat": 41.926919,
+   "lng": 12.519738,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/413518065",
+   "lat": 41.926551,
+   "lng": 12.526017,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/413518830",
+   "lat": 41.93332,
+   "lng": 12.52374,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/413520229",
+   "lat": 41.93295,
+   "lng": 12.53732,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/414271434",
+   "lat": 41.887901,
+   "lng": 12.534973,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4150884514",
+   "lat": 41.925318,
+   "lng": 12.504234,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/420456010",
+   "lat": 41.878374,
+   "lng": 12.518567,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4211288534",
+   "lat": 41.917646,
+   "lng": 12.519917,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4211302026",
+   "lat": 41.901176,
+   "lng": 12.519449,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/422707974",
+   "lat": 41.910856,
+   "lng": 12.449495,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4234653009",
+   "lat": 41.908486,
+   "lng": 12.474691,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/4244920205",
+   "lat": 41.877879,
+   "lng": 12.542928,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4244960720",
+   "lat": 41.872092,
+   "lng": 12.520442,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4270275789",
+   "lat": 41.908292,
+   "lng": 12.539842,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4271278053",
+   "lat": 41.899579,
+   "lng": 12.488373,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/427840863",
+   "lat": 41.846075,
+   "lng": 12.485529,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/427841374",
+   "lat": 41.826417,
+   "lng": 12.47843,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/429907689",
+   "lat": 41.917514,
+   "lng": 12.479303,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/4323199789",
+   "lat": 41.875742,
+   "lng": 12.440476,
+   "name": "Via del Casaletto",
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/4368659837",
+   "lat": 41.901237,
+   "lng": 12.457302,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385275650",
+   "lat": 41.901239,
+   "lng": 12.45725,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385275651",
+   "lat": 41.90128,
+   "lng": 12.457302,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385275652",
+   "lat": 41.901281,
+   "lng": 12.457251,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385278320",
+   "lat": 41.90317,
+   "lng": 12.457182,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385278321",
+   "lat": 41.903173,
+   "lng": 12.457232,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4385278322",
+   "lat": 41.903216,
+   "lng": 12.457231,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4393157076",
+   "lat": 41.908442,
+   "lng": 12.517744,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4412504389",
+   "lat": 41.881321,
+   "lng": 12.470956,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4413153091",
+   "lat": 41.903756,
+   "lng": 12.459455,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/442927803",
+   "lat": 41.939606,
+   "lng": 12.523996,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/442927922",
+   "lat": 41.937002,
+   "lng": 12.527667,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/442927969",
+   "lat": 41.929219,
+   "lng": 12.516158,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/442928022",
+   "lat": 41.921151,
+   "lng": 12.510012,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4450364080",
+   "lat": 41.915594,
+   "lng": 12.492536,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/4450594029",
+   "lat": 41.90157,
+   "lng": 12.481468,
+   "name": "Miracle Water",
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/4454926260",
+   "lat": 41.91109,
+   "lng": 12.496078,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/445696058",
+   "lat": 41.878408,
+   "lng": 12.510969,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4459615012",
+   "lat": 41.854344,
+   "lng": 12.467988,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4464678624",
+   "lat": 41.937404,
+   "lng": 12.516752,
+   "name": "Fontanella o \"nasone\"",
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4474577790",
+   "lat": 41.885152,
+   "lng": 12.472492,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/448927785",
+   "lat": 41.910312,
+   "lng": 12.4995,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/448931409",
+   "lat": 41.92356,
+   "lng": 12.471164,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/448962630",
+   "lat": 41.922209,
+   "lng": 12.489991,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/448962643",
+   "lat": 41.924395,
+   "lng": 12.486321,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/448962656",
+   "lat": 41.922601,
+   "lng": 12.487222,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/448962657",
+   "lat": 41.923241,
+   "lng": 12.485736,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/448974450",
+   "lat": 41.921387,
+   "lng": 12.492595,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/4514854791",
+   "lat": 41.900643,
+   "lng": 12.53513,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/454447561",
+   "lat": 41.864524,
+   "lng": 12.532531,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/454447567",
+   "lat": 41.865454,
+   "lng": 12.531434,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/454458848",
+   "lat": 41.902348,
+   "lng": 12.496991,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/4554725596",
+   "lat": 41.897132,
+   "lng": 12.43492,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4577562589",
+   "lat": 41.930766,
+   "lng": 12.490071,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/458406152",
+   "lat": 41.875527,
+   "lng": 12.522279,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/458435672",
+   "lat": 41.860919,
+   "lng": 12.483502,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/458435674",
+   "lat": 41.861161,
+   "lng": 12.484129,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/459100439",
+   "lat": 41.855869,
+   "lng": 12.476635,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/459100450",
+   "lat": 41.848799,
+   "lng": 12.478319,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4612502049",
+   "lat": 41.944483,
+   "lng": 12.46208,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/464002538",
+   "lat": 41.866911,
+   "lng": 12.491478,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4658940354",
+   "lat": 41.866076,
+   "lng": 12.471336,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4680258491",
+   "lat": 41.885704,
+   "lng": 12.517166,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4683394127",
+   "lat": 41.901297,
+   "lng": 12.438224,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/469543591",
+   "lat": 41.883507,
+   "lng": 12.521556,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/469750703",
+   "lat": 41.908394,
+   "lng": 12.460739,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/469751052",
+   "lat": 41.907873,
+   "lng": 12.462676,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/469752228",
+   "lat": 41.903205,
+   "lng": 12.479716,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/469752582",
+   "lat": 41.890364,
+   "lng": 12.502945,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/4699551893",
+   "lat": 41.889423,
+   "lng": 12.543167,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/472231123",
+   "lat": 41.856003,
+   "lng": 12.450775,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4729313375",
+   "lat": 41.85884,
+   "lng": 12.493339,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4731211953",
+   "lat": 41.937151,
+   "lng": 12.536873,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4732645569",
+   "lat": 41.909304,
+   "lng": 12.475605,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/4741926463",
+   "lat": 41.882447,
+   "lng": 12.540425,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4747280690",
+   "lat": 41.884774,
+   "lng": 12.529038,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4754161325",
+   "lat": 41.880797,
+   "lng": 12.542802,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/4786004027",
+   "lat": 41.895686,
+   "lng": 12.426751,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4786150566",
+   "lat": 41.895616,
+   "lng": 12.427809,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4793929923",
+   "lat": 41.907819,
+   "lng": 12.488545,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/4826144910",
+   "lat": 41.865682,
+   "lng": 12.483905,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4864399997",
+   "lat": 41.913062,
+   "lng": 12.543742,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4864400010",
+   "lat": 41.912812,
+   "lng": 12.542337,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4870734621",
+   "lat": 41.921371,
+   "lng": 12.515284,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4870735121",
+   "lat": 41.921913,
+   "lng": 12.513739,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/4920531725",
+   "lat": 41.899459,
+   "lng": 12.454593,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/4928750397",
+   "lat": 41.829174,
+   "lng": 12.482783,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/4934063073",
+   "lat": 41.902835,
+   "lng": 12.486367,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/495048544",
+   "lat": 41.893148,
+   "lng": 12.474294,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/495048559",
+   "lat": 41.903015,
+   "lng": 12.483291,
+   "name": "Fontana del Bufalo",
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/495101708",
+   "lat": 41.875631,
+   "lng": 12.518369,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/495101720",
+   "lat": 41.875685,
+   "lng": 12.520336,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/495113034",
+   "lat": 41.891331,
+   "lng": 12.493428,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/4952745846",
+   "lat": 41.854189,
+   "lng": 12.463424,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/4954580925",
+   "lat": 41.851808,
+   "lng": 12.494129,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/497353710",
+   "lat": 41.884483,
+   "lng": 12.480173,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/4982667014",
+   "lat": 41.895337,
+   "lng": 12.450439,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5009256923",
+   "lat": 41.912118,
+   "lng": 12.505047,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5028312325",
+   "lat": 41.894627,
+   "lng": 12.479606,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5028358421",
+   "lat": 41.90043,
+   "lng": 12.47085,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5029614660",
+   "lat": 41.903123,
+   "lng": 12.461429,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5043344975",
+   "lat": 41.883112,
+   "lng": 12.533786,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/5048201303",
+   "lat": 41.877817,
+   "lng": 12.458143,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5079813321",
+   "lat": 41.867499,
+   "lng": 12.471632,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/508307502",
+   "lat": 41.876927,
+   "lng": 12.47473,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/508307504",
+   "lat": 41.875574,
+   "lng": 12.490431,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/5091128837",
+   "lat": 41.864832,
+   "lng": 12.539058,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5099153325",
+   "lat": 41.86508,
+   "lng": 12.446682,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/5103159908",
+   "lat": 41.904243,
+   "lng": 12.46154,
+   "name": "Acqua Angelica",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5108982397",
+   "lat": 41.89539,
+   "lng": 12.470171,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5124470395",
+   "lat": 41.901827,
+   "lng": 12.453612,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5124470397",
+   "lat": 41.902033,
+   "lng": 12.454513,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5126273263",
+   "lat": 41.861394,
+   "lng": 12.536392,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5160523049",
+   "lat": 41.857816,
+   "lng": 12.54213,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5167177172",
+   "lat": 41.884693,
+   "lng": 12.463633,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5167180879",
+   "lat": 41.884694,
+   "lng": 12.46231,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5167443540",
+   "lat": 41.895573,
+   "lng": 12.49319,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5169986803",
+   "lat": 41.883165,
+   "lng": 12.464445,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5182512062",
+   "lat": 41.890813,
+   "lng": 12.513271,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/5203877866",
+   "lat": 41.84358,
+   "lng": 12.485605,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/521790367",
+   "lat": 41.891797,
+   "lng": 12.473841,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/521790371",
+   "lat": 41.89242,
+   "lng": 12.472632,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5222950839",
+   "lat": 41.869954,
+   "lng": 12.492174,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/5265667721",
+   "lat": 41.900049,
+   "lng": 12.470958,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5312498280",
+   "lat": 41.908862,
+   "lng": 12.452973,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5314059440",
+   "lat": 41.886353,
+   "lng": 12.490124,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5316361874",
+   "lat": 41.898693,
+   "lng": 12.483918,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5324611996",
+   "lat": 41.899384,
+   "lng": 12.47673,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/5340247517",
+   "lat": 41.891243,
+   "lng": 12.497852,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5340252322",
+   "lat": 41.891387,
+   "lng": 12.497397,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5373723799",
+   "lat": 41.919913,
+   "lng": 12.500828,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5401056270",
+   "lat": 41.867803,
+   "lng": 12.47295,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/5401682644",
+   "lat": 41.875432,
+   "lng": 12.468579,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/5403935872",
+   "lat": 41.854921,
+   "lng": 12.470248,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/5426719922",
+   "lat": 41.888539,
+   "lng": 12.478141,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5426719923",
+   "lat": 41.887905,
+   "lng": 12.476594,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5428648755",
+   "lat": 41.90246,
+   "lng": 12.515127,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5436140511",
+   "lat": 41.935773,
+   "lng": 12.531173,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5456516654",
+   "lat": 41.835488,
+   "lng": 12.468986,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5467922921",
+   "lat": 41.917299,
+   "lng": 12.467513,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5467922930",
+   "lat": 41.915491,
+   "lng": 12.46275,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5486199647",
+   "lat": 41.929628,
+   "lng": 12.474646,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/550325587",
+   "lat": 41.899497,
+   "lng": 12.469456,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/550325611",
+   "lat": 41.899506,
+   "lng": 12.470695,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/551785500",
+   "lat": 41.882916,
+   "lng": 12.49977,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/551832306",
+   "lat": 41.878399,
+   "lng": 12.504582,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/551832340",
+   "lat": 41.878846,
+   "lng": 12.503351,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/5535092255",
+   "lat": 41.891799,
+   "lng": 12.491523,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5574714298",
+   "lat": 41.905498,
+   "lng": 12.52645,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5578072257",
+   "lat": 41.869965,
+   "lng": 12.484602,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/560447974",
+   "lat": 41.904256,
+   "lng": 12.502538,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/563222067",
+   "lat": 41.857814,
+   "lng": 12.491332,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/564075629",
+   "lat": 41.925338,
+   "lng": 12.497037,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/564075638",
+   "lat": 41.924631,
+   "lng": 12.499928,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/564286710",
+   "lat": 41.880081,
+   "lng": 12.542104,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/564399160",
+   "lat": 41.915237,
+   "lng": 12.520506,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/564399176",
+   "lat": 41.926091,
+   "lng": 12.506729,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/564421074",
+   "lat": 41.926706,
+   "lng": 12.510147,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/564434526",
+   "lat": 41.931603,
+   "lng": 12.507927,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/564466957",
+   "lat": 41.92793,
+   "lng": 12.506553,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/564679380",
+   "lat": 41.93473,
+   "lng": 12.505966,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5728136028",
+   "lat": 41.827667,
+   "lng": 12.464898,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5732659653",
+   "lat": 41.89367,
+   "lng": 12.492317,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/5736991466",
+   "lat": 41.883102,
+   "lng": 12.537004,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/5747437099",
+   "lat": 41.884968,
+   "lng": 12.478712,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/574960624",
+   "lat": 41.947495,
+   "lng": 12.531939,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5758045023",
+   "lat": 41.841205,
+   "lng": 12.493817,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5758045881",
+   "lat": 41.83528,
+   "lng": 12.510789,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5784677072",
+   "lat": 41.930478,
+   "lng": 12.535445,
+   "name": "Acqua Sacra",
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5792136800",
+   "lat": 41.934801,
+   "lng": 12.46043,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5792136801",
+   "lat": 41.935272,
+   "lng": 12.459961,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5792136802",
+   "lat": 41.934412,
+   "lng": 12.460873,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5801329944",
+   "lat": 41.888086,
+   "lng": 12.488457,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/583256850",
+   "lat": 41.908551,
+   "lng": 12.444532,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/583257851",
+   "lat": 41.909812,
+   "lng": 12.44989,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/583258237",
+   "lat": 41.909817,
+   "lng": 12.452974,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/583425768",
+   "lat": 41.908645,
+   "lng": 12.455499,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/583771380",
+   "lat": 41.907119,
+   "lng": 12.449367,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/583771384",
+   "lat": 41.906092,
+   "lng": 12.448054,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/5838541485",
+   "lat": 41.923055,
+   "lng": 12.51309,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5842514652",
+   "lat": 41.873254,
+   "lng": 12.467059,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/5879713140",
+   "lat": 41.903656,
+   "lng": 12.520658,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5890483036",
+   "lat": 41.880471,
+   "lng": 12.508691,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/5900372885",
+   "lat": 41.856844,
+   "lng": 12.541007,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5900372886",
+   "lat": 41.859216,
+   "lng": 12.53717,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5922788382",
+   "lat": 41.847007,
+   "lng": 12.481797,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/5950709211",
+   "lat": 41.910013,
+   "lng": 12.506267,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5971136361",
+   "lat": 41.939165,
+   "lng": 12.462609,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/5983183612",
+   "lat": 41.903305,
+   "lng": 12.52297,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/5985581835",
+   "lat": 41.895187,
+   "lng": 12.453916,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/5991691219",
+   "lat": 41.904506,
+   "lng": 12.523682,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/6002420460",
+   "lat": 41.869871,
+   "lng": 12.49589,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/6009539520",
+   "lat": 41.937132,
+   "lng": 12.469452,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6073117146",
+   "lat": 41.895753,
+   "lng": 12.514549,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/6084526187",
+   "lat": 41.931855,
+   "lng": 12.459976,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6085869863",
+   "lat": 41.931246,
+   "lng": 12.464486,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6166692772",
+   "lat": 41.902292,
+   "lng": 12.523034,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/6173182816",
+   "lat": 41.934684,
+   "lng": 12.47579,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/618922939",
+   "lat": 41.905966,
+   "lng": 12.444184,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/618922940",
+   "lat": 41.904952,
+   "lng": 12.445227,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6198525507",
+   "lat": 41.906157,
+   "lng": 12.458358,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6205713285",
+   "lat": 41.892908,
+   "lng": 12.478927,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/6208038148",
+   "lat": 41.919491,
+   "lng": 12.461334,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6242864225",
+   "lat": 41.908104,
+   "lng": 12.520039,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/6249294887",
+   "lat": 41.91417,
+   "lng": 12.524891,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/625381962",
+   "lat": 41.917654,
+   "lng": 12.459359,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6258658085",
+   "lat": 41.868364,
+   "lng": 12.532522,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/626494415",
+   "lat": 41.918009,
+   "lng": 12.445518,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6280605307",
+   "lat": 41.893982,
+   "lng": 12.493695,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/630492085",
+   "lat": 41.907709,
+   "lng": 12.450889,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6361380153",
+   "lat": 41.905873,
+   "lng": 12.525662,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/639673131",
+   "lat": 41.890927,
+   "lng": 12.467036,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639673153",
+   "lat": 41.892494,
+   "lng": 12.466847,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639673162",
+   "lat": 41.897265,
+   "lng": 12.467564,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/639673167",
+   "lat": 41.897469,
+   "lng": 12.466891,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/639673187",
+   "lat": 41.899387,
+   "lng": 12.465926,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/639831912",
+   "lat": 41.88025,
+   "lng": 12.46159,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639831929",
+   "lat": 41.881053,
+   "lng": 12.462177,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639831932",
+   "lat": 41.884067,
+   "lng": 12.46011,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639831941",
+   "lat": 41.881881,
+   "lng": 12.464816,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/639831973",
+   "lat": 41.908324,
+   "lng": 12.453911,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/639862463",
+   "lat": 41.850701,
+   "lng": 12.423606,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/6401816622",
+   "lat": 41.896931,
+   "lng": 12.536356,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/6417720318",
+   "lat": 41.902772,
+   "lng": 12.440022,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6426417754",
+   "lat": 41.893558,
+   "lng": 12.475433,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/6427696156",
+   "lat": 41.872097,
+   "lng": 12.482795,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/6433864725",
+   "lat": 41.930483,
+   "lng": 12.464881,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6450587449",
+   "lat": 41.9026,
+   "lng": 12.440717,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6462027289",
+   "lat": 41.883979,
+   "lng": 12.509284,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/648637057",
+   "lat": 41.909202,
+   "lng": 12.450275,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/648644602",
+   "lat": 41.916528,
+   "lng": 12.511046,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/650391360",
+   "lat": 41.907518,
+   "lng": 12.460065,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/650391362",
+   "lat": 41.907663,
+   "lng": 12.461304,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6510592888",
+   "lat": 41.910044,
+   "lng": 12.517002,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/652443151",
+   "lat": 41.908979,
+   "lng": 12.448142,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6537337141",
+   "lat": 41.929806,
+   "lng": 12.475809,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/653894259",
+   "lat": 41.922733,
+   "lng": 12.461904,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6545701288",
+   "lat": 41.900398,
+   "lng": 12.496391,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/6547153465",
+   "lat": 41.897102,
+   "lng": 12.494138,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/6547164641",
+   "lat": 41.892404,
+   "lng": 12.487081,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/660310379",
+   "lat": 41.936491,
+   "lng": 12.466885,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/660336663",
+   "lat": 41.938214,
+   "lng": 12.479387,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6610148060",
+   "lat": 41.920304,
+   "lng": 12.474158,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6624702496",
+   "lat": 41.889669,
+   "lng": 12.465586,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/6659251460",
+   "lat": 41.837488,
+   "lng": 12.495114,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/666060909",
+   "lat": 41.911227,
+   "lng": 12.476357,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/666062346",
+   "lat": 41.911137,
+   "lng": 12.475969,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/6710441144",
+   "lat": 41.900387,
+   "lng": 12.456227,
+   "name": "Fontana di Porta Cavalleggeri",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6710441145",
+   "lat": 41.900254,
+   "lng": 12.447912,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6759324185",
+   "lat": 41.904955,
+   "lng": 12.460574,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/678536235",
+   "lat": 41.89135,
+   "lng": 12.534247,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/685457655",
+   "lat": 41.890262,
+   "lng": 12.486711,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/685461877",
+   "lat": 41.889123,
+   "lng": 12.487578,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/685465031",
+   "lat": 41.879324,
+   "lng": 12.491264,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/685465032",
+   "lat": 41.882982,
+   "lng": 12.491591,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/685471538",
+   "lat": 41.903756,
+   "lng": 12.461681,
+   "name": "Acqua Marcia",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/685764399",
+   "lat": 41.910305,
+   "lng": 12.450416,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6867751558",
+   "lat": 41.876211,
+   "lng": 12.543711,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/6875735278",
+   "lat": 41.90089,
+   "lng": 12.462063,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6881095909",
+   "lat": 41.890301,
+   "lng": 12.512601,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/688606241",
+   "lat": 41.911477,
+   "lng": 12.4557,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6893481812",
+   "lat": 41.91342,
+   "lng": 12.461616,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/6942907549",
+   "lat": 41.888007,
+   "lng": 12.4616,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/6960516844",
+   "lat": 41.903375,
+   "lng": 12.512719,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/7021581874",
+   "lat": 41.877507,
+   "lng": 12.474913,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7056130298",
+   "lat": 41.857522,
+   "lng": 12.491621,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/7085935353",
+   "lat": 41.8916,
+   "lng": 12.494188,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/7179361101",
+   "lat": 41.93403,
+   "lng": 12.524359,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/7203154248",
+   "lat": 41.888203,
+   "lng": 12.495549,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/747878163",
+   "lat": 41.910655,
+   "lng": 12.457975,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/7490623585",
+   "lat": 41.931597,
+   "lng": 12.516607,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/7507708385",
+   "lat": 41.870539,
+   "lng": 12.531318,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/754705366",
+   "lat": 41.913279,
+   "lng": 12.453058,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/754720780",
+   "lat": 41.916032,
+   "lng": 12.456484,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/767189118",
+   "lat": 41.910138,
+   "lng": 12.453507,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/769378682",
+   "lat": 41.902093,
+   "lng": 12.457464,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/769378684",
+   "lat": 41.902393,
+   "lng": 12.457453,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/769378685",
+   "lat": 41.902386,
+   "lng": 12.457053,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/769378686",
+   "lat": 41.902085,
+   "lng": 12.45707,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/774108590",
+   "lat": 41.928527,
+   "lng": 12.446111,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/7746807571",
+   "lat": 41.840034,
+   "lng": 12.437232,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7760814360",
+   "lat": 41.860816,
+   "lng": 12.481562,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7780730299",
+   "lat": 41.889444,
+   "lng": 12.491873,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/7786889623",
+   "lat": 41.865745,
+   "lng": 12.487079,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7786937033",
+   "lat": 41.865549,
+   "lng": 12.483871,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7864731499",
+   "lat": 41.880627,
+   "lng": 12.499606,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/7869827179",
+   "lat": 41.896614,
+   "lng": 12.494776,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/7911144202",
+   "lat": 41.918551,
+   "lng": 12.488572,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/7911153828",
+   "lat": 41.917103,
+   "lng": 12.489736,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/7917112690",
+   "lat": 41.842739,
+   "lng": 12.45983,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/7930688118",
+   "lat": 41.855955,
+   "lng": 12.443414,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/797693420",
+   "lat": 41.910693,
+   "lng": 12.454369,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8043933320",
+   "lat": 41.857834,
+   "lng": 12.455105,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/8084582739",
+   "lat": 41.890232,
+   "lng": 12.53292,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/8097366741",
+   "lat": 41.878819,
+   "lng": 12.524872,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/8118447253",
+   "lat": 41.85608,
+   "lng": 12.486033,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/813855268",
+   "lat": 41.922755,
+   "lng": 12.458304,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8164811452",
+   "lat": 41.905269,
+   "lng": 12.441498,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8198966878",
+   "lat": 41.903748,
+   "lng": 12.465386,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8242873977",
+   "lat": 41.932168,
+   "lng": 12.480439,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/8245742542",
+   "lat": 41.924033,
+   "lng": 12.427626,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8258609183",
+   "lat": 41.898641,
+   "lng": 12.471667,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/8278124018",
+   "lat": 41.854399,
+   "lng": 12.470869,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/8437270295",
+   "lat": 41.937057,
+   "lng": 12.460938,
+   "name": null,
+   "horario": null,
+   "zona": "Villa Borghese"
+  },
+  {
+   "id": "node/8463666294",
+   "lat": 41.874569,
+   "lng": 12.472699,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/8478375653",
+   "lat": 41.884869,
+   "lng": 12.508134,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/849786035",
+   "lat": 41.907088,
+   "lng": 12.453657,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8548585912",
+   "lat": 41.85802,
+   "lng": 12.501366,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/8615066223",
+   "lat": 41.843888,
+   "lng": 12.510579,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/8709842810",
+   "lat": 41.859023,
+   "lng": 12.510882,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/871790386",
+   "lat": 41.865539,
+   "lng": 12.491423,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/8733401671",
+   "lat": 41.879778,
+   "lng": 12.53655,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/8935206158",
+   "lat": 41.857366,
+   "lng": 12.503919,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/894768622",
+   "lat": 41.907296,
+   "lng": 12.455535,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/8969024868",
+   "lat": 41.89603,
+   "lng": 12.511908,
+   "name": null,
+   "horario": null,
+   "zona": "Esquilino"
+  },
+  {
+   "id": "node/9108120217",
+   "lat": 41.887734,
+   "lng": 12.484711,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/9111095195",
+   "lat": 41.902327,
+   "lng": 12.515166,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/9219134051",
+   "lat": 41.857401,
+   "lng": 12.468716,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/9235242845",
+   "lat": 41.861727,
+   "lng": 12.499809,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/9269837098",
+   "lat": 41.858234,
+   "lng": 12.468735,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/9299575882",
+   "lat": 41.872483,
+   "lng": 12.453909,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/9299688481",
+   "lat": 41.871267,
+   "lng": 12.446126,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/9385514491",
+   "lat": 41.899864,
+   "lng": 12.468138,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/9519088595",
+   "lat": 41.878428,
+   "lng": 12.496276,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/953841622",
+   "lat": 41.906628,
+   "lng": 12.48303,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/953890053",
+   "lat": 41.888799,
+   "lng": 12.487953,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/953890062",
+   "lat": 41.890985,
+   "lng": 12.488376,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/953909049",
+   "lat": 41.892277,
+   "lng": 12.48238,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/953909053",
+   "lat": 41.900952,
+   "lng": 12.47617,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/953909059",
+   "lat": 41.888985,
+   "lng": 12.496877,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/9545723483",
+   "lat": 41.935039,
+   "lng": 12.429806,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/959828138",
+   "lat": 41.918177,
+   "lng": 12.458977,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/9626676616",
+   "lat": 41.837858,
+   "lng": 12.429022,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/963152534",
+   "lat": 41.878252,
+   "lng": 12.53953,
+   "name": null,
+   "horario": null,
+   "zona": "San Giovanni"
+  },
+  {
+   "id": "node/9695106765",
+   "lat": 41.935143,
+   "lng": 12.511342,
+   "name": null,
+   "horario": null,
+   "zona": "Nomentano"
+  },
+  {
+   "id": "node/9722644109",
+   "lat": 41.887303,
+   "lng": 12.433298,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/9738012501",
+   "lat": 41.943455,
+   "lng": 12.423818,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/9738022170",
+   "lat": 41.93442,
+   "lng": 12.43942,
+   "name": null,
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "node/9738041464",
+   "lat": 41.896607,
+   "lng": 12.479043,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/9808393613",
+   "lat": 41.877788,
+   "lng": 12.488254,
+   "name": null,
+   "horario": null,
+   "zona": "Aventino"
+  },
+  {
+   "id": "node/9815461954",
+   "lat": 41.830744,
+   "lng": 12.469822,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/9864218758",
+   "lat": 41.862935,
+   "lng": 12.483108,
+   "name": null,
+   "horario": null,
+   "zona": "Testaccio"
+  },
+  {
+   "id": "node/9866132252",
+   "lat": 41.902378,
+   "lng": 12.473753,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/9866160813",
+   "lat": 41.893658,
+   "lng": 12.474436,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/9866169227",
+   "lat": 41.903062,
+   "lng": 12.475084,
+   "name": null,
+   "horario": null,
+   "zona": "Centro Histórico"
+  },
+  {
+   "id": "node/9878433809",
+   "lat": 41.893164,
+   "lng": 12.497105,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "node/9898318519",
+   "lat": 41.846338,
+   "lng": 12.487123,
+   "name": null,
+   "horario": null,
+   "zona": "Via Appia"
+  },
+  {
+   "id": "node/9908462464",
+   "lat": 41.897135,
+   "lng": 12.466073,
+   "name": null,
+   "horario": null,
+   "zona": "Trastevere y Gianicolo"
+  },
+  {
+   "id": "node/9983658444",
+   "lat": 41.892395,
+   "lng": 12.483694,
+   "name": null,
+   "horario": null,
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "way/1149904682",
+   "lat": 41.857596,
+   "lng": 12.491241,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Via Appia"
+  },
+  {
+   "id": "way/1428972754",
+   "lat": 41.881803,
+   "lng": 12.499521,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Aventino"
+  },
+  {
+   "id": "way/1428974337",
+   "lat": 41.858666,
+   "lng": 12.474591,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Testaccio"
+  },
+  {
+   "id": "way/1428979191",
+   "lat": 41.891341,
+   "lng": 12.491167,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Roma Antigua"
+  },
+  {
+   "id": "way/1448419610",
+   "lat": 41.854231,
+   "lng": 12.475605,
+   "name": null,
+   "horario": "24/7",
+   "zona": "Testaccio"
+  },
+  {
+   "id": "way/375563688",
+   "lat": 41.909319,
+   "lng": 12.458319,
+   "name": "Casa dell'Acqua",
+   "horario": null,
+   "zona": "Vaticano"
+  },
+  {
+   "id": "way/514908462",
+   "lat": 41.930036,
+   "lng": 12.474924,
+   "name": "Casa dell'Acqua",
+   "horario": null,
+   "zona": "Villa Borghese"
+  }
+ ]
+}

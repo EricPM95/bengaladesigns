@@ -2,14 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
-import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
+import { isOsmPoint, type DestinationPlace } from '../../../lib/destinationPlacesApi'
 import {
   PLACE_FILTER_CHIPS,
   RESTAURANT_SUB_CATEGORIES,
   categoriesForFilters,
   findPlaceCategoryChip,
   findRestaurantSubCategory,
-  type PlaceCategoryChip,
   type PlaceFilterId,
   type RestaurantSubCategory,
 } from '../../../lib/placeCategories'
@@ -24,6 +23,7 @@ import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
+import { CATEGORY_STYLE, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -70,6 +70,8 @@ interface PlaceExplorerScreenProps {
   recommendedZone?: string | null
   /** Texto del botón de cada sitio ("+ Añadir" por defecto; "Elegir" al cambiar un restaurante). */
   quickAddLabel?: string
+  /** Con él, los baños públicos (OpenStreetMap) entran como un filtro más: solo desde Explorar (no se pueden añadir a un día). */
+  toiletsEnabled?: boolean
   onClose: () => void
 }
 
@@ -144,92 +146,46 @@ const SEARCH_DEBOUNCE_MS = 150
 const MAX_SEARCH_RESULTS = 8
 
 /**
- * Prompt 3 (bug 2): foto real del lugar en vez del icono genérico de categoría — se reconoce de un
- * vistazo y anima a puntuar. Sale del mismo sitio que las fotos de las paradas (Wikipedia en
- * español por nombre, ver placePhoto.ts, que ya cachea por nombre+ciudad para toda la sesión).
- *
- * La foto se pide solo cuando la fila ENTRA EN PANTALLA: el catálogo de un destino son 100+ lugares
- * y resolverlos todos al abrir serían 100 llamadas a Wikipedia para ver ocho. Si no hay foto (o
- * Wikipedia falla, o tarda), se queda el icono de categoría de siempre — nunca un hueco vacío.
+ * La foto de una fila en el diseño «Trazo Explorar»: una franja con el borde izquierdo en diagonal. Misma foto y misma carga perezosa
+ * que PlaceThumb; si no hay foto se queda el degradado del color de la categoría con su icono.
  */
-function PlaceThumb({ name, city, chip, wikipediaTitle }: { name: string; city: string; chip: PlaceCategoryChip | null; wikipediaTitle?: string | null }) {
+function PlacePhotoPanel({ place, city, color, icon }: { place: DestinationPlace; city: string; color: string; icon: ExploreIconName }) {
   const ref = useRef<HTMLSpanElement>(null)
   const [inView, setInView] = useState(false)
   const [photo, setPhoto] = useState<string | null>(null)
-
+  const toilet = isOsmPoint(place)
   useEffect(() => {
-    if (inView || !ref.current) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) setInView(true)
-      },
-      // Margen generoso: la foto empieza a cargarse justo antes de que la fila asome, para que no
-      // se vea el salto de icono a foto mientras se hace scroll.
-      { rootMargin: '200px' },
-    )
+    if (inView || toilet || !ref.current) return
+    const observer = new IntersectionObserver((entries) => entries.some((entry) => entry.isIntersecting) && setInView(true), { rootMargin: '200px' })
     observer.observe(ref.current)
     return () => observer.disconnect()
-  }, [inView])
-
+  }, [inView, toilet])
   useEffect(() => {
     if (!inView) return
     let cancelled = false
-    fetchPlacePhoto(name, city, wikipediaTitle).then((url) => {
-      if (!cancelled) setPhoto(url)
-    })
+    fetchPlacePhoto(place.name, city, place.wikipedia_title).then((url) => !cancelled && setPhoto(url))
     return () => {
       cancelled = true
     }
-  }, [inView, name, city, wikipediaTitle])
-
+  }, [inView, place.name, place.wikipedia_title, city])
   return (
-    <span
-      ref={ref}
-      className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg text-xl"
-      style={{ backgroundColor: chip?.activeBg ?? 'rgb(var(--bg-hover))' }}
-      aria-hidden="true"
-    >
-      {photo ? (
-        <img
-          src={photo}
-          alt=""
-          loading="lazy"
-          className="h-full w-full object-cover"
-          // Wikipedia puede devolver una URL que luego no carga (imagen retirada, hotlink
-          // bloqueado). Sin esto quedaría un cuadro vacío, que es peor que el icono de categoría.
-          onError={() => setPhoto(null)}
-        />
-      ) : (
-        (chip?.icon ?? '📍')
-      )}
+    <span ref={ref} className="relative block shrink-0" style={{ width: 100, margin: '-1px 0 -1px -1px' }}>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center text-white"
+        style={{
+          borderRadius: '18px 0 0 18px',
+          clipPath: 'polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)',
+          background: photo ? `url("${photo}") center/cover, ${color}` : `linear-gradient(135deg,${color},rgba(28,34,48,.35))`,
+        }}
+      >
+        {!photo && (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity=".9">
+            <path d={EXPLORE_ICONS[icon]} />
+          </svg>
+        )}
+      </span>
     </span>
-  )
-}
-
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  )
-}
-
-/** Corazón de "me gusta": trazo fino y gris sin relleno mientras no se ha pulsado; relleno solo
-    cuando ESTE viajero ya le ha dado like, que es lo único que el relleno debe significar. */
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4 shrink-0"
-    >
-      <path d="M12 20s-7-4.6-7-9.3A4.2 4.2 0 0 1 12 8a4.2 4.2 0 0 1 7 2.7C19 15.4 12 20 12 20Z" />
-    </svg>
   )
 }
 
@@ -338,7 +294,7 @@ function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: 
 export function PlaceExplorerScreen({
   open,
   destination,
-  places,
+  places: allPlaces,
   title,
   subtitle,
   dayMarkers = [],
@@ -355,8 +311,11 @@ export function PlaceExplorerScreen({
   hotelsUrl = null,
   recommendedZone = null,
   quickAddLabel = '+ Añadir',
+  toiletsEnabled = false,
   onClose,
 }: PlaceExplorerScreenProps) {
+  // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
+  const places = useMemo(() => (toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')), [allPlaces, toiletsEnabled])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
   /** De la zona de la comida o la cena que se está cambiando. */
   const isRecommended = (place: DestinationPlace) => Boolean(recommendedZone) && place.kind === 'restaurant' && mainZone(place.zone_label) === mainZone(recommendedZone)
@@ -373,10 +332,17 @@ export function PlaceExplorerScreen({
   const [tab, setTab] = useState<BottomTab>('recommended')
   const [likes, setLikes] = useState<PlaceLikes>(EMPTY_PLACE_LIKES)
   const [selected, setSelected] = useState<DestinationPlace | null>(null)
+  /** Un baño tocado en el mapa o en la lista: se resalta, pero no abre ficha (no tiene) ni se puede añadir a un día. */
+  const [selectedToilet, setSelectedToilet] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   const [position, setPosition] = useState<Coordinates | null>(null)
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const chipsRowRef = useRef<HTMLDivElement>(null)
+  /** El mapa grande (por defecto) o pequeño: el tirador de la hoja lo cambia. */
+  const [mapBig, setMapBig] = useState(true)
+  /** El botón de localizarte pide la ubicación (con el mismo permiso de «Cerca de ti») y centra el mapa. */
+  const [locateRequested, setLocateRequested] = useState(false)
+  const [recenterKey, setRecenterKey] = useState(0)
 
   const initialFiltersKey = initialFilters.join(',')
 
@@ -415,7 +381,7 @@ export function PlaceExplorerScreen({
   // navegador es una interrupción, y pedirlo sin que el viajero haya pedido nada cercano es justo lo
   // que hace que lo deniegue para siempre.
   useEffect(() => {
-    if (!open || tab !== 'nearby' || position || geoStatus === 'asking' || geoStatus === 'denied') return
+    if (!open || (tab !== 'nearby' && !locateRequested) || position || geoStatus === 'asking' || geoStatus === 'denied') return
     if (!navigator.geolocation) {
       setGeoStatus('denied')
       return
@@ -429,7 +395,15 @@ export function PlaceExplorerScreen({
       () => setGeoStatus('denied'),
       { timeout: 8000, maximumAge: 5 * 60 * 1000 },
     )
-  }, [open, tab, position, geoStatus])
+  }, [open, tab, position, geoStatus, locateRequested])
+
+  // Pulsado el botón de localizarte y llegada la ubicación: el mapa vuela hasta ahí.
+  useEffect(() => {
+    if (locateRequested && position) {
+      setRecenterKey((value) => value + 1)
+      setLocateRequested(false)
+    }
+  }, [locateRequested, position])
 
   // Foto real (Wikipedia) solo del lugar abierto, no de los 61 de la lista: la lista usa el icono de
   // su categoría, que se pinta al instante y no gasta 61 peticiones cada vez que se abre la pantalla.
@@ -468,6 +442,10 @@ export function PlaceExplorerScreen({
   // "Atracciones + Entradas" salen las atracciones de pago; ella sola, todo lo que cobra entrada.
   const ticketsActive = activeFilters.includes('entradas')
   const excursionsActive = activeFilters.includes('excursiones')
+  const toiletsActive = activeFilters.includes('banos')
+  const fountainsActive = activeFilters.includes('fuentes')
+  /** Un baño o una fuente solo entra en la lista y el mapa con su propio filtro encendido. */
+  const osmShown = (place: DestinationPlace) => (place.kind === 'toilet' ? toiletsActive : place.kind === 'fountain' ? fountainsActive : true)
   const activeCategories = categoriesForFilters(activeFilters)
   // Solo-Excursiones no es "ningún filtro": el catálogo de lugares tiene que quedarse vacío, o
   // saldrían los 67 pines de Roma debajo de las 6 excursiones.
@@ -497,6 +475,7 @@ export function PlaceExplorerScreen({
     // que se puede elegir de un vistazo.
     if (needle) {
       return places
+        .filter((place) => osmShown(place))
         .map((place) => ({ place, score: searchScore(place, needle) }))
         .filter((entry) => entry.score > 0)
         .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name, 'es'))
@@ -511,6 +490,7 @@ export function PlaceExplorerScreen({
 
     const filtered = places.filter(
       (place) =>
+        (osmShown(place)) &&
         matchesSubCategory(place) &&
         (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))) &&
         // "Entradas" acota, no sustituye: se cruza con lo que ya hubiera activo (ver ticketsActive).
@@ -546,6 +526,8 @@ export function PlaceExplorerScreen({
   // dedo. Ahora la vista del viajero no se toca y los pines entran y salen con un fundido.
   // Más pequeños que los números de las paradas del día, para que la ruta siga destacando.
   const poiPlaces = useMemo(() => places.filter((place) => hasRealCoordinates(place.coordinates)), [places])
+  /** El id del pin de un lugar: los baños no tienen nombre propio, van por su id de OpenStreetMap. */
+  const poiId = (place: DestinationPlace) => (isOsmPoint(place) ? `toilet-${place.osm_id ?? place.coordinates.lat}` : `poi-${place.name}`)
 
   // "También te puede interesar" (Paso 3): lo de las experiencias que eligió el viajero que no está en
   // la ruta —lo que se quedó fuera por el máximo de la experiencia o porque no cabía—. Solo al añadir
@@ -581,16 +563,16 @@ export function PlaceExplorerScreen({
 
   const markers: StopsMapMarker[] = useMemo(() => {
     const poiMarkers: StopsMapMarker[] = poiPlaces.map((place) => {
-      const chip = findPlaceCategoryChip(place.filter_category)
+      const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
       return {
-        id: `poi-${place.name}`,
+        id: poiId(place),
         name: place.name,
         coordinates: place.coordinates,
         number: 0,
-        icon: chip?.icon ?? '📍',
-        bg: chip?.color ?? '#6B7280',
+        bg: solidOf(style?.color ?? '#6B7280'),
         text: '#FFFFFF',
-        small: true,
+        iconPath: EXPLORE_ICONS[style?.icon ?? 'temple'],
+        size: 28,
         ...(closedToday(place) ? { opacity: 0.35 } : {}),
       }
     })
@@ -602,17 +584,25 @@ export function PlaceExplorerScreen({
       búsqueda enseña lo encontrado, aunque los chips activos no lo incluyan. */
   const visiblePoiNames = useMemo(() => {
     const shown = needle || placeFiltersActive ? results : []
-    return new Set(shown.map((place) => place.name))
+    return new Set(shown.map((place) => poiId(place)))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results, needle, placeFiltersActive])
 
   const hiddenMarkerIds = useMemo(
     () => [
-      ...poiPlaces.filter((place) => !visiblePoiNames.has(place.name)).map((place) => `poi-${place.name}`),
+      ...poiPlaces.filter((place) => !visiblePoiNames.has(poiId(place))).map((place) => poiId(place)),
       // Mismo truco que con los lugares (Prompt 3): los pines de excursión están SIEMPRE en el mapa
       // y lo que cambia al marcar el chip es solo cuáles se ven — así la cámara no se resetea.
       ...(excursionsActive ? [] : excursionMarkers.map((marker) => marker.id)),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [poiPlaces, visiblePoiNames, excursionsActive, excursionMarkers],
+  )
+  /** Los pines de lo que ya está en la ruta llevan el aro dorado (el contador «En tu ruta · n» de encima del mapa). */
+  const inRouteIds = useMemo(
+    () => poiPlaces.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).map((place) => poiId(place)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [poiPlaces, stopEntries],
   )
   const visibleMarkerCount = dayMarkers.length + visiblePoiNames.size + (excursionsActive ? excursionMarkers.length : 0)
 
@@ -644,6 +634,28 @@ export function PlaceExplorerScreen({
   const selectedChip = selected ? findPlaceCategoryChip(selected.filter_category) : null
 
   // En el body y por encima de todo (el menú de arriba y la barra flotante incluidos), con su cruz para cerrar (paso 6.4).
+  // Aspecto del diseño «Trazo Explorar» (3-oct-2026): cabecera con la cruz en círculo y «Explorar <Roma>», pastillas de filtro con icono y número,
+  // el mapa con su píldora «En tu ruta» y el botón de localizarte, y la hoja de abajo con el buscador, el selector y las tarjetas. Solo cambia
+  // cómo se ve: los filtros, el buscador, los likes, «en ruta / no en ruta» y lo que pasa al añadir son los de siempre.
+  const titleMatch = /^(Explorar )(.+)$/.exec(title)
+  const chipCount = (id: PlaceFilterId): number => {
+    if (id === 'excursiones') return excursions.length
+    if (id === 'entradas') return places.filter((place) => place.requires_ticket && !isOsmPoint(place)).length
+    const categories = categoriesForFilters([id])
+    return places.filter((place) => place.filter_category !== null && categories.includes(place.filter_category)).length
+  }
+  const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).length : 0
+  const toiletsAvailable = toiletsEnabled && places.some((place) => isOsmPoint(place))
+  const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
+  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || excursions.length > 0) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
+  const iconBox = (name: ExploreIconName, size = 15) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d={EXPLORE_ICONS[name]} />
+    </svg>
+  )
+  const chipIcon: Record<PlaceFilterId, ExploreIconName> = { atracciones: 'museum', miradores: 'sunset', restaurantes: 'fork', entradas: 'ticket', excursiones: 'bus', banos: 'toilet', fuentes: 'drop' }
+  const warm = 'oklch(0.55 0.15 45)'
+
   return createPortal(
     <AnimatePresence>
       <motion.div
@@ -652,27 +664,43 @@ export function PlaceExplorerScreen({
         exit={{ opacity: 0 }}
         className="map-cover-overlay fixed inset-0 z-[90] flex flex-col overflow-hidden bg-bg"
       >
-        <div className="flex shrink-0 items-center gap-3 border-b border-border bg-bg-card px-4 py-3">
+        <header className="grid shrink-0 items-center px-4 pb-2.5 pt-1" style={{ gridTemplateColumns: '44px 1fr 44px' }}>
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
             title="Cerrar"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
+            className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-bg-card text-accent"
+            style={{ border: `1.5px solid ${warm}` }}
           >
-            ✕
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d={EXPLORE_ICONS.close} />
+            </svg>
           </button>
-          <div className="min-w-0 flex-1 text-center">
-            <p className="truncate text-body font-semibold text-text">{title}</p>
-            {subtitle && <p className="truncate text-caption text-text-muted">{subtitle}</p>}
+          <div className="flex min-w-0 flex-col items-center gap-[3px]">
+            <span className="max-w-full truncate font-display text-text" style={{ fontSize: 28, lineHeight: 1 }}>
+              {titleMatch ? (
+                <>
+                  {titleMatch[1]}
+                  <em className="text-accent">{titleMatch[2]}</em>
+                </>
+              ) : (
+                title
+              )}
+            </span>
+            {subtitle && (
+              <span className="max-w-full truncate text-text-muted" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase' }}>
+                {subtitle}
+              </span>
+            )}
           </div>
-          <span className="h-9 w-9 shrink-0" aria-hidden="true" />
-        </div>
+          <span aria-hidden="true" />
+        </header>
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
-        <div className="flex shrink-0 items-center gap-2 border-b border-border bg-bg-card px-3 py-2">
-          <div ref={chipsRowRef} className="flex flex-1 gap-2 overflow-x-auto">
-            {PLACE_FILTER_CHIPS.filter((chip) => chip.id !== 'excursiones' || excursions.length > 0).map((chip) => {
+        <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
+          <div ref={chipsRowRef} className="flex flex-1 items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            {chipRow.map((chip) => {
               const active = activeFilters.includes(chip.id)
               return (
                 <button
@@ -681,13 +709,24 @@ export function PlaceExplorerScreen({
                   onClick={() => toggleFilter(chip.id)}
                   aria-pressed={active}
                   data-active={active}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-caption font-semibold transition-colors ${
-                    active ? 'text-white' : 'border-border bg-bg text-text-soft hover:bg-bg-hover'
-                  }`}
-                  style={active ? { backgroundColor: chip.color, borderColor: chip.color } : undefined}
+                  className="flex shrink-0 items-center gap-2 rounded-full transition-colors"
+                  style={{
+                    height: 38,
+                    padding: '0 14px 0 6px',
+                    border: `1px solid ${active ? 'rgb(var(--text))' : 'rgba(28,34,48,.12)'}`,
+                    background: active ? 'rgb(var(--text))' : '#FFFDF8',
+                    color: active ? '#FFFDF8' : 'rgb(var(--text))',
+                    font: "500 14px 'Geist'",
+                  }}
                 >
-                  <span aria-hidden="true">{chip.icon}</span>
+                  <span
+                    className="flex h-7 w-7 items-center justify-center rounded-full transition-colors"
+                    style={{ background: active ? 'oklch(0.74 0.16 65)' : '#EFE7D8', color: active ? 'rgb(var(--text))' : 'rgba(28,34,48,.7)' }}
+                  >
+                    {iconBox(chipIcon[chip.id])}
+                  </span>
                   {chip.label}
+                  <span style={{ font: "500 11px 'Geist Mono',monospace", opacity: 0.6 }}>{chipCount(chip.id)}</span>
                 </button>
               )
             })}
@@ -696,29 +735,41 @@ export function PlaceExplorerScreen({
                 type="button"
                 onClick={() => setHotelsActive((value) => !value)}
                 aria-pressed={hotelsActive}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-caption font-semibold transition-colors ${hotelsActive ? 'border-text bg-text text-bg' : 'border-border bg-bg text-text-soft hover:bg-bg-hover'}`}
+                className="flex shrink-0 items-center gap-2 rounded-full transition-colors"
+                style={{
+                  height: 38,
+                  padding: '0 14px 0 6px',
+                  border: `1px solid ${hotelsActive ? 'rgb(var(--text))' : 'rgba(28,34,48,.12)'}`,
+                  background: hotelsActive ? 'rgb(var(--text))' : '#FFFDF8',
+                  color: hotelsActive ? '#FFFDF8' : 'rgb(var(--text))',
+                  font: "500 14px 'Geist'",
+                }}
               >
-                <span aria-hidden="true">🛏️</span>
+                <span
+                  className="flex h-7 w-7 items-center justify-center rounded-full"
+                  style={{ background: hotelsActive ? 'oklch(0.74 0.16 65)' : '#EFE7D8', color: hotelsActive ? 'rgb(var(--text))' : 'rgba(28,34,48,.7)' }}
+                >
+                  {iconBox('hotel')}
+                </span>
                 Hoteles
               </button>
             )}
           </div>
-          {activeFilters.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setActiveFilters([])}
-              aria-label="Quitar todos los filtros"
-              title="Quitar todos los filtros"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-bg text-text-muted transition-colors hover:bg-bg-hover hover:text-text"
-            >
-              ✕
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setActiveFilters([])}
+            aria-label="Quitar todos los filtros"
+            title="Quitar todos los filtros"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full transition-opacity"
+            style={{ border: '1px solid rgba(28,34,48,.12)', background: '#FFFDF8', color: 'rgba(28,34,48,.6)', opacity: activeFilters.length > 0 ? 1 : 0.35 }}
+          >
+            {iconBox('close')}
+          </button>
         </div>
 
         {/* Segunda fila, solo con Restaurantes activo: sub-categorías excluyentes. */}
         {restaurantsActive && (
-          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-bg-card px-3 pb-2">
+          <div className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-3" style={{ scrollbarWidth: 'none' }}>
             {[{ id: null, label: 'Todos', icon: null }, ...RESTAURANT_SUB_CATEGORIES].map((chip) => {
               const active = activeSubCategory === chip.id
               return (
@@ -728,7 +779,7 @@ export function PlaceExplorerScreen({
                   onClick={() => setActiveSubCategory(chip.id as RestaurantSubCategory | null)}
                   aria-pressed={active}
                   className={`flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-caption font-medium transition-colors ${
-                    active ? 'border-text-soft bg-bg-hover text-text' : 'border-border bg-bg text-text-muted hover:text-text-soft'
+                    active ? 'border-text bg-text text-bg' : 'border-border bg-bg-card text-text-soft hover:text-text'
                   }`}
                 >
                   {chip.icon && <span aria-hidden="true">{chip.icon}</span>}
@@ -739,21 +790,25 @@ export function PlaceExplorerScreen({
           </div>
         )}
 
-        <div className="relative shrink-0" style={{ height: '38vh' }}>
+        <div className="relative shrink-0" style={{ height: mapBig ? '38vh' : '20vh', transition: 'height .6s cubic-bezier(.2,.8,.2,1)' }}>
           {visibleMarkerCount > 0 ? (
             <StopsMapView
               markers={markers}
               hiddenMarkerIds={hiddenMarkerIds}
+              ringIds={inRouteIds}
+              userPosition={position}
+              recenterKey={recenterKey}
               // Solo al mirar excursiones y nada más: los destinos están fuera de la ciudad y hay
               // que abrir el mapa para verlos. Con cualquier filtro de lugares activo la cámara se
               // queda donde el viajero la dejó, como siempre.
               fitToMarkerIds={excursionsActive && !placeFiltersActive ? excursionMarkers.map((marker) => marker.id) : null}
               focusCenter={focusCoordinates}
-              activeStopId={selected ? `poi-${selected.name}` : null}
+              activeStopId={selected ? poiId(selected) : selectedToilet}
               onSelectStop={(id) => {
-                const place = places.find((candidate) => `poi-${candidate.name}` === id)
+                const place = places.find((candidate) => poiId(candidate) === id)
                 if (place) {
-                  setSelected(place)
+                  if (isOsmPoint(place)) setSelectedToilet(id)
+                  else setSelected(place)
                   return
                 }
                 const excursion = excursions.find((candidate) => `excursion-${candidate.id}` === id)
@@ -765,34 +820,77 @@ export function PlaceExplorerScreen({
               <p className="text-small text-text-soft">Activa una categoría para ver sus lugares en el mapa.</p>
             </div>
           )}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[4]" style={{ height: 22, background: 'linear-gradient(180deg,rgba(245,239,228,.9),rgba(245,239,228,0))' }} />
+          {route && (
+            <div
+              className="absolute left-3.5 z-[5] flex items-center gap-[7px] rounded-full backdrop-blur"
+              style={{ bottom: 36, height: 30, padding: '0 12px', background: 'rgba(255,253,248,.92)', font: "500 12px 'Geist'", boxShadow: '0 6px 16px -8px rgba(28,34,48,.35)' }}
+            >
+              <span className="h-2.5 w-2.5 rounded-full bg-white" style={{ boxShadow: '0 0 0 2.5px oklch(0.74 0.16 65)' }} />
+              En tu ruta · {inRouteCount}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              if (position) setRecenterKey((value) => value + 1)
+              else {
+                setGeoStatus((status) => (status === 'denied' ? 'idle' : status))
+                setLocateRequested(true)
+              }
+            }}
+            aria-label="Mi ubicación"
+            title="Mi ubicación"
+            className="absolute right-3.5 z-[5] flex h-[42px] w-[42px] items-center justify-center rounded-full text-text"
+            style={{ bottom: 36, background: '#FFFDF8', boxShadow: '0 8px 20px -8px rgba(28,34,48,.4)' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d={EXPLORE_ICONS.locate} />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+            </svg>
+          </button>
         </div>
 
-        <div className="flex shrink-0 items-center justify-center bg-bg-card py-1.5">
-          <span className="h-1.5 w-10 rounded-full bg-border" />
-        </div>
-
-        <div className="flex min-h-0 flex-1 flex-col bg-bg-card">
-          <div className="shrink-0 px-4 pb-2">
-            <div className="flex items-center gap-2 rounded-xl border border-border bg-bg px-3 py-2">
-              <SearchIcon />
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col bg-bg" style={{ marginTop: -22, borderRadius: '26px 26px 0 0', boxShadow: '0 -10px 30px -18px rgba(28,34,48,.3)' }}>
+          <button type="button" onClick={() => setMapBig((value) => !value)} aria-label="Arrastrar panel" className="flex h-[22px] shrink-0 items-center justify-center">
+            <span className="h-1 w-[42px] rounded bg-text/20" />
+          </button>
+          <div className="flex shrink-0 flex-col gap-2.5 px-4">
+            <label className="flex h-12 cursor-text items-center gap-2.5 px-3.5" style={{ borderRadius: 16, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" strokeWidth="1.8" strokeLinecap="round">
+                <path d={EXPLORE_ICONS.search} />
+              </svg>
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder={`Buscar en ${destination}...`}
+                placeholder={`Buscar en ${destination}…`}
                 autoComplete="off"
-                className="w-full bg-transparent text-small text-text outline-none placeholder:text-text-muted"
+                className="min-w-0 flex-1 border-none bg-transparent text-text outline-none placeholder:text-text/45"
+                style={{ font: "400 15px 'Geist'" }}
               />
               {trimmedQuery && (
-                <button type="button" onClick={() => setQuery('')} aria-label="Borrar búsqueda" className="shrink-0 text-text-muted hover:text-text">
-                  ✕
+                <button type="button" onClick={() => setQuery('')} aria-label="Borrar búsqueda" className="h-[26px] w-[26px] rounded-full bg-text/[0.08] text-text">
+                  ×
                 </button>
               )}
-            </div>
-          </div>
-
-          {!trimmedQuery && (
-            <div className="shrink-0 px-4 pb-2">
-              <div className="flex gap-1 rounded-xl bg-bg-hover p-1">
+            </label>
+            {!trimmedQuery && (
+              <div className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
+                <span
+                  aria-hidden="true"
+                  className="absolute"
+                  style={{
+                    top: 4,
+                    bottom: 4,
+                    left: 4,
+                    width: 'calc(50% - 4px)',
+                    borderRadius: 10,
+                    background: '#FFFDF8',
+                    boxShadow: '0 2px 6px -2px rgba(28,34,48,.2)',
+                    transform: tab === 'nearby' ? 'translateX(100%)' : 'none',
+                    transition: 'transform .4s cubic-bezier(.2,.8,.2,1)',
+                  }}
+                />
                 {(
                   [
                     { id: 'recommended', label: 'Recomendados' },
@@ -803,18 +901,17 @@ export function PlaceExplorerScreen({
                     key={item.id}
                     type="button"
                     onClick={() => setTab(item.id)}
-                    className={`flex-1 rounded-lg py-1.5 text-caption font-semibold transition-colors ${
-                      tab === item.id ? 'bg-bg-card text-accent shadow-sm' : 'text-text-soft hover:text-text'
-                    }`}
+                    className="relative"
+                    style={{ border: 'none', background: 'transparent', font: `${tab === item.id ? 600 : 500} 14px 'Geist'`, color: tab === item.id ? warm : 'rgba(28,34,48,.55)' }}
                   >
                     {item.label}
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
+          <div className="min-h-0 flex-1 overflow-y-auto" style={{ padding: '12px 16px 40px', scrollbarWidth: 'none' }}>
             {!trimmedQuery && tab === 'nearby' && geoStatus === 'asking' && (
               <p className="flex items-center justify-center gap-2 py-8 text-small text-text-soft">
                 <Spinner className="text-accent" />
@@ -840,7 +937,7 @@ export function PlaceExplorerScreen({
             {queryTooShort && <p className="py-8 text-center text-small text-text-soft">Escribe al menos {MIN_QUERY_LENGTH} letras para buscar.</p>}
 
             {hotelsActive && hotelsUrl && (
-              <div className="mb-3 flex items-center gap-3 rounded-xl border border-border p-2.5">
+              <div className="mb-3 flex items-center gap-3 rounded-[18px] border border-text/[0.08] bg-white p-2.5">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-xl" aria-hidden="true">🛏️</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-small font-semibold text-text">Hoteles en {destination}</span>
@@ -853,7 +950,9 @@ export function PlaceExplorerScreen({
             )}
 
             {needle && results.length === 0 && (
-              <p className="py-8 text-center text-small text-text-soft">No encontramos este lugar en nuestra selección de {destination}.</p>
+              <p className="py-10 text-center font-display text-text/55" style={{ fontSize: 22, lineHeight: 1.2 }}>
+                No hay lugares con ese nombre
+              </p>
             )}
 
             {!trimmedQuery && results.length === 0 && !(excursionsActive && !placeFiltersActive) && (
@@ -907,44 +1006,85 @@ export function PlaceExplorerScreen({
               </div>
             )}
 
-            <div className="space-y-2">
-              {results.map((place) => {
-                const chip = findPlaceCategoryChip(place.filter_category)
+            <div className="flex flex-col gap-2.5">
+              {results.map((place, index) => {
+                const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
+                const color = solidOf(style?.color ?? '#6B7280')
+                const toilet = isOsmPoint(place)
                 const likeCount = likes.counts.get(place.name) ?? 0
                 const liked = likes.mine.has(place.name)
-                const alreadyInRoute = isNameAlreadyInRoute(place.name, stopEntries)
+                const alreadyInRoute = !toilet && isNameAlreadyInRoute(place.name, stopEntries)
                 const distance = position && hasRealCoordinates(place.coordinates) ? haversineMeters(position, place.coordinates) : null
+                const active = toilet ? selectedToilet === poiId(place) : selected?.name === place.name
+                const addLabel = alreadyInRoute && quickAddLabel === '+ Añadir' ? '✓ En ruta' : quickAddLabel
+                const addDone = addLabel === '✓ En ruta'
                 return (
                   <div
-                    key={place.name}
-                    className={`flex items-center gap-3 rounded-xl border p-2.5 transition-colors ${
-                      selected?.name === place.name ? 'border-accent bg-accent-soft' : 'border-border'
-                    }`}
+                    key={toilet ? poiId(place) : place.name}
+                    className="relative flex h-[88px] shrink-0 bg-white transition-[border-color,box-shadow]"
+                    style={{
+                      borderRadius: 18,
+                      border: `1px solid ${active ? color : 'rgba(28,34,48,.08)'}`,
+                      boxShadow: active ? `0 14px 28px -16px ${color}` : '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)',
+                      animation: `explore-pop .4s cubic-bezier(.2,.8,.2,1) ${Math.min(index, 8) * 30}ms both`,
+                    }}
                   >
-                    <button type="button" onClick={() => setSelected(place)} className={`flex min-w-0 flex-1 items-center gap-3 text-left ${closedToday(place) ? 'opacity-50' : ''}`}>
-                      <PlaceThumb name={place.name} city={destination} chip={chip} wikipediaTitle={place.wikipedia_title} />
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-1.5">
-                          <span className="truncate text-small font-semibold text-text">{place.name}</span>
-                          {alreadyInRoute && (
-                            <span className="shrink-0 rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">En tu ruta</span>
-                          )}
+                    <button
+                      type="button"
+                      onClick={() => (toilet ? setSelectedToilet(poiId(place)) : setSelected(place))}
+                      className={`flex min-w-0 flex-1 text-left ${closedToday(place) ? 'opacity-50' : ''}`}
+                    >
+                      <PlacePhotoPanel place={place} city={destination} color={color} icon={style?.icon ?? 'temple'} />
+                      <span className="flex min-w-0 flex-1 flex-col justify-center gap-1" style={{ padding: '10px 0 10px 18px' }}>
+                        <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
+                          {place.name}
                         </span>
+                        {alreadyInRoute && (
+                          <span
+                            className="inline-flex items-center gap-1 self-start rounded-full"
+                            style={{ height: 19, padding: '0 8px', background: 'oklch(0.74 0.16 65 / .18)', color: 'oklch(0.48 0.14 50)', font: "600 10.5px 'Geist'" }}
+                          >
+                            <span className="h-[5px] w-[5px] rounded-full" style={{ background: 'oklch(0.7 0.16 60)' }} />
+                            En tu ruta
+                          </span>
+                        )}
                         {(isRecommended(place) || closedToday(place)) && (
-                          <span className="flex items-center gap-1.5 py-0.5">
+                          <span className="flex items-center gap-1.5">
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
                             {closedToday(place) && <span className="text-caption font-semibold text-text-muted">Hoy cierra</span>}
                           </span>
                         )}
-                        <span className="flex flex-wrap items-center gap-x-1.5 text-caption text-text-soft">
+                        <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-text/60" style={{ font: "400 11.5px 'Geist'" }}>
                           {/* Un restaurante se elige por tipo y precio, no por cuánto se tarda en
                               verlo: donde una atracción pone su duración, este pone su sub-categoría
-                              y su rango de precio. */}
-                          {place.kind === 'restaurant' ? (
+                              y su rango de precio. Un baño, si es de pago y si es accesible. */}
+                          {place.kind === 'fountain' ? (
                             <>
-                              {findRestaurantSubCategory(place.sub_category)?.label && (
-                                <span className="shrink-0">{findRestaurantSubCategory(place.sub_category)?.label}</span>
+                              <span className="shrink-0">Agua potable</span>
+                              <span>·</span>
+                              <span className="shrink-0">Gratis</span>
+                              {place.zone_label && (
+                                <>
+                                  <span>·</span>
+                                  <span className="truncate">{place.zone_label}</span>
+                                </>
                               )}
+                            </>
+                          ) : toilet ? (
+                            <>
+                              <span className="shrink-0">{place.de_pago === true ? 'De pago' : place.de_pago === false ? 'Gratis' : 'Precio sin dato'}</span>
+                              <span>·</span>
+                              <span className="shrink-0">{place.accesible === 'si' ? 'Accesible' : place.accesible === 'limitado' ? 'Acceso limitado' : place.accesible === 'no' ? 'No accesible' : 'Acceso sin dato'}</span>
+                              {place.zone_label && (
+                                <>
+                                  <span>·</span>
+                                  <span className="truncate">{place.zone_label}</span>
+                                </>
+                              )}
+                            </>
+                          ) : place.kind === 'restaurant' ? (
+                            <>
+                              {findRestaurantSubCategory(place.sub_category)?.label && <span className="shrink-0">{findRestaurantSubCategory(place.sub_category)?.label}</span>}
                               {place.price_range && (
                                 <>
                                   <span>·</span>
@@ -972,8 +1112,8 @@ export function PlaceExplorerScreen({
                               {place.requires_ticket && (
                                 <>
                                   <span>·</span>
-                                  <span className="flex shrink-0 items-center gap-1 text-text-muted">
-                                    <TicketIcon />
+                                  <span className="inline-flex shrink-0 items-center gap-[3px]">
+                                    <TicketIcon className="h-3 w-3" />
                                     Entrada
                                   </span>
                                 </>
@@ -983,34 +1123,67 @@ export function PlaceExplorerScreen({
                           {distance !== null && (
                             <>
                               <span>·</span>
-                              <span className="shrink-0">{formatDistance(distance)}</span>
+                              <span className="shrink-0" style={{ font: "500 11px 'Geist Mono',monospace", color: warm }}>
+                                {formatDistance(distance)}
+                              </span>
                             </>
                           )}
                         </span>
                       </span>
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => onToggleLike(place)}
-                      aria-pressed={liked}
-                      aria-label={liked ? `Quitar me gusta de ${place.name}` : `Me gusta ${place.name}`}
-                      className={`flex shrink-0 items-center gap-1 rounded-full px-2 py-1.5 text-caption font-semibold transition-colors ${
-                        liked ? 'text-accent' : 'text-text-muted hover:text-text-soft'
-                      }`}
-                    >
-                      <HeartIcon filled={liked} />
-                      {likeCount > 0 && <span className="tabular-nums">{likeCount}</span>}
-                    </button>
-                    {onQuickAdd && (
-                      <button type="button" onClick={() => onQuickAdd(place)} aria-label={`Añadir ${place.name}`} className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
-                        {quickAddLabel}
-                      </button>
+                    {!toilet && (
+                      <div className="flex shrink-0 flex-col items-end justify-between" style={{ padding: '6px 10px 9px 4px' }}>
+                        <button
+                          type="button"
+                          onClick={() => onToggleLike(place)}
+                          aria-pressed={liked}
+                          aria-label={liked ? `Quitar me gusta de ${place.name}` : `Me gusta ${place.name}`}
+                          className="flex h-[30px] min-w-[30px] items-center gap-[3px] px-1 transition-colors"
+                          style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
+                        >
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                            <path d={EXPLORE_ICONS.heart} />
+                          </svg>
+                          {likeCount > 0 && <span className="tabular-nums">{likeCount}</span>}
+                        </button>
+                        {onQuickAdd ? (
+                          <button
+                            type="button"
+                            onClick={() => onQuickAdd(place)}
+                            aria-label={`Añadir ${place.name}`}
+                            className="whitespace-nowrap transition-colors"
+                            style={{
+                              height: 32,
+                              padding: '0 11px',
+                              borderRadius: 999,
+                              border: `1.5px solid ${addDone ? 'rgb(var(--text))' : warm}`,
+                              background: addDone ? 'rgb(var(--text))' : 'transparent',
+                              color: addDone ? '#FFFDF8' : 'oklch(0.52 0.15 45)',
+                              font: "600 12.5px 'Geist'",
+                            }}
+                          >
+                            {addLabel}
+                          </button>
+                        ) : (
+                          <span style={{ height: 32 }} />
+                        )}
+                      </div>
                     )}
                   </div>
                 )
               })}
             </div>
+
+            {(toiletsActive || fountainsActive) && !trimmedQuery && (
+              <p className="pt-4 text-center text-text-muted" style={{ font: "400 11px 'Geist'" }}>
+                {toiletsActive && fountainsActive ? 'Baños y fuentes' : fountainsActive ? 'Fuentes' : 'Baños públicos'} de{' '}
+                <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline">
+                  © OpenStreetMap
+                </a>
+                .
+              </p>
+            )}
           </div>
         </div>
 

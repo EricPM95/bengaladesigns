@@ -17,7 +17,7 @@ export interface DestinationPlace {
    * sitio donde comer que el viajero consulta. Todo lo que cambia entre los dos tipos cuelga de
    * aquí, en vez de adivinarse por `filter_category`.
    */
-  kind: 'place' | 'restaurant'
+  kind: 'place' | 'restaurant' | 'toilet' | 'fountain'
   name: string
   coordinates: Coordinates
   filter_category: PlaceFilterCategory | null
@@ -59,6 +59,12 @@ export interface DestinationPlace {
   /** Artículo de Wikipedia del que sacar la foto, con prefijo de idioma opcional ("en:Colosseum").
       Solo está en los lugares donde la búsqueda por nombre falla — ver placePhoto.ts. */
   wikipedia_title?: string | null
+  /** Solo baños (`kind: 'toilet'`, de OpenStreetMap): si son de pago (null = sin dato). */
+  de_pago?: boolean | null
+  /** Solo baños: su id de OpenStreetMap (node/123, way/456). */
+  osm_id?: string
+  /** Solo baños: si son accesibles en silla de ruedas ("si" | "limitado" | "no"; null = sin dato). */
+  accesible?: 'si' | 'limitado' | 'no' | null
   /** Solo restaurantes: su posición en el JSON del destino (orden editorial) — desempata "Recomendados" mientras no haya likes. */
   order?: number
   /** Solo restaurantes — ver RESTAURANT_SUB_CATEGORIES. */
@@ -123,3 +129,6 @@ export async function fetchDestinationPlaces(destination: string): Promise<Desti
   inFlight.set(key, request)
   return request
 }
+
+/** Los puntos de OpenStreetMap (baños, fuentes de agua): salen en el mapa y en la lista, pero no tienen ficha ni se añaden a un día. */
+export const isOsmPoint = (place: { kind: string }) => place.kind === 'toilet' || place.kind === 'fountain'

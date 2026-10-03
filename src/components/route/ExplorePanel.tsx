@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { Route, Stop } from '../../lib/types'
+import type { Excursion, Route, Stop } from '../../lib/types'
+import { isOsmPoint, type DestinationPlace } from '../../lib/destinationPlacesApi'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import type { StopsMapMarker } from '../map/StopsMapView'
 import type { NearbyPlaceResult } from '../../lib/nearbyPlacesSearch'
@@ -10,8 +11,9 @@ import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
 import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
 import { confirmAddedStaying } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
-import { categoriesForFilters, type PlaceFilterId } from '../../lib/placeCategories'
-import { BOOKING_BLUE, buildHotelSearchUrl } from '../../lib/affiliateLinks'
+import { categoriesForFilters } from '../../lib/placeCategories'
+import { fetchPlacePhoto } from '../../lib/placePhoto'
+import { CARD_STYLE, EXPLORE_ICONS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
 
 interface ExplorePanelProps {
   route: Route
@@ -26,22 +28,20 @@ interface ExplorePanelProps {
 }
 
 /**
- * Las seis tarjetas de EXPLORAR. Cinco abren la pantalla de lugares con su filtro ya puesto — el
- * mismo componente y el mismo catálogo que el "+" de DIAS, para que el viajero vea exactamente los
- * mismos sitios busque desde donde busque. La sexta (hoteles) es la única que sale de la app.
- *
- * 'hotels' no es un filtro de la pantalla de lugares y por eso no está en PLACE_FILTER_CHIPS: un
- * hotel no es un sitio que visitar, y en "Añadir parada" no pintaría nada.
+ * Las tarjetas de EXPLORAR. Todas abren la pantalla de lugares con su filtro ya puesto — el mismo componente
+ * y el mismo catálogo que el "+" de DIAS, para que el viajero vea exactamente los mismos sitios busque desde
+ * donde busque. Hoteles se quitó (3-oct-2026, a petición del usuario). Baños y Fuentes solo salen si el destino
+ * tiene su descarga de OpenStreetMap.
  */
-type ExploreCardId = PlaceFilterId | 'hotels'
-
-const EXPLORE_CARDS: { id: ExploreCardId; icon: string; label: string }[] = [
-  { id: 'atracciones', icon: '🏛️', label: 'Atracciones' },
-  { id: 'miradores', icon: '📸', label: 'Miradores' },
-  { id: 'restaurantes', icon: '🍽️', label: 'Restaurantes' },
-  { id: 'entradas', icon: '🎟️', label: 'Entradas' },
-  { id: 'excursiones', icon: '🚌', label: 'Excursiones' },
-  { id: 'hotels', icon: '🏨', label: 'Hoteles' },
+const EXPLORE_CARDS: { id: ExploreCardId; label: string }[] = [
+  { id: 'atracciones', label: 'Atracciones' },
+  { id: 'miradores', label: 'Miradores' },
+  { id: 'restaurantes', label: 'Restaurantes' },
+  { id: 'entradas', label: 'Entradas' },
+  { id: 'excursiones', label: 'Excursiones' },
+  // Nueva (3-oct-2026): los baños públicos de OpenStreetMap, solo si el destino los tiene descargados.
+  { id: 'banos', label: 'Baños' },
+  { id: 'fuentes', label: 'Fuentes' },
 ]
 
 /**
@@ -53,6 +53,81 @@ const LEGACY_FALLBACK: Partial<Record<ExploreCardId, 'food' | 'viewpoints' | 'at
   restaurantes: 'food',
   miradores: 'viewpoints',
   atracciones: 'attractions',
+}
+
+/**
+ * Una tarjeta de Explorar (diseño «Trazo Reservas», pantalla 12): el cuadro de icono de color, la franja en diagonal con la foto o el degradado,
+ * el nombre en Instrument Serif y el contador pequeño.
+ */
+function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: ExploreCardId; label: string; sub: string; photo: string | null; delay: number; wide: boolean; onClick: () => void }) {
+  const style = CARD_STYLE[id]
+  const diagonal = 'polygon(34px 0,100% 0,100% 100%,0 100%)'
+  const background = photo ? `url("${photo}") center/cover, ${solidOf(style.color)}` : `linear-gradient(135deg,${solidOf(style.shadow)},#EFE7D8)`
+  const inner = (
+    <>
+      <span aria-hidden="true" className="absolute bottom-0 right-0 top-0" style={{ width: '58%', clipPath: diagonal, background }} />
+      <span aria-hidden="true" className="absolute bottom-0 right-0 top-0" style={{ width: '58%', clipPath: diagonal, background: 'linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%)' }} />
+      <span
+        aria-hidden="true"
+        className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center text-white"
+        style={{ borderRadius: 12, background: style.color, boxShadow: `0 6px 14px -6px ${style.shadow}` }}
+      >
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d={EXPLORE_ICONS[style.icon]} />
+        </svg>
+      </span>
+      <span className="absolute bottom-3 left-3 right-3 flex flex-col gap-[3px]">
+        <span className="font-display text-text" style={{ fontSize: 21, lineHeight: 1, textShadow: '0 0 12px #fff,0 0 4px #fff' }}>
+          {label}
+        </span>
+        {sub && (
+          <span
+            className="self-start rounded-md bg-bg-card py-0.5 pl-0 pr-1.5"
+            style={{ font: "500 11px 'Geist Mono',monospace", color: 'rgba(28,34,48,.65)' }}
+          >
+            {sub}
+          </span>
+        )}
+      </span>
+    </>
+  )
+  const className = `${wide ? 'col-span-2 ' : ''}relative block h-[132px] overflow-hidden rounded-[20px] border border-text/[0.08] bg-white p-0 text-left text-text transition-transform active:scale-[.98]`
+  const cardStyle = { boxShadow: '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)', animation: `explore-pop .45s cubic-bezier(.2,.8,.2,1) ${delay}ms both` } as const
+  return (
+    <button type="button" onClick={onClick} className={className} style={cardStyle}>
+      {inner}
+    </button>
+  )
+}
+
+/** La foto de cada tarjeta: la de un lugar representativo del propio catálogo del destino (el de menor nivel de la categoría), con el mismo servicio de fotos de siempre. */
+function useCardPhotos(city: string, pool: DestinationPlace[], excursions: Excursion[]): Partial<Record<ExploreCardId, string>> {
+  const [photos, setPhotos] = useState<Partial<Record<ExploreCardId, string>>>({})
+  const poolKey = pool.length
+  useEffect(() => {
+    let cancelled = false
+    const best = (filter: (place: DestinationPlace) => boolean) => pool.filter((place) => place.kind === 'place' && filter(place)).sort((a, b) => (a.level ?? 9) - (b.level ?? 9))[0] ?? null
+    const pick: [ExploreCardId, string | null, string | null | undefined][] = []
+    const attractionCategories: (string | null)[] = categoriesForFilters(['atracciones'])
+    const attraction = best((place) => attractionCategories.includes(place.filter_category))
+    const viewpoint = best((place) => place.filter_category === 'miradores')
+    const ticketed = best((place) => place.requires_ticket && place.name !== attraction?.name)
+    pick.push(['atracciones', attraction?.name ?? null, attraction?.wikipedia_title], ['miradores', viewpoint?.name ?? null, viewpoint?.wikipedia_title], ['entradas', ticketed?.name ?? null, ticketed?.wikipedia_title])
+    // Restaurantes, baños y fuentes no tienen un monumento que fotografiar: una foto del artículo de Wikipedia de lo que son.
+    pick.push(['restaurantes', 'Trattoria', 'Trattoria'], ['banos', 'Baños públicos', 'es:Baño público'], ['fuentes', 'Nasoni de Roma', 'en:Nasone'])
+    pick.push(['excursiones', excursions[0]?.photoName ?? excursions[0]?.title ?? null, null])
+    for (const [id, name, wiki] of pick) {
+      if (!name) continue
+      fetchPlacePhoto(name, city, wiki).then((url) => {
+        if (!cancelled && url) setPhotos((prev) => (prev[id] === url ? prev : { ...prev, [id]: url }))
+      })
+    }
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city, poolKey, excursions.length])
+  return photos
 }
 
 /**
@@ -73,6 +148,9 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
   const { places: curatedPool, excursions, resolved: curatedPoolResolved } = useDestinationPool(city, true)
   const hasCuratedCatalog = curatedPoolResolved && curatedPool.length > 0
+  const hasToilets = curatedPool.some((place) => place.kind === 'toilet')
+  const hasFountains = curatedPool.some((place) => place.kind === 'fountain')
+  const cardPhotos = useCardPhotos(city, curatedPool, excursions)
   const legacyCategory = activeCard ? LEGACY_FALLBACK[activeCard] : undefined
 
   // Solo los buscadores viejos publican marcadores hacia el mapa compartido — al salir de esa
@@ -92,7 +170,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const placeExplorerOpen = activeCard !== null && activeCard !== 'hotels' && hasCuratedCatalog
+  const placeExplorerOpen = activeCard !== null && hasCuratedCatalog
 
   // Avisa a RouteView de que hay una pantalla con mapa propio encima, para que desmonte el mapa
   // compartido mientras tanto (ver exploreFullScreen ahí).
@@ -112,22 +190,22 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     onSelectResultId(null)
   }
 
-  /** Cuántos elementos hay detrás de cada tarjeta. Null = no se cuenta (hoteles no es un catálogo nuestro). */
+  /** Cuántos elementos hay detrás de cada tarjeta. */
   const countFor = (id: ExploreCardId): number | null => {
-    if (id === 'hotels') return null
     if (id === 'excursiones') return excursions.length
-    if (id === 'entradas') return curatedPool.filter((place) => place.requires_ticket).length
+    if (id === 'entradas') return curatedPool.filter((place) => place.requires_ticket && !isOsmPoint(place)).length
     const categories = categoriesForFilters([id])
     return curatedPool.filter((place) => place.filter_category !== null && categories.includes(place.filter_category)).length
   }
 
   const countLabel = (id: ExploreCardId): string => {
-    if (id === 'hotels') return 'Buscar hotel'
     const count = countFor(id)
     if (count === null) return ''
     if (id === 'excursiones') return `${count} ${count === 1 ? 'opción' : 'opciones'}`
     if (id === 'entradas') return `${count} con entrada`
     if (id === 'restaurantes') return `${count} ${count === 1 ? 'sitio' : 'sitios'}`
+    if (id === 'fuentes') return `${count} ${count === 1 ? 'fuente' : 'fuentes'}`
+    if (id === 'banos') return `${count} ${count === 1 ? 'baño' : 'baños'}`
     return `${count} ${count === 1 ? 'lugar' : 'lugares'}`
   }
 
@@ -141,6 +219,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         open
         destination={city}
         places={curatedPool}
+        toiletsEnabled
         excursions={excursions}
         title={`Explorar ${city}`}
         subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
@@ -168,7 +247,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
 
   // Aún no se sabe si esta ciudad tiene catálogo — un render sin nada antes que enseñar el buscador
   // viejo medio segundo y cambiarlo por la pantalla nueva.
-  if (activeCard !== null && activeCard !== 'hotels' && !curatedPoolResolved) return null
+  if (activeCard !== null && !curatedPoolResolved) return null
 
   if (!hasCuratedCatalog && (legacyCategory === 'food' || legacyCategory === 'viewpoints')) {
     return (
@@ -186,16 +265,11 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   }
 
   const visibleCards = hasCuratedCatalog
-    ? EXPLORE_CARDS.filter((card) => card.id !== 'excursiones' || excursions.length > 0)
-    : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined || card.id === 'hotels')
+    ? EXPLORE_CARDS.filter((card) => (card.id !== 'excursiones' || excursions.length > 0) && (card.id !== 'banos' || hasToilets) && (card.id !== 'fuentes' || hasFountains))
+    : EXPLORE_CARDS.filter((card) => LEGACY_FALLBACK[card.id] !== undefined)
 
   return (
-    <div className="flex-1 space-y-5 overflow-y-auto p-4 pb-36">
-      <div>
-        <h2 className="font-display text-h2 font-semibold text-text">Explorar {city}</h2>
-        <p className="mt-1 text-small text-text-soft">Elige qué quieres descubrir.</p>
-      </div>
-
+    <div className="flex-1 space-y-4 overflow-y-auto p-3.5 pb-36">
       {cities.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {cities.map((candidate) => (
@@ -204,7 +278,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
               type="button"
               onClick={() => setCity(candidate)}
               className={`rounded-full px-3 py-1.5 text-caption font-semibold transition-colors ${
-                candidate === city ? 'bg-accent text-white' : 'bg-bg-hover text-text-soft hover:bg-border'
+                candidate === city ? 'bg-text text-bg' : 'bg-bg-hover text-text-soft hover:bg-border'
               }`}
             >
               {candidate}
@@ -213,44 +287,20 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        {visibleCards.map((card) => {
-          const label = countLabel(card.id)
-          // Hoteles sale de la app: es un enlace de verdad, no un botón que finge serlo (así el
-          // viajero puede abrirlo en otra pestaña si quiere). Ver affiliateLinks.ts.
-          if (card.id === 'hotels') {
-            return (
-              <a
-                key={card.id}
-                href={buildHotelSearchUrl(city, route.answers.dateRange?.start, route.answers.dateRange?.end)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-start gap-1.5 rounded-2xl border border-border p-4 text-left transition-colors hover:border-border-accent hover:bg-bg-hover"
-              >
-                <span className="text-2xl" aria-hidden="true">
-                  {card.icon}
-                </span>
-                <span className="text-small font-semibold text-text">{card.label}</span>
-                <span className="text-caption font-medium" style={{ color: BOOKING_BLUE }}>
-                  {label} ↗
-                </span>
-              </a>
-            )
-          }
+      <div className="grid grid-cols-2 gap-2.5">
+        {visibleCards.map((card, index) => {
+          const label = hasCuratedCatalog ? countLabel(card.id) : 'Buscar'
           return (
-            <button
+            <ExploreCard
               key={card.id}
-              type="button"
+              id={card.id}
+              label={card.label}
+              sub={label}
+              photo={cardPhotos[card.id] ?? null}
+              delay={index * 40}
+              wide={visibleCards.length % 2 === 1 && index === visibleCards.length - 1}
               onClick={() => setActiveCard(card.id)}
-              className="flex flex-col items-start gap-1.5 rounded-2xl border border-border p-4 text-left transition-colors hover:border-border-accent hover:bg-bg-hover"
-            >
-              <span className="text-2xl" aria-hidden="true">
-                {card.icon}
-              </span>
-              <span className="text-small font-semibold text-text">{card.label}</span>
-              {/* El contador solo aparece cuando hay catálogo del que sacarlo — nunca un número inventado. */}
-              <span className="text-caption text-text-muted">{hasCuratedCatalog ? label : 'Buscar'}</span>
-            </button>
+            />
           )
         })}
       </div>

@@ -17,7 +17,7 @@
  * RESTAURANT_SUB_CATEGORIES abajo y /api/destination-places): un restaurante NO es una parada de la
  * ruta — no tiene duración de visita ni entra en el itinerario, solo se consulta.
  */
-export type PlaceFilterCategory = 'monumentos' | 'museos_arte' | 'iglesias' | 'miradores' | 'restaurantes'
+export type PlaceFilterCategory = 'monumentos' | 'museos_arte' | 'iglesias' | 'miradores' | 'restaurantes' | 'banos' | 'fuentes'
 
 export interface PlaceCategoryChip {
   id: PlaceFilterCategory
@@ -41,6 +41,9 @@ export const PLACE_CATEGORY_CHIPS: PlaceCategoryChip[] = [
   { id: 'iglesias', label: 'Iglesias', color: '#5C6BC0', activeBg: '#E8EAF6', icon: '⛪' },
   { id: 'miradores', label: 'Miradores y Fotos', color: '#1E88E5', activeBg: '#E3F2FD', icon: '📸' },
   { id: 'restaurantes', label: 'Restaurantes', color: '#E64A19', activeBg: '#FBE9E7', icon: '🍴' },
+  // Los baños públicos de OpenStreetMap (data/pipeline_v2/banos): puntos del mapa, no paradas.
+  { id: 'banos', label: 'Baños', color: '#546E7A', activeBg: '#ECEFF1', icon: '🚻' },
+  { id: 'fuentes', label: 'Fuentes', color: '#0288D1', activeBg: '#E1F5FE', icon: '🚰' },
 ]
 
 export function findPlaceCategoryChip(id: string | null | undefined): PlaceCategoryChip | null {
@@ -49,7 +52,7 @@ export function findPlaceCategoryChip(id: string | null | undefined): PlaceCateg
 
 // ── Los 5 filtros de la UI ────────────────────────────────────────────────
 
-export type PlaceFilterId = 'atracciones' | 'miradores' | 'restaurantes' | 'entradas' | 'excursiones'
+export type PlaceFilterId = 'atracciones' | 'miradores' | 'restaurantes' | 'entradas' | 'excursiones' | 'banos' | 'fuentes'
 
 export interface PlaceFilterChip {
   id: PlaceFilterId
@@ -76,6 +79,9 @@ export const PLACE_FILTER_CHIPS: PlaceFilterChip[] = [
   // Autobús y no brújula: la brújula ya es el icono de "explorar" en la app (ver CompassIcon en
   // ExcursionBlocks.tsx) y aquí significaría otra cosa. El bus dice "esto es salir de la ciudad".
   { id: 'excursiones', label: 'Excursiones', color: '#00897B', activeBg: '#E0F2F1', icon: '🚌', categories: [] },
+  // Los baños: solo en Explorar (el «+» de los días no los enseña, no se pueden añadir a un día).
+  { id: 'banos', label: 'Baños', color: '#546E7A', activeBg: '#ECEFF1', icon: '🚻', categories: ['banos'] },
+  { id: 'fuentes', label: 'Fuentes', color: '#0288D1', activeBg: '#E1F5FE', icon: '🚰', categories: ['fuentes'] },
 ]
 
 export function findPlaceFilterChip(id: string | null | undefined): PlaceFilterChip | null {

@@ -168,6 +168,33 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   }
 }
 
+/* Diseño "Trazo Explorar": las tarjetas entran con un pequeño salto, y el punto azul de «dónde estás» late. */
+@keyframes explore-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes explore-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*='explore-pop'] {
+    animation: none !important;
+  }
+}
+
 /* Ventana de fechas especiales (DateNoticesModal.tsx): el fondo se desenfoca y la hoja sube (móvil) o la tarjeta
    aparece (ordenador). Con "reducir movimiento", sin animación. */
 @keyframes trazo-fade {
