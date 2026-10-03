@@ -302,6 +302,7 @@
     },
     {
       "name": "El Puente y el Castillo de Sant'Angelo (noche)",
+      "titulo_parada": "El Puente y el Castillo de Sant'Angelo iluminados",
       "duration": 25,
       "description": "Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio.",
       "coordinates": [
@@ -8534,7 +8535,7 @@
     },
     "night_view_title": "Roma iluminada desde {desde}",
     "night_view_overrides": {
-      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo de noche", "photo": "El Puente y el Castillo de Sant'Angelo (noche)" }
+      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo iluminados", "photo": "El Puente y el Castillo de Sant'Angelo (noche)" }
     },
     "night_view_names": {
       "Mirador del Janículo": "el Janículo",

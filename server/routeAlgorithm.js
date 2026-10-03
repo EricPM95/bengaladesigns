@@ -2411,6 +2411,7 @@ export async function buildDayBlockV2(destData, totalDays, hasFreeTour, dayNumbe
       description: nightExperience.description || '',
       hours: null,
       is_night_experience: true,
+      ...(nightExperience.titulo_parada ? { display_title: nightExperience.titulo_parada } : {}),
       ...categoryFor(nightExperience.name, findRawPlace(destData, nightExperience.name)?.tags),
     })
   }

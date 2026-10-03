@@ -331,6 +331,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       tags: [],
       schedule: null,
       is_night_experience: true,
+      // Lo que ve el viajero, si no es el nombre (que también es la clave de la foto): «El Puente y el Castillo de Sant'Angelo iluminados».
+      ...(entry.titulo_parada ? { display_title: entry.titulo_parada } : {}),
       // (De noche todo se ve desde la calle: sin pestaña «Entradas».)
       free_access: true,
       ...(plan.beforeDinner ? { before_dinner: true } : {}),
