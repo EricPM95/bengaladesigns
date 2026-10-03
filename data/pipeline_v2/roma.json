@@ -301,7 +301,7 @@
       ]
     },
     {
-      "name": "Puente Sant'Angelo (noche)",
+      "name": "El Puente y el Castillo de Sant'Angelo (noche)",
       "duration": 25,
       "description": "Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio.",
       "coordinates": [
@@ -8533,6 +8533,9 @@
       "vaticano": "Via della Conciliazione y el Castillo iluminados"
     },
     "night_view_title": "Roma iluminada desde {desde}",
+    "night_view_overrides": {
+      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo de noche", "photo": "El Puente y el Castillo de Sant'Angelo (noche)" }
+    },
     "night_view_names": {
       "Mirador del Janículo": "el Janículo",
       "Terraza del Pincio": "el Pincio",
@@ -9557,7 +9560,7 @@
       ],
       "cena": "Vaticano / Borgo o Prati",
       "nocturnas": [
-        "Puente Sant'Angelo (noche)"
+        "El Puente y el Castillo de Sant'Angelo (noche)"
       ],
       "traslados": {
         "free_tour": "bus 492 desde Senato (unos 20 min) o taxi (unos 20 min)",
@@ -12389,7 +12392,7 @@
     "castillo_tiber": {
       "nombre": "El Castillo y el Tíber",
       "recorrido": [
-        "Puente Sant'Angelo (noche)"
+        "El Puente y el Castillo de Sant'Angelo (noche)"
       ],
       "texto": "A cinco minutos de la cena tienes el Puente Sant'Angelo: los ángeles de Bernini iluminados y el Castillo reflejado en el Tíber. Crúzalo despacio y vuelve por la orilla del río, que a esta hora está tranquila."
     },

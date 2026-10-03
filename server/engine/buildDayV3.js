@@ -406,6 +406,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const desde = destData.destination_config?.night_view_names?.[visit.place.name]
       const template = destData.destination_config?.night_view_title
       if (desde && template) stop.night_view_title = template.replace('{desde}', desde)
+      // Una parada de noche única para el sitio (el Puente y el Castillo de Sant'Angelo, 3-oct-2026): su título y su foto, no la de día.
+      const override = destData.destination_config?.night_view_overrides?.[visit.place.name]
+      if (override?.title) stop.night_view_title = override.title
+      if (override?.photo) stop.photo_name = override.photo
     }
     // El tramo en bus o metro hasta aquí (`traslado_min`): "🚌 Bus 118, unos 25 min".
     if (visit.place.transit) stop.transit = transitFields(visit.place.transit)

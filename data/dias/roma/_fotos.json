@@ -69,14 +69,13 @@
     },
     {
       "archivo": "noche_castillo_y_puente_sant_angelo_rio.jpg",
-      "lugares": [
-        "Puente Sant'Angelo (noche)"
-      ],
+      "lugares": [],
       "cuando": "noche",
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "nota": "Sin uso desde el 3-oct-2026: «Puente Sant'Angelo (noche)» ya no existe como parada suelta; la de noche es «El Puente y el Castillo de Sant'Angelo (noche)», con la foto nueva del usuario."
     },
     {
       "archivo": "noche_foro_romano.jpg",
@@ -456,6 +455,18 @@
       "autor": "",
       "enlace": "",
       "nota": "La del usuario (3-oct-2026), con las fechas del mercadillo (del 1 de diciembre al 6 de enero, las de la fecha especial «mercadillo_navona»). La anterior se queda solo para «Piazza Navona»."
+    },
+    {
+      "archivo": "noche_puente_y_castillo_sant_angelo.jpg",
+      "lugares": [
+        "El Puente y el Castillo de Sant'Angelo (noche)"
+      ],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La del usuario (3-oct-2026). Es la foto de la parada de noche única del Puente y el Castillo de Sant'Angelo; la usan también el paseo «El Castillo y el Tíber» y el mirador que llega de noche (night_view_overrides)."
     }
   ],
   "notas_revision": {
